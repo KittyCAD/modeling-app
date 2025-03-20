@@ -39,11 +39,7 @@ description: Variables in memory after executing flange.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1662,
-            1740,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         }
@@ -55,11 +51,7 @@ description: Variables in memory after executing flange.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1662,
-                1740,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -110,11 +102,7 @@ description: Variables in memory after executing flange.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1195,
-                  1261,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudeArc"
               }
@@ -126,11 +114,7 @@ description: Variables in memory after executing flange.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1195,
-                      1261,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "ccw": true,
                   "center": [
@@ -197,11 +181,7 @@ description: Variables in memory after executing flange.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1195,
-                    1261,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "artifactId": "[uuid]",
@@ -236,11 +216,7 @@ description: Variables in memory after executing flange.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1662,
-              1740,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -295,11 +271,7 @@ description: Variables in memory after executing flange.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  851,
-                  957,
-                  0
-                ]
+                "sourceRange": []
               },
               "ccw": true,
               "center": [
@@ -366,11 +338,7 @@ description: Variables in memory after executing flange.kcl
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                851,
-                957,
-                0
-              ]
+              "sourceRange": []
             }
           },
           "artifactId": "[uuid]",
@@ -389,11 +357,7 @@ description: Variables in memory after executing flange.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  851,
-                  957,
-                  0
-                ]
+                "sourceRange": []
               },
               "ccw": true,
               "center": [
@@ -460,11 +424,7 @@ description: Variables in memory after executing flange.kcl
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                851,
-                957,
-                0
-              ]
+              "sourceRange": []
             }
           },
           "artifactId": "[uuid]",
@@ -483,11 +443,7 @@ description: Variables in memory after executing flange.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  851,
-                  957,
-                  0
-                ]
+                "sourceRange": []
               },
               "ccw": true,
               "center": [
@@ -554,11 +510,7 @@ description: Variables in memory after executing flange.kcl
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                851,
-                957,
-                0
-              ]
+              "sourceRange": []
             }
           },
           "artifactId": "[uuid]",
@@ -577,11 +529,7 @@ description: Variables in memory after executing flange.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  851,
-                  957,
-                  0
-                ]
+                "sourceRange": []
               },
               "ccw": true,
               "center": [
@@ -648,11 +596,7 @@ description: Variables in memory after executing flange.kcl
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                851,
-                957,
-                0
-              ]
+              "sourceRange": []
             }
           },
           "artifactId": "[uuid]",
@@ -674,11 +618,7 @@ description: Variables in memory after executing flange.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1195,
-            1261,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         }
@@ -690,11 +630,7 @@ description: Variables in memory after executing flange.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1195,
-                1261,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -761,11 +697,7 @@ description: Variables in memory after executing flange.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1195,
-              1261,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -844,11 +776,7 @@ description: Variables in memory after executing flange.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1870,
-            1913,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         }
@@ -860,11 +788,7 @@ description: Variables in memory after executing flange.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1870,
-                1913,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -915,11 +839,7 @@ description: Variables in memory after executing flange.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1429,
-                  1504,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudeArc"
               }
@@ -931,11 +851,7 @@ description: Variables in memory after executing flange.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1429,
-                      1504,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "ccw": true,
                   "center": [
@@ -986,11 +902,7 @@ description: Variables in memory after executing flange.kcl
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1195,
-                        1261,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudeArc"
                     }
@@ -1002,11 +914,7 @@ description: Variables in memory after executing flange.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1195,
-                            1261,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "ccw": true,
                         "center": [
@@ -1073,11 +981,7 @@ description: Variables in memory after executing flange.kcl
                       "tag": null,
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1195,
-                          1261,
-                          0
-                        ]
+                        "sourceRange": []
                       }
                     },
                     "artifactId": "[uuid]",
@@ -1112,11 +1016,7 @@ description: Variables in memory after executing flange.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1429,
-                    1504,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "artifactId": "[uuid]",
@@ -1151,11 +1051,7 @@ description: Variables in memory after executing flange.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1870,
-              1913,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -1182,11 +1078,7 @@ description: Variables in memory after executing flange.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1429,
-            1504,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         }
@@ -1198,11 +1090,7 @@ description: Variables in memory after executing flange.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1429,
-                1504,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -1253,11 +1141,7 @@ description: Variables in memory after executing flange.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1195,
-                  1261,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudeArc"
               }
@@ -1269,11 +1153,7 @@ description: Variables in memory after executing flange.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1195,
-                      1261,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "ccw": true,
                   "center": [
@@ -1340,11 +1220,7 @@ description: Variables in memory after executing flange.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1195,
-                    1261,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "artifactId": "[uuid]",
@@ -1379,11 +1255,7 @@ description: Variables in memory after executing flange.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1429,
-              1504,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",

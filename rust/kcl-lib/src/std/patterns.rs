@@ -363,7 +363,7 @@ async fn execute_pattern_transform<T: GeometryTrait>(
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not flush these, then you won't be able to pattern something with fillets.
     // Flush just the fillets/chamfers that apply to these solids.
-    T::flush_batch(args, exec_state, geo_set.clone()).await?;
+    T::flush_batch(args, exec_state, &geo_set).await?;
     let starting: Vec<T> = geo_set.into();
 
     if args.ctx.context_type == crate::execution::ContextType::Mock {
@@ -614,7 +614,7 @@ trait GeometryTrait: Clone {
     fn original_id(&self) -> Uuid;
     fn set_id(&mut self, id: Uuid);
     fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError>;
-    async fn flush_batch(args: &Args, exec_state: &mut ExecState, set: Self::Set) -> Result<(), KclError>;
+    async fn flush_batch(args: &Args, exec_state: &mut ExecState, set: &Self::Set) -> Result<(), KclError>;
 }
 
 impl GeometryTrait for Sketch {
@@ -633,7 +633,7 @@ impl GeometryTrait for Sketch {
         Ok(Point3d { x, y, z: 0.0 })
     }
 
-    async fn flush_batch(_: &Args, _: &mut ExecState, _: Self::Set) -> Result<(), KclError> {
+    async fn flush_batch(_: &Args, _: &mut ExecState, _: &Self::Set) -> Result<(), KclError> {
         Ok(())
     }
 }
@@ -656,7 +656,7 @@ impl GeometryTrait for Solid {
         array_to_point3d(val, source_ranges)
     }
 
-    async fn flush_batch(args: &Args, exec_state: &mut ExecState, solid_set: Self::Set) -> Result<(), KclError> {
+    async fn flush_batch(args: &Args, exec_state: &mut ExecState, solid_set: &Self::Set) -> Result<(), KclError> {
         args.flush_batch_for_solids(exec_state, solid_set).await
     }
 }
@@ -1221,7 +1221,7 @@ async fn inner_pattern_circular_3d(
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not flush these, then you won't be able to pattern something with fillets.
     // Flush just the fillets/chamfers that apply to these solids.
-    args.flush_batch_for_solids(exec_state, solids.clone()).await?;
+    args.flush_batch_for_solids(exec_state, &solids).await?;
 
     let starting_solids = solids;
 

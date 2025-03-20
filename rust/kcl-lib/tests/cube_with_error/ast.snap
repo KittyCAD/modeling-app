@@ -6,40 +6,49 @@ description: Result of parsing cube_with_error.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 392,
+          "commentStart": 3,
+          "end": 0,
           "id": {
-            "end": 7,
+            "commentStart": 3,
+            "end": 0,
             "name": "cube",
-            "start": 3,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "body": {
               "body": [
                 {
+                  "commentStart": 28,
                   "declaration": {
-                    "end": 42,
+                    "commentStart": 28,
+                    "end": 0,
                     "id": {
-                      "end": 29,
+                      "commentStart": 28,
+                      "end": 0,
                       "name": "l",
-                      "start": 28,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
-                      "end": 42,
+                      "commentStart": 32,
+                      "end": 0,
                       "left": {
-                        "end": 38,
+                        "commentStart": 32,
+                        "end": 0,
                         "name": "length",
-                        "start": 32,
+                        "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 42,
+                        "commentStart": 41,
+                        "end": 0,
                         "raw": "2",
-                        "start": 41,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -47,42 +56,48 @@ description: Result of parsing cube_with_error.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 32,
+                      "start": 0,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
-                    "start": 28,
+                    "start": 0,
                     "type": "VariableDeclarator"
                   },
-                  "end": 42,
+                  "end": 0,
                   "kind": "const",
-                  "start": 28,
+                  "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
+                  "commentStart": 45,
                   "declaration": {
-                    "end": 58,
+                    "commentStart": 45,
+                    "end": 0,
                     "id": {
-                      "end": 46,
+                      "commentStart": 45,
+                      "end": 0,
                       "name": "x",
-                      "start": 45,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
+                      "commentStart": 49,
                       "computed": false,
-                      "end": 58,
+                      "end": 0,
                       "object": {
-                        "end": 55,
+                        "commentStart": 49,
+                        "end": 0,
                         "name": "center",
-                        "start": 49,
+                        "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "property": {
-                        "end": 57,
+                        "commentStart": 56,
+                        "end": 0,
                         "raw": "0",
-                        "start": 56,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -90,42 +105,48 @@ description: Result of parsing cube_with_error.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 49,
+                      "start": 0,
                       "type": "MemberExpression",
                       "type": "MemberExpression"
                     },
-                    "start": 45,
+                    "start": 0,
                     "type": "VariableDeclarator"
                   },
-                  "end": 58,
+                  "end": 0,
                   "kind": "const",
-                  "start": 45,
+                  "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
+                  "commentStart": 61,
                   "declaration": {
-                    "end": 74,
+                    "commentStart": 61,
+                    "end": 0,
                     "id": {
-                      "end": 62,
+                      "commentStart": 61,
+                      "end": 0,
                       "name": "y",
-                      "start": 61,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
+                      "commentStart": 65,
                       "computed": false,
-                      "end": 74,
+                      "end": 0,
                       "object": {
-                        "end": 71,
+                        "commentStart": 65,
+                        "end": 0,
                         "name": "center",
-                        "start": 65,
+                        "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "property": {
-                        "end": 73,
+                        "commentStart": 72,
+                        "end": 0,
                         "raw": "1",
-                        "start": 72,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -133,316 +154,360 @@ description: Result of parsing cube_with_error.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 65,
+                      "start": 0,
                       "type": "MemberExpression",
                       "type": "MemberExpression"
                     },
-                    "start": 61,
+                    "start": 0,
                     "type": "VariableDeclarator"
                   },
-                  "end": 74,
+                  "end": 0,
                   "kind": "const",
-                  "start": 61,
+                  "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
+                  "commentStart": 77,
                   "declaration": {
-                    "end": 98,
+                    "commentStart": 77,
+                    "end": 0,
                     "id": {
-                      "end": 79,
+                      "commentStart": 77,
+                      "end": 0,
                       "name": "p0",
-                      "start": 77,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
+                      "commentStart": 82,
                       "elements": [
                         {
-                          "end": 89,
+                          "commentStart": 83,
+                          "end": 0,
                           "left": {
                             "argument": {
-                              "end": 85,
+                              "commentStart": 84,
+                              "end": 0,
                               "name": "l",
-                              "start": 84,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "end": 85,
+                            "commentStart": 83,
+                            "end": 0,
                             "operator": "-",
-                            "start": 83,
+                            "start": 0,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 89,
+                            "commentStart": 88,
+                            "end": 0,
                             "name": "x",
-                            "start": 88,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 83,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
                         {
-                          "end": 97,
+                          "commentStart": 91,
+                          "end": 0,
                           "left": {
                             "argument": {
-                              "end": 93,
+                              "commentStart": 92,
+                              "end": 0,
                               "name": "l",
-                              "start": 92,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "end": 93,
+                            "commentStart": 91,
+                            "end": 0,
                             "operator": "-",
-                            "start": 91,
+                            "start": 0,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 97,
+                            "commentStart": 96,
+                            "end": 0,
                             "name": "y",
-                            "start": 96,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 91,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       ],
-                      "end": 98,
-                      "start": 82,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     },
-                    "start": 77,
+                    "start": 0,
                     "type": "VariableDeclarator"
                   },
-                  "end": 98,
+                  "end": 0,
                   "kind": "const",
-                  "start": 77,
+                  "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
+                  "commentStart": 101,
                   "declaration": {
-                    "end": 121,
+                    "commentStart": 101,
+                    "end": 0,
                     "id": {
-                      "end": 103,
+                      "commentStart": 101,
+                      "end": 0,
                       "name": "p1",
-                      "start": 101,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
+                      "commentStart": 106,
                       "elements": [
                         {
-                          "end": 113,
+                          "commentStart": 107,
+                          "end": 0,
                           "left": {
                             "argument": {
-                              "end": 109,
+                              "commentStart": 108,
+                              "end": 0,
                               "name": "l",
-                              "start": 108,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "end": 109,
+                            "commentStart": 107,
+                            "end": 0,
                             "operator": "-",
-                            "start": 107,
+                            "start": 0,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 113,
+                            "commentStart": 112,
+                            "end": 0,
                             "name": "x",
-                            "start": 112,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 107,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
                         {
-                          "end": 120,
+                          "commentStart": 115,
+                          "end": 0,
                           "left": {
-                            "end": 116,
+                            "commentStart": 115,
+                            "end": 0,
                             "name": "l",
-                            "start": 115,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 120,
+                            "commentStart": 119,
+                            "end": 0,
                             "name": "y",
-                            "start": 119,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 115,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       ],
-                      "end": 121,
-                      "start": 106,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     },
-                    "start": 101,
+                    "start": 0,
                     "type": "VariableDeclarator"
                   },
-                  "end": 121,
+                  "end": 0,
                   "kind": "const",
-                  "start": 101,
+                  "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
+                  "commentStart": 124,
                   "declaration": {
-                    "end": 143,
+                    "commentStart": 124,
+                    "end": 0,
                     "id": {
-                      "end": 126,
+                      "commentStart": 124,
+                      "end": 0,
                       "name": "p2",
-                      "start": 124,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
+                      "commentStart": 129,
                       "elements": [
                         {
-                          "end": 135,
+                          "commentStart": 130,
+                          "end": 0,
                           "left": {
-                            "end": 131,
+                            "commentStart": 130,
+                            "end": 0,
                             "name": "l",
-                            "start": 130,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 135,
+                            "commentStart": 134,
+                            "end": 0,
                             "name": "x",
-                            "start": 134,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 130,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
                         {
-                          "end": 142,
+                          "commentStart": 137,
+                          "end": 0,
                           "left": {
-                            "end": 138,
+                            "commentStart": 137,
+                            "end": 0,
                             "name": "l",
-                            "start": 137,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 142,
+                            "commentStart": 141,
+                            "end": 0,
                             "name": "y",
-                            "start": 141,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 137,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       ],
-                      "end": 143,
-                      "start": 129,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     },
-                    "start": 124,
+                    "start": 0,
                     "type": "VariableDeclarator"
                   },
-                  "end": 143,
+                  "end": 0,
                   "kind": "const",
-                  "start": 124,
+                  "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
+                  "commentStart": 146,
                   "declaration": {
-                    "end": 166,
+                    "commentStart": 146,
+                    "end": 0,
                     "id": {
-                      "end": 148,
+                      "commentStart": 146,
+                      "end": 0,
                       "name": "p3",
-                      "start": 146,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
+                      "commentStart": 151,
                       "elements": [
                         {
-                          "end": 157,
+                          "commentStart": 152,
+                          "end": 0,
                           "left": {
-                            "end": 153,
+                            "commentStart": 152,
+                            "end": 0,
                             "name": "l",
-                            "start": 152,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 157,
+                            "commentStart": 156,
+                            "end": 0,
                             "name": "x",
-                            "start": 156,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 152,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
                         {
-                          "end": 165,
+                          "commentStart": 159,
+                          "end": 0,
                           "left": {
                             "argument": {
-                              "end": 161,
+                              "commentStart": 160,
+                              "end": 0,
                               "name": "l",
-                              "start": 160,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "end": 161,
+                            "commentStart": 159,
+                            "end": 0,
                             "operator": "-",
-                            "start": 159,
+                            "start": 0,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 165,
+                            "commentStart": 164,
+                            "end": 0,
                             "name": "y",
-                            "start": 164,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 159,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       ],
-                      "end": 166,
-                      "start": 151,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     },
-                    "start": 146,
+                    "start": 0,
                     "type": "VariableDeclarator"
                   },
-                  "end": 166,
+                  "end": 0,
                   "kind": "const",
-                  "start": 146,
+                  "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
@@ -452,48 +517,55 @@ description: Result of parsing cube_with_error.kcl
                       {
                         "arguments": [
                           {
-                            "end": 193,
+                            "commentStart": 191,
+                            "end": 0,
                             "name": "XY",
-                            "start": 191,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         ],
                         "callee": {
-                          "end": 190,
+                          "commentStart": 177,
+                          "end": 0,
                           "name": "startSketchOn",
-                          "start": 177,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "end": 194,
-                        "start": 177,
+                        "commentStart": 177,
+                        "end": 0,
+                        "start": 0,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       {
                         "arguments": [
                           {
-                            "end": 219,
+                            "commentStart": 217,
+                            "end": 0,
                             "name": "p0",
-                            "start": 217,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           {
-                            "end": 222,
-                            "start": 221,
+                            "commentStart": 221,
+                            "end": 0,
+                            "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 216,
+                          "commentStart": 202,
+                          "end": 0,
                           "name": "startProfileAt",
-                          "start": 202,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "end": 223,
-                        "start": 202,
+                        "commentStart": 202,
+                        "end": 0,
+                        "start": 0,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
@@ -502,28 +574,32 @@ description: Result of parsing cube_with_error.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "end": 247,
+                              "commentStart": 236,
+                              "end": 0,
                               "name": "endAbsolute",
-                              "start": 236,
+                              "start": 0,
                               "type": "Identifier"
                             },
                             "arg": {
-                              "end": 252,
+                              "commentStart": 250,
+                              "end": 0,
                               "name": "p1",
-                              "start": 250,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           }
                         ],
                         "callee": {
-                          "end": 235,
+                          "commentStart": 231,
+                          "end": 0,
                           "name": "line",
-                          "start": 231,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "end": 253,
-                        "start": 231,
+                        "commentStart": 231,
+                        "end": 0,
+                        "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
@@ -533,28 +609,32 @@ description: Result of parsing cube_with_error.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "end": 277,
+                              "commentStart": 266,
+                              "end": 0,
                               "name": "endAbsolute",
-                              "start": 266,
+                              "start": 0,
                               "type": "Identifier"
                             },
                             "arg": {
-                              "end": 282,
+                              "commentStart": 280,
+                              "end": 0,
                               "name": "p2",
-                              "start": 280,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           }
                         ],
                         "callee": {
-                          "end": 265,
+                          "commentStart": 261,
+                          "end": 0,
                           "name": "line",
-                          "start": 261,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "end": 283,
-                        "start": 261,
+                        "commentStart": 261,
+                        "end": 0,
+                        "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
@@ -564,28 +644,32 @@ description: Result of parsing cube_with_error.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "end": 307,
+                              "commentStart": 296,
+                              "end": 0,
                               "name": "endAbsolute",
-                              "start": 296,
+                              "start": 0,
                               "type": "Identifier"
                             },
                             "arg": {
-                              "end": 312,
+                              "commentStart": 310,
+                              "end": 0,
                               "name": "p3",
-                              "start": 310,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           }
                         ],
                         "callee": {
-                          "end": 295,
+                          "commentStart": 291,
+                          "end": 0,
                           "name": "line",
-                          "start": 291,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "end": 313,
-                        "start": 291,
+                        "commentStart": 291,
+                        "end": 0,
+                        "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
@@ -595,28 +679,32 @@ description: Result of parsing cube_with_error.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "end": 337,
+                              "commentStart": 326,
+                              "end": 0,
                               "name": "endAbsolute",
-                              "start": 326,
+                              "start": 0,
                               "type": "Identifier"
                             },
                             "arg": {
-                              "end": 342,
+                              "commentStart": 340,
+                              "end": 0,
                               "name": "p0",
-                              "start": 340,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           }
                         ],
                         "callee": {
-                          "end": 325,
+                          "commentStart": 321,
+                          "end": 0,
                           "name": "line",
-                          "start": 321,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "end": 343,
-                        "start": 321,
+                        "commentStart": 321,
+                        "end": 0,
+                        "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
@@ -624,13 +712,15 @@ description: Result of parsing cube_with_error.kcl
                       {
                         "arguments": [],
                         "callee": {
-                          "end": 356,
+                          "commentStart": 351,
+                          "end": 0,
                           "name": "close",
-                          "start": 351,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "end": 358,
-                        "start": 351,
+                        "commentStart": 351,
+                        "end": 0,
+                        "start": 0,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
@@ -639,51 +729,59 @@ description: Result of parsing cube_with_error.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "end": 380,
+                              "commentStart": 374,
+                              "end": 0,
                               "name": "length",
-                              "start": 374,
+                              "start": 0,
                               "type": "Identifier"
                             },
                             "arg": {
-                              "end": 389,
+                              "commentStart": 383,
+                              "end": 0,
                               "name": "length",
-                              "start": 383,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           }
                         ],
                         "callee": {
-                          "end": 373,
+                          "commentStart": 366,
+                          "end": 0,
                           "name": "extrude",
-                          "start": 366,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "end": 390,
-                        "start": 366,
+                        "commentStart": 366,
+                        "end": 0,
+                        "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
                       }
                     ],
-                    "end": 390,
-                    "start": 177,
+                    "commentStart": 177,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
-                  "end": 390,
-                  "start": 170,
+                  "commentStart": 166,
+                  "end": 0,
+                  "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 392,
+              "commentStart": 24,
+              "end": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "6": [
                     {
-                      "end": 170,
-                      "start": 166,
+                      "commentStart": 166,
+                      "end": 0,
+                      "start": 0,
                       "type": "NonCodeNode",
                       "value": {
                         "type": "newLine"
@@ -693,57 +791,64 @@ description: Result of parsing cube_with_error.kcl
                 },
                 "startNodes": []
               },
-              "start": 24
+              "start": 0
             },
-            "end": 392,
+            "commentStart": 7,
+            "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 14,
+                  "commentStart": 8,
+                  "end": 0,
                   "name": "length",
-                  "start": 8,
+                  "start": 0,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 22,
+                  "commentStart": 16,
+                  "end": 0,
                   "name": "center",
-                  "start": 16,
+                  "start": 0,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 7,
+            "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 3,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 392,
+        "end": 0,
         "kind": "fn",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 392,
         "declaration": {
-          "end": 419,
+          "commentStart": 394,
+          "end": 0,
           "id": {
-            "end": 400,
+            "commentStart": 394,
+            "end": 0,
             "name": "myCube",
-            "start": 394,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 410,
+                "commentStart": 408,
+                "end": 0,
                 "raw": "40",
-                "start": 408,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -752,11 +857,13 @@ description: Result of parsing cube_with_error.kcl
                 }
               },
               {
+                "commentStart": 412,
                 "elements": [
                   {
-                    "end": 414,
+                    "commentStart": 413,
+                    "end": 0,
                     "raw": "0",
-                    "start": 413,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -765,9 +872,10 @@ description: Result of parsing cube_with_error.kcl
                     }
                   },
                   {
-                    "end": 417,
+                    "commentStart": 416,
+                    "end": 0,
                     "raw": "0",
-                    "start": 416,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -776,68 +884,67 @@ description: Result of parsing cube_with_error.kcl
                     }
                   }
                 ],
-                "end": 418,
-                "start": 412,
+                "end": 0,
+                "start": 0,
                 "type": "ArrayExpression",
                 "type": "ArrayExpression"
               }
             ],
             "callee": {
-              "end": 407,
+              "commentStart": 403,
+              "end": 0,
               "name": "cube",
-              "start": 403,
+              "start": 0,
               "type": "Identifier"
             },
-            "end": 419,
-            "start": 403,
+            "commentStart": 403,
+            "end": 0,
+            "start": 0,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 394,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 419,
+        "end": 0,
         "kind": "const",
-        "start": 394,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 468,
+        "commentStart": 419,
+        "end": 0,
         "expression": {
-          "end": 468,
+          "commentStart": 465,
+          "end": 0,
           "name": "foo",
-          "start": 465,
+          "start": 0,
           "type": "Identifier",
           "type": "Identifier"
         },
-        "start": 465,
+        "preComments": [
+          "",
+          "",
+          "// Error, after creating meaningful output."
+        ],
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 469,
+    "commentStart": 0,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "end": 394,
-            "start": 392,
+            "commentStart": 392,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
-            }
-          }
-        ],
-        "1": [
-          {
-            "end": 464,
-            "start": 419,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "Error, after creating meaningful output.",
-              "style": "line"
             }
           }
         ]

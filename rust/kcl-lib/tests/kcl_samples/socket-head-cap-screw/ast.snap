@@ -6,18 +6,22 @@ description: Result of parsing socket-head-cap-screw.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 404,
         "declaration": {
-          "end": 443,
+          "commentStart": 426,
+          "end": 0,
           "id": {
-            "end": 437,
+            "commentStart": 426,
+            "end": 0,
             "name": "screwLength",
-            "start": 426,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 443,
+            "commentStart": 440,
+            "end": 0,
             "raw": "1.0",
-            "start": 440,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -25,28 +29,35 @@ description: Result of parsing socket-head-cap-screw.kcl
               "suffix": "None"
             }
           },
-          "start": 426,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 443,
+        "end": 0,
         "kind": "const",
-        "start": 426,
+        "preComments": [
+          "// Define constants"
+        ],
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 444,
         "declaration": {
-          "end": 464,
+          "commentStart": 444,
+          "end": 0,
           "id": {
-            "end": 457,
+            "commentStart": 444,
+            "end": 0,
             "name": "screwDiameter",
-            "start": 444,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 464,
+            "commentStart": 460,
+            "end": 0,
             "raw": ".190",
-            "start": 460,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -54,28 +65,32 @@ description: Result of parsing socket-head-cap-screw.kcl
               "suffix": "None"
             }
           },
-          "start": 444,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 464,
+        "end": 0,
         "kind": "const",
-        "start": 444,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 465,
         "declaration": {
-          "end": 484,
+          "commentStart": 465,
+          "end": 0,
           "id": {
-            "end": 477,
+            "commentStart": 465,
+            "end": 0,
             "name": "headDiameter",
-            "start": 465,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 484,
+            "commentStart": 480,
+            "end": 0,
             "raw": ".313",
-            "start": 480,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -83,55 +98,64 @@ description: Result of parsing socket-head-cap-screw.kcl
               "suffix": "None"
             }
           },
-          "start": 465,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 484,
+        "end": 0,
         "kind": "const",
-        "start": 465,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 485,
         "declaration": {
-          "end": 511,
+          "commentStart": 485,
+          "end": 0,
           "id": {
-            "end": 495,
+            "commentStart": 485,
+            "end": 0,
             "name": "headLength",
-            "start": 485,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 511,
+            "commentStart": 498,
+            "end": 0,
             "name": "screwDiameter",
-            "start": 498,
+            "start": 0,
             "type": "Identifier",
             "type": "Identifier"
           },
-          "start": 485,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 511,
+        "end": 0,
         "kind": "const",
-        "start": 485,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 512,
         "declaration": {
-          "end": 534,
+          "commentStart": 512,
+          "end": 0,
           "id": {
-            "end": 525,
+            "commentStart": 512,
+            "end": 0,
             "name": "hexWallToWall",
-            "start": 512,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 534,
+            "commentStart": 528,
+            "end": 0,
             "left": {
-              "end": 529,
+              "commentStart": 528,
+              "end": 0,
               "raw": "5",
-              "start": 528,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -141,9 +165,10 @@ description: Result of parsing socket-head-cap-screw.kcl
             },
             "operator": "/",
             "right": {
-              "end": 534,
+              "commentStart": 532,
+              "end": 0,
               "raw": "32",
-              "start": 532,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -151,124 +176,144 @@ description: Result of parsing socket-head-cap-screw.kcl
                 "suffix": "None"
               }
             },
-            "start": 528,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 512,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 534,
+        "end": 0,
         "kind": "const",
-        "start": 512,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 535,
         "declaration": {
-          "end": 574,
+          "commentStart": 535,
+          "end": 0,
           "id": {
-            "end": 543,
+            "commentStart": 535,
+            "end": 0,
             "name": "capRatio",
-            "start": 535,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 574,
+            "commentStart": 546,
+            "end": 0,
             "left": {
-              "end": 559,
+              "commentStart": 546,
+              "end": 0,
               "name": "screwDiameter",
-              "start": 546,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "operator": "/",
             "right": {
-              "end": 574,
+              "commentStart": 562,
+              "end": 0,
               "name": "headDiameter",
-              "start": 562,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
-            "start": 546,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 535,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 574,
+        "end": 0,
         "kind": "const",
-        "start": 535,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 575,
         "declaration": {
-          "end": 614,
+          "commentStart": 575,
+          "end": 0,
           "id": {
-            "end": 583,
+            "commentStart": 575,
+            "end": 0,
             "name": "hexRatio",
-            "start": 575,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 614,
+            "commentStart": 586,
+            "end": 0,
             "left": {
-              "end": 599,
+              "commentStart": 586,
+              "end": 0,
               "name": "hexWallToWall",
-              "start": 586,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "operator": "/",
             "right": {
-              "end": 614,
+              "commentStart": 602,
+              "end": 0,
               "name": "headDiameter",
-              "start": 602,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
-            "start": 586,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 575,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 614,
+        "end": 0,
         "kind": "const",
-        "start": 575,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 615,
         "declaration": {
-          "end": 673,
+          "commentStart": 615,
+          "end": 0,
           "id": {
-            "end": 628,
+            "commentStart": 615,
+            "end": 0,
             "name": "hexWallLength",
-            "start": 615,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 673,
+            "commentStart": 631,
+            "end": 0,
             "left": {
-              "end": 652,
+              "commentStart": 631,
+              "end": 0,
               "left": {
-                "end": 648,
+                "commentStart": 631,
+                "end": 0,
                 "left": {
-                  "end": 644,
+                  "commentStart": 631,
+                  "end": 0,
                   "name": "hexWallToWall",
-                  "start": 631,
+                  "start": 0,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 "operator": "/",
                 "right": {
-                  "end": 648,
+                  "commentStart": 647,
+                  "end": 0,
                   "raw": "2",
-                  "start": 647,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -276,15 +321,16 @@ description: Result of parsing socket-head-cap-screw.kcl
                     "suffix": "None"
                   }
                 },
-                "start": 631,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
               "operator": "*",
               "right": {
-                "end": 652,
+                "commentStart": 651,
+                "end": 0,
                 "raw": "1",
-                "start": 651,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -292,7 +338,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "suffix": "None"
                 }
               },
-              "start": 631,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
@@ -302,9 +348,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 {
                   "arguments": [
                     {
-                      "end": 671,
+                      "commentStart": 669,
+                      "end": 0,
                       "raw": "30",
-                      "start": 669,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -314,54 +361,62 @@ description: Result of parsing socket-head-cap-screw.kcl
                     }
                   ],
                   "callee": {
-                    "end": 668,
+                    "commentStart": 659,
+                    "end": 0,
                     "name": "toRadians",
-                    "start": 659,
+                    "start": 0,
                     "type": "Identifier"
                   },
-                  "end": 672,
-                  "start": 659,
+                  "commentStart": 659,
+                  "end": 0,
+                  "start": 0,
                   "type": "CallExpression",
                   "type": "CallExpression"
                 }
               ],
               "callee": {
-                "end": 658,
+                "commentStart": 655,
+                "end": 0,
                 "name": "cos",
-                "start": 655,
+                "start": 0,
                 "type": "Identifier"
               },
-              "end": 673,
-              "start": 655,
+              "commentStart": 655,
+              "end": 0,
+              "start": 0,
               "type": "CallExpression",
               "type": "CallExpression"
             },
-            "start": 631,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 615,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 673,
+        "end": 0,
         "kind": "const",
-        "start": 615,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 674,
         "declaration": {
-          "end": 696,
+          "commentStart": 674,
+          "end": 0,
           "id": {
-            "end": 690,
+            "commentStart": 674,
+            "end": 0,
             "name": "hexStartingAngle",
-            "start": 674,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 696,
+            "commentStart": 693,
+            "end": 0,
             "raw": "210",
-            "start": 693,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -369,28 +424,32 @@ description: Result of parsing socket-head-cap-screw.kcl
               "suffix": "None"
             }
           },
-          "start": 674,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 696,
+        "end": 0,
         "kind": "const",
-        "start": 674,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 696,
         "declaration": {
-          "end": 749,
+          "commentStart": 727,
+          "end": 0,
           "id": {
-            "end": 743,
+            "commentStart": 727,
+            "end": 0,
             "name": "hexInteriorAngle",
-            "start": 727,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 749,
+            "commentStart": 746,
+            "end": 0,
             "raw": "120",
-            "start": 746,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -398,30 +457,35 @@ description: Result of parsing socket-head-cap-screw.kcl
               "suffix": "None"
             }
           },
-          "start": 727,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 749,
+        "end": 0,
         "kind": "const",
-        "start": 727,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 750,
         "declaration": {
-          "end": 789,
+          "commentStart": 750,
+          "end": 0,
           "id": {
-            "end": 764,
+            "commentStart": 750,
+            "end": 0,
             "name": "hexChangeAngle",
-            "start": 750,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 789,
+            "commentStart": 767,
+            "end": 0,
             "left": {
-              "end": 770,
+              "commentStart": 767,
+              "end": 0,
               "raw": "180",
-              "start": 767,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -431,44 +495,51 @@ description: Result of parsing socket-head-cap-screw.kcl
             },
             "operator": "-",
             "right": {
-              "end": 789,
+              "commentStart": 773,
+              "end": 0,
               "name": "hexInteriorAngle",
-              "start": 773,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
-            "start": 767,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 750,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 789,
+        "end": 0,
         "kind": "const",
-        "start": 750,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 789,
         "declaration": {
-          "end": 2274,
+          "commentStart": 853,
+          "end": 0,
           "id": {
-            "end": 861,
+            "commentStart": 853,
+            "end": 0,
             "name": "capScrew",
-            "start": 853,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "body": {
               "body": [
                 {
+                  "commentStart": 898,
                   "declaration": {
-                    "end": 1113,
+                    "commentStart": 939,
+                    "end": 0,
                     "id": {
-                      "end": 954,
+                      "commentStart": 939,
+                      "end": 0,
                       "name": "screwHeadSketch",
-                      "start": 939,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
@@ -476,22 +547,25 @@ description: Result of parsing socket-head-cap-screw.kcl
                         {
                           "arguments": [
                             {
-                              "end": 975,
+                              "commentStart": 971,
+                              "end": 0,
                               "raw": "'XZ'",
-                              "start": 971,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": "XZ"
                             }
                           ],
                           "callee": {
-                            "end": 970,
+                            "commentStart": 957,
+                            "end": 0,
                             "name": "startSketchOn",
-                            "start": 957,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 976,
-                          "start": 957,
+                          "commentStart": 957,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -500,27 +574,32 @@ description: Result of parsing socket-head-cap-screw.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 1007,
+                                "commentStart": 1001,
+                                "end": 0,
                                 "name": "center",
-                                "start": 1001,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "commentStart": 1010,
                                 "elements": [
                                   {
+                                    "commentStart": 1011,
                                     "computed": false,
-                                    "end": 1019,
+                                    "end": 0,
                                     "object": {
-                                      "end": 1016,
+                                      "commentStart": 1011,
+                                      "end": 0,
                                       "name": "start",
-                                      "start": 1011,
+                                      "start": 0,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     "property": {
-                                      "end": 1018,
+                                      "commentStart": 1017,
+                                      "end": 0,
                                       "raw": "0",
-                                      "start": 1017,
+                                      "start": 0,
                                       "type": "Literal",
                                       "type": "Literal",
                                       "value": {
@@ -528,24 +607,27 @@ description: Result of parsing socket-head-cap-screw.kcl
                                         "suffix": "None"
                                       }
                                     },
-                                    "start": 1011,
+                                    "start": 0,
                                     "type": "MemberExpression",
                                     "type": "MemberExpression"
                                   },
                                   {
+                                    "commentStart": 1021,
                                     "computed": false,
-                                    "end": 1029,
+                                    "end": 0,
                                     "object": {
-                                      "end": 1026,
+                                      "commentStart": 1021,
+                                      "end": 0,
                                       "name": "start",
-                                      "start": 1021,
+                                      "start": 0,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     "property": {
-                                      "end": 1028,
+                                      "commentStart": 1027,
+                                      "end": 0,
                                       "raw": "1",
-                                      "start": 1027,
+                                      "start": 0,
                                       "type": "Literal",
                                       "type": "Literal",
                                       "value": {
@@ -553,13 +635,13 @@ description: Result of parsing socket-head-cap-screw.kcl
                                         "suffix": "None"
                                       }
                                     },
-                                    "start": 1021,
+                                    "start": 0,
                                     "type": "MemberExpression",
                                     "type": "MemberExpression"
                                   }
                                 ],
-                                "end": 1030,
-                                "start": 1010,
+                                "end": 0,
+                                "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
@@ -567,39 +649,45 @@ description: Result of parsing socket-head-cap-screw.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 1047,
+                                "commentStart": 1041,
+                                "end": 0,
                                 "name": "radius",
-                                "start": 1041,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 1068,
+                                "commentStart": 1050,
+                                "end": 0,
                                 "left": {
-                                  "end": 1064,
+                                  "commentStart": 1050,
+                                  "end": 0,
                                   "left": {
-                                    "end": 1053,
+                                    "commentStart": 1050,
+                                    "end": 0,
                                     "name": "dia",
-                                    "start": 1050,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
                                   "operator": "/",
                                   "right": {
-                                    "end": 1064,
+                                    "commentStart": 1056,
+                                    "end": 0,
                                     "name": "capRatio",
-                                    "start": 1056,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
-                                  "start": 1050,
+                                  "start": 0,
                                   "type": "BinaryExpression",
                                   "type": "BinaryExpression"
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "end": 1068,
+                                  "commentStart": 1067,
+                                  "end": 0,
                                   "raw": "2",
-                                  "start": 1067,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -607,32 +695,36 @@ description: Result of parsing socket-head-cap-screw.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 1050,
+                                "start": 0,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 990,
+                            "commentStart": 984,
+                            "end": 0,
                             "name": "circle",
-                            "start": 984,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1077,
-                          "start": 984,
+                          "commentStart": 984,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
                         }
                       ],
-                      "end": 1113,
+                      "commentStart": 957,
+                      "end": 0,
                       "nonCodeMeta": {
                         "nonCodeNodes": {
                           "1": [
                             {
-                              "end": 1113,
-                              "start": 1079,
+                              "commentStart": 1079,
+                              "end": 0,
+                              "start": 0,
                               "type": "NonCodeNode",
                               "value": {
                                 "type": "newLineBlockComment",
@@ -644,26 +736,32 @@ description: Result of parsing socket-head-cap-screw.kcl
                         },
                         "startNodes": []
                       },
-                      "start": 957,
+                      "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
-                    "start": 939,
+                    "start": 0,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1113,
+                  "end": 0,
                   "kind": "const",
-                  "start": 939,
+                  "preComments": [
+                    "// Create the head of the cap screw"
+                  ],
+                  "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
+                  "commentStart": 1116,
                   "declaration": {
-                    "end": 1176,
+                    "commentStart": 1116,
+                    "end": 0,
                     "id": {
-                      "end": 1125,
+                      "commentStart": 1116,
+                      "end": 0,
                       "name": "screwHead",
-                      "start": 1116,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
@@ -671,54 +769,62 @@ description: Result of parsing socket-head-cap-screw.kcl
                         {
                           "type": "LabeledArg",
                           "label": {
-                            "end": 1159,
+                            "commentStart": 1153,
+                            "end": 0,
                             "name": "length",
-                            "start": 1153,
+                            "start": 0,
                             "type": "Identifier"
                           },
                           "arg": {
-                            "end": 1175,
+                            "commentStart": 1162,
+                            "end": 0,
                             "name": "capHeadLength",
-                            "start": 1162,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         }
                       ],
                       "callee": {
-                        "end": 1135,
+                        "commentStart": 1128,
+                        "end": 0,
                         "name": "extrude",
-                        "start": 1128,
+                        "start": 0,
                         "type": "Identifier"
                       },
-                      "end": 1176,
-                      "start": 1128,
+                      "commentStart": 1128,
+                      "end": 0,
+                      "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
                       "unlabeled": {
-                        "end": 1151,
+                        "commentStart": 1136,
+                        "end": 0,
                         "name": "screwHeadSketch",
-                        "start": 1136,
+                        "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       }
                     },
-                    "start": 1116,
+                    "start": 0,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1176,
+                  "end": 0,
                   "kind": "const",
-                  "start": 1116,
+                  "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
+                  "commentStart": 1178,
                   "declaration": {
-                    "end": 1982,
+                    "commentStart": 1240,
+                    "end": 0,
                     "id": {
-                      "end": 1256,
+                      "commentStart": 1240,
+                      "end": 0,
                       "name": "hexPatternSketch",
-                      "start": 1240,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
@@ -726,50 +832,58 @@ description: Result of parsing socket-head-cap-screw.kcl
                         {
                           "arguments": [
                             {
-                              "end": 1282,
+                              "commentStart": 1273,
+                              "end": 0,
                               "name": "screwHead",
-                              "start": 1273,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             {
-                              "end": 1289,
+                              "commentStart": 1284,
+                              "end": 0,
                               "raw": "'end'",
-                              "start": 1284,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": "end"
                             }
                           ],
                           "callee": {
-                            "end": 1272,
+                            "commentStart": 1259,
+                            "end": 0,
                             "name": "startSketchOn",
-                            "start": 1259,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1290,
-                          "start": 1259,
+                          "commentStart": 1259,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
+                              "commentStart": 1313,
                               "elements": [
                                 {
-                                  "end": 1331,
+                                  "commentStart": 1314,
+                                  "end": 0,
                                   "left": {
-                                    "end": 1327,
+                                    "commentStart": 1314,
+                                    "end": 0,
                                     "name": "hexWallToWall",
-                                    "start": 1314,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
                                   "operator": "/",
                                   "right": {
-                                    "end": 1331,
+                                    "commentStart": 1330,
+                                    "end": 0,
                                     "raw": "2",
-                                    "start": 1330,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -777,14 +891,15 @@ description: Result of parsing socket-head-cap-screw.kcl
                                       "suffix": "None"
                                     }
                                   },
-                                  "start": 1314,
+                                  "start": 0,
                                   "type": "BinaryExpression",
                                   "type": "BinaryExpression"
                                 },
                                 {
-                                  "end": 1334,
+                                  "commentStart": 1333,
+                                  "end": 0,
                                   "raw": "0",
-                                  "start": 1333,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -793,26 +908,29 @@ description: Result of parsing socket-head-cap-screw.kcl
                                   }
                                 }
                               ],
-                              "end": 1335,
-                              "start": 1313,
+                              "end": 0,
+                              "start": 0,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             },
                             {
-                              "end": 1338,
-                              "start": 1337,
+                              "commentStart": 1337,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1312,
+                            "commentStart": 1298,
+                            "end": 0,
                             "name": "startProfileAt",
-                            "start": 1298,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1339,
-                          "start": 1298,
+                          "commentStart": 1298,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -821,32 +939,37 @@ description: Result of parsing socket-head-cap-screw.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 1359,
+                                "commentStart": 1353,
+                                "end": 0,
                                 "name": "length",
-                                "start": 1353,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 1380,
+                                "commentStart": 1362,
+                                "end": 0,
                                 "left": {
                                   "argument": {
-                                    "end": 1376,
+                                    "commentStart": 1363,
+                                    "end": 0,
                                     "name": "hexWallLength",
-                                    "start": 1363,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
-                                  "end": 1376,
+                                  "commentStart": 1362,
+                                  "end": 0,
                                   "operator": "-",
-                                  "start": 1362,
+                                  "start": 0,
                                   "type": "UnaryExpression",
                                   "type": "UnaryExpression"
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "end": 1380,
+                                  "commentStart": 1379,
+                                  "end": 0,
                                   "raw": "2",
-                                  "start": 1379,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -854,20 +977,22 @@ description: Result of parsing socket-head-cap-screw.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 1362,
+                                "start": 0,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 1352,
+                            "commentStart": 1347,
+                            "end": 0,
                             "name": "yLine",
-                            "start": 1347,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1381,
-                          "start": 1347,
+                          "commentStart": 1347,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -875,176 +1000,205 @@ description: Result of parsing socket-head-cap-screw.kcl
                         {
                           "arguments": [
                             {
-                              "end": 1477,
+                              "commentStart": 1400,
+                              "end": 0,
                               "properties": [
                                 {
-                                  "end": 1435,
+                                  "commentStart": 1411,
+                                  "end": 0,
                                   "key": {
-                                    "end": 1416,
+                                    "commentStart": 1411,
+                                    "end": 0,
                                     "name": "angle",
-                                    "start": 1411,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 1411,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1435,
+                                    "commentStart": 1419,
+                                    "end": 0,
                                     "name": "hexStartingAngle",
-                                    "start": 1419,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 },
                                 {
-                                  "end": 1468,
+                                  "commentStart": 1446,
+                                  "end": 0,
                                   "key": {
-                                    "end": 1452,
+                                    "commentStart": 1446,
+                                    "end": 0,
                                     "name": "length",
-                                    "start": 1446,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 1446,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1468,
+                                    "commentStart": 1455,
+                                    "end": 0,
                                     "name": "hexWallLength",
-                                    "start": 1455,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 }
                               ],
-                              "start": 1400,
+                              "start": 0,
                               "type": "ObjectExpression",
                               "type": "ObjectExpression"
                             },
                             {
-                              "end": 1480,
-                              "start": 1479,
+                              "commentStart": 1479,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1399,
+                            "commentStart": 1389,
+                            "end": 0,
                             "name": "angledLine",
-                            "start": 1389,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1481,
-                          "start": 1389,
+                          "commentStart": 1389,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 1594,
+                              "commentStart": 1500,
+                              "end": 0,
                               "properties": [
                                 {
-                                  "end": 1552,
+                                  "commentStart": 1511,
+                                  "end": 0,
                                   "key": {
-                                    "end": 1516,
+                                    "commentStart": 1511,
+                                    "end": 0,
                                     "name": "angle",
-                                    "start": 1511,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 1511,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1552,
+                                    "commentStart": 1519,
+                                    "end": 0,
                                     "left": {
-                                      "end": 1535,
+                                      "commentStart": 1519,
+                                      "end": 0,
                                       "name": "hexStartingAngle",
-                                      "start": 1519,
+                                      "start": 0,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     "operator": "-",
                                     "right": {
-                                      "end": 1552,
+                                      "commentStart": 1538,
+                                      "end": 0,
                                       "name": "hexChangeAngle",
-                                      "start": 1538,
+                                      "start": 0,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
-                                    "start": 1519,
+                                    "start": 0,
                                     "type": "BinaryExpression",
                                     "type": "BinaryExpression"
                                   }
                                 },
                                 {
-                                  "end": 1585,
+                                  "commentStart": 1563,
+                                  "end": 0,
                                   "key": {
-                                    "end": 1569,
+                                    "commentStart": 1563,
+                                    "end": 0,
                                     "name": "length",
-                                    "start": 1563,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 1563,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1585,
+                                    "commentStart": 1572,
+                                    "end": 0,
                                     "name": "hexWallLength",
-                                    "start": 1572,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 }
                               ],
-                              "start": 1500,
+                              "start": 0,
                               "type": "ObjectExpression",
                               "type": "ObjectExpression"
                             },
                             {
-                              "end": 1597,
-                              "start": 1596,
+                              "commentStart": 1596,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1499,
+                            "commentStart": 1489,
+                            "end": 0,
                             "name": "angledLine",
-                            "start": 1489,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1598,
-                          "start": 1489,
+                          "commentStart": 1489,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 1717,
+                              "commentStart": 1617,
+                              "end": 0,
                               "properties": [
                                 {
-                                  "end": 1674,
+                                  "commentStart": 1628,
+                                  "end": 0,
                                   "key": {
-                                    "end": 1633,
+                                    "commentStart": 1628,
+                                    "end": 0,
                                     "name": "angle",
-                                    "start": 1628,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 1628,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1674,
+                                    "commentStart": 1636,
+                                    "end": 0,
                                     "left": {
-                                      "end": 1652,
+                                      "commentStart": 1636,
+                                      "end": 0,
                                       "name": "hexStartingAngle",
-                                      "start": 1636,
+                                      "start": 0,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     "operator": "-",
                                     "right": {
-                                      "end": 1674,
+                                      "commentStart": 1656,
+                                      "end": 0,
                                       "left": {
-                                        "end": 1657,
+                                        "commentStart": 1656,
+                                        "end": 0,
                                         "raw": "2",
-                                        "start": 1656,
+                                        "start": 0,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -1054,93 +1208,107 @@ description: Result of parsing socket-head-cap-screw.kcl
                                       },
                                       "operator": "*",
                                       "right": {
-                                        "end": 1674,
+                                        "commentStart": 1660,
+                                        "end": 0,
                                         "name": "hexChangeAngle",
-                                        "start": 1660,
+                                        "start": 0,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
-                                      "start": 1656,
+                                      "start": 0,
                                       "type": "BinaryExpression",
                                       "type": "BinaryExpression"
                                     },
-                                    "start": 1636,
+                                    "start": 0,
                                     "type": "BinaryExpression",
                                     "type": "BinaryExpression"
                                   }
                                 },
                                 {
-                                  "end": 1708,
+                                  "commentStart": 1686,
+                                  "end": 0,
                                   "key": {
-                                    "end": 1692,
+                                    "commentStart": 1686,
+                                    "end": 0,
                                     "name": "length",
-                                    "start": 1686,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 1686,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1708,
+                                    "commentStart": 1695,
+                                    "end": 0,
                                     "name": "hexWallLength",
-                                    "start": 1695,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 }
                               ],
-                              "start": 1617,
+                              "start": 0,
                               "type": "ObjectExpression",
                               "type": "ObjectExpression"
                             },
                             {
-                              "end": 1720,
-                              "start": 1719,
+                              "commentStart": 1719,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1616,
+                            "commentStart": 1606,
+                            "end": 0,
                             "name": "angledLine",
-                            "start": 1606,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1721,
-                          "start": 1606,
+                          "commentStart": 1606,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 1840,
+                              "commentStart": 1740,
+                              "end": 0,
                               "properties": [
                                 {
-                                  "end": 1797,
+                                  "commentStart": 1751,
+                                  "end": 0,
                                   "key": {
-                                    "end": 1756,
+                                    "commentStart": 1751,
+                                    "end": 0,
                                     "name": "angle",
-                                    "start": 1751,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 1751,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1797,
+                                    "commentStart": 1759,
+                                    "end": 0,
                                     "left": {
-                                      "end": 1775,
+                                      "commentStart": 1759,
+                                      "end": 0,
                                       "name": "hexStartingAngle",
-                                      "start": 1759,
+                                      "start": 0,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     "operator": "-",
                                     "right": {
-                                      "end": 1797,
+                                      "commentStart": 1779,
+                                      "end": 0,
                                       "left": {
-                                        "end": 1780,
+                                        "commentStart": 1779,
+                                        "end": 0,
                                         "raw": "3",
-                                        "start": 1779,
+                                        "start": 0,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -1150,93 +1318,107 @@ description: Result of parsing socket-head-cap-screw.kcl
                                       },
                                       "operator": "*",
                                       "right": {
-                                        "end": 1797,
+                                        "commentStart": 1783,
+                                        "end": 0,
                                         "name": "hexChangeAngle",
-                                        "start": 1783,
+                                        "start": 0,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
-                                      "start": 1779,
+                                      "start": 0,
                                       "type": "BinaryExpression",
                                       "type": "BinaryExpression"
                                     },
-                                    "start": 1759,
+                                    "start": 0,
                                     "type": "BinaryExpression",
                                     "type": "BinaryExpression"
                                   }
                                 },
                                 {
-                                  "end": 1831,
+                                  "commentStart": 1809,
+                                  "end": 0,
                                   "key": {
-                                    "end": 1815,
+                                    "commentStart": 1809,
+                                    "end": 0,
                                     "name": "length",
-                                    "start": 1809,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 1809,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1831,
+                                    "commentStart": 1818,
+                                    "end": 0,
                                     "name": "hexWallLength",
-                                    "start": 1818,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 }
                               ],
-                              "start": 1740,
+                              "start": 0,
                               "type": "ObjectExpression",
                               "type": "ObjectExpression"
                             },
                             {
-                              "end": 1843,
-                              "start": 1842,
+                              "commentStart": 1842,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1739,
+                            "commentStart": 1729,
+                            "end": 0,
                             "name": "angledLine",
-                            "start": 1729,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1844,
-                          "start": 1729,
+                          "commentStart": 1729,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 1963,
+                              "commentStart": 1863,
+                              "end": 0,
                               "properties": [
                                 {
-                                  "end": 1920,
+                                  "commentStart": 1874,
+                                  "end": 0,
                                   "key": {
-                                    "end": 1879,
+                                    "commentStart": 1874,
+                                    "end": 0,
                                     "name": "angle",
-                                    "start": 1874,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 1874,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1920,
+                                    "commentStart": 1882,
+                                    "end": 0,
                                     "left": {
-                                      "end": 1898,
+                                      "commentStart": 1882,
+                                      "end": 0,
                                       "name": "hexStartingAngle",
-                                      "start": 1882,
+                                      "start": 0,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     "operator": "-",
                                     "right": {
-                                      "end": 1920,
+                                      "commentStart": 1902,
+                                      "end": 0,
                                       "left": {
-                                        "end": 1903,
+                                        "commentStart": 1902,
+                                        "end": 0,
                                         "raw": "4",
-                                        "start": 1902,
+                                        "start": 0,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -1246,97 +1428,115 @@ description: Result of parsing socket-head-cap-screw.kcl
                                       },
                                       "operator": "*",
                                       "right": {
-                                        "end": 1920,
+                                        "commentStart": 1906,
+                                        "end": 0,
                                         "name": "hexChangeAngle",
-                                        "start": 1906,
+                                        "start": 0,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
-                                      "start": 1902,
+                                      "start": 0,
                                       "type": "BinaryExpression",
                                       "type": "BinaryExpression"
                                     },
-                                    "start": 1882,
+                                    "start": 0,
                                     "type": "BinaryExpression",
                                     "type": "BinaryExpression"
                                   }
                                 },
                                 {
-                                  "end": 1954,
+                                  "commentStart": 1932,
+                                  "end": 0,
                                   "key": {
-                                    "end": 1938,
+                                    "commentStart": 1932,
+                                    "end": 0,
                                     "name": "length",
-                                    "start": 1932,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 1932,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1954,
+                                    "commentStart": 1941,
+                                    "end": 0,
                                     "name": "hexWallLength",
-                                    "start": 1941,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 }
                               ],
-                              "start": 1863,
+                              "start": 0,
                               "type": "ObjectExpression",
                               "type": "ObjectExpression"
                             },
                             {
-                              "end": 1966,
-                              "start": 1965,
+                              "commentStart": 1965,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1862,
+                            "commentStart": 1852,
+                            "end": 0,
                             "name": "angledLine",
-                            "start": 1852,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1967,
-                          "start": 1852,
+                          "commentStart": 1852,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [],
                           "callee": {
-                            "end": 1980,
+                            "commentStart": 1975,
+                            "end": 0,
                             "name": "close",
-                            "start": 1975,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1982,
-                          "start": 1975,
+                          "commentStart": 1975,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 1982,
-                      "start": 1259,
+                      "commentStart": 1259,
+                      "end": 0,
+                      "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
-                    "start": 1240,
+                    "start": 0,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1982,
+                  "end": 0,
                   "kind": "const",
-                  "start": 1240,
+                  "preComments": [
+                    "",
+                    "",
+                    "// Define the sketch of the hex pattern on the screw head"
+                  ],
+                  "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
+                  "commentStart": 1985,
                   "declaration": {
-                    "end": 2052,
+                    "commentStart": 1985,
+                    "end": 0,
                     "id": {
-                      "end": 1995,
+                      "commentStart": 1985,
+                      "end": 0,
                       "name": "hexPattern",
-                      "start": 1985,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
@@ -1344,32 +1544,37 @@ description: Result of parsing socket-head-cap-screw.kcl
                         {
                           "type": "LabeledArg",
                           "label": {
-                            "end": 2030,
+                            "commentStart": 2024,
+                            "end": 0,
                             "name": "length",
-                            "start": 2024,
+                            "start": 0,
                             "type": "Identifier"
                           },
                           "arg": {
-                            "end": 2051,
+                            "commentStart": 2033,
+                            "end": 0,
                             "left": {
                               "argument": {
-                                "end": 2044,
+                                "commentStart": 2034,
+                                "end": 0,
                                 "name": "headLength",
-                                "start": 2034,
+                                "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "end": 2044,
+                              "commentStart": 2033,
+                              "end": 0,
                               "operator": "-",
-                              "start": 2033,
+                              "start": 0,
                               "type": "UnaryExpression",
                               "type": "UnaryExpression"
                             },
                             "operator": "*",
                             "right": {
-                              "end": 2051,
+                              "commentStart": 2047,
+                              "end": 0,
                               "raw": "0.75",
-                              "start": 2047,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1377,46 +1582,52 @@ description: Result of parsing socket-head-cap-screw.kcl
                                 "suffix": "None"
                               }
                             },
-                            "start": 2033,
+                            "start": 0,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           }
                         }
                       ],
                       "callee": {
-                        "end": 2005,
+                        "commentStart": 1998,
+                        "end": 0,
                         "name": "extrude",
-                        "start": 1998,
+                        "start": 0,
                         "type": "Identifier"
                       },
-                      "end": 2052,
-                      "start": 1998,
+                      "commentStart": 1998,
+                      "end": 0,
+                      "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
                       "unlabeled": {
-                        "end": 2022,
+                        "commentStart": 2006,
+                        "end": 0,
                         "name": "hexPatternSketch",
-                        "start": 2006,
+                        "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       }
                     },
-                    "start": 1985,
+                    "start": 0,
                     "type": "VariableDeclarator"
                   },
-                  "end": 2052,
+                  "end": 0,
                   "kind": "const",
-                  "start": 1985,
+                  "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
+                  "commentStart": 2052,
                   "declaration": {
-                    "end": 2197,
+                    "commentStart": 2056,
+                    "end": 0,
                     "id": {
-                      "end": 2071,
+                      "commentStart": 2056,
+                      "end": 0,
                       "name": "screwBodySketch",
-                      "start": 2056,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
@@ -1424,29 +1635,33 @@ description: Result of parsing socket-head-cap-screw.kcl
                         {
                           "arguments": [
                             {
-                              "end": 2097,
+                              "commentStart": 2088,
+                              "end": 0,
                               "name": "screwHead",
-                              "start": 2088,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             {
-                              "end": 2106,
+                              "commentStart": 2099,
+                              "end": 0,
                               "raw": "\"start\"",
-                              "start": 2099,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": "start"
                             }
                           ],
                           "callee": {
-                            "end": 2087,
+                            "commentStart": 2074,
+                            "end": 0,
                             "name": "startSketchOn",
-                            "start": 2074,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 2107,
-                          "start": 2074,
+                          "commentStart": 2074,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -1455,27 +1670,32 @@ description: Result of parsing socket-head-cap-screw.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 2138,
+                                "commentStart": 2132,
+                                "end": 0,
                                 "name": "center",
-                                "start": 2132,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "commentStart": 2141,
                                 "elements": [
                                   {
+                                    "commentStart": 2142,
                                     "computed": false,
-                                    "end": 2150,
+                                    "end": 0,
                                     "object": {
-                                      "end": 2147,
+                                      "commentStart": 2142,
+                                      "end": 0,
                                       "name": "start",
-                                      "start": 2142,
+                                      "start": 0,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     "property": {
-                                      "end": 2149,
+                                      "commentStart": 2148,
+                                      "end": 0,
                                       "raw": "0",
-                                      "start": 2148,
+                                      "start": 0,
                                       "type": "Literal",
                                       "type": "Literal",
                                       "value": {
@@ -1483,24 +1703,27 @@ description: Result of parsing socket-head-cap-screw.kcl
                                         "suffix": "None"
                                       }
                                     },
-                                    "start": 2142,
+                                    "start": 0,
                                     "type": "MemberExpression",
                                     "type": "MemberExpression"
                                   },
                                   {
+                                    "commentStart": 2152,
                                     "computed": false,
-                                    "end": 2160,
+                                    "end": 0,
                                     "object": {
-                                      "end": 2157,
+                                      "commentStart": 2152,
+                                      "end": 0,
                                       "name": "start",
-                                      "start": 2152,
+                                      "start": 0,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     "property": {
-                                      "end": 2159,
+                                      "commentStart": 2158,
+                                      "end": 0,
                                       "raw": "1",
-                                      "start": 2158,
+                                      "start": 0,
                                       "type": "Literal",
                                       "type": "Literal",
                                       "value": {
@@ -1508,13 +1731,13 @@ description: Result of parsing socket-head-cap-screw.kcl
                                         "suffix": "None"
                                       }
                                     },
-                                    "start": 2152,
+                                    "start": 0,
                                     "type": "MemberExpression",
                                     "type": "MemberExpression"
                                   }
                                 ],
-                                "end": 2161,
-                                "start": 2141,
+                                "end": 0,
+                                "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
@@ -1522,25 +1745,29 @@ description: Result of parsing socket-head-cap-screw.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 2178,
+                                "commentStart": 2172,
+                                "end": 0,
                                 "name": "radius",
-                                "start": 2172,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 2188,
+                                "commentStart": 2181,
+                                "end": 0,
                                 "left": {
-                                  "end": 2184,
+                                  "commentStart": 2181,
+                                  "end": 0,
                                   "name": "dia",
-                                  "start": 2181,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "end": 2188,
+                                  "commentStart": 2187,
+                                  "end": 0,
                                   "raw": "2",
-                                  "start": 2187,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -1548,46 +1775,52 @@ description: Result of parsing socket-head-cap-screw.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 2181,
+                                "start": 0,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 2121,
+                            "commentStart": 2115,
+                            "end": 0,
                             "name": "circle",
-                            "start": 2115,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 2197,
-                          "start": 2115,
+                          "commentStart": 2115,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
                         }
                       ],
-                      "end": 2197,
-                      "start": 2074,
+                      "commentStart": 2074,
+                      "end": 0,
+                      "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
-                    "start": 2056,
+                    "start": 0,
                     "type": "VariableDeclarator"
                   },
-                  "end": 2197,
+                  "end": 0,
                   "kind": "const",
-                  "start": 2056,
+                  "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
+                  "commentStart": 2200,
                   "declaration": {
-                    "end": 2253,
+                    "commentStart": 2200,
+                    "end": 0,
                     "id": {
-                      "end": 2209,
+                      "commentStart": 2200,
+                      "end": 0,
                       "name": "screwBody",
-                      "start": 2200,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
@@ -1595,80 +1828,77 @@ description: Result of parsing socket-head-cap-screw.kcl
                         {
                           "type": "LabeledArg",
                           "label": {
-                            "end": 2243,
+                            "commentStart": 2237,
+                            "end": 0,
                             "name": "length",
-                            "start": 2237,
+                            "start": 0,
                             "type": "Identifier"
                           },
                           "arg": {
-                            "end": 2252,
+                            "commentStart": 2246,
+                            "end": 0,
                             "name": "length",
-                            "start": 2246,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         }
                       ],
                       "callee": {
-                        "end": 2219,
+                        "commentStart": 2212,
+                        "end": 0,
                         "name": "extrude",
-                        "start": 2212,
+                        "start": 0,
                         "type": "Identifier"
                       },
-                      "end": 2253,
-                      "start": 2212,
+                      "commentStart": 2212,
+                      "end": 0,
+                      "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
                       "unlabeled": {
-                        "end": 2235,
+                        "commentStart": 2220,
+                        "end": 0,
                         "name": "screwBodySketch",
-                        "start": 2220,
+                        "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       }
                     },
-                    "start": 2200,
+                    "start": 0,
                     "type": "VariableDeclarator"
                   },
-                  "end": 2253,
+                  "end": 0,
                   "kind": "const",
-                  "start": 2200,
+                  "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "argument": {
-                    "end": 2272,
+                    "commentStart": 2263,
+                    "end": 0,
                     "name": "screwBody",
-                    "start": 2263,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "end": 2272,
-                  "start": 2256,
+                  "commentStart": 2256,
+                  "end": 0,
+                  "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 2274,
+              "commentStart": 898,
+              "end": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
-                  "1": [
-                    {
-                      "end": 1237,
-                      "start": 1178,
-                      "type": "NonCodeNode",
-                      "value": {
-                        "type": "newLineBlockComment",
-                        "value": "Define the sketch of the hex pattern on the screw head",
-                        "style": "line"
-                      }
-                    }
-                  ],
                   "3": [
                     {
-                      "end": 2056,
-                      "start": 2052,
+                      "commentStart": 2052,
+                      "end": 0,
+                      "start": 0,
                       "type": "NonCodeNode",
                       "value": {
                         "type": "newLine"
@@ -1676,83 +1906,85 @@ description: Result of parsing socket-head-cap-screw.kcl
                     }
                   ]
                 },
-                "startNodes": [
-                  {
-                    "end": 937,
-                    "start": 898,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "blockComment",
-                      "value": "Create the head of the cap screw",
-                      "style": "line"
-                    }
-                  }
-                ]
+                "startNodes": []
               },
-              "start": 898
+              "start": 0
             },
-            "end": 2274,
+            "commentStart": 861,
+            "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 867,
+                  "commentStart": 862,
+                  "end": 0,
                   "name": "start",
-                  "start": 862,
+                  "start": 0,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 875,
+                  "commentStart": 869,
+                  "end": 0,
                   "name": "length",
-                  "start": 869,
+                  "start": 0,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 880,
+                  "commentStart": 877,
+                  "end": 0,
                   "name": "dia",
-                  "start": 877,
+                  "start": 0,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 895,
+                  "commentStart": 882,
+                  "end": 0,
                   "name": "capHeadLength",
-                  "start": 882,
+                  "start": 0,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 861,
+            "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 853,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 2274,
+        "end": 0,
         "kind": "fn",
-        "start": 850,
+        "preComments": [
+          "",
+          "",
+          "// Write a function that defines the Socket Head Cap Screw"
+        ],
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 2335,
+        "commentStart": 2274,
+        "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 2285,
               "elements": [
                 {
-                  "end": 2287,
+                  "commentStart": 2286,
+                  "end": 0,
                   "raw": "0",
-                  "start": 2286,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -1761,9 +1993,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                   }
                 },
                 {
-                  "end": 2290,
+                  "commentStart": 2289,
+                  "end": 0,
                   "raw": "0",
-                  "start": 2289,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -1772,80 +2005,98 @@ description: Result of parsing socket-head-cap-screw.kcl
                   }
                 }
               ],
-              "end": 2291,
-              "start": 2285,
+              "end": 0,
+              "start": 0,
               "type": "ArrayExpression",
               "type": "ArrayExpression"
             },
             {
-              "end": 2304,
+              "commentStart": 2293,
+              "end": 0,
               "name": "screwLength",
-              "start": 2293,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 2319,
+              "commentStart": 2306,
+              "end": 0,
               "name": "screwDiameter",
-              "start": 2306,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 2334,
+              "commentStart": 2321,
+              "end": 0,
               "name": "screwDiameter",
-              "start": 2321,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             }
           ],
           "callee": {
-            "end": 2284,
+            "commentStart": 2276,
+            "end": 0,
             "name": "capScrew",
-            "start": 2276,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 2335,
-          "start": 2276,
+          "commentStart": 2276,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 2276,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 2336,
+    "commentStart": 0,
+    "end": 0,
     "innerAttrs": [
       {
-        "end": 404,
+        "commentStart": 0,
+        "end": 0,
         "name": {
-          "end": 380,
+          "commentStart": 372,
+          "end": 0,
           "name": "settings",
-          "start": 372,
+          "start": 0,
           "type": "Identifier"
         },
+        "preComments": [
+          "// Socket Head Cap Screw",
+          "// This is for a #10-24 screw that is 1.00 inches long. A socket head cap screw is a type of fastener that is widely used in a variety of applications requiring a high strength fastening solution. It is characterized by its cylindrical head and internal hexagonal drive, which allows for tightening with an Allen wrench or hex key.",
+          "",
+          "",
+          "// Set units"
+        ],
         "properties": [
           {
-            "end": 403,
+            "commentStart": 381,
+            "end": 0,
             "key": {
-              "end": 398,
+              "commentStart": 381,
+              "end": 0,
               "name": "defaultLengthUnit",
-              "start": 381,
+              "start": 0,
               "type": "Identifier"
             },
-            "start": 381,
+            "start": 0,
             "type": "ObjectProperty",
             "value": {
-              "end": 403,
+              "commentStart": 401,
+              "end": 0,
               "name": "in",
-              "start": 401,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             }
           }
         ],
-        "start": 371,
+        "start": 0,
         "type": "Annotation"
       }
     ],
@@ -1853,8 +2104,9 @@ description: Result of parsing socket-head-cap-screw.kcl
       "nonCodeNodes": {
         "8": [
           {
-            "end": 726,
-            "start": 696,
+            "commentStart": 696,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "inlineComment",
@@ -1863,22 +2115,11 @@ description: Result of parsing socket-head-cap-screw.kcl
             }
           }
         ],
-        "10": [
-          {
-            "end": 849,
-            "start": 789,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "Write a function that defines the Socket Head Cap Screw",
-              "style": "line"
-            }
-          }
-        ],
         "11": [
           {
-            "end": 2276,
-            "start": 2274,
+            "commentStart": 2274,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -1888,59 +2129,12 @@ description: Result of parsing socket-head-cap-screw.kcl
       },
       "startNodes": [
         {
-          "end": 24,
+          "commentStart": 404,
+          "end": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
-            "type": "blockComment",
-            "value": "Socket Head Cap Screw",
-            "style": "line"
-          }
-        },
-        {
-          "end": 356,
-          "start": 25,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "This is for a #10-24 screw that is 1.00 inches long. A socket head cap screw is a type of fastener that is widely used in a variety of applications requiring a high strength fastening solution. It is characterized by its cylindrical head and internal hexagonal drive, which allows for tightening with an Allen wrench or hex key.",
-            "style": "line"
-          }
-        },
-        {
-          "end": 358,
-          "start": 356,
-          "type": "NonCodeNode",
-          "value": {
             "type": "newLine"
-          }
-        },
-        {
-          "end": 370,
-          "start": 358,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Set units",
-            "style": "line"
-          }
-        },
-        {
-          "end": 406,
-          "start": 404,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "newLine"
-          }
-        },
-        {
-          "end": 425,
-          "start": 406,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Define constants",
-            "style": "line"
           }
         }
       ]

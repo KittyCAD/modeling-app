@@ -10,19 +10,11 @@ description: Operations executed circle_three_point.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          26,
-          30,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      12,
-      31,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,19 +34,11 @@ description: Operations executed circle_three_point.kcl
             }
           }
         },
-        "sourceRange": [
-          121,
-          123,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      104,
-      124,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -63,11 +47,7 @@ description: Operations executed circle_three_point.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        104,
-        124,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

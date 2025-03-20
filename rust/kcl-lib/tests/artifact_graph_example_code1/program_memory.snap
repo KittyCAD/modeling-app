@@ -13,23 +13,16 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            70,
-            89,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            95,
-            131,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 124,
             "end": 130,
             "start": 124,
             "type": "TagDeclarator",
@@ -40,12 +33,9 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            137,
-            171,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 164,
             "end": 170,
             "start": 164,
             "type": "TagDeclarator",
@@ -56,11 +46,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            177,
-            233,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -72,11 +58,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                70,
-                89,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -5.0,
@@ -95,17 +77,14 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                95,
-                131,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -5.0,
               5.0
             ],
             "tag": {
+              "commentStart": 124,
               "end": 130,
               "start": 124,
               "type": "TagDeclarator",
@@ -123,17 +102,14 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                137,
-                171,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.55,
               5.0
             ],
             "tag": {
+              "commentStart": 164,
               "end": 170,
               "start": 164,
               "type": "TagDeclarator",
@@ -151,11 +127,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                177,
-                233,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.55,
@@ -174,11 +146,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                239,
-                246,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -5.0,
@@ -239,11 +207,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              37,
-              64,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
@@ -289,33 +253,21 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            416,
-            434,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            440,
-            459,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            465,
-            521,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -327,11 +279,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                416,
-                434,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -2.0,
@@ -350,11 +298,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                440,
-                459,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -373,11 +317,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                465,
-                521,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.0,
@@ -396,11 +336,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                527,
-                534,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -2.0,
@@ -445,23 +381,16 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  70,
-                  89,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  95,
-                  131,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 124,
                   "end": 130,
                   "start": 124,
                   "type": "TagDeclarator",
@@ -472,12 +401,9 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  137,
-                  171,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 164,
                   "end": 170,
                   "start": 164,
                   "type": "TagDeclarator",
@@ -488,11 +414,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  177,
-                  233,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               }
@@ -504,11 +426,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      70,
-                      89,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -5.0,
@@ -527,17 +445,14 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      95,
-                      131,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -5.0,
                     5.0
                   ],
                   "tag": {
+                    "commentStart": 124,
                     "end": 130,
                     "start": 124,
                     "type": "TagDeclarator",
@@ -555,17 +470,14 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      137,
-                      171,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     5.55,
                     5.0
                   ],
                   "tag": {
+                    "commentStart": 164,
                     "end": 170,
                     "start": 164,
                     "type": "TagDeclarator",
@@ -583,11 +495,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      177,
-                      233,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     5.55,
@@ -606,11 +514,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      239,
-                      246,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -5.0,
@@ -671,11 +575,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    37,
-                    64,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "tags": {
@@ -729,11 +629,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              383,
-              410,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -769,11 +665,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              70,
-              89,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -5.0,
@@ -792,17 +684,14 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              95,
-              131,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -5.0,
             5.0
           ],
           "tag": {
+            "commentStart": 124,
             "end": 130,
             "start": 124,
             "type": "TagDeclarator",
@@ -820,17 +709,14 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              137,
-              171,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             5.55,
             5.0
           ],
           "tag": {
+            "commentStart": 164,
             "end": 170,
             "start": 164,
             "type": "TagDeclarator",
@@ -848,11 +734,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              177,
-              233,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             5.55,
@@ -871,11 +753,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              239,
-              246,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -5.0,
@@ -936,11 +814,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            37,
-            64,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
@@ -969,11 +843,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              416,
-              434,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -2.0,
@@ -992,11 +862,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              440,
-              459,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -1015,11 +881,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              465,
-              521,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             2.0,
@@ -1038,11 +900,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              527,
-              534,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -2.0,
@@ -1087,23 +945,16 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                70,
-                89,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                95,
-                131,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 124,
                 "end": 130,
                 "start": 124,
                 "type": "TagDeclarator",
@@ -1114,12 +965,9 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                137,
-                171,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 164,
                 "end": 170,
                 "start": 164,
                 "type": "TagDeclarator",
@@ -1130,11 +978,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                177,
-                233,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -1146,11 +990,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    70,
-                    89,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -5.0,
@@ -1169,17 +1009,14 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    95,
-                    131,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -5.0,
                   5.0
                 ],
                 "tag": {
+                  "commentStart": 124,
                   "end": 130,
                   "start": 124,
                   "type": "TagDeclarator",
@@ -1197,17 +1034,14 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    137,
-                    171,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   5.55,
                   5.0
                 ],
                 "tag": {
+                  "commentStart": 164,
                   "end": 170,
                   "start": 164,
                   "type": "TagDeclarator",
@@ -1225,11 +1059,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    177,
-                    233,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   5.55,
@@ -1248,11 +1078,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    239,
-                    246,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -5.0,
@@ -1313,11 +1139,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  37,
-                  64,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
@@ -1371,11 +1193,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            383,
-            410,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",

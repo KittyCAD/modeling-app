@@ -6,12 +6,15 @@ description: Result of parsing multi_transform.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 108,
+          "commentStart": 3,
+          "end": 0,
           "id": {
-            "end": 12,
+            "commentStart": 3,
+            "end": 0,
             "name": "transform",
-            "start": 3,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -19,28 +22,35 @@ description: Result of parsing multi_transform.kcl
               "body": [
                 {
                   "argument": {
+                    "commentStart": 27,
                     "elements": [
                       {
-                        "end": 63,
+                        "commentStart": 33,
+                        "end": 0,
                         "properties": [
                           {
-                            "end": 61,
+                            "commentStart": 35,
+                            "end": 0,
                             "key": {
-                              "end": 44,
+                              "commentStart": 35,
+                              "end": 0,
                               "name": "translate",
-                              "start": 35,
+                              "start": 0,
                               "type": "Identifier"
                             },
-                            "start": 35,
+                            "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 47,
                               "elements": [
                                 {
-                                  "end": 54,
+                                  "commentStart": 48,
+                                  "end": 0,
                                   "left": {
-                                    "end": 50,
+                                    "commentStart": 48,
+                                    "end": 0,
                                     "raw": "30",
-                                    "start": 48,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -50,20 +60,22 @@ description: Result of parsing multi_transform.kcl
                                   },
                                   "operator": "*",
                                   "right": {
-                                    "end": 54,
+                                    "commentStart": 53,
+                                    "end": 0,
                                     "name": "i",
-                                    "start": 53,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
-                                  "start": 48,
+                                  "start": 0,
                                   "type": "BinaryExpression",
                                   "type": "BinaryExpression"
                                 },
                                 {
-                                  "end": 57,
+                                  "commentStart": 56,
+                                  "end": 0,
                                   "raw": "0",
-                                  "start": 56,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -72,9 +84,10 @@ description: Result of parsing multi_transform.kcl
                                   }
                                 },
                                 {
-                                  "end": 60,
+                                  "commentStart": 59,
+                                  "end": 0,
                                   "raw": "0",
-                                  "start": 59,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -83,49 +96,57 @@ description: Result of parsing multi_transform.kcl
                                   }
                                 }
                               ],
-                              "end": 61,
-                              "start": 47,
+                              "end": 0,
+                              "start": 0,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             }
                           }
                         ],
-                        "start": 33,
+                        "start": 0,
                         "type": "ObjectExpression",
                         "type": "ObjectExpression"
                       },
                       {
-                        "end": 102,
+                        "commentStart": 69,
+                        "end": 0,
                         "properties": [
                           {
-                            "end": 100,
+                            "commentStart": 71,
+                            "end": 0,
                             "key": {
-                              "end": 79,
+                              "commentStart": 71,
+                              "end": 0,
                               "name": "rotation",
-                              "start": 71,
+                              "start": 0,
                               "type": "Identifier"
                             },
-                            "start": 71,
+                            "start": 0,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 100,
+                              "commentStart": 82,
+                              "end": 0,
                               "properties": [
                                 {
-                                  "end": 98,
+                                  "commentStart": 84,
+                                  "end": 0,
                                   "key": {
-                                    "end": 89,
+                                    "commentStart": 84,
+                                    "end": 0,
                                     "name": "angle",
-                                    "start": 84,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 84,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 98,
+                                    "commentStart": 92,
+                                    "end": 0,
                                     "left": {
-                                      "end": 94,
+                                      "commentStart": 92,
+                                      "end": 0,
                                       "raw": "45",
-                                      "start": 92,
+                                      "start": 0,
                                       "type": "Literal",
                                       "type": "Literal",
                                       "value": {
@@ -135,101 +156,112 @@ description: Result of parsing multi_transform.kcl
                                     },
                                     "operator": "*",
                                     "right": {
-                                      "end": 98,
+                                      "commentStart": 97,
+                                      "end": 0,
                                       "name": "i",
-                                      "start": 97,
+                                      "start": 0,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
-                                    "start": 92,
+                                    "start": 0,
                                     "type": "BinaryExpression",
                                     "type": "BinaryExpression"
                                   }
                                 }
                               ],
-                              "start": 82,
+                              "start": 0,
                               "type": "ObjectExpression",
                               "type": "ObjectExpression"
                             }
                           }
                         ],
-                        "start": 69,
+                        "start": 0,
                         "type": "ObjectExpression",
                         "type": "ObjectExpression"
                       }
                     ],
-                    "end": 106,
-                    "start": 27,
+                    "end": 0,
+                    "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
-                  "end": 106,
-                  "start": 20,
+                  "commentStart": 20,
+                  "end": 0,
+                  "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 108,
-              "start": 16
+              "commentStart": 16,
+              "end": 0,
+              "start": 0
             },
-            "end": 108,
+            "commentStart": 12,
+            "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 14,
+                  "commentStart": 13,
+                  "end": 0,
                   "name": "i",
-                  "start": 13,
+                  "start": 0,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 12,
+            "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 3,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 108,
+        "end": 0,
         "kind": "fn",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 358,
+        "commentStart": 109,
+        "end": 0,
         "expression": {
           "body": [
             {
               "arguments": [
                 {
-                  "end": 125,
+                  "commentStart": 123,
+                  "end": 0,
                   "name": "XY",
-                  "start": 123,
+                  "start": 0,
                   "type": "Identifier",
                   "type": "Identifier"
                 }
               ],
               "callee": {
-                "end": 122,
+                "commentStart": 109,
+                "end": 0,
                 "name": "startSketchOn",
-                "start": 109,
+                "start": 0,
                 "type": "Identifier"
               },
-              "end": 126,
-              "start": 109,
+              "commentStart": 109,
+              "end": 0,
+              "start": 0,
               "type": "CallExpression",
               "type": "CallExpression"
             },
             {
               "arguments": [
                 {
+                  "commentStart": 147,
                   "elements": [
                     {
-                      "end": 149,
+                      "commentStart": 148,
+                      "end": 0,
                       "raw": "0",
-                      "start": 148,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -238,9 +270,10 @@ description: Result of parsing multi_transform.kcl
                       }
                     },
                     {
-                      "end": 152,
+                      "commentStart": 151,
+                      "end": 0,
                       "raw": "0",
-                      "start": 151,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -249,48 +282,55 @@ description: Result of parsing multi_transform.kcl
                       }
                     }
                   ],
-                  "end": 153,
-                  "start": 147,
+                  "end": 0,
+                  "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
                 },
                 {
-                  "end": 156,
-                  "start": 155,
+                  "commentStart": 155,
+                  "end": 0,
+                  "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
                 }
               ],
               "callee": {
-                "end": 146,
+                "commentStart": 132,
+                "end": 0,
                 "name": "startProfileAt",
-                "start": 132,
+                "start": 0,
                 "type": "Identifier"
               },
-              "end": 157,
-              "start": 132,
+              "commentStart": 132,
+              "end": 0,
+              "start": 0,
               "type": "CallExpression",
               "type": "CallExpression"
             },
             {
               "arguments": [
                 {
-                  "end": 269,
+                  "commentStart": 171,
+                  "end": 0,
                   "properties": [
                     {
-                      "end": 191,
+                      "commentStart": 180,
+                      "end": 0,
                       "key": {
-                        "end": 186,
+                        "commentStart": 180,
+                        "end": 0,
                         "name": "radius",
-                        "start": 180,
+                        "start": 0,
                         "type": "Identifier"
                       },
-                      "start": 180,
+                      "start": 0,
                       "type": "ObjectProperty",
                       "value": {
-                        "end": 191,
+                        "commentStart": 189,
+                        "end": 0,
                         "raw": "10",
-                        "start": 189,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -300,19 +340,22 @@ description: Result of parsing multi_transform.kcl
                       }
                     },
                     {
-                      "end": 212,
+                      "commentStart": 200,
+                      "end": 0,
                       "key": {
-                        "end": 208,
+                        "commentStart": 200,
+                        "end": 0,
                         "name": "numSides",
-                        "start": 200,
+                        "start": 0,
                         "type": "Identifier"
                       },
-                      "start": 200,
+                      "start": 0,
                       "type": "ObjectProperty",
                       "value": {
-                        "end": 212,
+                        "commentStart": 211,
+                        "end": 0,
                         "raw": "4",
-                        "start": 211,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -322,21 +365,25 @@ description: Result of parsing multi_transform.kcl
                       }
                     },
                     {
-                      "end": 236,
+                      "commentStart": 221,
+                      "end": 0,
                       "key": {
-                        "end": 227,
+                        "commentStart": 221,
+                        "end": 0,
                         "name": "center",
-                        "start": 221,
+                        "start": 0,
                         "type": "Identifier"
                       },
-                      "start": 221,
+                      "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "commentStart": 230,
                         "elements": [
                           {
-                            "end": 232,
+                            "commentStart": 231,
+                            "end": 0,
                             "raw": "0",
-                            "start": 231,
+                            "start": 0,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -345,9 +392,10 @@ description: Result of parsing multi_transform.kcl
                             }
                           },
                           {
-                            "end": 235,
+                            "commentStart": 234,
+                            "end": 0,
                             "raw": "0",
-                            "start": 234,
+                            "start": 0,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -356,51 +404,57 @@ description: Result of parsing multi_transform.kcl
                             }
                           }
                         ],
-                        "end": 236,
-                        "start": 230,
+                        "end": 0,
+                        "start": 0,
                         "type": "ArrayExpression",
                         "type": "ArrayExpression"
                       }
                     },
                     {
-                      "end": 262,
+                      "commentStart": 245,
+                      "end": 0,
                       "key": {
-                        "end": 254,
+                        "commentStart": 245,
+                        "end": 0,
                         "name": "inscribed",
-                        "start": 245,
+                        "start": 0,
                         "type": "Identifier"
                       },
-                      "start": 245,
+                      "start": 0,
                       "type": "ObjectProperty",
                       "value": {
-                        "end": 262,
+                        "commentStart": 257,
+                        "end": 0,
                         "raw": "false",
-                        "start": 257,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": false
                       }
                     }
                   ],
-                  "start": 171,
+                  "start": 0,
                   "type": "ObjectExpression",
                   "type": "ObjectExpression"
                 },
                 {
-                  "end": 272,
-                  "start": 271,
+                  "commentStart": 271,
+                  "end": 0,
+                  "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
                 }
               ],
               "callee": {
-                "end": 170,
+                "commentStart": 163,
+                "end": 0,
                 "name": "polygon",
-                "start": 163,
+                "start": 0,
                 "type": "Identifier"
               },
-              "end": 273,
-              "start": 163,
+              "commentStart": 163,
+              "end": 0,
+              "start": 0,
               "type": "CallExpression",
               "type": "CallExpression"
             },
@@ -409,15 +463,17 @@ description: Result of parsing multi_transform.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "end": 293,
+                    "commentStart": 287,
+                    "end": 0,
                     "name": "length",
-                    "start": 287,
+                    "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "end": 297,
+                    "commentStart": 296,
+                    "end": 0,
                     "raw": "4",
-                    "start": 296,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -428,13 +484,15 @@ description: Result of parsing multi_transform.kcl
                 }
               ],
               "callee": {
-                "end": 286,
+                "commentStart": 279,
+                "end": 0,
                 "name": "extrude",
-                "start": 279,
+                "start": 0,
                 "type": "Identifier"
               },
-              "end": 298,
-              "start": 279,
+              "commentStart": 279,
+              "end": 0,
+              "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": null
@@ -444,15 +502,17 @@ description: Result of parsing multi_transform.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "end": 330,
+                    "commentStart": 321,
+                    "end": 0,
                     "name": "instances",
-                    "start": 321,
+                    "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "end": 334,
+                    "commentStart": 333,
+                    "end": 0,
                     "raw": "3",
-                    "start": 333,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -464,44 +524,50 @@ description: Result of parsing multi_transform.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "end": 345,
+                    "commentStart": 336,
+                    "end": 0,
                     "name": "transform",
-                    "start": 336,
+                    "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "end": 357,
+                    "commentStart": 348,
+                    "end": 0,
                     "name": "transform",
-                    "start": 348,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 }
               ],
               "callee": {
-                "end": 320,
+                "commentStart": 304,
+                "end": 0,
                 "name": "patternTransform",
-                "start": 304,
+                "start": 0,
                 "type": "Identifier"
               },
-              "end": 358,
-              "start": 304,
+              "commentStart": 304,
+              "end": 0,
+              "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": null
             }
           ],
-          "end": 358,
-          "start": 109,
+          "commentStart": 109,
+          "end": 0,
+          "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
-        "start": 109,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 359,
+    "commentStart": 0,
+    "end": 0,
     "start": 0
   }
 }
