@@ -58,6 +58,6 @@ export const useSettings = () =>
     return settings
   })
 
-export const engineStreamActor = appActor.system.get(ENGINE_STREAM) as ActorRefFrom<
-  typeof engineStreamMachine
->
+export const engineStreamActor = appActor.system.get(
+  ENGINE_STREAM
+) as ActorRefFrom<typeof engineStreamMachine>

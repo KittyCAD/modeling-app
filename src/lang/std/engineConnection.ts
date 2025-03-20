@@ -839,13 +839,6 @@ class EngineConnection extends EventTarget {
 
             this.engineCommandManager.inSequence = 1
 
-            // Bust the cache before anything
-            ;(async () => {
-              await rustContext.clearSceneAndBustCache(
-                kclManager.engineCommandManager.settings
-              )
-            })().catch(reportRejection)
-
             this.dispatchEvent(
               new CustomEvent(EngineConnectionEvents.Opened, { detail: this })
             )
