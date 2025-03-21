@@ -1494,6 +1494,7 @@ export class EngineCommandManager extends EventTarget {
       })
 
       this._camControlsCameraChange()
+
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.sendSceneCommand({
         // CameraControls subscribes to default_camera_get_settings response events
@@ -1504,6 +1505,7 @@ export class EngineCommandManager extends EventTarget {
           type: 'default_camera_get_settings',
         },
       })
+
       setIsStreamReady(true)
 
       // Other parts of the application should use this to react on scene ready.
@@ -1717,7 +1719,7 @@ export class EngineCommandManager extends EventTarget {
       cmd: {
         type: 'reconfigure_stream',
         ...this.streamDimensions,
-        fps: 30,
+        fps: 60, // This is required but it does next to nothing
       },
     }
     this.engineConnection?.send(resizeCmd)
