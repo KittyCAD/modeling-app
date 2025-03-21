@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{collections::HashSet, str::FromStr};
 
 use regex::Regex;
 use tower_lsp::lsp_types::{
@@ -9,7 +9,7 @@ use tower_lsp::lsp_types::{
 use crate::{
     execution::annotations,
     parsing::{
-        ast::types::{Annotation, Node, NonCodeNode, VariableKind},
+        ast::types::{Annotation, Node, NonCodeNode, PrimitiveType, Type, VariableKind},
         token::NumericSuffix,
     },
     ModuleId,
@@ -322,6 +322,8 @@ pub struct FnData {
     /// Code examples.
     /// These are tested and we know they compile and execute.
     pub examples: Vec<(String, ExampleProperties)>,
+    #[allow(dead_code)]
+    pub referenced_types: Vec<String>,
 }
 
 impl FnData {
@@ -332,6 +334,17 @@ impl FnData {
         };
         let name = var.declaration.id.name.clone();
         qual_name.push_str(&name);
+
+        let mut referenced_types = HashSet::new();
+        if let Some(t) = &expr.return_type {
+            collect_type_names(&mut referenced_types, t);
+        }
+        for p in &expr.params {
+            if let Some(t) = &p.type_ {
+                collect_type_names(&mut referenced_types, t);
+            }
+        }
+
         FnData {
             name,
             qual_name,
@@ -346,6 +359,7 @@ impl FnData {
             summary: None,
             description: None,
             examples: Vec::new(),
+            referenced_types: referenced_types.into_iter().collect(),
         }
     }
 
@@ -414,7 +428,7 @@ impl FnData {
     }
 
     #[allow(clippy::literal_string_with_formatting_args)]
-    fn to_autocomplete_snippet(&self) -> String {
+    pub(super) fn to_autocomplete_snippet(&self) -> String {
         if self.name == "loft" {
             return "loft([${0:sketch000}, ${1:sketch001}])${}".to_owned();
         } else if self.name == "hole" {
@@ -485,7 +499,7 @@ pub struct ArgData {
     pub docs: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ArgKind {
     Special,
     // Parameter is whether the arg is optional.
@@ -513,20 +527,31 @@ impl ArgData {
     }
 
     pub fn get_autocomplete_snippet(&self, index: usize) -> Option<(usize, String)> {
-        match &self.ty {
-            Some(s)
-                if [
-                    "Sketch",
-                    "SketchSet",
-                    "Solid",
-                    "SolidSet",
-                    "SketchSurface",
-                    "SketchOrSurface",
-                ]
-                .contains(&&**s) =>
-            {
-                Some((index, format!("${{{}:{}}}", index, "%")))
+        let label = if self.kind == ArgKind::Special {
+            String::new()
+        } else {
+            format!("{} = ", self.name)
+        };
+        match self.ty.as_deref() {
+            Some(s) if ["Sketch", "Solid", "Plane | Face", "Sketch | Plane | Face"].contains(&s) => {
+                Some((index, format!("{label}${{{}:{}}}", index, "%")))
             }
+            Some("number") if self.kind.required() => Some((index, format!(r#"{label}${{{}:3.14}}"#, index))),
+            Some("Point2d") if self.kind.required() => Some((
+                index + 1,
+                format!(r#"{label}[${{{}:3.14}}, ${{{}:3.14}}]"#, index, index + 1),
+            )),
+            Some("Point3d") if self.kind.required() => Some((
+                index + 2,
+                format!(
+                    r#"{label}[${{{}:3.14}}, ${{{}:3.14}}, ${{{}:3.14}}]"#,
+                    index,
+                    index + 1,
+                    index + 2
+                ),
+            )),
+            Some("string") if self.kind.required() => Some((index, format!(r#"{label}${{{}:"string"}}"#, index))),
+            Some("bool") if self.kind.required() => Some((index, format!(r#"{label}${{{}:false}}"#, index))),
             _ => None,
         }
     }
@@ -570,12 +595,19 @@ pub struct TyData {
     /// Code examples.
     /// These are tested and we know they compile and execute.
     pub examples: Vec<(String, ExampleProperties)>,
+    #[allow(dead_code)]
+    pub referenced_types: Vec<String>,
 }
 
 impl TyData {
     fn from_ast(ty: &crate::parsing::ast::types::TypeDeclaration, mut qual_name: String) -> Self {
         let name = ty.name.name.clone();
         qual_name.push_str(&name);
+        let mut referenced_types = HashSet::new();
+        if let Some(t) = &ty.alias {
+            collect_type_names(&mut referenced_types, t);
+        }
+
         TyData {
             name,
             qual_name,
@@ -589,6 +621,7 @@ impl TyData {
             summary: None,
             description: None,
             examples: Vec::new(),
+            referenced_types: referenced_types.into_iter().collect(),
         }
     }
 
@@ -849,6 +882,35 @@ impl ApplyMeta for TyData {
 
     fn impl_kind(&mut self, impl_kind: annotations::Impl) {
         self.properties.impl_kind = impl_kind;
+    }
+}
+
+fn collect_type_names(acc: &mut HashSet<String>, ty: &Type) {
+    match ty {
+        Type::Primitive(primitive_type) => {
+            acc.insert(collect_type_names_from_primitive(primitive_type));
+        }
+        Type::Array { ty, .. } => {
+            acc.insert(collect_type_names_from_primitive(ty));
+        }
+        Type::Union { tys } => tys.iter().for_each(|t| {
+            acc.insert(collect_type_names_from_primitive(t));
+        }),
+        Type::Object { properties } => properties.iter().for_each(|p| {
+            if let Some(t) = &p.type_ {
+                collect_type_names(acc, t)
+            }
+        }),
+    }
+}
+
+fn collect_type_names_from_primitive(ty: &PrimitiveType) -> String {
+    match ty {
+        PrimitiveType::String => "string".to_owned(),
+        PrimitiveType::Number(_) => "number".to_owned(),
+        PrimitiveType::Boolean => "bool".to_owned(),
+        PrimitiveType::Tag => "tag".to_owned(),
+        PrimitiveType::Named(id) => id.name.clone(),
     }
 }
 

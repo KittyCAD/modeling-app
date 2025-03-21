@@ -1000,48 +1000,54 @@ where
 
 impl<'a> FromKclValue<'a> for [f64; 2] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::MixedArray { value, meta: _ } = arg else {
-            return None;
-        };
-        if value.len() != 2 {
-            return None;
+        match arg {
+            KclValue::MixedArray { value, meta: _ } | KclValue::HomArray { value, .. } => {
+                if value.len() != 2 {
+                    return None;
+                }
+                let v0 = value.first()?;
+                let v1 = value.get(1)?;
+                let array = [v0.as_f64()?, v1.as_f64()?];
+                Some(array)
+            }
+            _ => None,
         }
-        let v0 = value.first()?;
-        let v1 = value.get(1)?;
-        let array = [v0.as_f64()?, v1.as_f64()?];
-        Some(array)
     }
 }
 
 impl<'a> FromKclValue<'a> for [usize; 3] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::MixedArray { value, meta: _ } = arg else {
-            return None;
-        };
-        if value.len() != 3 {
-            return None;
+        match arg {
+            KclValue::MixedArray { value, meta: _ } | KclValue::HomArray { value, .. } => {
+                if value.len() != 3 {
+                    return None;
+                }
+                let v0 = value.first()?;
+                let v1 = value.get(1)?;
+                let v2 = value.get(2)?;
+                let array = [v0.as_usize()?, v1.as_usize()?, v2.as_usize()?];
+                Some(array)
+            }
+            _ => None,
         }
-        let v0 = value.first()?;
-        let v1 = value.get(1)?;
-        let v2 = value.get(2)?;
-        let array = [v0.as_usize()?, v1.as_usize()?, v2.as_usize()?];
-        Some(array)
     }
 }
 
 impl<'a> FromKclValue<'a> for [f64; 3] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::MixedArray { value, meta: _ } = arg else {
-            return None;
-        };
-        if value.len() != 3 {
-            return None;
+        match arg {
+            KclValue::MixedArray { value, meta: _ } | KclValue::HomArray { value, .. } => {
+                if value.len() != 3 {
+                    return None;
+                }
+                let v0 = value.first()?;
+                let v1 = value.get(1)?;
+                let v2 = value.get(2)?;
+                let array = [v0.as_f64()?, v1.as_f64()?, v2.as_f64()?];
+                Some(array)
+            }
+            _ => None,
         }
-        let v0 = value.first()?;
-        let v1 = value.get(1)?;
-        let v2 = value.get(2)?;
-        let array = [v0.as_f64()?, v1.as_f64()?, v2.as_f64()?];
-        Some(array)
     }
 }
 

@@ -926,6 +926,8 @@ fn get_autocomplete_string_from_schema(schema: &schemars::schema::Schema) -> Res
 mod tests {
     use pretty_assertions::assert_eq;
 
+    use crate::docs::kcl_doc::{self, DocData};
+
     use super::StdLibFn;
 
     #[test]
@@ -1006,8 +1008,11 @@ mod tests {
     #[test]
     #[allow(clippy::literal_string_with_formatting_args)]
     fn get_autocomplete_snippet_circle() {
-        let circle_fn: Box<dyn StdLibFn> = Box::new(crate::std::shapes::Circle);
-        let snippet = circle_fn.to_autocomplete_snippet().unwrap();
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(circle_fn) = data.into_iter().find(|d| d.name() == "circle").unwrap() else {
+            panic!();
+        };
+        let snippet = circle_fn.to_autocomplete_snippet();
         assert_eq!(
             snippet,
             r#"circle(${0:%}, center = [${1:3.14}, ${2:3.14}], radius = ${3:3.14})${}"#

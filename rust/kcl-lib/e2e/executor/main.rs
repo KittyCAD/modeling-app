@@ -822,7 +822,7 @@ async fn kcl_test_stdlib_kcl_error_circle() {
 
 // Create a function that defines the body width and length of the mounting plate. Tag the corners so they can be passed through the fillet function.
 fn rectShape = (pos, w, l) => {
-  rr = startSketchOn('XY')
+  rr = startSketchOn(XY)
   |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
   |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge1)
   |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge2)
@@ -837,10 +837,10 @@ holeIndex = 6
 
 // Create the mounting plate extrusion, holes, and fillets
 part = rectShape([0, 0], 20, 20)
-  |> hole(circle('XY', [-holeIndex, holeIndex], holeRadius), %)
-  |> hole(circle('XY', [holeIndex, holeIndex], holeRadius), %)
-  |> hole(circle('XY', [-holeIndex, -holeIndex], holeRadius), %)
-  |> hole(circle('XY', [holeIndex, -holeIndex], holeRadius), %)
+  |> hole(circle('XY', center = [-holeIndex, holeIndex], radius = holeRadius), %)
+  |> hole(circle('XY', center = [holeIndex, holeIndex], radius = holeRadius), %)
+  |> hole(circle('XY', center = [-holeIndex, -holeIndex], radius = holeRadius), %)
+  |> hole(circle('XY', center = [holeIndex, -holeIndex], radius = holeRadius), %)
   |> extrude(length = 2)
   |> fillet(
        radius = 4,
@@ -860,7 +860,7 @@ part = rectShape([0, 0], 20, 20)
     };
     assert_eq!(
         err.error.message(),
-        "This function expected the input argument to be of type SketchOrSurface but it's actually of type string (text)"
+        "The input argument of std::sketch::circle requires a value with type `Sketch | Plane | Face`, but found string (text)"
     );
 }
 

@@ -610,7 +610,11 @@ impl ExecutorContext {
                     if let Some(std_path) = &exec_state.mod_local.settings.std_path {
                         let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
                         KclValue::Function {
-                            value: FunctionSource::Std { func, props },
+                            value: FunctionSource::Std {
+                                func,
+                                props,
+                                ast: function_expression.clone(),
+                            },
                             meta: vec![metadata.to_owned()],
                         }
                     } else {
@@ -622,7 +626,7 @@ impl ExecutorContext {
                     }
                 } else {
                     // Snapshotting memory here is crucial for semantics so that we close
-                    // over variables.  Variables defined lexically later shouldn't
+                    // over variables. Variables defined lexically later shouldn't
                     // be available to the function body.
                     KclValue::Function {
                         value: FunctionSource::User {
@@ -1118,10 +1122,35 @@ impl Node<CallExpressionKw> {
                     None
                 };
 
+                let formals = func.args(false);
+                #[allow(clippy::iter_over_hash_type)]
+                for (label, arg) in &args.kw_args.labeled {
+                    match formals.iter().find(|p| &p.name == label) {
+                        Some(p) => {
+                            if !p.label_required {
+                                exec_state.err(CompilationError::err(
+                                    arg.source_range,
+                                    format!(
+                                        "The function `{fn_name}` expects an unlabeled first parameter (`{label}`), but it is labelled in the call"
+                                    ),
+                                ));
+                            }
+                        }
+                        None => {
+                            exec_state.err(CompilationError::err(
+                                arg.source_range,
+                                format!("`{label}` is not an argument of `{fn_name}`"),
+                            ));
+                        }
+                    }
+                }
+
                 // Attempt to call the function.
                 let mut return_value = {
                     // Don't early-return in this block.
+                    exec_state.mut_stack().push_new_env_for_rust_call();
                     let result = func.std_lib_fn()(exec_state, args).await;
+                    exec_state.mut_stack().pop_env();
 
                     if let Some(mut op) = op {
                         op.set_std_lib_call_is_error(result.is_err());
@@ -1140,10 +1169,9 @@ impl Node<CallExpressionKw> {
                 Ok(return_value)
             }
             FunctionKind::UserDefined => {
-                let source_range = SourceRange::from(self);
                 // Clone the function so that we can use a mutable reference to
                 // exec_state.
-                let func = exec_state.stack().get(fn_name, source_range)?.clone();
+                let func = exec_state.stack().get(fn_name, callsite)?.clone();
 
                 // Track call operation.
                 let op_labeled_args = args
@@ -1164,17 +1192,21 @@ impl Node<CallExpressionKw> {
                     source_range: callsite,
                 });
 
-                let return_value = func
-                    .call_fn_kw(args, exec_state, ctx.clone(), callsite)
-                    .await
-                    .map_err(|e| {
-                        // Add the call expression to the source ranges.
-                        // TODO currently ignored by the frontend
-                        e.add_source_ranges(vec![source_range])
-                    })?;
+                let Some(fn_src) = func.as_fn() else {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        message: "cannot call this because it isn't a function".to_string(),
+                        source_ranges: vec![callsite],
+                    }));
+                };
+
+                let return_value = fn_src.call_kw(exec_state, ctx, args, callsite).await.map_err(|e| {
+                    // Add the call expression to the source ranges.
+                    // TODO currently ignored by the frontend
+                    e.add_source_ranges(vec![callsite])
+                })?;
 
                 let result = return_value.ok_or_else(move || {
-                    let mut source_ranges: Vec<SourceRange> = vec![source_range];
+                    let mut source_ranges: Vec<SourceRange> = vec![callsite];
                     // We want to send the source range of the original function.
                     if let KclValue::Function { meta, .. } = func {
                         source_ranges = meta.iter().map(|m| m.source_range).collect();
@@ -1291,14 +1323,17 @@ impl Node<CallExpression> {
                     source_range: callsite,
                 });
 
-                let return_value = func
-                    .call_fn(fn_args, exec_state, ctx.clone(), source_range)
-                    .await
-                    .map_err(|e| {
-                        // Add the call expression to the source ranges.
-                        // TODO currently ignored by the frontend
-                        e.add_source_ranges(vec![source_range])
-                    })?;
+                let Some(fn_src) = func.as_fn() else {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        message: "cannot call this because it isn't a function".to_string(),
+                        source_ranges: vec![source_range],
+                    }));
+                };
+                let return_value = fn_src.call(exec_state, ctx, fn_args, source_range).await.map_err(|e| {
+                    // Add the call expression to the source ranges.
+                    // TODO currently ignored by the frontend
+                    e.add_source_ranges(vec![source_range])
+                })?;
 
                 let result = return_value.ok_or_else(move || {
                     let mut source_ranges: Vec<SourceRange> = vec![source_range];
@@ -1784,6 +1819,28 @@ fn assign_args_to_params_kw(
     mut args: crate::std::args::KwArgs,
     exec_state: &mut ExecState,
 ) -> Result<(), KclError> {
+    #[allow(clippy::iter_over_hash_type)]
+    for (label, arg) in &args.labeled {
+        match function_expression.params.iter().find(|p| &p.identifier.name == label) {
+            Some(p) => {
+                if !p.labeled {
+                    exec_state.err(CompilationError::err(
+                        arg.source_range,
+                        format!(
+                            "This function expects an unlabeled first parameter (`{label}`), but it is labelled in the call"
+                        ),
+                    ));
+                }
+            }
+            None => {
+                exec_state.err(CompilationError::err(
+                    arg.source_range,
+                    format!("`{label}` is not an argument of this function"),
+                ));
+            }
+        }
+    }
+
     // Add the arguments to the memory.  A new call frame should have already
     // been created.
     let source_ranges = vec![function_expression.into()];
@@ -1832,10 +1889,11 @@ fn assign_args_to_params_kw(
             )?;
         }
     }
+
     Ok(())
 }
 
-pub(crate) async fn call_user_defined_function(
+async fn call_user_defined_function(
     args: Vec<Arg>,
     memory: EnvironmentRef,
     function_expression: NodeRef<'_, FunctionExpression>,
@@ -1868,7 +1926,7 @@ pub(crate) async fn call_user_defined_function(
     result
 }
 
-pub(crate) async fn call_user_defined_function_kw(
+async fn call_user_defined_function_kw(
     args: crate::std::args::KwArgs,
     memory: EnvironmentRef,
     function_expression: NodeRef<'_, FunctionExpression>,
@@ -1906,35 +1964,139 @@ impl FunctionSource {
         &self,
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
-        args: Vec<Arg>,
-        source_range: SourceRange,
+        mut args: Vec<Arg>,
+        callsite: SourceRange,
     ) -> Result<Option<KclValue>, KclError> {
         match self {
-            FunctionSource::Std { func, props } => {
+            FunctionSource::Std { props, .. } => {
+                if args.len() <= 1 {
+                    let args = crate::std::Args::new_kw(
+                        KwArgs {
+                            unlabeled: args.pop(),
+                            labeled: HashMap::new(),
+                        },
+                        callsite,
+                        ctx.clone(),
+                        exec_state.mod_local.pipe_value.clone().map(|v| Arg::new(v, callsite)),
+                    );
+                    self.call_kw(exec_state, ctx, args, callsite).await
+                } else {
+                    Err(KclError::Semantic(KclErrorDetails {
+                        message: format!("{} requires its arguments to be labelled", props.name),
+                        source_ranges: vec![callsite],
+                    }))
+                }
+            }
+            FunctionSource::User { ast, memory, .. } => {
+                call_user_defined_function(args, *memory, ast, exec_state, ctx).await
+            }
+            FunctionSource::None => unreachable!(),
+        }
+    }
+
+    pub async fn call_kw(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+        mut args: crate::std::Args,
+        callsite: SourceRange,
+    ) -> Result<Option<KclValue>, KclError> {
+        match self {
+            FunctionSource::Std { func, ast, props } => {
                 if props.deprecated {
                     exec_state.warn(CompilationError::err(
-                        source_range,
+                        callsite,
                         format!(
                             "`{}` is deprecated, see the docs for a recommended replacement",
                             props.name
                         ),
                     ));
                 }
-                let args = crate::std::Args::new(
-                    args,
-                    source_range,
-                    ctx.clone(),
-                    exec_state
-                        .mod_local
-                        .pipe_value
-                        .clone()
-                        .map(|v| Arg::new(v, source_range)),
-                );
 
-                func(exec_state, args).await.map(Some)
+                #[allow(clippy::iter_over_hash_type)]
+                for (label, arg) in &mut args.kw_args.labeled {
+                    match ast.params.iter().find(|p| &p.identifier.name == label) {
+                        Some(p) => {
+                            if !p.labeled {
+                                exec_state.err(CompilationError::err(
+                                    arg.source_range,
+                                    format!(
+                                        "The function `{}` expects an unlabeled first parameter (`{label}`), but it is labelled in the call",
+                                        props.name
+                                    ),
+                                ));
+                            }
+
+                            if let Some(ty) = &p.type_ {
+                                arg.value = arg
+                                    .value
+                                    .coerce(
+                                        &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range)
+                                            .unwrap(),
+                                        exec_state,
+                                    )
+                                    .ok_or_else(|| {
+                                        KclError::Semantic(KclErrorDetails {
+                                            message: format!(
+                                                "{label} requires a value with type `{}`, but found {}",
+                                                ty.inner,
+                                                arg.value.human_friendly_type()
+                                            ),
+                                            source_ranges: vec![callsite],
+                                        })
+                                    })?;
+                            }
+                        }
+                        None => {
+                            exec_state.err(CompilationError::err(
+                                arg.source_range,
+                                format!("`{label}` is not an argument of `{}`", props.name),
+                            ));
+                        }
+                    }
+                }
+
+                if let Some(arg) = &mut args.kw_args.unlabeled {
+                    if let Some(p) = ast.params.iter().find(|p| !p.labeled) {
+                        if let Some(ty) = &p.type_ {
+                            arg.value = arg
+                                .value
+                                .coerce(
+                                    &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range).unwrap(),
+                                    exec_state,
+                                )
+                                .ok_or_else(|| {
+                                    KclError::Semantic(KclErrorDetails {
+                                        message: format!(
+                                            "The input argument of {} requires a value with type `{}`, but found {}",
+                                            props.name,
+                                            ty.inner,
+                                            arg.value.human_friendly_type()
+                                        ),
+                                        source_ranges: vec![callsite],
+                                    })
+                                })?;
+                        }
+                    }
+                }
+
+                // Attempt to call the function.
+                exec_state.mut_stack().push_new_env_for_rust_call();
+                let mut result = {
+                    // Don't early-return in this block.
+                    let result = func(exec_state, args).await;
+                    exec_state.mut_stack().pop_env();
+
+                    // TODO support recording op into the feature tree
+                    result
+                }?;
+
+                update_memory_for_tags_of_geometry(&mut result, exec_state)?;
+
+                Ok(Some(result))
             }
             FunctionSource::User { ast, memory, .. } => {
-                call_user_defined_function(args, *memory, ast, exec_state, ctx).await
+                call_user_defined_function_kw(args.kw_args, *memory, ast, exec_state, ctx).await
             }
             FunctionSource::None => unreachable!(),
         }

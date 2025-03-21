@@ -46,38 +46,17 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     })
 }
 
-/// Construct a 2-dimensional circle, of the specified radius, centered at
-/// the provided (x, y) origin point.
-///
-/// ```no_run
-/// exampleSketch = startSketchOn("-XZ")
-///   |> circle( center = [0, 0], radius = 10 )
-///
-/// example = extrude(exampleSketch, length = 5)
-/// ```
-///
-/// ```no_run
-/// exampleSketch = startSketchOn("XZ")
-///   |> startProfileAt([-15, 0], %)
-///   |> line(end = [30, 0])
-///   |> line(end = [0, 30])
-///   |> line(end = [-30, 0])
-///   |> close()
-///   |> hole(circle( center = [0, 15], radius = 5), %)
-///
-/// example = extrude(exampleSketch, length = 5)
-/// ```
-#[stdlib {
-    name = "circle",
-    keywords = true,
-    unlabeled_first = true,
-    args = {
-        sketch_or_surface = {docs = "Plane or surface to sketch on."},
-        center = {docs = "The center of the circle."},
-        radius = {docs = "The radius of the circle."},
-        tag = { docs = "Create a new tag which refers to this circle"},
-    }
-}]
+// #[stdlib {
+//     name = "circle",
+//     keywords = true,
+//     unlabeled_first = true,
+//     args = {
+//         sketch_or_surface = {docs = "Plane or surface to sketch on."},
+//         center = {docs = "The center of the circle."},
+//         radius = {docs = "The radius of the circle."},
+//         tag = { docs = "Create a new tag which refers to this circle"},
+//     }
+// }]
 async fn inner_circle(
     sketch_or_surface: SketchOrSurface,
     center: [f64; 2],
@@ -174,7 +153,7 @@ pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Resul
 #[stdlib {
     name = "circleThreePoint",
     keywords = true,
-    unlabeled_first = true,
+    unlabeled_first = false,
     args = {
         p1 = {docs = "1st point to derive the circle."},
         p2 = {docs = "2nd point to derive the circle."},
