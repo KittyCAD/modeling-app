@@ -118,9 +118,7 @@ export const engineStreamMachine = setup({
         // will not reexecute.
         // When calling cache before _any_ executions it errors, but non-fatal.
         await rustContext
-          .clearSceneAndBustCache(
-            { settings: await jsAppSettings() },
-          )
+          .clearSceneAndBustCache({ settings: await jsAppSettings() })
           .catch(console.warn)
 
         await kclManager.executeCode(params.zoomToFit)
