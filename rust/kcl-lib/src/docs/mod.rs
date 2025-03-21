@@ -127,13 +127,14 @@ impl StdLibFnArg {
         } else {
             ""
         };
-        if self.type_ == "Sketch"
+        if (self.type_ == "Sketch"
             || self.type_ == "[Sketch]"
             || self.type_ == "Solid"
             || self.type_ == "[Solid]"
             || self.type_ == "SketchSurface"
             || self.type_ == "SketchOrSurface"
-            || self.type_ == "SolidOrSketchOrImportedGeometry" && self.required
+            || self.type_ == "SolidOrSketchOrImportedGeometry")
+            && (self.required || self.include_in_snippet)
         {
             return Ok(Some((index, format!("{label}${{{}:{}}}", index, "%"))));
         } else if (self.type_ == "TagDeclarator" || self.type_ == "TagNode") && self.required {
