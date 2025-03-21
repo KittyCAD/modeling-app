@@ -384,8 +384,11 @@ extrude002 = extrude(profile002, length = 150)
             websocket
               // @ts-ignore
               .waitForEvent('framesent', (frame) => {
-                frame.payload.toString().includes('reconfigure_stream') &&
-                  resolve(true)
+                frame.payload
+                  .toString()
+                  .includes(
+                    '"type":"reconfigure_stream","width":1000,"height":500'
+                  ) && resolve(true)
               })
               .catch(reportRejection)
           }),
