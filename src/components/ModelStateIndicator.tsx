@@ -6,6 +6,13 @@ import { CommandLogType } from 'lang/std/engineConnection'
 import { engineStreamActor } from 'machines/appMachine'
 import { EngineStreamState } from 'machines/engineStreamMachine'
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faPlay,
+  faPause,
+  faSpinner,
+} from '@fortawesome/free-solid-svg-icons'
+
 export const ModelStateIndicator = () => {
   const [commands] = useEngineCommands()
   const [isDone, setIsDone] = useState<boolean>(false)
@@ -29,17 +36,29 @@ export const ModelStateIndicator = () => {
 
   if (engineStreamState.value === EngineStreamState.Paused) {
     className += 'text-secondary'
-    icon = <CustomIcon data-testid={dataTestId + '-paused'} name="parallel" />
+    icon = <FontAwesomeIcon
+      data-testid={dataTestId + '-paused'}
+      icon={faPause}
+      width="20"
+      height="20"
+    />
   } else if (engineStreamState.value === EngineStreamState.Resuming) {
     className += 'text-secondary'
-    icon = <CustomIcon data-testid={dataTestId + '-resuming'} name="parallel" />
+    icon = <FontAwesomeIcon
+      data-testid={dataTestId + '-resuming'}
+      icon={faSpinner}
+      width="20"
+      height="20"
+    />
   } else if (isDone) {
     className += 'text-secondary'
     icon = (
-      <CustomIcon
-        data-testid={dataTestId + '-execution-done'}
-        name="checkmark"
-      />
+        <FontAwesomeIcon
+          data-testid={dataTestId + '-execution-done'}
+          icon={faPlay}
+          width="20"
+          height="20"
+        />
     )
   }
 
