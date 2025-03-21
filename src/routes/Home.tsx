@@ -37,8 +37,11 @@ const Home = () => {
   const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
   const { projectsDir } = useProjectsLoader([projectsLoaderTrigger])
 
+  // Only create the native file menus on desktop
   useEffect(() => {
-    window.electron.createHomePageMenu().catch(reportRejection)
+    if (isDesktop()) {
+      window.electron.createHomePageMenu().catch(reportRejection)
+    }
   }, [])
 
   // Keep a lookout for a URL query string that invokes the 'import file from URL' command

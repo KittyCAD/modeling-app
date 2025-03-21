@@ -61,8 +61,11 @@ export const FileMachineProvider = ({
     []
   )
 
+  // Only create the native file menus on desktop
   useEffect(() => {
-    window.electron.createModelingPageMenu().catch(reportRejection)
+    if (isDesktop()) {
+      window.electron.createModelingPageMenu().catch(reportRejection)
+    }
   }, [])
 
   useEffect(() => {

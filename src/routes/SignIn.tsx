@@ -21,7 +21,11 @@ const subtleBorder =
 const cardArea = `${subtleBorder} rounded-lg px-6 py-3 text-chalkboard-70 dark:text-chalkboard-30`
 
 const SignIn = () => {
-  window.electron.createFallbackMenu().catch(reportRejection)
+  // Only create the native file menus on desktop
+  if (isDesktop()) {
+    window.electron.createFallbackMenu().catch(reportRejection)
+  }
+
   const [userCode, setUserCode] = useState('')
   const {
     app: { theme },
