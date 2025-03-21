@@ -1124,7 +1124,7 @@ mod tests {
         assert_eq!(
             snippet,
             r#"getCommonEdge(faces = [{
-       value = ${0:"string"},
+	value = ${0:"string"},
 }])${}"#
         );
     }
