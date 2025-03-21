@@ -837,10 +837,10 @@ holeIndex = 6
 
 // Create the mounting plate extrusion, holes, and fillets
 part = rectShape([0, 0], 20, 20)
-  |> hole(circle(XY, [-holeIndex, holeIndex], holeRadius), %)
-  |> hole(circle(XY, [holeIndex, holeIndex], holeRadius), %)
-  |> hole(circle(XY, [-holeIndex, -holeIndex], holeRadius), %)
-  |> hole(circle(XY, [holeIndex, -holeIndex], holeRadius), %)
+  |> hole(circle('XY', center = [-holeIndex, holeIndex], radius = holeRadius), %)
+  |> hole(circle('XY', center = [holeIndex, holeIndex], radius = holeRadius), %)
+  |> hole(circle('XY', center = [-holeIndex, -holeIndex], radius = holeRadius), %)
+  |> hole(circle('XY', center = [holeIndex, -holeIndex], radius = holeRadius), %)
   |> extrude(length = 2)
   |> fillet(
        radius = 4,
@@ -860,7 +860,7 @@ part = rectShape([0, 0], 20, 20)
     };
     assert_eq!(
         err.error.message(),
-        "This function requires a keyword argument 'center'"
+        "The input argument of std::sketch::circle requires a value with type `Sketch | Plane | Face`, but found string (text)"
     );
 }
 
