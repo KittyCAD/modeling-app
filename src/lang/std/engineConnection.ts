@@ -1717,7 +1717,7 @@ export class EngineCommandManager extends EventTarget {
       cmd: {
         type: 'reconfigure_stream',
         ...this.streamDimensions,
-        fps: 60,
+        fps: 30,
       },
     }
     this.engineConnection?.send(resizeCmd)
