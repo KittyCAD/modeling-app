@@ -1007,6 +1007,10 @@ export function executorInputPath(fileName: string): string {
   return path.join('rust', 'kcl-lib', 'e2e', 'executor', 'inputs', fileName)
 }
 
+export function kclSamplesInputPath(samplePathSegments: string[]): string {
+  return path.join('public', 'kcl-samples', ...samplePathSegments)
+}
+
 export async function doAndWaitForImageDiff(
   page: Page,
   fn: () => Promise<unknown>,

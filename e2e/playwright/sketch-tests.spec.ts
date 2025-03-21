@@ -113,7 +113,8 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn(XZ)
+        `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([2.61, -4.01], %)
   |> xLine(length = 8.73)
   |> tangentialArcTo([8.33, -1.31], %)`
@@ -159,7 +160,10 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
       await page.mouse.click(700, 200)
 
       await expect.poll(u.normalisedEditorCode, { timeout: 1000 })
-        .toBe(`sketch002 = startSketchOn(XZ)
+        .toBe(`@settings(defaultLengthUnit = in)
+
+
+sketch002 = startSketchOn(XZ)
 sketch001 = startProfileAt([12.34, -12.34], sketch002)
   |> yLine(length = 12.34)
 
@@ -789,7 +793,8 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
       200
     )
 
-    let codeStr = 'sketch001 = startSketchOn(XY)'
+    let codeStr =
+      '@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XY)'
 
     await page.mouse.click(center.x, viewportSize.height * 0.55)
     await expect(u.codeLocator).toHaveText(codeStr)

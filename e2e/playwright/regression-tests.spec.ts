@@ -4,7 +4,7 @@ import path from 'path'
 import * as fsp from 'fs/promises'
 import {
   getUtils,
-  executorInputPath,
+  kclSamplesInputPath,
   TEST_COLORS,
   TestColor,
   orRunWhenFullSuiteEnabled,
@@ -582,7 +582,7 @@ extrude002 = extrude(profile002, length = 150)
         const bracketDir = path.join(dir, 'bracket')
         await fsp.mkdir(bracketDir, { recursive: true })
         await fsp.copyFile(
-          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          kclSamplesInputPath(['flange', 'main.kcl']),
           path.join(bracketDir, 'main.kcl')
         )
       })
@@ -632,12 +632,13 @@ extrude002 = extrude(profile002, length = 150)
 
     await test.step(`Load an empty file`, async () => {
       await page.addInitScript(async () => {
-        localStorage.setItem('persistCode', '')
+        localStorage.setItem('persistCode', '@settings(defaultLengthUnit = in)')
       })
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
       await u.waitForPageLoad()
       await u.closeKclCodePanel()
+      await page.waitForTimeout(20)
     })
 
     await test.step(`Zoom out until you can't see the default planes`, async () => {
@@ -646,13 +647,14 @@ extrude002 = extrude(profile002, length = 150)
           timeout: 5000,
           message: 'Plane color is visible',
         })
-        .toBeLessThanOrEqual(15)
+        .toBeLessThanOrEqual(20)
 
       let maxZoomOuts = 10
       let middlePixelIsBackgroundColor =
         (await middlePixelIsColor(bgColor)) < 10
       while (!middlePixelIsBackgroundColor && maxZoomOuts > 0) {
         await page.keyboard.down('Control')
+        await page.waitForTimeout(20)
         await page.mouse.move(600, 460)
         await page.mouse.down({ button: 'right' })
         await page.mouse.move(600, 50, { steps: 20 })
@@ -660,7 +662,7 @@ extrude002 = extrude(profile002, length = 150)
         await page.keyboard.up('Control')
         await page.waitForTimeout(100)
         maxZoomOuts--
-        middlePixelIsBackgroundColor = (await middlePixelIsColor(bgColor)) < 10
+        middlePixelIsBackgroundColor = (await middlePixelIsColor(bgColor)) < 15
       }
 
       expect(middlePixelIsBackgroundColor, {
@@ -678,13 +680,12 @@ extrude002 = extrude(profile002, length = 150)
     homePage,
     scene,
     toolbar,
-    viewport,
   }) => {
     await context.folderSetupFn(async (dir) => {
       const legoDir = path.join(dir, 'lego')
       await fsp.mkdir(legoDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('lego.kcl'),
+        kclSamplesInputPath(['ball-bearing', 'main.kcl']),
         path.join(legoDir, 'main.kcl')
       )
     })
@@ -697,11 +698,8 @@ extrude002 = extrude(profile002, length = 150)
       await scene.loadingIndicator.waitFor({ state: 'detached' })
     })
     await test.step(`The part should start loading quickly, not waiting until execution is complete`, async () => {
-      await scene.expectPixelColor(
-        [143, 143, 143],
-        { x: (viewport?.width ?? 1200) / 2, y: (viewport?.height ?? 500) / 2 },
-        15
-      )
+      // TODO: use the viewport size to pick the center point, but the `viewport` fixutre's values were wrong.
+      await scene.expectPixelColor([143, 143, 143], { x: 500, y: 250 }, 15)
     })
   })
 

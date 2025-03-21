@@ -2,7 +2,7 @@ import { test, expect } from './zoo-test'
 import {
   orRunWhenFullSuiteEnabled,
   getUtils,
-  executorInputPath,
+  kclSamplesInputPath,
 } from './test-utils'
 import { join } from 'path'
 import { bracket } from 'lib/exampleKcl'
@@ -250,11 +250,11 @@ test(
       ])
       await Promise.all([
         fsp.copyFile(
-          executorInputPath('router-template-slate.kcl'),
+          kclSamplesInputPath(['ball-bearing', 'main.kcl']),
           join(routerTemplateDir, 'main.kcl')
         ),
         fsp.copyFile(
-          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          kclSamplesInputPath(['flange', 'main.kcl']),
           join(bracketDir, 'main.kcl')
         ),
       ])

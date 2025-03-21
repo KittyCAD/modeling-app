@@ -4,6 +4,7 @@ import {
   getUtils,
   executorInputPath,
   getPlaywrightDownloadDir,
+  kclSamplesInputPath,
 } from './test-utils'
 import fsp from 'fs/promises'
 
@@ -20,11 +21,11 @@ test(
       await Promise.all([fsp.mkdir(bracketDir, { recursive: true })])
       await Promise.all([
         fsp.copyFile(
-          executorInputPath('router-template-slate.kcl'),
+          kclSamplesInputPath(['flange', 'main.kcl']),
           path.join(bracketDir, 'other.kcl')
         ),
         fsp.copyFile(
-          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          kclSamplesInputPath(['ball-bearing', 'main.kcl']),
           path.join(bracketDir, 'main.kcl')
         ),
       ])

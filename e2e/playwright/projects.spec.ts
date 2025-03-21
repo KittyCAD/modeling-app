@@ -8,6 +8,7 @@ import {
   createProject,
   getPlaywrightDownloadDir,
   orRunWhenFullSuiteEnabled,
+  kclSamplesInputPath,
 } from './test-utils'
 import fsp from 'fs/promises'
 import fs from 'fs'
@@ -86,7 +87,7 @@ test(
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        kclSamplesInputPath(['flange', 'main.kcl']),
         path.join(bracketDir, 'main.kcl')
       )
     })
@@ -123,7 +124,7 @@ test(
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        kclSamplesInputPath(['flange', 'main.kcl']),
         path.join(bracketDir, 'main.kcl')
       )
       const errorDir = path.join(dir, 'broken-code')
@@ -212,7 +213,7 @@ test(
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        kclSamplesInputPath(['flange', 'main.kcl']),
         path.join(bracketDir, 'main.kcl')
       )
       const emptyDir = path.join(dir, 'empty')
@@ -289,7 +290,7 @@ test(
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        kclSamplesInputPath(['flange', 'main.kcl']),
         path.join(bracketDir, 'main.kcl')
       )
 
@@ -355,7 +356,7 @@ test(
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        kclSamplesInputPath(['flange', 'main.kcl']),
         path.join(bracketDir, 'main.kcl')
       )
       await fsp.copyFile(
@@ -474,7 +475,7 @@ test.describe('Can export from electron app', () => {
           const bracketDir = path.join(dir, 'bracket')
           await fsp.mkdir(bracketDir, { recursive: true })
           await fsp.copyFile(
-            executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+            kclSamplesInputPath(['flange', 'main.kcl']),
             path.join(bracketDir, 'main.kcl')
           )
         })

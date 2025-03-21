@@ -8,6 +8,7 @@ import {
   tomlToSettings,
   TEST_COLORS,
   orRunWhenFullSuiteEnabled,
+  kclSamplesInputPath,
 } from './test-utils'
 import { SettingsLevel } from 'lib/settings/settingsTypes'
 import { SETTINGS_FILE_NAME, PROJECT_SETTINGS_FILE_NAME } from 'lib/constants'
@@ -271,7 +272,7 @@ test.describe('Testing settings', () => {
           const bracketDir = join(dir, projectName)
           await fsp.mkdir(bracketDir, { recursive: true })
           await fsp.copyFile(
-            executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+            kclSamplesInputPath(['flange', 'main.kcl']),
             join(bracketDir, 'main.kcl')
           )
         }
