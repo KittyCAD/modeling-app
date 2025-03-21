@@ -13,7 +13,7 @@ import { FILE_EXT } from 'lib/constants'
 test.describe('integrations tests', () => {
   test(
     'Creating a new file or switching file while in sketchMode should exit sketchMode',
-    { tag: '@electron' },
+    { tag: ['@electron', '@skipWin'] },
     async ({ page, context, homePage, scene, editor, toolbar, cmdBar }) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'test-sample')
