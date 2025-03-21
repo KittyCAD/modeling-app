@@ -2809,15 +2809,40 @@ fn uom_for_type(i: &mut TokenSlice) -> PResult<NumericSuffix> {
     any.try_map(|t: Token| t.value.parse()).parse_next(i)
 }
 
+fn comment(i: &mut TokenSlice) -> PResult<Node<String>> {
+    any.verify_map(|token: Token| {
+        let value = match token.token_type {
+            TokenType::LineComment => token.value,
+            TokenType::BlockComment => token.value,
+            _ => return None,
+        };
+        Some(Node::new(value, token.start, token.end, token.module_id))
+    })
+    .context(expected("Comment"))
+    .parse_next(i)
+}
+
+fn comments(i: &mut TokenSlice) -> PResult<Node<Vec<String>>> {
+    let comments: Vec<Node<String>> = repeat(1.., (comment, opt(whitespace)).map(|(c, _)| c)).parse_next(i)?;
+    let start = comments[0].start;
+    let module_id = comments[0].module_id;
+    let end = comments.last().unwrap().end;
+    let inner = comments.into_iter().map(|n| n.inner).collect();
+    Ok(Node::new(inner, start, end, module_id))
+}
+
 struct ParamDescription {
     labeled: bool,
     arg_name: Token,
     type_: std::option::Option<Node<Type>>,
     default_value: Option<DefaultParamVal>,
+    comments: Option<Node<Vec<String>>>,
 }
 
 fn parameter(i: &mut TokenSlice) -> PResult<ParamDescription> {
-    let (found_at_sign, arg_name, question_mark, _, type_, _ws, default_literal) = (
+    let (_, comments, found_at_sign, arg_name, question_mark, _, type_, _ws, default_literal) = (
+        opt(whitespace),
+        opt(comments),
         opt(at_sign),
         any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")"),
         opt(question_mark),
@@ -2827,6 +2852,7 @@ fn parameter(i: &mut TokenSlice) -> PResult<ParamDescription> {
         opt((equals, opt(whitespace), literal).map(|(_, _, literal)| literal)),
     )
         .parse_next(i)?;
+
     Ok(ParamDescription {
         labeled: found_at_sign.is_none(),
         arg_name,
@@ -2841,6 +2867,7 @@ fn parameter(i: &mut TokenSlice) -> PResult<ParamDescription> {
                 return Err(ErrMode::Backtrack(ContextError::from(e)));
             }
         },
+        comments,
     })
 }
 
@@ -2850,6 +2877,7 @@ fn parameters(i: &mut TokenSlice) -> PResult<Vec<Parameter>> {
     let candidates: Vec<_> = separated(0.., parameter, comma_sep)
         .context(expected("function parameters"))
         .parse_next(i)?;
+    opt(comma_sep).parse_next(i)?;
 
     // Make sure all those tokens are valid parameters.
     let params: Vec<Parameter> = candidates
@@ -2860,8 +2888,13 @@ fn parameters(i: &mut TokenSlice) -> PResult<Vec<Parameter>> {
                  arg_name,
                  type_,
                  default_value,
+                 comments,
              }| {
-                let identifier = Node::<Identifier>::try_from(arg_name)?;
+                let mut identifier = Node::<Identifier>::try_from(arg_name)?;
+                if let Some(comments) = comments {
+                    identifier.comment_start = comments.start;
+                    identifier.pre_comments = comments.inner;
+                }
 
                 Ok(Parameter {
                     identifier,
