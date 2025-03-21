@@ -1,7 +1,9 @@
 name: E2E Tests
 on:
   push:
-    branches: [ main, all-e2e ]
+    branches:
+      - main
+      - all-e2e # this bypasses `fixme()` using `orRunWhenFullSuiteEnabled()`
   pull_request:
   schedule:
     - cron: 0 * * * *  # hourly
