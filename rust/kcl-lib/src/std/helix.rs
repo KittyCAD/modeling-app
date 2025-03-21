@@ -174,7 +174,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         radius = { docs = "Radius of the helix.", include_in_snippet = true},
         axis = { docs = "Axis to use for the helix.", include_in_snippet = true},
         length = { docs = "Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used.", include_in_snippet = true},
-        cylinder = { docs = "Cylinder to create the helix on."},
+        cylinder = { docs = "Cylinder to create the helix on.", include_in_snippet = false},
     },
     feature_tree_operation = true,
 }]

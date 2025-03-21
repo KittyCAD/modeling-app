@@ -16,7 +16,7 @@ helix(
   radius?: number,
   axis?: Axis3dOrEdgeReference,
   length?: number,
-  cylinder?: Box<Solid,
+  cylinder?: Solid,
 ): HelixValue
 ```
 
@@ -31,7 +31,7 @@ helix(
 | `radius` | [`number`](/docs/kcl/types/number) | Radius of the helix. | No |
 | `axis` | [`Axis3dOrEdgeReference`](/docs/kcl/types/Axis3dOrEdgeReference) | Axis to use for the helix. | No |
 | `length` | [`number`](/docs/kcl/types/number) | Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used. | No |
-| `cylinder` | `Box&lt;Solid` | Cylinder to create the helix on. | No |
+| `cylinder` | [`Solid`](/docs/kcl/types/Solid) | Cylinder to create the helix on. | No |
 
 ### Returns
 
