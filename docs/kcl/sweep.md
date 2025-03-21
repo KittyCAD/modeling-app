@@ -44,7 +44,7 @@ sweep(
 // Create a pipe using a sweep.
 
 // Create a path for the sweep.
-sweepPath = startSketchOn('XZ')
+sweepPath = startSketchOn(XZ)
   |> startProfileAt([0.05, 0.05], %)
   |> line(end = [0, 7])
   |> tangentialArc({ offset = 90, radius = 5 }, %)
@@ -53,10 +53,10 @@ sweepPath = startSketchOn('XZ')
   |> line(end = [0, 7])
 
 // Create a hole for the pipe.
-pipeHole = startSketchOn('XY')
+pipeHole = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1.5)
 
-sweepSketch = startSketchOn('XY')
+sweepSketch = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 2)
   |> hole(pipeHole, %)
   |> sweep(path = sweepPath)
@@ -78,7 +78,7 @@ helixPath = helix(
 )
 
 // Create a spring by sweeping around the helix path.
-springSketch = startSketchOn('YZ')
+springSketch = startSketchOn(YZ)
   |> circle(center = [0, 0], radius = 1)
   |> sweep(path = helixPath)
 ```
@@ -89,7 +89,7 @@ springSketch = startSketchOn('YZ')
 // Sweep two sketches along the same path.
 
 
-sketch001 = startSketchOn('XY')
+sketch001 = startSketchOn(XY)
 rectangleSketch = startProfileAt([-200, 23.86], sketch001)
   |> angledLine([0, 73.47], %, $rectangleSegmentA001)
   |> angledLine([
@@ -105,7 +105,7 @@ rectangleSketch = startProfileAt([-200, 23.86], sketch001)
 
 circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
 
-sketch002 = startSketchOn('YZ')
+sketch002 = startSketchOn(YZ)
 sweepPath = startProfileAt([0, 0], sketch002)
   |> yLine(length = 231.81)
   |> tangentialArc({ radius = 80, offset = -90 }, %)

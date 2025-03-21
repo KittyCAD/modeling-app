@@ -367,6 +367,8 @@ pub enum TokenType {
     QuestionMark,
     /// The @ symbol.
     At,
+    /// `;`
+    SemiColon,
 }
 
 /// Most KCL tokens correspond to LSP semantic tokens (but not all).
@@ -396,6 +398,7 @@ impl TryFrom<TokenType> for SemanticTokenType {
             | TokenType::Hash
             | TokenType::Dollar
             | TokenType::At
+            | TokenType::SemiColon
             | TokenType::Unknown => {
                 anyhow::bail!("unsupported token type: {:?}", token_type)
             }
@@ -477,6 +480,18 @@ impl Token {
     }
 
     pub fn numeric_value(&self) -> Option<f64> {
+        if self.token_type != TokenType::Number {
+            return None;
+        }
+        let value = &self.value;
+        let value = value
+            .split_once(|c: char| c == '_' || c.is_ascii_alphabetic())
+            .map(|(s, _)| s)
+            .unwrap_or(value);
+        value.parse().ok()
+    }
+
+    pub fn uint_value(&self) -> Option<u32> {
         if self.token_type != TokenType::Number {
             return None;
         }

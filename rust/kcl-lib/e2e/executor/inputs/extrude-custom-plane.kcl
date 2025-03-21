@@ -1,5 +1,5 @@
 // create a sketch with name sketch000
-const sketch000 = startSketchOn('XY')
+const sketch000 = startSketchOn(XY)
   |> startProfileAt([0.0, 0.0], %)
   |> line(end = [1.0, 1.0], tag = $line000)
   |> line(end = [0.0, -1.0], tag = $line001)

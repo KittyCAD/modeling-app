@@ -2,7 +2,7 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing xz_plane.kcl
 ---
-part001 = startSketchOn('XZ')
+part001 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [100, 100])
   |> line(endAbsolute = [100, 0])

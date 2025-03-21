@@ -2,7 +2,7 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing crazy_multi_profile.kcl
 ---
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([6.71, -3.66], sketch001)
   |> line(end = [2.65, 9.02], tag = $seg02)
   |> line(end = [3.73, -9.36], tag = $seg01)
@@ -38,7 +38,7 @@ profile006 = startProfileAt([9.65, 3.82], sketch002)
   |> close()
 revolve001 = revolve(profile004, angle = 45, axis = getNextAdjacentEdge(seg01))
 extrude002 = extrude(profile006, length = 4)
-sketch003 = startSketchOn('-XZ')
+sketch003 = startSketchOn(-XZ)
 profile007 = startProfileAt([4.8, 7.55], sketch003)
   |> line(end = [7.39, 2.58])
   |> line(end = [7.02, -2.85])

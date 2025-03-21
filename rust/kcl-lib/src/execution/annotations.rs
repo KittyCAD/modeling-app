@@ -6,7 +6,7 @@ use kittycad_modeling_cmds::coord::{System, KITTYCAD, OPENGL, VULKAN};
 
 use crate::{
     errors::KclErrorDetails,
-    execution::kcl_value::{UnitAngle, UnitLen},
+    execution::types::{UnitAngle, UnitLen},
     parsing::ast::types::{Annotation, Expr, Node, ObjectProperty},
     KclError, SourceRange,
 };

@@ -93,7 +93,7 @@ export function isSketchVariablesLinked(
   and will keep checking the second arguments recursively until it runs out of variable declarations
   to check or it finds a match.
   that way it can find fn calls that are linked to each other through variables eg:
-  const part001 = startSketchOn('XY')
+  const part001 = startSketchOn(XY)
     |> startProfileAt([0, 0],%)
     |> xLine(endAbsolute = 1.69)
     |> line(end = [myVar, 0.38]) // ❗️ <- cursor in this fn call (the primary)

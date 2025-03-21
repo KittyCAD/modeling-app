@@ -397,7 +397,8 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
       inert={false}
       wrapperStyle={
         isDesktop()
-          ? ({ '-webkit-app-region': 'no-drag' } as React.CSSProperties)
+          ? // Without this, the tooltip disappears before being able to click on anything in it
+            ({ WebkitAppRegion: 'no-drag' } as React.CSSProperties)
           : {}
       }
       hoverOnly
