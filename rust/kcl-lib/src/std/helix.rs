@@ -186,7 +186,7 @@ async fn inner_helix(
     radius: Option<f64>,
     axis: Option<Axis3dOrEdgeReference>,
     length: Option<f64>,
-    cylinder: Option<Box<Solid>>,
+    cylinder: Option<Solid>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<HelixValue>, KclError> {
