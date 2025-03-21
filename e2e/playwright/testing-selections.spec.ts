@@ -528,6 +528,8 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
   test('Hovering over 3d features highlights code, clicking puts the cursor in the right place and sends selection id to engine', async ({
     page,
     homePage,
+    scene,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async (KCL_DEFAULT_LENGTH) => {
@@ -779,11 +781,7 @@ part001 = startSketchOn(XZ)
    )
   `)
 
-    await expect(
-      page
-        .getByTestId('model-state-indicator-receive-reliable')
-        .or(page.getByTestId('model-state-indicator-execution-done'))
-    ).toBeVisible()
+    await scene.settled(cmdBar)
 
     await u.openAndClearDebugPanel()
     await u.sendCustomCmd({
@@ -953,6 +951,7 @@ part001 = startSketchOn(XZ)
     page,
     homePage,
     scene,
+    cmdBar,
   }) => {
     const cases = [
       {
@@ -989,7 +988,7 @@ part001 = startSketchOn(XZ)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
     await u.openAndClearDebugPanel()
 
     await u.sendCustomCmd({
@@ -1024,6 +1023,7 @@ part001 = startSketchOn(XZ)
     page,
     homePage,
     scene,
+    cmdBar,
   }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -1043,7 +1043,7 @@ part001 = startSketchOn(XZ)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
     await u.openAndClearDebugPanel()
 
     await u.sendCustomCmd({

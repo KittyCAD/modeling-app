@@ -305,6 +305,8 @@ class EngineConnection extends EventTarget {
   )
   isUsingConnectionLite: boolean = false
 
+  timeoutToForceConnectId: ReturnType<typeof setTimeout> = setTimeout(() => {}, 3000)
+
   constructor({
     engineCommandManager,
     url,
@@ -595,7 +597,7 @@ class EngineConnection extends EventTarget {
 
           // Sometimes the remote end doesn't report the end of candidates.
           // They have 3 seconds to.
-          setTimeout(() => {
+          this.timeoutToForceConnectId = setTimeout(() => {
             if (that.initiateConnectionExclusive()) {
               console.warn('connected after 3 second delay')
             }
@@ -1192,6 +1194,8 @@ class EngineConnection extends EventTarget {
     )
   }
   disconnectAll() {
+    clearTimeout(this.timeoutToForceConnectId)
+
     if (this.websocket?.readyState === 1) {
       this.websocket?.close()
     }

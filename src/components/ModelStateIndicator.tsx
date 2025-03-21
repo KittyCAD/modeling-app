@@ -26,7 +26,7 @@ export const ModelStateIndicator = () => {
     className += 'text-secondary'
     icon = (
       <FontAwesomeIcon
-        data-testid={dataTestId + '-execution-done'}
+        data-testid={dataTestId + '-playing'}
         icon={faPlay}
         width="20"
         height="20"
