@@ -5,6 +5,7 @@ import {
   TEST_COLORS,
   pollEditorLinesSelectedLength,
   executorInputPath,
+  orRunWhenFullSuiteEnabled,
 } from './test-utils'
 import { XOR } from 'lib/utils'
 import path from 'node:path'
@@ -14,7 +15,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('XY')
+        `sketch001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -57,7 +58,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       .click()
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `length001 = 20sketch001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line(end = [20, 0])  |> angledLine([90, length001], %)  |> xLine(length = -20)`
+      `length001 = 20sketch001 = startSketchOn(XY)  |> startProfileAt([-10, -10], %)  |> line(end = [20, 0])  |> angledLine([90, length001], %)  |> xLine(length = -20)`
     )
 
     // Make sure we didn't pop out of sketch mode.
@@ -81,13 +82,13 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       localStorage.setItem(
         'persistCode',
         `yo = 79
-  part001 = startSketchOn('XZ')
+  part001 = startSketchOn(XZ)
     |> startProfileAt([-7.54, -26.74], %)
     |> line(end = [74.36, 130.4], tag = $seg01)
     |> line(end = [78.92, -120.11])
     |> angledLine([segAng(seg01), yo], %)
     |> line(end = [41.19, 58.97 + 5])
-  part002 = startSketchOn('XZ')
+  part002 = startSketchOn(XZ)
     |> startProfileAt([299.05, 120], %)
     |> xLine(length = -385.34, tag = $seg_what)
     |> yLine(length = -170.06)
@@ -145,13 +146,13 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
           localStorage.setItem(
             'persistCode',
             `yo = 5
-      part001 = startSketchOn('XZ')
+      part001 = startSketchOn(XZ)
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4], tag = $seg01)
         |> line(end = [78.92, -120.11])
         |> angledLine([segAng(seg01), 78.33], %)
         |> line(end = [51.19, 48.97])
-      part002 = startSketchOn('XZ')
+      part002 = startSketchOn(XZ)
         |> startProfileAt([299.05, 231.45], %)
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
@@ -277,13 +278,13 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
           localStorage.setItem(
             'persistCode',
             `yo = 5
-      part001 = startSketchOn('XZ')
+      part001 = startSketchOn(XZ)
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
         |> line(end = [51.19, 48.97])
-      part002 = startSketchOn('XZ')
+      part002 = startSketchOn(XZ)
         |> startProfileAt([299.05, 231.45], %)
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
@@ -387,13 +388,13 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
           localStorage.setItem(
             'persistCode',
             `yo = 5
-      part001 = startSketchOn('XZ')
+      part001 = startSketchOn(XZ)
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
         |> line(end = [51.19, 48.97])
-      part002 = startSketchOn('XZ')
+      part002 = startSketchOn(XZ)
         |> startProfileAt([299.05, 231.45], %)
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
@@ -500,13 +501,13 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
           localStorage.setItem(
             'persistCode',
             `yo = 5
-      part001 = startSketchOn('XZ')
+      part001 = startSketchOn(XZ)
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
         |> line(end = [51.19, 48.97])
-      part002 = startSketchOn('XZ')
+      part002 = startSketchOn(XZ)
         |> startProfileAt([299.05, 231.45], %)
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
@@ -602,13 +603,13 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
           localStorage.setItem(
             'persistCode',
             `yo = 5
-      part001 = startSketchOn('XZ')
+      part001 = startSketchOn(XZ)
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
         |> line(end = [51.19, 48.97])
-      part002 = startSketchOn('XZ')
+      part002 = startSketchOn(XZ)
         |> startProfileAt([299.05, 231.45], %)
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
@@ -688,13 +689,13 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
           localStorage.setItem(
             'persistCode',
             `yo = 5
-part001 = startSketchOn('XZ')
+part001 = startSketchOn(XZ)
   |> startProfileAt([-7.54, -26.74], %)
   |> line(end = [74.36, 130.4])
   |> line(end = [78.92, -120.11])
   |> line(end = [9.16, 77.79])
   |> line(end = [51.19, 48.97])
-part002 = startSketchOn('XZ')
+part002 = startSketchOn(XZ)
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(length = -425.34, tag = $seg_what)
   |> yLine(length = -264.06)
@@ -768,13 +769,13 @@ part002 = startSketchOn('XZ')
           localStorage.setItem(
             'persistCode',
             `yo = 5
-      part001 = startSketchOn('XZ')
+      part001 = startSketchOn(XZ)
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
         |> line(end = [51.19, 48.97])
-      part002 = startSketchOn('XZ')
+      part002 = startSketchOn(XZ)
         |> startProfileAt([299.05, 231.45], %)
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
@@ -869,12 +870,12 @@ part002 = startSketchOn('XZ')
           localStorage.setItem(
             'persistCode',
             `yo = 5
-      part001 = startSketchOn('XZ')
+      part001 = startSketchOn(XZ)
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
-      part002 = startSketchOn('XZ')
+      part002 = startSketchOn(XZ)
         |> startProfileAt([299.05, 231.45], %)
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
@@ -950,12 +951,12 @@ part002 = startSketchOn('XZ')
           localStorage.setItem(
             'persistCode',
             `yo = 5
-      part001 = startSketchOn('XZ')
+      part001 = startSketchOn(XZ)
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
-      part002 = startSketchOn('XZ')
+      part002 = startSketchOn(XZ)
         |> startProfileAt([299.05, 231.45], %)
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
@@ -1009,12 +1010,12 @@ part002 = startSketchOn('XZ')
     page,
     homePage,
   }) => {
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled())
     test.setTimeout(70_000)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('XY')
+        `sketch001 = startSketchOn(XY)
     |> startProfileAt([-1.05, -1.07], %)
     |> line(end = [3.79, 2.68], tag = $seg01)
     |> line(end = [3.13, -2.4])`

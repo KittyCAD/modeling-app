@@ -27,7 +27,7 @@ polar(data: PolarCoordsData): [number]
 ### Examples
 
 ```js
-exampleSketch = startSketchOn('XZ')
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(end = polar({ angle = 30, length = 5 }), tag = $thing)
   |> line(end = [0, 5])

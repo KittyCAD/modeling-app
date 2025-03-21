@@ -8,8 +8,9 @@ use crate::parsing::{
         LiteralValue, MemberExpression, MemberObject, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter,
         PipeExpression, Program, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration, VariableKind,
     },
+    deprecation,
     token::NumericSuffix,
-    PIPE_OPERATOR,
+    DeprecationKind, PIPE_OPERATOR,
 };
 
 impl Program {
@@ -292,7 +293,10 @@ impl Expr {
             }
             Expr::CallExpression(call_exp) => call_exp.recast(options, indentation_level, ctxt),
             Expr::CallExpressionKw(call_exp) => call_exp.recast(options, indentation_level, ctxt),
-            Expr::Identifier(ident) => ident.name.to_string(),
+            Expr::Identifier(ident) => match deprecation(&ident.name, DeprecationKind::Const) {
+                Some(suggestion) => suggestion.to_owned(),
+                None => ident.name.to_owned(),
+            },
             Expr::TagDeclarator(tag) => tag.recast(),
             Expr::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
             Expr::UnaryExpression(unary_exp) => unary_exp.recast(options),
@@ -321,7 +325,10 @@ impl BinaryPart {
     fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         match &self {
             BinaryPart::Literal(literal) => literal.recast(),
-            BinaryPart::Identifier(identifier) => identifier.name.to_string(),
+            BinaryPart::Identifier(ident) => match deprecation(&ident.name, DeprecationKind::Const) {
+                Some(suggestion) => suggestion.to_owned(),
+                None => ident.name.to_owned(),
+            },
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.recast(options),
             BinaryPart::CallExpression(call_expression) => {
                 call_expression.recast(options, indentation_level, ExprContext::Other)
@@ -376,6 +383,11 @@ impl CallExpressionKw {
             options.get_indentation(indentation_level)
         };
         let name = &self.callee.name;
+
+        if let Some(suggestion) = deprecation(name, DeprecationKind::Function) {
+            return format!("{indent}{suggestion}");
+        }
+
         let arg_list = self.recast_args(options, indentation_level, ctxt);
         let args = arg_list.clone().join(", ");
         let has_lots_of_args = arg_list.len() >= 4;
@@ -480,6 +492,9 @@ impl Literal {
                 }
             }
             LiteralValue::String(ref s) => {
+                if let Some(suggestion) = deprecation(s, DeprecationKind::String) {
+                    return suggestion.to_owned();
+                }
                 let quote = if self.raw.trim().starts_with('"') { '"' } else { '\'' };
                 format!("{quote}{s}{quote}")
             }
@@ -1078,7 +1093,7 @@ s = 1 // s = 1 -> height of Z is 13.4mm
 d = 1
 
 fn rect(x, y, w, h) {
-  startSketchOn('XY')
+  startSketchOn(XY)
     |> startProfileAt([x, y], %)
     |> xLine(length = w)
     |> yLine(length = h)
@@ -1088,7 +1103,7 @@ fn rect(x, y, w, h) {
 }
 
 fn quad(x1, y1, x2, y2, x3, y3, x4, y4) {
-  startSketchOn('XY')
+  startSketchOn(XY)
     |> startProfileAt([x1, y1], %)
     |> line(endAbsolute = [x2, y2])
     |> line(endAbsolute = [x3, y3])
@@ -1098,7 +1113,7 @@ fn quad(x1, y1, x2, y2, x3, y3, x4, y4) {
 }
 
 fn crosshair(x, y) {
-  startSketchOn('XY')
+  startSketchOn(XY)
     |> startProfileAt([x, y], %)
     |> yLine(length = 1)
     |> yLine(length = -2)
@@ -1144,7 +1159,7 @@ fn o(c_x, c_y) {
   // crosshair(c_x, c_y)
 
 
-  startSketchOn('XY')
+  startSketchOn(XY)
     |> startProfileAt([o_x1, o_y1], %)
     |> arc({
          radius = o_r,
@@ -1160,7 +1175,7 @@ fn o(c_x, c_y) {
     |> close()
     |> extrude(d, %)
 
-  startSketchOn('XY')
+  startSketchOn(XY)
     |> startProfileAt([o_x2, o_y2], %)
     |> arc({
          radius = o_r,
@@ -1203,7 +1218,7 @@ thickness = 0.25
 overHangLength = .4
 
 // Sketch and revolve the inside bearing piece
-insideRevolve = startSketchOn('XZ')
+insideRevolve = startSketchOn(XZ)
   |> startProfileAt([insideDia / 2, 0], %)
   |> line([0, thickness + sphereDia / 2], %)
   |> line([overHangLength, 0], %)
@@ -1217,7 +1232,7 @@ insideRevolve = startSketchOn('XZ')
   |> revolve({ axis: 'y' }, %)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
-sphere = startSketchOn('XZ')
+sphere = startSketchOn(XZ)
   |> startProfileAt([
        0.05 + insideDia / 2 + thickness,
        0 - 0.05
@@ -1239,7 +1254,7 @@ sphere = startSketchOn('XZ')
      )
 
 // Sketch and revolve the outside bearing
-outsideRevolve = startSketchOn('XZ')
+outsideRevolve = startSketchOn(XZ)
   |> startProfileAt([
        insideDia / 2 + thickness + sphereDia,
        0
@@ -1269,7 +1284,7 @@ thickness = 0.25
 overHangLength = .4
 
 // Sketch and revolve the inside bearing piece
-insideRevolve = startSketchOn('XZ')
+insideRevolve = startSketchOn(XZ)
   |> startProfileAt([insideDia / 2, 0], %)
   |> line([0, thickness + sphereDia / 2], %)
   |> line([overHangLength, 0], %)
@@ -1283,7 +1298,7 @@ insideRevolve = startSketchOn('XZ')
   |> revolve({ axis = 'y' }, %)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
-sphere = startSketchOn('XZ')
+sphere = startSketchOn(XZ)
   |> startProfileAt([
        0.05 + insideDia / 2 + thickness,
        0 - 0.05
@@ -1305,7 +1320,7 @@ sphere = startSketchOn('XZ')
      )
 
 // Sketch and revolve the outside bearing
-outsideRevolve = startSketchOn('XZ')
+outsideRevolve = startSketchOn(XZ)
   |> startProfileAt([
        insideDia / 2 + thickness + sphereDia,
        0
@@ -1455,7 +1470,7 @@ myNestedVar = [
     #[test]
     fn test_recast_shebang() {
         let some_program_string = r#"#!/usr/local/env zoo kcl
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -1470,7 +1485,7 @@ part001 = startSketchOn('XY')
             recasted,
             r#"#!/usr/local/env zoo kcl
 
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -1486,7 +1501,7 @@ part001 = startSketchOn('XY')
         
 
 
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -1501,7 +1516,7 @@ part001 = startSketchOn('XY')
             recasted,
             r#"#!/usr/local/env zoo kcl
 
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -1516,7 +1531,7 @@ part001 = startSketchOn('XY')
         let some_program_string = r#"#!/usr/local/env zoo kcl
         
 // Yo yo my comments.
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -1532,7 +1547,7 @@ part001 = startSketchOn('XY')
             r#"#!/usr/local/env zoo kcl
 
 // Yo yo my comments.
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -1795,7 +1810,7 @@ tabs_l = startSketchOn({
     #[test]
     fn test_recast_nested_var_declaration_in_fn_body() {
         let some_program_string = r#"fn cube = (pos, scale) => {
-   sg = startSketchOn('XY')
+   sg = startSketchOn(XY)
   |> startProfileAt(pos, %)
   |> line([0, scale], %)
   |> line([scale, 0], %)
@@ -1809,7 +1824,7 @@ tabs_l = startSketchOn({
         assert_eq!(
             recasted,
             r#"fn cube(pos, scale) {
-  sg = startSketchOn('XY')
+  sg = startSketchOn(XY)
     |> startProfileAt(pos, %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
@@ -1826,7 +1841,7 @@ tabs_l = startSketchOn({
         let some_program_string = r#"fn cube(pos, scale) {
   x = dfsfs + dfsfsd as y
 
-  sg = startSketchOn('XY')
+  sg = startSketchOn(XY)
     |> startProfileAt(pos, %) as foo
     |> line([0, scale], %)
     |> line([scale, 0], %) as bar
@@ -1845,7 +1860,7 @@ cube(0, 0) as cub
 
     #[test]
     fn test_recast_with_bad_indentation() {
-        let some_program_string = r#"part001 = startSketchOn('XY')
+        let some_program_string = r#"part001 = startSketchOn(XY)
   |> startProfileAt([0.0, 5.0], %)
               |> line([0.4900857016, -0.0240763666], %)
     |> line([0.6804562304, 0.9087880491], %)"#;
@@ -1854,7 +1869,7 @@ cube(0, 0) as cub
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"part001 = startSketchOn('XY')
+            r#"part001 = startSketchOn(XY)
   |> startProfileAt([0.0, 5.0], %)
   |> line([0.4900857016, -0.0240763666], %)
   |> line([0.6804562304, 0.9087880491], %)
@@ -1864,7 +1879,7 @@ cube(0, 0) as cub
 
     #[test]
     fn test_recast_with_bad_indentation_and_inline_comment() {
-        let some_program_string = r#"part001 = startSketchOn('XY')
+        let some_program_string = r#"part001 = startSketchOn(XY)
   |> startProfileAt([0.0, 5.0], %)
               |> line([0.4900857016, -0.0240763666], %) // hello world
     |> line([0.6804562304, 0.9087880491], %)"#;
@@ -1873,7 +1888,7 @@ cube(0, 0) as cub
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"part001 = startSketchOn('XY')
+            r#"part001 = startSketchOn(XY)
   |> startProfileAt([0.0, 5.0], %)
   |> line([0.4900857016, -0.0240763666], %) // hello world
   |> line([0.6804562304, 0.9087880491], %)
@@ -1882,7 +1897,7 @@ cube(0, 0) as cub
     }
     #[test]
     fn test_recast_with_bad_indentation_and_line_comment() {
-        let some_program_string = r#"part001 = startSketchOn('XY')
+        let some_program_string = r#"part001 = startSketchOn(XY)
   |> startProfileAt([0.0, 5.0], %)
               |> line([0.4900857016, -0.0240763666], %)
         // hello world
@@ -1892,7 +1907,7 @@ cube(0, 0) as cub
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"part001 = startSketchOn('XY')
+            r#"part001 = startSketchOn(XY)
   |> startProfileAt([0.0, 5.0], %)
   |> line([0.4900857016, -0.0240763666], %)
   // hello world
@@ -2047,7 +2062,7 @@ mySk1 = startSketchOn(XY)
     #[test]
     fn test_recast_lots_of_comments() {
         let some_program_string = r#"// comment at start
-mySk1 = startSketchOn('XY')
+mySk1 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [1, 1])
   // comment here
@@ -2068,7 +2083,7 @@ mySk1 = startSketchOn('XY')
         assert_eq!(
             recasted,
             r#"// comment at start
-mySk1 = startSketchOn('XY')
+mySk1 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [1, 1])
   // comment here
@@ -2088,7 +2103,7 @@ mySk1 = startSketchOn('XY')
 
     #[test]
     fn test_recast_multiline_object() {
-        let some_program_string = r#"part001 = startSketchOn('XY')
+        let some_program_string = r#"part001 = startSketchOn(XY)
   |> startProfileAt([-0.01, -0.08], %)
   |> line([0.62, 4.15], %, $seg01)
   |> line([2.77, -1.24], %)
@@ -2170,7 +2185,7 @@ myVar2 = 5
 myVar3 = 6
 myAng = 40
 myAng2 = 134
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line([1, 3.82], %, $seg01) // ln-should-get-tag
   |> angledLineToX([
@@ -2194,7 +2209,7 @@ myVar2 = 5
 myVar3 = 6
 myAng = 40
 myAng2 = 134
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
    |> startProfileAt([0, 0], %)
    |> line([1, 3.82], %, $seg01) // ln-should-get-tag
    |> angledLineToX([
@@ -2221,7 +2236,7 @@ part001 = startSketchOn('XY')
 
     #[test]
     fn test_recast_after_rename_std() {
-        let some_program_string = r#"part001 = startSketchOn('XY')
+        let some_program_string = r#"part001 = startSketchOn(XY)
   |> startProfileAt([0.0000000000, 5.0000000000], %)
     |> line([0.4900857016, -0.0240763666], %)
 
@@ -2241,7 +2256,7 @@ fn ghi = (part001) => {
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"mySuperCoolPart = startSketchOn('XY')
+            r#"mySuperCoolPart = startSketchOn(XY)
   |> startProfileAt([0.0, 5.0], %)
   |> line([0.4900857016, -0.0240763666], %)
 
@@ -2278,7 +2293,7 @@ fn ghi(part001) {
 
     #[test]
     fn test_recast_trailing_comma() {
-        let some_program_string = r#"startSketchOn('XY')
+        let some_program_string = r#"startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> arc({
     radius = 1,
@@ -2290,7 +2305,7 @@ fn ghi(part001) {
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"startSketchOn('XY')
+            r#"startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> arc({
        radius = 1,
@@ -2307,7 +2322,7 @@ fn ghi(part001) {
 l = 8
 h = 10
 
-firstExtrude = startSketchOn('XY')
+firstExtrude = startSketchOn(XY)
   |> startProfileAt([0,0], %)
   |> line([0, l], %)
   |> line([w, 0], %)
@@ -2324,7 +2339,7 @@ firstExtrude = startSketchOn('XY')
 l = 8
 h = 10
 
-firstExtrude = startSketchOn('XY')
+firstExtrude = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line([0, l], %)
   |> line([w, 0], %)
@@ -2344,7 +2359,7 @@ h = 10
 // This is my comment
 // It has multiple lines
 // And it's really long
-firstExtrude = startSketchOn('XY')
+firstExtrude = startSketchOn(XY)
   |> startProfileAt([0,0], %)
   |> line([0, l], %)
   |> line([w, 0], %)
@@ -2364,7 +2379,7 @@ h = 10
 // This is my comment
 // It has multiple lines
 // And it's really long
-firstExtrude = startSketchOn('XY')
+firstExtrude = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line([0, l], %)
   |> line([w, 0], %)
@@ -2389,7 +2404,7 @@ firstExtrude = startSketchOn('XY')
         let some_program_string = r#"wallMountL = 3.82
 thickness = 0.5
 
-startSketchOn('XY')
+startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line([0, -(wallMountL - thickness)], %)
   |> line([0, -(5 - thickness)], %)

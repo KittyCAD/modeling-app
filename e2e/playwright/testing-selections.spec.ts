@@ -1,6 +1,6 @@
 import { test, expect } from './zoo-test'
 
-import { commonPoints, getUtils } from './test-utils'
+import { commonPoints, getUtils, orRunWhenFullSuiteEnabled } from './test-utils'
 import { Coords2d } from 'lang/std/sketch'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import { uuidv4 } from 'lib/utils'
@@ -68,20 +68,20 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
     await u.closeDebugPanel()
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${commonPoints.startAt}, sketch001)`
+      `sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)`
     )
 
     await page.waitForTimeout(100)
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
+      .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
     |> xLine(length = ${commonPoints.num1})`)
 
     await page.waitForTimeout(100)
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${
+      .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
       commonPoints.startAt
     }, sketch001)
     |> xLine(length = ${commonPoints.num1})
@@ -89,7 +89,7 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
     await page.waitForTimeout(100)
     await page.mouse.click(startXPx, 500 - PUR * 20)
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${
+      .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
       commonPoints.startAt
     }, sketch001)
     |> xLine(length = ${commonPoints.num1})
@@ -260,7 +260,7 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn(XZ)
   |> startProfileAt([-79.26, 95.04], %)
   |> line(end = [112.54, 127.64], tag = $seg02)
   |> line(end = [170.36, -121.61], tag = $seg01)
@@ -299,7 +299,7 @@ pipeLength = 40
 pipeSmallDia = 10
 pipeLargeDia = 20
 thickness = 0.5
-part009 = startSketchOn('XY')
+part009 = startSketchOn(XY)
   |> startProfileAt([pipeLargeDia - (thickness / 2), 38], %)
   |> line(end = [thickness, 0])
   |> line(end = [0, -1])
@@ -320,7 +320,7 @@ part009 = startSketchOn('XY')
   |> angledLineToX({ angle = 60, to = pipeLargeDia }, %)
   |> close()
 rev = revolve(part009, axis = 'y')
-sketch006 = startSketchOn('XY')
+sketch006 = startSketchOn(XY)
 profile001 = circle(
   sketch006,
   center = [42.91, -70.42],
@@ -455,13 +455,13 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     cmdBar,
     editor,
   }) => {
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled())
     test.setTimeout(90_000)
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `part001 = startSketchOn('XY')
+        `part001 = startSketchOn(XY)
 yo = startProfileAt([4.83, 12.56], part001)
   |> line(end = [15.1, 2.48])
   |> line(end = [3.15, -9.85], tag = $seg01)
@@ -528,7 +528,7 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
     await page.addInitScript(async (KCL_DEFAULT_LENGTH) => {
       localStorage.setItem(
         'persistCode',
-        `part001 = startSketchOn('XZ')
+        `part001 = startSketchOn(XZ)
   |> startProfileAt([20, 0], %)
   |> line(end = [7.13, 4 + 0])
   |> angledLine({ angle = 3 + 0, length = 3.14 + 0 }, %)
@@ -747,7 +747,7 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
     await page.waitForTimeout(200)
 
     await u.removeCurrentCode()
-    await u.codeLocator.fill(`sketch001 = startSketchOn('XZ')
+    await u.codeLocator.fill(`sketch001 = startSketchOn(XZ)
     |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
     |> angledLine([0, 268.43], %, $rectangleSegmentA001)
     |> angledLine([
@@ -869,7 +869,7 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn(XZ)
     |> startProfileAt([3.29, 7.86], %)
     |> line(end = [2.48, 2.44])
     |> line(end = [2.66, 1.17])
@@ -966,7 +966,7 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
         localStorage.setItem(
           'persistCode',
           `yo = 79
-  part001 = startSketchOn('XZ')
+  part001 = startSketchOn(XZ)
     |> startProfileAt([-7.54, -26.74], %)
     |> ${cases[0].expectedCode}
     |> line(end = [-3.19, -138.43])
@@ -1020,7 +1020,7 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn(XZ)
     |> startProfileAt([-79.26, 95.04], %)
     |> line(end = [112.54, 127.64])
     |> line(end = [170.36, -121.61], tag = $seg01)
@@ -1135,7 +1135,7 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
       }: any) => {
         localStorage.setItem(
           'persistCode',
-          `part001 = startSketchOn('XZ')
+          `part001 = startSketchOn(XZ)
   ${extrudeAndEditBlocked}
   |> line(end = [25.96, 2.93])
   |> line(end = [5.25, -5.72])
@@ -1143,14 +1143,14 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
   |> line(end = [-27.65, -2.78])
   |> close()
   |> extrude(length = 5)
-    sketch002 = startSketchOn('XZ')
+    sketch002 = startSketchOn(XZ)
   ${extrudeAndEditAllowed}
   |> line(end = [10.32, 6.47])
   |> line(end = [9.71, -6.16])
   |> line(end = [-3.08, -9.86])
   |> line(end = [-12.02, -1.54])
   |> close()
-    sketch003 = startSketchOn('XZ')
+    sketch003 = startSketchOn(XZ)
   ${editOnly}
   |> line(end = [27.55, -1.65])
   |> line(end = [4.95, -8])
@@ -1158,7 +1158,7 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
   |> line(end = [-15.79, 17.08])
 
     fn yohey = (pos) => {
-  sketch004 = startSketchOn('XZ')
+  sketch004 = startSketchOn(XZ)
   ${extrudeAndEditBlockedInFunction}
   |> line(end = [27.55, -1.65])
   |> line(end = [4.95, -10.53])
@@ -1253,7 +1253,7 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
     await page.mouse.click(700, 200)
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn('XZ')`
+      `sketch001 = startSketchOn(XZ)`
     )
 
     await page.waitForTimeout(600)
