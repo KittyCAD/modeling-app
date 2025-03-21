@@ -110,21 +110,6 @@ export interface IElectronAPI {
   createFallbackMenu: () => Promise<any>
   enableMenu(menuId: string): Promise<any>
   disableMenu(menuId: string): Promise<any>
-
-  // Long list of menu action IPC communication proxies
-  onFileNewProject: (callback: () => void) => any
-  onFileOpenProject: (callback: () => void) => any
-  fileSignOut: (callback: () => void) => any
-  editChangeProjectDirectory: (callback: () => void) => any
-  fileRoleNewProject: (callback: () => void) => any
-  fileRoleOpenProject: (callback: () => void) => any
-  fileRoleDeleteProject: (callback: () => void) => any
-  fileRoleRenameProject: (callback: () => void) => any
-  fileImportFileFromURL: (callback: () => void) => any
-  filePreferencesUserSettings: (callback: () => void) => any
-  filePreferencesKeybindings: (callback: () => void) => any
-  helpResetOnboarding: (callback: () => void) => any
-
   menuOn: (callback: (payload: WebContentSendPayload) => void) => any
   menuOff: (listener: any) => any
 }

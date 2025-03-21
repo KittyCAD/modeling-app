@@ -10,8 +10,6 @@ import {
   nativeTheme,
   desktopCapturer,
   systemPreferences,
-  globalShortcut,
-  MenuItemConstructorOptions,
   Menu,
 } from 'electron'
 import path from 'path'
