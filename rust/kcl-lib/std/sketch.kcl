@@ -22,4 +22,13 @@
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust)
-export fn circle(@sketch_or_surface: Sketch | Plane | Face, center: Point2d, radius: number, tag?: tag): Sketch {}
+export fn circle(
+  /// Sketch to extend, or plane or surface to sketch on.
+  @sketch_or_surface: Sketch | Plane | Face,
+  /// The center of the circle.
+  center: Point2d,
+  /// The radius of the circle.
+  radius: number,
+  /// Create a new tag which refers to this circle.
+  tag?: tag,
+): Sketch {}

@@ -9,7 +9,7 @@ use tower_lsp::lsp_types::{
 use crate::{
     execution::annotations,
     parsing::{
-        ast::types::{Annotation, Node, NonCodeNode, PrimitiveType, Type, VariableKind},
+        ast::types::{Annotation, Node, PrimitiveType, Type, VariableKind},
         token::NumericSuffix,
     },
     ModuleId,
@@ -59,7 +59,6 @@ impl CollectionVisitor {
                         format!("std::{}::", self.name)
                     };
                     let mut dd = match var.kind {
-                        // TODO metadata for args
                         VariableKind::Fn => DocData::Fn(FnData::from_ast(var, qual_name)),
                         VariableKind::Const => DocData::Const(ConstData::from_ast(var, qual_name)),
                     };
@@ -494,7 +493,7 @@ pub struct ArgData {
     /// If the argument is required.
     pub kind: ArgKind,
     /// Additional information that could be used instead of the type's description.
-    /// This is helpful if the type is really basic, like "u32" -- that won't tell the user much about
+    /// This is helpful if the type is really basic, like "number" -- that won't tell the user much about
     /// how this argument is meant to be used.
     pub docs: Option<String>,
 }
@@ -509,21 +508,19 @@ pub enum ArgKind {
 
 impl ArgData {
     fn from_ast(arg: &crate::parsing::ast::types::Parameter) -> Self {
-        ArgData {
+        let mut result = ArgData {
             name: arg.identifier.name.clone(),
             ty: arg.type_.as_ref().map(|t| t.to_string()),
-            // Doc comments are not yet supported on parameters.
             docs: None,
             kind: if arg.labeled {
                 ArgKind::Labelled(arg.optional())
             } else {
                 ArgKind::Special
             },
-        }
-    }
+        };
 
-    fn _with_meta(&mut self, _meta: &[Node<NonCodeNode>]) {
-        // TODO use comments for docs (we can't currently get the comments for an argument)
+        result.with_comments(&arg.identifier.pre_comments);
+        result
     }
 
     pub fn get_autocomplete_snippet(&self, index: usize) -> Option<(usize, String)> {
@@ -882,6 +879,37 @@ impl ApplyMeta for TyData {
 
     fn impl_kind(&mut self, impl_kind: annotations::Impl) {
         self.properties.impl_kind = impl_kind;
+    }
+}
+
+impl ApplyMeta for ArgData {
+    fn apply_docs(
+        &mut self,
+        summary: Option<String>,
+        description: Option<String>,
+        _examples: Vec<(String, ExampleProperties)>,
+    ) {
+        let Some(mut docs) = summary else {
+            return;
+        };
+        if let Some(desc) = description {
+            docs.push_str("\n\n");
+            docs.push_str(&desc);
+        }
+
+        self.docs = Some(docs);
+    }
+
+    fn deprecated(&mut self, _deprecated: bool) {
+        unreachable!();
+    }
+
+    fn doc_hidden(&mut self, _doc_hidden: bool) {
+        unreachable!();
+    }
+
+    fn impl_kind(&mut self, _impl_kind: annotations::Impl) {
+        unreachable!();
     }
 }
 
