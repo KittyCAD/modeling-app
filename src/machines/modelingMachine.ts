@@ -2707,7 +2707,7 @@ export const modelingMachine = setup({
           reenter: true,
         },
 
-        'Boolean subtract': 'Boolean subtracting',
+        'Boolean Subtract': 'Boolean subtracting',
       },
 
       entry: 'reset client scene mouse handlers',

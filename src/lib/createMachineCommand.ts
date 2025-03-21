@@ -188,6 +188,8 @@ export function buildCommandArgument<
       multiple: arg.multiple,
       selectionTypes: arg.selectionTypes,
       validation: arg.validation,
+      clearSelectionFirst: arg.clearSelectionFirst,
+      selectionFilter: arg.selectionFilter,
     } satisfies CommandArgument<O, T> & { inputType: 'selection' }
   } else if (arg.inputType === 'selectionMixed') {
     return {

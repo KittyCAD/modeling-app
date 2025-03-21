@@ -8,7 +8,7 @@ import { MachineManager } from 'components/MachineManagerProvider'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import { Artifact } from 'lang/std/artifactGraph'
 import { CommandBarContext } from 'machines/commandBarMachine'
-import { Name } from '@rust/kcl-lib/bindings/Name'
+import { EntityType_type } from '@kittycad/lib/dist/types/src/models'
 
 type Icon = CustomIconName
 const _PLATFORMS = ['both', 'web', 'desktop'] as const
@@ -160,6 +160,8 @@ export type CommandArgumentConfig<
   | {
       inputType: 'selection'
       selectionTypes: Artifact['type'][]
+      clearSelectionFirst?: boolean
+      selectionFilter?: EntityType_type[]
       multiple: boolean
       validation?: ({
         data,
@@ -281,6 +283,8 @@ export type CommandArgument<
   | {
       inputType: 'selection'
       selectionTypes: Artifact['type'][]
+      clearSelectionFirst?: boolean
+      selectionFilter?: EntityType_type[]
       multiple: boolean
       validation?: ({
         data,
