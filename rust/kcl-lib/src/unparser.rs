@@ -2040,6 +2040,15 @@ thing = 'foo'
     }
 
     #[test]
+    fn test_recast_only_line_comments() {
+        let code = r#"// comment at start
+"#;
+        let program = crate::parsing::top_level_parse(code).unwrap();
+
+        assert_eq!(program.recast(&Default::default(), 0), code);
+    }
+
+    #[test]
     fn test_recast_comment_at_start() {
         let test_program = r#"
 /* comment at start */
