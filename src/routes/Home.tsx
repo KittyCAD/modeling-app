@@ -110,7 +110,10 @@ const Home = () => {
       navigate(PATHS.HOME + PATHS.SETTINGS_USER + '#projectDirectory')
     } else if (data.menuLabel === 'File.Sign out') {
       authActor.send({ type: 'Log out' })
-    } else if (data.menuLabel === 'View.Command Palette...') {
+    } else if (
+      data.menuLabel === 'View.Command Palette...' ||
+      data.menuLabel === 'Help.Command Palette...'
+    ) {
       commandBarActor.send({ type: 'Open' })
     } else if (data.menuLabel === 'File.Preferences.Theme') {
       commandBarActor.send({
@@ -120,6 +123,8 @@ const Home = () => {
           name: 'app.theme',
         },
       })
+    } else if (data.menuLabel === 'File.Preferences.Theme color') {
+      navigate(PATHS.HOME + PATHS.SETTINGS_USER + '#themeColor')
     }
   }
   useMenuListener(cb)

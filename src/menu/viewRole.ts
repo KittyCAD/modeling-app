@@ -5,7 +5,9 @@ import { typeSafeWebContentsSend } from './channels'
 import os from 'node:os'
 const isMac = os.platform() === 'darwin'
 
-export const projectViewRole = (mainWindow: BrowserWindow): ZooMenuItemConstructorOptions => {
+export const projectViewRole = (
+  mainWindow: BrowserWindow
+): ZooMenuItemConstructorOptions => {
   return {
     label: 'View',
     submenu: [
@@ -16,7 +18,8 @@ export const projectViewRole = (mainWindow: BrowserWindow): ZooMenuItemConstruct
             menuLabel: 'View.Command Palette...',
           })
         },
-      }, {
+      },
+      {
         label: 'Appearance',
         submenu: [
           { role: 'togglefullscreen' },
@@ -24,7 +27,7 @@ export const projectViewRole = (mainWindow: BrowserWindow): ZooMenuItemConstruct
           { role: 'zoomIn' },
           { role: 'zoomOut' },
           { role: 'resetZoom' },
-        ]
+        ],
       },
       { type: 'separator' },
       { role: 'minimize' },

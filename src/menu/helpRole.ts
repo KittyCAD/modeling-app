@@ -10,22 +10,32 @@ export const helpRole = (
     label: 'Help',
     submenu: [
       {
-        label: 'Report a bug',
+        label: 'Show all commands',
+        click: () => {
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'Help.Command Palette...',
+          })
+        },
+      },
+      {
+        label: 'KCL code samples',
         click: () => {
           shell
-            .openExternal(
-              'https://github.com/KittyCAD/modeling-app/issues/new/choose'
-            )
+            .openExternal('https://zoo.dev/docs/kcl-samples')
             .catch(reportRejection)
         },
       },
       {
-        label: 'Request a feature',
+        label: 'KCL docs',
+        click: () => {
+          shell.openExternal('https://zoo.dev/docs/kcl').catch(reportRejection)
+        },
+      },
+      {
+        label: 'Get started with Text-to-CAD',
         click: () => {
           shell
-            .openExternal(
-              'https://github.com/KittyCAD/modeling-app/discussions'
-            )
+            .openExternal('https://text-to-cad.zoo.dev/dashboard')
             .catch(reportRejection)
         },
       },
@@ -48,17 +58,23 @@ export const helpRole = (
       },
       { type: 'separator' },
       {
-        label: 'KCL code samples',
+        label: 'Report a bug',
         click: () => {
           shell
-            .openExternal('https://zoo.dev/docs/kcl-samples')
+            .openExternal(
+              'https://github.com/KittyCAD/modeling-app/issues/new/choose'
+            )
             .catch(reportRejection)
         },
       },
       {
-        label: 'KCL docs',
+        label: 'Request a feature',
         click: () => {
-          shell.openExternal('https://zoo.dev/docs/kcl').catch(reportRejection)
+          shell
+            .openExternal(
+              'https://github.com/KittyCAD/modeling-app/discussions'
+            )
+            .catch(reportRejection)
         },
       },
       { type: 'separator' },
@@ -71,8 +87,12 @@ export const helpRole = (
         },
       },
       { type: 'separator' },
+      { role: 'toggleDevTools' },
+      { role: 'reload' },
+      { role: 'forceReload' },
+      { type: 'separator' },
       {
-        label: 'Release notes',
+        label: 'Show release notes',
         click: () => {
           shell
             .openExternal('https://github.com/KittyCAD/modeling-app/releases')

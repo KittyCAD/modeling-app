@@ -30,6 +30,7 @@ export const projectFileRole = (
         },
       },
       // TODO https://www.electronjs.org/docs/latest/tutorial/recent-documents
+      // Appears to be only Windows and Mac OS specific. Linux does not have support
       { type: 'separator' },
       {
         label: 'Import file from URL',
@@ -64,6 +65,14 @@ export const projectFileRole = (
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'File.Preferences.Theme',
+              })
+            },
+          },
+          {
+            label: 'Theme color',
+            click: () => {
+              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+                menuLabel: 'File.Preferences.Theme color',
               })
             },
           },

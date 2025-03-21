@@ -20,6 +20,7 @@ type FileRoleLabel =
   | 'Keybindings'
   | 'Sign out'
   | 'Theme'
+  | 'Theme color'
 
 type EditRoleLabel =
   | 'Rename project'
@@ -34,8 +35,10 @@ type HelpRoleLabel =
   | 'KCL code samples'
   | 'KCL docs'
   | 'Reset onboarding'
-  | 'Release notes'
+  | 'Show release notes'
   | 'Manage account'
+  | 'Get started with Text-to-CAD'
+  | 'Show all commands'
 
 type OptionsRoleLabel = 'Report an issue'
 

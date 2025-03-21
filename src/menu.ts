@@ -5,7 +5,7 @@ import { optionsRole } from 'menu/optionsRole'
 import { utilityRole } from 'menu/utilityRole'
 import { windowRole } from 'menu/windowRole'
 import { helpRole } from 'menu/helpRole'
-import { projectViewRole } from "menu/viewRole"
+import { projectViewRole } from 'menu/viewRole'
 
 import os from 'node:os'
 const isMac = os.platform() === 'darwin'
@@ -124,7 +124,7 @@ export function buildAndSetMenuForProjectPage(mainWindow: BrowserWindow) {
     projectEditRole(mainWindow),
     projectViewRole(mainWindow),
     // windowRole(mainWindow),
-    utilityRole(mainWindow),
+    // utilityRole(mainWindow),
     // Help role is the same for all pages
     helpRole(mainWindow),
   ]
