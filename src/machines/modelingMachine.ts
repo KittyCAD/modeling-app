@@ -59,6 +59,7 @@ import {
   EdgeTreatmentType,
   FilletParameters,
   getPathToExtrudeForSegmentSelection,
+  locateExtrudeDeclarator,
   mutateAstWithTagForSketchSegment,
 } from 'lang/modifyAst/addEdgeTreatment'
 import { getNodeFromPath } from '../lang/queryAst'
@@ -2316,7 +2317,29 @@ export const modelingMachine = setup({
 
         // Extract inputs
         const ast = kclManager.ast
-        const { selection, radius } = input
+        const { nodeToEdit, selection, radius } = input
+
+        // If this is an edit flow, first we're going to remove the old one
+        // The code below is stolen from apperance
+        if (nodeToEdit) {
+          const result = locateExtrudeDeclarator(ast, nodeToEdit)
+          if (err(result)) {
+            return result
+          }
+
+          const declarator = result.extrudeDeclarator
+          // TODO: double check this stuff below
+          if (declarator.init.type === 'PipeExpression') {
+            const existingIndex = declarator.init.body.findIndex(
+              (v) =>
+                v.type === 'CallExpressionKw' &&
+                v.callee.type === 'Identifier' &&
+                v.callee.name === 'fillet'
+            )
+            declarator.init.body.splice(existingIndex, 1)
+          }
+        }
+
         const parameters: FilletParameters = {
           type: EdgeTreatmentType.Fillet,
           radius,
