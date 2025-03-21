@@ -32,7 +32,7 @@ export interface NetworkStatus {
   error: ErrorType | undefined
   setHasCopied: (b: boolean) => void
   hasCopied: boolean
-  pingPongHealth: undefined | 'OK' | 'TIMEOUT'
+  ping: undefined | number
 }
 
 // Must be called from one place in the application.
@@ -48,9 +48,7 @@ export function useNetworkStatus() {
   const [overallState, setOverallState] = useState<NetworkHealthState>(
     NetworkHealthState.Disconnected
   )
-  const [pingPongHealth, setPingPongHealth] = useState<
-    undefined | 'OK' | 'TIMEOUT'
-  >(undefined)
+  const [ping, setPing] = useState<undefined | number>(undefined)
   const [hasCopied, setHasCopied] = useState<boolean>(false)
 
   const [error, setError] = useState<ErrorType | undefined>(undefined)
@@ -72,12 +70,12 @@ export function useNetworkStatus() {
       !internetConnected
         ? NetworkHealthState.Disconnected
         : hasIssues || hasIssues === undefined
-          ? NetworkHealthState.Issue
-          : pingPongHealth === 'TIMEOUT'
-            ? NetworkHealthState.Weak
-            : NetworkHealthState.Ok
+        ? NetworkHealthState.Issue
+        : ping > (16.6*3) // we consider ping longer than 3 frames as weak
+        ? NetworkHealthState.Weak
+        : NetworkHealthState.Ok
     )
-  }, [hasIssues, internetConnected, pingPongHealth])
+  }, [hasIssues, internetConnected, ping])
 
   useEffect(() => {
     const onlineCallback = () => {
@@ -128,7 +126,8 @@ export function useNetworkStatus() {
 
   useEffect(() => {
     const onPingPongChange = ({ detail: state }: CustomEvent) => {
-      setPingPongHealth(state)
+      console.log(state)
+      setPing(state)
     }
 
     const onConnectionStateChange = ({
@@ -233,6 +232,6 @@ export function useNetworkStatus() {
     error,
     setHasCopied,
     hasCopied,
-    pingPongHealth,
+    ping,
   }
 }
