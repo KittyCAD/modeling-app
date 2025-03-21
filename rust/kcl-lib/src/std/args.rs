@@ -1258,23 +1258,6 @@ impl<'a> FromKclValue<'a> for super::sketch::BezierData {
     }
 }
 
-impl<'a> FromKclValue<'a> for super::helix::HelixRevolutionsData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, revolutions);
-        let_field_of!(obj, length?);
-        let_field_of!(obj, ccw?);
-        let ccw = ccw.unwrap_or_default();
-        let angle_start = obj.get("angleStart")?.as_f64()?;
-        Some(Self {
-            revolutions,
-            angle_start,
-            ccw,
-            length,
-        })
-    }
-}
-
 impl<'a> FromKclValue<'a> for FaceTag {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let case1 = || match arg.as_str() {
