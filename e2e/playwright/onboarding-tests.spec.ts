@@ -326,7 +326,7 @@ test.describe('Onboarding tests', () => {
     homePage,
     tronApp,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled)
+    test.fixme(orRunWhenFullSuiteEnabled())
     if (!tronApp) {
       fail()
     }
@@ -399,7 +399,7 @@ test.describe('Onboarding tests', () => {
     homePage,
     tronApp,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled)
+    test.fixme(orRunWhenFullSuiteEnabled())
     if (!tronApp) {
       fail()
     }
@@ -458,7 +458,7 @@ test('Restarting onboarding on desktop takes one attempt', async ({
   page,
   tronApp,
 }) => {
-  test.fixme(orRunWhenFullSuiteEnabled)
+  test.fixme(orRunWhenFullSuiteEnabled())
   if (!tronApp) {
     fail()
   }

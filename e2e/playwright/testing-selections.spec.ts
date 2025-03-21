@@ -455,7 +455,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     cmdBar,
     editor,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled)
+    test.fixme(orRunWhenFullSuiteEnabled())
     test.setTimeout(90_000)
     const u = await getUtils(page)
     await page.addInitScript(async () => {

@@ -1010,7 +1010,7 @@ part002 = startSketchOn('XZ')
     page,
     homePage,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled)
+    test.fixme(orRunWhenFullSuiteEnabled())
     test.setTimeout(70_000)
     await page.addInitScript(async () => {
       localStorage.setItem(

@@ -205,7 +205,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
     page,
     scene,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled)
+    test.fixme(orRunWhenFullSuiteEnabled())
     const body1CapCoords = { x: 571, y: 311 }
 
     await context.addInitScript((file) => {

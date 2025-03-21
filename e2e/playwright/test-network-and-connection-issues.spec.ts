@@ -8,7 +8,7 @@ test.describe('Test network and connection issues', () => {
     'simulate network down and network little widget',
     { tag: '@skipLocalEngine' },
     async ({ page, homePage }) => {
-      test.fixme(orRunWhenFullSuiteEnabled)
+      test.fixme(orRunWhenFullSuiteEnabled())
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -85,7 +85,7 @@ test.describe('Test network and connection issues', () => {
     'Engine disconnect & reconnect in sketch mode',
     { tag: '@skipLocalEngine' },
     async ({ page, homePage, toolbar }) => {
-      test.fixme(orRunWhenFullSuiteEnabled)
+      test.fixme(orRunWhenFullSuiteEnabled())
       const networkToggle = page.getByTestId('network-toggle')
 
       const u = await getUtils(page)

@@ -8,7 +8,7 @@ import {
 } from './test-utils'
 
 test('Units menu', async ({ page, homePage }) => {
-  test.fixme(orRunWhenFullSuiteEnabled)
+  test.fixme(orRunWhenFullSuiteEnabled())
   await page.setBodyDimensions({ width: 1200, height: 500 })
   await homePage.goToModelingScene()
 
@@ -273,7 +273,7 @@ test('Basic default modeling and sketch hotkeys work', async ({
   page,
   homePage,
 }) => {
-  test.fixme(orRunWhenFullSuiteEnabled)
+  test.fixme(orRunWhenFullSuiteEnabled())
   const u = await getUtils(page)
 
   // This test can run long if it takes a little too long to load

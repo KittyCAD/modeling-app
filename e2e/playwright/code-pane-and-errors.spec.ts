@@ -54,7 +54,7 @@ test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
     homePage,
     editor,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled)
+    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
 
     // Load the app with the working starter code
@@ -128,7 +128,7 @@ test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
     homePage,
     context,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled)
+    test.fixme(orRunWhenFullSuiteEnabled())
     // Load the app with the working starter code
     await context.addInitScript((code) => {
       localStorage.setItem('persistCode', code)

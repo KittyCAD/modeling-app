@@ -46,7 +46,7 @@ test(
   'exports of each format should work',
   { tag: ['@snapshot', '@skipWin', '@skipMacos'] },
   async ({ page, context, scene, cmdBar, tronApp }) => {
-    test.fixme(orRunWhenFullSuiteEnabled)
+    test.fixme(orRunWhenFullSuiteEnabled())
     if (!tronApp) {
       fail()
     }
@@ -1099,7 +1099,7 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
 })
 
 test('theme persists', async ({ page, context }) => {
-  test.fixme(orRunWhenFullSuiteEnabled)
+  test.fixme(orRunWhenFullSuiteEnabled())
   const u = await getUtils(page)
   await context.addInitScript(async () => {
     localStorage.setItem(

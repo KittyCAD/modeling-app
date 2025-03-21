@@ -640,7 +640,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     page,
     homePage,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled)
+    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -1127,7 +1127,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     `Can use the import stdlib function on a local OBJ file`,
     { tag: '@electron' },
     async ({ page, context }, testInfo) => {
-      test.fixme(orRunWhenFullSuiteEnabled)
+      test.fixme(orRunWhenFullSuiteEnabled())
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'cube')
         await fsp.mkdir(bracketDir, { recursive: true })
