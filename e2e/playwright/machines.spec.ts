@@ -1,5 +1,5 @@
 import { test, expect } from './zoo-test'
-import { executorInputPath, kclSamplesInputPath } from './test-utils'
+import { executorInputPath } from './test-utils'
 import { join } from 'path'
 import fsp from 'fs/promises'
 
@@ -11,7 +11,7 @@ test(
       const bracketDir = join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        kclSamplesInputPath(['flange', 'main.kcl']),
+        executorInputPath('cylinder-inches.kcl'),
         join(bracketDir, 'main.kcl')
       )
     })
@@ -51,7 +51,7 @@ test(
       const bracketDir = join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        kclSamplesInputPath(['flange', 'main.kcl']),
+        executorInputPath('cylinder-inches.kcl'),
         join(bracketDir, 'main.kcl')
       )
     })

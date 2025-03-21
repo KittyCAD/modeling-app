@@ -4,7 +4,6 @@ import {
   getUtils,
   executorInputPath,
   getPlaywrightDownloadDir,
-  kclSamplesInputPath,
 } from './test-utils'
 import fsp from 'fs/promises'
 
@@ -21,11 +20,11 @@ test(
       await Promise.all([fsp.mkdir(bracketDir, { recursive: true })])
       await Promise.all([
         fsp.copyFile(
-          kclSamplesInputPath(['flange', 'main.kcl']),
+          executorInputPath('cylinder-inches.kcl'),
           path.join(bracketDir, 'other.kcl')
         ),
         fsp.copyFile(
-          kclSamplesInputPath(['ball-bearing', 'main.kcl']),
+          executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
           path.join(bracketDir, 'main.kcl')
         ),
       ])
@@ -108,7 +107,7 @@ test(
             },
             { timeout: 15_000 }
           )
-          .toBeGreaterThan(300_000)
+          .toBeGreaterThan(30_000)
       })
     })
 
@@ -188,7 +187,7 @@ test(
             },
             { timeout: 15_000 }
           )
-          .toBeGreaterThan(70_000)
+          .toBeGreaterThan(50_000)
       })
     })
   }

@@ -4,9 +4,9 @@ import path from 'path'
 import * as fsp from 'fs/promises'
 import {
   getUtils,
-  kclSamplesInputPath,
   TEST_COLORS,
   TestColor,
+  executorInputPath,
   orRunWhenFullSuiteEnabled,
 } from './test-utils'
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from './storageStates'
@@ -582,7 +582,7 @@ extrude002 = extrude(profile002, length = 150)
         const bracketDir = path.join(dir, 'bracket')
         await fsp.mkdir(bracketDir, { recursive: true })
         await fsp.copyFile(
-          kclSamplesInputPath(['flange', 'main.kcl']),
+          executorInputPath('cylinder-inches.kcl'),
           path.join(bracketDir, 'main.kcl')
         )
       })
@@ -685,7 +685,7 @@ extrude002 = extrude(profile002, length = 150)
       const legoDir = path.join(dir, 'lego')
       await fsp.mkdir(legoDir, { recursive: true })
       await fsp.copyFile(
-        kclSamplesInputPath(['ball-bearing', 'main.kcl']),
+        executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
         path.join(legoDir, 'main.kcl')
       )
     })
