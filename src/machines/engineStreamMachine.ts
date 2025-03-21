@@ -297,11 +297,16 @@ export const engineStreamMachine = setup({
       },
     },
     [EngineStreamState.Resuming]: {
+      reenter: true,
       invoke: {
         src: EngineStreamTransition.StartOrReconfigureEngine,
         input: (args) => args,
       },
       on: {
+        // The stream can be paused as it's resuming.
+        [EngineStreamTransition.Pause]: {
+          target: EngineStreamState.Paused,
+        },
         [EngineStreamTransition.SetMediaStream]: {
           actions: [
             assign({ mediaStream: ({ context, event }) => event.mediaStream }),

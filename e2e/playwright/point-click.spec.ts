@@ -31,7 +31,7 @@ test.describe('Point-and-click tests', () => {
       localStorage.setItem('persistCode', file)
     }, file)
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     const [clickCircle, moveToCircle] = scene.makeMouseHelpers(582, 217)
 
@@ -186,6 +186,7 @@ test.describe('Point-and-click tests', () => {
       editor,
       toolbar,
       scene,
+      cmdBar
     }) => {
       const file = await fs.readFile(
         path.resolve(
@@ -200,9 +201,7 @@ test.describe('Point-and-click tests', () => {
       }, file)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await expect(
-        page.getByTestId('model-state-indicator-receive-reliable')
-      ).toBeVisible()
+      await scene.settled(cmdBar)
 
       const sketchOnAChamfer = _sketchOnAChamfer(page, editor, toolbar, scene)
 
@@ -376,6 +375,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
       editor,
       toolbar,
       scene,
+      cmdBar,
     }) => {
       const file = await fs.readFile(
         path.resolve(
@@ -391,7 +391,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
 
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
 
       const sketchOnAChamfer = _sketchOnAChamfer(page, editor, toolbar, scene)
 
@@ -1278,6 +1278,7 @@ openSketch = startSketchOn(XY)
     page,
     homePage,
     scene,
+    cmdBar
   }) => {
     const initialCode = `sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 30)
@@ -1291,7 +1292,7 @@ loft001 = loft([sketch001, sketch002])
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 575, y: 200 }
@@ -1384,7 +1385,7 @@ sketch002 = startSketchOn('XZ')
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
 
       // One dumb hardcoded screen pixel value
       const [clickOnSketch1] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
@@ -1522,7 +1523,7 @@ sketch002 = startSketchOn(XZ)
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 700, y: 250 }
@@ -2114,7 +2115,7 @@ extrude001 = extrude(sketch001, length = -12)
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
     })
 
     // Test 1: Command bar flow with preselected edges
@@ -2296,6 +2297,7 @@ extrude001 = extrude(sketch001, length = -12)
     scene,
     editor,
     toolbar,
+    cmdBar,
   }) => {
     // Code samples
     const initialCode = `sketch001 = startSketchOn(XY)
@@ -2338,7 +2340,7 @@ chamfer04 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
 
       // verify modeling scene is loaded
       await scene.expectPixelColor(
@@ -2461,7 +2463,7 @@ extrude001 = extrude(sketch001, length = 30)
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
 
       // One dumb hardcoded screen pixel value
       const testPoint = { x: 575, y: 200 }
@@ -2601,7 +2603,7 @@ extrude001 = extrude(sketch001, length = 40)
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 580, y: 180 }
@@ -2738,7 +2740,7 @@ extrude002 = extrude(sketch002, length = 50)
       }, initialCode)
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
 
       // One dumb hardcoded screen pixel value
       const testPoint = { x: 580, y: 320 }
@@ -2826,7 +2828,7 @@ profile001 = startProfileAt([-20, 20], sketch001)
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
       await toolbar.openPane('feature-tree')
 
       // One dumb hardcoded screen pixel value
@@ -2906,7 +2908,7 @@ sweep001 = sweep(sketch001, path = sketch002)
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 500, y: 250 }
@@ -2982,7 +2984,7 @@ segAng(rectangleSegmentA002),
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
 
       // select line of code
       const codeToSelecton = `segAng(rectangleSegmentA002) - 90,`
@@ -3032,7 +3034,7 @@ radius = 8.69
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
 
       // select line of code
       const codeToSelecton = `center = [-11.34, 10.0]`
@@ -3083,7 +3085,7 @@ radius = 8.69
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
 
       // select line of code
       const codeToSelecton = `center = [-0.69, 0.56]`
@@ -3122,7 +3124,7 @@ extrude001 = extrude(profile001, length = 100)
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 500, y: 250 }
