@@ -25,6 +25,7 @@ const mockElectron = {
   },
   getPath: vi.fn(),
   kittycad: vi.fn(),
+  canReadWriteDirectory: vi.fn(),
 }
 
 vi.stubGlobal('window', { electron: mockElectron })
@@ -86,6 +87,12 @@ describe('desktop utilities', () => {
     mockElectron.statIsDirectory.mockImplementation(async (path: string) => {
       return path in mockFileSystem
     })
+
+    mockElectron.canReadWriteDirectory.mockImplementation(
+      async (path: string) => {
+        return { value: path in mockFileSystem, error: undefined }
+      }
+    )
 
     // Mock stat to always resolve with dummy metadata
     mockElectron.stat.mockResolvedValue({

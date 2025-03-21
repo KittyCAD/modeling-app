@@ -5,6 +5,8 @@ import { loadAndValidateSettings } from 'lib/settings/settingsUtils'
 import { Project } from 'lib/project'
 import { isDesktop } from 'lib/isDesktop'
 
+// Gotcha: This should be ported to the ProjectMachine and keep track of
+// projectDirs and projectPaths in the context when it internally calls listProjects
 // Hook uses [number] to give users familiarity. It is meant to mimic a
 // dependency array, but is intended to only ever be used with 1 value.
 export const useProjectsLoader = (deps?: [number]) => {
