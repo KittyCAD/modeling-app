@@ -219,16 +219,32 @@ export function createSettings() {
           (typeof v === 'number' &&
             v >= 1 * MS_IN_MINUTE &&
             v <= 60 * MS_IN_MINUTE),
-        Component: ({ value, updateValue }) => (
+        Component: ({ value: settingValueInStorage, updateValue: writeSettingValueToStorage }) => {
+          const [timeoutId, setTimeoutId] = useState(undefined)
+          const [preview, setPreview] = useState(settingValueInStorage === undefined ? settingValueInStorage : (settingValueInStorage / MS_IN_MINUTE))
+          const onChangeRange = (e: React.SyntheticEvent) => setPreview(e.currentTarget.value)
+          const onSaveRange = (e: React.SyntheticEvent) => {
+            if (preview === undefined) return
+            writeSettingValueToStorage(Number(e.currentTarget.value) * MS_IN_MINUTE)
+          }
+
+          return (
           <div className="flex item-center gap-4 px-2 m-0 py-0">
             <div className="flex flex-col">
               <input
                 type="checkbox"
-                checked={value !== undefined}
-                onChange={(e) =>
-                  updateValue(
-                    !e.currentTarget.checked ? undefined : 5 * MS_IN_MINUTE
-                  )
+                checked={settingValueInStorage !== undefined}
+                onChange={(event) => {
+                    if (timeoutId) { return }
+                    const isChecked = event.currentTarget.checked
+                    clearTimeout(timeoutId)
+                    setTimeoutId(setTimeout(() => {
+                      const requested = !isChecked ? undefined : 5
+                      setPreview(requested)
+                      writeSettingValueToStorage(requested === undefined ? undefined : Number(requested) * MS_IN_MINUTE)
+                      setTimeoutId(undefined)
+                    }, 100))
+                  }
                 }
                 className="block w-4 h-4"
               />
@@ -237,13 +253,14 @@ export function createSettings() {
             <div className="flex flex-col grow">
               <input
                 type="range"
-                onChange={(e) =>
-                  updateValue(Number(e.currentTarget.value) * MS_IN_MINUTE)
-                }
-                disabled={value === undefined}
+                onChange={onChangeRange}
+                onMouseUp={onSaveRange}
+                onKeyUp={onSaveRange}
+                onPointerUp={onSaveRange}
+                disabled={preview === undefined}
                 value={
-                  value !== null && value !== undefined
-                    ? value / MS_IN_MINUTE
+                  preview !== null && preview !== undefined
+                    ? preview
                     : 5
                 }
                 min={1}
@@ -251,18 +268,18 @@ export function createSettings() {
                 step={1}
                 className="block flex-1"
               />
-              {value !== undefined && value !== null && (
+              {preview !== undefined && preview !== null && (
                 <div>
-                  {value / MS_IN_MINUTE === 60
+                  {preview / MS_IN_MINUTE === 60
                     ? '1 hour'
-                    : value / MS_IN_MINUTE === 1
+                    : preview / MS_IN_MINUTE === 1
                     ? '1 minute'
-                    : value / MS_IN_MINUTE + ' minutes'}
+                    : preview + ' minutes'}
                 </div>
               )}
             </div>
           </div>
-        ),
+        )},
       }),
       allowOrbitInSketchMode: new Setting<boolean>({
         defaultValue: false,

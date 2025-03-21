@@ -275,11 +275,6 @@ export class CameraControls {
     >[0]
 
     const cb = ({ data, type }: CallBackParam) => {
-      // We're reconnecting, so ignore this init proces.
-      if (this.oldCameraState) {
-        return
-      }
-
       const camSettings = data.settings
       this.camera.position.set(
         camSettings.pos.x,
@@ -965,16 +960,16 @@ export class CameraControls {
   }
 
   async restoreRemoteCameraStateAndTriggerSync() {
-    if (!this.oldCameraState) return
-
-    await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_set_view',
-        view: this.oldCameraState,
-      },
-    })
+    if (this.oldCameraState) {
+      await this.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_set_view',
+          view: this.oldCameraState,
+        },
+      })
+    }
 
     await this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
