@@ -16,6 +16,7 @@ import {
 import { fileMachine } from 'machines/fileMachine'
 import { isDesktop } from 'lib/isDesktop'
 import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_FILE_NAME,
   DEFAULT_PROJECT_KCL_FILE,
   FILE_EXT,
@@ -34,7 +35,8 @@ import { settingsActor, useSettings } from 'machines/appMachine'
 import { createRouteCommands } from 'lib/commandBarConfigs/routeCommandConfig'
 import { useToken } from 'machines/appMachine'
 import { createNamedViewsCommand } from 'lib/commandBarConfigs/namedViewsConfig'
-import { reportRejection } from 'lib/trap'
+import { err, reportRejection } from 'lib/trap'
+import { newKclFile } from 'lang/project'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -248,7 +250,12 @@ export const FileMachineProvider = ({
                 createdPath
               )
             } else {
-              await window.electron.writeFile(createdPath, input.content ?? '')
+              const codeToWrite = newKclFile(
+                input.content,
+                settings.modeling.defaultUnit.current
+              )
+              if (err(codeToWrite)) return Promise.reject(codeToWrite)
+              await window.electron.writeFile(createdPath, codeToWrite)
             }
           }
 
@@ -277,7 +284,12 @@ export const FileMachineProvider = ({
             })
             createdName = name
             createdPath = path
-            await window.electron.writeFile(createdPath, input.content ?? '')
+            const codeToWrite = newKclFile(
+              input.content,
+              settings.modeling.defaultUnit.current
+            )
+            if (err(codeToWrite)) return Promise.reject(codeToWrite)
+            await window.electron.writeFile(createdPath, codeToWrite)
           }
 
           return {
@@ -412,7 +424,9 @@ export const FileMachineProvider = ({
         authToken: token ?? '',
         projectData,
         settings: {
-          defaultUnit: settings.modeling.defaultUnit.current ?? 'mm',
+          defaultUnit:
+            settings.modeling.defaultUnit.current ??
+            DEFAULT_DEFAULT_LENGTH_UNIT,
         },
         specialPropsForSampleCommand: {
           onSubmit: async (data) => {

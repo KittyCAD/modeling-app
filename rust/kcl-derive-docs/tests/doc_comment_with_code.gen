@@ -33,13 +33,7 @@ mod test_examples_my_func {
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
     async fn kcl_test_example_my_func0() -> miette::Result<()> {
         let code = "This is another code block.\nyes sirrr.\nmyFunc";
-        let result = match crate::test_server::execute_and_snapshot(
-            code,
-            crate::settings::types::UnitLength::Mm,
-            None,
-        )
-        .await
-        {
+        let result = match crate::test_server::execute_and_snapshot(code, None).await {
             Err(crate::errors::ExecError::Kcl(e)) => {
                 return Err(miette::Report::new(crate::errors::Report {
                     error: e.error,

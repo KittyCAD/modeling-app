@@ -271,7 +271,7 @@ test.describe('Testing settings', () => {
           const bracketDir = join(dir, projectName)
           await fsp.mkdir(bracketDir, { recursive: true })
           await fsp.copyFile(
-            executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+            executorInputPath('cylinder-inches.kcl'),
             join(bracketDir, 'main.kcl')
           )
         }
@@ -950,9 +950,9 @@ test.describe('Testing settings', () => {
       )
     })
 
-    await test.step(`Initial units from settings`, async () => {
+    await test.step(`Initial units from settings are ignored`, async () => {
       await homePage.openProject('project-000')
-      await expect(unitsIndicator).toHaveText('Current units are: in')
+      await expect(unitsIndicator).toHaveText('Current units are: mm')
     })
 
     await test.step(`Manually write inline settings`, async () => {

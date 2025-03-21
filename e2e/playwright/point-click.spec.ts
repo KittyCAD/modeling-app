@@ -137,7 +137,7 @@ test.describe('Point-and-click tests', () => {
 
         await scene.moveCameraTo(cameraPos, cameraTarget)
 
-        await test.step('check chamfer selection changes cursor positon', async () => {
+        await test.step('check chamfer selection changes cursor position', async () => {
           await expect(async () => {
             // sometimes initial click doesn't register
             await clickChamfer()
@@ -173,7 +173,7 @@ test.describe('Point-and-click tests', () => {
         })
         await test.step('Check there is no errors after code created in previous steps executes', async () => {
           await editor.expectState({
-            activeLines: ['sketch001 = startSketchOn(XZ)'],
+            activeLines: ['@settings(defaultLengthUnit = in)'],
             highlightedCode: '',
             diagnostics: [],
           })
@@ -299,7 +299,8 @@ test.describe('Point-and-click tests', () => {
 
       await test.step('verify at the end of the test that final code is what is expected', async () => {
         await editor.expectEditor.toContain(
-          `sketch001 = startSketchOn(XZ)
+          `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
   |> angledLine([0, 268.43], %, $rectangleSegmentA001)
   |> angledLine([
@@ -369,7 +370,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
       })
     })
 
-    test('Works on chamfers that are non in a pipeExpression can break up multi edges in a chamfer array', async ({
+    test('Works on chamfers that are not in a pipeExpression can break up multi edges in a chamfer array', async ({
       context,
       page,
       homePage,
@@ -418,7 +419,8 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
         |>close()`,
       })
       await editor.expectEditor.toContain(
-        `sketch001 = startSketchOn(XZ)
+        `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([75.8, 317.2], %)
   |> angledLine([0, 268.43], %, $rectangleSegmentA001)
   |> angledLine([
@@ -1340,7 +1342,8 @@ loft001 = loft([sketch001, sketch002])
     {
       targetType: 'circle',
       testPoint: { x: 700, y: 250 },
-      initialCode: `sketch001 = startSketchOn('YZ')
+      initialCode: `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn('YZ')
 profile001 = circle(sketch001, center = [0, 0], radius = 500)
 sketch002 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
@@ -1350,7 +1353,8 @@ sketch002 = startSketchOn('XZ')
     {
       targetType: 'rectangle',
       testPoint: { x: 710, y: 255 },
-      initialCode: `sketch001 = startSketchOn('YZ')
+      initialCode: `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn('YZ')
 profile001 = startProfileAt([-400, -400], sketch001)
   |> angledLine([0, 800], %, $rectangleSegmentA001)
   |> angledLine([
@@ -1507,7 +1511,8 @@ sketch002 = startSketchOn('XZ')
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `sketch001 = startSketchOn(YZ)
+    const initialCode = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(YZ)
   |> circle(
        center = [0, 0],
        radius = 500
@@ -2074,7 +2079,8 @@ extrude001 = extrude(profile001, length = 5)
     cmdBar,
   }) => {
     // Code samples
-    const initialCode = `sketch001 = startSketchOn(XY)
+    const initialCode = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XY)
   |> startProfileAt([-12, -6], %)
   |> line(end = [0, 12])
   |> line(end = [24, 0])
@@ -2298,7 +2304,8 @@ extrude001 = extrude(sketch001, length = -12)
     toolbar,
   }) => {
     // Code samples
-    const initialCode = `sketch001 = startSketchOn(XY)
+    const initialCode = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XY)
   |> startProfileAt([-12, -6], %)
   |> line(end = [0, 12])
   |> line(end = [24, 0], tag = $seg02)
@@ -2452,7 +2459,8 @@ chamfer04 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
       toolbar,
       cmdBar,
     }) => {
-      const initialCode = `sketch001 = startSketchOn(XZ)
+      const initialCode = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 30)
 extrude001 = extrude(sketch001, length = 30)
     `
@@ -2587,7 +2595,8 @@ extrude001 = extrude(sketch001, length = 30)
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `sketch001 = startSketchOn(XY)
+    const initialCode = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XY)
   |> startProfileAt([-20, 20], %)
   |> xLine(length = 40)
   |> yLine(length = -60)
@@ -2705,7 +2714,8 @@ extrude001 = extrude(sketch001, length = 40)
   })
 
   const shellSketchOnFacesCases = [
-    `sketch001 = startSketchOn(XZ)
+    `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 100)
   |> extrude(length = 100)
 
@@ -2713,7 +2723,8 @@ sketch002 = startSketchOn(sketch001, 'END')
   |> circle(center = [0, 0], radius = 50)
   |> extrude(length = 50)
   `,
-    `sketch001 = startSketchOn(XZ)
+    `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 100)
 extrude001 = extrude(sketch001, length = 100)
 
@@ -3109,7 +3120,8 @@ radius = 8.69
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `sketch001 = startSketchOn(XZ)
+    const initialCode = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
 profile001 = circle(
   sketch001,
   center = [0, 0],

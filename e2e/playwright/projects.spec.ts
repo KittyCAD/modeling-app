@@ -86,7 +86,7 @@ test(
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        executorInputPath('cylinder-inches.kcl'),
         path.join(bracketDir, 'main.kcl')
       )
     })
@@ -123,7 +123,7 @@ test(
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        executorInputPath('cylinder-inches.kcl'),
         path.join(bracketDir, 'main.kcl')
       )
       const errorDir = path.join(dir, 'broken-code')
@@ -212,7 +212,7 @@ test(
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        executorInputPath('cylinder-inches.kcl'),
         path.join(bracketDir, 'main.kcl')
       )
       const emptyDir = path.join(dir, 'empty')
@@ -289,7 +289,7 @@ test(
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        executorInputPath('cylinder-inches.kcl'),
         path.join(bracketDir, 'main.kcl')
       )
 
@@ -355,7 +355,7 @@ test(
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        executorInputPath('cylinder-inches.kcl'),
         path.join(bracketDir, 'main.kcl')
       )
       await fsp.copyFile(
@@ -474,7 +474,7 @@ test.describe('Can export from electron app', () => {
           const bracketDir = path.join(dir, 'bracket')
           await fsp.mkdir(bracketDir, { recursive: true })
           await fsp.copyFile(
-            executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+            executorInputPath('cylinder-inches.kcl'),
             path.join(bracketDir, 'main.kcl')
           )
         })
@@ -1497,7 +1497,12 @@ test(
 
     await u.waitForPageLoad()
 
-    await page.locator('.cm-content').fill(`sketch001 = startSketchOn(XZ)
+    // The file should be prepopulated with the user's unit settings.
+    await expect(page.locator('.cm-content')).toHaveText(
+      '@settings(defaultLengthUnit = in)'
+    )
+
+    await page.locator('.cm-content').fill(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([-87.4, 282.92], %)
   |> line(end = [324.07, 27.199], tag = $seg01)
   |> line(end = [118.328, -291.754])
