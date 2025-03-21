@@ -856,7 +856,7 @@ openSketch = startSketchOn(XY)
     scene,
     editor,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
+    test.fixme(orRunWhenFullSuiteEnabled)
     // Locators
     const firstPointLocation = { x: 200, y: 100 }
     const secondPointLocation = { x: 800, y: 100 }

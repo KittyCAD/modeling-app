@@ -190,7 +190,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
     ).toBeVisible()
   })
   test('Can edit segments by dragging their handles', () => {
-    test.fixme(orRunWhenFullSuiteEnabled())
+    test.fixme(orRunWhenFullSuiteEnabled)
     const doEditSegmentsByDraggingHandle = async (
       page: Page,
       homePage: HomePageFixture,
@@ -1092,7 +1092,7 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
     page,
     homePage,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
+    test.fixme(orRunWhenFullSuiteEnabled)
     /**
      * Tests the following things
      * 1) The the planes are there on load because the scene is empty
@@ -1467,7 +1467,7 @@ test.describe('multi-profile sketching', () => {
     `test it removes half-finished expressions when changing tools in sketch mode`,
     { tag: ['@skipWin'] },
     async ({ context, page, scene, toolbar, editor, homePage, cmdBar }) => {
-      test.fixme(orRunWhenFullSuiteEnabled())
+      test.fixme(orRunWhenFullSuiteEnabled)
       // We seed the scene with a single offset plane
       await context.addInitScript(() => {
         localStorage.setItem(
@@ -2863,7 +2863,7 @@ loft([profile001, profile002])
     page,
     homePage,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
+    test.fixme(orRunWhenFullSuiteEnabled)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',

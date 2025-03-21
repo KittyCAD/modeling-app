@@ -577,7 +577,7 @@ extrude002 = extrude(profile002, length = 150)
     `Network health indicator only appears in modeling view`,
     { tag: '@electron' },
     async ({ context, page }, testInfo) => {
-      test.fixme(orRunWhenFullSuiteEnabled())
+      test.fixme(orRunWhenFullSuiteEnabled)
       await context.folderSetupFn(async (dir) => {
         const bracketDir = path.join(dir, 'bracket')
         await fsp.mkdir(bracketDir, { recursive: true })

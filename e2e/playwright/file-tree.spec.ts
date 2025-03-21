@@ -277,7 +277,7 @@ test.describe('when using the file tree to', () => {
       tag: '@electron',
     },
     async ({ page }, testInfo) => {
-      test.fixme(orRunWhenFullSuiteEnabled())
+      test.fixme(orRunWhenFullSuiteEnabled)
       const {
         panesOpen,
         pasteCodeInEditor,

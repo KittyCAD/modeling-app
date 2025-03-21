@@ -155,7 +155,7 @@ async function doBasicSketch(
 
 test.describe('Basic sketch', { tag: ['@skipWin'] }, () => {
   test('code pane open at start', async ({ page, homePage }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
+    test.fixme(orRunWhenFullSuiteEnabled)
     await doBasicSketch(page, homePage, ['code'])
   })
 

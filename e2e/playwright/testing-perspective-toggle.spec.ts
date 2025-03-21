@@ -3,7 +3,7 @@ import { getUtils, orRunWhenFullSuiteEnabled } from './test-utils'
 
 test.describe('Test toggling perspective', () => {
   test('via command palette and toggle', async ({ page, homePage }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
+    test.fixme(orRunWhenFullSuiteEnabled)
     const u = await getUtils(page)
 
     // Locators and constants

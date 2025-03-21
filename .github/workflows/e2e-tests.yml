@@ -159,7 +159,7 @@ jobs:
           name: prepared-wasm
           path: |
             rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
-  
+
 
   snapshots:
     name: playwright:snapshots:ubuntu
@@ -372,7 +372,7 @@ jobs:
           shell: bash
           command: .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{ env.OS_NAME }}
           timeout_minutes: 45
-          max_attempts: 15
+          max_attempts: 1
         env:
           CI: true
           FAIL_ON_CONSOLE_ERRORS: true
