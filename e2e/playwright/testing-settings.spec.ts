@@ -6,6 +6,7 @@ import {
   executorInputPath,
   createProject,
   tomlToSettings,
+  TEST_COLORS,
   orRunWhenFullSuiteEnabled,
 } from './test-utils'
 import { SettingsLevel } from 'lib/settings/settingsTypes'
@@ -812,7 +813,7 @@ test.describe('Testing settings', () => {
     // Selectors and constants
     const darkBackgroundCss = 'oklch(0.3012 0 264.5)'
     const lightBackgroundCss = 'oklch(0.9911 0 264.5)'
-    const darkBackgroundColor: [number, number, number] = [27, 27, 27]
+    const darkBackgroundColor = TEST_COLORS.DARK_MODE_BKGD
     const lightBackgroundColor: [number, number, number] = [245, 245, 245]
     const streamBackgroundPixelIsColor = async (
       color: [number, number, number]
