@@ -2,10 +2,10 @@ import { test, expect } from './zoo-test'
 import fsp from 'fs/promises'
 import { uuidv4 } from 'lib/utils'
 import {
-  darkModeBgColor,
-  darkModePlaneColorXZ,
   executorInputPath,
   getUtils,
+  orRunWhenFullSuiteEnabled,
+  TEST_COLORS,
 } from './test-utils'
 
 import { join } from 'path'
@@ -639,7 +639,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     page,
     homePage,
   }) => {
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -1126,7 +1126,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     `Can use the import stdlib function on a local OBJ file`,
     { tag: '@electron' },
     async ({ page, context }, testInfo) => {
-      test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+      test.fixme(orRunWhenFullSuiteEnabled())
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'cube')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -1163,7 +1163,8 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
         await u.waitForPageLoad()
         await expect
           .poll(
-            async () => locationToHavColor(notTheOrigin, darkModePlaneColorXZ),
+            async () =>
+              locationToHavColor(notTheOrigin, TEST_COLORS.DARK_MODE_PLANE_XZ),
             {
               timeout: 5000,
               message: 'XZ plane color is visible',
@@ -1184,16 +1185,23 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
       await test.step(`Verify that we see the imported geometry and no errors`, async () => {
         await expect(errorIndicators).toHaveCount(0)
         await expect
-          .poll(async () => locationToHavColor(origin, darkModePlaneColorXZ), {
-            timeout: 3000,
-            message: 'Plane color should not be visible',
-          })
+          .poll(
+            async () =>
+              locationToHavColor(origin, TEST_COLORS.DARK_MODE_PLANE_XZ),
+            {
+              timeout: 3000,
+              message: 'Plane color should not be visible',
+            }
+          )
           .toBeGreaterThan(15)
         await expect
-          .poll(async () => locationToHavColor(origin, darkModeBgColor), {
-            timeout: 3000,
-            message: 'Background color should not be visible',
-          })
+          .poll(
+            async () => locationToHavColor(origin, TEST_COLORS.DARK_MODE_BKGD),
+            {
+              timeout: 3000,
+              message: 'Background color should not be visible',
+            }
+          )
           .toBeGreaterThan(15)
       })
     }

@@ -53,6 +53,7 @@ format: install ## Format the code
 
 .PHONY: lint
 lint: install ## Lint the code
+	yarn tsc
 	yarn lint
 
 ###############################################################################

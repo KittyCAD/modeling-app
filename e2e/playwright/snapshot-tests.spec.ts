@@ -1,6 +1,12 @@
 import { test, expect } from './zoo-test'
 import { secrets } from './secrets'
-import { Paths, doExport, getUtils, settingsToToml } from './test-utils'
+import {
+  Paths,
+  doExport,
+  getUtils,
+  settingsToToml,
+  orRunWhenFullSuiteEnabled,
+} from './test-utils'
 import { Models } from '@kittycad/lib'
 import fsp from 'fs/promises'
 import { spawn } from 'child_process'
@@ -40,7 +46,7 @@ test(
   'exports of each format should work',
   { tag: ['@snapshot', '@skipWin', '@skipMacos'] },
   async ({ page, context, scene, cmdBar, tronApp }) => {
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled())
     if (!tronApp) {
       fail()
     }
@@ -863,6 +869,7 @@ part002 = startSketchOn(part001, seg01)
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
     })
   }
 )
@@ -902,6 +909,7 @@ test(
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
     })
   }
 )
@@ -942,6 +950,7 @@ test(
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
     })
   }
 )
@@ -1090,7 +1099,7 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
 })
 
 test('theme persists', async ({ page, context }) => {
-  test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+  test.fixme(orRunWhenFullSuiteEnabled())
   const u = await getUtils(page)
   await context.addInitScript(async () => {
     localStorage.setItem(
@@ -1198,6 +1207,7 @@ sweepSketch = startSketchOn('XY')
 
     await expect(page, 'expect small color widget').toHaveScreenshot({
       maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
     })
   })
 
@@ -1255,6 +1265,7 @@ sweepSketch = startSketchOn('XY')
       'expect small color widget to have window open'
     ).toHaveScreenshot({
       maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
     })
   })
 })

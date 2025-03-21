@@ -6,6 +6,8 @@ import {
   executorInputPath,
   createProject,
   tomlToSettings,
+  TEST_COLORS,
+  orRunWhenFullSuiteEnabled,
 } from './test-utils'
 import { SettingsLevel } from 'lib/settings/settingsTypes'
 import { SETTINGS_FILE_NAME, PROJECT_SETTINGS_FILE_NAME } from 'lib/constants'
@@ -59,7 +61,7 @@ test.describe('Testing settings', () => {
     page,
     homePage,
   }) => {
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     await test.step(`Setup`, async () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -172,7 +174,7 @@ test.describe('Testing settings', () => {
   })
 
   test('Project and user settings can be reset', async ({ page, homePage }) => {
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     await test.step(`Setup`, async () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -262,7 +264,7 @@ test.describe('Testing settings', () => {
     `Project settings override user settings on desktop`,
     { tag: ['@electron', '@skipWin'] },
     async ({ context, page }, testInfo) => {
-      test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+      test.fixme(orRunWhenFullSuiteEnabled())
       const projectName = 'bracket'
       const { dir: projectDirName } = await context.folderSetupFn(
         async (dir) => {
@@ -404,7 +406,7 @@ test.describe('Testing settings', () => {
       tag: '@electron',
     },
     async ({ context, page, tronApp }, testInfo) => {
-      test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+      test.fixme(orRunWhenFullSuiteEnabled())
       if (!tronApp) {
         fail()
       }
@@ -462,7 +464,7 @@ test.describe('Testing settings', () => {
     'project settings reload on external change',
     { tag: '@electron' },
     async ({ context, page }, testInfo) => {
-      test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+      test.fixme(orRunWhenFullSuiteEnabled())
       const { dir: projectDirName } = await context.folderSetupFn(
         async () => {}
       )
@@ -811,7 +813,7 @@ test.describe('Testing settings', () => {
     // Selectors and constants
     const darkBackgroundCss = 'oklch(0.3012 0 264.5)'
     const lightBackgroundCss = 'oklch(0.9911 0 264.5)'
-    const darkBackgroundColor: [number, number, number] = [27, 27, 27]
+    const darkBackgroundColor = TEST_COLORS.DARK_MODE_BKGD
     const lightBackgroundColor: [number, number, number] = [245, 245, 245]
     const streamBackgroundPixelIsColor = async (
       color: [number, number, number]
@@ -983,7 +985,7 @@ fn cube`
     toolbar,
     cmdBar,
   }, testInfo) => {
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled())
     await context.folderSetupFn(async (dir) => {
       const projectDir = join(dir, 'project-000')
       await fsp.mkdir(projectDir, { recursive: true })

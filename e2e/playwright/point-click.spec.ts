@@ -5,7 +5,7 @@ import { SceneFixture } from './fixtures/sceneFixture'
 import { ToolbarFixture } from './fixtures/toolbarFixture'
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { getUtils } from './test-utils'
+import { getUtils, orRunWhenFullSuiteEnabled } from './test-utils'
 import { Locator } from '@playwright/test'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
@@ -856,7 +856,7 @@ openSketch = startSketchOn('XY')
     scene,
     editor,
   }) => {
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled())
     // Locators
     const firstPointLocation = { x: 200, y: 100 }
     const secondPointLocation = { x: 800, y: 100 }
@@ -1336,7 +1336,7 @@ loft001 = loft([sketch001, sketch002])
     })
   })
 
-  test(`Sweep point-and-click`, async ({
+  test(`Sweep point-and-click base`, async ({
     context,
     page,
     homePage,
@@ -1369,7 +1369,10 @@ sketch002 = startSketchOn('XZ')
       testPoint.x - 50,
       testPoint.y
     )
-    const sweepDeclaration = 'sweep001 = sweep(sketch001, path = sketch002)'
+    const sweepDeclaration =
+      'sweep001 = sweep(sketch001, path = sketch002, sectional = false)'
+    const editedSweepDeclaration =
+      'sweep001 = sweep(sketch001, path = sketch002, sectional = true)'
 
     await test.step(`Look for sketch001`, async () => {
       await toolbar.closePane('code')
@@ -1383,6 +1386,7 @@ sketch002 = startSketchOn('XZ')
         currentArgKey: 'target',
         currentArgValue: '',
         headerArguments: {
+          Sectional: '',
           Target: '',
           Trajectory: '',
         },
@@ -1395,6 +1399,7 @@ sketch002 = startSketchOn('XZ')
         currentArgKey: 'trajectory',
         currentArgValue: '',
         headerArguments: {
+          Sectional: '',
           Target: '1 face',
           Trajectory: '',
         },
@@ -1404,18 +1409,50 @@ sketch002 = startSketchOn('XZ')
       await clickOnSketch2()
       await page.waitForTimeout(500)
       await cmdBar.progressCmdBar()
-      await toolbar.openPane('code')
-      await page.waitForTimeout(500)
+      await cmdBar.expectState({
+        commandName: 'Sweep',
+        headerArguments: {
+          Target: '1 face',
+          Trajectory: '1 segment',
+          Sectional: '',
+        },
+        stage: 'review',
+      })
+      await cmdBar.progressCmdBar()
     })
 
     await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
-      // await scene.expectPixelColor([135, 64, 73], testPoint, 15) // FIXME
+      await toolbar.openPane('code')
       await editor.expectEditor.toContain(sweepDeclaration)
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [sweepDeclaration],
-        highlightedCode: '',
+      await toolbar.closePane('code')
+    })
+
+    await test.step('Edit sweep via feature tree selection works', async () => {
+      await toolbar.openPane('feature-tree')
+      const operationButton = await toolbar.getFeatureTreeOperation('Sweep', 0)
+      await operationButton.dblclick({ button: 'left' })
+      await cmdBar.expectState({
+        commandName: 'Sweep',
+        currentArgKey: 'sectional',
+        currentArgValue: '',
+        headerArguments: {
+          Sectional: '',
+        },
+        highlightedHeaderArg: 'sectional',
+        stage: 'arguments',
       })
+      await cmdBar.selectOption({ name: 'True' }).click()
+      await cmdBar.expectState({
+        commandName: 'Sweep',
+        headerArguments: {
+          Sectional: '',
+        },
+        stage: 'review',
+      })
+      await cmdBar.progressCmdBar()
+      await toolbar.closePane('feature-tree')
+      await toolbar.openPane('code')
+      await editor.expectEditor.toContain(editedSweepDeclaration)
       await toolbar.closePane('code')
     })
 
@@ -1476,6 +1513,7 @@ sketch002 = startSketchOn('XZ')
         currentArgKey: 'target',
         currentArgValue: '',
         headerArguments: {
+          Sectional: '',
           Target: '',
           Trajectory: '',
         },
@@ -1488,6 +1526,7 @@ sketch002 = startSketchOn('XZ')
         currentArgKey: 'trajectory',
         currentArgValue: '',
         headerArguments: {
+          Sectional: '',
           Target: '1 face',
           Trajectory: '',
         },

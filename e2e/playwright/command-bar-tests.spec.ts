@@ -1,6 +1,10 @@
 import { test, expect } from './zoo-test'
 import * as fsp from 'fs/promises'
-import { executorInputPath, getUtils } from './test-utils'
+import {
+  executorInputPath,
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+} from './test-utils'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import path, { join } from 'path'
 
@@ -48,7 +52,7 @@ test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
 
   // TODO: fix this test after the electron migration
   test('Fillet from command bar', async ({ page, homePage }) => {
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled())
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
