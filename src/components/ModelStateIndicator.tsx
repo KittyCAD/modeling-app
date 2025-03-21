@@ -10,21 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 export const ModelStateIndicator = () => {
-  const [commands] = useEngineCommands()
-  const [isDone, setIsDone] = useState<boolean>(false)
-
   const engineStreamState = useSelector(engineStreamActor, (state) => state)
-
-  const lastCommandType = commands[commands.length - 1]?.type
-
-  useEffect(() => {
-    if (lastCommandType === CommandLogType.SetDefaultSystemProperties) {
-      setIsDone(false)
-    }
-    if (lastCommandType === CommandLogType.ExecutionDone) {
-      setIsDone(true)
-    }
-  }, [lastCommandType])
 
   let className = 'w-6 h-6 '
   let icon = <div className={className}></div>
@@ -38,15 +24,7 @@ export const ModelStateIndicator = () => {
       width="20"
       height="20"
     />
-  } else if (engineStreamState.value === EngineStreamState.Resuming) {
-    className += 'text-secondary'
-    icon = <FontAwesomeIcon
-      data-testid={dataTestId + '-resuming'}
-      icon={faSpinner}
-      width="20"
-      height="20"
-    />
-  } else if (isDone) {
+  } else if (engineStreamState.value === EngineStreamState.Playing) {
     className += 'text-secondary'
     icon = (
         <FontAwesomeIcon
@@ -56,6 +34,14 @@ export const ModelStateIndicator = () => {
           height="20"
         />
     )
+  } else {
+    className += 'text-secondary'
+    icon = <FontAwesomeIcon
+      data-testid={dataTestId + '-resuming'}
+      icon={faSpinner}
+      width="20"
+      height="20"
+    />
   }
 
   return (

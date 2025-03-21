@@ -20,8 +20,7 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import { binaryToUuid, uuidv4 } from '@src/lib/utils'
 
-// TODO(paultag): This ought to be tweakable.
-const pingIntervalMs = 5_000
+const pingIntervalMs = 1_000
 
 function isHighlightSetEntity_type(
   data: any
@@ -191,8 +190,6 @@ export type EngineConnectionState =
   | State<EngineConnectionStateType.Disconnecting, DisconnectingValue>
   | State<EngineConnectionStateType.Disconnected, void>
 
-export type PingPongState = 'OK' | 'TIMEOUT'
-
 export enum EngineConnectionEvents {
   // Fires for each ping-pong success or failure.
   PingPongChanged = 'ping-pong-changed', // (state: PingPongState) => void
@@ -333,70 +330,17 @@ class EngineConnection extends EventTarget {
       return
     }
 
-    // Without an interval ping, our connection will timeout.
-    // If this.idleMode is true we skip this logic so only reconnect
-    // happens on mouse move
     this.pingIntervalId = setInterval(() => {
-      if (this.idleMode) return
+      // Only start a new ping when the other is fulfilled.
+      if (this.pingPongSpan.ping) { return }
 
-      switch (this.state.type as EngineConnectionStateType) {
-        case EngineConnectionStateType.ConnectionEstablished:
-          // If there was no reply to the last ping, report a timeout and
-          // teardown the connection.
-          if (this.pingPongSpan.ping && !this.pingPongSpan.pong) {
-            this.dispatchEvent(
-              new CustomEvent(EngineConnectionEvents.PingPongChanged, {
-                detail: 'TIMEOUT',
-              })
-            )
-            this.state = {
-              type: EngineConnectionStateType.Disconnecting,
-              value: {
-                type: DisconnectingType.Timeout,
-              },
-            }
-            this.disconnectAll()
+      // Don't start pinging until we're connected.
+      if (this.state.type !== EngineConnectionStateType.ConnectionEstablished) { return }
 
-            // Otherwise check the time between was >= pingIntervalMs,
-            // and if it was, then it's bad network health.
-          } else if (this.pingPongSpan.ping && this.pingPongSpan.pong) {
-            if (
-              Math.abs(
-                this.pingPongSpan.pong.valueOf() -
-                  this.pingPongSpan.ping.valueOf()
-              ) >= pingIntervalMs
-            ) {
-              this.dispatchEvent(
-                new CustomEvent(EngineConnectionEvents.PingPongChanged, {
-                  detail: 'TIMEOUT',
-                })
-              )
-            } else {
-              this.dispatchEvent(
-                new CustomEvent(EngineConnectionEvents.PingPongChanged, {
-                  detail: 'OK',
-                })
-              )
-            }
-          }
-
-          this.send({ type: 'ping' })
-          this.pingPongSpan.ping = new Date()
-          this.pingPongSpan.pong = undefined
-          break
-        case EngineConnectionStateType.Disconnecting:
-        case EngineConnectionStateType.Disconnected:
-          // We will do reconnection elsewhere, because we basically need
-          // to destroy this EngineConnection, and this setInterval loop
-          // lives inside it. (lee) I might change this in the future so it's
-          // outside this class.
-          break
-        default:
-          if (this.isConnecting()) break
-          // Means we never could do an initial connection. Reconnect everything.
-          if (!this.pingPongSpan.ping)
-            this.connect({ reconnect: false }).catch(reportRejection)
-          break
+      this.send({ type: 'ping' })
+      this.pingPongSpan = {
+        ping: new Date(),
+        pong: undefined
       }
     }, pingIntervalMs)
 
@@ -1054,6 +998,14 @@ class EngineConnection extends EventTarget {
           switch (resp.type) {
             case 'pong':
               this.pingPongSpan.pong = new Date()
+              this.dispatchEvent(
+                new CustomEvent(EngineConnectionEvents.PingPongChanged, {
+                  detail: Math.min(999, Math.floor(this.pingPongSpan.pong - this.pingPongSpan.ping)),
+                })
+              )
+              // Clear the initial ping so our interval ping loop can fire again
+              // But only after using it above!
+              this.pingPongSpan.ping = undefined
               break
 
             case 'modeling_session_data':
