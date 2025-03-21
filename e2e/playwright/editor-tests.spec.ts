@@ -34,7 +34,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
 
     await expect(page.locator('.cm-content')).toHaveText(
       `@settings(defaultLengthUnit = in)
-sketch001 = startSketchOn('XY')
+sketch001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
