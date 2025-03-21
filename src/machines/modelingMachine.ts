@@ -870,14 +870,14 @@ export const modelingMachine = setup({
       )
 
       // Position the click raycast plane
-      if (sceneEntitiesManager.intersectionPlane) {
-        sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
-          quaternion
-        )
-        sceneEntitiesManager.intersectionPlane.position.copy(
-          new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
-        )
-      }
+
+      sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
+        quaternion
+      )
+      sceneEntitiesManager.intersectionPlane.position.copy(
+        new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
+      )
+
       sceneInfra.setCallbacks({
         onClick: (args) => {
           if (!args) return
@@ -906,14 +906,14 @@ export const modelingMachine = setup({
       )
 
       // Position the click raycast plane
-      if (sceneEntitiesManager.intersectionPlane) {
-        sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
-          quaternion
-        )
-        sceneEntitiesManager.intersectionPlane.position.copy(
-          new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
-        )
-      }
+
+      sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
+        quaternion
+      )
+      sceneEntitiesManager.intersectionPlane.position.copy(
+        new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
+      )
+
       sceneInfra.setCallbacks({
         onClick: (args) => {
           if (!args) return
@@ -939,14 +939,14 @@ export const modelingMachine = setup({
       )
 
       // Position the click raycast plane
-      if (sceneEntitiesManager.intersectionPlane) {
-        sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
-          quaternion
-        )
-        sceneEntitiesManager.intersectionPlane.position.copy(
-          new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
-        )
-      }
+
+      sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
+        quaternion
+      )
+      sceneEntitiesManager.intersectionPlane.position.copy(
+        new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
+      )
+
       sceneInfra.setCallbacks({
         onClick: (args) => {
           if (!args) return
@@ -973,14 +973,14 @@ export const modelingMachine = setup({
       )
 
       // Position the click raycast plane
-      if (sceneEntitiesManager.intersectionPlane) {
-        sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
-          quaternion
-        )
-        sceneEntitiesManager.intersectionPlane.position.copy(
-          new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
-        )
-      }
+
+      sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
+        quaternion
+      )
+      sceneEntitiesManager.intersectionPlane.position.copy(
+        new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
+      )
+
       sceneInfra.setCallbacks({
         onClick: (args) => {
           if (!args) return
@@ -1011,14 +1011,13 @@ export const modelingMachine = setup({
       )
 
       // Position the click raycast plane
-      if (sceneEntitiesManager.intersectionPlane) {
-        sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
-          quaternion
-        )
-        sceneEntitiesManager.intersectionPlane.position.copy(
-          new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
-        )
-      }
+
+      sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
+        quaternion
+      )
+      sceneEntitiesManager.intersectionPlane.position.copy(
+        new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
+      )
 
       const dummy = new Mesh()
       dummy.position.set(0, 0, 0)
