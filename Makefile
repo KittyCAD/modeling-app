@@ -86,7 +86,7 @@ test: test-unit test-e2e
 
 .PHONY: test-unit
 test-unit: install ## Run the unit tests
-	@ nc -z localhost 3000 || ( echo "Error: localhost:3000 not available, 'make run-web' first" && exit 1 )
+	@ curl -fs localhost:3000 >/dev/null || ( echo "Error: localhost:3000 not available, 'make run-web' first" && exit 1 )
 	yarn test:unit
 
 .PHONY: test-e2e
@@ -94,7 +94,7 @@ test-e2e: test-e2e-desktop
 
 .PHONY: test-e2e-web
 test-e2e-web: install build-web ## Run the web e2e tests
-	@ nc -z localhost 3000 || ( echo "Error: localhost:3000 not available, 'make run-web' first" && exit 1 )
+	@ curl -fs localhost:3000 >/dev/null || ( echo "Error: localhost:3000 not available, 'make run-web' first" && exit 1 )
 	yarn chrome:test --headed --workers=$(E2E_WORKERS) --max-failures=$(E2E_FAILURES) --grep=$(E2E_GREP)
 
 .PHONY: test-e2e-desktop
