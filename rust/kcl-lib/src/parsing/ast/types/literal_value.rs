@@ -25,6 +25,13 @@ impl LiteralValue {
             suffix: NumericSuffix::None,
         }
     }
+
+    pub fn string_value(&self) -> Option<&str> {
+        match self {
+            Self::String(s) => Some(s),
+            _ => None,
+        }
+    }
 }
 
 impl fmt::Display for LiteralValue {

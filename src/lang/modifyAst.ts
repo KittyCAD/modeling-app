@@ -515,30 +515,54 @@ export function addShell({
   }
 }
 
-export function addSweep(
-  node: Node<Program>,
-  profileDeclarator: VariableDeclarator,
-  pathDeclarator: VariableDeclarator
-): {
+export function addSweep({
+  node,
+  targetDeclarator,
+  trajectoryDeclarator,
+  sectional,
+  variableName,
+  insertIndex,
+}: {
+  node: Node<Program>
+  targetDeclarator: VariableDeclarator
+  trajectoryDeclarator: VariableDeclarator
+  sectional: boolean
+  variableName?: string
+  insertIndex?: number
+}): {
   modifiedAst: Node<Program>
   pathToNode: PathToNode
 } {
   const modifiedAst = structuredClone(node)
-  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP)
-  const sweep = createCallExpressionStdLibKw(
+  const name =
+    variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP)
+  const call = createCallExpressionStdLibKw(
     'sweep',
-    createIdentifier(profileDeclarator.id.name),
-    [createLabeledArg('path', createIdentifier(pathDeclarator.id.name))]
+    createIdentifier(targetDeclarator.id.name),
+    [
+      createLabeledArg('path', createIdentifier(trajectoryDeclarator.id.name)),
+      createLabeledArg('sectional', createLiteral(sectional)),
+    ]
   )
-  const declaration = createVariableDeclaration(name, sweep)
-  modifiedAst.body.push(declaration)
+  const variable = createVariableDeclaration(name, call)
+  const insertAt =
+    insertIndex !== undefined
+      ? insertIndex
+      : modifiedAst.body.length
+      ? modifiedAst.body.length
+      : 0
+
+  modifiedAst.body.length
+    ? modifiedAst.body.splice(insertAt, 0, variable)
+    : modifiedAst.body.push(variable)
+  const argIndex = 0
   const pathToNode: PathToNode = [
     ['body', ''],
-    [modifiedAst.body.length - 1, 'index'],
+    [insertAt, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpressionKw'],
-    [0, ARG_INDEX_FIELD],
+    [argIndex, ARG_INDEX_FIELD],
     ['arg', LABELED_ARG_FIELD],
   ]
 
@@ -1943,7 +1967,7 @@ export function updateSketchNodePathsWithInsertIndex({
  * 
  * Split the following pipe expression into 
  * ```ts
- * part001 = startSketchOn('XZ')
+ * part001 = startSketchOn(XZ)
   |> startProfileAt([1, 2], %)
   |> line([3, 4], %)
   |> line([5, 6], %)
@@ -1952,7 +1976,7 @@ extrude001 = extrude(5, part001)
 ```
 into
 ```ts
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
 part001 = startProfileAt([1, 2], sketch001)
   |> line([3, 4], %)
   |> line([5, 6], %)

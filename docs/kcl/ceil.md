@@ -31,7 +31,7 @@ ceil(num: number): number
 ### Examples
 
 ```js
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [12, 10])
   |> line(end = [ceil(7.02986), 0])

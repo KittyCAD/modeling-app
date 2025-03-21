@@ -42,7 +42,7 @@ length = 10
 thickness = 1
 filletRadius = 2
 
-mountingPlateSketch = startSketchOn("XY")
+mountingPlateSketch = startSketchOn(XY)
   |> startProfileAt([-width / 2, -length / 2], %)
   |> line(endAbsolute = [width / 2, -length / 2], tag = $edge1)
   |> line(endAbsolute = [width / 2, length / 2], tag = $edge2)
@@ -69,7 +69,7 @@ length = 10
 thickness = 1
 filletRadius = 1
 
-mountingPlateSketch = startSketchOn("XY")
+mountingPlateSketch = startSketchOn(XY)
   |> startProfileAt([-width / 2, -length / 2], %)
   |> line(endAbsolute = [width / 2, -length / 2], tag = $edge1)
   |> line(endAbsolute = [width / 2, length / 2], tag = $edge2)

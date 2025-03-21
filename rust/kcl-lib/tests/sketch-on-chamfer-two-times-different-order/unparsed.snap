@@ -2,7 +2,7 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing sketch-on-chamfer-two-times-different-order.kcl
 ---
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
   |> angledLine([0, 268.43], %, $rectangleSegmentA001)
   |> angledLine([

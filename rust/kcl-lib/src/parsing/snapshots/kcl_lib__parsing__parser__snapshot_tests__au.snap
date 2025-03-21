@@ -8,7 +8,7 @@ expression: actual
       "commentStart": 0,
       "declaration": {
         "commentStart": 6,
-        "end": 106,
+        "end": 104,
         "id": {
           "commentStart": 6,
           "end": 14,
@@ -22,12 +22,11 @@ expression: actual
               "arguments": [
                 {
                   "commentStart": 31,
-                  "end": 35,
-                  "raw": "'XY'",
+                  "end": 33,
+                  "name": "XY",
                   "start": 31,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": "XY"
+                  "type": "Identifier",
+                  "type": "Identifier"
                 }
               ],
               "callee": {
@@ -38,7 +37,7 @@ expression: actual
                 "type": "Identifier"
               },
               "commentStart": 17,
-              "end": 36,
+              "end": 34,
               "start": 17,
               "type": "CallExpression",
               "type": "CallExpression"
@@ -48,20 +47,20 @@ expression: actual
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 51,
-                    "end": 57,
+                    "commentStart": 49,
+                    "end": 55,
                     "name": "center",
-                    "start": 51,
+                    "start": 49,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 59,
+                    "commentStart": 57,
                     "elements": [
                       {
-                        "commentStart": 60,
-                        "end": 61,
+                        "commentStart": 58,
+                        "end": 59,
                         "raw": "0",
-                        "start": 60,
+                        "start": 58,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -70,10 +69,10 @@ expression: actual
                         }
                       },
                       {
-                        "commentStart": 63,
-                        "end": 64,
+                        "commentStart": 61,
+                        "end": 62,
                         "raw": "0",
-                        "start": 63,
+                        "start": 61,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -82,8 +81,8 @@ expression: actual
                         }
                       }
                     ],
-                    "end": 65,
-                    "start": 59,
+                    "end": 63,
+                    "start": 57,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   }
@@ -91,17 +90,17 @@ expression: actual
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 67,
-                    "end": 73,
+                    "commentStart": 65,
+                    "end": 71,
                     "name": "radius",
-                    "start": 67,
+                    "start": 65,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 75,
-                    "end": 77,
+                    "commentStart": 73,
+                    "end": 75,
                     "raw": "22",
-                    "start": 75,
+                    "start": 73,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -112,15 +111,15 @@ expression: actual
                 }
               ],
               "callee": {
-                "commentStart": 44,
-                "end": 50,
+                "commentStart": 42,
+                "end": 48,
                 "name": "circle",
-                "start": 44,
+                "start": 42,
                 "type": "Identifier"
               },
-              "commentStart": 44,
-              "end": 78,
-              "start": 44,
+              "commentStart": 42,
+              "end": 76,
+              "start": 42,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": null
@@ -130,17 +129,17 @@ expression: actual
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 94,
-                    "end": 100,
+                    "commentStart": 92,
+                    "end": 98,
                     "name": "length",
-                    "start": 94,
+                    "start": 92,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 103,
-                    "end": 105,
+                    "commentStart": 101,
+                    "end": 103,
                     "raw": "14",
-                    "start": 103,
+                    "start": 101,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -151,22 +150,22 @@ expression: actual
                 }
               ],
               "callee": {
-                "commentStart": 86,
-                "end": 93,
+                "commentStart": 84,
+                "end": 91,
                 "name": "extrude",
-                "start": 86,
+                "start": 84,
                 "type": "Identifier"
               },
-              "commentStart": 86,
-              "end": 106,
-              "start": 86,
+              "commentStart": 84,
+              "end": 104,
+              "start": 84,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": null
             }
           ],
           "commentStart": 17,
-          "end": 106,
+          "end": 104,
           "start": 17,
           "type": "PipeExpression",
           "type": "PipeExpression"
@@ -174,7 +173,7 @@ expression: actual
         "start": 6,
         "type": "VariableDeclarator"
       },
-      "end": 106,
+      "end": 104,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
@@ -182,6 +181,6 @@ expression: actual
     }
   ],
   "commentStart": 0,
-  "end": 107,
+  "end": 105,
   "start": 0
 }

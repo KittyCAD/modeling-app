@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing function_sketch_with_position.kcl
 ---
 fn box(p, h, l, w) {
-  myBox = startSketchOn('XY')
+  myBox = startSketchOn(XY)
     |> startProfileAt(p, %)
     |> line(end = [0, l])
     |> line(end = [w, 0])

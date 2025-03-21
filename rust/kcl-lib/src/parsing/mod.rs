@@ -146,6 +146,32 @@ impl From<KclError> for ParseResult {
     }
 }
 
+const STR_DEPRECATIONS: [(&str, &str); 6] = [
+    ("XY", "XY"),
+    ("XZ", "XZ"),
+    ("YZ", "YZ"),
+    ("-XY", "-XY"),
+    ("-XZ", "-XZ"),
+    ("-YZ", "-YZ"),
+];
+const FN_DEPRECATIONS: [(&str, &str); 3] = [("pi", "PI"), ("e", "E"), ("tau", "TAU")];
+const CONST_DEPRECATIONS: [(&str, &str); 0] = [];
+
+#[derive(Clone, Copy)]
+pub enum DeprecationKind {
+    String,
+    Function,
+    Const,
+}
+
+pub fn deprecation(s: &str, kind: DeprecationKind) -> Option<&'static str> {
+    match kind {
+        DeprecationKind::String => STR_DEPRECATIONS.iter().find_map(|(a, b)| (*a == s).then_some(*b)),
+        DeprecationKind::Function => FN_DEPRECATIONS.iter().find_map(|(a, b)| (*a == s).then_some(*b)),
+        DeprecationKind::Const => CONST_DEPRECATIONS.iter().find_map(|(a, b)| (*a == s).then_some(*b)),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     macro_rules! parse_and_lex {

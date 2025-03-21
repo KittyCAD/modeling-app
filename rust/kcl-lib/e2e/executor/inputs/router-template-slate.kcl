@@ -9,7 +9,7 @@ const radius = 10
 const depth = 30
 const length001 = slateWidthHalf - radius
 const length002 = depth + minClampingDistance
-const sketch001 = startSketchOn('XZ')
+const sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, depth - templateGap], %)
   |> xLine(length = length001, tag = $seg01)
   |> arc({

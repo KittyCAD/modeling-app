@@ -2,10 +2,10 @@ import { test, expect } from './zoo-test'
 import fsp from 'fs/promises'
 import { uuidv4 } from 'lib/utils'
 import {
-  darkModeBgColor,
-  darkModePlaneColorXZ,
   executorInputPath,
   getUtils,
+  orRunWhenFullSuiteEnabled,
+  TEST_COLORS,
 } from './test-utils'
 
 import { join } from 'path'
@@ -21,7 +21,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
     await u.codeLocator.click()
-    await page.keyboard.type(`sketch001 = startSketchOn('XY')
+    await page.keyboard.type(`sketch001 = startSketchOn(XY)
     |> startProfileAt([-10, -10], %)
     |> line(end = [20, 0])
     |> line(end = [0, 20])
@@ -69,7 +69,7 @@ sketch001 = startSketchOn('XY')
     await u.waitForPageLoad()
 
     await u.codeLocator.click()
-    await page.keyboard.type(`sketch001 = startSketchOn('XY')
+    await page.keyboard.type(`sketch001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -118,7 +118,7 @@ sketch001 = startSketchOn('XY')
     await u.waitForPageLoad()
 
     await u.codeLocator.click()
-    await page.keyboard.type(`sketch001 = startSketchOn('XY')
+    await page.keyboard.type(`sketch001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -173,7 +173,7 @@ sketch001 = startSketchOn('XY')
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
     await u.codeLocator.click()
-    await page.keyboard.type(`sketch001 = startSketchOn('XY')
+    await page.keyboard.type(`sketch001 = startSketchOn(XY)
     |> startProfileAt([-10, -10], %)
     |> line(end = [20, 0])
     |> line(end = [0, 20])
@@ -206,7 +206,7 @@ sketch001 = startSketchOn('XY')
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
     await u.codeLocator.click()
-    await page.keyboard.type(`sketch_001 = startSketchOn('XY')
+    await page.keyboard.type(`sketch_001 = startSketchOn(XY)
     |> startProfileAt([-10, -10], %)
     |> line(end = [20, 0])
     |> line(end = [0, 20])
@@ -254,7 +254,7 @@ sketch_001 = startSketchOn('XY')
   })
 
   test('fold gutters work', async ({ page, homePage }) => {
-    const fullCode = `sketch001 = startSketchOn('XY')
+    const fullCode = `sketch001 = startSketchOn(XY)
    |> startProfileAt([-10, -10], %)
    |> line(end = [20, 0])
    |> line(end = [0, 20])
@@ -263,7 +263,7 @@ sketch_001 = startSketchOn('XY')
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('XY')
+        `sketch001 = startSketchOn(XY)
    |> startProfileAt([-10, -10], %)
    |> line(end = [20, 0])
    |> line(end = [0, 20])
@@ -301,7 +301,7 @@ sketch_001 = startSketchOn('XY')
     await foldGutterFoldLine.click()
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn('XY')…   `
+      `sketch001 = startSketchOn(XY)…   `
     )
     await expect(page.locator('.cm-content')).not.toHaveText(fullCode)
     await expect(foldGutterFoldLine).not.toBeVisible()
@@ -332,7 +332,7 @@ sketch_001 = startSketchOn('XY')
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('XY')
+        `sketch001 = startSketchOn(XY)
     |> startProfileAt([-10, -10], %)
     |> line(end = [20, 0])
     |> line(end = [0, 20])
@@ -379,7 +379,7 @@ sketch_001 = startSketchOn('XY')
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('XY')
+        `sketch001 = startSketchOn(XY)
     |> startProfileAt([-10, -10], %)
     |> line(end = [20, 0])
     |> line(end = [0, 20])
@@ -406,7 +406,7 @@ sketch_001 = startSketchOn('XY')
     await page.keyboard.press('Alt+Shift+KeyF')
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn('XY')
+      .toHaveText(`sketch001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -422,7 +422,7 @@ sketch_001 = startSketchOn('XY')
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch_001 = startSketchOn('XY')
+        `sketch_001 = startSketchOn(XY)
     |> startProfileAt([-10, -10], %)
     |> line(end = [20, 0])
     |> line(end = [0, 20])
@@ -459,7 +459,7 @@ sketch_001 = startSketchOn('XY')
     await u.closeDebugPanel()
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch_001 = startSketchOn('XY')
+      .toHaveText(`sketch_001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -532,7 +532,7 @@ sketch_001 = startSketchOn('XY')
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn(XZ)
     |> startProfileAt([3.29, 7.86], %)
     |> line(end = [2.48, 2.44])
     |> line(end = [2.66, 1.17])
@@ -647,7 +647,7 @@ sketch_001 = startSketchOn('XY')
     page,
     homePage,
   }) => {
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -658,7 +658,7 @@ sketch_001 = startSketchOn('XY')
     dia = 4
 
     fn squareHole = (l, w) => {
-  squareHoleSketch = startSketchOn('XY')
+  squareHoleSketch = startSketchOn(XY)
   |> startProfileAt([-width / 2, -length / 2], %)
   |> line(endAbsolute = [width / 2, -length / 2])
   |> line(endAbsolute = [width / 2, length / 2])
@@ -698,7 +698,7 @@ sketch_001 = startSketchOn('XY')
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('Enter')
-    await page.keyboard.type(`extrusion = startSketchOn('XY')
+    await page.keyboard.type(`extrusion = startSketchOn(XY)
   |> circle(center: [0, 0], radius: dia/2)
     |> hole(squareHole(length, width, height), %)
     |> extrude(length = height)`)
@@ -721,7 +721,7 @@ sketch_001 = startSketchOn('XY')
     await context.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `box = startSketchOn('XY')
+        `box = startSketchOn(XY)
     |> startProfileAt([0, 0], %)
     |> line(end = [0, 10])
     |> line(end = [10, 0])
@@ -780,7 +780,7 @@ sketch_001 = startSketchOn('XY')
       }).toPass()
       // this makes sure we can accept a completion with click
       await page.getByText('startSketchOn').click()
-      await page.keyboard.type("'XZ'")
+      await page.keyboard.type('XZ')
       await page.keyboard.press('Tab')
       await page.keyboard.press('Enter')
       await page.keyboard.type('  |> startProfi')
@@ -856,7 +856,7 @@ sketch001 = startSketchOn('XZ')
       await page.keyboard.press('ArrowDown')
       await page.keyboard.press('Tab')
       await page.waitForTimeout(500)
-      await page.keyboard.type("'XZ'")
+      await page.keyboard.type('XZ')
       await page.keyboard.press('Tab')
       await page.keyboard.press('Enter')
       await page.keyboard.type('  |> startProfi')
@@ -915,7 +915,7 @@ sketch001 = startSketchOn('XZ')
     await context.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -14.01], %)
   |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -5.38], %)
@@ -967,7 +967,7 @@ sketch001 = startSketchOn('XZ')
 
     // expect the code to have changed
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn('XZ')  |> startProfileAt([4.61, -14.01], %)  |> line(end = [12.73, -0.09])  |> tangentialArcTo([24.95, -5.38], %)  |> close()extrude001 = extrude(sketch001, length = 5)`
+      `sketch001 = startSketchOn(XZ)  |> startProfileAt([4.61, -14.01], %)  |> line(end = [12.73, -0.09])  |> tangentialArcTo([24.95, -5.38], %)  |> close()extrude001 = extrude(sketch001, length = 5)`
     )
 
     // Now hit undo
@@ -977,7 +977,7 @@ sketch001 = startSketchOn('XZ')
 
     await page.waitForTimeout(100)
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn('XZ')
+      .toHaveText(`sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -14.01], %)
   |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -5.38], %)
@@ -992,7 +992,7 @@ sketch001 = startSketchOn('XZ')
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `sketch001 = startSketchOn('XZ')
+          `sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -10.01], %)
   |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -0.38], %)
@@ -1083,7 +1083,7 @@ sketch001 = startSketchOn('XZ')
 
       // expect the code to have changed
       await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')
+        .toHaveText(`sketch001 = startSketchOn(XZ)
     |> startProfileAt([2.71, -2.71], %)
     |> line(end = [15.4, -2.78])
     |> tangentialArcTo([27.6, -3.05], %)
@@ -1097,7 +1097,7 @@ sketch001 = startSketchOn('XZ')
       await page.keyboard.up('Control')
 
       await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')
+        .toHaveText(`sketch001 = startSketchOn(XZ)
     |> startProfileAt([2.71, -2.71], %)
     |> line(end = [15.4, -2.78])
     |> tangentialArcTo([24.95, -0.38], %)
@@ -1110,7 +1110,7 @@ sketch001 = startSketchOn('XZ')
       await page.keyboard.up('Control')
 
       await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')
+        .toHaveText(`sketch001 = startSketchOn(XZ)
     |> startProfileAt([2.71, -2.71], %)
     |> line(end = [12.73, -0.09])
     |> tangentialArcTo([24.95, -0.38], %)
@@ -1125,7 +1125,7 @@ sketch001 = startSketchOn('XZ')
 
       await page.waitForTimeout(100)
       await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')
+        .toHaveText(`sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -10.01], %)
   |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -0.38], %)
@@ -1138,7 +1138,7 @@ sketch001 = startSketchOn('XZ')
     `Can use the import stdlib function on a local OBJ file`,
     { tag: '@electron' },
     async ({ page, context }, testInfo) => {
-      test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+      test.fixme(orRunWhenFullSuiteEnabled())
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'cube')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -1175,7 +1175,8 @@ sketch001 = startSketchOn('XZ')
         await u.waitForPageLoad()
         await expect
           .poll(
-            async () => locationToHavColor(notTheOrigin, darkModePlaneColorXZ),
+            async () =>
+              locationToHavColor(notTheOrigin, TEST_COLORS.DARK_MODE_PLANE_XZ),
             {
               timeout: 5000,
               message: 'XZ plane color is visible',
@@ -1196,16 +1197,23 @@ sketch001 = startSketchOn('XZ')
       await test.step(`Verify that we see the imported geometry and no errors`, async () => {
         await expect(errorIndicators).toHaveCount(0)
         await expect
-          .poll(async () => locationToHavColor(origin, darkModePlaneColorXZ), {
-            timeout: 3000,
-            message: 'Plane color should not be visible',
-          })
+          .poll(
+            async () =>
+              locationToHavColor(origin, TEST_COLORS.DARK_MODE_PLANE_XZ),
+            {
+              timeout: 3000,
+              message: 'Plane color should not be visible',
+            }
+          )
           .toBeGreaterThan(15)
         await expect
-          .poll(async () => locationToHavColor(origin, darkModeBgColor), {
-            timeout: 3000,
-            message: 'Background color should not be visible',
-          })
+          .poll(
+            async () => locationToHavColor(origin, TEST_COLORS.DARK_MODE_BKGD),
+            {
+              timeout: 3000,
+              message: 'Background color should not be visible',
+            }
+          )
           .toBeGreaterThan(15)
       })
     }

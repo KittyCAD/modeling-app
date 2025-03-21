@@ -2211,8 +2211,13 @@ impl Node<Identifier> {
     /// Get the constraint level for this identifier.
     /// Identifier are always fully constrained.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
-        ConstraintLevel::Full {
-            source_ranges: vec![self.into()],
+        match &*self.name {
+            "XY" | "XZ" | "YZ" => ConstraintLevel::None {
+                source_ranges: vec![self.into()],
+            },
+            _ => ConstraintLevel::Full {
+                source_ranges: vec![self.into()],
+            },
         }
     }
 }
@@ -3531,11 +3536,11 @@ mod tests {
 
     #[test]
     fn test_get_lsp_folding_ranges() {
-        let code = r#"const part001 = startSketchOn('XY')
+        let code = r#"const part001 = startSketchOn(XY)
   |> startProfileAt([0.0000000000, 5.0000000000], %)
     |> line([0.4900857016, -0.0240763666], %)
 
-startSketchOn('XY')
+startSketchOn(XY)
   |> startProfileAt([0.0000000000, 5.0000000000], %)
     |> line([0.4900857016, -0.0240763666], %)
 
@@ -3554,20 +3559,17 @@ ghi("things")
         let program = crate::parsing::top_level_parse(code).unwrap();
         let folding_ranges = program.get_lsp_folding_ranges();
         assert_eq!(folding_ranges.len(), 3);
-        assert_eq!(folding_ranges[0].start_line, 29);
-        assert_eq!(folding_ranges[0].end_line, 134);
+        assert_eq!(folding_ranges[0].start_line, 27);
+        assert_eq!(folding_ranges[0].end_line, 132);
         assert_eq!(
             folding_ranges[0].collapsed_text,
-            Some("part001 = startSketchOn('XY')".to_string())
+            Some("part001 = startSketchOn(XY)".to_string())
         );
-        assert_eq!(folding_ranges[1].start_line, 155);
-        assert_eq!(folding_ranges[1].end_line, 254);
-        assert_eq!(
-            folding_ranges[1].collapsed_text,
-            Some("startSketchOn('XY')".to_string())
-        );
-        assert_eq!(folding_ranges[2].start_line, 384);
-        assert_eq!(folding_ranges[2].end_line, 403);
+        assert_eq!(folding_ranges[1].start_line, 151);
+        assert_eq!(folding_ranges[1].end_line, 250);
+        assert_eq!(folding_ranges[1].collapsed_text, Some("startSketchOn(XY)".to_string()));
+        assert_eq!(folding_ranges[2].start_line, 380);
+        assert_eq!(folding_ranges[2].end_line, 399);
         assert_eq!(folding_ranges[2].collapsed_text, Some("fn ghi(x) {".to_string()));
     }
 
@@ -4033,7 +4035,7 @@ const cylinder = startSketchOn('-XZ')
     async fn test_parse_get_meta_settings_inch() {
         let some_program_string = r#"@settings(defaultLengthUnit = inch)
 
-startSketchOn('XY')"#;
+startSketchOn(XY)"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
         let result = program.meta_settings().unwrap();
         assert!(result.is_some());
@@ -4049,7 +4051,7 @@ startSketchOn('XY')"#;
     async fn test_parse_get_meta_settings_inch_to_mm() {
         let some_program_string = r#"@settings(defaultLengthUnit = inch)
 
-startSketchOn('XY')"#;
+startSketchOn(XY)"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
         let result = program.meta_settings().unwrap();
         assert!(result.is_some());
@@ -4080,14 +4082,14 @@ startSketchOn('XY')"#;
             formatted,
             r#"@settings(defaultLengthUnit = mm)
 
-startSketchOn('XY')
+startSketchOn(XY)
 "#
         );
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_get_meta_settings_nothing_to_mm() {
-        let some_program_string = r#"startSketchOn('XY')"#;
+        let some_program_string = r#"startSketchOn(XY)"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
         let result = program.meta_settings().unwrap();
         assert!(result.is_none());
@@ -4112,7 +4114,7 @@ startSketchOn('XY')
             formatted,
             r#"@settings(defaultLengthUnit = mm)
 
-startSketchOn('XY')
+startSketchOn(XY)
 "#
         );
     }

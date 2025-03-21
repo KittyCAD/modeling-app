@@ -5,7 +5,7 @@ import { SceneFixture } from './fixtures/sceneFixture'
 import { ToolbarFixture } from './fixtures/toolbarFixture'
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { getUtils } from './test-utils'
+import { getUtils, orRunWhenFullSuiteEnabled } from './test-utils'
 import { Locator } from '@playwright/test'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
@@ -45,7 +45,7 @@ test.describe('Point-and-click tests', () => {
       await moveToCircle()
       const circleSnippet = 'circle(center = [318.33, 168.1], radius = 182.8)'
       await editor.expectState({
-        activeLines: ["sketch002=startSketchOn('XZ')"],
+        activeLines: ['sketch002=startSketchOn(XZ)'],
         highlightedCode: circleSnippet,
         diagnostics: [],
       })
@@ -54,7 +54,7 @@ test.describe('Point-and-click tests', () => {
         await moveToCircle()
         const circleSnippet = 'circle(center = [318.33, 168.1], radius = 182.8)'
         await editor.expectState({
-          activeLines: ["sketch002=startSketchOn('XZ')"],
+          activeLines: ['sketch002=startSketchOn(XZ)'],
           highlightedCode: circleSnippet,
           diagnostics: [],
         })
@@ -525,7 +525,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
     )
 
     const expectedCodeSnippets = {
-      sketchOnXzPlane: `sketch001 = startSketchOn('XZ')`,
+      sketchOnXzPlane: `sketch001 = startSketchOn(XZ)`,
       pointAtOrigin: `startProfileAt([${originSloppy.kcl[0]}, ${originSloppy.kcl[1]}], sketch001)`,
       segmentOnXAxis: `xLine(length = ${xAxisSloppy.kcl[0]})`,
       afterSegmentDraggedOffYAxis: `startProfileAt([${offYAxis.kcl[0]}, ${offYAxis.kcl[1]}], sketch001)`,
@@ -583,9 +583,9 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
   }) => {
     const u = await getUtils(page)
 
-    const initialCode = `closedSketch = startSketchOn('XZ')
+    const initialCode = `closedSketch = startSketchOn(XZ)
   |> circle(center = [8, 5], radius = 2)
-openSketch = startSketchOn('XY')
+openSketch = startSketchOn(XY)
   |> startProfileAt([-5, 0], %)
   |> line(endAbsolute = [0, 5])
   |> xLine(length = 5)
@@ -689,7 +689,7 @@ openSketch = startSketchOn('XY')
     scene,
   }) => {
     // Code samples
-    const initialCode = `sketch001 = startSketchOn('XY')
+    const initialCode = `sketch001 = startSketchOn(XY)
     |> startProfileAt([-12, -6], %)
     |> line(end = [0, 12])
     |> line(end = [24, 0])
@@ -858,7 +858,7 @@ openSketch = startSketchOn('XY')
     scene,
     editor,
   }) => {
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled())
     // Locators
     const firstPointLocation = { x: 200, y: 100 }
     const secondPointLocation = { x: 800, y: 100 }
@@ -1019,7 +1019,7 @@ openSketch = startSketchOn('XY')
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 700, y: 150 }
     const [clickOnXzPlane] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-    const expectedOutput = `plane001 = offsetPlane('XZ', offset = 5)`
+    const expectedOutput = `plane001 = offsetPlane(XZ, offset = 5)`
 
     await homePage.goToModelingScene()
     // FIXME: Since there is no KCL code loaded. We need to wait for the scene to load before we continue.
@@ -1195,9 +1195,9 @@ openSketch = startSketchOn('XY')
       toolbar,
       cmdBar,
     }) => {
-      const initialCode = `sketch001 = startSketchOn('XZ')
+      const initialCode = `sketch001 = startSketchOn(XZ)
     |> circle(center = [0, 0], radius = 30)
-    plane001 = offsetPlane('XZ', offset = 50)
+    plane001 = offsetPlane(XZ, offset = 50)
     sketch002 = startSketchOn(plane001)
     |> circle(center = [0, 0], radius = 20)
 `
@@ -1281,9 +1281,9 @@ openSketch = startSketchOn('XY')
     homePage,
     scene,
   }) => {
-    const initialCode = `sketch001 = startSketchOn('XZ')
+    const initialCode = `sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 30)
-  plane001 = offsetPlane('XZ', offset = 50)
+  plane001 = offsetPlane(XZ, offset = 50)
   sketch002 = startSketchOn(plane001)
   |> circle(center = [0, 0], radius = 20)
 loft001 = loft([sketch001, sketch002])
@@ -1330,7 +1330,7 @@ loft001 = loft([sketch001, sketch002])
       await page.waitForTimeout(1000)
       await clickOnSketch2()
       await expect(page.locator('.cm-activeLine')).toHaveText(`
-      plane001 = offsetPlane('XZ', offset = 50)
+      plane001 = offsetPlane(XZ, offset = 50)
     `)
       await page.keyboard.press('Delete')
       // Check for sketch 1
@@ -1338,7 +1338,7 @@ loft001 = loft([sketch001, sketch002])
     })
   })
 
-  test(`Sweep point-and-click`, async ({
+  test(`Sweep point-and-click base`, async ({
     context,
     page,
     homePage,
@@ -1347,12 +1347,12 @@ loft001 = loft([sketch001, sketch002])
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `sketch001 = startSketchOn('YZ')
+    const initialCode = `sketch001 = startSketchOn(YZ)
   |> circle(
        center = [0, 0],
        radius = 500
      )
-sketch002 = startSketchOn('XZ')
+sketch002 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> xLine(length = -500)
   |> tangentialArcTo([-2000, 500], %)
@@ -1371,7 +1371,10 @@ sketch002 = startSketchOn('XZ')
       testPoint.x - 50,
       testPoint.y
     )
-    const sweepDeclaration = 'sweep001 = sweep(sketch001, path = sketch002)'
+    const sweepDeclaration =
+      'sweep001 = sweep(sketch001, path = sketch002, sectional = false)'
+    const editedSweepDeclaration =
+      'sweep001 = sweep(sketch001, path = sketch002, sectional = true)'
 
     await test.step(`Look for sketch001`, async () => {
       await toolbar.closePane('code')
@@ -1385,6 +1388,7 @@ sketch002 = startSketchOn('XZ')
         currentArgKey: 'target',
         currentArgValue: '',
         headerArguments: {
+          Sectional: '',
           Target: '',
           Trajectory: '',
         },
@@ -1397,6 +1401,7 @@ sketch002 = startSketchOn('XZ')
         currentArgKey: 'trajectory',
         currentArgValue: '',
         headerArguments: {
+          Sectional: '',
           Target: '1 face',
           Trajectory: '',
         },
@@ -1406,18 +1411,50 @@ sketch002 = startSketchOn('XZ')
       await clickOnSketch2()
       await page.waitForTimeout(500)
       await cmdBar.progressCmdBar()
-      await toolbar.openPane('code')
-      await page.waitForTimeout(500)
+      await cmdBar.expectState({
+        commandName: 'Sweep',
+        headerArguments: {
+          Target: '1 face',
+          Trajectory: '1 segment',
+          Sectional: '',
+        },
+        stage: 'review',
+      })
+      await cmdBar.progressCmdBar()
     })
 
     await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
-      // await scene.expectPixelColor([135, 64, 73], testPoint, 15) // FIXME
+      await toolbar.openPane('code')
       await editor.expectEditor.toContain(sweepDeclaration)
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [sweepDeclaration],
-        highlightedCode: '',
+      await toolbar.closePane('code')
+    })
+
+    await test.step('Edit sweep via feature tree selection works', async () => {
+      await toolbar.openPane('feature-tree')
+      const operationButton = await toolbar.getFeatureTreeOperation('Sweep', 0)
+      await operationButton.dblclick({ button: 'left' })
+      await cmdBar.expectState({
+        commandName: 'Sweep',
+        currentArgKey: 'sectional',
+        currentArgValue: '',
+        headerArguments: {
+          Sectional: '',
+        },
+        highlightedHeaderArg: 'sectional',
+        stage: 'arguments',
       })
+      await cmdBar.selectOption({ name: 'True' }).click()
+      await cmdBar.expectState({
+        commandName: 'Sweep',
+        headerArguments: {
+          Sectional: '',
+        },
+        stage: 'review',
+      })
+      await cmdBar.progressCmdBar()
+      await toolbar.closePane('feature-tree')
+      await toolbar.openPane('code')
+      await editor.expectEditor.toContain(editedSweepDeclaration)
       await toolbar.closePane('code')
     })
 
@@ -1441,12 +1478,12 @@ sketch002 = startSketchOn('XZ')
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `sketch001 = startSketchOn('YZ')
+    const initialCode = `sketch001 = startSketchOn(YZ)
   |> circle(
        center = [0, 0],
        radius = 500
      )
-sketch002 = startSketchOn('XZ')
+sketch002 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> xLine(length = -500)
   |> line(endAbsolute = [-2000, 500])
@@ -1478,6 +1515,7 @@ sketch002 = startSketchOn('XZ')
         currentArgKey: 'target',
         currentArgValue: '',
         headerArguments: {
+          Sectional: '',
           Target: '',
           Trajectory: '',
         },
@@ -1490,6 +1528,7 @@ sketch002 = startSketchOn('XZ')
         currentArgKey: 'trajectory',
         currentArgValue: '',
         headerArguments: {
+          Sectional: '',
           Target: '1 face',
           Trajectory: '',
         },
@@ -1515,7 +1554,7 @@ sketch002 = startSketchOn('XZ')
     cmdBar,
   }) => {
     // Code samples
-    const initialCode = `sketch001 = startSketchOn('XY')
+    const initialCode = `sketch001 = startSketchOn(XY)
   |> startProfileAt([-12, -6], %)
   |> line(end = [0, 12])
   |> line(end = [24, 0])
@@ -1750,7 +1789,7 @@ extrude001 = extrude(sketch001, length = -12)
     toolbar,
   }) => {
     // Code samples
-    const initialCode = `sketch001 = startSketchOn('XY')
+    const initialCode = `sketch001 = startSketchOn(XY)
   |> startProfileAt([-12, -6], %)
   |> line(end = [0, 12])
   |> line(end = [24, 0], tag = $seg02)
@@ -1893,7 +1932,7 @@ fillet04 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
     cmdBar,
   }) => {
     // Create a cube with small edges that will cause some fillets to fail
-    const initialCode = `sketch001 = startSketchOn('XY')
+    const initialCode = `sketch001 = startSketchOn(XY)
 profile001 = startProfileAt([0, 0], sketch001)
   |> yLine(length = -1)
   |> xLine(length = -10)
@@ -2006,7 +2045,7 @@ extrude001 = extrude(profile001, length = 5)
     cmdBar,
   }) => {
     // Code samples
-    const initialCode = `sketch001 = startSketchOn('XY')
+    const initialCode = `sketch001 = startSketchOn(XY)
   |> startProfileAt([-12, -6], %)
   |> line(end = [0, 12])
   |> line(end = [24, 0])
@@ -2230,7 +2269,7 @@ extrude001 = extrude(sketch001, length = -12)
     toolbar,
   }) => {
     // Code samples
-    const initialCode = `sketch001 = startSketchOn('XY')
+    const initialCode = `sketch001 = startSketchOn(XY)
   |> startProfileAt([-12, -6], %)
   |> line(end = [0, 12])
   |> line(end = [24, 0], tag = $seg02)
@@ -2384,7 +2423,7 @@ chamfer04 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
       toolbar,
       cmdBar,
     }) => {
-      const initialCode = `sketch001 = startSketchOn('XZ')
+      const initialCode = `sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 30)
 extrude001 = extrude(sketch001, length = 30)
     `
@@ -2519,7 +2558,7 @@ extrude001 = extrude(sketch001, length = 30)
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `sketch001 = startSketchOn('XY')
+    const initialCode = `sketch001 = startSketchOn(XY)
   |> startProfileAt([-20, 20], %)
   |> xLine(length = 40)
   |> yLine(length = -60)
@@ -2637,7 +2676,7 @@ extrude001 = extrude(sketch001, length = 40)
   })
 
   const shellSketchOnFacesCases = [
-    `sketch001 = startSketchOn('XZ')
+    `sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 100)
   |> extrude(length = 100)
 
@@ -2645,7 +2684,7 @@ sketch002 = startSketchOn(sketch001, 'END')
   |> circle(center = [0, 0], radius = 50)
   |> extrude(length = 50)
   `,
-    `sketch001 = startSketchOn('XZ')
+    `sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 100)
 extrude001 = extrude(sketch001, length = 100)
 
@@ -2740,7 +2779,7 @@ extrude002 = extrude(sketch002, length = 50)
       toolbar,
       cmdBar,
     }) => {
-      const sketchCode = `sketch001 = startSketchOn('XY')
+      const sketchCode = `sketch001 = startSketchOn(XY)
 profile001 = startProfileAt([-20, 20], sketch001)
     |> xLine(length = 40)
     |> yLine(length = -60)
@@ -2823,12 +2862,12 @@ profile001 = startProfileAt([-20, 20], sketch001)
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `sketch001 = startSketchOn('YZ')
+    const initialCode = `sketch001 = startSketchOn(YZ)
   |> circle(
        center = [0, 0],
        radius = 500
      )
-sketch002 = startSketchOn('XZ')
+sketch002 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> xLine(length = -2000)
 sweep001 = sweep(sketch001, path = sketch002)
@@ -2883,7 +2922,7 @@ sweep001 = sweep(sketch001, path = sketch002)
       cmdBar,
     }) => {
       const initialCode = `
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
 |> startProfileAt([-100.0, 100.0], %)
 |> angledLine([0, 200.0], %, $rectangleSegmentA001)
 |> angledLine([segAng(rectangleSegmentA001) - 90, 200], %, $rectangleSegmentB001)
@@ -2939,7 +2978,7 @@ segAng(rectangleSegmentA002),
       cmdBar,
     }) => {
       const initialCode = `
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
 |> startProfileAt([-102.57, 101.72], %)
 |> angledLine([0, 202.6], %, $rectangleSegmentA001)
 |> angledLine([
@@ -2989,7 +3028,7 @@ radius = 8.69
       cmdBar,
     }) => {
       const initialCode = `
-    sketch002 = startSketchOn('XY')
+    sketch002 = startSketchOn(XY)
       |> startProfileAt([-2.02, 1.79], %)
       |> xLine(length = 2.6)
     sketch001 = startSketchOn('-XY')
@@ -3041,7 +3080,7 @@ radius = 8.69
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `sketch001 = startSketchOn('XZ')
+    const initialCode = `sketch001 = startSketchOn(XZ)
 profile001 = circle(
   sketch001,
   center = [0, 0],

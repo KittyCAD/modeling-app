@@ -31,7 +31,7 @@ getCommonEdge(faces: [TagIdentifier]): Uuid
 
 
 scale = 20
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(end = [0, scale])
   |> line(end = [scale, 0])
