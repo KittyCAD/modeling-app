@@ -150,7 +150,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 ///
 /// ```no_run
-/// Create a helix on a cylinder.
+/// // Create a helix on a cylinder.
 ///
 /// part001 = startSketchOn('XY')
 ///   |> circle( center= [5, 5], radius= 10 )
