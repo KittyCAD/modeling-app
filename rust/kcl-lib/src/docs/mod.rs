@@ -1097,14 +1097,7 @@ mod tests {
     fn get_autocomplete_snippet_union() {
         let union_fn: Box<dyn StdLibFn> = Box::new(crate::std::csg::Union);
         let snippet = union_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(
-            snippet,
-            r#"helixRevolutions({
-	revolutions = ${0:3.14},
-	angleStart = ${1:3.14},
-	ccw = ${2:false},
-}, ${3:%})${}"#
-        );
+        assert_eq!(snippet, r#"union(${0:%})${}"#);
     }
 
     #[test]
@@ -1112,14 +1105,7 @@ mod tests {
     fn get_autocomplete_snippet_subtract() {
         let subtract_fn: Box<dyn StdLibFn> = Box::new(crate::std::csg::Subtract);
         let snippet = subtract_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(
-            snippet,
-            r#"helixRevolutions({
-	revolutions = ${0:3.14},
-	angleStart = ${1:3.14},
-	ccw = ${2:false},
-}, ${3:%})${}"#
-        );
+        assert_eq!(snippet, r#"subtract(${0:%}, tools = ${1:%})${}"#);
     }
 
     #[test]
@@ -1127,14 +1113,7 @@ mod tests {
     fn get_autocomplete_snippet_intersect() {
         let intersect_fn: Box<dyn StdLibFn> = Box::new(crate::std::csg::Intersect);
         let snippet = intersect_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(
-            snippet,
-            r#"helixRevolutions({
-	revolutions = ${0:3.14},
-	angleStart = ${1:3.14},
-	ccw = ${2:false},
-}, ${3:%})${}"#
-        );
+        assert_eq!(snippet, r#"intersect(${0:%})${}"#);
     }
 
     #[test]
@@ -1144,11 +1123,9 @@ mod tests {
         let snippet = get_common_edge_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(
             snippet,
-            r#"helixRevolutions({
-	revolutions = ${0:3.14},
-	angleStart = ${1:3.14},
-	ccw = ${2:false},
-}, ${3:%})${}"#
+            r#"getCommonEdge(faces = [{
+       value = ${0:"string"},
+}])${}"#
         );
     }
 
