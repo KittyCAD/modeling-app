@@ -99,9 +99,6 @@ pub const NEW_TAG_KW: &str = "tag";
 pub async fn involute_circular(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch =
         args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
-
-    /*
-     */
     let start_radius = args.get_kw_arg("startRadius")?;
     let end_radius = args.get_kw_arg("endRadius")?;
     let angle = args.get_kw_arg("angle")?;
@@ -123,7 +120,6 @@ pub async fn involute_circular(exec_state: &mut ExecState, args: Args) -> Result
 ///   |> startProfileAt([0, 0], %)
 ///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60)
 ///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60, reverse = true)
-///
 /// ```
 #[stdlib {
     name = "involuteCircular",
