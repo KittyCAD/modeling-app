@@ -357,6 +357,10 @@ impl Node<Program> {
             return false;
         }
 
+        if self.non_code_meta.start_nodes.iter().any(|node| node.is_comment()) {
+            return false;
+        }
+
         for item in &self.inner_attrs {
             if item.name() != Some(annotations::SETTINGS) {
                 return false;
@@ -3514,6 +3518,9 @@ mod tests {
 
         // Settings are empty.
         assert!(parse(r#"@settings(defaultLengthUnit = mm)"#).is_empty_or_only_settings());
+
+        // Only comments is not empty.
+        assert!(!parse("// comment").is_empty_or_only_settings());
 
         // Any statement is not empty.
         assert!(!parse("5").is_empty_or_only_settings());
