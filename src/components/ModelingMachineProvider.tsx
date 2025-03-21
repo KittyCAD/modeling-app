@@ -148,7 +148,6 @@ export const ModelingMachineProvider = ({
       enableSSAO,
     },
   } = useSettings()
-  const previousAllowOrbitInSketchMode = useRef(allowOrbitInSketchMode.current)
   const navigate = useNavigate()
   const { context, send: fileMachineSend } = useFileContext()
   const { file } = useLoaderData() as IndexLoaderData
