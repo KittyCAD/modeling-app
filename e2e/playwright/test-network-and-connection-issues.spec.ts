@@ -1,5 +1,5 @@
 import { test, expect } from './zoo-test'
-import { commonPoints, getUtils } from './test-utils'
+import { commonPoints, getUtils, orRunWhenFullSuiteEnabled } from './test-utils'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import { uuidv4 } from 'lib/utils'
 
@@ -8,7 +8,7 @@ test.describe('Test network and connection issues', () => {
     'simulate network down and network little widget',
     { tag: '@skipLocalEngine' },
     async ({ page, homePage }) => {
-      test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+      test.fixme(orRunWhenFullSuiteEnabled())
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -85,7 +85,7 @@ test.describe('Test network and connection issues', () => {
     'Engine disconnect & reconnect in sketch mode',
     { tag: '@skipLocalEngine' },
     async ({ page, homePage, toolbar }) => {
-      test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+      test.fixme(orRunWhenFullSuiteEnabled())
       const networkToggle = page.getByTestId('network-toggle')
 
       const u = await getUtils(page)
@@ -105,7 +105,7 @@ test.describe('Test network and connection issues', () => {
       await page.mouse.click(700, 200)
 
       await expect(page.locator('.cm-content')).toHaveText(
-        `sketch001 = startSketchOn('XZ')`
+        `sketch001 = startSketchOn(XZ)`
       )
       await u.closeDebugPanel()
 
@@ -114,7 +114,7 @@ test.describe('Test network and connection issues', () => {
       const startXPx = 600
       await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
       await expect(page.locator('.cm-content')).toHaveText(
-        `sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${commonPoints.startAt}, sketch001)`
+        `sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)`
       )
       await page.waitForTimeout(100)
 
@@ -122,7 +122,7 @@ test.describe('Test network and connection issues', () => {
       await page.waitForTimeout(100)
 
       await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
+        .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
       |> xLine(length = ${commonPoints.num1})`)
 
       // Expect the network to be up
@@ -211,7 +211,7 @@ test.describe('Test network and connection issues', () => {
       // Ensure we can continue sketching
       await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
       await expect.poll(u.normalisedEditorCode)
-        .toBe(`sketch001 = startSketchOn('XZ')
+        .toBe(`sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([12.34, -12.34], sketch001)
   |> xLine(length = 12.34)
   |> line(end = [-12.34, 12.34])
@@ -221,7 +221,7 @@ profile001 = startProfileAt([12.34, -12.34], sketch001)
       await page.mouse.click(startXPx, 500 - PUR * 20)
 
       await expect.poll(u.normalisedEditorCode)
-        .toBe(`sketch001 = startSketchOn('XZ')
+        .toBe(`sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([12.34, -12.34], sketch001)
   |> xLine(length = 12.34)
   |> line(end = [-12.34, 12.34])

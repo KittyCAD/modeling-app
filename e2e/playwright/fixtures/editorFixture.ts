@@ -205,7 +205,7 @@ export class EditorFixture {
 
     // Use Playwright's built-in text selection on the code content
     // it seems to only select whole divs, which works out to align with syntax highlighting
-    // for code mirror, so you can probably select "sketch002 = startSketchOn('XZ')"
+    // for code mirror, so you can probably select "sketch002 = startSketchOn(XZ)"
     // but less so for exactly "sketch002 = startS"
     await this.codeContent.getByText(text).first().selectText()
 

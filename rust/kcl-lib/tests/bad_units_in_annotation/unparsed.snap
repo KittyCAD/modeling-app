@@ -15,7 +15,7 @@ bondAngle = 104.5 // Bond angle in degrees
 
 // Function to create a sphere representing an atom
 fn createAtom(center, radius) {
-  return startSketchOn('XY')
+  return startSketchOn(XY)
     |> circle(center = center, radius = radius)
     |> extrude(length = radius * 2)
 }

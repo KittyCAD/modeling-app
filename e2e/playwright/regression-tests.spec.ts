@@ -2,9 +2,16 @@ import { Page } from '@playwright/test'
 import { test, expect } from './zoo-test'
 import path from 'path'
 import * as fsp from 'fs/promises'
-import { getUtils, executorInputPath } from './test-utils'
+import {
+  getUtils,
+  executorInputPath,
+  TEST_COLORS,
+  TestColor,
+  orRunWhenFullSuiteEnabled,
+} from './test-utils'
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from './storageStates'
 import { bracket } from 'lib/exampleKcl'
+import { reportRejection } from 'lib/trap'
 
 test.describe('Regression tests', { tag: ['@skipWin'] }, () => {
   // bugs we found that don't fit neatly into other categories
@@ -58,7 +65,7 @@ test.describe('Regression tests', { tag: ['@skipWin'] }, () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('XY')
+        `sketch001 = startSketchOn(XY)
   |> startProfileAt([82.33, 238.21], %)
   |> angledLine([0, 288.63], %, $rectangleSegmentA001)
   |> angledLine([
@@ -126,7 +133,7 @@ extrude001 = extrude(sketch001, length = 50)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('-XZ')
+        `sketch001 = startSketchOn(-XZ)
   |> startProfileAt([-6.95, 4.98], %)
   |> line(end = [25.1, 0.41])
   |> line(end = [0.73, -14.93])
@@ -187,7 +194,7 @@ extrude001 = extrude(sketch001, length = 50)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `part = startSketchOn('XY')
+        `part = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(end = [0, 1])
   |> line(end = [1, 0])
@@ -315,6 +322,89 @@ extrude001 = extrude(sketch001, length = 50)
     }
   )
 
+  test(
+    'window resize updates should reconfigure the stream',
+    { tag: '@skipLocalEngine' },
+    async ({ scene, page, homePage, cmdBar, toolbar }) => {
+      await page.addInitScript(
+        async ({ code }) => {
+          localStorage.setItem(
+            'persistCode',
+            `@settings(defaultLengthUnit = mm)
+sketch002 = startSketchOn('XY')
+profile002 = startProfileAt([72.24, -52.05], sketch002)
+  |> angledLine([0, 181.26], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       21.54
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude002 = extrude(profile002, length = 150)
+`
+          )
+          ;(window as any).playwrightSkipFilePicker = true
+        },
+        { code: TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR }
+      )
+
+      const websocketPromise = page.waitForEvent('websocket')
+      await page.setBodyDimensions({ width: 500, height: 500 })
+
+      await homePage.goToModelingScene()
+      const websocket = await websocketPromise
+
+      await scene.connectionEstablished()
+      await scene.settled(cmdBar)
+      await toolbar.closePane('code')
+
+      // expect pixel color to be background color
+      const offModelBefore = { x: 446, y: 250 }
+      const onModelBefore = { x: 422, y: 250 }
+      const offModelAfter = { x: 692, y: 262 }
+      const onModelAfter = { x: 673, y: 266 }
+
+      await scene.expectPixelColor(
+        TEST_COLORS.DARK_MODE_BKGD,
+        offModelBefore,
+        15
+      )
+      const standardModelGrey: TestColor = [100, 100, 100]
+      await scene.expectPixelColor(standardModelGrey, onModelBefore, 15)
+
+      await test.step('resize window and expect "reconfigure_stream" websocket message', async () => {
+        // note this is a bit low level for our tests, usually this would go into a fixture
+        // but it's pretty unique to this resize test, it can be moved/abstracted if we have further need
+        // to listen to websocket messages
+        await Promise.all([
+          new Promise((resolve) => {
+            websocket
+              // @ts-ignore
+              .waitForEvent('framesent', (frame) => {
+                frame.payload
+                  .toString()
+                  .includes(
+                    '"type":"reconfigure_stream","width":1000,"height":500'
+                  ) && resolve(true)
+              })
+              .catch(reportRejection)
+          }),
+          page.setBodyDimensions({ width: 1000, height: 500 }),
+        ])
+      })
+
+      await scene.expectPixelColor(
+        TEST_COLORS.DARK_MODE_BKGD,
+        offModelAfter,
+        15
+      )
+      await scene.expectPixelColor(standardModelGrey, onModelAfter, 15)
+    }
+  )
   test(
     'when engine fails export we handle the failure and alert the user',
     { tag: '@skipLocalEngine' },
@@ -487,7 +577,7 @@ extrude001 = extrude(sketch001, length = 50)
     `Network health indicator only appears in modeling view`,
     { tag: '@electron' },
     async ({ context, page }, testInfo) => {
-      test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+      test.fixme(orRunWhenFullSuiteEnabled())
       await context.folderSetupFn(async (dir) => {
         const bracketDir = path.join(dir, 'bracket')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -534,7 +624,7 @@ extrude001 = extrude(sketch001, length = 50)
 
     // Constants and locators
     const planeColor: [number, number, number] = [170, 220, 170]
-    const bgColor: [number, number, number] = [27, 27, 27]
+    const bgColor: [number, number, number] = TEST_COLORS.DARK_MODE_BKGD
     const middlePixelIsColor = async (color: [number, number, number]) => {
       return u.getGreatestPixDiff({ x: 600, y: 250 }, color)
     }

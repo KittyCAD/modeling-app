@@ -3,7 +3,7 @@ const height = 10
 const length = 12
 
 fn box = (sk1, sk2, scale) => {
-  const boxSketch = startSketchOn('XY')
+  const boxSketch = startSketchOn(XY)
     |> startProfileAt([sk1, sk2], %)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])

@@ -1,5 +1,5 @@
 fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
+  const sg = startSketchOn(XY)
     |> startProfileAt(pos, %)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])

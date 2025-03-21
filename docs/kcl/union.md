@@ -30,7 +30,7 @@ union(solids: [Solid]): [Solid]
 
 ```js
 fn cube(center) {
-  return startSketchOn('XY')
+  return startSketchOn(XY)
     |> startProfileAt([center[0] - 10, center[1] - 10], %)
     |> line(endAbsolute = [center[0] + 10, center[1] - 10])
     |> line(endAbsolute = [center[0] + 10, center[1] + 10])

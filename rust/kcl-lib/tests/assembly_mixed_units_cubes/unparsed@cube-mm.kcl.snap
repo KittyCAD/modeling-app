@@ -4,7 +4,7 @@ description: Result of unparsing tests/assembly_mixed_units_cubes/cube-mm.kcl
 ---
 @settings(defaultLengthUnit = mm)
 
-sketch001 = startSketchOn('XY')
+sketch001 = startSketchOn(XY)
 cubeMm = startProfileAt([10, 10], sketch001)
   |> xLine(length = 5)
   |> yLine(length = -5)

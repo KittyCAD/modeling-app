@@ -311,6 +311,143 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   }
 }
 
+const prepareToEditSweep: PrepareToEditCallback = async ({
+  artifact,
+  operation,
+}) => {
+  const baseCommand = {
+    name: 'Sweep',
+    groupId: 'modeling',
+  }
+  if (
+    operation.type !== 'StdLibCall' ||
+    !operation.labeledArgs ||
+    !operation.unlabeledArg ||
+    !('sectional' in operation.labeledArgs) ||
+    !operation.labeledArgs.sectional
+  ) {
+    return baseCommand
+  }
+  if (!artifact || !('pathId' in artifact) || operation.type !== 'StdLibCall') {
+    return baseCommand
+  }
+
+  // We have to go a little roundabout to get from the original artifact
+  // to the solid2DId that we need to pass to the Sweep command, just like Extrude.
+  const pathArtifact = getArtifactOfTypes(
+    {
+      key: artifact.pathId,
+      types: ['path'],
+    },
+    engineCommandManager.artifactGraph
+  )
+
+  if (
+    err(pathArtifact) ||
+    pathArtifact.type !== 'path' ||
+    !pathArtifact.solid2dId
+  ) {
+    return baseCommand
+  }
+
+  const targetArtifact = getArtifactOfTypes(
+    {
+      key: pathArtifact.solid2dId,
+      types: ['solid2d'],
+    },
+    engineCommandManager.artifactGraph
+  )
+
+  if (err(targetArtifact) || targetArtifact.type !== 'solid2d') {
+    return baseCommand
+  }
+
+  const target = {
+    graphSelections: [
+      {
+        artifact: targetArtifact,
+        codeRef: pathArtifact.codeRef,
+      },
+    ],
+    otherSelections: [],
+  }
+
+  // Same roundabout but twice for 'path' aka trajectory: sketch -> path -> segment
+  if (!('path' in operation.labeledArgs) || !operation.labeledArgs.path) {
+    return baseCommand
+  }
+
+  if (operation.labeledArgs.path.value.type !== 'Sketch') {
+    return baseCommand
+  }
+
+  const trajectoryPathArtifact = getArtifactOfTypes(
+    {
+      key: operation.labeledArgs.path.value.value.artifactId,
+      types: ['path'],
+    },
+    engineCommandManager.artifactGraph
+  )
+
+  if (err(trajectoryPathArtifact) || trajectoryPathArtifact.type !== 'path') {
+    return baseCommand
+  }
+
+  const trajectoryArtifact = getArtifactOfTypes(
+    {
+      key: trajectoryPathArtifact.segIds[0],
+      types: ['segment'],
+    },
+    engineCommandManager.artifactGraph
+  )
+
+  if (err(trajectoryArtifact) || trajectoryArtifact.type !== 'segment') {
+    return baseCommand
+  }
+
+  const trajectory = {
+    graphSelections: [
+      {
+        artifact: trajectoryArtifact,
+        codeRef: trajectoryArtifact.codeRef,
+      },
+    ],
+    otherSelections: [],
+  }
+
+  // sectional options boolean arg
+  if (
+    !('sectional' in operation.labeledArgs) ||
+    !operation.labeledArgs.sectional
+  ) {
+    return baseCommand
+  }
+
+  const sectional =
+    codeManager.code.slice(
+      operation.labeledArgs.sectional.sourceRange[0],
+      operation.labeledArgs.sectional.sourceRange[1]
+    ) === 'true'
+
+  // Assemble the default argument values for the Offset Plane command,
+  // with `nodeToEdit` set, which will let the Offset Plane actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Sweep'] = {
+    target: target,
+    trajectory,
+    sectional,
+    nodeToEdit: getNodePathFromSourceRange(
+      kclManager.ast,
+      sourceRangeFromRust(operation.sourceRange)
+    ),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
 const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   const baseCommand = {
     name: 'Helix',
@@ -511,6 +648,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   sweep: {
     label: 'Sweep',
     icon: 'sweep',
+    prepareToEdit: prepareToEditSweep,
     supportsAppearance: true,
   },
 }
