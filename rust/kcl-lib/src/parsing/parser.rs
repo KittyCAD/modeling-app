@@ -15,10 +15,12 @@ use winnow::{
 use super::{
     ast::types::{Ascription, ImportPath, LabelledExpression},
     token::{NumericSuffix, RESERVED_WORDS},
+    DeprecationKind,
 };
 use crate::{
     docs::StdLibFn,
     errors::{CompilationError, Severity, Tag},
+    execution::types::ArrayLen,
     parsing::{
         ast::types::{
             Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
@@ -476,7 +478,8 @@ fn string_literal(i: &mut TokenSlice) -> PResult<Node<Literal>> {
         })
         .context(expected("string literal (like \"myPart\""))
         .parse_next(i)?;
-    Ok(Node::new(
+
+    let result = Node::new(
         Literal {
             value,
             raw: token.value.clone(),
@@ -485,7 +488,32 @@ fn string_literal(i: &mut TokenSlice) -> PResult<Node<Literal>> {
         token.start,
         token.end,
         token.module_id,
-    ))
+    );
+
+    if let Some(suggestion) = super::deprecation(result.value.string_value().unwrap(), DeprecationKind::String) {
+        ParseContext::warn(
+            CompilationError::err(
+                result.as_source_range(),
+                format!(
+                    "Using `\"{}\"` is deprecated, prefer using `{}`.",
+                    result.value.string_value().unwrap(),
+                    suggestion
+                ),
+            )
+            .with_suggestion(
+                format!(
+                    "Replace `\"{}\"` with `{}`",
+                    result.value.string_value().unwrap(),
+                    suggestion
+                ),
+                suggestion,
+                None,
+                Tag::Deprecated,
+            ),
+        );
+    }
+
+    Ok(result)
 }
 
 /// Parse a KCL literal number, with no - sign.
@@ -2215,7 +2243,7 @@ fn ty_decl(i: &mut TokenSlice) -> PResult<BoxNode<TypeDeclaration>> {
     let name = identifier(i)?;
     let mut end = name.end;
 
-    let args = if peek(open_paren).parse_next(i).is_ok() {
+    let args = if peek((opt(whitespace), open_paren)).parse_next(i).is_ok() {
         ignore_whitespace(i);
         open_paren(i)?;
         ignore_whitespace(i);
@@ -2228,11 +2256,28 @@ fn ty_decl(i: &mut TokenSlice) -> PResult<BoxNode<TypeDeclaration>> {
         None
     };
 
+    let alias = if peek((opt(whitespace), equals)).parse_next(i).is_ok() {
+        ignore_whitespace(i);
+        equals(i)?;
+        ignore_whitespace(i);
+        let ty = argument_type(i)?;
+
+        ParseContext::warn(CompilationError::err(
+            ty.as_source_range(),
+            "Type aliases are experimental, likely to change in the future, and likely to not work properly.",
+        ));
+
+        Some(ty)
+    } else {
+        None
+    };
+
     let module_id = name.module_id;
     let result = Node::boxed(
         TypeDeclaration {
             name,
             args,
+            alias,
             visibility,
             digest: None,
         },
@@ -2297,6 +2342,21 @@ fn nameable_identifier(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
         ));
     }
 
+    if let Some(suggestion) = super::deprecation(&result.name, DeprecationKind::Const) {
+        ParseContext::warn(
+            CompilationError::err(
+                result.as_source_range(),
+                format!("Using `{}` is deprecated, prefer using `{}`.", result.name, suggestion),
+            )
+            .with_suggestion(
+                format!("Replace `{}` with `{}`", result.name, suggestion),
+                suggestion,
+                None,
+                Tag::Deprecated,
+            ),
+        );
+    }
+
     Ok(result)
 }
 
@@ -2336,21 +2396,7 @@ impl TryFrom<Token> for Node<TagDeclarator> {
                 format!("Cannot assign a tag to a reserved keyword: {}", token.value.as_str()),
             )),
 
-            TokenType::Bang
-            | TokenType::At
-            | TokenType::Hash
-            | TokenType::Colon
-            | TokenType::Period
-            | TokenType::Operator
-            | TokenType::DoublePeriod
-            | TokenType::QuestionMark
-            | TokenType::BlockComment
-            | TokenType::Function
-            | TokenType::String
-            | TokenType::Dollar
-            | TokenType::Keyword
-            | TokenType::Unknown
-            | TokenType::LineComment => Err(CompilationError::fatal(
+            _ => Err(CompilationError::fatal(
                 token.as_source_range(),
                 // this is `start with` because if most of these cases are in the middle, it ends
                 // up hitting a different error path(e.g. including a bang) or being valid(e.g. including a comment) since it will get broken up into
@@ -2617,6 +2663,14 @@ fn colon(i: &mut TokenSlice) -> PResult<Token> {
     TokenType::Colon.parse_from(i)
 }
 
+fn semi_colon(i: &mut TokenSlice) -> PResult<Token> {
+    TokenType::SemiColon.parse_from(i)
+}
+
+fn plus(i: &mut TokenSlice) -> PResult<Token> {
+    one_of((TokenType::Operator, "+")).parse_next(i)
+}
+
 fn equals(i: &mut TokenSlice) -> PResult<Token> {
     one_of((TokenType::Operator, "="))
         .context(expected("the equals operator, ="))
@@ -2659,6 +2713,12 @@ fn comma_sep(i: &mut TokenSlice) -> PResult<()> {
     Ok(())
 }
 
+/// Parse a `|`, optionally followed by some whitespace.
+fn pipe_sep(i: &mut TokenSlice) -> PResult<()> {
+    (opt(whitespace), one_of((TokenType::Operator, "|")), opt(whitespace)).parse_next(i)?;
+    Ok(())
+}
+
 /// Arguments are passed into a function.
 fn arguments(i: &mut TokenSlice) -> PResult<Vec<Expr>> {
     separated(0.., expression, comma_sep)
@@ -2685,7 +2745,15 @@ fn argument_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
     let type_ = alt((
         // Object types
         // TODO it is buggy to treat object fields like parameters since the parameters parser assumes a terminating `)`.
-        (open_brace, parameters, close_brace).map(|(open, params, close)| {
+        (open_brace, parameters, close_brace).try_map(|(open, params, close)| {
+            for p in &params {
+                if p.type_.is_none() {
+                    return Err(CompilationError::fatal(
+                        p.identifier.as_source_range(),
+                        "Missing type for field in record type",
+                    ));
+                }
+            }
             Ok(Node::new(
                 Type::Object { properties: params },
                 open.start,
@@ -2694,12 +2762,21 @@ fn argument_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
             ))
         }),
         // Array types
-        (open_bracket, primitive_type, close_bracket).map(|(_, t, _)| Ok(t.map(Type::Array))),
-        // Primitive types
-        primitive_type.map(|t| Ok(t.map(Type::Primitive))),
+        array_type,
+        // Primitive or union types
+        separated(1.., primitive_type, pipe_sep).map(|mut tys: Vec<_>| {
+            if tys.len() == 1 {
+                tys.pop().unwrap().map(Type::Primitive)
+            } else {
+                let start = tys[0].start;
+                let module_id = tys[0].module_id;
+                let end = tys.last().unwrap().end;
+                Node::new(Type::Union { tys }, start, end, module_id)
+            }
+        }),
     ))
-    .parse_next(i)?
-    .map_err(|e: CompilationError| ErrMode::Backtrack(ContextError::from(e)))?;
+    .parse_next(i)?;
+
     Ok(type_)
 }
 
@@ -2719,6 +2796,55 @@ fn primitive_type(i: &mut TokenSlice) -> PResult<Node<PrimitiveType>> {
     }
 
     Ok(result)
+}
+
+fn array_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
+    fn opt_whitespace(i: &mut TokenSlice) -> PResult<()> {
+        ignore_whitespace(i);
+        Ok(())
+    }
+
+    open_bracket(i)?;
+    let ty = primitive_type(i)?;
+    let len = opt((
+        semi_colon,
+        opt_whitespace,
+        any.try_map(|token: Token| match token.token_type {
+            TokenType::Number => {
+                let value = token.uint_value().ok_or_else(|| {
+                    CompilationError::fatal(
+                        token.as_source_range(),
+                        format!("Expected unsigned integer literal, found: {}", token.value),
+                    )
+                })?;
+
+                Ok(value as usize)
+            }
+            _ => Err(CompilationError::fatal(token.as_source_range(), "invalid array length")),
+        }),
+        opt(plus),
+    ))
+    .parse_next(i)?;
+    close_bracket(i)?;
+
+    let len = if let Some((tok, _, n, plus)) = len {
+        if plus.is_some() {
+            if n != 1 {
+                return Err(ErrMode::Cut(ContextError::from(CompilationError::fatal(
+                    tok.as_source_range(),
+                    "Non-empty arrays are specified using `1+`, for a fixed-size array use just an integer",
+                ))));
+            } else {
+                ArrayLen::NonEmpty
+            }
+        } else {
+            ArrayLen::Known(n)
+        }
+    } else {
+        ArrayLen::None
+    };
+
+    Ok(ty.map(|ty| Type::Array { ty, len }))
 }
 
 fn uom_for_type(i: &mut TokenSlice) -> PResult<NumericSuffix> {
@@ -2932,7 +3058,7 @@ fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
     }
     let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
 
-    Ok(Node::new_node(
+    let result = Node::new_node(
         fn_name.start,
         end,
         fn_name.module_id,
@@ -2941,7 +3067,27 @@ fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
             arguments: args,
             digest: None,
         },
-    ))
+    );
+
+    if let Some(suggestion) = super::deprecation(&result.callee.name, DeprecationKind::Function) {
+        ParseContext::warn(
+            CompilationError::err(
+                result.as_source_range(),
+                format!(
+                    "Calling `{}` is deprecated, prefer using `{}`.",
+                    result.callee.name, suggestion
+                ),
+            )
+            .with_suggestion(
+                format!("Replace `{}` with `{}`", result.callee.name, suggestion),
+                suggestion,
+                None,
+                Tag::Deprecated,
+            ),
+        );
+    }
+
+    Ok(result)
 }
 
 fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
@@ -3013,7 +3159,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
         non_code_nodes,
         ..Default::default()
     };
-    Ok(Node::new_node(
+    let result = Node::new_node(
         fn_name.start,
         end,
         fn_name.module_id,
@@ -3024,7 +3170,27 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
             digest: None,
             non_code_meta,
         },
-    ))
+    );
+
+    if let Some(suggestion) = super::deprecation(&result.callee.name, DeprecationKind::Function) {
+        ParseContext::warn(
+            CompilationError::err(
+                result.as_source_range(),
+                format!(
+                    "Calling `{}` is deprecated, prefer using `{}`.",
+                    result.callee.name, suggestion
+                ),
+            )
+            .with_suggestion(
+                format!("Replace `{}` with `{}`", result.callee.name, suggestion),
+                suggestion,
+                None,
+                Tag::Deprecated,
+            ),
+        );
+    }
+
+    Ok(result)
 }
 
 #[cfg(test)]
@@ -3242,7 +3408,7 @@ mySk1 = startSketchOn(XY)
 
     #[test]
     fn inline_comment_pipe_expression() {
-        let test_input = r#"a('XY')
+        let test_input = r#"a(XY)
         |> b(%)
         |> c(%) // inline-comment
         |> d(%)"#;

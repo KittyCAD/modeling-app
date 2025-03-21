@@ -1,7 +1,12 @@
 import { test, expect } from './zoo-test'
 import * as fsp from 'fs/promises'
 import * as fs from 'fs'
-import { createProject, executorInputPath, getUtils } from './test-utils'
+import {
+  createProject,
+  executorInputPath,
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+} from './test-utils'
 import { join } from 'path'
 import { FILE_EXT } from 'lib/constants'
 
@@ -266,12 +271,13 @@ test.describe('when using the file tree to', () => {
     }
   )
 
-  test.fixme(
+  test(
     'loading small file, then large, then back to small',
     {
       tag: '@electron',
     },
     async ({ page }, testInfo) => {
+      test.fixme(orRunWhenFullSuiteEnabled())
       const {
         panesOpen,
         pasteCodeInEditor,
@@ -1058,7 +1064,7 @@ test.describe('Undo and redo do not keep history when navigating between files',
         // Click in the editor and add some new lines.
         await u.codeLocator.click()
 
-        await page.keyboard.type(`sketch001 = startSketchOn('XY')
+        await page.keyboard.type(`sketch001 = startSketchOn(XY)
     some other shit`)
 
         // Ensure the content in the editor changed.

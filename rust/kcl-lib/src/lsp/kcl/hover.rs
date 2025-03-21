@@ -344,8 +344,8 @@ impl Node<Type> {
         let range = self.as_source_range();
         if range.contains(pos) {
             match &self.inner {
-                Type::Array(t) | Type::Primitive(t) => {
-                    let mut name = t.to_string();
+                Type::Array { ty, .. } | Type::Primitive(ty) => {
+                    let mut name = ty.to_string();
                     if name.ends_with(')') {
                         name.truncate(name.find('(').unwrap());
                     }
@@ -379,7 +379,7 @@ impl FunctionExpression {
         if let Some(value) = self.body.get_expr_for_position(pos) {
             let mut vars = opts.vars.clone().unwrap_or_default();
             for arg in &self.params {
-                let ty = arg.type_.as_ref().map(|ty| ty.recast(&FormatOptions::default(), 0));
+                let ty = arg.type_.as_ref().map(|ty| ty.to_string());
                 vars.insert(arg.identifier.inner.name.clone(), ty);
             }
             return value.get_hover_value_for_position(

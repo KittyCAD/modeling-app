@@ -1,4 +1,4 @@
-exampleSketch = startSketchOn('XZ')
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [0, 2])
   |> line(end = [3, 1])

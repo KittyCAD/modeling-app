@@ -19,7 +19,7 @@ const lSegments = total_length / (lbumps + 1)
 const wSegments = total_width / (wbumps + 1)
 
 // make the base
-const s = startSketchOn('XY')
+const s = startSketchOn(XY)
   |> startProfileAt([-total_width / 2, -total_length / 2], %)
   |> line(end = [total_width, 0])
   |> line(end = [0, total_length])

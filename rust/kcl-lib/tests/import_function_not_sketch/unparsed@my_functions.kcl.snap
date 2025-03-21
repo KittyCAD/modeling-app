@@ -4,7 +4,7 @@ description: Result of unparsing tests/import_function_not_sketch/my_functions.k
 ---
 @settings(defaultLengthUnit = mm)
 
-export part001 = startSketchOn('XY')
+export part001 = startSketchOn(XY)
   |> startProfileAt([4, 12], %)
   |> line(end = [2, 0])
   |> line(end = [0, -6])

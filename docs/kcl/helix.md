@@ -50,7 +50,7 @@ helixPath = helix(
 )
 
 // Create a spring by sweeping around the helix path.
-springSketch = startSketchOn('YZ')
+springSketch = startSketchOn(YZ)
   |> circle(center = [0, 0], radius = 0.5)
   |> sweep(path = helixPath)
 ```
@@ -59,7 +59,7 @@ springSketch = startSketchOn('YZ')
 
 ```js
 // Create a helix around an edge.
-helper001 = startSketchOn('XZ')
+helper001 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [0, 10], tag = $edge001)
 
@@ -73,7 +73,7 @@ helixPath = helix(
 )
 
 // Create a spring by sweeping around the helix path.
-springSketch = startSketchOn('XY')
+springSketch = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 0.5)
   |> sweep(path = helixPath)
 ```
@@ -97,7 +97,7 @@ helixPath = helix(
 )
 
 // Create a spring by sweeping around the helix path.
-springSketch = startSketchOn('XY')
+springSketch = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
   |> sweep(path = helixPath)
 ```

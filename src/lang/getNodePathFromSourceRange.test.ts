@@ -17,7 +17,7 @@ describe('testing getNodePathFromSourceRange', () => {
   it('test it gets the right path for a `lineTo` CallExpression within a SketchExpression', () => {
     const code = `
 const myVar = 5
-const sk3 = startSketchOn('XY')
+const sk3 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [1, 2])
   |> line(endAbsolute = [3, 4], tag = $yo)
@@ -41,7 +41,7 @@ const sk3 = startSketchOn('XY')
   })
   it('gets path right for function definition params', () => {
     const code = `fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
+  const sg = startSketchOn(XY)
     |> startProfileAt(pos, %)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
@@ -74,7 +74,7 @@ const b1 = cube([0,0], 10)`
   })
   it('gets path right for deep within function definition body', () => {
     const code = `fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
+  const sg = startSketchOn(XY)
     |> startProfileAt(pos, %)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])

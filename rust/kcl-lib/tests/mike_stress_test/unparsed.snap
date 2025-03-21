@@ -2,7 +2,7 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing mike_stress_test.kcl
 ---
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([0.0, 0.0], %)
   |> line(end = [
        -0.3670208139314082,

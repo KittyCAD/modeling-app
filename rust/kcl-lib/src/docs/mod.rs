@@ -18,7 +18,7 @@ use tower_lsp::lsp_types::{
 };
 
 use crate::{
-    execution::{kcl_value::NumericType, Sketch},
+    execution::{types::NumericType, Sketch},
     std::Primitive,
 };
 

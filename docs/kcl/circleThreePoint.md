@@ -37,7 +37,7 @@ circleThreePoint(
 ### Examples
 
 ```js
-exampleSketch = startSketchOn("XY")
+exampleSketch = startSketchOn(XY)
   |> circleThreePoint(p1 = [10, 10], p2 = [20, 8], p3 = [15, 5])
   |> extrude(length = 5)
 ```

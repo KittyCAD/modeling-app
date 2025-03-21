@@ -27,7 +27,7 @@ getNextAdjacentEdge(tag: TagIdentifier): Uuid
 ### Examples
 
 ```js
-exampleSketch = startSketchOn('XZ')
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [10, 0])
   |> angledLine({ angle = 60, length = 10 }, %)
