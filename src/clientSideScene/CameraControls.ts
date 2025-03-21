@@ -981,17 +981,21 @@ export class CameraControls {
   }
 
   async saveRemoteCameraState() {
-    const cameraViewStateResponse = await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: { type: 'default_camera_get_view' },
-    })
+    const cameraViewStateResponse =
+      await this.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: { type: 'default_camera_get_view' },
+      })
     if (!cameraViewStateResponse) return
-    if ('resp' in cameraViewStateResponse
-      && 'modeling_response' in cameraViewStateResponse.resp.data
-      && 'data' in cameraViewStateResponse.resp.data.modeling_response
-      && 'view' in cameraViewStateResponse.resp.data.modeling_response.data) {
-      this.oldCameraState = cameraViewStateResponse.resp.data.modeling_response.data.view
+    if (
+      'resp' in cameraViewStateResponse &&
+      'modeling_response' in cameraViewStateResponse.resp.data &&
+      'data' in cameraViewStateResponse.resp.data.modeling_response &&
+      'view' in cameraViewStateResponse.resp.data.modeling_response.data
+    ) {
+      this.oldCameraState =
+        cameraViewStateResponse.resp.data.modeling_response.data.view
     }
   }
 
