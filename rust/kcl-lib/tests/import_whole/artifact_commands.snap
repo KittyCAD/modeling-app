@@ -241,7 +241,7 @@ description: Artifact commands import_whole.kcl
       "face_ids": [
         "[uuid]"
       ],
-      "shell_thickness": 0.25,
+      "shell_thickness": 42.0,
       "hollow": false
     }
   }

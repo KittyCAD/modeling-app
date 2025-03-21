@@ -32,11 +32,19 @@ description: Result of parsing circle_three_point.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 12,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 12,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 12,
                 "end": 0,
@@ -177,11 +185,19 @@ description: Result of parsing circle_three_point.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 37,
                   "end": 0,
-                  "name": "circleThreePoint",
+                  "name": {
+                    "commentStart": 37,
+                    "end": 0,
+                    "name": "circleThreePoint",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 37,
                 "end": 0,
@@ -216,11 +232,19 @@ description: Result of parsing circle_three_point.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 104,
                   "end": 0,
-                  "name": "extrude",
+                  "name": {
+                    "commentStart": 104,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 104,
                 "end": 0,

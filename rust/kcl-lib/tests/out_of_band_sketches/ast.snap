@@ -30,11 +30,19 @@ description: Result of parsing out_of_band_sketches.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 12,
               "end": 0,
-              "name": "startSketchOn",
+              "name": {
+                "commentStart": 12,
+                "end": 0,
+                "name": "startSketchOn",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 12,
             "end": 0,
@@ -101,20 +109,36 @@ description: Result of parsing out_of_band_sketches.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "abs_path": false,
                     "commentStart": 77,
                     "end": 0,
-                    "name": "sketch001",
+                    "name": {
+                      "commentStart": 77,
+                      "end": 0,
+                      "name": "sketch001",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 45,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 45,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 45,
                 "end": 0,
@@ -169,11 +193,19 @@ description: Result of parsing out_of_band_sketches.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 164,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 164,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 164,
                 "end": 0,
@@ -237,11 +269,19 @@ description: Result of parsing out_of_band_sketches.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 208,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 208,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 208,
                 "end": 0,
@@ -335,11 +375,19 @@ description: Result of parsing out_of_band_sketches.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 265,
               "end": 0,
-              "name": "startSketchOn",
+              "name": {
+                "commentStart": 265,
+                "end": 0,
+                "name": "startSketchOn",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 265,
             "end": 0,
@@ -414,20 +462,36 @@ description: Result of parsing out_of_band_sketches.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "abs_path": false,
                     "commentStart": 329,
                     "end": 0,
-                    "name": "sketch002",
+                    "name": {
+                      "commentStart": 329,
+                      "end": 0,
+                      "name": "sketch002",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 298,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 298,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 298,
                 "end": 0,
@@ -482,11 +546,19 @@ description: Result of parsing out_of_band_sketches.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 416,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 416,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 416,
                 "end": 0,
@@ -558,11 +630,19 @@ description: Result of parsing out_of_band_sketches.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 460,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 460,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 460,
                 "end": 0,
@@ -646,12 +726,20 @@ description: Result of parsing out_of_band_sketches.kcl
           "init": {
             "body": [
               {
+                "abs_path": false,
                 "commentStart": 527,
                 "end": 0,
-                "name": "profile001",
+                "name": {
+                  "commentStart": 527,
+                  "end": 0,
+                  "name": "profile001",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "arguments": [
@@ -708,11 +796,19 @@ description: Result of parsing out_of_band_sketches.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 543,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 543,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 543,
                 "end": 0,
@@ -724,11 +820,19 @@ description: Result of parsing out_of_band_sketches.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 588,
                   "end": 0,
-                  "name": "close",
+                  "name": {
+                    "commentStart": 588,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 588,
                 "end": 0,
@@ -798,12 +902,20 @@ description: Result of parsing out_of_band_sketches.kcl
           "init": {
             "body": [
               {
+                "abs_path": false,
                 "commentStart": 627,
                 "end": 0,
-                "name": "profile002",
+                "name": {
+                  "commentStart": 627,
+                  "end": 0,
+                  "name": "profile002",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "arguments": [
@@ -860,11 +972,19 @@ description: Result of parsing out_of_band_sketches.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 643,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 643,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 643,
                 "end": 0,
@@ -876,11 +996,19 @@ description: Result of parsing out_of_band_sketches.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 692,
                   "end": 0,
-                  "name": "close",
+                  "name": {
+                    "commentStart": 692,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 692,
                 "end": 0,
@@ -964,11 +1092,19 @@ description: Result of parsing out_of_band_sketches.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 710,
             "end": 0,
-            "name": "extrude",
+            "name": {
+              "commentStart": 710,
+              "end": 0,
+              "name": "extrude",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 710,
           "end": 0,
@@ -979,20 +1115,36 @@ description: Result of parsing out_of_band_sketches.kcl
             "commentStart": 718,
             "elements": [
               {
+                "abs_path": false,
                 "commentStart": 719,
                 "end": 0,
-                "name": "profile001extended",
+                "name": {
+                  "commentStart": 719,
+                  "end": 0,
+                  "name": "profile001extended",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
+                "abs_path": false,
                 "commentStart": 739,
                 "end": 0,
-                "name": "profile002extended",
+                "name": {
+                  "commentStart": 739,
+                  "end": 0,
+                  "name": "profile002extended",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "end": 0,

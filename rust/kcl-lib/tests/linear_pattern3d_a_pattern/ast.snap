@@ -32,11 +32,19 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 16,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 16,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 16,
                 "end": 0,
@@ -88,11 +96,19 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 41,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 41,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 41,
                 "end": 0,
@@ -147,11 +163,19 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 72,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 72,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 72,
                 "end": 0,
@@ -207,11 +231,19 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 96,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 96,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 96,
                 "end": 0,
@@ -275,11 +307,19 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 120,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 120,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 120,
                 "end": 0,
@@ -299,11 +339,19 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 145,
                   "end": 0,
-                  "name": "close",
+                  "name": {
+                    "commentStart": 145,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 145,
                 "end": 0,
@@ -337,11 +385,19 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 159,
                   "end": 0,
-                  "name": "extrude",
+                  "name": {
+                    "commentStart": 159,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 159,
                 "end": 0,
@@ -481,11 +537,19 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 189,
               "end": 0,
-              "name": "patternLinear3d",
+              "name": {
+                "commentStart": 189,
+                "end": 0,
+                "name": "patternLinear3d",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 189,
             "end": 0,
@@ -493,12 +557,20 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "commentStart": 208,
               "end": 0,
-              "name": "exampleSketch",
+              "name": {
+                "commentStart": 208,
+                "end": 0,
+                "name": "exampleSketch",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 0,
@@ -625,11 +697,19 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 288,
               "end": 0,
-              "name": "patternLinear3d",
+              "name": {
+                "commentStart": 288,
+                "end": 0,
+                "name": "patternLinear3d",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 288,
             "end": 0,
@@ -637,12 +717,20 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "commentStart": 307,
               "end": 0,
-              "name": "pattn1",
+              "name": {
+                "commentStart": 307,
+                "end": 0,
+                "name": "pattn1",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 0,

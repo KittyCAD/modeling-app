@@ -21,20 +21,36 @@ expression: actual
             {
               "arguments": [
                 {
+                  "abs_path": false,
                   "commentStart": 26,
                   "end": 28,
-                  "name": "XY",
+                  "name": {
+                    "commentStart": 26,
+                    "end": 28,
+                    "name": "XY",
+                    "start": 26,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 26,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 12,
                 "end": 25,
-                "name": "startSketchOn",
+                "name": {
+                  "commentStart": 12,
+                  "end": 25,
+                  "name": "startSketchOn",
+                  "start": 12,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 12,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 12,
               "end": 29,
@@ -86,11 +102,19 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 37,
                 "end": 51,
-                "name": "startProfileAt",
+                "name": {
+                  "commentStart": 37,
+                  "end": 51,
+                  "name": "startProfileAt",
+                  "start": 37,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 37,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 37,
               "end": 62,
@@ -142,11 +166,19 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 70,
                 "end": 74,
-                "name": "line",
+                "name": {
+                  "commentStart": 70,
+                  "end": 74,
+                  "name": "line",
+                  "start": 70,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 70,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 70,
               "end": 86,
@@ -206,11 +238,19 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 94,
                 "end": 107,
-                "name": "tangentialArc",
+                "name": {
+                  "commentStart": 94,
+                  "end": 107,
+                  "name": "tangentialArc",
+                  "start": 94,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 94,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 94,
               "end": 119,
@@ -270,11 +310,19 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 127,
                 "end": 131,
-                "name": "line",
+                "name": {
+                  "commentStart": 127,
+                  "end": 131,
+                  "name": "line",
+                  "start": 127,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 127,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 127,
               "end": 144,
@@ -308,11 +356,19 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 152,
                 "end": 159,
-                "name": "extrude",
+                "name": {
+                  "commentStart": 152,
+                  "end": 159,
+                  "name": "extrude",
+                  "start": 152,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 152,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 152,
               "end": 170,

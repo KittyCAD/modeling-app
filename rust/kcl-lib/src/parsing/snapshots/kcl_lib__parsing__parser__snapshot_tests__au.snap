@@ -31,11 +31,19 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 17,
                 "end": 30,
-                "name": "startSketchOn",
+                "name": {
+                  "commentStart": 17,
+                  "end": 30,
+                  "name": "startSketchOn",
+                  "start": 17,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 17,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 17,
               "end": 36,
@@ -112,11 +120,19 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 44,
                 "end": 50,
-                "name": "circle",
+                "name": {
+                  "commentStart": 44,
+                  "end": 50,
+                  "name": "circle",
+                  "start": 44,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 44,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 44,
               "end": 78,
@@ -151,11 +167,19 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 86,
                 "end": 93,
-                "name": "extrude",
+                "name": {
+                  "commentStart": 86,
+                  "end": 93,
+                  "name": "extrude",
+                  "start": 86,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 86,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 86,
               "end": 106,

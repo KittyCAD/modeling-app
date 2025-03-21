@@ -25,12 +25,20 @@ description: Result of parsing double_map_fn.kcl
                     "commentStart": 27,
                     "end": 0,
                     "left": {
+                      "abs_path": false,
                       "commentStart": 27,
                       "end": 0,
-                      "name": "i",
+                      "name": {
+                        "commentStart": 27,
+                        "end": 0,
+                        "name": "i",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "+",
                     "right": {
@@ -155,12 +163,20 @@ description: Result of parsing double_map_fn.kcl
           "init": {
             "body": [
               {
+                "abs_path": false,
                 "commentStart": 53,
                 "end": 0,
-                "name": "xs",
+                "name": {
+                  "commentStart": 53,
+                  "end": 0,
+                  "name": "xs",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "arguments": [
@@ -172,20 +188,36 @@ description: Result of parsing double_map_fn.kcl
                     "type": "PipeSubstitution"
                   },
                   {
+                    "abs_path": false,
                     "commentStart": 68,
                     "end": 0,
-                    "name": "increment",
+                    "name": {
+                      "commentStart": 68,
+                      "end": 0,
+                      "name": "increment",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 61,
                   "end": 0,
-                  "name": "map",
+                  "name": {
+                    "commentStart": 61,
+                    "end": 0,
+                    "name": "map",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 61,
                 "end": 0,
@@ -203,20 +235,36 @@ description: Result of parsing double_map_fn.kcl
                     "type": "PipeSubstitution"
                   },
                   {
+                    "abs_path": false,
                     "commentStart": 91,
                     "end": 0,
-                    "name": "increment",
+                    "name": {
+                      "commentStart": 91,
+                      "end": 0,
+                      "name": "increment",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 84,
                   "end": 0,
-                  "name": "map",
+                  "name": {
+                    "commentStart": 84,
+                    "end": 0,
+                    "name": "map",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 84,
                 "end": 0,

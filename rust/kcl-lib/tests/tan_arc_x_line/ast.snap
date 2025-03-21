@@ -188,11 +188,19 @@ description: Result of parsing tan_arc_x_line.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 64,
                 "end": 0,
-                "name": "startSketchOn",
+                "name": {
+                  "commentStart": 64,
+                  "end": 0,
+                  "name": "startSketchOn",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 64,
               "end": 0,
@@ -206,20 +214,36 @@ description: Result of parsing tan_arc_x_line.kcl
                   "commentStart": 104,
                   "elements": [
                     {
+                      "abs_path": false,
                       "commentStart": 105,
                       "end": 0,
-                      "name": "startX",
+                      "name": {
+                        "commentStart": 105,
+                        "end": 0,
+                        "name": "startX",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     {
+                      "abs_path": false,
                       "commentStart": 113,
                       "end": 0,
-                      "name": "startY",
+                      "name": {
+                        "commentStart": 113,
+                        "end": 0,
+                        "name": "startY",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   ],
                   "end": 0,
@@ -236,11 +260,19 @@ description: Result of parsing tan_arc_x_line.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 89,
                 "end": 0,
-                "name": "startProfileAt",
+                "name": {
+                  "commentStart": 89,
+                  "end": 0,
+                  "name": "startProfileAt",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 89,
               "end": 0,
@@ -267,12 +299,20 @@ description: Result of parsing tan_arc_x_line.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "abs_path": false,
                         "commentStart": 151,
                         "end": 0,
-                        "name": "angleStart",
+                        "name": {
+                          "commentStart": 151,
+                          "end": 0,
+                          "name": "angleStart",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     },
                     {
@@ -314,11 +354,19 @@ description: Result of parsing tan_arc_x_line.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 130,
                 "end": 0,
-                "name": "angledLine",
+                "name": {
+                  "commentStart": 130,
+                  "end": 0,
+                  "name": "angledLine",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 130,
               "end": 0,
@@ -345,12 +393,20 @@ description: Result of parsing tan_arc_x_line.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "abs_path": false,
                         "commentStart": 216,
                         "end": 0,
-                        "name": "angleOffset",
+                        "name": {
+                          "commentStart": 216,
+                          "end": 0,
+                          "name": "angleOffset",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     },
                     {
@@ -366,12 +422,20 @@ description: Result of parsing tan_arc_x_line.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "abs_path": false,
                         "commentStart": 238,
                         "end": 0,
-                        "name": "r",
+                        "name": {
+                          "commentStart": 238,
+                          "end": 0,
+                          "name": "r",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     }
                   ],
@@ -396,11 +460,19 @@ description: Result of parsing tan_arc_x_line.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 191,
                 "end": 0,
-                "name": "tangentialArc",
+                "name": {
+                  "commentStart": 191,
+                  "end": 0,
+                  "name": "tangentialArc",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 191,
               "end": 0,
@@ -427,12 +499,20 @@ description: Result of parsing tan_arc_x_line.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "abs_path": false,
                         "commentStart": 290,
                         "end": 0,
-                        "name": "angleOffset",
+                        "name": {
+                          "commentStart": 290,
+                          "end": 0,
+                          "name": "angleOffset",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     },
                     {
@@ -464,12 +544,20 @@ description: Result of parsing tan_arc_x_line.kcl
                         },
                         "operator": "*",
                         "right": {
+                          "abs_path": false,
                           "commentStart": 325,
                           "end": 0,
-                          "name": "r",
+                          "name": {
+                            "commentStart": 325,
+                            "end": 0,
+                            "name": "r",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 0,
                         "type": "BinaryExpression",
@@ -498,11 +586,19 @@ description: Result of parsing tan_arc_x_line.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 258,
                 "end": 0,
-                "name": "tangentialArc",
+                "name": {
+                  "commentStart": 258,
+                  "end": 0,
+                  "name": "tangentialArc",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 258,
               "end": 0,
@@ -530,12 +626,20 @@ description: Result of parsing tan_arc_x_line.kcl
                       "type": "ObjectProperty",
                       "value": {
                         "argument": {
+                          "abs_path": false,
                           "commentStart": 383,
                           "end": 0,
-                          "name": "angleOffset",
+                          "name": {
+                            "commentStart": 383,
+                            "end": 0,
+                            "name": "angleOffset",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "commentStart": 382,
                         "end": 0,
@@ -574,12 +678,20 @@ description: Result of parsing tan_arc_x_line.kcl
                         },
                         "operator": "*",
                         "right": {
+                          "abs_path": false,
                           "commentStart": 418,
                           "end": 0,
-                          "name": "r",
+                          "name": {
+                            "commentStart": 418,
+                            "end": 0,
+                            "name": "r",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 0,
                         "type": "BinaryExpression",
@@ -608,11 +720,19 @@ description: Result of parsing tan_arc_x_line.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 350,
                 "end": 0,
-                "name": "tangentialArc",
+                "name": {
+                  "commentStart": 350,
+                  "end": 0,
+                  "name": "tangentialArc",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 350,
               "end": 0,
@@ -646,11 +766,19 @@ description: Result of parsing tan_arc_x_line.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 443,
                 "end": 0,
-                "name": "xLine",
+                "name": {
+                  "commentStart": 443,
+                  "end": 0,
+                  "name": "xLine",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 443,
               "end": 0,

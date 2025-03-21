@@ -31,20 +31,36 @@ expression: actual
             "value": "hello"
           },
           {
+            "abs_path": false,
             "commentStart": 16,
             "end": 27,
-            "name": "aIdentifier",
+            "name": {
+              "commentStart": 16,
+              "end": 27,
+              "name": "aIdentifier",
+              "start": 16,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 16,
-            "type": "Identifier",
-            "type": "Identifier"
+            "type": "Name",
+            "type": "Name"
           }
         ],
         "callee": {
+          "abs_path": false,
           "commentStart": 0,
           "end": 3,
-          "name": "log",
+          "name": {
+            "commentStart": 0,
+            "end": 3,
+            "name": "log",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 0,
-          "type": "Identifier"
+          "type": "Name"
         },
         "commentStart": 0,
         "end": 28,

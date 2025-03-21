@@ -258,21 +258,37 @@ description: Result of parsing pipe.kcl
               "commentStart": 392,
               "end": 0,
               "left": {
+                "abs_path": false,
                 "commentStart": 392,
                 "end": 0,
-                "name": "pipeTotalLength",
+                "name": {
+                  "commentStart": 392,
+                  "end": 0,
+                  "name": "pipeTotalLength",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "-",
               "right": {
+                "abs_path": false,
                 "commentStart": 410,
                 "end": 0,
-                "name": "pipeTransitionLength",
+                "name": {
+                  "commentStart": 410,
+                  "end": 0,
+                  "name": "pipeTransitionLength",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "start": 0,
               "type": "BinaryExpression",
@@ -280,12 +296,20 @@ description: Result of parsing pipe.kcl
             },
             "operator": "-",
             "right": {
+              "abs_path": false,
               "commentStart": 433,
               "end": 0,
-              "name": "pipeLargeDiaLength",
+              "name": {
+                "commentStart": 433,
+                "end": 0,
+                "name": "pipeLargeDiaLength",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "start": 0,
             "type": "BinaryExpression",
@@ -327,11 +351,19 @@ description: Result of parsing pipe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 605,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 605,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 605,
                 "end": 0,
@@ -348,24 +380,40 @@ description: Result of parsing pipe.kcl
                         "commentStart": 646,
                         "end": 0,
                         "left": {
+                          "abs_path": false,
                           "commentStart": 646,
                           "end": 0,
-                          "name": "pipeSmallDia",
+                          "name": {
+                            "commentStart": 646,
+                            "end": 0,
+                            "name": "pipeSmallDia",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "-",
                         "right": {
                           "commentStart": 662,
                           "end": 0,
                           "left": {
+                            "abs_path": false,
                             "commentStart": 662,
                             "end": 0,
-                            "name": "thickness",
+                            "name": {
+                              "commentStart": 662,
+                              "end": 0,
+                              "name": "thickness",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -415,11 +463,19 @@ description: Result of parsing pipe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 630,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 630,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 630,
                 "end": 0,
@@ -442,12 +498,20 @@ description: Result of parsing pipe.kcl
                       "commentStart": 702,
                       "elements": [
                         {
+                          "abs_path": false,
                           "commentStart": 703,
                           "end": 0,
-                          "name": "thickness",
+                          "name": {
+                            "commentStart": 703,
+                            "end": 0,
+                            "name": "thickness",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         {
                           "commentStart": 714,
@@ -470,11 +534,19 @@ description: Result of parsing pipe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 691,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 691,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 691,
                 "end": 0,
@@ -511,12 +583,20 @@ description: Result of parsing pipe.kcl
                         },
                         {
                           "argument": {
+                            "abs_path": false,
                             "commentStart": 739,
                             "end": 0,
-                            "name": "pipeSmallDiaLength",
+                            "name": {
+                              "commentStart": 739,
+                              "end": 0,
+                              "name": "pipeSmallDiaLength",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "commentStart": 738,
                           "end": 0,
@@ -534,11 +614,19 @@ description: Result of parsing pipe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 723,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 723,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 723,
                 "end": 0,
@@ -599,12 +687,20 @@ description: Result of parsing pipe.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "abs_path": false,
                           "commentStart": 823,
                           "end": 0,
-                          "name": "pipeTransitionLength",
+                          "name": {
+                            "commentStart": 823,
+                            "end": 0,
+                            "name": "pipeTransitionLength",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
@@ -621,11 +717,19 @@ description: Result of parsing pipe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 765,
                   "end": 0,
-                  "name": "angledLineOfYLength",
+                  "name": {
+                    "commentStart": 765,
+                    "end": 0,
+                    "name": "angledLineOfYLength",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 765,
                 "end": 0,
@@ -661,12 +765,20 @@ description: Result of parsing pipe.kcl
                         },
                         {
                           "argument": {
+                            "abs_path": false,
                             "commentStart": 876,
                             "end": 0,
-                            "name": "pipeLargeDiaLength",
+                            "name": {
+                              "commentStart": 876,
+                              "end": 0,
+                              "name": "pipeLargeDiaLength",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "commentStart": 875,
                           "end": 0,
@@ -684,11 +796,19 @@ description: Result of parsing pipe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 860,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 860,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 860,
                 "end": 0,
@@ -710,12 +830,20 @@ description: Result of parsing pipe.kcl
                     },
                     "arg": {
                       "argument": {
+                        "abs_path": false,
                         "commentStart": 918,
                         "end": 0,
-                        "name": "thickness",
+                        "name": {
+                          "commentStart": 918,
+                          "end": 0,
+                          "name": "thickness",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "commentStart": 917,
                       "end": 0,
@@ -727,11 +855,19 @@ description: Result of parsing pipe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 902,
                   "end": 0,
-                  "name": "xLine",
+                  "name": {
+                    "commentStart": 902,
+                    "end": 0,
+                    "name": "xLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 902,
                 "end": 0,
@@ -767,12 +903,20 @@ description: Result of parsing pipe.kcl
                           }
                         },
                         {
+                          "abs_path": false,
                           "commentStart": 949,
                           "end": 0,
-                          "name": "pipeLargeDiaLength",
+                          "name": {
+                            "commentStart": 949,
+                            "end": 0,
+                            "name": "pipeLargeDiaLength",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 0,
@@ -783,11 +927,19 @@ description: Result of parsing pipe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 934,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 934,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 934,
                 "end": 0,
@@ -819,12 +971,20 @@ description: Result of parsing pipe.kcl
                           "end": 0,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "commentStart": 1007,
                               "end": 0,
-                              "name": "pipeTransitionAngle",
+                              "name": {
+                                "commentStart": 1007,
+                                "end": 0,
+                                "name": "pipeTransitionAngle",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "commentStart": 1006,
                             "end": 0,
@@ -867,24 +1027,40 @@ description: Result of parsing pipe.kcl
                           "commentStart": 1046,
                           "end": 0,
                           "left": {
+                            "abs_path": false,
                             "commentStart": 1046,
                             "end": 0,
-                            "name": "pipeSmallDia",
+                            "name": {
+                              "commentStart": 1046,
+                              "end": 0,
+                              "name": "pipeSmallDia",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "-",
                           "right": {
                             "commentStart": 1062,
                             "end": 0,
                             "left": {
+                              "abs_path": false,
                               "commentStart": 1062,
                               "end": 0,
-                              "name": "thickness",
+                              "name": {
+                                "commentStart": 1062,
+                                "end": 0,
+                                "name": "thickness",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
@@ -922,11 +1098,19 @@ description: Result of parsing pipe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 975,
                   "end": 0,
-                  "name": "angledLineToX",
+                  "name": {
+                    "commentStart": 975,
+                    "end": 0,
+                    "name": "angledLineToX",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 975,
                 "end": 0,
@@ -937,11 +1121,19 @@ description: Result of parsing pipe.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1093,
                   "end": 0,
-                  "name": "close",
+                  "name": {
+                    "commentStart": 1093,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1093,
                 "end": 0,
@@ -1023,11 +1215,19 @@ description: Result of parsing pipe.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 1150,
               "end": 0,
-              "name": "revolve",
+              "name": {
+                "commentStart": 1150,
+                "end": 0,
+                "name": "revolve",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 1150,
             "end": 0,
@@ -1035,12 +1235,20 @@ description: Result of parsing pipe.kcl
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "commentStart": 1158,
               "end": 0,
-              "name": "pipeSketch",
+              "name": {
+                "commentStart": 1158,
+                "end": 0,
+                "name": "pipeSketch",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 0,
@@ -1087,12 +1295,20 @@ description: Result of parsing pipe.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "commentStart": 196,
               "end": 0,
-              "name": "in",
+              "name": {
+                "commentStart": 196,
+                "end": 0,
+                "name": "in",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

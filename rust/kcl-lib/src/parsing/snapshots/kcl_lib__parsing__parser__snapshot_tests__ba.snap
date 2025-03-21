@@ -31,11 +31,19 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 13,
                 "end": 26,
-                "name": "startSketchOn",
+                "name": {
+                  "commentStart": 13,
+                  "end": 26,
+                  "name": "startSketchOn",
+                  "start": 13,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 13,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 13,
               "end": 32,
@@ -54,11 +62,19 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 109,
                 "end": 123,
-                "name": "startProfileAt",
+                "name": {
+                  "commentStart": 109,
+                  "end": 123,
+                  "name": "startProfileAt",
+                  "start": 109,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 109,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 109,
               "end": 126,

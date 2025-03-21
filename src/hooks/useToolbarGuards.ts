@@ -37,7 +37,7 @@ export function useConvertToVariable(range?: SourceRange) {
     if (trap(meta)) return
 
     const { isSafe, value } = meta
-    const canReplace = isSafe && value.type !== 'Identifier'
+    const canReplace = isSafe && value.type !== 'Name'
     const isOnlyOneSelection =
       !!range || context.selectionRanges.graphSelections.length === 1
 

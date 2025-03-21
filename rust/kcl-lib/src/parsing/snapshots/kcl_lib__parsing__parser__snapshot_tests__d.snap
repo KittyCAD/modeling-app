@@ -73,11 +73,19 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 17,
                 "end": 23,
-                "name": "myFunc",
+                "name": {
+                  "commentStart": 17,
+                  "end": 23,
+                  "name": "myFunc",
+                  "start": 17,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 17,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 17,
               "end": 30,

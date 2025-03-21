@@ -266,21 +266,37 @@ description: Result of parsing parametric.kcl
                         "commentStart": 163,
                         "end": 0,
                         "left": {
+                          "abs_path": false,
                           "commentStart": 163,
                           "end": 0,
-                          "name": "distance",
+                          "name": {
+                            "commentStart": 163,
+                            "end": 0,
+                            "name": "distance",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "*",
                         "right": {
+                          "abs_path": false,
                           "commentStart": 174,
                           "end": 0,
-                          "name": "p",
+                          "name": {
+                            "commentStart": 174,
+                            "end": 0,
+                            "name": "p",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 0,
                         "type": "BinaryExpression",
@@ -288,12 +304,20 @@ description: Result of parsing parametric.kcl
                       },
                       "operator": "*",
                       "right": {
+                        "abs_path": false,
                         "commentStart": 178,
                         "end": 0,
-                        "name": "FOS",
+                        "name": {
+                          "commentStart": 178,
+                          "end": 0,
+                          "name": "FOS",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
                       "type": "BinaryExpression",
@@ -318,12 +342,20 @@ description: Result of parsing parametric.kcl
                   },
                   "operator": "/",
                   "right": {
+                    "abs_path": false,
                     "commentStart": 188,
                     "end": 0,
-                    "name": "sigmaAllow",
+                    "name": {
+                      "commentStart": 188,
+                      "end": 0,
+                      "name": "sigmaAllow",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "BinaryExpression",
@@ -331,12 +363,20 @@ description: Result of parsing parametric.kcl
                 },
                 "operator": "/",
                 "right": {
+                  "abs_path": false,
                   "commentStart": 201,
                   "end": 0,
-                  "name": "width",
+                  "name": {
+                    "commentStart": 201,
+                    "end": 0,
+                    "name": "width",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "start": 0,
                 "type": "BinaryExpression",
@@ -344,11 +384,19 @@ description: Result of parsing parametric.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 158,
               "end": 0,
-              "name": "sqrt",
+              "name": {
+                "commentStart": 158,
+                "end": 0,
+                "name": "sqrt",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 158,
             "end": 0,
@@ -392,11 +440,19 @@ description: Result of parsing parametric.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 228,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 228,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 228,
                 "end": 0,
@@ -448,11 +504,19 @@ description: Result of parsing parametric.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 253,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 253,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 253,
                 "end": 0,
@@ -487,12 +551,20 @@ description: Result of parsing parametric.kcl
                           }
                         },
                         {
+                          "abs_path": false,
                           "commentStart": 299,
                           "end": 0,
-                          "name": "leg1",
+                          "name": {
+                            "commentStart": 299,
+                            "end": 0,
+                            "name": "leg1",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 0,
@@ -503,11 +575,19 @@ description: Result of parsing parametric.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 284,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 284,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 284,
                 "end": 0,
@@ -531,12 +611,20 @@ description: Result of parsing parametric.kcl
                       "commentStart": 322,
                       "elements": [
                         {
+                          "abs_path": false,
                           "commentStart": 323,
                           "end": 0,
-                          "name": "leg2",
+                          "name": {
+                            "commentStart": 323,
+                            "end": 0,
+                            "name": "leg2",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         {
                           "commentStart": 329,
@@ -559,11 +647,19 @@ description: Result of parsing parametric.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 311,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 311,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 311,
                 "end": 0,
@@ -600,12 +696,20 @@ description: Result of parsing parametric.kcl
                         },
                         {
                           "argument": {
+                            "abs_path": false,
                             "commentStart": 354,
                             "end": 0,
-                            "name": "thickness",
+                            "name": {
+                              "commentStart": 354,
+                              "end": 0,
+                              "name": "thickness",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "commentStart": 353,
                           "end": 0,
@@ -623,11 +727,19 @@ description: Result of parsing parametric.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 338,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 338,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 338,
                 "end": 0,
@@ -655,12 +767,20 @@ description: Result of parsing parametric.kcl
                           "end": 0,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "commentStart": 384,
                               "end": 0,
-                              "name": "leg2",
+                              "name": {
+                                "commentStart": 384,
+                                "end": 0,
+                                "name": "leg2",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "commentStart": 383,
                             "end": 0,
@@ -671,12 +791,20 @@ description: Result of parsing parametric.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "commentStart": 391,
                             "end": 0,
-                            "name": "thickness",
+                            "name": {
+                              "commentStart": 391,
+                              "end": 0,
+                              "name": "thickness",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 0,
                           "type": "BinaryExpression",
@@ -703,11 +831,19 @@ description: Result of parsing parametric.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 371,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 371,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 371,
                 "end": 0,
@@ -747,12 +883,20 @@ description: Result of parsing parametric.kcl
                           "end": 0,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "commentStart": 427,
                               "end": 0,
-                              "name": "leg1",
+                              "name": {
+                                "commentStart": 427,
+                                "end": 0,
+                                "name": "leg1",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "commentStart": 426,
                             "end": 0,
@@ -763,12 +907,20 @@ description: Result of parsing parametric.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "commentStart": 434,
                             "end": 0,
-                            "name": "thickness",
+                            "name": {
+                              "commentStart": 434,
+                              "end": 0,
+                              "name": "thickness",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 0,
                           "type": "BinaryExpression",
@@ -783,11 +935,19 @@ description: Result of parsing parametric.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 411,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 411,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 411,
                 "end": 0,
@@ -807,11 +967,19 @@ description: Result of parsing parametric.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 451,
                   "end": 0,
-                  "name": "close",
+                  "name": {
+                    "commentStart": 451,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 451,
                 "end": 0,
@@ -831,21 +999,37 @@ description: Result of parsing parametric.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "commentStart": 482,
                       "end": 0,
-                      "name": "width",
+                      "name": {
+                        "commentStart": 482,
+                        "end": 0,
+                        "name": "width",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 465,
                   "end": 0,
-                  "name": "extrude",
+                  "name": {
+                    "commentStart": 465,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 465,
                 "end": 0,

@@ -49,20 +49,36 @@ description: Result of parsing array_elem_pop_empty_fail.kcl
           "init": {
             "arguments": [
               {
+                "abs_path": false,
                 "commentStart": 20,
                 "end": 0,
-                "name": "arr",
+                "name": {
+                  "commentStart": 20,
+                  "end": 0,
+                  "name": "arr",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 16,
               "end": 0,
-              "name": "pop",
+              "name": {
+                "commentStart": 16,
+                "end": 0,
+                "name": "pop",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 16,
             "end": 0,

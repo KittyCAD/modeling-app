@@ -36,11 +36,19 @@ description: Result of parsing sketch_in_object.kcl
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "commentStart": 21,
                           "end": 0,
-                          "name": "startSketchOn",
+                          "name": {
+                            "commentStart": 21,
+                            "end": 0,
+                            "name": "startSketchOn",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "commentStart": 21,
                         "end": 0,
@@ -92,11 +100,19 @@ description: Result of parsing sketch_in_object.kcl
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "commentStart": 48,
                           "end": 0,
-                          "name": "startProfileAt",
+                          "name": {
+                            "commentStart": 48,
+                            "end": 0,
+                            "name": "startProfileAt",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "commentStart": 48,
                         "end": 0,
@@ -151,11 +167,19 @@ description: Result of parsing sketch_in_object.kcl
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "commentStart": 81,
                           "end": 0,
-                          "name": "line",
+                          "name": {
+                            "commentStart": 81,
+                            "end": 0,
+                            "name": "line",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "commentStart": 81,
                         "end": 0,
@@ -211,11 +235,19 @@ description: Result of parsing sketch_in_object.kcl
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "commentStart": 107,
                           "end": 0,
-                          "name": "line",
+                          "name": {
+                            "commentStart": 107,
+                            "end": 0,
+                            "name": "line",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "commentStart": 107,
                         "end": 0,
@@ -279,11 +311,19 @@ description: Result of parsing sketch_in_object.kcl
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "commentStart": 133,
                           "end": 0,
-                          "name": "line",
+                          "name": {
+                            "commentStart": 133,
+                            "end": 0,
+                            "name": "line",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "commentStart": 133,
                         "end": 0,
@@ -303,11 +343,19 @@ description: Result of parsing sketch_in_object.kcl
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "commentStart": 160,
                           "end": 0,
-                          "name": "close",
+                          "name": {
+                            "commentStart": 160,
+                            "end": 0,
+                            "name": "close",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "commentStart": 160,
                         "end": 0,
@@ -412,11 +460,19 @@ description: Result of parsing sketch_in_object.kcl
                                       }
                                     ],
                                     "callee": {
+                                      "abs_path": false,
                                       "commentStart": 226,
                                       "end": 0,
-                                      "name": "startSketchOn",
+                                      "name": {
+                                        "commentStart": 226,
+                                        "end": 0,
+                                        "name": "startSketchOn",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier"
+                                      "type": "Name"
                                     },
                                     "commentStart": 226,
                                     "end": 0,
@@ -468,11 +524,19 @@ description: Result of parsing sketch_in_object.kcl
                                       }
                                     ],
                                     "callee": {
+                                      "abs_path": false,
                                       "commentStart": 257,
                                       "end": 0,
-                                      "name": "startProfileAt",
+                                      "name": {
+                                        "commentStart": 257,
+                                        "end": 0,
+                                        "name": "startProfileAt",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier"
+                                      "type": "Name"
                                     },
                                     "commentStart": 257,
                                     "end": 0,
@@ -527,11 +591,19 @@ description: Result of parsing sketch_in_object.kcl
                                       }
                                     ],
                                     "callee": {
+                                      "abs_path": false,
                                       "commentStart": 294,
                                       "end": 0,
-                                      "name": "line",
+                                      "name": {
+                                        "commentStart": 294,
+                                        "end": 0,
+                                        "name": "line",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier"
+                                      "type": "Name"
                                     },
                                     "commentStart": 294,
                                     "end": 0,
@@ -587,11 +659,19 @@ description: Result of parsing sketch_in_object.kcl
                                       }
                                     ],
                                     "callee": {
+                                      "abs_path": false,
                                       "commentStart": 324,
                                       "end": 0,
-                                      "name": "line",
+                                      "name": {
+                                        "commentStart": 324,
+                                        "end": 0,
+                                        "name": "line",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier"
+                                      "type": "Name"
                                     },
                                     "commentStart": 324,
                                     "end": 0,
@@ -655,11 +735,19 @@ description: Result of parsing sketch_in_object.kcl
                                       }
                                     ],
                                     "callee": {
+                                      "abs_path": false,
                                       "commentStart": 354,
                                       "end": 0,
-                                      "name": "line",
+                                      "name": {
+                                        "commentStart": 354,
+                                        "end": 0,
+                                        "name": "line",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier"
+                                      "type": "Name"
                                     },
                                     "commentStart": 354,
                                     "end": 0,
@@ -679,11 +767,19 @@ description: Result of parsing sketch_in_object.kcl
                                       }
                                     ],
                                     "callee": {
+                                      "abs_path": false,
                                       "commentStart": 385,
                                       "end": 0,
-                                      "name": "close",
+                                      "name": {
+                                        "commentStart": 385,
+                                        "end": 0,
+                                        "name": "close",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier"
+                                      "type": "Name"
                                     },
                                     "commentStart": 385,
                                     "end": 0,
@@ -752,11 +848,19 @@ description: Result of parsing sketch_in_object.kcl
           "init": {
             "arguments": [],
             "callee": {
+              "abs_path": false,
               "commentStart": 411,
               "end": 0,
-              "name": "test",
+              "name": {
+                "commentStart": 411,
+                "end": 0,
+                "name": "test",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 411,
             "end": 0,
@@ -779,12 +883,20 @@ description: Result of parsing sketch_in_object.kcl
         "expression": {
           "body": [
             {
+              "abs_path": false,
               "commentStart": 418,
               "end": 0,
-              "name": "x",
+              "name": {
+                "commentStart": 418,
+                "end": 0,
+                "name": "x",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "arguments": [
@@ -820,11 +932,19 @@ description: Result of parsing sketch_in_object.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 425,
                 "end": 0,
-                "name": "extrude",
+                "name": {
+                  "commentStart": 425,
+                  "end": 0,
+                  "name": "extrude",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 425,
               "end": 0,
@@ -859,11 +979,19 @@ description: Result of parsing sketch_in_object.kcl
           "init": {
             "arguments": [],
             "callee": {
+              "abs_path": false,
               "commentStart": 453,
               "end": 0,
-              "name": "test2",
+              "name": {
+                "commentStart": 453,
+                "end": 0,
+                "name": "test2",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 453,
             "end": 0,
@@ -951,11 +1079,19 @@ description: Result of parsing sketch_in_object.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 483,
                 "end": 0,
-                "name": "extrude",
+                "name": {
+                  "commentStart": 483,
+                  "end": 0,
+                  "name": "extrude",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 483,
               "end": 0,

@@ -86,12 +86,20 @@ description: Result of parsing translate_after_fillet.kcl
             "type": "Identifier"
           },
           "init": {
+            "abs_path": false,
             "commentStart": 78,
             "end": 0,
-            "name": "boltDiameter",
+            "name": {
+              "commentStart": 78,
+              "end": 0,
+              "name": "boltDiameter",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier",
-            "type": "Identifier"
+            "type": "Name",
+            "type": "Name"
           },
           "start": 0,
           "type": "VariableDeclarator"
@@ -207,12 +215,20 @@ description: Result of parsing translate_after_fillet.kcl
             "commentStart": 178,
             "end": 0,
             "left": {
+              "abs_path": false,
               "commentStart": 178,
               "end": 0,
-              "name": "boltHexDrive",
+              "name": {
+                "commentStart": 178,
+                "end": 0,
+                "name": "boltHexDrive",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "/",
             "right": {
@@ -249,11 +265,19 @@ description: Result of parsing translate_after_fillet.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "commentStart": 202,
                       "end": 0,
-                      "name": "toRadians",
+                      "name": {
+                        "commentStart": 202,
+                        "end": 0,
+                        "name": "toRadians",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "commentStart": 202,
                     "end": 0,
@@ -263,11 +287,19 @@ description: Result of parsing translate_after_fillet.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 198,
                   "end": 0,
-                  "name": "cos",
+                  "name": {
+                    "commentStart": 198,
+                    "end": 0,
+                    "name": "cos",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 198,
                 "end": 0,
@@ -369,11 +401,19 @@ description: Result of parsing translate_after_fillet.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 320,
                             "end": 0,
-                            "name": "startSketchOn",
+                            "name": {
+                              "commentStart": 320,
+                              "end": 0,
+                              "name": "startSketchOn",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 320,
                           "end": 0,
@@ -439,12 +479,20 @@ description: Result of parsing translate_after_fillet.kcl
                                 "commentStart": 380,
                                 "end": 0,
                                 "left": {
+                                  "abs_path": false,
                                   "commentStart": 380,
                                   "end": 0,
-                                  "name": "boltHeadDiameter",
+                                  "name": {
+                                    "commentStart": 380,
+                                    "end": 0,
+                                    "name": "boltHeadDiameter",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 0,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "/",
                                 "right": {
@@ -484,11 +532,19 @@ description: Result of parsing translate_after_fillet.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 347,
                             "end": 0,
-                            "name": "circle",
+                            "name": {
+                              "commentStart": 347,
+                              "end": 0,
+                              "name": "circle",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 347,
                           "end": 0,
@@ -510,12 +566,20 @@ description: Result of parsing translate_after_fillet.kcl
                               },
                               "arg": {
                                 "argument": {
+                                  "abs_path": false,
                                   "commentStart": 443,
                                   "end": 0,
-                                  "name": "boltHeadLength",
+                                  "name": {
+                                    "commentStart": 443,
+                                    "end": 0,
+                                    "name": "boltHeadLength",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 0,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "commentStart": 442,
                                 "end": 0,
@@ -527,11 +591,19 @@ description: Result of parsing translate_after_fillet.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 425,
                             "end": 0,
-                            "name": "extrude",
+                            "name": {
+                              "commentStart": 425,
+                              "end": 0,
+                              "name": "extrude",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 425,
                           "end": 0,
@@ -577,30 +649,54 @@ description: Result of parsing translate_after_fillet.kcl
                                 "commentStart": 496,
                                 "elements": [
                                   {
+                                    "abs_path": false,
                                     "commentStart": 497,
                                     "end": 0,
-                                    "name": "topEdge",
+                                    "name": {
+                                      "commentStart": 497,
+                                      "end": 0,
+                                      "name": "topEdge",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   {
                                     "arguments": [
                                       {
+                                        "abs_path": false,
                                         "commentStart": 522,
                                         "end": 0,
-                                        "name": "topEdge",
+                                        "name": {
+                                          "commentStart": 522,
+                                          "end": 0,
+                                          "name": "topEdge",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 0,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "type": "Name",
+                                        "type": "Name"
                                       }
                                     ],
                                     "callee": {
+                                      "abs_path": false,
                                       "commentStart": 506,
                                       "end": 0,
-                                      "name": "getOppositeEdge",
+                                      "name": {
+                                        "commentStart": 506,
+                                        "end": 0,
+                                        "name": "getOppositeEdge",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier"
+                                      "type": "Name"
                                     },
                                     "commentStart": 506,
                                     "end": 0,
@@ -617,11 +713,19 @@ description: Result of parsing translate_after_fillet.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 466,
                             "end": 0,
-                            "name": "fillet",
+                            "name": {
+                              "commentStart": 466,
+                              "end": 0,
+                              "name": "fillet",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 466,
                           "end": 0,
@@ -684,12 +788,20 @@ description: Result of parsing translate_after_fillet.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "commentStart": 629,
                               "end": 0,
-                              "name": "boltHead",
+                              "name": {
+                                "commentStart": 629,
+                                "end": 0,
+                                "name": "boltHead",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             {
                               "commentStart": 639,
@@ -702,11 +814,19 @@ description: Result of parsing translate_after_fillet.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 615,
                             "end": 0,
-                            "name": "startSketchOn",
+                            "name": {
+                              "commentStart": 615,
+                              "end": 0,
+                              "name": "startSketchOn",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 615,
                           "end": 0,
@@ -723,12 +843,20 @@ description: Result of parsing translate_after_fillet.kcl
                                   "commentStart": 681,
                                   "end": 0,
                                   "left": {
+                                    "abs_path": false,
                                     "commentStart": 681,
                                     "end": 0,
-                                    "name": "boltHexDrive",
+                                    "name": {
+                                      "commentStart": 681,
+                                      "end": 0,
+                                      "name": "boltHexDrive",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "/",
                                   "right": {
@@ -751,12 +879,20 @@ description: Result of parsing translate_after_fillet.kcl
                                   "commentStart": 708,
                                   "end": 0,
                                   "left": {
+                                    "abs_path": false,
                                     "commentStart": 708,
                                     "end": 0,
-                                    "name": "boltHexFlatLength",
+                                    "name": {
+                                      "commentStart": 708,
+                                      "end": 0,
+                                      "name": "boltHexFlatLength",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "/",
                                   "right": {
@@ -790,11 +926,19 @@ description: Result of parsing translate_after_fillet.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 655,
                             "end": 0,
-                            "name": "startProfileAt",
+                            "name": {
+                              "commentStart": 655,
+                              "end": 0,
+                              "name": "startProfileAt",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 655,
                           "end": 0,
@@ -846,12 +990,20 @@ description: Result of parsing translate_after_fillet.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "commentStart": 803,
                                     "end": 0,
-                                    "name": "boltHexFlatLength",
+                                    "name": {
+                                      "commentStart": 803,
+                                      "end": 0,
+                                      "name": "boltHexFlatLength",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -868,11 +1020,19 @@ description: Result of parsing translate_after_fillet.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 750,
                             "end": 0,
-                            "name": "angledLine",
+                            "name": {
+                              "commentStart": 750,
+                              "end": 0,
+                              "name": "angledLine",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 750,
                           "end": 0,
@@ -924,12 +1084,20 @@ description: Result of parsing translate_after_fillet.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "commentStart": 894,
                                     "end": 0,
-                                    "name": "boltHexFlatLength",
+                                    "name": {
+                                      "commentStart": 894,
+                                      "end": 0,
+                                      "name": "boltHexFlatLength",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -946,11 +1114,19 @@ description: Result of parsing translate_after_fillet.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 841,
                             "end": 0,
-                            "name": "angledLine",
+                            "name": {
+                              "commentStart": 841,
+                              "end": 0,
+                              "name": "angledLine",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 841,
                           "end": 0,
@@ -1002,12 +1178,20 @@ description: Result of parsing translate_after_fillet.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "commentStart": 985,
                                     "end": 0,
-                                    "name": "boltHexFlatLength",
+                                    "name": {
+                                      "commentStart": 985,
+                                      "end": 0,
+                                      "name": "boltHexFlatLength",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -1024,11 +1208,19 @@ description: Result of parsing translate_after_fillet.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 932,
                             "end": 0,
-                            "name": "angledLine",
+                            "name": {
+                              "commentStart": 932,
+                              "end": 0,
+                              "name": "angledLine",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 932,
                           "end": 0,
@@ -1080,12 +1272,20 @@ description: Result of parsing translate_after_fillet.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "commentStart": 1075,
                                     "end": 0,
-                                    "name": "boltHexFlatLength",
+                                    "name": {
+                                      "commentStart": 1075,
+                                      "end": 0,
+                                      "name": "boltHexFlatLength",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -1102,11 +1302,19 @@ description: Result of parsing translate_after_fillet.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 1023,
                             "end": 0,
-                            "name": "angledLine",
+                            "name": {
+                              "commentStart": 1023,
+                              "end": 0,
+                              "name": "angledLine",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 1023,
                           "end": 0,
@@ -1158,12 +1366,20 @@ description: Result of parsing translate_after_fillet.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "commentStart": 1165,
                                     "end": 0,
-                                    "name": "boltHexFlatLength",
+                                    "name": {
+                                      "commentStart": 1165,
+                                      "end": 0,
+                                      "name": "boltHexFlatLength",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -1180,11 +1396,19 @@ description: Result of parsing translate_after_fillet.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 1113,
                             "end": 0,
-                            "name": "angledLine",
+                            "name": {
+                              "commentStart": 1113,
+                              "end": 0,
+                              "name": "angledLine",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 1113,
                           "end": 0,
@@ -1195,11 +1419,19 @@ description: Result of parsing translate_after_fillet.kcl
                         {
                           "arguments": [],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 1203,
                             "end": 0,
-                            "name": "close",
+                            "name": {
+                              "commentStart": 1203,
+                              "end": 0,
+                              "name": "close",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 1203,
                           "end": 0,
@@ -1223,12 +1455,20 @@ description: Result of parsing translate_after_fillet.kcl
                                 "end": 0,
                                 "left": {
                                   "argument": {
+                                    "abs_path": false,
                                     "commentStart": 1236,
                                     "end": 0,
-                                    "name": "boltHeadLength",
+                                    "name": {
+                                      "commentStart": 1236,
+                                      "end": 0,
+                                      "name": "boltHeadLength",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "commentStart": 1235,
                                   "end": 0,
@@ -1257,11 +1497,19 @@ description: Result of parsing translate_after_fillet.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 1218,
                             "end": 0,
-                            "name": "extrude",
+                            "name": {
+                              "commentStart": 1218,
+                              "end": 0,
+                              "name": "extrude",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 1218,
                           "end": 0,
@@ -1303,12 +1551,20 @@ description: Result of parsing translate_after_fillet.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "commentStart": 1287,
                               "end": 0,
-                              "name": "boltHead",
+                              "name": {
+                                "commentStart": 1287,
+                                "end": 0,
+                                "name": "boltHead",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             {
                               "commentStart": 1297,
@@ -1321,11 +1577,19 @@ description: Result of parsing translate_after_fillet.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 1273,
                             "end": 0,
-                            "name": "startSketchOn",
+                            "name": {
+                              "commentStart": 1273,
+                              "end": 0,
+                              "name": "startSketchOn",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 1273,
                           "end": 0,
@@ -1391,12 +1655,20 @@ description: Result of parsing translate_after_fillet.kcl
                                 "commentStart": 1344,
                                 "end": 0,
                                 "left": {
+                                  "abs_path": false,
                                   "commentStart": 1344,
                                   "end": 0,
-                                  "name": "boltDiameter",
+                                  "name": {
+                                    "commentStart": 1344,
+                                    "end": 0,
+                                    "name": "boltDiameter",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 0,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "/",
                                 "right": {
@@ -1436,11 +1708,19 @@ description: Result of parsing translate_after_fillet.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 1311,
                             "end": 0,
-                            "name": "circle",
+                            "name": {
+                              "commentStart": 1311,
+                              "end": 0,
+                              "name": "circle",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 1311,
                           "end": 0,
@@ -1461,21 +1741,37 @@ description: Result of parsing translate_after_fillet.kcl
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "abs_path": false,
                                 "commentStart": 1405,
                                 "end": 0,
-                                "name": "boltLength",
+                                "name": {
+                                  "commentStart": 1405,
+                                  "end": 0,
+                                  "name": "boltLength",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               }
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 1388,
                             "end": 0,
-                            "name": "extrude",
+                            "name": {
+                              "commentStart": 1388,
+                              "end": 0,
+                              "name": "extrude",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 1388,
                           "end": 0,
@@ -1523,20 +1819,36 @@ description: Result of parsing translate_after_fillet.kcl
                                   {
                                     "arguments": [
                                       {
+                                        "abs_path": false,
                                         "commentStart": 1470,
                                         "end": 0,
-                                        "name": "filletEdge",
+                                        "name": {
+                                          "commentStart": 1470,
+                                          "end": 0,
+                                          "name": "filletEdge",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 0,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "type": "Name",
+                                        "type": "Name"
                                       }
                                     ],
                                     "callee": {
+                                      "abs_path": false,
                                       "commentStart": 1454,
                                       "end": 0,
-                                      "name": "getOppositeEdge",
+                                      "name": {
+                                        "commentStart": 1454,
+                                        "end": 0,
+                                        "name": "getOppositeEdge",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier"
+                                      "type": "Name"
                                     },
                                     "commentStart": 1454,
                                     "end": 0,
@@ -1553,11 +1865,19 @@ description: Result of parsing translate_after_fillet.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 1424,
                             "end": 0,
-                            "name": "fillet",
+                            "name": {
+                              "commentStart": 1424,
+                              "end": 0,
+                              "name": "fillet",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 1424,
                           "end": 0,
@@ -1633,11 +1953,19 @@ description: Result of parsing translate_after_fillet.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 1491,
                             "end": 0,
-                            "name": "appearance",
+                            "name": {
+                              "commentStart": 1491,
+                              "end": 0,
+                              "name": "appearance",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 1491,
                           "end": 0,
@@ -1664,12 +1992,20 @@ description: Result of parsing translate_after_fillet.kcl
                 },
                 {
                   "argument": {
+                    "abs_path": false,
                     "commentStart": 1563,
                     "end": 0,
-                    "name": "boltBody",
+                    "name": {
+                      "commentStart": 1563,
+                      "end": 0,
+                      "name": "boltBody",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "commentStart": 1552,
                   "end": 0,
@@ -1734,11 +2070,19 @@ description: Result of parsing translate_after_fillet.kcl
             {
               "arguments": [],
               "callee": {
+                "abs_path": false,
                 "commentStart": 1575,
                 "end": 0,
-                "name": "bolt",
+                "name": {
+                  "commentStart": 1575,
+                  "end": 0,
+                  "name": "bolt",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 1575,
               "end": 0,
@@ -1805,11 +2149,19 @@ description: Result of parsing translate_after_fillet.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 1587,
                 "end": 0,
-                "name": "translate",
+                "name": {
+                  "commentStart": 1587,
+                  "end": 0,
+                  "name": "translate",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 1587,
               "end": 0,

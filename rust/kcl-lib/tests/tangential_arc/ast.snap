@@ -22,20 +22,36 @@ description: Result of parsing tangential_arc.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "commentStart": 26,
                     "end": 0,
-                    "name": "XY",
+                    "name": {
+                      "commentStart": 26,
+                      "end": 0,
+                      "name": "XY",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 12,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 12,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 12,
                 "end": 0,
@@ -87,11 +103,19 @@ description: Result of parsing tangential_arc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 35,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 35,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 35,
                 "end": 0,
@@ -146,11 +170,19 @@ description: Result of parsing tangential_arc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 66,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 66,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 66,
                 "end": 0,
@@ -229,11 +261,19 @@ description: Result of parsing tangential_arc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 91,
                   "end": 0,
-                  "name": "tangentialArc",
+                  "name": {
+                    "commentStart": 91,
+                    "end": 0,
+                    "name": "tangentialArc",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 91,
                 "end": 0,
@@ -296,11 +336,19 @@ description: Result of parsing tangential_arc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 142,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 142,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 142,
                 "end": 0,
@@ -335,11 +383,19 @@ description: Result of parsing tangential_arc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 168,
                   "end": 0,
-                  "name": "extrude",
+                  "name": {
+                    "commentStart": 168,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 168,
                 "end": 0,

@@ -299,11 +299,19 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 946,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 946,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 946,
                 "end": 0,
@@ -321,12 +329,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                         "end": 0,
                         "left": {
                           "argument": {
+                            "abs_path": false,
                             "commentStart": 988,
                             "end": 0,
-                            "name": "width",
+                            "name": {
+                              "commentStart": 988,
+                              "end": 0,
+                              "name": "width",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "commentStart": 987,
                           "end": 0,
@@ -357,12 +373,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                         "end": 0,
                         "left": {
                           "argument": {
+                            "abs_path": false,
                             "commentStart": 1000,
                             "end": 0,
-                            "name": "length",
+                            "name": {
+                              "commentStart": 1000,
+                              "end": 0,
+                              "name": "length",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "commentStart": 999,
                           "end": 0,
@@ -403,11 +427,19 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 971,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 971,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 971,
                 "end": 0,
@@ -433,12 +465,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                           "commentStart": 1041,
                           "end": 0,
                           "left": {
+                            "abs_path": false,
                             "commentStart": 1041,
                             "end": 0,
-                            "name": "width",
+                            "name": {
+                              "commentStart": 1041,
+                              "end": 0,
+                              "name": "width",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -462,12 +502,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                           "end": 0,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "commentStart": 1053,
                               "end": 0,
-                              "name": "length",
+                              "name": {
+                                "commentStart": 1053,
+                                "end": 0,
+                                "name": "length",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "commentStart": 1052,
                             "end": 0,
@@ -502,11 +550,19 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1021,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 1021,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1021,
                 "end": 0,
@@ -533,12 +589,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                           "commentStart": 1091,
                           "end": 0,
                           "left": {
+                            "abs_path": false,
                             "commentStart": 1091,
                             "end": 0,
-                            "name": "width",
+                            "name": {
+                              "commentStart": 1091,
+                              "end": 0,
+                              "name": "width",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -561,12 +625,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                           "commentStart": 1102,
                           "end": 0,
                           "left": {
+                            "abs_path": false,
                             "commentStart": 1102,
                             "end": 0,
-                            "name": "length",
+                            "name": {
+                              "commentStart": 1102,
+                              "end": 0,
+                              "name": "length",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -594,11 +666,19 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1071,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 1071,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1071,
                 "end": 0,
@@ -626,12 +706,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                           "end": 0,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "commentStart": 1141,
                               "end": 0,
-                              "name": "width",
+                              "name": {
+                                "commentStart": 1141,
+                                "end": 0,
+                                "name": "width",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "commentStart": 1140,
                             "end": 0,
@@ -661,12 +749,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                           "commentStart": 1152,
                           "end": 0,
                           "left": {
+                            "abs_path": false,
                             "commentStart": 1152,
                             "end": 0,
-                            "name": "length",
+                            "name": {
+                              "commentStart": 1152,
+                              "end": 0,
+                              "name": "length",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -694,11 +790,19 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1120,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 1120,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1120,
                 "end": 0,
@@ -710,11 +814,19 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1170,
                   "end": 0,
-                  "name": "close",
+                  "name": {
+                    "commentStart": 1170,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1170,
                 "end": 0,
@@ -734,21 +846,37 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "commentStart": 1200,
                       "end": 0,
-                      "name": "height",
+                      "name": {
+                        "commentStart": 1200,
+                        "end": 0,
+                        "name": "height",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1183,
                   "end": 0,
-                  "name": "extrude",
+                  "name": {
+                    "commentStart": 1183,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1183,
                 "end": 0,
@@ -795,12 +923,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "commentStart": 1238,
                     "end": 0,
-                    "name": "extrude001",
+                    "name": {
+                      "commentStart": 1238,
+                      "end": 0,
+                      "name": "extrude001",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "commentStart": 1250,
@@ -813,11 +949,19 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1224,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 1224,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1224,
                 "end": 0,
@@ -847,12 +991,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                               "commentStart": 1298,
                               "end": 0,
                               "left": {
+                                "abs_path": false,
                                 "commentStart": 1298,
                                 "end": 0,
-                                "name": "width",
+                                "name": {
+                                  "commentStart": 1298,
+                                  "end": 0,
+                                  "name": "width",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "/",
                               "right": {
@@ -876,12 +1028,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                               "commentStart": 1311,
                               "end": 0,
                               "left": {
+                                "abs_path": false,
                                 "commentStart": 1311,
                                 "end": 0,
-                                "name": "padding",
+                                "name": {
+                                  "commentStart": 1311,
+                                  "end": 0,
+                                  "name": "padding",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "/",
                               "right": {
@@ -919,12 +1079,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                               "commentStart": 1337,
                               "end": 0,
                               "left": {
+                                "abs_path": false,
                                 "commentStart": 1337,
                                 "end": 0,
-                                "name": "length",
+                                "name": {
+                                  "commentStart": 1337,
+                                  "end": 0,
+                                  "name": "length",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "/",
                               "right": {
@@ -948,12 +1116,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                               "commentStart": 1351,
                               "end": 0,
                               "left": {
+                                "abs_path": false,
                                 "commentStart": 1351,
                                 "end": 0,
-                                "name": "padding",
+                                "name": {
+                                  "commentStart": 1351,
+                                  "end": 0,
+                                  "name": "padding",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "/",
                               "right": {
@@ -1003,12 +1179,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                       "commentStart": 1389,
                       "end": 0,
                       "left": {
+                        "abs_path": false,
                         "commentStart": 1389,
                         "end": 0,
-                        "name": "cbDia",
+                        "name": {
+                          "commentStart": 1389,
+                          "end": 0,
+                          "name": "cbDia",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -1030,11 +1214,19 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1262,
                   "end": 0,
-                  "name": "circle",
+                  "name": {
+                    "commentStart": 1262,
+                    "end": 0,
+                    "name": "circle",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1262,
                 "end": 0,
@@ -1080,21 +1272,37 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                       "commentStart": 1467,
                       "end": 0,
                       "left": {
+                        "abs_path": false,
                         "commentStart": 1467,
                         "end": 0,
-                        "name": "length",
+                        "name": {
+                          "commentStart": 1467,
+                          "end": 0,
+                          "name": "length",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "-",
                       "right": {
+                        "abs_path": false,
                         "commentStart": 1476,
                         "end": 0,
-                        "name": "padding",
+                        "name": {
+                          "commentStart": 1476,
+                          "end": 0,
+                          "name": "padding",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
                       "type": "BinaryExpression",
@@ -1146,11 +1354,19 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1412,
                   "end": 0,
-                  "name": "patternLinear2d",
+                  "name": {
+                    "commentStart": 1412,
+                    "end": 0,
+                    "name": "patternLinear2d",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1412,
                 "end": 0,
@@ -1196,21 +1412,37 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                       "commentStart": 1573,
                       "end": 0,
                       "left": {
+                        "abs_path": false,
                         "commentStart": 1573,
                         "end": 0,
-                        "name": "width",
+                        "name": {
+                          "commentStart": 1573,
+                          "end": 0,
+                          "name": "width",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "-",
                       "right": {
+                        "abs_path": false,
                         "commentStart": 1581,
                         "end": 0,
-                        "name": "padding",
+                        "name": {
+                          "commentStart": 1581,
+                          "end": 0,
+                          "name": "padding",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
                       "type": "BinaryExpression",
@@ -1262,11 +1494,19 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1518,
                   "end": 0,
-                  "name": "patternLinear2d",
+                  "name": {
+                    "commentStart": 1518,
+                    "end": 0,
+                    "name": "patternLinear2d",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1518,
                 "end": 0,
@@ -1288,12 +1528,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                     },
                     "arg": {
                       "argument": {
+                        "abs_path": false,
                         "commentStart": 1643,
                         "end": 0,
-                        "name": "cbDepth",
+                        "name": {
+                          "commentStart": 1643,
+                          "end": 0,
+                          "name": "cbDepth",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "commentStart": 1642,
                       "end": 0,
@@ -1305,11 +1553,19 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1622,
                   "end": 0,
-                  "name": "extrude",
+                  "name": {
+                    "commentStart": 1622,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1622,
                 "end": 0,
@@ -1357,12 +1613,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "commentStart": 1680,
                     "end": 0,
-                    "name": "extrude001",
+                    "name": {
+                      "commentStart": 1680,
+                      "end": 0,
+                      "name": "extrude001",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "commentStart": 1692,
@@ -1375,11 +1639,19 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1666,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 1666,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1666,
                 "end": 0,
@@ -1409,12 +1681,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                               "commentStart": 1746,
                               "end": 0,
                               "left": {
+                                "abs_path": false,
                                 "commentStart": 1746,
                                 "end": 0,
-                                "name": "width",
+                                "name": {
+                                  "commentStart": 1746,
+                                  "end": 0,
+                                  "name": "width",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "/",
                               "right": {
@@ -1438,12 +1718,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                               "commentStart": 1759,
                               "end": 0,
                               "left": {
+                                "abs_path": false,
                                 "commentStart": 1759,
                                 "end": 0,
-                                "name": "padding",
+                                "name": {
+                                  "commentStart": 1759,
+                                  "end": 0,
+                                  "name": "padding",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "/",
                               "right": {
@@ -1481,12 +1769,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                               "commentStart": 1787,
                               "end": 0,
                               "left": {
+                                "abs_path": false,
                                 "commentStart": 1787,
                                 "end": 0,
-                                "name": "length",
+                                "name": {
+                                  "commentStart": 1787,
+                                  "end": 0,
+                                  "name": "length",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "/",
                               "right": {
@@ -1510,12 +1806,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                               "commentStart": 1801,
                               "end": 0,
                               "left": {
+                                "abs_path": false,
                                 "commentStart": 1801,
                                 "end": 0,
-                                "name": "padding",
+                                "name": {
+                                  "commentStart": 1801,
+                                  "end": 0,
+                                  "name": "padding",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "/",
                               "right": {
@@ -1565,12 +1869,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                       "commentStart": 1843,
                       "end": 0,
                       "left": {
+                        "abs_path": false,
                         "commentStart": 1843,
                         "end": 0,
-                        "name": "holeDia",
+                        "name": {
+                          "commentStart": 1843,
+                          "end": 0,
+                          "name": "holeDia",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -1592,11 +1904,19 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1706,
                   "end": 0,
-                  "name": "circle",
+                  "name": {
+                    "commentStart": 1706,
+                    "end": 0,
+                    "name": "circle",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1706,
                 "end": 0,
@@ -1642,21 +1962,37 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                       "commentStart": 1923,
                       "end": 0,
                       "left": {
+                        "abs_path": false,
                         "commentStart": 1923,
                         "end": 0,
-                        "name": "length",
+                        "name": {
+                          "commentStart": 1923,
+                          "end": 0,
+                          "name": "length",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "-",
                       "right": {
+                        "abs_path": false,
                         "commentStart": 1932,
                         "end": 0,
-                        "name": "padding",
+                        "name": {
+                          "commentStart": 1932,
+                          "end": 0,
+                          "name": "padding",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
                       "type": "BinaryExpression",
@@ -1708,11 +2044,19 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1868,
                   "end": 0,
-                  "name": "patternLinear2d",
+                  "name": {
+                    "commentStart": 1868,
+                    "end": 0,
+                    "name": "patternLinear2d",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1868,
                 "end": 0,
@@ -1758,21 +2102,37 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                       "commentStart": 2028,
                       "end": 0,
                       "left": {
+                        "abs_path": false,
                         "commentStart": 2028,
                         "end": 0,
-                        "name": "width",
+                        "name": {
+                          "commentStart": 2028,
+                          "end": 0,
+                          "name": "width",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "-",
                       "right": {
+                        "abs_path": false,
                         "commentStart": 2036,
                         "end": 0,
-                        "name": "padding",
+                        "name": {
+                          "commentStart": 2036,
+                          "end": 0,
+                          "name": "padding",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
                       "type": "BinaryExpression",
@@ -1824,11 +2184,19 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1973,
                   "end": 0,
-                  "name": "patternLinear2d",
+                  "name": {
+                    "commentStart": 1973,
+                    "end": 0,
+                    "name": "patternLinear2d",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1973,
                 "end": 0,
@@ -1853,12 +2221,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                       "end": 0,
                       "left": {
                         "argument": {
+                          "abs_path": false,
                           "commentStart": 2095,
                           "end": 0,
-                          "name": "height",
+                          "name": {
+                            "commentStart": 2095,
+                            "end": 0,
+                            "name": "height",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "commentStart": 2094,
                         "end": 0,
@@ -1869,12 +2245,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                       },
                       "operator": "+",
                       "right": {
+                        "abs_path": false,
                         "commentStart": 2104,
                         "end": 0,
-                        "name": "cbDepth",
+                        "name": {
+                          "commentStart": 2104,
+                          "end": 0,
+                          "name": "cbDepth",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
                       "type": "BinaryExpression",
@@ -1883,11 +2267,19 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 2077,
                   "end": 0,
-                  "name": "extrude",
+                  "name": {
+                    "commentStart": 2077,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 2077,
                 "end": 0,
@@ -1929,12 +2321,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "commentStart": 2141,
                     "end": 0,
-                    "name": "extrude001",
+                    "name": {
+                      "commentStart": 2141,
+                      "end": 0,
+                      "name": "extrude001",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "commentStart": 2153,
@@ -1947,11 +2347,19 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 2127,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 2127,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 2127,
                 "end": 0,
@@ -2017,12 +2425,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                       "commentStart": 2211,
                       "end": 0,
                       "left": {
+                        "abs_path": false,
                         "commentStart": 2211,
                         "end": 0,
-                        "name": "bearingDia",
+                        "name": {
+                          "commentStart": 2211,
+                          "end": 0,
+                          "name": "bearingDia",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -2044,11 +2460,19 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 2165,
                   "end": 0,
-                  "name": "circle",
+                  "name": {
+                    "commentStart": 2165,
+                    "end": 0,
+                    "name": "circle",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 2165,
                 "end": 0,
@@ -2070,12 +2494,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                     },
                     "arg": {
                       "argument": {
+                        "abs_path": false,
                         "commentStart": 2254,
                         "end": 0,
-                        "name": "height",
+                        "name": {
+                          "commentStart": 2254,
+                          "end": 0,
+                          "name": "height",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "commentStart": 2253,
                       "end": 0,
@@ -2087,11 +2519,19 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 2236,
                   "end": 0,
-                  "name": "extrude",
+                  "name": {
+                    "commentStart": 2236,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 2236,
                 "end": 0,
@@ -2151,12 +2591,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "commentStart": 592,
               "end": 0,
-              "name": "in",
+              "name": {
+                "commentStart": 592,
+                "end": 0,
+                "name": "in",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

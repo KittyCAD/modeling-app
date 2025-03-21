@@ -34,20 +34,36 @@ expression: actual
               "cond": {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "commentStart": 51,
                     "end": 57,
-                    "name": "radius",
+                    "name": {
+                      "commentStart": 51,
+                      "end": 57,
+                      "name": "radius",
+                      "start": 51,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 51,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 46,
                   "end": 50,
-                  "name": "func",
+                  "name": {
+                    "commentStart": 46,
+                    "end": 50,
+                    "name": "func",
+                    "start": 46,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 46,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 46,
                 "end": 58,
