@@ -41,10 +41,6 @@ type HelpRoleLabel =
   | 'Get started with Text-to-CAD'
   | 'Show all commands'
 
-type OptionsRoleLabel = 'Report an issue'
-
-// type UtilityRoleLabel =
-
 type ViewRoleLabel = 'Command Palette...' | 'Appearance'
 
 // Only export the union of all the internal types since they are all labels
@@ -54,8 +50,6 @@ export type ZooLabel =
   | FileRoleLabel
   | EditRoleLabel
   | HelpRoleLabel
-  | OptionsRoleLabel
-  // | UtilityRoleLabel
   | ViewRoleLabel
 
 // Extend the interface with additional custom properties

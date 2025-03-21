@@ -1,6 +1,5 @@
-import { shell, BrowserWindow } from 'electron'
+import { BrowserWindow } from 'electron'
 import { ZooMenuItemConstructorOptions } from './roles'
-import { reportRejection } from 'lib/trap'
 import { typeSafeWebContentsSend } from './channels'
 import os from 'node:os'
 const isMac = os.platform() === 'darwin'
