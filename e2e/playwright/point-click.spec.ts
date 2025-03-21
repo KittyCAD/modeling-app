@@ -3088,7 +3088,8 @@ radius = 8.69
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `sketch001 = startSketchOn(XZ)
+    const initialCode = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
 profile001 = circle(
   sketch001,
   center = [0, 0],
