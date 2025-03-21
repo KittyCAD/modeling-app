@@ -4,7 +4,6 @@ import {
   getUtils,
   TEST_COLORS,
   pollEditorLinesSelectedLength,
-  executorInputPath,
   orRunWhenFullSuiteEnabled,
 } from './test-utils'
 import { XOR } from 'lib/utils'
