@@ -167,16 +167,32 @@ export default class CodeManager {
   // When we unload the page via changing routes we want to instantly write to disk to save their progress
   // There is a race condition in the system. writeToFile takes 1000ms to run, if they make an edit and leave within the 1000ms
   // window they won't get their content saved. Use this to always save their file before rerouting
-  async writeToFileNoTimeout() {
+  async writeToFileNoTimeoutForBeforeUnload() {
+    // Since this function should only run when the page calls beforeunload we are going
+    // to catch when this.code = ''
+    console.warn('beforeunload attempting to save off current code progress')
+
+    const codeToWrite = this.code.split('').join('');
+
+    if (!codeToWrite || codeToWrite === '') {
+      // This limits one workflow. If the user deletes all the code then instantly invokes beforeunload
+      // we would not save that to disk.
+      // I am keeping this for the time being because we are getting blank writes to disk when we shouldn't.
+      console.warn('code is falsey, do not write to disk. code is ', codeToWrite)
+      return
+    }
+
     if (isDesktop()) {
       return new Promise((resolve, reject) => {
-        if (!this._currentFilePath)
+        if (!this._currentFilePath) {
+          console.warn('current file path is falsey', this._currentFilePath)
           return reject(new Error('currentFilePath not set'))
+        }
 
         // Wait one event loop to give a chance for params to be set
         // Save the file to disk
         window.electron
-          .writeFile(this._currentFilePath, this.code ?? '')
+          .writeFile(this._currentFilePath, codeToWrite)
           .then(resolve)
           .catch((err: Error) => {
             // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
@@ -186,7 +202,7 @@ export default class CodeManager {
           })
       })
     } else {
-      safeLSSetItem(PERSIST_CODE_KEY, this.code)
+      safeLSSetItem(PERSIST_CODE_KEY, codeToWrite)
     }
   }
 
