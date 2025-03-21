@@ -200,6 +200,13 @@ export type CommandArgumentConfig<
             commandBarContext: ContextFrom<typeof commandBarMachine>,
             machineContext?: C
           ) => string)
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
     }
   | {
       inputType: 'string'
@@ -321,6 +328,13 @@ export type CommandArgument<
             commandBarContext: ContextFrom<typeof commandBarMachine>,
             machineContext?: ContextFrom<T>
           ) => string)
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
     }
   | {
       inputType: 'string'

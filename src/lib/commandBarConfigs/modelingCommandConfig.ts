@@ -15,6 +15,7 @@ import { codeManager, kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 import { modelingMachine, SketchTool } from 'machines/modelingMachine'
 import {
+  filletValidator,
   loftValidator,
   revolveAxisValidator,
   shellValidator,
@@ -587,6 +588,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         skip: false,
+        /**
+         * You can't validate this step since even valid selection
+         * might fail on the engine side with the bad radius.
+         * you have to validate selection and radius together.
+         */
         warningMessage:
           'Fillets cannot touch other fillets yet. This is under development.',
       },
@@ -594,6 +600,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
+        validation: filletValidator,
       },
     },
   },
