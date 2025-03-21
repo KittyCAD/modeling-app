@@ -134,6 +134,25 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// sweep([rectangleSketch, circleSketch], path = sweepPath)
 /// ```
+/// ```
+/// // Sectionally sweep one sketch along the path
+///
+/// sketch001 = startSketchOn('XY')
+/// circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
+///
+/// sketch002 = startSketchOn('YZ')
+/// sweepPath = startProfileAt([0, 0], sketch002)
+///     |> yLine(length = 231.81)
+///     |> tangentialArc({
+///         radius = 80,
+///         offset = -90,
+///     }, %)
+///     |> xLine(length = 384.93)
+///
+/// sweep(circleSketch, path = sweepPath, sectional = true)
+/// ```
+///
+
 #[stdlib {
     name = "sweep",
     feature_tree_operation = true,
