@@ -78,7 +78,7 @@ import {
 import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConfig'
 import { err, reportRejection, trap } from 'lib/trap'
 import { DefaultPlaneStr } from 'lib/planes'
-import { uuidv4 } from 'lib/utils'
+import { isArray, uuidv4 } from 'lib/utils'
 import { Coords2d } from 'lang/std/sketch'
 import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
 import toast from 'react-hot-toast'
@@ -1994,55 +1994,88 @@ export const modelingMachine = setup({
         if (!input) return new Error('No input provided')
         // Extract inputs
         const ast = kclManager.ast
-        const { target, trajectory } = input
+        const { target, trajectory, sectional, nodeToEdit } = input
+        let variableName: string | undefined = undefined
+        let insertIndex: number | undefined = undefined
 
-        // Find the profile declaration
+        // If this is an edit flow, first we're going to remove the old one
+        if (nodeToEdit !== undefined && typeof nodeToEdit[1][0] === 'number') {
+          // Extract the plane name from the node to edit
+          const variableNode = getNodeFromPath<VariableDeclaration>(
+            ast,
+            nodeToEdit,
+            'VariableDeclaration'
+          )
+
+          if (err(variableNode)) {
+            console.error('Error extracting name')
+          } else {
+            variableName = variableNode.node.declaration.id.name
+          }
+
+          // Removing the old statement
+          const newBody = [...ast.body]
+          newBody.splice(nodeToEdit[1][0], 1)
+          ast.body = newBody
+          insertIndex = nodeToEdit[1][0]
+        }
+
+        // Find the target declaration
         const targetNodePath = getNodePathFromSourceRange(
           ast,
           target.graphSelections[0].codeRef.range
         )
-        const targetNode = getNodeFromPath<VariableDeclarator>(
-          ast,
-          targetNodePath,
-          'VariableDeclarator'
-        )
+        // Gotchas, not sure why
+        // - it seems like in some cases we get a list on edit, especially the state that e2e hits
+        // - looking for a VariableDeclaration seems more robust than VariableDeclarator
+        const targetNode = getNodeFromPath<
+          VariableDeclaration | VariableDeclaration[]
+        >(ast, targetNodePath, 'VariableDeclaration')
         if (err(targetNode)) {
           return new Error("Couldn't parse profile selection")
         }
-        const targetDeclarator = targetNode.node
 
-        // Find the path declaration
+        const targetDeclarator = isArray(targetNode.node)
+          ? targetNode.node[0].declaration
+          : targetNode.node.declaration
+
+        // Find the trajectory (or path) declaration
         const trajectoryNodePath = getNodePathFromSourceRange(
           ast,
           trajectory.graphSelections[0].codeRef.range
         )
-        const trajectoryNode = getNodeFromPath<VariableDeclarator>(
+        // Also looking for VariableDeclaration for consistency here
+        const trajectoryNode = getNodeFromPath<VariableDeclaration>(
           ast,
           trajectoryNodePath,
-          'VariableDeclarator'
+          'VariableDeclaration'
         )
         if (err(trajectoryNode)) {
           return new Error("Couldn't parse path selection")
         }
-        const trajectoryDeclarator = trajectoryNode.node
+
+        const trajectoryDeclarator = trajectoryNode.node.declaration
 
         // Perform the sweep
-        const sweepRes = addSweep(ast, targetDeclarator, trajectoryDeclarator)
-        const updateAstResult = await kclManager.updateAst(
-          sweepRes.modifiedAst,
-          true,
+        const { modifiedAst, pathToNode } = addSweep({
+          node: ast,
+          targetDeclarator,
+          trajectoryDeclarator,
+          sectional,
+          variableName,
+          insertIndex,
+        })
+        await updateModelingState(
+          modifiedAst,
           {
-            focusPath: [sweepRes.pathToNode],
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [pathToNode],
           }
         )
-
-        await codeManager.updateEditorWithAstAndWriteToFile(
-          updateAstResult.newAst
-        )
-
-        if (updateAstResult?.selections) {
-          editorManager.selectRange(updateAstResult?.selections)
-        }
       }
     ),
     loftAstMod: fromPromise(
