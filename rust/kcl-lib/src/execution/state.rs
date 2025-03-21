@@ -72,6 +72,8 @@ pub(super) struct ModuleState {
     pub module_exports: Vec<String>,
     /// Settings specified from annotations.
     pub settings: MetaSettings,
+    pub(super) explicit_length_units: bool,
+    pub(super) std_path: Option<String>,
 }
 
 impl ExecState {
@@ -296,10 +298,11 @@ impl ModuleState {
             stack: memory.new_stack(),
             pipe_value: Default::default(),
             module_exports: Default::default(),
+            explicit_length_units: false,
+            std_path,
             settings: MetaSettings {
                 default_length_units: exec_settings.units.into(),
                 default_angle_units: Default::default(),
-                std_path,
             },
         }
     }
@@ -311,22 +314,23 @@ impl ModuleState {
 pub struct MetaSettings {
     pub default_length_units: types::UnitLen,
     pub default_angle_units: types::UnitAngle,
-    pub std_path: Option<String>,
 }
 
 impl MetaSettings {
     pub(crate) fn update_from_annotation(
         &mut self,
         annotation: &crate::parsing::ast::types::Node<Annotation>,
-    ) -> Result<(), KclError> {
+    ) -> Result<bool, KclError> {
         let properties = annotations::expect_properties(annotations::SETTINGS, annotation)?;
 
+        let mut updated_len = false;
         for p in properties {
             match &*p.inner.key.name {
                 annotations::SETTINGS_UNIT_LENGTH => {
                     let value = annotations::expect_ident(&p.inner.value)?;
                     let value = types::UnitLen::from_str(value, annotation.as_source_range())?;
                     self.default_length_units = value;
+                    updated_len = true;
                 }
                 annotations::SETTINGS_UNIT_ANGLE => {
                     let value = annotations::expect_ident(&p.inner.value)?;
@@ -346,6 +350,6 @@ impl MetaSettings {
             }
         }
 
-        Ok(())
+        Ok(updated_len)
     }
 }

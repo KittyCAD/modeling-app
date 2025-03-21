@@ -6,8 +6,13 @@ use dhat::{HeapStats, Profiler};
 use web_time::Instant;
 
 const LOG_ENV_VAR: &str = "ZOO_LOG";
+const FORCE_LOGGING: bool = false;
+
 lazy_static::lazy_static! {
     static ref ENABLED: bool = {
+        if FORCE_LOGGING {
+            return true;
+        }
         let env_var = env::var(LOG_ENV_VAR);
         let Ok(env_var) = env_var else {
             return false;
