@@ -22,6 +22,7 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
     context,
     homePage,
     scene,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     const selectionsSnippets = {
@@ -82,7 +83,7 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // wait for execution done
     await u.openDebugPanel()
@@ -108,6 +109,7 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
     page,
     scene,
     homePage,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
@@ -121,7 +123,7 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
     })
 
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 587, y: 270 }, 15)
 
@@ -664,6 +666,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
     page,
     homePage,
     scene,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
@@ -679,7 +682,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
     })
 
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
@@ -2341,7 +2344,7 @@ profile003 = circle(sketch001, center = [6.92, -4.2], radius = 3.16)
 
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
       ).not.toBeDisabled()
@@ -2938,6 +2941,7 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
     toolbar,
     editor,
     homePage,
+    cmdBar,
   }) => {
     // We seed the scene with a single offset plane
     await context.addInitScript(() => {
@@ -2955,7 +2959,7 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
     })
 
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     await test.step(`format the code`, async () => {
       // doesn't contain condensed version
@@ -3020,6 +3024,7 @@ test.describe('Redirecting to home page and back to the original file should cle
     toolbar,
     editor,
     homePage,
+    cmdBar,
   }) => {
     // We seed the scene with a single offset plane
     await context.addInitScript(() => {
@@ -3032,7 +3037,7 @@ test.describe('Redirecting to home page and back to the original file should cle
       )
     })
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     const [objClick] = scene.makeMouseHelpers(634, 274)
     await objClick()

@@ -45,12 +45,6 @@ export class SceneFixture {
   public networkToggleConnected!: Locator
   public startEditSketchBtn!: Locator
 
-  get exeIndicator() {
-    return this.page
-      .getByTestId('model-state-indicator-execution-done')
-      .or(this.page.getByTestId('model-state-indicator-receive-reliable'))
-  }
-
   constructor(page: Page) {
     this.page = page
     this.streamWrapper = page.getByTestId('stream')
@@ -229,10 +223,6 @@ export class SceneFixture {
     }
   }
 
-  waitForExecutionDone = async () => {
-    await expect(this.exeIndicator).toBeVisible({ timeout: 30000 })
-  }
-
   connectionEstablished = async () => {
     const timeout = 30000
     await expect(this.networkToggleConnected).toBeVisible({ timeout })
@@ -241,6 +231,9 @@ export class SceneFixture {
   settled = async (cmdBar: CmdBarFixture) => {
     const u = await getUtils(this.page)
 
+    await expect(this.startEditSketchBtn).not.toBeDisabled()
+    await expect(this.startEditSketchBtn).toBeVisible()
+
     await cmdBar.openCmdBar()
     await cmdBar.chooseCommand('Settings · app · show debug panel')
     await cmdBar.selectOption({ name: 'on' }).click()
@@ -248,10 +241,6 @@ export class SceneFixture {
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
-
-    await this.waitForExecutionDone()
-    await expect(this.startEditSketchBtn).not.toBeDisabled()
-    await expect(this.startEditSketchBtn).toBeVisible()
   }
 
   expectPixelColor = async (

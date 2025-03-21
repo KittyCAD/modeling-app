@@ -15,6 +15,7 @@ import {
 import { isDesktop } from 'lib/isDesktop'
 import { useRef, useState } from 'react'
 import { CustomIcon } from 'components/CustomIcon'
+import { Toggle } from 'components/Toggle/Toggle'
 import Tooltip from 'components/Tooltip'
 import { isArray, toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
@@ -211,7 +212,7 @@ export function createSettings() {
       streamIdleMode: new Setting<number | undefined>({
         defaultValue: undefined,
         hideOnLevel: 'project',
-        description: 'Toggle stream idling, saving bandwidth and battery',
+        description: 'Save bandwidth & battery',
         validate: (v) =>
           v === undefined ||
           (typeof v === 'number' &&
@@ -237,34 +238,32 @@ export function createSettings() {
           }
 
           return (
-            <div className="flex item-center gap-4 px-2 m-0 py-0">
-              <div className="flex flex-col">
-                <input
-                  type="checkbox"
-                  checked={settingValueInStorage !== undefined}
-                  onChange={(event) => {
-                    if (timeoutId) {
-                      return
-                    }
-                    const isChecked = event.currentTarget.checked
-                    clearTimeout(timeoutId)
-                    setTimeoutId(
-                      setTimeout(() => {
-                        const requested = !isChecked ? undefined : 5
-                        setPreview(requested)
-                        writeSettingValueToStorage(
-                          requested === undefined
-                            ? undefined
-                            : Number(requested) * MS_IN_MINUTE
-                        )
-                        setTimeoutId(undefined)
-                      }, 100)
-                    )
-                  }}
-                  className="block w-4 h-4"
-                />
-                <div></div>
-              </div>
+            <div className="flex item-center gap-4 m-0 py-0">
+              <Toggle
+                offLabel="Off"
+                onLabel="On"
+                checked={settingValueInStorage !== undefined}
+                onChange={(event) => {
+                  if (timeoutId) {
+                    return
+                  }
+                  const isChecked = event.currentTarget.checked
+                  clearTimeout(timeoutId)
+                  setTimeoutId(
+                    setTimeout(() => {
+                      const requested = !isChecked ? undefined : 5
+                      setPreview(requested)
+                      writeSettingValueToStorage(
+                        requested === undefined
+                          ? undefined
+                          : Number(requested) * MS_IN_MINUTE
+                      )
+                      setTimeoutId(undefined)
+                    }, 100)
+                  )
+                }}
+                className="block w-4 h-4"
+              />
               <div className="flex flex-col grow">
                 <input
                   type="range"
