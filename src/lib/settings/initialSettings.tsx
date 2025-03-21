@@ -219,67 +219,83 @@ export function createSettings() {
           (typeof v === 'number' &&
             v >= 1 * MS_IN_MINUTE &&
             v <= 60 * MS_IN_MINUTE),
-        Component: ({ value: settingValueInStorage, updateValue: writeSettingValueToStorage }) => {
+        Component: ({
+          value: settingValueInStorage,
+          updateValue: writeSettingValueToStorage,
+        }) => {
           const [timeoutId, setTimeoutId] = useState(undefined)
-          const [preview, setPreview] = useState(settingValueInStorage === undefined ? settingValueInStorage : (settingValueInStorage / MS_IN_MINUTE))
-          const onChangeRange = (e: React.SyntheticEvent) => setPreview(e.currentTarget.value)
+          const [preview, setPreview] = useState(
+            settingValueInStorage === undefined
+              ? settingValueInStorage
+              : settingValueInStorage / MS_IN_MINUTE
+          )
+          const onChangeRange = (e: React.SyntheticEvent) =>
+            setPreview(e.currentTarget.value)
           const onSaveRange = (e: React.SyntheticEvent) => {
             if (preview === undefined) return
-            writeSettingValueToStorage(Number(e.currentTarget.value) * MS_IN_MINUTE)
+            writeSettingValueToStorage(
+              Number(e.currentTarget.value) * MS_IN_MINUTE
+            )
           }
 
           return (
-          <div className="flex item-center gap-4 px-2 m-0 py-0">
-            <div className="flex flex-col">
-              <input
-                type="checkbox"
-                checked={settingValueInStorage !== undefined}
-                onChange={(event) => {
-                    if (timeoutId) { return }
+            <div className="flex item-center gap-4 px-2 m-0 py-0">
+              <div className="flex flex-col">
+                <input
+                  type="checkbox"
+                  checked={settingValueInStorage !== undefined}
+                  onChange={(event) => {
+                    if (timeoutId) {
+                      return
+                    }
                     const isChecked = event.currentTarget.checked
                     clearTimeout(timeoutId)
-                    setTimeoutId(setTimeout(() => {
-                      const requested = !isChecked ? undefined : 5
-                      setPreview(requested)
-                      writeSettingValueToStorage(requested === undefined ? undefined : Number(requested) * MS_IN_MINUTE)
-                      setTimeoutId(undefined)
-                    }, 100))
+                    setTimeoutId(
+                      setTimeout(() => {
+                        const requested = !isChecked ? undefined : 5
+                        setPreview(requested)
+                        writeSettingValueToStorage(
+                          requested === undefined
+                            ? undefined
+                            : Number(requested) * MS_IN_MINUTE
+                        )
+                        setTimeoutId(undefined)
+                      }, 100)
+                    )
+                  }}
+                  className="block w-4 h-4"
+                />
+                <div></div>
+              </div>
+              <div className="flex flex-col grow">
+                <input
+                  type="range"
+                  onChange={onChangeRange}
+                  onMouseUp={onSaveRange}
+                  onKeyUp={onSaveRange}
+                  onPointerUp={onSaveRange}
+                  disabled={preview === undefined}
+                  value={
+                    preview !== null && preview !== undefined ? preview : 5
                   }
-                }
-                className="block w-4 h-4"
-              />
-              <div></div>
+                  min={1}
+                  max={60}
+                  step={1}
+                  className="block flex-1"
+                />
+                {preview !== undefined && preview !== null && (
+                  <div>
+                    {preview / MS_IN_MINUTE === 60
+                      ? '1 hour'
+                      : preview / MS_IN_MINUTE === 1
+                      ? '1 minute'
+                      : preview + ' minutes'}
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="flex flex-col grow">
-              <input
-                type="range"
-                onChange={onChangeRange}
-                onMouseUp={onSaveRange}
-                onKeyUp={onSaveRange}
-                onPointerUp={onSaveRange}
-                disabled={preview === undefined}
-                value={
-                  preview !== null && preview !== undefined
-                    ? preview
-                    : 5
-                }
-                min={1}
-                max={60}
-                step={1}
-                className="block flex-1"
-              />
-              {preview !== undefined && preview !== null && (
-                <div>
-                  {preview / MS_IN_MINUTE === 60
-                    ? '1 hour'
-                    : preview / MS_IN_MINUTE === 1
-                    ? '1 minute'
-                    : preview + ' minutes'}
-                </div>
-              )}
-            </div>
-          </div>
-        )},
+          )
+        },
       }),
       allowOrbitInSketchMode: new Setting<boolean>({
         defaultValue: false,

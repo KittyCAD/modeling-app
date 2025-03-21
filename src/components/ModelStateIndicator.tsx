@@ -3,11 +3,7 @@ import { useEngineCommands } from '@src/components/EngineCommands'
 import { Spinner } from '@src/components/Spinner'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faPlay,
-  faPause,
-  faSpinner,
-} from '@fortawesome/free-solid-svg-icons'
+import { faPlay, faPause, faSpinner } from '@fortawesome/free-solid-svg-icons'
 
 export const ModelStateIndicator = () => {
   const engineStreamState = useSelector(engineStreamActor, (state) => state)
@@ -18,30 +14,34 @@ export const ModelStateIndicator = () => {
 
   if (engineStreamState.value === EngineStreamState.Paused) {
     className += 'text-secondary'
-    icon = <FontAwesomeIcon
-      data-testid={dataTestId + '-paused'}
-      icon={faPause}
-      width="20"
-      height="20"
-    />
+    icon = (
+      <FontAwesomeIcon
+        data-testid={dataTestId + '-paused'}
+        icon={faPause}
+        width="20"
+        height="20"
+      />
+    )
   } else if (engineStreamState.value === EngineStreamState.Playing) {
     className += 'text-secondary'
     icon = (
-        <FontAwesomeIcon
-          data-testid={dataTestId + '-execution-done'}
-          icon={faPlay}
-          width="20"
-          height="20"
-        />
+      <FontAwesomeIcon
+        data-testid={dataTestId + '-execution-done'}
+        icon={faPlay}
+        width="20"
+        height="20"
+      />
     )
   } else {
     className += 'text-secondary'
-    icon = <FontAwesomeIcon
-      data-testid={dataTestId + '-resuming'}
-      icon={faSpinner}
-      width="20"
-      height="20"
-    />
+    icon = (
+      <FontAwesomeIcon
+        data-testid={dataTestId + '-resuming'}
+        icon={faSpinner}
+        width="20"
+        height="20"
+      />
+    )
   }
 
   return (

@@ -332,15 +332,19 @@ class EngineConnection extends EventTarget {
 
     this.pingIntervalId = setInterval(() => {
       // Only start a new ping when the other is fulfilled.
-      if (this.pingPongSpan.ping) { return }
+      if (this.pingPongSpan.ping) {
+        return
+      }
 
       // Don't start pinging until we're connected.
-      if (this.state.type !== EngineConnectionStateType.ConnectionEstablished) { return }
+      if (this.state.type !== EngineConnectionStateType.ConnectionEstablished) {
+        return
+      }
 
       this.send({ type: 'ping' })
       this.pingPongSpan = {
         ping: new Date(),
-        pong: undefined
+        pong: undefined,
       }
     }, pingIntervalMs)
 
@@ -1000,7 +1004,10 @@ class EngineConnection extends EventTarget {
               this.pingPongSpan.pong = new Date()
               this.dispatchEvent(
                 new CustomEvent(EngineConnectionEvents.PingPongChanged, {
-                  detail: Math.min(999, Math.floor(this.pingPongSpan.pong - this.pingPongSpan.ping)),
+                  detail: Math.min(
+                    999,
+                    Math.floor(this.pingPongSpan.pong - this.pingPongSpan.ping)
+                  ),
                 })
               )
               // Clear the initial ping so our interval ping loop can fire again
