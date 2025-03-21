@@ -1117,9 +1117,19 @@ test.describe('Electron constraint tests', () => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = path.join(dir, 'test-sample')
         await fsp.mkdir(bracketDir, { recursive: true })
-        await fsp.copyFile(
-          executorInputPath('angled_line.kcl'),
-          path.join(bracketDir, 'main.kcl')
+        await fsp.writeFile(
+          path.join(bracketDir, 'main.kcl'),
+          `@settings(defaultLengthUnit = in)
+          const part001 = startSketchOn(XY)
+            |> startProfileAt([4.83, 12.56], %)
+            |> line(end = [15.1, 2.48])
+            |> line(end = [3.15, -9.85], tag = $seg01)
+            |> line(end = [-15.17, -4.1])
+            |> angledLine([segAng(seg01), 12.35], %)
+            |> line(end = [-13.02, 10.03])
+            |> close()
+            |> extrude(length = 4)`,
+          'utf-8'
         )
       })
 

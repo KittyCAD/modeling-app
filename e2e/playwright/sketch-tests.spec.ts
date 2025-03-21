@@ -2491,7 +2491,11 @@ extrude001 = extrude(profile003, length = 5)
     page,
   }) => {
     await page.addInitScript(async () => {
-      localStorage.setItem('persistCode', `myVar = 5`)
+      localStorage.setItem(
+        'persistCode',
+        `@settings(defaultLengthUnit = in)
+        myVar = 5`
+      )
     })
 
     await page.setBodyDimensions({ width: 1000, height: 500 })
