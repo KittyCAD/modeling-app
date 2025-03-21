@@ -126,7 +126,6 @@ export function useNetworkStatus() {
 
   useEffect(() => {
     const onPingPongChange = ({ detail: state }: CustomEvent) => {
-      console.log(state)
       setPing(state)
     }
 
