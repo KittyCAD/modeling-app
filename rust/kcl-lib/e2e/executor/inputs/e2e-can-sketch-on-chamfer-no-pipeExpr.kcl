@@ -1,4 +1,4 @@
-const sketch001 = startSketchOn('XZ')
+const sketch001 = startSketchOn(XZ)
   |> startProfileAt([75.8, 317.2], %)
   |> angledLine([0, 268.43], %, $rectangleSegmentA001)
   |> angledLine([

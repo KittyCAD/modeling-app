@@ -2,7 +2,7 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing big_number_angle_to_match_length_y.kcl
 ---
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(end = [1, 3.82], tag = $seg01)
   |> angledLineToX([-angleToMatchLengthY(seg01, 3, %), 3], %)

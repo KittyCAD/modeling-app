@@ -8,7 +8,7 @@ angleOffset = 135
 r = 1
 angleStart = 110
 
-startSketchOn('XY')
+startSketchOn(XY)
   |> startProfileAt([startX, startY], %)
   |> angledLine({ angle = angleStart, length = .000001 }, %)
   |> tangentialArc({ offset = angleOffset, radius = r }, %, $arc1)

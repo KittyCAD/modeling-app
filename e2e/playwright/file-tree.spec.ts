@@ -1064,7 +1064,7 @@ test.describe('Undo and redo do not keep history when navigating between files',
         // Click in the editor and add some new lines.
         await u.codeLocator.click()
 
-        await page.keyboard.type(`sketch001 = startSketchOn('XY')
+        await page.keyboard.type(`sketch001 = startSketchOn(XY)
     some other shit`)
 
         // Ensure the content in the editor changed.

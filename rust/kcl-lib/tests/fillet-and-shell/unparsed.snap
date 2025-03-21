@@ -45,7 +45,7 @@ miniHdmiHole = startSketchOn(XY)
      ])
   |> close(%)
 
-case = startSketchOn('XY')
+case = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [caseWidth, 0], tag = $edge1)
   |> line(endAbsolute = [caseWidth, caseLength], tag = $edge2)
@@ -63,7 +63,7 @@ case = startSketchOn('XY')
      )
 
 fn m25Screw(x, y, height) {
-  screw = startSketchOn("XY")
+  screw = startSketchOn(XY)
     |> startProfileAt([0, 0], %)
     |> circle(center = [x, y], radius = 2.5)
     |> hole(circle(center = [x, y], radius = 1.25), %)

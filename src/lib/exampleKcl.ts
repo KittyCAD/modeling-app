@@ -19,7 +19,7 @@ filletRadius = .25
 extFilletRadius = filletRadius + thickness
 mountingHoleDiameter = 0.5
 
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> xLine(length = shelfMountL - thickness, tag = $seg01)
   |> yLine(length = thickness, tag = $seg02)

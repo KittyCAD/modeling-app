@@ -56,7 +56,7 @@ baseHeight = 1
 totalHeightHalf = 2
 armThick = 0.5
 totalLen = 9.5
-part001 = startSketchOn('-XZ')
+part001 = startSketchOn(-XZ)
 |> startProfileAt([0, 0], %)
 |> yLine(length = baseHeight)
 |> xLine(length = baseLen)
@@ -483,7 +483,7 @@ test('Sketch on face', async ({ page, homePage, scene, cmdBar, toolbar }) => {
   await page.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
-      `sketch001 = startSketchOn('XZ')
+      `sketch001 = startSketchOn(XZ)
 |> startProfileAt([3.29, 7.86], %)
 |> line(end = [2.48, 2.44])
 |> line(end = [2.66, 1.17])

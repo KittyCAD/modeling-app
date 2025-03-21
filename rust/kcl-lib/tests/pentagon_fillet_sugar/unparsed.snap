@@ -12,7 +12,7 @@ circ = {
 }
 
 triangleLen = 500
-p = startSketchOn('XY')
+p = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> angledLine({ angle = 60, length = triangleLen }, %, $a)
   |> angledLine({ angle = 180, length = triangleLen }, %, $b)

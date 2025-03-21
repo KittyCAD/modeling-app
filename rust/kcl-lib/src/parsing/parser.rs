@@ -15,6 +15,7 @@ use winnow::{
 use super::{
     ast::types::{Ascription, ImportPath, LabelledExpression},
     token::{NumericSuffix, RESERVED_WORDS},
+    DeprecationKind,
 };
 use crate::{
     docs::StdLibFn,
@@ -477,7 +478,8 @@ fn string_literal(i: &mut TokenSlice) -> PResult<Node<Literal>> {
         })
         .context(expected("string literal (like \"myPart\""))
         .parse_next(i)?;
-    Ok(Node::new(
+
+    let result = Node::new(
         Literal {
             value,
             raw: token.value.clone(),
@@ -486,7 +488,32 @@ fn string_literal(i: &mut TokenSlice) -> PResult<Node<Literal>> {
         token.start,
         token.end,
         token.module_id,
-    ))
+    );
+
+    if let Some(suggestion) = super::deprecation(result.value.string_value().unwrap(), DeprecationKind::String) {
+        ParseContext::warn(
+            CompilationError::err(
+                result.as_source_range(),
+                format!(
+                    "Using `\"{}\"` is deprecated, prefer using `{}`.",
+                    result.value.string_value().unwrap(),
+                    suggestion
+                ),
+            )
+            .with_suggestion(
+                format!(
+                    "Replace `\"{}\"` with `{}`",
+                    result.value.string_value().unwrap(),
+                    suggestion
+                ),
+                suggestion,
+                None,
+                Tag::Deprecated,
+            ),
+        );
+    }
+
+    Ok(result)
 }
 
 /// Parse a KCL literal number, with no - sign.
@@ -2315,6 +2342,21 @@ fn nameable_identifier(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
         ));
     }
 
+    if let Some(suggestion) = super::deprecation(&result.name, DeprecationKind::Const) {
+        ParseContext::warn(
+            CompilationError::err(
+                result.as_source_range(),
+                format!("Using `{}` is deprecated, prefer using `{}`.", result.name, suggestion),
+            )
+            .with_suggestion(
+                format!("Replace `{}` with `{}`", result.name, suggestion),
+                suggestion,
+                None,
+                Tag::Deprecated,
+            ),
+        );
+    }
+
     Ok(result)
 }
 
@@ -3016,7 +3058,7 @@ fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
     }
     let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
 
-    Ok(Node::new_node(
+    let result = Node::new_node(
         fn_name.start,
         end,
         fn_name.module_id,
@@ -3025,7 +3067,27 @@ fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
             arguments: args,
             digest: None,
         },
-    ))
+    );
+
+    if let Some(suggestion) = super::deprecation(&result.callee.name, DeprecationKind::Function) {
+        ParseContext::warn(
+            CompilationError::err(
+                result.as_source_range(),
+                format!(
+                    "Calling `{}` is deprecated, prefer using `{}`.",
+                    result.callee.name, suggestion
+                ),
+            )
+            .with_suggestion(
+                format!("Replace `{}` with `{}`", result.callee.name, suggestion),
+                suggestion,
+                None,
+                Tag::Deprecated,
+            ),
+        );
+    }
+
+    Ok(result)
 }
 
 fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
@@ -3097,7 +3159,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
         non_code_nodes,
         ..Default::default()
     };
-    Ok(Node::new_node(
+    let result = Node::new_node(
         fn_name.start,
         end,
         fn_name.module_id,
@@ -3108,7 +3170,27 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
             digest: None,
             non_code_meta,
         },
-    ))
+    );
+
+    if let Some(suggestion) = super::deprecation(&result.callee.name, DeprecationKind::Function) {
+        ParseContext::warn(
+            CompilationError::err(
+                result.as_source_range(),
+                format!(
+                    "Calling `{}` is deprecated, prefer using `{}`.",
+                    result.callee.name, suggestion
+                ),
+            )
+            .with_suggestion(
+                format!("Replace `{}` with `{}`", result.callee.name, suggestion),
+                suggestion,
+                None,
+                Tag::Deprecated,
+            ),
+        );
+    }
+
+    Ok(result)
 }
 
 #[cfg(test)]
@@ -3326,7 +3408,7 @@ mySk1 = startSketchOn(XY)
 
     #[test]
     fn inline_comment_pipe_expression() {
-        let test_input = r#"a('XY')
+        let test_input = r#"a(XY)
         |> b(%)
         |> c(%) // inline-comment
         |> d(%)"#;
