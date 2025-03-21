@@ -762,7 +762,7 @@ plane002 = offsetPlane(XZ, offset = -2 * x)`
       )
     })
     await homePage.openProject('test-sample')
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
     await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 20_000 })
     const operationButton = await toolbar.getFeatureTreeOperation(
       'Offset Plane',

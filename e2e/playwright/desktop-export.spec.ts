@@ -11,7 +11,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 test(
   'export works on the first try',
   { tag: ['@electron', '@skipLocalEngine'] },
-  async ({ page, context, scene, tronApp }, testInfo) => {
+  async ({ page, context, scene, tronApp, cmdBar }, testInfo) => {
     if (!tronApp) {
       fail()
     }
@@ -48,10 +48,7 @@ test(
       await expect(exportButton).toBeVisible()
 
       // Wait for the model to finish loading
-      const modelStateIndicator = page.getByTestId(
-        'model-state-indicator-execution-done'
-      )
-      await expect(modelStateIndicator).toBeVisible({ timeout: 60000 })
+      await scene.settled(cmdBar)
 
       const gltfOption = page.getByText('glTF')
       const submitButton = page.getByText('Confirm Export')
@@ -124,8 +121,7 @@ test(
       // Close the file pane
       await u.closeFilePanel()
 
-      // FIXME: await scene.waitForExecutionDone() does not work. The modeling indicator stays in -receive-reliable and not execution done
-      await page.waitForTimeout(10000)
+      await scene.settled(cmdBar)
 
       // expect zero errors in guter
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()

@@ -1129,7 +1129,7 @@ test.describe('Electron constraint tests', () => {
           sortBy: 'last-modified-desc',
         })
         await homePage.openProject('test-sample')
-        await scene.waitForExecutionDone()
+        await scene.settled(cmdBar)
       })
 
       async function clickOnFirstSegmentLabel() {

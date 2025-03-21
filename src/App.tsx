@@ -145,6 +145,14 @@ export function App() {
     }
   }, [lastCommandType])
 
+  useEffect(() => {
+    // When leaving the modeling scene, cut the engine stream.
+    return () => {
+      engineStreamActor.send({ type: EngineStreamTransition.Pause })
+      console.log('engineStreamActor cleanup')
+    }
+  }, [])
+
   return (
     <div className="relative h-full flex flex-col" ref={ref}>
       <AppHeader
