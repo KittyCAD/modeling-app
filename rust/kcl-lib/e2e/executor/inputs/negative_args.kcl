@@ -1,0 +1,19 @@
+const width = 5
+const height = 10
+const length = 12
+
+fn box = (sk1, sk2, scale) => {
+  const boxSketch = startSketchOn(XY)
+    |> startProfileAt([sk1, sk2], %)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
+    |> close()
+    |> extrude(length = scale)
+  return boxSketch
+}
+
+box(0, 0, 5)
+box(10, 23, 8)
+let thing = box(-12, -15, 10)
+box(-20, -5, 10)

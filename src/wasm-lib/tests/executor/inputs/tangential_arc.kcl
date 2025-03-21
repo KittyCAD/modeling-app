@@ -1,5 +1,0 @@
-const boxSketch = startSketchAt([0, 0])
-    |> line([0, 10], %)
-    |> tangentialArc({radius: 5, offset: 90}, %)
-    |> line([5, -15], %)
-    |> extrude(10, %)

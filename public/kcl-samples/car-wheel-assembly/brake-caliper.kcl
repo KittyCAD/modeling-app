@@ -1,0 +1,86 @@
+// Brake Caliper
+// Brake calipers are used to squeeze the brake pads against the rotor, causing larger and larger amounts of friction depending on how hard the brakes are pressed.
+
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+
+// Import Constants
+import caliperTolerance, caliperPadLength, caliperThickness, caliperOuterEdgeRadius, caliperInnerEdgeRadius, rotorDiameter, rotorTotalThickness, yAxisOffset from "globals.kcl"
+
+// Sketch the brake caliper profile
+brakeCaliperSketch = startSketchOn('XY')
+  |> startProfileAt([
+       rotorDiameter / 2 + caliperTolerance,
+       0
+     ], %)
+  |> line(end = [
+       0,
+       rotorTotalThickness + caliperTolerance - caliperInnerEdgeRadius
+     ])
+  |> tangentialArc({
+       offset = 90,
+       radius = caliperInnerEdgeRadius
+     }, %)
+  |> line(end = [
+       -caliperPadLength + 2 * caliperInnerEdgeRadius,
+       0
+     ])
+  |> tangentialArc({
+       offset = -90,
+       radius = caliperInnerEdgeRadius
+     }, %)
+  |> line(end = [
+       0,
+       caliperThickness - (caliperInnerEdgeRadius * 2)
+     ])
+  |> tangentialArc({
+       offset = -90,
+       radius = caliperInnerEdgeRadius
+     }, %)
+  |> line(end = [
+       caliperPadLength + caliperThickness - caliperOuterEdgeRadius - caliperInnerEdgeRadius,
+       0
+     ])
+  |> tangentialArc({
+       offset = -90,
+       radius = caliperOuterEdgeRadius
+     }, %)
+  |> line(end = [
+       0,
+       -2 * caliperTolerance - (2 * caliperThickness) - rotorTotalThickness + 2 * caliperOuterEdgeRadius
+     ])
+  |> tangentialArc({
+       offset = -90,
+       radius = caliperOuterEdgeRadius
+     }, %)
+  |> line(end = [
+       -caliperPadLength - caliperThickness + caliperOuterEdgeRadius + caliperInnerEdgeRadius,
+       0
+     ])
+  |> tangentialArc({
+       offset = -90,
+       radius = caliperInnerEdgeRadius
+     }, %)
+  |> line(end = [
+       0,
+       caliperThickness - (2 * caliperInnerEdgeRadius)
+     ])
+  |> tangentialArc({
+       offset = -90,
+       radius = caliperInnerEdgeRadius
+     }, %)
+  |> line(end = [
+       caliperPadLength - (2 * caliperInnerEdgeRadius),
+       0
+     ])
+  |> tangentialArc({
+       offset = 90,
+       radius = caliperInnerEdgeRadius
+     }, %)
+  |> close()
+
+// Revolve the brake caliper sketch
+revolve(brakeCaliperSketch, axis = "Y", angle = -70)
+  |> appearance(color = "#c82d2d", metalness = 90, roughness = 90)

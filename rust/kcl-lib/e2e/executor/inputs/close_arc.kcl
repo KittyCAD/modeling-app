@@ -1,0 +1,9 @@
+const center = [0,0]
+const radius = 40
+const height = 3
+
+const body = startSketchOn(XY)
+      |> startProfileAt([center[0]+radius, center[1]], %)
+      |> arc({angleEnd: 360, angleStart: 0, radius}, %)
+      |> close()
+      |> extrude(length = height)

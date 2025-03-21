@@ -1,0 +1,104 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "declaration": {
+        "commentStart": 0,
+        "end": 28,
+        "id": {
+          "commentStart": 0,
+          "end": 4,
+          "name": "prop",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "commentStart": 7,
+          "computed": false,
+          "end": 28,
+          "object": {
+            "commentStart": 7,
+            "computed": false,
+            "end": 23,
+            "object": {
+              "commentStart": 7,
+              "computed": false,
+              "end": 17,
+              "object": {
+                "commentStart": 7,
+                "computed": false,
+                "end": 13,
+                "object": {
+                  "commentStart": 7,
+                  "end": 9,
+                  "name": "yo",
+                  "start": 7,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "property": {
+                  "commentStart": 10,
+                  "end": 13,
+                  "name": "one",
+                  "start": 10,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "start": 7,
+                "type": "MemberExpression",
+                "type": "MemberExpression"
+              },
+              "property": {
+                "commentStart": 14,
+                "end": 17,
+                "name": "two",
+                "start": 14,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "start": 7,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
+            },
+            "property": {
+              "commentStart": 18,
+              "end": 23,
+              "name": "three",
+              "start": 18,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "start": 7,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          },
+          "property": {
+            "commentStart": 24,
+            "end": 28,
+            "name": "four",
+            "start": 24,
+            "type": "Identifier",
+            "type": "Identifier"
+          },
+          "start": 7,
+          "type": "MemberExpression",
+          "type": "MemberExpression"
+        },
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 28,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "commentStart": 0,
+  "end": 28,
+  "start": 0
+}

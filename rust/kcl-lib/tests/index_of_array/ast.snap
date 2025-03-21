@@ -1,0 +1,542 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing index_of_array.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 35,
+          "end": 0,
+          "id": {
+            "commentStart": 35,
+            "end": 0,
+            "name": "arr",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 41,
+            "elements": [
+              {
+                "commentStart": 42,
+                "end": 0,
+                "raw": "90",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 90.0,
+                  "suffix": "None"
+                }
+              },
+              {
+                "commentStart": 46,
+                "end": 0,
+                "raw": "91",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 91.0,
+                  "suffix": "None"
+                }
+              },
+              {
+                "commentStart": 50,
+                "end": 0,
+                "raw": "92",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 92.0,
+                  "suffix": "None"
+                }
+              }
+            ],
+            "end": 0,
+            "start": 0,
+            "type": "ArrayExpression",
+            "type": "ArrayExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 53,
+        "declaration": {
+          "commentStart": 81,
+          "end": 0,
+          "id": {
+            "commentStart": 81,
+            "end": 0,
+            "name": "result0",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 91,
+            "computed": false,
+            "end": 0,
+            "object": {
+              "commentStart": 91,
+              "end": 0,
+              "name": "arr",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "property": {
+              "commentStart": 95,
+              "end": 0,
+              "raw": "1",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
+            },
+            "start": 0,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 97,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 118,
+              "end": 0,
+              "name": "result0",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "commentStart": 127,
+              "end": 0,
+              "raw": "91",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 91.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 131,
+              "end": 0,
+              "raw": "\"Literal property lookup\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "Literal property lookup"
+            }
+          ],
+          "callee": {
+            "commentStart": 99,
+            "end": 0,
+            "name": "assertLessThanOrEq",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "commentStart": 99,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 158,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 180,
+              "end": 0,
+              "name": "result0",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "commentStart": 189,
+              "end": 0,
+              "raw": "91",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 91.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 193,
+              "end": 0,
+              "raw": "\"Literal property lookup\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "Literal property lookup"
+            }
+          ],
+          "callee": {
+            "commentStart": 158,
+            "end": 0,
+            "name": "assertGreaterThanOrEq",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "commentStart": 158,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 219,
+        "declaration": {
+          "commentStart": 248,
+          "end": 0,
+          "id": {
+            "commentStart": 248,
+            "end": 0,
+            "name": "i",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "commentStart": 256,
+                "end": 0,
+                "left": {
+                  "commentStart": 256,
+                  "end": 0,
+                  "raw": "1",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
+                  }
+                },
+                "operator": "+",
+                "right": {
+                  "commentStart": 260,
+                  "end": 0,
+                  "raw": "0",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
+                  }
+                },
+                "start": 0,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              }
+            ],
+            "callee": {
+              "commentStart": 252,
+              "end": 0,
+              "name": "int",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "commentStart": 252,
+            "end": 0,
+            "start": 0,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 263,
+        "declaration": {
+          "commentStart": 263,
+          "end": 0,
+          "id": {
+            "commentStart": 263,
+            "end": 0,
+            "name": "result1",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 273,
+            "computed": true,
+            "end": 0,
+            "object": {
+              "commentStart": 273,
+              "end": 0,
+              "name": "arr",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "property": {
+              "commentStart": 277,
+              "end": 0,
+              "name": "i",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "start": 0,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 279,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 300,
+              "end": 0,
+              "name": "result1",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "commentStart": 309,
+              "end": 0,
+              "raw": "91",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 91.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 313,
+              "end": 0,
+              "raw": "\"Computed property lookup\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "Computed property lookup"
+            }
+          ],
+          "callee": {
+            "commentStart": 281,
+            "end": 0,
+            "name": "assertLessThanOrEq",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "commentStart": 281,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 341,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 363,
+              "end": 0,
+              "name": "result1",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "commentStart": 372,
+              "end": 0,
+              "raw": "91",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 91.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 376,
+              "end": 0,
+              "raw": "\"Computed property lookup\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "Computed property lookup"
+            }
+          ],
+          "callee": {
+            "commentStart": 341,
+            "end": 0,
+            "name": "assertGreaterThanOrEq",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "commentStart": 341,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "0": [
+          {
+            "commentStart": 53,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Test: literal index.",
+              "style": "line"
+            }
+          },
+          {
+            "commentStart": 78,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "1": [
+          {
+            "commentStart": 97,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "3": [
+          {
+            "commentStart": 219,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Test: computed index.",
+              "style": "line"
+            }
+          },
+          {
+            "commentStart": 245,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "5": [
+          {
+            "commentStart": 279,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "commentStart": 0,
+          "end": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "This tests indexing an array.",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 32,
+          "end": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}

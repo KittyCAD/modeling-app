@@ -1,0 +1,13 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Error from executing array_elem_pop_fail.kcl
+---
+KCL UndefinedValue error
+
+  × undefined value: The array doesn't have any item at index 2
+   ╭─[3:8]
+ 2 │ pushedArr = pop(arr)
+ 3 │ fail = pushedArr[2]
+   ·        ──────┬─────
+   ·              ╰── tests/array_elem_pop_fail/input.kcl
+   ╰────

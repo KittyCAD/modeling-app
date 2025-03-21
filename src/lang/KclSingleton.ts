@@ -1,4 +1,4 @@
-import { executeAst, lintAst } from 'lang/langHelpers'
+import { executeAst, executeAstMock, lintAst } from 'lang/langHelpers'
 import { handleSelectionBatch, Selections } from 'lib/selections'
 import {
   KCLError,
@@ -11,29 +11,36 @@ import { err } from 'lib/trap'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
 
 import {
-  CallExpression,
-  clearSceneAndBustCache,
   emptyExecState,
   ExecState,
+  getKclVersion,
   initPromise,
+  jsAppSettings,
+  KclValue,
   parse,
   PathToNode,
   Program,
-  ProgramMemory,
   recast,
   SourceRange,
   topLevelRange,
+  VariableMap,
 } from 'lang/wasm'
-import { getNodeFromPath } from './queryAst'
-import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
+import { getNodeFromPath, getSettingsAnnotation } from './queryAst'
+import {
+  codeManager,
+  editorManager,
+  sceneInfra,
+  rustContext,
+} from 'lib/singletons'
 import { Diagnostic } from '@codemirror/lint'
 import { markOnce } from 'lib/performance'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   EntityType_type,
   ModelingCmdReq_type,
 } from '@kittycad/lib/dist/types/src/models'
-import { Operation } from 'wasm-lib/kcl/bindings/Operation'
+import { Operation } from '@rust/kcl-lib/bindings/Operation'
+import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -56,10 +63,14 @@ export class KclManager {
       nonCodeNodes: {},
       startNodes: [],
     },
+    innerAttrs: [],
+    outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
   }
   private _execState: ExecState = emptyExecState()
-  private _programMemory: ProgramMemory = ProgramMemory.empty()
-  lastSuccessfulProgramMemory: ProgramMemory = ProgramMemory.empty()
+  private _variables: VariableMap = {}
+  lastSuccessfulVariables: VariableMap = {}
   lastSuccessfulOperations: Operation[] = []
   private _logs: string[] = []
   private _errors: KCLError[] = []
@@ -67,14 +78,18 @@ export class KclManager {
   private _isExecuting = false
   private _executeIsStale: ExecuteArgs | null = null
   private _wasmInitFailed = true
-  private _hasErrors = false
+  private _astParseFailed = false
   private _switchedFiles = false
+  private _fileSettings: KclSettingsAnnotation = {}
+  private _kclVersion: string | undefined = undefined
 
   engineCommandManager: EngineCommandManager
 
   private _isExecutingCallback: (arg: boolean) => void = () => {}
   private _astCallBack: (arg: Node<Program>) => void = () => {}
-  private _programMemoryCallBack: (arg: ProgramMemory) => void = () => {}
+  private _variablesCallBack: (arg: {
+    [key in string]?: KclValue | undefined
+  }) => void = () => {}
   private _logsCallBack: (arg: string[]) => void = () => {}
   private _kclErrorsCallBack: (errors: KCLError[]) => void = () => {}
   private _diagnosticsCallback: (errors: Diagnostic[]) => void = () => {}
@@ -93,22 +108,32 @@ export class KclManager {
     this._switchedFiles = switchedFiles
   }
 
-  get programMemory() {
-    return this._programMemory
+  get variables() {
+    return this._variables
   }
   // This is private because callers should be setting the entire execState.
-  private set programMemory(programMemory) {
-    this._programMemory = programMemory
-    this._programMemoryCallBack(programMemory)
+  private set variables(variables) {
+    this._variables = variables
+    this._variablesCallBack(variables)
   }
 
   private set execState(execState) {
     this._execState = execState
-    this.programMemory = execState.memory
+    this.variables = execState.variables
   }
 
   get execState() {
     return this._execState
+  }
+
+  // Get the kcl version from the wasm module
+  // and store it in the singleton
+  // so we don't waste time getting it multiple times
+  get kclVersion() {
+    if (this._kclVersion === undefined) {
+      this._kclVersion = getKclVersion()
+    }
+    return this._kclVersion
   }
 
   get errors() {
@@ -142,7 +167,7 @@ export class KclManager {
   }
 
   hasErrors(): boolean {
-    return this._hasErrors
+    return this._astParseFailed || this._errors.length > 0
   }
 
   setDiagnosticsForCurrentErrors() {
@@ -197,7 +222,7 @@ export class KclManager {
   }
 
   registerCallBacks({
-    setProgramMemory,
+    setVariables,
     setAst,
     setLogs,
     setErrors,
@@ -205,7 +230,7 @@ export class KclManager {
     setIsExecuting,
     setWasmInitFailed,
   }: {
-    setProgramMemory: (arg: ProgramMemory) => void
+    setVariables: (arg: VariableMap) => void
     setAst: (arg: Node<Program>) => void
     setLogs: (arg: string[]) => void
     setErrors: (errors: KCLError[]) => void
@@ -213,7 +238,7 @@ export class KclManager {
     setIsExecuting: (arg: boolean) => void
     setWasmInitFailed: (arg: boolean) => void
   }) {
-    this._programMemoryCallBack = setProgramMemory
+    this._variablesCallBack = setVariables
     this._astCallBack = setAst
     this._logsCallBack = setLogs
     this._kclErrorsCallBack = setErrors
@@ -236,6 +261,10 @@ export class KclManager {
         nonCodeNodes: {},
         startNodes: [],
       },
+      innerAttrs: [],
+      outerAttrs: [],
+      preComments: [],
+      commentStart: 0,
     }
   }
 
@@ -249,8 +278,11 @@ export class KclManager {
   private async checkIfSwitchedFilesShouldClear() {
     // If we were switching files and we hit an error on parse we need to bust
     // the cache and clear the scene.
-    if (this._hasErrors && this._switchedFiles) {
-      await clearSceneAndBustCache(this.engineCommandManager)
+    if (this._astParseFailed && this._switchedFiles) {
+      await rustContext.clearSceneAndBustCache(
+        { settings: await jsAppSettings() },
+        codeManager.currentFilePath || undefined
+      )
     } else if (this._switchedFiles) {
       // Reset the switched files boolean.
       this._switchedFiles = false
@@ -260,21 +292,28 @@ export class KclManager {
   async safeParse(code: string): Promise<Node<Program> | null> {
     const result = parse(code)
     this.diagnostics = []
-    this._hasErrors = false
+    this._astParseFailed = false
 
     if (err(result)) {
       const kclerror: KCLError = result as KCLError
       this.diagnostics = kclErrorsToDiagnostics([kclerror])
-      this._hasErrors = true
+      this._astParseFailed = true
 
       await this.checkIfSwitchedFilesShouldClear()
       return null
     }
 
+    // GOTCHA:
+    // When we safeParse this is tied to execution because they clicked a new file to load
+    // Clear all previous errors and logs because they are old since they executed a new file
+    // If we decouple safeParse from execution we need to move this application logic.
+    this._kclErrorsCallBack([])
+    this._logsCallBack([])
+
     this.addDiagnostics(complilationErrorsToDiagnostics(result.errors))
     this.addDiagnostics(complilationErrorsToDiagnostics(result.warnings))
     if (result.errors.length > 0) {
-      this._hasErrors = true
+      this._astParseFailed = true
 
       await this.checkIfSwitchedFilesShouldClear()
       return null
@@ -289,6 +328,7 @@ export class KclManager {
       if (this.wasmInitFailed) {
         this.wasmInitFailed = false
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       this.wasmInitFailed = true
     }
@@ -303,7 +343,7 @@ export class KclManager {
     if (this.isExecuting) {
       this.executeIsStale = args
 
-      // The previous execteAst will be rejected and cleaned up. The execution will be marked as stale.
+      // The previous executeAst will be rejected and cleaned up. The execution will be marked as stale.
       // A new executeAst will start.
       this.engineCommandManager.rejectAllModelingCommands(
         EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
@@ -323,7 +363,7 @@ export class KclManager {
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
       path: codeManager.currentFilePath || undefined,
-      engineCommandManager: this.engineCommandManager,
+      rustContext,
     })
 
     // Program was not interrupted, setup the scene
@@ -367,23 +407,33 @@ export class KclManager {
       await this.disableSketchMode()
     }
 
+    let fileSettings = getSettingsAnnotation(ast)
+    if (err(fileSettings)) {
+      console.error(fileSettings)
+      fileSettings = {}
+    }
+    this.fileSettings = fileSettings
+
     this.logs = logs
     this.errors = errors
     // Do not add the errors since the program was interrupted and the error is not a real KCL error
     this.addDiagnostics(isInterrupted ? [] : kclErrorsToDiagnostics(errors))
+    // Add warnings and non-fatal errors
+    this.addDiagnostics(
+      isInterrupted ? [] : complilationErrorsToDiagnostics(execState.errors)
+    )
     this.execState = execState
     if (!errors.length) {
-      this.lastSuccessfulProgramMemory = execState.memory
+      this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
     }
     this.ast = { ...ast }
-    // updateArtifactGraph relies on updated executeState/programMemory
+    // updateArtifactGraph relies on updated executeState/variables
     this.engineCommandManager.updateArtifactGraph(execState.artifactGraph)
     this._executeCallback()
     if (!isInterrupted) {
       sceneInfra.modelingSend({ type: 'code edit during sketch' })
     }
-
     this.engineCommandManager.addCommandLog({
       type: 'execution-done',
       data: null,
@@ -412,14 +462,7 @@ export class KclManager {
 
   // NOTE: this always updates the code state and editor.
   // DO NOT CALL THIS from codemirror ever.
-  async executeAstMock(
-    ast: Program = this._ast,
-    {
-      updates,
-    }: {
-      updates: 'none' | 'artifactRanges'
-    } = { updates: 'none' }
-  ) {
+  async executeAstMock(ast: Program) {
     await this.ensureWasmInit()
 
     const newCode = recast(ast)
@@ -429,53 +472,25 @@ export class KclManager {
     }
     const newAst = await this.safeParse(newCode)
     if (!newAst) {
+      // By clearning the AST we indicate to our callers that there was an issue with execution and
+      // the pre-execution state should be restored.
       this.clearAst()
       return
     }
     this._ast = { ...newAst }
 
-    const { logs, errors, execState } = await executeAst({
+    const { logs, errors, execState } = await executeAstMock({
       ast: newAst,
-      engineCommandManager: this.engineCommandManager,
-      // We make sure to send an empty program memory to denote we mean mock mode.
-      programMemoryOverride: ProgramMemory.empty(),
+      rustContext,
     })
 
     this._logs = logs
-    this.addDiagnostics(kclErrorsToDiagnostics(errors))
     this._execState = execState
-    this._programMemory = execState.memory
+    this._variables = execState.variables
     if (!errors.length) {
-      this.lastSuccessfulProgramMemory = execState.memory
+      this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
     }
-    if (updates !== 'artifactRanges') return
-
-    // TODO the below seems like a work around, I wish there's a comment explaining exactly what
-    // problem this solves, but either way we should strive to remove it.
-    Array.from(this.engineCommandManager.artifactGraph).forEach(
-      ([commandId, artifact]) => {
-        if (!('codeRef' in artifact)) return
-        const _node1 = getNodeFromPath<Node<CallExpression>>(
-          this.ast,
-          artifact.codeRef.pathToNode,
-          'CallExpression'
-        )
-        if (err(_node1)) return
-        const { node } = _node1
-        if (node.type !== 'CallExpression') return
-        const [oldStart, oldEnd] = artifact.codeRef.range
-        if (oldStart === 0 && oldEnd === 0) return
-        if (oldStart === node.start && oldEnd === node.end) return
-        this.engineCommandManager.artifactGraph.set(commandId, {
-          ...artifact,
-          codeRef: {
-            ...artifact.codeRef,
-            range: topLevelRange(node.start, node.end),
-          },
-        })
-      }
-    )
   }
   cancelAllExecutions() {
     this._cancelTokens.forEach((_, key) => {
@@ -486,6 +501,8 @@ export class KclManager {
     const ast = await this.safeParse(codeManager.code)
 
     if (!ast) {
+      // By clearning the AST we indicate to our callers that there was an issue with execution and
+      // the pre-execution state should be restored.
       this.clearAst()
       return
     }
@@ -618,7 +635,7 @@ export class KclManager {
   }
 
   get defaultPlanes() {
-    return this?.engineCommandManager?.defaultPlanes
+    return rustContext.defaultPlanes
   }
 
   showPlanes(all = false) {
@@ -696,6 +713,14 @@ export class KclManager {
   // Determines if there is no KCL code which means it is executing a blank KCL file
   _isAstEmpty(ast: Node<Program>) {
     return ast.start === 0 && ast.end === 0 && ast.body.length === 0
+  }
+
+  get fileSettings() {
+    return this._fileSettings
+  }
+
+  set fileSettings(settings: KclSettingsAnnotation) {
+    this._fileSettings = settings
   }
 }
 

@@ -1,0 +1,2384 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing dodecahedron.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 305,
+        "declaration": {
+          "commentStart": 351,
+          "end": 0,
+          "id": {
+            "commentStart": 351,
+            "end": 0,
+            "name": "circR",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 359,
+            "end": 0,
+            "raw": "25",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 25.0,
+              "suffix": "None"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "preComments": [
+          "// Input parameters",
+          "// circumscribed radius"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 361,
+        "declaration": {
+          "commentStart": 421,
+          "end": 0,
+          "id": {
+            "commentStart": 421,
+            "end": 0,
+            "name": "wallThickness",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 437,
+            "end": 0,
+            "left": {
+              "commentStart": 437,
+              "end": 0,
+              "name": "circR",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "operator": "*",
+            "right": {
+              "commentStart": 445,
+              "end": 0,
+              "raw": "0.2",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.2,
+                "suffix": "None"
+              }
+            },
+            "start": 0,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// Calculated parameters",
+          "// thickness of the dodecahedron"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 448,
+        "declaration": {
+          "commentStart": 484,
+          "end": 0,
+          "id": {
+            "commentStart": 484,
+            "end": 0,
+            "name": "dihedral",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "argument": {
+                  "commentStart": 502,
+                  "end": 0,
+                  "left": {
+                    "arguments": [
+                      {
+                        "commentStart": 507,
+                        "end": 0,
+                        "raw": "5",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 5.0,
+                          "suffix": "None"
+                        }
+                      }
+                    ],
+                    "callee": {
+                      "commentStart": 502,
+                      "end": 0,
+                      "name": "sqrt",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "commentStart": 502,
+                    "end": 0,
+                    "start": 0,
+                    "type": "CallExpression",
+                    "type": "CallExpression"
+                  },
+                  "operator": "/",
+                  "right": {
+                    "commentStart": 512,
+                    "end": 0,
+                    "raw": "5",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 5.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "start": 0,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                "commentStart": 500,
+                "end": 0,
+                "operator": "-",
+                "start": 0,
+                "type": "UnaryExpression",
+                "type": "UnaryExpression"
+              }
+            ],
+            "callee": {
+              "commentStart": 495,
+              "end": 0,
+              "name": "acos",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "commentStart": 495,
+            "end": 0,
+            "start": 0,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// angle between faces in radians"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 515,
+        "declaration": {
+          "commentStart": 537,
+          "end": 0,
+          "id": {
+            "commentStart": 537,
+            "end": 0,
+            "name": "inscR",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 545,
+            "end": 0,
+            "left": {
+              "commentStart": 545,
+              "end": 0,
+              "left": {
+                "commentStart": 545,
+                "end": 0,
+                "name": "circR",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "operator": "/",
+              "right": {
+                "commentStart": 553,
+                "end": 0,
+                "raw": "15",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 15.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 0,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            "operator": "*",
+            "right": {
+              "arguments": [
+                {
+                  "commentStart": 563,
+                  "end": 0,
+                  "left": {
+                    "commentStart": 563,
+                    "end": 0,
+                    "raw": "75",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 75.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "operator": "+",
+                  "right": {
+                    "commentStart": 568,
+                    "end": 0,
+                    "left": {
+                      "commentStart": 568,
+                      "end": 0,
+                      "raw": "30",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 30.0,
+                        "suffix": "None"
+                      }
+                    },
+                    "operator": "*",
+                    "right": {
+                      "arguments": [
+                        {
+                          "commentStart": 578,
+                          "end": 0,
+                          "raw": "5",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 5.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "callee": {
+                        "commentStart": 573,
+                        "end": 0,
+                        "name": "sqrt",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "commentStart": 573,
+                      "end": 0,
+                      "start": 0,
+                      "type": "CallExpression",
+                      "type": "CallExpression"
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "start": 0,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                }
+              ],
+              "callee": {
+                "commentStart": 558,
+                "end": 0,
+                "name": "sqrt",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "commentStart": 558,
+              "end": 0,
+              "start": 0,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            "start": 0,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// inscribed radius"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 581,
+        "declaration": {
+          "commentStart": 607,
+          "end": 0,
+          "id": {
+            "commentStart": 607,
+            "end": 0,
+            "name": "edgeL",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 615,
+            "end": 0,
+            "left": {
+              "commentStart": 615,
+              "end": 0,
+              "left": {
+                "commentStart": 615,
+                "end": 0,
+                "raw": "4",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 4.0,
+                  "suffix": "None"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "commentStart": 619,
+                "end": 0,
+                "name": "circR",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "start": 0,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            "operator": "/",
+            "right": {
+              "commentStart": 628,
+              "end": 0,
+              "left": {
+                "arguments": [
+                  {
+                    "commentStart": 633,
+                    "end": 0,
+                    "raw": "3",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 3.0,
+                      "suffix": "None"
+                    }
+                  }
+                ],
+                "callee": {
+                  "commentStart": 628,
+                  "end": 0,
+                  "name": "sqrt",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "commentStart": 628,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              "operator": "*",
+              "right": {
+                "commentStart": 639,
+                "end": 0,
+                "left": {
+                  "commentStart": 639,
+                  "end": 0,
+                  "raw": "1",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
+                  }
+                },
+                "operator": "+",
+                "right": {
+                  "arguments": [
+                    {
+                      "commentStart": 648,
+                      "end": 0,
+                      "raw": "5",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 5.0,
+                        "suffix": "None"
+                      }
+                    }
+                  ],
+                  "callee": {
+                    "commentStart": 643,
+                    "end": 0,
+                    "name": "sqrt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "commentStart": 643,
+                  "end": 0,
+                  "start": 0,
+                  "type": "CallExpression",
+                  "type": "CallExpression"
+                },
+                "start": 0,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "start": 0,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            "start": 0,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// pentagon edge length"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 652,
+        "declaration": {
+          "commentStart": 673,
+          "end": 0,
+          "id": {
+            "commentStart": 673,
+            "end": 0,
+            "name": "pentR",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 681,
+            "end": 0,
+            "left": {
+              "commentStart": 681,
+              "end": 0,
+              "left": {
+                "commentStart": 681,
+                "end": 0,
+                "name": "edgeL",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "operator": "/",
+              "right": {
+                "commentStart": 689,
+                "end": 0,
+                "raw": "2",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 0,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            "operator": "/",
+            "right": {
+              "arguments": [
+                {
+                  "arguments": [
+                    {
+                      "commentStart": 707,
+                      "end": 0,
+                      "raw": "36",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 36.0,
+                        "suffix": "None"
+                      }
+                    }
+                  ],
+                  "callee": {
+                    "commentStart": 697,
+                    "end": 0,
+                    "name": "toRadians",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "commentStart": 697,
+                  "end": 0,
+                  "start": 0,
+                  "type": "CallExpression",
+                  "type": "CallExpression"
+                }
+              ],
+              "callee": {
+                "commentStart": 693,
+                "end": 0,
+                "name": "sin",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "commentStart": 693,
+              "end": 0,
+              "start": 0,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            "start": 0,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// pentagon radius"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 711,
+        "declaration": {
+          "commentStart": 758,
+          "end": 0,
+          "id": {
+            "commentStart": 758,
+            "end": 0,
+            "name": "plane",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 766,
+            "end": 0,
+            "properties": [
+              {
+                "commentStart": 770,
+                "end": 0,
+                "key": {
+                  "commentStart": 770,
+                  "end": 0,
+                  "name": "plane",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "start": 0,
+                "type": "ObjectProperty",
+                "value": {
+                  "commentStart": 778,
+                  "end": 0,
+                  "properties": [
+                    {
+                      "commentStart": 784,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 784,
+                        "end": 0,
+                        "name": "origin",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 793,
+                        "elements": [
+                          {
+                            "commentStart": 801,
+                            "end": 0,
+                            "left": {
+                              "argument": {
+                                "commentStart": 802,
+                                "end": 0,
+                                "name": "inscR",
+                                "start": 0,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "commentStart": 801,
+                              "end": 0,
+                              "operator": "-",
+                              "start": 0,
+                              "type": "UnaryExpression",
+                              "type": "UnaryExpression"
+                            },
+                            "operator": "*",
+                            "right": {
+                              "arguments": [
+                                {
+                                  "arguments": [
+                                    {
+                                      "commentStart": 824,
+                                      "end": 0,
+                                      "left": {
+                                        "arguments": [
+                                          {
+                                            "commentStart": 834,
+                                            "end": 0,
+                                            "name": "dihedral",
+                                            "start": 0,
+                                            "type": "Identifier",
+                                            "type": "Identifier"
+                                          }
+                                        ],
+                                        "callee": {
+                                          "commentStart": 824,
+                                          "end": 0,
+                                          "name": "toDegrees",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "commentStart": 824,
+                                        "end": 0,
+                                        "start": 0,
+                                        "type": "CallExpression",
+                                        "type": "CallExpression"
+                                      },
+                                      "operator": "-",
+                                      "right": {
+                                        "commentStart": 846,
+                                        "end": 0,
+                                        "raw": "90",
+                                        "start": 0,
+                                        "type": "Literal",
+                                        "type": "Literal",
+                                        "value": {
+                                          "value": 90.0,
+                                          "suffix": "None"
+                                        }
+                                      },
+                                      "start": 0,
+                                      "type": "BinaryExpression",
+                                      "type": "BinaryExpression"
+                                    }
+                                  ],
+                                  "callee": {
+                                    "commentStart": 814,
+                                    "end": 0,
+                                    "name": "toRadians",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "commentStart": 814,
+                                  "end": 0,
+                                  "start": 0,
+                                  "type": "CallExpression",
+                                  "type": "CallExpression"
+                                }
+                              ],
+                              "callee": {
+                                "commentStart": 810,
+                                "end": 0,
+                                "name": "cos",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "commentStart": 810,
+                              "end": 0,
+                              "start": 0,
+                              "type": "CallExpression",
+                              "type": "CallExpression"
+                            },
+                            "start": 0,
+                            "type": "BinaryExpression",
+                            "type": "BinaryExpression"
+                          },
+                          {
+                            "commentStart": 858,
+                            "end": 0,
+                            "raw": "0",
+                            "start": 0,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 0.0,
+                              "suffix": "None"
+                            }
+                          },
+                          {
+                            "commentStart": 867,
+                            "end": 0,
+                            "left": {
+                              "commentStart": 867,
+                              "end": 0,
+                              "name": "inscR",
+                              "start": 0,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "operator": "-",
+                            "right": {
+                              "commentStart": 876,
+                              "end": 0,
+                              "left": {
+                                "commentStart": 876,
+                                "end": 0,
+                                "name": "inscR",
+                                "start": 0,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "operator": "*",
+                              "right": {
+                                "arguments": [
+                                  {
+                                    "arguments": [
+                                      {
+                                        "commentStart": 898,
+                                        "end": 0,
+                                        "left": {
+                                          "arguments": [
+                                            {
+                                              "commentStart": 908,
+                                              "end": 0,
+                                              "name": "dihedral",
+                                              "start": 0,
+                                              "type": "Identifier",
+                                              "type": "Identifier"
+                                            }
+                                          ],
+                                          "callee": {
+                                            "commentStart": 898,
+                                            "end": 0,
+                                            "name": "toDegrees",
+                                            "start": 0,
+                                            "type": "Identifier"
+                                          },
+                                          "commentStart": 898,
+                                          "end": 0,
+                                          "start": 0,
+                                          "type": "CallExpression",
+                                          "type": "CallExpression"
+                                        },
+                                        "operator": "-",
+                                        "right": {
+                                          "commentStart": 920,
+                                          "end": 0,
+                                          "raw": "90",
+                                          "start": 0,
+                                          "type": "Literal",
+                                          "type": "Literal",
+                                          "value": {
+                                            "value": 90.0,
+                                            "suffix": "None"
+                                          }
+                                        },
+                                        "start": 0,
+                                        "type": "BinaryExpression",
+                                        "type": "BinaryExpression"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "commentStart": 888,
+                                      "end": 0,
+                                      "name": "toRadians",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "commentStart": 888,
+                                    "end": 0,
+                                    "start": 0,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  }
+                                ],
+                                "callee": {
+                                  "commentStart": 884,
+                                  "end": 0,
+                                  "name": "sin",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "commentStart": 884,
+                                "end": 0,
+                                "start": 0,
+                                "type": "CallExpression",
+                                "type": "CallExpression"
+                              },
+                              "start": 0,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            },
+                            "start": 0,
+                            "type": "BinaryExpression",
+                            "type": "BinaryExpression"
+                          }
+                        ],
+                        "end": 0,
+                        "start": 0,
+                        "type": "ArrayExpression",
+                        "type": "ArrayExpression"
+                      }
+                    },
+                    {
+                      "commentStart": 937,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 937,
+                        "end": 0,
+                        "name": "xAxis",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 945,
+                        "elements": [
+                          {
+                            "arguments": [
+                              {
+                                "commentStart": 950,
+                                "end": 0,
+                                "name": "dihedral",
+                                "start": 0,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              }
+                            ],
+                            "callee": {
+                              "commentStart": 946,
+                              "end": 0,
+                              "name": "cos",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "commentStart": 946,
+                            "end": 0,
+                            "start": 0,
+                            "type": "CallExpression",
+                            "type": "CallExpression"
+                          },
+                          {
+                            "commentStart": 961,
+                            "end": 0,
+                            "raw": "0.0",
+                            "start": 0,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 0.0,
+                              "suffix": "None"
+                            }
+                          },
+                          {
+                            "arguments": [
+                              {
+                                "commentStart": 970,
+                                "end": 0,
+                                "name": "dihedral",
+                                "start": 0,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              }
+                            ],
+                            "callee": {
+                              "commentStart": 966,
+                              "end": 0,
+                              "name": "sin",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "commentStart": 966,
+                            "end": 0,
+                            "start": 0,
+                            "type": "CallExpression",
+                            "type": "CallExpression"
+                          }
+                        ],
+                        "end": 0,
+                        "start": 0,
+                        "type": "ArrayExpression",
+                        "type": "ArrayExpression"
+                      }
+                    },
+                    {
+                      "commentStart": 986,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 986,
+                        "end": 0,
+                        "name": "yAxis",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 994,
+                        "elements": [
+                          {
+                            "commentStart": 995,
+                            "end": 0,
+                            "raw": "0",
+                            "start": 0,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 0.0,
+                              "suffix": "None"
+                            }
+                          },
+                          {
+                            "commentStart": 998,
+                            "end": 0,
+                            "raw": "1",
+                            "start": 0,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 1.0,
+                              "suffix": "None"
+                            }
+                          },
+                          {
+                            "commentStart": 1001,
+                            "end": 0,
+                            "raw": "0",
+                            "start": 0,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 0.0,
+                              "suffix": "None"
+                            }
+                          }
+                        ],
+                        "end": 0,
+                        "start": 0,
+                        "type": "ArrayExpression",
+                        "type": "ArrayExpression"
+                      }
+                    },
+                    {
+                      "commentStart": 1009,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 1009,
+                        "end": 0,
+                        "name": "zAxis",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 1017,
+                        "elements": [
+                          {
+                            "arguments": [
+                              {
+                                "commentStart": 1022,
+                                "end": 0,
+                                "name": "dihedral",
+                                "start": 0,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              }
+                            ],
+                            "callee": {
+                              "commentStart": 1018,
+                              "end": 0,
+                              "name": "sin",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "commentStart": 1018,
+                            "end": 0,
+                            "start": 0,
+                            "type": "CallExpression",
+                            "type": "CallExpression"
+                          },
+                          {
+                            "commentStart": 1033,
+                            "end": 0,
+                            "raw": "0",
+                            "start": 0,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 0.0,
+                              "suffix": "None"
+                            }
+                          },
+                          {
+                            "argument": {
+                              "arguments": [
+                                {
+                                  "commentStart": 1041,
+                                  "end": 0,
+                                  "name": "dihedral",
+                                  "start": 0,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                }
+                              ],
+                              "callee": {
+                                "commentStart": 1037,
+                                "end": 0,
+                                "name": "cos",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "commentStart": 1037,
+                              "end": 0,
+                              "start": 0,
+                              "type": "CallExpression",
+                              "type": "CallExpression"
+                            },
+                            "commentStart": 1036,
+                            "end": 0,
+                            "operator": "-",
+                            "start": 0,
+                            "type": "UnaryExpression",
+                            "type": "UnaryExpression"
+                          }
+                        ],
+                        "end": 0,
+                        "start": 0,
+                        "type": "ArrayExpression",
+                        "type": "ArrayExpression"
+                      }
+                    }
+                  ],
+                  "start": 0,
+                  "type": "ObjectExpression",
+                  "type": "ObjectExpression"
+                }
+              }
+            ],
+            "start": 0,
+            "type": "ObjectExpression",
+            "type": "ObjectExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// Define a plane for the bottom angled face"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 1057,
+        "declaration": {
+          "commentStart": 1126,
+          "end": 0,
+          "id": {
+            "commentStart": 1126,
+            "end": 0,
+            "name": "bottomFace",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "commentStart": 1153,
+                    "end": 0,
+                    "raw": "'XY'",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": "XY"
+                  }
+                ],
+                "callee": {
+                  "commentStart": 1139,
+                  "end": 0,
+                  "name": "startSketchOn",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "commentStart": 1139,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "commentStart": 1172,
+                    "end": 0,
+                    "properties": [
+                      {
+                        "commentStart": 1181,
+                        "end": 0,
+                        "key": {
+                          "commentStart": 1181,
+                          "end": 0,
+                          "name": "radius",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "start": 0,
+                        "type": "ObjectProperty",
+                        "value": {
+                          "commentStart": 1190,
+                          "end": 0,
+                          "name": "pentR",
+                          "start": 0,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
+                      },
+                      {
+                        "commentStart": 1204,
+                        "end": 0,
+                        "key": {
+                          "commentStart": 1204,
+                          "end": 0,
+                          "name": "numSides",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "start": 0,
+                        "type": "ObjectProperty",
+                        "value": {
+                          "commentStart": 1215,
+                          "end": 0,
+                          "raw": "5",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 5.0,
+                            "suffix": "None"
+                          }
+                        }
+                      },
+                      {
+                        "commentStart": 1225,
+                        "end": 0,
+                        "key": {
+                          "commentStart": 1225,
+                          "end": 0,
+                          "name": "center",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "start": 0,
+                        "type": "ObjectProperty",
+                        "value": {
+                          "commentStart": 1234,
+                          "elements": [
+                            {
+                              "commentStart": 1235,
+                              "end": 0,
+                              "raw": "0",
+                              "start": 0,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 0.0,
+                                "suffix": "None"
+                              }
+                            },
+                            {
+                              "commentStart": 1238,
+                              "end": 0,
+                              "raw": "0",
+                              "start": 0,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 0.0,
+                                "suffix": "None"
+                              }
+                            }
+                          ],
+                          "end": 0,
+                          "start": 0,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        }
+                      },
+                      {
+                        "commentStart": 1249,
+                        "end": 0,
+                        "key": {
+                          "commentStart": 1249,
+                          "end": 0,
+                          "name": "inscribed",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "start": 0,
+                        "type": "ObjectProperty",
+                        "value": {
+                          "commentStart": 1261,
+                          "end": 0,
+                          "raw": "true",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": true
+                        }
+                      }
+                    ],
+                    "start": 0,
+                    "type": "ObjectExpression",
+                    "type": "ObjectExpression"
+                  },
+                  {
+                    "commentStart": 1274,
+                    "end": 0,
+                    "start": 0,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "commentStart": 1164,
+                  "end": 0,
+                  "name": "polygon",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "commentStart": 1164,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              }
+            ],
+            "commentStart": 1139,
+            "end": 0,
+            "start": 0,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// Create a regular pentagon inscribed in a circle of radius pentR"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 1276,
+        "declaration": {
+          "commentStart": 1278,
+          "end": 0,
+          "id": {
+            "commentStart": 1278,
+            "end": 0,
+            "name": "bottomSideFace",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "commentStart": 1309,
+                    "end": 0,
+                    "name": "plane",
+                    "start": 0,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                ],
+                "callee": {
+                  "commentStart": 1295,
+                  "end": 0,
+                  "name": "startSketchOn",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "commentStart": 1295,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "commentStart": 1329,
+                    "end": 0,
+                    "properties": [
+                      {
+                        "commentStart": 1338,
+                        "end": 0,
+                        "key": {
+                          "commentStart": 1338,
+                          "end": 0,
+                          "name": "radius",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "start": 0,
+                        "type": "ObjectProperty",
+                        "value": {
+                          "commentStart": 1347,
+                          "end": 0,
+                          "name": "pentR",
+                          "start": 0,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
+                      },
+                      {
+                        "commentStart": 1361,
+                        "end": 0,
+                        "key": {
+                          "commentStart": 1361,
+                          "end": 0,
+                          "name": "numSides",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "start": 0,
+                        "type": "ObjectProperty",
+                        "value": {
+                          "commentStart": 1372,
+                          "end": 0,
+                          "raw": "5",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 5.0,
+                            "suffix": "None"
+                          }
+                        }
+                      },
+                      {
+                        "commentStart": 1382,
+                        "end": 0,
+                        "key": {
+                          "commentStart": 1382,
+                          "end": 0,
+                          "name": "center",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "start": 0,
+                        "type": "ObjectProperty",
+                        "value": {
+                          "commentStart": 1391,
+                          "elements": [
+                            {
+                              "commentStart": 1392,
+                              "end": 0,
+                              "raw": "0",
+                              "start": 0,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 0.0,
+                                "suffix": "None"
+                              }
+                            },
+                            {
+                              "commentStart": 1395,
+                              "end": 0,
+                              "raw": "0",
+                              "start": 0,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 0.0,
+                                "suffix": "None"
+                              }
+                            }
+                          ],
+                          "end": 0,
+                          "start": 0,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        }
+                      },
+                      {
+                        "commentStart": 1406,
+                        "end": 0,
+                        "key": {
+                          "commentStart": 1406,
+                          "end": 0,
+                          "name": "inscribed",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "start": 0,
+                        "type": "ObjectProperty",
+                        "value": {
+                          "commentStart": 1418,
+                          "end": 0,
+                          "raw": "true",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": true
+                        }
+                      }
+                    ],
+                    "start": 0,
+                    "type": "ObjectExpression",
+                    "type": "ObjectExpression"
+                  },
+                  {
+                    "commentStart": 1431,
+                    "end": 0,
+                    "start": 0,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "commentStart": 1321,
+                  "end": 0,
+                  "name": "polygon",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "commentStart": 1321,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              }
+            ],
+            "commentStart": 1295,
+            "end": 0,
+            "nonCodeMeta": {
+              "nonCodeNodes": {
+                "1": [
+                  {
+                    "commentStart": 1433,
+                    "end": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "newLineBlockComment",
+                      "value": "Extrude the faces in each plane",
+                      "style": "line"
+                    }
+                  }
+                ]
+              },
+              "startNodes": []
+            },
+            "start": 0,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 1470,
+        "declaration": {
+          "commentStart": 1470,
+          "end": 0,
+          "id": {
+            "commentStart": 1470,
+            "end": 0,
+            "name": "bottom",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 1499,
+                  "end": 0,
+                  "name": "length",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 1508,
+                  "end": 0,
+                  "name": "wallThickness",
+                  "start": 0,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                }
+              }
+            ],
+            "callee": {
+              "commentStart": 1479,
+              "end": 0,
+              "name": "extrude",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "commentStart": 1479,
+            "end": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "commentStart": 1487,
+              "end": 0,
+              "name": "bottomFace",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 1523,
+        "declaration": {
+          "commentStart": 1523,
+          "end": 0,
+          "id": {
+            "commentStart": 1523,
+            "end": 0,
+            "name": "bottomSide",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 1560,
+                  "end": 0,
+                  "name": "length",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 1569,
+                  "end": 0,
+                  "name": "wallThickness",
+                  "start": 0,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                }
+              }
+            ],
+            "callee": {
+              "commentStart": 1536,
+              "end": 0,
+              "name": "extrude",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "commentStart": 1536,
+            "end": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "commentStart": 1544,
+              "end": 0,
+              "name": "bottomSideFace",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 1583,
+        "declaration": {
+          "commentStart": 1637,
+          "end": 0,
+          "id": {
+            "commentStart": 1637,
+            "end": 0,
+            "name": "bottomBowl",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 1685,
+                  "end": 0,
+                  "name": "instances",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 1697,
+                  "end": 0,
+                  "raw": "5",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 5.0,
+                    "suffix": "None"
+                  }
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 1702,
+                  "end": 0,
+                  "name": "axis",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 1709,
+                  "elements": [
+                    {
+                      "commentStart": 1710,
+                      "end": 0,
+                      "raw": "0",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "commentStart": 1713,
+                      "end": 0,
+                      "raw": "0",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "commentStart": 1716,
+                      "end": 0,
+                      "raw": "1",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
+                    }
+                  ],
+                  "end": 0,
+                  "start": 0,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 1722,
+                  "end": 0,
+                  "name": "center",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 1731,
+                  "elements": [
+                    {
+                      "commentStart": 1732,
+                      "end": 0,
+                      "raw": "0",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "commentStart": 1735,
+                      "end": 0,
+                      "raw": "0",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "commentStart": 1738,
+                      "end": 0,
+                      "raw": "0",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    }
+                  ],
+                  "end": 0,
+                  "start": 0,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 1744,
+                  "end": 0,
+                  "name": "arcDegrees",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 1757,
+                  "end": 0,
+                  "raw": "360",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 360.0,
+                    "suffix": "None"
+                  }
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 1764,
+                  "end": 0,
+                  "name": "rotateDuplicates",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 1783,
+                  "end": 0,
+                  "raw": "true",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": true
+                }
+              }
+            ],
+            "callee": {
+              "commentStart": 1650,
+              "end": 0,
+              "name": "patternCircular3d",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "commentStart": 1650,
+            "end": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "commentStart": 1671,
+              "end": 0,
+              "name": "bottomSide",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// Pattern the sides so we have a full dodecahedron"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 1789,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 1867,
+                "end": 0,
+                "name": "instances",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 1879,
+                "end": 0,
+                "raw": "2",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 1884,
+                "end": 0,
+                "name": "axis",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 1891,
+                "elements": [
+                  {
+                    "commentStart": 1892,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  },
+                  {
+                    "commentStart": 1895,
+                    "end": 0,
+                    "raw": "1",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 1.0,
+                      "suffix": "None"
+                    }
+                  },
+                  {
+                    "commentStart": 1898,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  }
+                ],
+                "end": 0,
+                "start": 0,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 1904,
+                "end": 0,
+                "name": "center",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 1913,
+                "elements": [
+                  {
+                    "commentStart": 1914,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  },
+                  {
+                    "commentStart": 1917,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  },
+                  {
+                    "commentStart": 1920,
+                    "end": 0,
+                    "name": "inscR",
+                    "start": 0,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                ],
+                "end": 0,
+                "start": 0,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 1930,
+                "end": 0,
+                "name": "arcDegrees",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 1943,
+                "end": 0,
+                "raw": "360",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 360.0,
+                  "suffix": "None"
+                }
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 1950,
+                "end": 0,
+                "name": "rotateDuplicates",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 1969,
+                "end": 0,
+                "raw": "true",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": true
+              }
+            }
+          ],
+          "callee": {
+            "commentStart": 1836,
+            "end": 0,
+            "name": "patternCircular3d",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "commentStart": 1836,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "commentStart": 1857,
+            "end": 0,
+            "name": "bottom",
+            "start": 0,
+            "type": "Identifier",
+            "type": "Identifier"
+          }
+        },
+        "preComments": [
+          "",
+          "",
+          "// pattern the bottom to create the top face"
+        ],
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 1975,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 2065,
+                "end": 0,
+                "name": "instances",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 2077,
+                "end": 0,
+                "raw": "2",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 2082,
+                "end": 0,
+                "name": "axis",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 2089,
+                "elements": [
+                  {
+                    "commentStart": 2090,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  },
+                  {
+                    "commentStart": 2093,
+                    "end": 0,
+                    "raw": "1",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 1.0,
+                      "suffix": "None"
+                    }
+                  },
+                  {
+                    "commentStart": 2096,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  }
+                ],
+                "end": 0,
+                "start": 0,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 2102,
+                "end": 0,
+                "name": "center",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 2111,
+                "elements": [
+                  {
+                    "commentStart": 2112,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  },
+                  {
+                    "commentStart": 2115,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  },
+                  {
+                    "commentStart": 2118,
+                    "end": 0,
+                    "name": "inscR",
+                    "start": 0,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                ],
+                "end": 0,
+                "start": 0,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 2128,
+                "end": 0,
+                "name": "arcDegrees",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 2141,
+                "end": 0,
+                "raw": "360",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 360.0,
+                  "suffix": "None"
+                }
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 2148,
+                "end": 0,
+                "name": "rotateDuplicates",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 2167,
+                "end": 0,
+                "raw": "true",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": true
+              }
+            }
+          ],
+          "callee": {
+            "commentStart": 2030,
+            "end": 0,
+            "name": "patternCircular3d",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "commentStart": 2030,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "commentStart": 2051,
+            "end": 0,
+            "name": "bottomBowl",
+            "start": 0,
+            "type": "Identifier",
+            "type": "Identifier"
+          }
+        },
+        "preComments": [
+          "",
+          "",
+          "// pattern the bottom angled faces to create the top"
+        ],
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "innerAttrs": [
+      {
+        "commentStart": 0,
+        "end": 0,
+        "name": {
+          "commentStart": 273,
+          "end": 0,
+          "name": "settings",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "preComments": [
+          "// Hollow Dodecahedron",
+          "// A regular dodecahedron or pentagonal dodecahedron is a dodecahedron composed of regular pentagonal faces, three meeting at each vertex. This example shows constructing the individual faces of the dodecahedron and extruding inwards.",
+          "",
+          "",
+          "// Set units"
+        ],
+        "properties": [
+          {
+            "commentStart": 282,
+            "end": 0,
+            "key": {
+              "commentStart": 282,
+              "end": 0,
+              "name": "defaultLengthUnit",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 302,
+              "end": 0,
+              "name": "in",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          }
+        ],
+        "start": 0,
+        "type": "Annotation"
+      }
+    ],
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "7": [
+          {
+            "commentStart": 1276,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "commentStart": 305,
+          "end": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}

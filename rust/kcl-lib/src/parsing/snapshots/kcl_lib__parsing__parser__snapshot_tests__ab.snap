@@ -1,0 +1,86 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "end": 27,
+      "expression": {
+        "arguments": [
+          {
+            "type": "LabeledArg",
+            "label": {
+              "commentStart": 5,
+              "end": 16,
+              "name": "endAbsolute",
+              "start": 5,
+              "type": "Identifier"
+            },
+            "arg": {
+              "commentStart": 19,
+              "elements": [
+                {
+                  "commentStart": 20,
+                  "end": 21,
+                  "raw": "0",
+                  "start": 20,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
+                  }
+                },
+                {
+                  "argument": {
+                    "commentStart": 24,
+                    "end": 25,
+                    "raw": "1",
+                    "start": 24,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 1.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "commentStart": 23,
+                  "end": 25,
+                  "operator": "-",
+                  "start": 23,
+                  "type": "UnaryExpression",
+                  "type": "UnaryExpression"
+                }
+              ],
+              "end": 26,
+              "start": 19,
+              "type": "ArrayExpression",
+              "type": "ArrayExpression"
+            }
+          }
+        ],
+        "callee": {
+          "commentStart": 0,
+          "end": 4,
+          "name": "line",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "commentStart": 0,
+        "end": 27,
+        "start": 0,
+        "type": "CallExpressionKw",
+        "type": "CallExpressionKw",
+        "unlabeled": null
+      },
+      "start": 0,
+      "type": "ExpressionStatement",
+      "type": "ExpressionStatement"
+    }
+  ],
+  "commentStart": 0,
+  "end": 27,
+  "start": 0
+}

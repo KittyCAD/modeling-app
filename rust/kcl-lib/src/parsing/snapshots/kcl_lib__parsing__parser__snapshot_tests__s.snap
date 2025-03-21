@@ -1,0 +1,73 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "declaration": {
+        "commentStart": 0,
+        "end": 21,
+        "id": {
+          "commentStart": 0,
+          "end": 4,
+          "name": "prop",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "commentStart": 7,
+          "computed": true,
+          "end": 21,
+          "object": {
+            "commentStart": 7,
+            "computed": false,
+            "end": 16,
+            "object": {
+              "commentStart": 7,
+              "end": 9,
+              "name": "yo",
+              "start": 7,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "property": {
+              "commentStart": 10,
+              "end": 15,
+              "raw": "\"one\"",
+              "start": 10,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "one"
+            },
+            "start": 7,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          },
+          "property": {
+            "commentStart": 17,
+            "end": 20,
+            "name": "two",
+            "start": 17,
+            "type": "Identifier",
+            "type": "Identifier"
+          },
+          "start": 7,
+          "type": "MemberExpression",
+          "type": "MemberExpression"
+        },
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 21,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "commentStart": 0,
+  "end": 21,
+  "start": 0
+}

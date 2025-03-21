@@ -11,16 +11,18 @@ import { Selections } from 'lib/selections'
 import { cleanErrs, err } from 'lib/trap'
 import {
   CallExpression,
+  CallExpressionKw,
   Program,
   Expr,
   BinaryPart,
   VariableDeclarator,
   PathToNode,
-  ProgramMemory,
   sketchFromKclValue,
   Literal,
   SourceRange,
   LiteralValue,
+  LabeledArg,
+  VariableMap,
 } from '../wasm'
 import { getNodeFromPath, getNodeFromPathCurry } from '../queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
@@ -29,7 +31,9 @@ import {
   createBinaryExpression,
   createBinaryExpressionWithUnary,
   createCallExpression,
+  createCallExpressionStdLibKw,
   createIdentifier,
+  createLabeledArg,
   createLiteral,
   createObjectExpression,
   createPipeSubstitution,
@@ -40,14 +44,26 @@ import {
   createFirstArg,
   getConstraintInfo,
   getFirstArg,
+  getArgForEnd,
   replaceSketchLine,
+  ARG_TAG,
+  ARG_END,
+  ARG_END_ABSOLUTE,
+  getConstraintInfoKw,
+  isAbsoluteLine,
+  getCircle,
+  ARG_LENGTH,
+  tooltipToFnName,
+  fnNameToTooltip,
+  DETERMINING_ARGS,
 } from './sketch'
 import {
   getSketchSegmentFromPathToNode,
   getSketchSegmentFromSourceRange,
 } from './sketchConstraints'
-import { getAngle, roundOff, normaliseAngle } from '../../lib/utils'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { getAngle, roundOff, normaliseAngle, isArray } from '../../lib/utils'
+import { Node } from '@rust/kcl-lib/bindings/Node'
+import { findKwArg, findKwArgAny } from 'lang/util'
 
 export type LineInputsType =
   | 'xAbsolute'
@@ -110,6 +126,74 @@ function createCallWrapper(
   tag?: Expr,
   valueUsedInTransform?: number
 ): CreatedSketchExprResult {
+  if (isArray(val)) {
+    if (tooltip === 'line') {
+      const labeledArgs = [createLabeledArg('end', createArrayExpression(val))]
+      if (tag) {
+        labeledArgs.push(createLabeledArg(ARG_TAG, tag))
+      }
+      return {
+        callExp: createCallExpressionStdLibKw(
+          'line',
+          null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
+          labeledArgs
+        ),
+        valueUsedInTransform,
+      }
+    }
+    if (tooltip === 'lineTo') {
+      const labeledArgs = [
+        createLabeledArg(ARG_END_ABSOLUTE, createArrayExpression(val)),
+      ]
+      if (tag) {
+        labeledArgs.push(createLabeledArg(ARG_TAG, tag))
+      }
+      return {
+        callExp: createCallExpressionStdLibKw(
+          'line',
+          null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
+          labeledArgs
+        ),
+        valueUsedInTransform,
+      }
+    }
+  } else {
+    // In this branch, `val` is an expression.
+    const arg = (() => {
+      switch (tooltip) {
+        case 'xLine':
+        case 'yLine':
+          return createLabeledArg(ARG_LENGTH, val)
+        case 'xLineTo':
+        case 'yLineTo':
+          return createLabeledArg(ARG_END_ABSOLUTE, val)
+      }
+    })()
+    if (arg !== undefined) {
+      const labeledArgs = []
+      labeledArgs.push(arg)
+      if (tag) {
+        labeledArgs.push(createLabeledArg(ARG_TAG, tag))
+      }
+      const fnName = tooltipToFnName(tooltip)
+      if (err(fnName)) {
+        console.error(fnName)
+        return {
+          callExp: createCallExpression('', []),
+          valueUsedInTransform: 0,
+        }
+      }
+      return {
+        callExp: createCallExpressionStdLibKw(
+          fnName,
+          null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
+          labeledArgs
+        ),
+        valueUsedInTransform,
+      }
+    }
+  }
+
   const args =
     tooltip === 'circle'
       ? []
@@ -154,6 +238,37 @@ function createStdlibCallExpression(
   }
   return {
     callExp: createCallExpression(tool, args),
+    valueUsedInTransform,
+  }
+}
+
+/**
+ * Abstracts creation of a CallExpressionKw ready for use for a sketchCombo transform
+ * Assume it exists within a pipe, so it omits the unlabeled param, so that it's implicitly
+ * set to "%".
+ * @param tool line, lineTo, angledLine, etc
+ * @param labeled Any labeled arguments to use, except the tag.
+ * @param tag
+ * @param valueUsedInTransform
+ * @returns
+ */
+function createStdlibCallExpressionKw(
+  tool: ToolTip,
+  labeled: LabeledArg[],
+  tag?: Expr,
+  valueUsedInTransform?: number,
+  unlabeled?: Expr
+): CreatedSketchExprResult {
+  const args = labeled
+  if (tag) {
+    args.push(createLabeledArg(ARG_TAG, tag))
+  }
+  return {
+    callExp: createCallExpressionStdLibKw(
+      tool,
+      unlabeled ? unlabeled : null,
+      args
+    ),
     valueUsedInTransform,
   }
 }
@@ -208,9 +323,9 @@ const xyLineSetLength =
       : referenceSeg
       ? segRef
       : args[0].expr
-    const literalARg = asNum(args[0].expr.value)
-    if (err(literalARg)) return literalARg
-    return createCallWrapper(xOrY, lineVal, tag, literalARg)
+    const literalArg = asNum(args[0].expr.value)
+    if (err(literalArg)) return literalArg
+    return createCallWrapper(xOrY, lineVal, tag, literalArg)
   }
 
 type AngLenNone = 'ang' | 'len' | 'none'
@@ -574,6 +689,16 @@ const setAngleBetweenCreateNode =
     )
   }
 
+/**
+  IMO, the transformMap is a nested structure that maps like this:
+Name of function
+-> Current constraints
+-> Constraints you could apply
+-> How to apply the extra constraint.
+For example, line could be partially constrained with x (relative), with y (relative), or unconstrained (free).
+If it's x-rel constrained, you could add an equal length constraint. That'd involve changing the line to a different line.
+OTOH if you instead constrained it to be horizontal, you'd change it into an xLine node.
+*/
 const transformMap: TransformMap = {
   line: {
     xRelative: {
@@ -1184,7 +1309,7 @@ const transformMap: TransformMap = {
 }
 
 export function getRemoveConstraintsTransform(
-  sketchFnExp: CallExpression,
+  sketchFnExp: CallExpression | CallExpressionKw,
   constraintType: ConstraintType
 ): TransformInfo | false {
   let name = sketchFnExp.callee.name as ToolTip
@@ -1225,10 +1350,29 @@ export function getRemoveConstraintsTransform(
     },
   }
 
+  if (
+    (sketchFnExp.type === 'CallExpressionKw' &&
+      sketchFnExp.callee.name === 'circleThreePoint') ||
+    (sketchFnExp.type === 'CallExpression' &&
+      (sketchFnExp.callee.name === 'arcTo' ||
+        sketchFnExp.callee.name === 'arc'))
+  ) {
+    return false
+  }
+  const isAbsolute =
+    // isAbsolute doesn't matter if the call is positional.
+    sketchFnExp.type === 'CallExpression' ? false : isAbsoluteLine(sketchFnExp)
+  if (err(isAbsolute)) {
+    console.error(isAbsolute)
+    return false
+  }
+
   // check if the function is locked down and so can't be transformed
-  const firstArg = getFirstArg(sketchFnExp)
+  const firstArg =
+    sketchFnExp.type === 'CallExpression'
+      ? getFirstArg(sketchFnExp)
+      : getArgForEnd(sketchFnExp)
   if (err(firstArg)) {
-    console.error(firstArg)
     return false
   }
 
@@ -1238,18 +1382,18 @@ export function getRemoveConstraintsTransform(
 
   // check if the function has no constraints
   const isTwoValFree =
-    Array.isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
+    isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
   if (isTwoValFree) {
     return false
   }
   const isOneValFree =
-    !Array.isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
+    !isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
   if (isOneValFree) {
     return transformInfo
   }
 
   // check what constraints the function has
-  const lineInputType = getConstraintType(firstArg.val, name)
+  const lineInputType = getConstraintType(firstArg.val, name, isAbsolute)
   if (lineInputType) {
     return transformInfo
   }
@@ -1259,23 +1403,26 @@ export function getRemoveConstraintsTransform(
 
 export function removeSingleConstraint({
   pathToCallExp,
-  inputDetails,
+  inputDetails: inputToReplace,
   ast,
 }: {
   pathToCallExp: PathToNode
   inputDetails: SimplifiedArgDetails
   ast: Program
 }): TransformInfo | false {
-  const callExp = getNodeFromPath<CallExpression>(
+  const callExp = getNodeFromPath<CallExpression | CallExpressionKw>(
     ast,
     pathToCallExp,
-    'CallExpression'
+    ['CallExpression', 'CallExpressionKw']
   )
   if (err(callExp)) {
     console.error(callExp)
     return false
   }
-  if (callExp.node.type !== 'CallExpression') {
+  if (
+    callExp.node.type !== 'CallExpression' &&
+    callExp.node.type !== 'CallExpressionKw'
+  ) {
     console.error(new Error('Invalid node type'))
     return false
   }
@@ -1289,12 +1436,12 @@ export function removeSingleConstraint({
       // So we should update the call expression to use the inputs, except for
       // the inputDetails, input where we should use the rawValue(s)
 
-      if (inputDetails.type === 'arrayItem') {
+      if (inputToReplace.type === 'arrayItem') {
         const values = inputs.map((arg) => {
           if (
             !(
               (arg.type === 'arrayItem' || arg.type === 'arrayOrObjItem') &&
-              arg.index === inputDetails.index
+              arg.index === inputToReplace.index
             )
           )
             return arg.expr
@@ -1302,77 +1449,141 @@ export function removeSingleConstraint({
             (rawValue) =>
               (rawValue.type === 'arrayItem' ||
                 rawValue.type === 'arrayOrObjItem') &&
-              rawValue.index === inputDetails.index
+              rawValue.index === inputToReplace.index
           )?.expr
-          return (arg.index === inputDetails.index && literal) || arg.expr
+          return (arg.index === inputToReplace.index && literal) || arg.expr
         })
-        return createStdlibCallExpression(
-          callExp.node.callee.name as any,
-          createArrayExpression(values),
-          tag
-        )
+        if (callExp.node.type === 'CallExpression') {
+          return createStdlibCallExpression(
+            callExp.node.callee.name as any,
+            createArrayExpression(values),
+            tag
+          )
+        } else {
+          // It's a kw call.
+          const isAbsolute = callExp.node.callee.name == 'lineTo'
+          if (isAbsolute) {
+            const args = [
+              createLabeledArg(ARG_END_ABSOLUTE, createArrayExpression(values)),
+            ]
+            return createStdlibCallExpressionKw('line', args, tag)
+          } else {
+            const args = [
+              createLabeledArg(ARG_END, createArrayExpression(values)),
+            ]
+            return createStdlibCallExpressionKw(
+              callExp.node.callee.name as ToolTip,
+              args,
+              tag
+            )
+          }
+        }
       }
       if (
-        inputDetails.type === 'arrayInObject' ||
-        inputDetails.type === 'objectProperty'
+        inputToReplace.type === 'arrayInObject' ||
+        inputToReplace.type === 'objectProperty'
       ) {
-        const arrayDetailsNameBetterLater: {
+        const arrayInput: {
           [key: string]: Parameters<typeof createArrayExpression>[0]
         } = {}
-        const otherThing: Parameters<typeof createObjectExpression>[0] = {}
-        inputs.forEach((arg) => {
+        const objInput: Parameters<typeof createObjectExpression>[0] = {}
+        const kwArgInput: ReturnType<typeof createLabeledArg>[] = []
+        inputs.forEach((currentArg) => {
           if (
-            arg.type !== 'objectProperty' &&
-            arg.type !== 'arrayOrObjItem' &&
-            arg.type !== 'arrayInObject'
+            // should be one of these, return early to make TS happy.
+            currentArg.type !== 'objectProperty' &&
+            currentArg.type !== 'arrayOrObjItem' &&
+            currentArg.type !== 'arrayInObject'
           )
             return
           const rawLiteralArrayInObject = rawArgs.find(
             (rawValue) =>
               rawValue.type === 'arrayInObject' &&
-              rawValue.key === inputDetails.key &&
-              rawValue.index === (arg.type === 'arrayInObject' ? arg.index : -1)
+              rawValue.key === currentArg.key &&
+              rawValue.index ===
+                (currentArg.type === 'arrayInObject' ? currentArg.index : -1)
           )
           const rawLiteralObjProp = rawArgs.find(
             (rawValue) =>
               (rawValue.type === 'objectProperty' ||
                 rawValue.type === 'arrayOrObjItem' ||
                 rawValue.type === 'arrayInObject') &&
-              rawValue.key === inputDetails.key
+              rawValue.key === inputToReplace.key
           )
           if (
-            inputDetails.type === 'arrayInObject' &&
+            inputToReplace.type === 'arrayInObject' &&
             rawLiteralArrayInObject?.type === 'arrayInObject' &&
-            rawLiteralArrayInObject?.index === inputDetails.index &&
-            rawLiteralArrayInObject?.key === inputDetails.key
+            rawLiteralArrayInObject?.index === inputToReplace.index &&
+            rawLiteralArrayInObject?.key === inputToReplace.key
           ) {
-            if (!arrayDetailsNameBetterLater[arg.key])
-              arrayDetailsNameBetterLater[arg.key] = []
-            arrayDetailsNameBetterLater[inputDetails.key][inputDetails.index] =
+            if (!arrayInput[currentArg.key]) {
+              arrayInput[currentArg.key] = []
+            }
+            arrayInput[inputToReplace.key][inputToReplace.index] =
               rawLiteralArrayInObject.expr
+            let existingKwgForKey = kwArgInput.find(
+              (kwArg) => kwArg.label.name === currentArg.key
+            )
+            if (!existingKwgForKey) {
+              existingKwgForKey = createLabeledArg(
+                currentArg.key,
+                createArrayExpression([])
+              )
+              kwArgInput.push(existingKwgForKey)
+            }
+            if (existingKwgForKey.arg.type === 'ArrayExpression') {
+              existingKwgForKey.arg.elements[inputToReplace.index] =
+                rawLiteralArrayInObject.expr
+            }
           } else if (
-            inputDetails.type === 'objectProperty' &&
+            inputToReplace.type === 'objectProperty' &&
             (rawLiteralObjProp?.type === 'objectProperty' ||
               rawLiteralObjProp?.type === 'arrayOrObjItem') &&
-            rawLiteralObjProp?.key === inputDetails.key &&
-            arg.key === inputDetails.key
+            rawLiteralObjProp?.key === inputToReplace.key &&
+            currentArg.key === inputToReplace.key
           ) {
-            otherThing[inputDetails.key] = rawLiteralObjProp.expr
-          } else if (arg.type === 'arrayInObject') {
-            if (!arrayDetailsNameBetterLater[arg.key])
-              arrayDetailsNameBetterLater[arg.key] = []
-            arrayDetailsNameBetterLater[arg.key][arg.index] = arg.expr
-          } else if (arg.type === 'objectProperty') {
-            otherThing[arg.key] = arg.expr
+            objInput[inputToReplace.key] = rawLiteralObjProp.expr
+          } else if (currentArg.type === 'arrayInObject') {
+            if (!arrayInput[currentArg.key]) arrayInput[currentArg.key] = []
+            arrayInput[currentArg.key][currentArg.index] = currentArg.expr
+            let existingKwgForKey = kwArgInput.find(
+              (kwArg) => kwArg.label.name === currentArg.key
+            )
+            if (!existingKwgForKey) {
+              existingKwgForKey = createLabeledArg(
+                currentArg.key,
+                createArrayExpression([])
+              )
+              kwArgInput.push(existingKwgForKey)
+            }
+            if (existingKwgForKey.arg.type === 'ArrayExpression') {
+              existingKwgForKey.arg.elements[currentArg.index] = currentArg.expr
+            }
+          } else if (currentArg.type === 'objectProperty') {
+            objInput[currentArg.key] = currentArg.expr
           }
         })
         const createObjParam: Parameters<typeof createObjectExpression>[0] = {}
-        Object.entries(arrayDetailsNameBetterLater).forEach(([key, value]) => {
+        Object.entries(arrayInput).forEach(([key, value]) => {
           createObjParam[key] = createArrayExpression(value)
         })
+        if (
+          callExp.node.callee.name === 'circleThreePoint' &&
+          callExp.node.type === 'CallExpressionKw'
+        ) {
+          // it's kwarg
+          const inputPlane = callExp.node.unlabeled as Expr
+          return createStdlibCallExpressionKw(
+            callExp.node.callee.name as any,
+            kwArgInput,
+            tag,
+            undefined,
+            inputPlane
+          )
+        }
         const objExp = createObjectExpression({
           ...createObjParam,
-          ...otherThing,
+          ...objInput,
         })
         return createStdlibCallExpression(
           callExp.node.callee.name as any,
@@ -1405,6 +1616,9 @@ function getTransformMapPath(
   if (!toolTips.includes(name)) {
     return false
   }
+  if (name === 'arcTo') {
+    return false
+  }
 
   // check if the function is locked down and so can't be transformed
   const firstArg = getFirstArg(sketchFnExp)
@@ -1430,7 +1644,7 @@ function getTransformMapPath(
   }
 
   // check what constraints the function has
-  const lineInputType = getConstraintType(firstArg.val, name)
+  const lineInputType = getConstraintType(firstArg.val, name, false)
   if (lineInputType) {
     const info = transformMap?.[name]?.[lineInputType]?.[constraintType]
     if (info)
@@ -1440,6 +1654,74 @@ function getTransformMapPath(
         constraintType,
       }
     // if (info) return info
+  }
+
+  return false
+}
+
+function getTransformMapPathKw(
+  sketchFnExp: CallExpressionKw,
+  constraintType: ConstraintType
+):
+  | {
+      toolTip: ToolTip
+      lineInputType: LineInputsType | 'free'
+      constraintType: ConstraintType
+    }
+  | false {
+  const name = sketchFnExp.callee.name as ToolTip
+  if (name === 'circleThreePoint') {
+    const info = transformMap?.circleThreePoint?.free?.[constraintType]
+    if (info)
+      return {
+        toolTip: 'circleThreePoint',
+        lineInputType: 'free',
+        constraintType,
+      }
+    return false
+  }
+  const isAbsolute = findKwArg(ARG_END_ABSOLUTE, sketchFnExp) !== undefined
+  const tooltip = fnNameToTooltip(isAbsolute, name)
+  if (err(tooltip)) {
+    return false
+  }
+  if (!toolTips.includes(tooltip)) {
+    return false
+  }
+
+  // check if the function is locked down and so can't be transformed
+  const argForEnd = getArgForEnd(sketchFnExp)
+  if (err(argForEnd)) {
+    return false
+  }
+
+  if (isNotLiteralArrayOrStatic(argForEnd.val)) {
+    return false
+  }
+
+  // check if the function has no constraints
+  if (isLiteralArrayOrStatic(argForEnd.val)) {
+    const info = transformMap?.[tooltip]?.free?.[constraintType]
+    if (info) {
+      return {
+        toolTip: tooltip,
+        lineInputType: 'free',
+        constraintType,
+      }
+    }
+  }
+
+  // check what constraints the function has
+  const lineInputType = getConstraintType(argForEnd.val, name, isAbsolute)
+  if (lineInputType) {
+    const info = transformMap?.[tooltip]?.[lineInputType]?.[constraintType]
+    if (info) {
+      return {
+        toolTip: tooltip,
+        lineInputType,
+        constraintType,
+      }
+    }
   }
 
   return false
@@ -1457,25 +1739,38 @@ export function getTransformInfo(
   return info
 }
 
+export function getTransformInfoKw(
+  sketchFnExp: CallExpressionKw,
+  constraintType: ConstraintType
+): TransformInfo | false {
+  const path = getTransformMapPathKw(sketchFnExp, constraintType)
+  if (!path) return false
+  const { toolTip, lineInputType, constraintType: _constraintType } = path
+  const info = transformMap?.[toolTip]?.[lineInputType]?.[_constraintType]
+  if (!info) return false
+  return info
+}
+
 export function getConstraintType(
   val: Expr | [Expr, Expr] | [Expr, Expr, Expr],
-  fnName: ToolTip
+  fnName: ToolTip,
+  isAbsolute: boolean
 ): LineInputsType | null {
   // this function assumes that for two val sketch functions that one arg is locked down not both
   // and for one val sketch functions that the arg is NOT locked down
   // these conditions should have been checked previously.
   // completely locked down or not locked down at all does not depend on the fnName so we can check that first
-  const isArr = Array.isArray(val)
+  const isArr = isArray(val)
   if (!isArr) {
-    if (fnName === 'xLine') return 'yRelative'
-    if (fnName === 'yLine') return 'xRelative'
+    if (fnName === 'xLine') return isAbsolute ? 'yAbsolute' : 'yRelative'
+    if (fnName === 'yLine') return isAbsolute ? 'xAbsolute' : 'xRelative'
     if (fnName === 'xLineTo') return 'yAbsolute'
     if (fnName === 'yLineTo') return 'xAbsolute'
   } else {
     const isFirstArgLockedDown = isNotLiteralArrayOrStatic(val[0])
-    if (fnName === 'line')
+    if (fnName === 'line' && !isAbsolute)
       return isFirstArgLockedDown ? 'xRelative' : 'yRelative'
-    if (fnName === 'lineTo')
+    if (fnName === 'lineTo' || (fnName === 'line' && isAbsolute))
       return isFirstArgLockedDown ? 'xAbsolute' : 'yAbsolute'
     if (fnName === 'angledLine')
       return isFirstArgLockedDown ? 'angle' : 'length'
@@ -1497,7 +1792,10 @@ export function getTransformInfos(
   constraintType: ConstraintType
 ): TransformInfo[] {
   const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodeFromPath<Expr>(ast, codeRef.pathToNode, 'CallExpression')
+    getNodeFromPath<Expr>(ast, codeRef.pathToNode, [
+      'CallExpression',
+      'CallExpressionKw',
+    ])
   )
 
   try {
@@ -1508,8 +1806,13 @@ export function getTransformInfos(
       }
 
       const node = nodeMeta.node
-      if (node?.type === 'CallExpression')
+      if (node?.type === 'CallExpression') {
         return getTransformInfo(node, constraintType)
+      }
+
+      if (node?.type === 'CallExpressionKw') {
+        return getTransformInfoKw(node, constraintType)
+      }
 
       return false
     }) as TransformInfo[]
@@ -1538,8 +1841,9 @@ export function getRemoveConstraintsTransforms(
     }
 
     const node = nodeMeta.node
-    if (node?.type === 'CallExpression')
+    if (node?.type === 'CallExpression' || node?.type === 'CallExpressionKw') {
       return getRemoveConstraintsTransform(node, constraintType)
+    }
 
     return false
   }) as TransformInfo[]
@@ -1552,14 +1856,14 @@ export function transformSecondarySketchLinesTagFirst({
   ast,
   selectionRanges,
   transformInfos,
-  programMemory,
+  memVars,
   forceSegName,
   forceValueUsedInTransform,
 }: {
   ast: Node<Program>
   selectionRanges: Selections
   transformInfos: TransformInfo[]
-  programMemory: ProgramMemory
+  memVars: VariableMap
   forceSegName?: string
   forceValueUsedInTransform?: BinaryPart
 }):
@@ -1595,7 +1899,7 @@ export function transformSecondarySketchLinesTagFirst({
     },
     referencedSegmentRange: primarySelection,
     transformInfos,
-    programMemory,
+    memVars,
     referenceSegName: tag,
     forceValueUsedInTransform,
   })
@@ -1629,7 +1933,7 @@ export function transformAstSketchLines({
   ast,
   selectionRanges,
   transformInfos,
-  programMemory,
+  memVars,
   referenceSegName,
   forceValueUsedInTransform,
   referencedSegmentRange,
@@ -1637,7 +1941,7 @@ export function transformAstSketchLines({
   ast: Node<Program>
   selectionRanges: Selections | PathToNode[]
   transformInfos: TransformInfo[]
-  programMemory: ProgramMemory
+  memVars: VariableMap
   referenceSegName: string
   referencedSegmentRange?: SourceRange
   forceValueUsedInTransform?: BinaryPart
@@ -1661,17 +1965,39 @@ export function transformAstSketchLines({
 
     const getNode = getNodeFromPathCurry(node, _pathToNode)
 
+    // Find `call` which could either be a positional-arg or keyword-arg call.
     const callExp = getNode<Node<CallExpression>>('CallExpression')
-    if (err(callExp)) return callExp
+    const callExpKw = getNode<Node<CallExpressionKw>>('CallExpressionKw')
+    const call =
+      !err(callExp) && callExp.node.type === 'CallExpression'
+        ? callExp
+        : callExpKw
+    if (err(call)) return call
+
     const varDec = getNode<VariableDeclarator>('VariableDeclarator')
     if (err(varDec)) return varDec
 
-    const callBackTag = callExp.node.arguments[2]
-    const _referencedSegmentNameVal =
-      callExp.node.arguments[0]?.type === 'ObjectExpression' &&
-      callExp.node.arguments[0].properties?.find(
-        (prop) => prop.key.name === 'intersectTag'
-      )?.value
+    const callBackTag = (() => {
+      switch (call.node.type) {
+        case 'CallExpression':
+          return call.node.arguments[2]
+        case 'CallExpressionKw':
+          return findKwArg(ARG_TAG, call.node)
+      }
+    })()
+    const _referencedSegmentNameVal = (() => {
+      switch (call.node.type) {
+        case 'CallExpressionKw':
+          return findKwArg('intersectTag', call.node)
+        case 'CallExpression':
+          return (
+            call.node.arguments[0]?.type === 'ObjectExpression' &&
+            call.node.arguments[0].properties?.find(
+              (prop) => prop.key.name === 'intersectTag'
+            )?.value
+          )
+      }
+    })()
     const _referencedSegmentName =
       referenceSegName ||
       (_referencedSegmentNameVal &&
@@ -1680,7 +2006,15 @@ export function transformAstSketchLines({
       ''
     const inputs: InputArgs = []
 
-    getConstraintInfo(callExp.node, '', _pathToNode).forEach((a) => {
+    const constraints = (() => {
+      switch (call.node.type) {
+        case 'CallExpression':
+          return getConstraintInfo(call.node, '', _pathToNode)
+        case 'CallExpressionKw':
+          return getConstraintInfoKw(call.node, '', _pathToNode)
+      }
+    })()
+    constraints.forEach((a) => {
       if (
         a.type === 'tangentialWithPrevious' ||
         a.type === 'horizontal' ||
@@ -1723,7 +2057,7 @@ export function transformAstSketchLines({
     })
 
     const varName = varDec.node.id.name
-    let kclVal = programMemory.get(varName)
+    let kclVal = memVars[varName]
     let sketch
     if (kclVal?.type === 'Solid') {
       sketch = kclVal.value.sketch
@@ -1751,12 +2085,13 @@ export function transformAstSketchLines({
       )
     }
     const { to, from } = seg
+    // Note to ADAM: Here is where the replaceExisting call gets sent.
     const replacedSketchLine = replaceSketchLine({
       node: node,
-      programMemory,
+      variables: memVars,
       pathToNode: _pathToNode,
       referencedSegment,
-      fnName: transformTo || (callExp.node.callee.name as ToolTip),
+      fnName: transformTo || (call.node.callee.name as ToolTip),
       segmentInput:
         seg.type === 'Circle'
           ? {
@@ -1764,6 +2099,15 @@ export function transformAstSketchLines({
               center: seg.center,
               radius: seg.radius,
               from,
+              to: from, // For a full circle, to is the same as from
+              ccw: true, // Default to counter-clockwise for circles
+            }
+          : seg.type === 'CircleThreePoint' || seg.type === 'ArcThreePoint'
+          ? {
+              type: 'circle-three-point-segment',
+              p1: seg.p1,
+              p2: seg.p2,
+              p3: seg.p3,
             }
           : {
               type: 'straight-segment',
@@ -1794,9 +2138,12 @@ export function transformAstSketchLines({
   if ('graphSelections' in selectionRanges) {
     // If the processing of any of the selections failed, return the first error
     const maybeProcessErrors = selectionRanges.graphSelections
-      .map(({ codeRef }, index) =>
-        processSelection(getNodePathFromSourceRange(node, codeRef.range), index)
-      )
+      .map(({ codeRef }, index) => {
+        return processSelection(
+          getNodePathFromSourceRange(node, codeRef.range),
+          index
+        )
+      })
       .filter(err)
 
     if (maybeProcessErrors.length) return maybeProcessErrors[0]
@@ -1842,19 +2189,47 @@ export function getConstraintLevelFromSourceRange(
   ast: Program | Error
 ): Error | { range: [number, number]; level: ConstraintLevel } {
   if (err(ast)) return ast
-  const nodeMeta = getNodeFromPath<Node<CallExpression>>(
-    ast,
-    getNodePathFromSourceRange(ast, cursorRange),
-    'CallExpression'
-  )
-  if (err(nodeMeta)) return nodeMeta
+  let partsOfCallNode = (() => {
+    const path = getNodePathFromSourceRange(ast, cursorRange)
+    const nodeMeta = getNodeFromPath<
+      Node<CallExpression> | Node<CallExpressionKw>
+    >(ast, path, ['CallExpression', 'CallExpressionKw'])
+    if (err(nodeMeta)) return nodeMeta
 
-  const { node: sketchFnExp } = nodeMeta
-  const name = sketchFnExp?.callee?.name as ToolTip
-  const range: [number, number] = [sketchFnExp.start, sketchFnExp.end]
+    const { node: sketchFnExp } = nodeMeta
+    const name = sketchFnExp?.callee?.name as ToolTip
+    const range: [number, number] = [sketchFnExp.start, sketchFnExp.end]
+    const firstArg = (() => {
+      switch (nodeMeta.node.type) {
+        case 'CallExpression':
+          return getFirstArg(nodeMeta.node)
+        case 'CallExpressionKw':
+          if (name === 'circle') {
+            return getCircle(nodeMeta.node)
+          }
+          const arg = findKwArgAny(DETERMINING_ARGS, nodeMeta.node)
+          if (arg === undefined) {
+            const argStr = nodeMeta.node.arguments.map((a) => a.label.name)
+            return new Error(
+              `call to expression ${name} has unexpected args: ${argStr} `
+            )
+          }
+          const val =
+            arg.type === 'ArrayExpression' && arg.elements.length === 2
+              ? (arg.elements as [Expr, Expr])
+              : arg
+          return {
+            val,
+            tag: findKwArg(ARG_TAG, nodeMeta.node),
+          }
+      }
+    })()
+    return { name, range, firstArg }
+  })()
+  if (err(partsOfCallNode)) return partsOfCallNode
+  const { name, range, firstArg } = partsOfCallNode
   if (!toolTips.includes(name)) return { level: 'free', range: range }
 
-  const firstArg = getFirstArg(sketchFnExp)
   if (err(firstArg)) return firstArg
 
   // check if the function is fully constrained
@@ -1864,9 +2239,9 @@ export function getConstraintLevelFromSourceRange(
 
   // check if the function has no constraints
   const isTwoValFree =
-    Array.isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
+    isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
   const isOneValFree =
-    !Array.isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
+    !isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
 
   if (isTwoValFree) return { level: 'free', range: range }
   if (isOneValFree) return { level: 'partial', range: range }
@@ -1879,7 +2254,7 @@ export function isLiteralArrayOrStatic(
 ): boolean {
   if (!val) return false
 
-  if (Array.isArray(val)) {
+  if (isArray(val)) {
     const a = val[0]
     const b = val[1]
     return isLiteralArrayOrStatic(a) && isLiteralArrayOrStatic(b)
@@ -1893,7 +2268,7 @@ export function isLiteralArrayOrStatic(
 export function isNotLiteralArrayOrStatic(
   val: Expr | [Expr, Expr] | [Expr, Expr, Expr]
 ): boolean {
-  if (Array.isArray(val)) {
+  if (isArray(val)) {
     const a = val[0]
     const b = val[1]
     return isNotLiteralArrayOrStatic(a) && isNotLiteralArrayOrStatic(b)

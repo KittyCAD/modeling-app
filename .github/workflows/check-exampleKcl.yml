@@ -26,11 +26,21 @@ jobs:
             const issue_number = context.payload.pull_request.number;
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-
-            // Post a comment on the PR
-            await github.rest.issues.createComment({
+            
+            const { data: comments } = await github.rest.issues.listComments({
               owner,
               repo,
-              issue_number,
-              body: message,
+              issue_number
             });
+
+            const commentExists = comments.some(comment => comment.body === message);
+
+            if (!commentExists) {
+              // Post a comment on the PR
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number,
+                body: message,
+              });
+            }

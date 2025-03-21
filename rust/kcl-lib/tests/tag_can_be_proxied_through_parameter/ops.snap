@@ -1,0 +1,82 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed tag_can_be_proxied_through_parameter.kcl
+---
+[
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          139,
+          143,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      125,
+      144,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "myCircle",
+    "functionSourceRange": [
+      47,
+      118,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": [
+      181,
+      199,
+      0
+    ]
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          324,
+          328,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      310,
+      329,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "myCircle",
+    "functionSourceRange": [
+      47,
+      118,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": [
+      366,
+      384,
+      0
+    ]
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  }
+]

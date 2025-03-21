@@ -1,0 +1,20 @@
+fn cube = (pos, scale) => {
+  const sg = startSketchOn(XY)
+    |> startProfileAt(pos, %)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close()
+    |> extrude(length = 20)
+
+const part002 = startSketchOn(part001, "start")
+  |> startProfileAt([0, 0], %)
+  |> line(end = [0, 10])
+  |> line(end = [10, 0])
+  |> line(end = [0, -10])
+  |> close()
+  |> extrude(length = 5)

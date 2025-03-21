@@ -1,0 +1,38 @@
+let triangleHeight = 200
+let plumbusLen = 100
+let radius = 80
+let circ = {angle_start: 0, angle_end: 360, radius: radius}
+
+let triangleLen = 500
+const p = startSketchOn(XY)
+  |> startProfileAt([0, 0], %)
+  |> angledLine({angle: 60, length:triangleLen}, %, $a)
+  |> angledLine({angle: 180, length: triangleLen}, %, $b)
+  |> angledLine({angle: 300, length: triangleLen}, %, $c)
+  |> extrude(length = triangleHeight)
+
+fn circl = (x, face) => {
+return startSketchOn(p, face)
+  |> startProfileAt([x + radius, triangleHeight/2], %)
+  |> arc(circ, %,  $arc_tag)
+  |> close()
+}
+
+const c1 = circl(-200,c)
+const plumbus1 =
+  c1
+  |> extrude(length = plumbusLen)
+  |> fillet(
+       radius = 5,
+       tags = [c1.tags.arc_tag, getOppositeEdge(c1.tags.arc_tag)]
+     )
+const c2 = circl(200, a)
+const plumbus0 =
+ c2
+  |> extrude(length = plumbusLen)
+  |> fillet(
+       radius = 5,
+       tags = [c2.tags.arc_tag, getOppositeEdge(c2.tags.arc_tag)]
+     , %)
+
+

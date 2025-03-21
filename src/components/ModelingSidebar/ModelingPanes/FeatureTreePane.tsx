@@ -11,10 +11,11 @@ import {
   filterOperations,
   getOperationIcon,
   getOperationLabel,
+  stdLibMap,
 } from 'lib/operations'
 import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
 import { ComponentProps, useEffect, useMemo, useRef, useState } from 'react'
-import { Operation } from 'wasm-lib/kcl/bindings/Operation'
+import { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { Actor, Prop } from 'xstate'
 import { featureTreeMachine } from 'machines/featureTreeMachine'
 import {
@@ -60,7 +61,8 @@ export const FeatureTreePane = () => {
                 engineCommandManager.artifactGraph
               )
             : null
-          if (!artifact || !('codeRef' in artifact)) {
+
+          if (!artifact) {
             modelingSend({
               type: 'Set selection',
               data: {
@@ -311,12 +313,36 @@ const OperationItem = (props: {
    * TODO: https://github.com/KittyCAD/modeling-app/issues/4442
    */
   function enterEditFlow() {
-    if (
-      props.item.type === 'StdLibCall' &&
-      props.item.name === 'startSketchOn'
-    ) {
+    if (props.item.type === 'StdLibCall') {
       props.send({
         type: 'enterEditFlow',
+        data: {
+          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+          currentOperation: props.item,
+        },
+      })
+    }
+  }
+
+  function enterAppearanceFlow() {
+    if (props.item.type === 'StdLibCall') {
+      props.send({
+        type: 'enterAppearanceFlow',
+        data: {
+          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+          currentOperation: props.item,
+        },
+      })
+    }
+  }
+
+  function deleteOperation() {
+    if (
+      props.item.type === 'StdLibCall' ||
+      props.item.type === 'UserDefinedFunctionCall'
+    ) {
+      props.send({
+        type: 'deleteOperation',
         data: {
           targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
         },
@@ -364,6 +390,31 @@ const OperationItem = (props: {
             </ContextMenuItem>,
           ]
         : []),
+      ...(props.item.type === 'StdLibCall'
+        ? [
+            <ContextMenuItem
+              disabled={!stdLibMap[props.item.name]?.supportsAppearance}
+              onClick={enterAppearanceFlow}
+              data-testid="context-menu-set-appearance"
+            >
+              Set appearance
+            </ContextMenuItem>,
+            <ContextMenuItem
+              disabled={!stdLibMap[props.item.name]?.prepareToEdit}
+              onClick={enterEditFlow}
+              hotkey="Double click"
+            >
+              Edit
+            </ContextMenuItem>,
+          ]
+        : []),
+      <ContextMenuItem
+        onClick={deleteOperation}
+        hotkey="Delete"
+        data-testid="context-menu-delete"
+      >
+        Delete
+      </ContextMenuItem>,
     ],
     [props.item, props.send]
   )

@@ -1,0 +1,96 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "declaration": {
+        "commentStart": 0,
+        "end": 48,
+        "id": {
+          "commentStart": 0,
+          "end": 2,
+          "name": "sg",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "body": [
+            {
+              "arguments": [
+                {
+                  "commentStart": 19,
+                  "end": 21,
+                  "name": "XY",
+                  "start": 19,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                }
+              ],
+              "callee": {
+                "commentStart": 5,
+                "end": 18,
+                "name": "startSketchOn",
+                "start": 5,
+                "type": "Identifier"
+              },
+              "commentStart": 5,
+              "end": 22,
+              "start": 5,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            {
+              "arguments": [
+                {
+                  "commentStart": 41,
+                  "end": 44,
+                  "name": "pos",
+                  "start": 41,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                {
+                  "commentStart": 46,
+                  "end": 47,
+                  "start": 46,
+                  "type": "PipeSubstitution",
+                  "type": "PipeSubstitution"
+                }
+              ],
+              "callee": {
+                "commentStart": 26,
+                "end": 40,
+                "name": "startProfileAt",
+                "start": 26,
+                "type": "Identifier"
+              },
+              "commentStart": 26,
+              "end": 48,
+              "start": 26,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            }
+          ],
+          "commentStart": 5,
+          "end": 48,
+          "start": 5,
+          "type": "PipeExpression",
+          "type": "PipeExpression"
+        },
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 48,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "commentStart": 0,
+  "end": 48,
+  "start": 0
+}

@@ -10,7 +10,7 @@ import {
 import { TransformInfo } from 'lang/std/stdTypes'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import { codeRefFromRange } from 'lang/std/artifactGraph'
 
 export function removeConstrainingValuesInfo({
@@ -28,7 +28,7 @@ export function removeConstrainingValuesInfo({
   | Error {
   const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode)
-    if (err(tmp)) return tmp
+    if (tmp instanceof Error) return tmp
     return tmp.node
   })
   const _err1 = _nodes.find(err)
@@ -50,7 +50,7 @@ export function removeConstrainingValuesInfo({
     : selectionRanges
   const isAllTooltips = nodes.every(
     (node) =>
-      node?.type === 'CallExpression' &&
+      (node?.type === 'CallExpression' || node?.type === 'CallExpressionKw') &&
       toolTips.includes(node.callee.name as any)
   )
 
@@ -88,7 +88,7 @@ export function applyRemoveConstrainingValues({
     ast: kclManager.ast,
     selectionRanges: updatedSelectionRanges,
     transformInfos: transforms,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
     referenceSegName: '',
   })
 }

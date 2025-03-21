@@ -1,5 +1,5 @@
 import { CustomIcon } from '../CustomIcon'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { ActionButton } from '../ActionButton'
 import { Selections, getSelectionTypeDisplayText } from 'lib/selections'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -13,6 +13,19 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
   const {
     context: { selectedCommand, currentArgument, argumentsToSubmit },
   } = commandBarState
+  const nonHiddenArgs = useMemo(() => {
+    if (!selectedCommand?.args) return undefined
+    const s = { ...selectedCommand.args }
+    for (const [name, arg] of Object.entries(s)) {
+      if (
+        typeof arg.hidden === 'function'
+          ? arg.hidden(commandBarState.context)
+          : arg.hidden
+      )
+        delete s[name]
+    }
+    return s
+  }, [selectedCommand])
   const isReviewing = commandBarState.matches('Review')
   const [showShortcuts, setShowShortcuts] = useState(false)
 
@@ -43,11 +56,9 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
     ],
     (_, b) => {
       if (b.keys && !Number.isNaN(parseInt(b.keys[0], 10))) {
-        if (!selectedCommand?.args) return
-        const argName = Object.keys(selectedCommand.args)[
-          parseInt(b.keys[0], 10) - 1
-        ]
-        const arg = selectedCommand?.args[argName]
+        if (!nonHiddenArgs) return
+        const argName = Object.keys(nonHiddenArgs)[parseInt(b.keys[0], 10) - 1]
+        const arg = nonHiddenArgs[argName]
         if (!argName || !arg) return
         commandBarActor.send({
           type: 'Change current argument',
@@ -78,7 +89,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                 {selectedCommand.displayName || selectedCommand.name}
               </span>
             </p>
-            {Object.entries(selectedCommand?.args || {})
+            {Object.entries(nonHiddenArgs || {})
               .filter(([_, argConfig]) =>
                 typeof argConfig.required === 'function'
                   ? argConfig.required(commandBarState.context)
@@ -119,12 +130,13 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                       data-test-name="arg-name"
                       className="capitalize"
                     >
-                      {argName}
+                      {arg.displayName || argName}
                     </span>
                     <span className="sr-only">:&nbsp;</span>
                     <span data-testid="header-arg-value">
                       {argValue ? (
-                        arg.inputType === 'selection' ? (
+                        arg.inputType === 'selection' ||
+                        arg.inputType === 'selectionMixed' ? (
                           getSelectionTypeDisplayText(argValue as Selections)
                         ) : arg.inputType === 'kcl' ? (
                           roundOff(
@@ -156,6 +168,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                     )}
                     {arg.inputType === 'kcl' &&
                       !!argValue &&
+                      typeof argValue === 'object' &&
                       'variableName' in (argValue as KclCommandValue) && (
                         <>
                           <CustomIcon
@@ -195,6 +208,7 @@ function ReviewingButton() {
       type="submit"
       form="review-form"
       className="w-fit !p-0 rounded-sm hover:shadow"
+      data-testid="command-bar-submit"
       iconStart={{
         icon: 'checkmark',
         bgClassName: 'p-1 rounded-sm !bg-primary hover:brightness-110',
@@ -213,6 +227,7 @@ function GatheringArgsButton() {
       type="submit"
       form="arg-form"
       className="w-fit !p-0 rounded-sm hover:shadow"
+      data-testid="command-bar-continue"
       iconStart={{
         icon: 'arrowRight',
         bgClassName: 'p-1 rounded-sm !bg-primary hover:brightness-110',

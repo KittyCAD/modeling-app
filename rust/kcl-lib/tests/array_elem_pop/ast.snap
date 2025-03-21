@@ -1,0 +1,466 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing array_elem_pop.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "name": "arr",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 6,
+            "elements": [
+              {
+                "commentStart": 7,
+                "end": 0,
+                "raw": "1",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
+              },
+              {
+                "commentStart": 10,
+                "end": 0,
+                "raw": "2",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
+              },
+              {
+                "commentStart": 13,
+                "end": 0,
+                "raw": "3",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
+              }
+            ],
+            "end": 0,
+            "start": 0,
+            "type": "ArrayExpression",
+            "type": "ArrayExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 16,
+        "declaration": {
+          "commentStart": 16,
+          "end": 0,
+          "id": {
+            "commentStart": 16,
+            "end": 0,
+            "name": "new_arr1",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "commentStart": 31,
+                "end": 0,
+                "name": "arr",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              }
+            ],
+            "callee": {
+              "commentStart": 27,
+              "end": 0,
+              "name": "pop",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "commentStart": 27,
+            "end": 0,
+            "start": 0,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 36,
+        "declaration": {
+          "commentStart": 36,
+          "end": 0,
+          "id": {
+            "commentStart": 36,
+            "end": 0,
+            "name": "new_arr2",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "commentStart": 51,
+                "end": 0,
+                "name": "new_arr1",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              }
+            ],
+            "callee": {
+              "commentStart": 47,
+              "end": 0,
+              "name": "pop",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "commentStart": 47,
+            "end": 0,
+            "start": 0,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 61,
+        "declaration": {
+          "commentStart": 61,
+          "end": 0,
+          "id": {
+            "commentStart": 61,
+            "end": 0,
+            "name": "new_arr3",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "commentStart": 76,
+                "end": 0,
+                "name": "new_arr2",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              }
+            ],
+            "callee": {
+              "commentStart": 72,
+              "end": 0,
+              "name": "pop",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "commentStart": 72,
+            "end": 0,
+            "start": 0,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 86,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 98,
+              "computed": false,
+              "end": 0,
+              "object": {
+                "commentStart": 98,
+                "end": 0,
+                "name": "new_arr1",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "property": {
+                "commentStart": 107,
+                "end": 0,
+                "raw": "0",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 0.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 0,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
+            },
+            {
+              "commentStart": 111,
+              "end": 0,
+              "raw": "1",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 114,
+              "end": 0,
+              "raw": "0.00001",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.00001,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 123,
+              "end": 0,
+              "raw": "\"element 0 should not have changed\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "element 0 should not have changed"
+            }
+          ],
+          "callee": {
+            "commentStart": 86,
+            "end": 0,
+            "name": "assertEqual",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "commentStart": 86,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 160,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 172,
+              "computed": false,
+              "end": 0,
+              "object": {
+                "commentStart": 172,
+                "end": 0,
+                "name": "new_arr1",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "property": {
+                "commentStart": 181,
+                "end": 0,
+                "raw": "1",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 0,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
+            },
+            {
+              "commentStart": 185,
+              "end": 0,
+              "raw": "2",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 188,
+              "end": 0,
+              "raw": "0.00001",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.00001,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 197,
+              "end": 0,
+              "raw": "\"element 1 should not have changed\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "element 1 should not have changed"
+            }
+          ],
+          "callee": {
+            "commentStart": 160,
+            "end": 0,
+            "name": "assertEqual",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "commentStart": 160,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 234,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 246,
+              "computed": false,
+              "end": 0,
+              "object": {
+                "commentStart": 246,
+                "end": 0,
+                "name": "new_arr2",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "property": {
+                "commentStart": 255,
+                "end": 0,
+                "raw": "0",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 0.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 0,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
+            },
+            {
+              "commentStart": 259,
+              "end": 0,
+              "raw": "1",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 262,
+              "end": 0,
+              "raw": "0.00001",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.00001,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 271,
+              "end": 0,
+              "raw": "\"element 0 should not have changed\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "element 0 should not have changed"
+            }
+          ],
+          "callee": {
+            "commentStart": 234,
+            "end": 0,
+            "name": "assertEqual",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "commentStart": 234,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "start": 0
+  }
+}

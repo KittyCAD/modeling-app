@@ -1,0 +1,984 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing property_of_object.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 50,
+          "end": 0,
+          "id": {
+            "commentStart": 50,
+            "end": 0,
+            "name": "obj",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 56,
+            "end": 0,
+            "properties": [
+              {
+                "commentStart": 58,
+                "end": 0,
+                "key": {
+                  "commentStart": 58,
+                  "end": 0,
+                  "name": "foo",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "start": 0,
+                "type": "ObjectProperty",
+                "value": {
+                  "commentStart": 64,
+                  "end": 0,
+                  "raw": "1",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
+                  }
+                }
+              },
+              {
+                "commentStart": 67,
+                "end": 0,
+                "key": {
+                  "commentStart": 67,
+                  "end": 0,
+                  "name": "bar",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "start": 0,
+                "type": "ObjectProperty",
+                "value": {
+                  "commentStart": 73,
+                  "end": 0,
+                  "raw": "0",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
+                  }
+                }
+              }
+            ],
+            "start": 0,
+            "type": "ObjectExpression",
+            "type": "ObjectExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 76,
+        "declaration": {
+          "commentStart": 116,
+          "end": 0,
+          "id": {
+            "commentStart": 116,
+            "end": 0,
+            "name": "one_a",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 124,
+            "computed": false,
+            "end": 0,
+            "object": {
+              "commentStart": 124,
+              "end": 0,
+              "name": "obj",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "property": {
+              "commentStart": 128,
+              "end": 0,
+              "raw": "\"foo\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "foo"
+            },
+            "start": 0,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 134,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 155,
+              "end": 0,
+              "name": "one_a",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "commentStart": 162,
+              "end": 0,
+              "raw": "1",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 165,
+              "end": 0,
+              "raw": "\"Literal property lookup\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "Literal property lookup"
+            }
+          ],
+          "callee": {
+            "commentStart": 136,
+            "end": 0,
+            "name": "assertLessThanOrEq",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "commentStart": 136,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 192,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 214,
+              "end": 0,
+              "name": "one_a",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "commentStart": 221,
+              "end": 0,
+              "raw": "1",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 224,
+              "end": 0,
+              "raw": "\"Literal property lookup\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "Literal property lookup"
+            }
+          ],
+          "callee": {
+            "commentStart": 192,
+            "end": 0,
+            "name": "assertGreaterThanOrEq",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "commentStart": 192,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 250,
+        "declaration": {
+          "commentStart": 340,
+          "end": 0,
+          "id": {
+            "commentStart": 340,
+            "end": 0,
+            "name": "p",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 344,
+            "end": 0,
+            "raw": "\"foo\"",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": "foo"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 350,
+        "declaration": {
+          "commentStart": 350,
+          "end": 0,
+          "id": {
+            "commentStart": 350,
+            "end": 0,
+            "name": "one_b",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 358,
+            "computed": true,
+            "end": 0,
+            "object": {
+              "commentStart": 358,
+              "end": 0,
+              "name": "obj",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "property": {
+              "commentStart": 362,
+              "end": 0,
+              "name": "p",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "start": 0,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 364,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 385,
+              "end": 0,
+              "name": "one_b",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "commentStart": 392,
+              "end": 0,
+              "raw": "1",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 395,
+              "end": 0,
+              "raw": "\"Computed property lookup\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "Computed property lookup"
+            }
+          ],
+          "callee": {
+            "commentStart": 366,
+            "end": 0,
+            "name": "assertLessThanOrEq",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "commentStart": 366,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 423,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 445,
+              "end": 0,
+              "name": "one_b",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "commentStart": 452,
+              "end": 0,
+              "raw": "1",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 455,
+              "end": 0,
+              "raw": "\"Computed property lookup\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "Computed property lookup"
+            }
+          ],
+          "callee": {
+            "commentStart": 423,
+            "end": 0,
+            "name": "assertGreaterThanOrEq",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "commentStart": 423,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 482,
+        "declaration": {
+          "commentStart": 524,
+          "end": 0,
+          "id": {
+            "commentStart": 524,
+            "end": 0,
+            "name": "obj2",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 531,
+            "end": 0,
+            "properties": [
+              {
+                "commentStart": 533,
+                "end": 0,
+                "key": {
+                  "commentStart": 533,
+                  "end": 0,
+                  "name": "inner",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "start": 0,
+                "type": "ObjectProperty",
+                "value": {
+                  "commentStart": 541,
+                  "end": 0,
+                  "name": "obj",
+                  "start": 0,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                }
+              }
+            ],
+            "start": 0,
+            "type": "ObjectExpression",
+            "type": "ObjectExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 546,
+        "declaration": {
+          "commentStart": 548,
+          "end": 0,
+          "id": {
+            "commentStart": 548,
+            "end": 0,
+            "name": "one_c",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 556,
+            "computed": false,
+            "end": 0,
+            "object": {
+              "commentStart": 556,
+              "computed": false,
+              "end": 0,
+              "object": {
+                "commentStart": 556,
+                "end": 0,
+                "name": "obj2",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "property": {
+                "commentStart": 561,
+                "end": 0,
+                "name": "inner",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "start": 0,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
+            },
+            "property": {
+              "commentStart": 567,
+              "end": 0,
+              "raw": "\"foo\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "foo"
+            },
+            "start": 0,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 573,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 594,
+              "end": 0,
+              "name": "one_c",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "commentStart": 601,
+              "end": 0,
+              "raw": "1",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 604,
+              "end": 0,
+              "raw": "\"Literal property lookup\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "Literal property lookup"
+            }
+          ],
+          "callee": {
+            "commentStart": 575,
+            "end": 0,
+            "name": "assertLessThanOrEq",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "commentStart": 575,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 631,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 653,
+              "end": 0,
+              "name": "one_c",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "commentStart": 660,
+              "end": 0,
+              "raw": "1",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 663,
+              "end": 0,
+              "raw": "\"Literal property lookup\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "Literal property lookup"
+            }
+          ],
+          "callee": {
+            "commentStart": 631,
+            "end": 0,
+            "name": "assertGreaterThanOrEq",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "commentStart": 631,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 689,
+        "declaration": {
+          "commentStart": 752,
+          "end": 0,
+          "id": {
+            "commentStart": 752,
+            "end": 0,
+            "name": "one_d",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 760,
+            "computed": true,
+            "end": 0,
+            "object": {
+              "commentStart": 760,
+              "computed": false,
+              "end": 0,
+              "object": {
+                "commentStart": 760,
+                "end": 0,
+                "name": "obj2",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "property": {
+                "commentStart": 765,
+                "end": 0,
+                "name": "inner",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "start": 0,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
+            },
+            "property": {
+              "commentStart": 771,
+              "end": 0,
+              "name": "p",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "start": 0,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 773,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 794,
+              "end": 0,
+              "name": "one_d",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "commentStart": 801,
+              "end": 0,
+              "raw": "1",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 804,
+              "end": 0,
+              "raw": "\"Computed property lookup\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "Computed property lookup"
+            }
+          ],
+          "callee": {
+            "commentStart": 775,
+            "end": 0,
+            "name": "assertLessThanOrEq",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "commentStart": 775,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 832,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 854,
+              "end": 0,
+              "name": "one_d",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "commentStart": 861,
+              "end": 0,
+              "raw": "1",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 864,
+              "end": 0,
+              "raw": "\"Computed property lookup\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "Computed property lookup"
+            }
+          ],
+          "callee": {
+            "commentStart": 832,
+            "end": 0,
+            "name": "assertGreaterThanOrEq",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "commentStart": 832,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "0": [
+          {
+            "commentStart": 76,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Test: the property is a literal.",
+              "style": "line"
+            }
+          },
+          {
+            "commentStart": 113,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "1": [
+          {
+            "commentStart": 134,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "3": [
+          {
+            "commentStart": 250,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Test: the property is a variable,",
+              "style": "line"
+            }
+          },
+          {
+            "commentStart": 289,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
+              "value": "which must be evaluated before looking it up.",
+              "style": "line"
+            }
+          },
+          {
+            "commentStart": 337,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "5": [
+          {
+            "commentStart": 364,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "7": [
+          {
+            "commentStart": 482,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Test: multiple literal properties.",
+              "style": "line"
+            }
+          },
+          {
+            "commentStart": 521,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "8": [
+          {
+            "commentStart": 546,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "9": [
+          {
+            "commentStart": 573,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "11": [
+          {
+            "commentStart": 689,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Test: multiple properties, mix of literal and computed.",
+              "style": "line"
+            }
+          },
+          {
+            "commentStart": 749,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "12": [
+          {
+            "commentStart": 773,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "commentStart": 0,
+          "end": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "This tests evaluating properties of objects.",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 47,
+          "end": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}

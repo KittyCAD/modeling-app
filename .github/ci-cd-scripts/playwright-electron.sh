@@ -4,27 +4,27 @@
 set -euo pipefail
 
 if [[ ! -f "test-results/.last-run.json" ]]; then
-    # if no last run artifact, than run plawright normally
+    # If no last run artifact, than run Playwright normally
     echo "run playwright normally"
-        if [[ "$3" == *ubuntu* ]]; then
-            xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn test:playwright:electron:ubuntu -- --shard=$1/$2 || true
-        elif [[ "$3" == *windows* ]]; then
-            yarn test:playwright:electron:windows -- --shard=$1/$2 || true
-        elif [[ "$3" == *macos* ]]; then
-            yarn test:playwright:electron:macos  -- --shard=$1/$2 || true
-        else
-            echo "Do not run playwright. Unable to detect os runtime."
-            exit 1
-        fi
-        # # send to axiom
-        node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
+    if [[ "$3" == *ubuntu* ]]; then
+        xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn test:playwright:electron:ubuntu -- --shard=$1/$2 || true
+    elif [[ "$3" == *windows* ]]; then
+        yarn test:playwright:electron:windows -- --shard=$1/$2 || true
+    elif [[ "$3" == *macos* ]]; then
+        yarn test:playwright:electron:macos  -- --shard=$1/$2 || true
+    else
+        echo "Do not run Playwright. Unable to detect os runtime."
+        exit 1
+    fi
+    # Log failures for Axiom to pick up
+    node playwrightProcess.mjs > /tmp/github-actions.log
 fi
 
 retry=1
-max_retrys=5
+max_retries=1
 
-# retry failed tests, doing our own retries because using inbuilt playwright retries causes connection issues
-while [[ $retry -le $max_retrys ]]; do
+# Retry failed tests, doing our own retries because using inbuilt Playwright retries causes connection issues
+while [[ $retry -le $max_retries ]]; do
     if [[ -f "test-results/.last-run.json" ]]; then
         failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
         if [[ $failed_tests -gt 0 ]]; then
@@ -40,8 +40,8 @@ while [[ $retry -le $max_retrys ]]; do
                 echo "Do not run playwright. Unable to detect os runtime."
                 exit 1
             fi
-            # send to axiom
-            node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
+            # Log failures for Axiom to pick up
+            node playwrightProcess.mjs > /tmp/github-actions.log
             retry=$((retry + 1))
         else
             echo "retried=false" >>$GITHUB_OUTPUT
@@ -58,7 +58,7 @@ echo "retried=false" >>$GITHUB_OUTPUT
 if [[ -f "test-results/.last-run.json" ]]; then
     failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
     if [[ $failed_tests -gt 0 ]]; then
-        # if it still fails after 3 retrys, then fail the job
+        # If it still fails after 3 retries, then fail the job
         exit 1
     fi
 fi

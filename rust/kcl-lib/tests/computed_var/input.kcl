@@ -1,0 +1,18 @@
+// This tests computed properties.
+
+
+arr = [0, 0, 0, 10]
+i = 3
+ten = arr[i]
+
+assertEqual(ten, 10, 0.000001, "oops")
+
+p = "foo"
+obj = { foo = 1, bar = 0 }
+one = obj[p]
+
+assertEqual(one, 1, 0.0000001, "oops")
+
+assertEqual(PI, 3, 0.2, "oops pi")
+x = cos(2 * PI)
+assertEqual(x, 1, 0.000001, "oops cos")

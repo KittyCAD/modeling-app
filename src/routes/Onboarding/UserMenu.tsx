@@ -1,15 +1,12 @@
-import { OnboardingButtons, useDismiss, useNextClick } from '.'
+import { OnboardingButtons } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useEffect, useState } from 'react'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { useUser } from 'machines/appMachine'
 
 export default function UserMenu() {
-  const { auth } = useSettingsAuthContext()
-  const dismiss = useDismiss()
-  const next = useNextClick(onboardingPaths.PROJECT_MENU)
+  const user = useUser()
   const [avatarErrored, setAvatarErrored] = useState(false)
 
-  const user = auth?.context?.user
   const errorOrNoImage = !user?.image || avatarErrored
   const buttonDescription = errorOrNoImage ? 'the menu button' : 'your avatar'
 
@@ -33,7 +30,7 @@ export default function UserMenu() {
     <div className="fixed grid justify-center items-start inset-0 z-50 pointer-events-none">
       <div
         className={
-          'pointer-events-auto max-w-xl flex flex-col border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded'
+          'relative pointer-events-auto max-w-xl flex flex-col border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded'
         }
       >
         <section className="flex-1">
@@ -49,12 +46,7 @@ export default function UserMenu() {
             only apply to the current project.
           </p>
         </section>
-        <OnboardingButtons
-          currentSlug={onboardingPaths.USER_MENU}
-          dismiss={dismiss}
-          next={next}
-          nextText="Next: Project Menu"
-        />
+        <OnboardingButtons currentSlug={onboardingPaths.USER_MENU} />
       </div>
     </div>
   )

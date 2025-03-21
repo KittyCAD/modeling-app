@@ -1,0 +1,137 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "declaration": {
+        "commentStart": 0,
+        "end": 20,
+        "id": {
+          "commentStart": 0,
+          "end": 3,
+          "name": "obj",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "commentStart": 6,
+          "end": 20,
+          "properties": [
+            {
+              "commentStart": 8,
+              "end": 12,
+              "key": {
+                "commentStart": 8,
+                "end": 9,
+                "name": "a",
+                "start": 8,
+                "type": "Identifier"
+              },
+              "start": 8,
+              "type": "ObjectProperty",
+              "value": {
+                "commentStart": 11,
+                "end": 12,
+                "raw": "1",
+                "start": 11,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
+              }
+            },
+            {
+              "commentStart": 14,
+              "end": 18,
+              "key": {
+                "commentStart": 14,
+                "end": 15,
+                "name": "b",
+                "start": 14,
+                "type": "Identifier"
+              },
+              "start": 14,
+              "type": "ObjectProperty",
+              "value": {
+                "commentStart": 17,
+                "end": 18,
+                "raw": "2",
+                "start": 17,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
+              }
+            }
+          ],
+          "start": 6,
+          "type": "ObjectExpression",
+          "type": "ObjectExpression"
+        },
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 20,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    },
+    {
+      "commentStart": 25,
+      "declaration": {
+        "commentStart": 25,
+        "end": 42,
+        "id": {
+          "commentStart": 25,
+          "end": 31,
+          "name": "height",
+          "start": 25,
+          "type": "Identifier"
+        },
+        "init": {
+          "commentStart": 34,
+          "computed": false,
+          "end": 42,
+          "object": {
+            "commentStart": 34,
+            "end": 37,
+            "name": "obj",
+            "start": 34,
+            "type": "Identifier",
+            "type": "Identifier"
+          },
+          "property": {
+            "commentStart": 38,
+            "end": 41,
+            "raw": "\"a\"",
+            "start": 38,
+            "type": "Literal",
+            "type": "Literal",
+            "value": "a"
+          },
+          "start": 34,
+          "type": "MemberExpression",
+          "type": "MemberExpression"
+        },
+        "start": 25,
+        "type": "VariableDeclarator"
+      },
+      "end": 42,
+      "kind": "const",
+      "start": 25,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "commentStart": 0,
+  "end": 42,
+  "start": 0
+}

@@ -1,0 +1,14 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing kw_fn.kcl
+---
+fn increment(@x) {
+  return x + 1
+}
+
+fn add(@x, delta) {
+  return x + delta
+}
+
+two = increment(1)
+three = add(1, delta = 2)

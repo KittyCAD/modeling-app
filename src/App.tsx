@@ -6,14 +6,12 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { useLoaderData, useNavigate } from 'react-router-dom'
 import { type IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
 import { codeManager, engineCommandManager } from 'lib/singletons'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { isDesktop } from 'lib/isDesktop'
 import { useLspContext } from 'components/LspProvider'
-import { useRefreshSettings } from 'hooks/useRefreshSettings'
 import { ModelingSidebar } from 'components/ModelingSidebar/ModelingSidebar'
 import { LowerRightControls } from 'components/LowerRightControls'
 import ModalContainer from 'react-modal-promise'
@@ -24,7 +22,14 @@ import { UnitsMenu } from 'components/UnitsMenu'
 import { CameraProjectionToggle } from 'components/CameraProjectionToggle'
 import { useCreateFileLinkQuery } from 'hooks/useCreateFileLinkQueryWatcher'
 import { maybeWriteToDisk } from 'lib/telemetry'
+import { takeScreenshotOfVideoStreamCanvas } from 'lib/screenshot'
+import { writeProjectThumbnailFile } from 'lib/desktop'
+import { useRouteLoaderData } from 'react-router-dom'
+import { useEngineCommands } from 'components/EngineCommands'
 import { commandBarActor } from 'machines/commandBarMachine'
+import { useToken } from 'machines/appMachine'
+import { useSettings } from 'machines/appMachine'
+import { rustContext } from 'lib/singletons'
 maybeWriteToDisk()
   .then(() => {})
   .catch(() => {})
@@ -44,7 +49,6 @@ export function App() {
     })
   })
 
-  useRefreshSettings(PATHS.FILE + 'SETTINGS')
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
   const { onProjectOpen } = useLspContext()
@@ -54,23 +58,34 @@ export function App() {
 
   const projectName = project?.name || null
   const projectPath = project?.path || null
+
+  const [commands] = useEngineCommands()
+  const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const lastCommandType = commands[commands.length - 1]?.type
+
   useEffect(() => {
     onProjectOpen({ name: projectName, path: projectPath }, file || null)
   }, [projectName, projectPath])
 
   useHotKeyListener()
 
-  const { auth, settings } = useSettingsAuthContext()
-  const token = auth?.context?.token
+  const settings = useSettings()
+  const token = useToken()
 
   const coreDumpManager = useMemo(
-    () => new CoreDumpManager(engineCommandManager, codeManager, token),
+    () =>
+      new CoreDumpManager(
+        engineCommandManager,
+        codeManager,
+        rustContext,
+        token
+      ),
     []
   )
 
   const {
     app: { onboardingStatus },
-  } = settings.context
+  } = settings
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
@@ -90,6 +105,28 @@ export function App() {
     : ''
 
   useEngineConnectionSubscriptions()
+
+  // Generate thumbnail.png when loading the app
+  useEffect(() => {
+    if (isDesktop() && lastCommandType === 'execution-done') {
+      setTimeout(() => {
+        const projectDirectoryWithoutEndingSlash = loaderData?.project?.path
+        if (!projectDirectoryWithoutEndingSlash) {
+          return
+        }
+        const dataUrl: string = takeScreenshotOfVideoStreamCanvas()
+        // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
+        writeProjectThumbnailFile(dataUrl, projectDirectoryWithoutEndingSlash)
+          .then(() => {})
+          .catch((e) => {
+            console.error(
+              `Failed to generate thumbnail for ${projectDirectoryWithoutEndingSlash}`
+            )
+            console.error(e)
+          })
+      }, 500)
+    }
+  }, [lastCommandType])
 
   return (
     <div className="relative h-full flex flex-col" ref={ref}>

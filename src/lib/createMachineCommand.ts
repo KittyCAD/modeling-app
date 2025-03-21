@@ -160,8 +160,10 @@ export function buildCommandArgument<
   // GOTCHA: modelingCommandConfig is not a 1:1 mapping to this baseCommandArgument
   // You need to manually add key/value pairs here.
   const baseCommandArgument = {
+    displayName: arg.displayName,
     description: arg.description,
     required: arg.required,
+    hidden: arg.hidden,
     skip: arg.skip,
     machineActor,
     valueSummary: arg.valueSummary,
@@ -187,10 +189,20 @@ export function buildCommandArgument<
       selectionTypes: arg.selectionTypes,
       validation: arg.validation,
     } satisfies CommandArgument<O, T> & { inputType: 'selection' }
+  } else if (arg.inputType === 'selectionMixed') {
+    return {
+      inputType: arg.inputType,
+      ...baseCommandArgument,
+      multiple: arg.multiple,
+      selectionTypes: arg.selectionTypes,
+      validation: arg.validation,
+      allowNoSelection: arg.allowNoSelection,
+      selectionSource: arg.selectionSource,
+    } satisfies CommandArgument<O, T> & { inputType: 'selectionMixed' }
   } else if (arg.inputType === 'kcl') {
     return {
       inputType: arg.inputType,
-      createVariableByDefault: arg.createVariableByDefault,
+      createVariable: arg.createVariable,
       variableName: arg.variableName,
       defaultValue: arg.defaultValue,
       ...baseCommandArgument,

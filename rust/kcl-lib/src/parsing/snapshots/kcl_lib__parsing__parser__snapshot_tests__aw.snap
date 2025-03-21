@@ -1,0 +1,96 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "declaration": {
+        "commentStart": 4,
+        "end": 91,
+        "id": {
+          "commentStart": 4,
+          "end": 11,
+          "name": "numbers",
+          "start": 4,
+          "type": "Identifier"
+        },
+        "init": {
+          "commentStart": 14,
+          "elements": [
+            {
+              "commentStart": 28,
+              "end": 29,
+              "raw": "1",
+              "start": 28,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 79,
+              "end": 80,
+              "raw": "3",
+              "start": 79,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 3.0,
+                "suffix": "None"
+              }
+            }
+          ],
+          "end": 91,
+          "nonCodeMeta": {
+            "nonCodeNodes": {
+              "1": [
+                {
+                  "commentStart": 43,
+                  "end": 48,
+                  "start": 43,
+                  "type": "NonCodeNode",
+                  "value": {
+                    "type": "blockComment",
+                    "value": "A,",
+                    "style": "line"
+                  }
+                }
+              ],
+              "2": [
+                {
+                  "commentStart": 61,
+                  "end": 66,
+                  "start": 61,
+                  "type": "NonCodeNode",
+                  "value": {
+                    "type": "blockComment",
+                    "value": "B,",
+                    "style": "line"
+                  }
+                }
+              ]
+            },
+            "startNodes": []
+          },
+          "start": 14,
+          "type": "ArrayExpression",
+          "type": "ArrayExpression"
+        },
+        "start": 4,
+        "type": "VariableDeclarator"
+      },
+      "end": 91,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "commentStart": 0,
+  "end": 91,
+  "start": 0
+}

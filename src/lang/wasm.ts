@@ -3,102 +3,104 @@ import {
   parse_wasm,
   recast_wasm,
   format_number,
-  execute,
   kcl_lint,
-  modify_ast_for_sketch_wasm,
   is_points_ccw,
   get_tangential_arc_to_info,
-  program_memory_init,
-  make_default_planes,
+  get_kcl_version,
   coredump,
-  toml_stringify,
   default_app_settings,
   parse_app_settings,
   parse_project_settings,
   default_project_settings,
   base64_decode,
-  clear_scene_and_bust_cache,
+  kcl_settings,
+  change_kcl_settings,
+  serialize_project_configuration,
+  serialize_configuration,
   reloadModule,
 } from 'lib/wasm_lib_wrapper'
 
 import { KCLError } from './errors'
-import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
-import { EngineCommandManager } from './std/engineConnection'
-import { Discovered } from '../wasm-lib/kcl/bindings/Discovered'
-import { KclValue } from '../wasm-lib/kcl/bindings/KclValue'
-import type { Program } from '../wasm-lib/kcl/bindings/Program'
+import { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
+import { Discovered } from '@rust/kcl-lib/bindings/Discovered'
+import { KclValue } from '@rust/kcl-lib/bindings/KclValue'
+import type { Program } from '@rust/kcl-lib/bindings/Program'
 import { Coords2d } from './std/sketch'
-import { fileSystemManager } from 'lang/std/fileSystemManager'
-import { CoreDumpInfo } from 'wasm-lib/kcl/bindings/CoreDumpInfo'
+import { CoreDumpInfo } from '@rust/kcl-lib/bindings/CoreDumpInfo'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
-import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import { TEST } from 'env'
 import { err, Reason } from 'lib/trap'
-import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { DeepPartial } from 'lib/types'
-import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
-import { Sketch } from '../wasm-lib/kcl/bindings/Sketch'
-import { ExecOutcome as RustExecOutcome } from 'wasm-lib/kcl/bindings/ExecOutcome'
-import { ProgramMemory as RawProgramMemory } from '../wasm-lib/kcl/bindings/ProgramMemory'
-import { EnvironmentRef } from '../wasm-lib/kcl/bindings/EnvironmentRef'
-import { Environment } from '../wasm-lib/kcl/bindings/Environment'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
-import { SourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
+import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+import { Sketch } from '@rust/kcl-lib/bindings/Sketch'
+import { ExecOutcome as RustExecOutcome } from '@rust/kcl-lib/bindings/ExecOutcome'
+import { Node } from '@rust/kcl-lib/bindings/Node'
+import { CompilationError } from '@rust/kcl-lib/bindings/CompilationError'
+import { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import { getAllCurrentSettings } from 'lib/settings/settingsUtils'
-import { Operation } from 'wasm-lib/kcl/bindings/Operation'
-import { KclErrorWithOutputs } from 'wasm-lib/kcl/bindings/KclErrorWithOutputs'
-import { Artifact as RustArtifact } from 'wasm-lib/kcl/bindings/Artifact'
-import { ArtifactId } from 'wasm-lib/kcl/bindings/Artifact'
-import { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
-import { ArtifactGraph as RustArtifactGraph } from 'wasm-lib/kcl/bindings/Artifact'
+import { Operation } from '@rust/kcl-lib/bindings/Operation'
+import { KclErrorWithOutputs } from '@rust/kcl-lib/bindings/KclErrorWithOutputs'
+import { ArtifactId } from '@rust/kcl-lib/bindings/Artifact'
+import { ArtifactCommand } from '@rust/kcl-lib/bindings/Artifact'
+import { ArtifactGraph as RustArtifactGraph } from '@rust/kcl-lib/bindings/Artifact'
 import { Artifact } from './std/artifactGraph'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { NumericSuffix } from 'wasm-lib/kcl/bindings/NumericSuffix'
+import { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
+import { MetaSettings } from '@rust/kcl-lib/bindings/MetaSettings'
+import { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
+import { UnitLen } from '@rust/kcl-lib/bindings/UnitLen'
+import { UnitAngle as UnitAng } from '@rust/kcl-lib/bindings/UnitAngle'
+import { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
+import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
+import { isArray } from 'lib/utils'
 
-export type { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
-export type { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
-export type { ArtifactId } from 'wasm-lib/kcl/bindings/Artifact'
-export type { Cap as CapArtifact } from 'wasm-lib/kcl/bindings/Artifact'
-export type { CodeRef } from 'wasm-lib/kcl/bindings/Artifact'
-export type { EdgeCut } from 'wasm-lib/kcl/bindings/Artifact'
-export type { Path as PathArtifact } from 'wasm-lib/kcl/bindings/Artifact'
-export type { Plane as PlaneArtifact } from 'wasm-lib/kcl/bindings/Artifact'
-export type { Segment as SegmentArtifact } from 'wasm-lib/kcl/bindings/Artifact'
-export type { Solid2d as Solid2dArtifact } from 'wasm-lib/kcl/bindings/Artifact'
-export type { Sweep as SweepArtifact } from 'wasm-lib/kcl/bindings/Artifact'
-export type { SweepEdge } from 'wasm-lib/kcl/bindings/Artifact'
-export type { Wall as WallArtifact } from 'wasm-lib/kcl/bindings/Artifact'
-export type { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
-export type { Program } from '../wasm-lib/kcl/bindings/Program'
-export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
-export type { ObjectExpression } from '../wasm-lib/kcl/bindings/ObjectExpression'
-export type { ObjectProperty } from '../wasm-lib/kcl/bindings/ObjectProperty'
-export type { MemberExpression } from '../wasm-lib/kcl/bindings/MemberExpression'
-export type { PipeExpression } from '../wasm-lib/kcl/bindings/PipeExpression'
-export type { VariableDeclaration } from '../wasm-lib/kcl/bindings/VariableDeclaration'
-export type { Parameter } from '../wasm-lib/kcl/bindings/Parameter'
-export type { PipeSubstitution } from '../wasm-lib/kcl/bindings/PipeSubstitution'
-export type { Identifier } from '../wasm-lib/kcl/bindings/Identifier'
-export type { UnaryExpression } from '../wasm-lib/kcl/bindings/UnaryExpression'
-export type { BinaryExpression } from '../wasm-lib/kcl/bindings/BinaryExpression'
-export type { ReturnStatement } from '../wasm-lib/kcl/bindings/ReturnStatement'
-export type { ExpressionStatement } from '../wasm-lib/kcl/bindings/ExpressionStatement'
-export type { CallExpression } from '../wasm-lib/kcl/bindings/CallExpression'
-export type { VariableDeclarator } from '../wasm-lib/kcl/bindings/VariableDeclarator'
-export type { BinaryPart } from '../wasm-lib/kcl/bindings/BinaryPart'
-export type { Literal } from '../wasm-lib/kcl/bindings/Literal'
-export type { LiteralValue } from '../wasm-lib/kcl/bindings/LiteralValue'
-export type { ArrayExpression } from '../wasm-lib/kcl/bindings/ArrayExpression'
-export type { SourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
-export type { NumericSuffix } from 'wasm-lib/kcl/bindings/NumericSuffix'
+export type { Artifact } from '@rust/kcl-lib/bindings/Artifact'
+export type { ArtifactCommand } from '@rust/kcl-lib/bindings/Artifact'
+export type { ArtifactId } from '@rust/kcl-lib/bindings/Artifact'
+export type { Cap as CapArtifact } from '@rust/kcl-lib/bindings/Artifact'
+export type { CodeRef } from '@rust/kcl-lib/bindings/Artifact'
+export type { EdgeCut } from '@rust/kcl-lib/bindings/Artifact'
+export type { Path as PathArtifact } from '@rust/kcl-lib/bindings/Artifact'
+export type { Plane as PlaneArtifact } from '@rust/kcl-lib/bindings/Artifact'
+export type { Segment as SegmentArtifact } from '@rust/kcl-lib/bindings/Artifact'
+export type { Solid2d as Solid2dArtifact } from '@rust/kcl-lib/bindings/Artifact'
+export type { Sweep as SweepArtifact } from '@rust/kcl-lib/bindings/Artifact'
+export type { SweepEdge } from '@rust/kcl-lib/bindings/Artifact'
+export type { Wall as WallArtifact } from '@rust/kcl-lib/bindings/Artifact'
+export type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+export type { Program } from '@rust/kcl-lib/bindings/Program'
+export type { Expr } from '@rust/kcl-lib/bindings/Expr'
+export type { ObjectExpression } from '@rust/kcl-lib/bindings/ObjectExpression'
+export type { ObjectProperty } from '@rust/kcl-lib/bindings/ObjectProperty'
+export type { MemberExpression } from '@rust/kcl-lib/bindings/MemberExpression'
+export type { PipeExpression } from '@rust/kcl-lib/bindings/PipeExpression'
+export type { VariableDeclaration } from '@rust/kcl-lib/bindings/VariableDeclaration'
+export type { Parameter } from '@rust/kcl-lib/bindings/Parameter'
+export type { PipeSubstitution } from '@rust/kcl-lib/bindings/PipeSubstitution'
+export type { Identifier } from '@rust/kcl-lib/bindings/Identifier'
+export type { UnaryExpression } from '@rust/kcl-lib/bindings/UnaryExpression'
+export type { BinaryExpression } from '@rust/kcl-lib/bindings/BinaryExpression'
+export type { ReturnStatement } from '@rust/kcl-lib/bindings/ReturnStatement'
+export type { ExpressionStatement } from '@rust/kcl-lib/bindings/ExpressionStatement'
+export type { CallExpression } from '@rust/kcl-lib/bindings/CallExpression'
+export type { CallExpressionKw } from '@rust/kcl-lib/bindings/CallExpressionKw'
+export type { LabeledArg } from '@rust/kcl-lib/bindings/LabeledArg'
+export type { VariableDeclarator } from '@rust/kcl-lib/bindings/VariableDeclarator'
+export type { BinaryPart } from '@rust/kcl-lib/bindings/BinaryPart'
+export type { Literal } from '@rust/kcl-lib/bindings/Literal'
+export type { LiteralValue } from '@rust/kcl-lib/bindings/LiteralValue'
+export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
+export type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
+export type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 
 export type SyntaxType =
   | 'Program'
   | 'ExpressionStatement'
   | 'BinaryExpression'
   | 'CallExpression'
+  | 'CallExpressionKw'
   | 'Identifier'
   | 'ReturnStatement'
   | 'VariableDeclaration'
@@ -115,11 +117,11 @@ export type SyntaxType =
   | 'NonCodeNode'
   | 'UnaryExpression'
 
-export type { Path } from '../wasm-lib/kcl/bindings/Path'
-export type { Sketch } from '../wasm-lib/kcl/bindings/Sketch'
-export type { Solid } from '../wasm-lib/kcl/bindings/Solid'
-export type { KclValue } from '../wasm-lib/kcl/bindings/KclValue'
-export type { ExtrudeSurface } from '../wasm-lib/kcl/bindings/ExtrudeSurface'
+export type { Path } from '@rust/kcl-lib/bindings/Path'
+export type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
+export type { Solid } from '@rust/kcl-lib/bindings/Solid'
+export type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
+export type { ExtrudeSurface } from '@rust/kcl-lib/bindings/ExtrudeSurface'
 
 /**
  * Convert a SourceRange as used inside the KCL interpreter into the above one for use in the
@@ -153,16 +155,22 @@ export function isTopLevelModule(range: SourceRange): boolean {
   return range[2] === 0
 }
 
+function firstSourceRange(error: RustKclError): SourceRange {
+  return error.sourceRanges.length > 0
+    ? sourceRangeFromRust(error.sourceRanges[0])
+    : defaultSourceRange()
+}
+
 export const wasmUrl = () => {
   // For when we're in electron (file based) or web server (network based)
   // For some reason relative paths don't work as expected. Otherwise we would
   // just do /wasm_lib_bg.wasm. In particular, the issue arises when the path
   // is used from within worker.ts.
   const fullUrl = document.location.protocol.includes('http')
-    ? document.location.origin + '/wasm_lib_bg.wasm'
+    ? document.location.origin + '/kcl_wasm_lib_bg.wasm'
     : document.location.protocol +
       document.location.pathname.split('/').slice(0, -1).join('/') +
-      '/wasm_lib_bg.wasm'
+      '/kcl_wasm_lib_bg.wasm'
 
   return fullUrl
 }
@@ -245,14 +253,17 @@ export const parse = (code: string | Error): ParseResult | Error => {
     return new ParseResult(parsed[0], errs.errors, errs.warnings)
   } catch (e: any) {
     // throw e
+    console.error(e.toString())
     const parsed: RustKclError = JSON.parse(e.toString())
     return new KCLError(
       parsed.kind,
       parsed.msg,
-      sourceRangeFromRust(parsed.sourceRanges[0]),
+      firstSourceRange(parsed),
       [],
       [],
-      defaultArtifactGraph()
+      defaultArtifactGraph(),
+      {},
+      null
     )
   }
 }
@@ -265,6 +276,8 @@ export const assertParse = (code: string): Node<Program> => {
   return result.program
 }
 
+export type VariableMap = { [key in string]?: KclValue }
+
 export type PathToNode = [string | number, string][]
 
 export const isPathToNodeNumber = (
@@ -273,12 +286,21 @@ export const isPathToNodeNumber = (
   return typeof pathToNode === 'number'
 }
 
+export const isPathToNode = (input: unknown): input is PathToNode =>
+  isArray(input) &&
+  isArray(input[0]) &&
+  input[0].length == 2 &&
+  (typeof input[0][0] === 'number' || typeof input[0][0] === 'string') &&
+  typeof input[0][1] === 'string'
+
 export interface ExecState {
-  memory: ProgramMemory
+  variables: { [key in string]?: KclValue }
   operations: Operation[]
-  artifacts: { [key in ArtifactId]?: RustArtifact }
   artifactCommands: ArtifactCommand[]
   artifactGraph: ArtifactGraph
+  errors: CompilationError[]
+  filenames: { [x: number]: ModulePath | undefined }
+  defaultPlanes: DefaultPlanes | null
 }
 
 /**
@@ -287,21 +309,23 @@ export interface ExecState {
  */
 export function emptyExecState(): ExecState {
   return {
-    memory: ProgramMemory.empty(),
+    variables: {},
     operations: [],
-    artifacts: {},
     artifactCommands: [],
     artifactGraph: defaultArtifactGraph(),
+    errors: [],
+    filenames: [],
+    defaultPlanes: null,
   }
 }
 
-function execStateFromRust(
+export function execStateFromRust(
   execOutcome: RustExecOutcome,
   program: Node<Program>
 ): ExecState {
   const artifactGraph = rustArtifactGraphToMap(execOutcome.artifactGraph)
   // We haven't ported pathToNode logic to Rust yet, so we need to fill it in.
-  for (const [id, artifact] of artifactGraph) {
+  for (const [_id, artifact] of artifactGraph) {
     if (!artifact) continue
     if (!('codeRef' in artifact)) continue
     const pathToNode = getNodePathFromSourceRange(
@@ -312,11 +336,25 @@ function execStateFromRust(
   }
 
   return {
-    memory: ProgramMemory.fromRaw(execOutcome.memory),
+    variables: execOutcome.variables,
     operations: execOutcome.operations,
-    artifacts: execOutcome.artifacts,
     artifactCommands: execOutcome.artifactCommands,
     artifactGraph,
+    errors: execOutcome.errors,
+    filenames: execOutcome.filenames,
+    defaultPlanes: execOutcome.defaultPlanes,
+  }
+}
+
+export function mockExecStateFromRust(execOutcome: RustExecOutcome): ExecState {
+  return {
+    variables: execOutcome.variables,
+    operations: execOutcome.operations,
+    artifactCommands: execOutcome.artifactCommands,
+    artifactGraph: new Map<ArtifactId, Artifact>(),
+    errors: execOutcome.errors,
+    filenames: execOutcome.filenames,
+    defaultPlanes: execOutcome.defaultPlanes,
   }
 }
 
@@ -336,203 +374,6 @@ function rustArtifactGraphToMap(
 
 export function defaultArtifactGraph(): ArtifactGraph {
   return new Map()
-}
-
-interface Memory {
-  [key: string]: KclValue | undefined
-}
-
-const ROOT_ENVIRONMENT_REF: EnvironmentRef = 0
-
-function emptyEnvironment(): Environment {
-  return { bindings: {}, parent: null }
-}
-
-function emptyRootEnvironment(): Environment {
-  return {
-    // This is dumb this is copied from rust.
-    bindings: {
-      ZERO: { type: 'Number', value: 0.0, __meta: [] },
-      QUARTER_TURN: { type: 'Number', value: 90.0, __meta: [] },
-      HALF_TURN: { type: 'Number', value: 180.0, __meta: [] },
-      THREE_QUARTER_TURN: { type: 'Number', value: 270.0, __meta: [] },
-    },
-    parent: null,
-  }
-}
-
-/**
- * This duplicates logic in Rust.  The hope is to keep ProgramMemory internals
- * isolated from the rest of the TypeScript code so that we can move it to Rust
- * in the future.
- */
-export class ProgramMemory {
-  private environments: Environment[]
-  private currentEnv: EnvironmentRef
-  private return: KclValue | null
-
-  /**
-   * Empty memory doesn't include prelude definitions.
-   */
-  static empty(): ProgramMemory {
-    return new ProgramMemory()
-  }
-
-  static fromRaw(raw: RawProgramMemory): ProgramMemory {
-    return new ProgramMemory(raw.environments, raw.currentEnv, raw.return)
-  }
-
-  constructor(
-    environments: Environment[] = [emptyRootEnvironment()],
-    currentEnv: EnvironmentRef = ROOT_ENVIRONMENT_REF,
-    returnVal: KclValue | null = null
-  ) {
-    this.environments = environments
-    this.currentEnv = currentEnv
-    this.return = returnVal
-  }
-
-  /**
-   * Returns a deep copy.
-   */
-  clone(): ProgramMemory {
-    return ProgramMemory.fromRaw(structuredClone(this.toRaw()))
-  }
-
-  has(name: string): boolean {
-    let envRef = this.currentEnv
-    while (true) {
-      const env = this.environments[envRef]
-      if (env.bindings.hasOwnProperty(name)) {
-        return true
-      }
-      if (!env.parent) {
-        break
-      }
-      envRef = env.parent
-    }
-    return false
-  }
-
-  get(name: string): KclValue | null {
-    let envRef = this.currentEnv
-    while (true) {
-      const env = this.environments[envRef]
-      if (env.bindings.hasOwnProperty(name)) {
-        return env.bindings[name] ?? null
-      }
-      if (!env.parent) {
-        break
-      }
-      envRef = env.parent
-    }
-    return null
-  }
-
-  set(name: string, value: KclValue): Error | null {
-    if (this.environments.length === 0) {
-      return new Error('No environment to set memory in')
-    }
-    const env = this.environments[this.currentEnv]
-    env.bindings[name] = value
-    return null
-  }
-
-  /**
-   * Returns a new ProgramMemory with only `KclValue`s that pass the
-   * predicate.  Values are deep copied.
-   *
-   * Note: Return value of the returned ProgramMemory is always null.
-   */
-  filterVariables(
-    keepPrelude: boolean,
-    predicate: (value: KclValue) => boolean
-  ): ProgramMemory | Error {
-    const environments: Environment[] = []
-    for (const [i, env] of this.environments.entries()) {
-      let bindings: Memory
-      if (i === ROOT_ENVIRONMENT_REF && keepPrelude) {
-        // Get prelude definitions.  Create these first so that they're always
-        // first in iteration order.
-        const memoryOrError = programMemoryInit()
-        if (err(memoryOrError)) return memoryOrError
-        bindings = memoryOrError.environments[0].bindings
-      } else {
-        bindings = emptyEnvironment().bindings
-      }
-
-      for (const [name, value] of Object.entries(env.bindings)) {
-        if (value === undefined) continue
-        // Check the predicate.
-        if (!predicate(value)) {
-          continue
-        }
-        // Deep copy.
-        bindings[name] = structuredClone(value)
-      }
-      environments.push({ bindings, parent: env.parent })
-    }
-    return new ProgramMemory(environments, this.currentEnv, null)
-  }
-
-  numEnvironments(): number {
-    return this.environments.length
-  }
-
-  numVariables(envRef: EnvironmentRef): number {
-    return Object.keys(this.environments[envRef]).length
-  }
-
-  /**
-   * Returns all variable entries in memory that are visible, in a flat
-   * structure.  If variables are shadowed, they're not visible, and therefore,
-   * not included.
-   *
-   * This should only be used to display in the MemoryPane UI.
-   */
-  visibleEntries(): Map<string, KclValue> {
-    const map = new Map<string, KclValue>()
-    let envRef = this.currentEnv
-    while (true) {
-      const env = this.environments[envRef]
-      for (const [name, value] of Object.entries(env.bindings)) {
-        if (value === undefined) continue
-        // Don't include shadowed variables.
-        if (!map.has(name)) {
-          map.set(name, value)
-        }
-      }
-      if (!env.parent) {
-        break
-      }
-      envRef = env.parent
-    }
-    return map
-  }
-
-  /**
-   * Returns true if any visible variables are a Sketch or Solid.
-   */
-  hasSketchOrSolid(): boolean {
-    for (const node of this.visibleEntries().values()) {
-      if (node.type === 'Solid' || node.type === 'Sketch') {
-        return true
-      }
-    }
-    return false
-  }
-
-  /**
-   * Return the representation that can be serialized to JSON.  This should only
-   * be used within this module.
-   */
-  toRaw(): RawProgramMemory {
-    return {
-      environments: this.environments,
-      currentEnv: this.currentEnv,
-      return: this.return,
-    }
-  }
 }
 
 // TODO: In the future, make the parameter be a KclValue.
@@ -569,61 +410,31 @@ export function sketchFromKclValue(
   return result
 }
 
-/**
- * Execute a KCL program.
- * @param node The AST of the program to execute.
- * @param path The full path of the file being executed.  Use `null` for
- * expressions that don't have a file, like expressions in the command bar.
- * @param programMemoryOverride If this is not `null`, this will be used as the
- * initial program memory, and the execution will be engineless (AKA mock
- * execution).
- */
-export const executor = async (
-  node: Node<Program>,
-  engineCommandManager: EngineCommandManager,
-  path?: string,
-  programMemoryOverride: ProgramMemory | Error | null = null
-): Promise<ExecState> => {
-  if (programMemoryOverride !== null && err(programMemoryOverride))
-    return Promise.reject(programMemoryOverride)
-
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  if (programMemoryOverride !== null && err(programMemoryOverride))
-    return Promise.reject(programMemoryOverride)
-
-  try {
-    let jsAppSettings = default_app_settings()
-    if (!TEST) {
-      const lastSettingsSnapshot = await import(
-        'components/SettingsAuthProvider'
-      ).then((module) => module.lastSettingsContextSnapshot)
-      if (lastSettingsSnapshot) {
-        jsAppSettings = getAllCurrentSettings(lastSettingsSnapshot)
-      }
+export const jsAppSettings = async () => {
+  let jsAppSettings = default_app_settings()
+  if (!TEST) {
+    const settings = await import('machines/appMachine').then((module) =>
+      module.getSettings()
+    )
+    if (settings) {
+      jsAppSettings = getAllCurrentSettings(settings)
     }
-    const execOutcome: RustExecOutcome = await execute(
-      JSON.stringify(node),
-      path,
-      JSON.stringify(programMemoryOverride?.toRaw() || null),
-      JSON.stringify({ settings: jsAppSettings }),
-      engineCommandManager,
-      fileSystemManager
-    )
-    return execStateFromRust(execOutcome, node)
-  } catch (e: any) {
-    console.log(e)
-    const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
-    const kclError = new KCLError(
-      parsed.error.kind,
-      parsed.error.msg,
-      sourceRangeFromRust(parsed.error.sourceRanges[0]),
-      parsed.operations,
-      parsed.artifactCommands,
-      rustArtifactGraphToMap(parsed.artifactGraph)
-    )
-
-    return Promise.reject(kclError)
   }
+  return jsAppSettings
+}
+
+export const errFromErrWithOutputs = (e: any): KCLError => {
+  const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
+  return new KCLError(
+    parsed.error.kind,
+    parsed.error.msg,
+    firstSourceRange(parsed.error),
+    parsed.operations,
+    parsed.artifactCommands,
+    rustArtifactGraphToMap(parsed.artifactGraph),
+    parsed.filenames,
+    parsed.defaultPlanes
+  )
 }
 
 export const kclLint = async (ast: Program): Promise<Array<Discovered>> => {
@@ -646,54 +457,6 @@ export const recast = (ast: Program): string | Error => {
  */
 export function formatNumber(value: number, suffix: NumericSuffix): string {
   return format_number(value, JSON.stringify(suffix))
-}
-
-export const makeDefaultPlanes = async (
-  engineCommandManager: EngineCommandManager
-): Promise<DefaultPlanes> => {
-  try {
-    const planes: DefaultPlanes = await make_default_planes(
-      engineCommandManager
-    )
-    return planes
-  } catch (e) {
-    // TODO: do something real with the error.
-    console.log('make default planes error', e)
-    return Promise.reject(e)
-  }
-}
-
-export const modifyAstForSketch = async (
-  engineCommandManager: EngineCommandManager,
-  ast: Node<Program>,
-  variableName: string,
-  currentPlane: string,
-  engineId: string
-): Promise<Node<Program>> => {
-  try {
-    const updatedAst: Node<Program> = await modify_ast_for_sketch_wasm(
-      engineCommandManager,
-      JSON.stringify(ast),
-      variableName,
-      JSON.stringify(currentPlane),
-      engineId
-    )
-
-    return updatedAst
-  } catch (e: any) {
-    const parsed: RustKclError = JSON.parse(e.toString())
-    const kclError = new KCLError(
-      parsed.kind,
-      parsed.msg,
-      sourceRangeFromRust(parsed.sourceRanges[0]),
-      [],
-      [],
-      defaultArtifactGraph()
-    )
-
-    console.log(kclError)
-    return Promise.reject(kclError)
-  }
 }
 
 export function isPointsCCW(points: Coords2d[]): number {
@@ -739,31 +502,6 @@ export function getTangentialArcToInfo({
   }
 }
 
-/**
- * Returns new ProgramMemory with prelude definitions.
- */
-export function programMemoryInit(): ProgramMemory | Error {
-  try {
-    const memory: RawProgramMemory = program_memory_init()
-    return new ProgramMemory(
-      memory.environments,
-      memory.currentEnv,
-      memory.return
-    )
-  } catch (e: any) {
-    console.log(e)
-    const parsed: RustKclError = JSON.parse(e.toString())
-    return new KCLError(
-      parsed.kind,
-      parsed.msg,
-      sourceRangeFromRust(parsed.sourceRanges[0]),
-      [],
-      [],
-      defaultArtifactGraph()
-    )
-  }
-}
-
 export async function coreDump(
   coreDumpManager: CoreDumpManager,
   openGithubIssue: boolean = false
@@ -794,27 +532,8 @@ export async function coreDump(
   }
 }
 
-export function tomlStringify(toml: any): string | Error {
-  return toml_stringify(JSON.stringify(toml))
-}
-
 export function defaultAppSettings(): DeepPartial<Configuration> | Error {
   return default_app_settings()
-}
-
-export async function clearSceneAndBustCache(
-  engineCommandManager: EngineCommandManager
-): Promise<null | Error> {
-  try {
-    await clear_scene_and_bust_cache(engineCommandManager)
-  } catch (e: any) {
-    console.error('clear_scene_and_bust_cache: error', e)
-    return Promise.reject(
-      new Error(`Error on clear_scene_and_bust_cache: ${e}`)
-    )
-  }
-
-  return null
 }
 
 export function parseAppSettings(
@@ -842,5 +561,129 @@ export function base64Decode(base64: string): ArrayBuffer | Error {
   } catch (e) {
     console.error('Caught error decoding base64 string: ' + e)
     return new Error('Caught error decoding base64 string: ' + e)
+  }
+}
+
+/**
+ * Get the meta settings for the KCL.  If no settings were set in the file,
+ * returns null.
+ */
+export function kclSettings(
+  kcl: string | Node<Program>
+): MetaSettings | null | Error {
+  let program: Node<Program>
+  if (typeof kcl === 'string') {
+    const parseResult = parse(kcl)
+    if (err(parseResult)) return parseResult
+    if (!resultIsOk(parseResult)) {
+      return new Error(`parse result had errors`, { cause: parseResult })
+    }
+    program = parseResult.program
+  } else {
+    program = kcl
+  }
+  try {
+    return kcl_settings(JSON.stringify(program))
+  } catch (e) {
+    return new Error('Caught error getting kcl settings', { cause: e })
+  }
+}
+
+/**
+ * Change the meta settings for the kcl file.
+ * @returns the new kcl string with the updated settings.
+ */
+export function changeKclSettings(
+  kcl: string,
+  settings: MetaSettings
+): string | Error {
+  try {
+    return change_kcl_settings(kcl, JSON.stringify(settings))
+  } catch (e) {
+    console.error('Caught error changing kcl settings', e)
+    return new Error('Caught error changing kcl settings', { cause: e })
+  }
+}
+
+/**
+ * Convert a `UnitLength_type` to a `UnitLen`
+ */
+export function unitLengthToUnitLen(input: UnitLength): UnitLen {
+  switch (input) {
+    case 'm':
+      return { type: 'M' }
+    case 'cm':
+      return { type: 'Cm' }
+    case 'yd':
+      return { type: 'Yards' }
+    case 'ft':
+      return { type: 'Feet' }
+    case 'in':
+      return { type: 'Inches' }
+    default:
+      return { type: 'Mm' }
+  }
+}
+
+/**
+ * Convert `UnitLen` to `UnitLength_type`.
+ */
+export function unitLenToUnitLength(input: UnitLen): UnitLength {
+  switch (input.type) {
+    case 'M':
+      return 'm'
+    case 'Cm':
+      return 'cm'
+    case 'Yards':
+      return 'yd'
+    case 'Feet':
+      return 'ft'
+    case 'Inches':
+      return 'in'
+    default:
+      return 'mm'
+  }
+}
+
+/**
+ * Convert `UnitAngle` to `UnitAngle_type`.
+ */
+export function unitAngToUnitAngle(input: UnitAng): UnitAngle {
+  switch (input.type) {
+    case 'Radians':
+      return 'radians'
+    default:
+      return 'degrees'
+  }
+}
+
+/**
+ * Get the KCL version currently being used.
+ */
+export function getKclVersion(): string {
+  return get_kcl_version()
+}
+
+/**
+ * Serialize a project configuration to a TOML string.
+ */
+export function serializeConfiguration(configuration: any): string | Error {
+  try {
+    return serialize_configuration(configuration)
+  } catch (e: any) {
+    return new Error(`Error serializing configuration: ${e}`)
+  }
+}
+
+/**
+ * Serialize a project configuration to a TOML string.
+ */
+export function serializeProjectConfiguration(
+  configuration: any
+): string | Error {
+  try {
+    return serialize_project_configuration(configuration)
+  } catch (e: any) {
+    return new Error(`Error serializing project configuration: ${e}`)
   }
 }

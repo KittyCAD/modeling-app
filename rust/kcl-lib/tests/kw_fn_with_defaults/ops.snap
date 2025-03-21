@@ -1,0 +1,68 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed kw_fn_with_defaults.kcl
+---
+[
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "increment",
+    "functionSourceRange": [
+      12,
+      45,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "increment",
+    "functionSourceRange": [
+      12,
+      45,
+      0
+    ],
+    "unlabeledArg": {
+      "value": {
+        "type": "Number",
+        "value": 1.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "by": {
+        "value": {
+          "type": "Number",
+          "value": 20.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  }
+]

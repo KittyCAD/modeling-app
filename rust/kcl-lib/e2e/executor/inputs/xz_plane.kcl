@@ -1,0 +1,6 @@
+part001 = startSketchOn(XZ)
+  |> startProfileAt([0, 0], %)
+  |> line(endAbsolute = [100, 100])
+  |> line(endAbsolute = [100, 0])
+  |> close()
+  |> extrude(length = 5 + 7)

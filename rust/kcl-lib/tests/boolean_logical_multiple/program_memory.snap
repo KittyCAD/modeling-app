@@ -1,0 +1,40 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing boolean_logical_multiple.kcl
+---
+{
+  "i": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "ii": {
+    "type": "Bool",
+    "value": true
+  },
+  "j": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "jj": {
+    "type": "Bool",
+    "value": true
+  }
+}

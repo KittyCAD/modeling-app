@@ -1,6 +1,0 @@
----
-source: kcl/src/simulation_tests.rs
-description: Operations executed computed_var.kcl
-snapshot_kind: text
----
-[]

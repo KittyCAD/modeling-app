@@ -6,7 +6,7 @@ import { readLocalStorageAppSettingsFile } from './settings/settingsUtils'
 import { err } from 'lib/trap'
 import { IS_PLAYWRIGHT_KEY } from '../../e2e/playwright/storageStates'
 import { DeepPartial } from './types'
-import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { PlatformPath } from 'path'
 
 const prependRoutes =
@@ -75,11 +75,11 @@ export async function getProjectMetaByRouteId(
   return route
 }
 
-export async function parseProjectRoute(
+export function parseProjectRoute(
   configuration: DeepPartial<Configuration>,
   id: string,
   pathlib: PlatformPath | undefined
-): Promise<ProjectRoute> {
+): ProjectRoute {
   let projectName = null
   let projectPath = ''
   let currentFileName = null

@@ -1,5 +1,6 @@
 import { getNodeFromPath } from 'lang/queryAst'
 import { ToolTip, toolTips } from 'lang/langHelpers'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   Program,
   VariableDeclarator,
@@ -10,8 +11,12 @@ import {
   PathToNode,
   Expr,
   topLevelRange,
+  LabeledArg,
+  CallExpressionKw,
 } from '../wasm'
 import { err } from 'lib/trap'
+import { findKwArgAny } from 'lang/util'
+import { DETERMINING_ARGS } from './sketch'
 
 export function getSketchSegmentFromPathToNode(
   sketch: Sketch,
@@ -23,13 +28,24 @@ export function getSketchSegmentFromPathToNode(
       index: number
     }
   | Error {
-  // TODO: once pathTodNode is stored on program memory as part of execution,
+  // TODO: once pathToNode is stored on program memory as part of execution,
   // we can check if the pathToNode matches the pathToNode of the sketch.
   // For now we fall back to the sourceRange
-  const nodeMeta = getNodeFromPath<Expr>(ast, pathToNode)
+  const nodeMeta = getNodeFromPath<Node<Expr> | LabeledArg>(ast, pathToNode)
   if (err(nodeMeta)) return nodeMeta
 
-  const node = nodeMeta.node
+  const _node = nodeMeta.node
+  const node = (() => {
+    switch (_node.type) {
+      // LabeledArg wraps the expression being assigned to a parameter.
+      // So, undo the wrapper. Used for keyword arguments.
+      case 'LabeledArg':
+        return _node.arg
+      // Other nodes aren't wrapped, we can return them directly.
+      default:
+        return _node
+    }
+  })()
   if (!node || typeof node.start !== 'number' || !node.end)
     return new Error('no node found')
   const sourceRange = topLevelRange(node.start, node.end)
@@ -77,16 +93,17 @@ export function isSketchVariablesLinked(
   and will keep checking the second arguments recursively until it runs out of variable declarations
   to check or it finds a match.
   that way it can find fn calls that are linked to each other through variables eg:
-  const part001 = startSketchAt([0, 0])
-    |> xLineTo(1.69, %)
-    |> line([myVar, 0.38], %) // ❗️ <- cursor in this fn call (the primary)
-    |> line([0.41, baz], %)
-    |> xLine(0.91, %)
+  const part001 = startSketchOn(XY)
+    |> startProfileAt([0, 0],%)
+    |> xLine(endAbsolute = 1.69)
+    |> line(end = [myVar, 0.38]) // ❗️ <- cursor in this fn call (the primary)
+    |> line(end = [0.41, baz])
+    |> xLine(length = 0.91)
     |> angledLine([37, 2], %)
-  const yo = line([myVar, 0.38], part001)
-    |> line([1, 1], %)
-  const yo2 = line([myVar, 0.38], yo)
-    |> line([1, 1], %) // ❗️ <- and cursor here (secondary) is linked to the one above through variables
+  const yo = line(end = [myVar, 0.38], tag = part001)
+    |> line(end = [1, 1])
+  const yo2 = line(end = [myVar, 0.38], tag = yo)
+    |> line(end = [1, 1]) // ❗️ <- and cursor here (secondary) is linked to the one above through variables
   */
   const secondaryVarName = secondaryVarDec?.id?.name
   if (!secondaryVarName) return false
@@ -94,18 +111,33 @@ export function isSketchVariablesLinked(
   const { init } = secondaryVarDec
   if (
     !init ||
-    !(init.type === 'CallExpression' || init.type === 'PipeExpression')
+    !(
+      init.type === 'CallExpression' ||
+      init.type === 'CallExpressionKw' ||
+      init.type === 'PipeExpression'
+    )
   )
     return false
   const firstCallExp = // first in pipe expression or just the call expression
-    init?.type === 'CallExpression' ? init : (init?.body[0] as CallExpression)
+    init?.type === 'PipeExpression'
+      ? (init?.body[0] as CallExpression | CallExpressionKw)
+      : init
   if (
     !firstCallExp ||
     !toolTips.includes(firstCallExp?.callee?.name as ToolTip)
   )
     return false
   // convention for sketch fns is that the second argument is the sketch
-  const secondArg = firstCallExp?.arguments[1]
+  // This is not the convention for kw arg calls, so, TODO at some point,
+  // rename this var.
+  const secondArg = (() => {
+    switch (firstCallExp.type) {
+      case 'CallExpression':
+        return firstCallExp?.arguments[1]
+      case 'CallExpressionKw':
+        return findKwArgAny(DETERMINING_ARGS, firstCallExp)
+    }
+  })()
   if (!secondArg || secondArg?.type !== 'Identifier') return false
   if (secondArg.name === primaryVarDec?.id?.name) return true
 

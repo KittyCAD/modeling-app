@@ -1,0 +1,160 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "declaration": {
+        "commentStart": 0,
+        "end": 115,
+        "id": {
+          "commentStart": 0,
+          "end": 1,
+          "name": "x",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "commentStart": 4,
+          "cond": {
+            "commentStart": 7,
+            "end": 11,
+            "raw": "true",
+            "start": 7,
+            "type": "Literal",
+            "type": "Literal",
+            "value": true
+          },
+          "digest": null,
+          "else_ifs": [
+            {
+              "commentStart": 38,
+              "cond": {
+                "arguments": [
+                  {
+                    "commentStart": 51,
+                    "end": 57,
+                    "name": "radius",
+                    "start": 51,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                ],
+                "callee": {
+                  "commentStart": 46,
+                  "end": 50,
+                  "name": "func",
+                  "start": 46,
+                  "type": "Identifier"
+                },
+                "commentStart": 46,
+                "end": 58,
+                "start": 46,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              "digest": null,
+              "end": 84,
+              "start": 38,
+              "then_val": {
+                "body": [
+                  {
+                    "commentStart": 73,
+                    "end": 74,
+                    "expression": {
+                      "commentStart": 73,
+                      "end": 74,
+                      "raw": "4",
+                      "start": 73,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 4.0,
+                        "suffix": "None"
+                      }
+                    },
+                    "start": 73,
+                    "type": "ExpressionStatement",
+                    "type": "ExpressionStatement"
+                  }
+                ],
+                "commentStart": 59,
+                "end": 83,
+                "start": 59
+              },
+              "type": "ElseIf"
+            }
+          ],
+          "end": 115,
+          "final_else": {
+            "body": [
+              {
+                "commentStart": 104,
+                "end": 105,
+                "expression": {
+                  "commentStart": 104,
+                  "end": 105,
+                  "raw": "5",
+                  "start": 104,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 5.0,
+                    "suffix": "None"
+                  }
+                },
+                "start": 104,
+                "type": "ExpressionStatement",
+                "type": "ExpressionStatement"
+              }
+            ],
+            "commentStart": 104,
+            "end": 114,
+            "start": 104
+          },
+          "start": 4,
+          "then_val": {
+            "body": [
+              {
+                "commentStart": 26,
+                "end": 27,
+                "expression": {
+                  "commentStart": 26,
+                  "end": 27,
+                  "raw": "3",
+                  "start": 26,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 3.0,
+                    "suffix": "None"
+                  }
+                },
+                "start": 26,
+                "type": "ExpressionStatement",
+                "type": "ExpressionStatement"
+              }
+            ],
+            "commentStart": 26,
+            "end": 36,
+            "start": 26
+          },
+          "type": "IfExpression",
+          "type": "IfExpression"
+        },
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 115,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "commentStart": 0,
+  "end": 115,
+  "start": 0
+}

@@ -1,8 +1,8 @@
 import { err } from 'lib/trap'
 import { formatNumber, initPromise, parse, ParseResult } from './wasm'
 import { enginelessExecutor } from 'lib/testHelpers'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { Program } from '../wasm-lib/kcl/bindings/Program'
+import { Node } from '@rust/kcl-lib/bindings/Node'
+import { Program } from '@rust/kcl-lib/bindings/Program'
 
 beforeEach(async () => {
   await initPromise
@@ -18,7 +18,7 @@ it('can execute parsed AST', async () => {
   expect(pResult.program).not.toEqual(null)
   const execState = await enginelessExecutor(pResult.program as Node<Program>)
   expect(err(execState)).toEqual(false)
-  expect(execState.memory.get('x')?.value).toEqual(1)
+  expect(execState.variables['x']?.value).toEqual(1)
 })
 
 it('formats numbers with units', () => {

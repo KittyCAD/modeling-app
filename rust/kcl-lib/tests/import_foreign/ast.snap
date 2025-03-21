@@ -1,0 +1,79 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing import_foreign.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 0,
+        "end": 0,
+        "path": {
+          "type": "Foreign",
+          "path": "../inputs/cube.gltf"
+        },
+        "selector": {
+          "type": "None",
+          "alias": {
+            "commentStart": 32,
+            "end": 0,
+            "name": "cube",
+            "start": 0,
+            "type": "Identifier"
+          }
+        },
+        "start": 0,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "commentStart": 36,
+        "declaration": {
+          "commentStart": 38,
+          "end": 0,
+          "id": {
+            "commentStart": 38,
+            "end": 0,
+            "name": "model",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 46,
+            "end": 0,
+            "name": "cube",
+            "start": 0,
+            "type": "Identifier",
+            "type": "Identifier"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "0": [
+          {
+            "commentStart": 36,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": []
+    },
+    "start": 0
+  }
+}

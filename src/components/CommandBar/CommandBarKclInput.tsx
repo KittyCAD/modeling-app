@@ -7,7 +7,6 @@ import {
 } from '@codemirror/autocomplete'
 import { EditorView, keymap, ViewUpdate } from '@codemirror/view'
 import { CustomIcon } from 'components/CustomIcon'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { CommandArgument, KclCommandValue } from 'lib/commandTypes'
 import { getSystemTheme } from 'lib/theme'
 import { useCalculateKclExpression } from 'lib/useCalculateKclExpression'
@@ -20,10 +19,18 @@ import { createIdentifier, createVariableDeclaration } from 'lang/modifyAst'
 import { useCodeMirror } from 'components/ModelingSidebar/ModelingPanes/CodeEditor'
 import { useSelector } from '@xstate/react'
 import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
+import { useSettings } from 'machines/appMachine'
+import toast from 'react-hot-toast'
+import { AnyStateMachine, SnapshotFrom } from 'xstate'
+import { kclManager } from 'lib/singletons'
+import { getNodeFromPath } from 'lang/queryAst'
+import { isPathToNode, SourceRange, VariableDeclarator } from 'lang/wasm'
+import { Node } from '@rust/kcl-lib/bindings/Node'
+import { err } from 'lib/trap'
 
-const machineContextSelector = (snapshot?: {
-  context: Record<string, unknown>
-}) => snapshot?.context
+// TODO: remove the need for this selector once we decouple all actors from React
+const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
+  snapshot?.context
 
 function CommandBarKclInput({
   arg,
@@ -41,11 +48,21 @@ function CommandBarKclInput({
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
     arg.name
   ] as KclCommandValue | undefined
-  const { settings } = useSettingsAuthContext()
+  const settings = useSettings()
   const argMachineContext = useSelector(
     arg.machineActor,
     machineContextSelector
   )
+  const sourceRangeForPrevVariables = useMemo<SourceRange | undefined>(() => {
+    const nodeToEdit = commandBarState.context.argumentsToSubmit.nodeToEdit
+    const pathToNode = isPathToNode(nodeToEdit) ? nodeToEdit : undefined
+    const node = pathToNode
+      ? getNodeFromPath<Node<VariableDeclarator>>(kclManager.ast, pathToNode)
+      : undefined
+    return !err(node) && node && node.node.type === 'VariableDeclarator'
+      ? [node.node.start, node.node.end, node.node.moduleId]
+      : undefined
+  }, [kclManager.ast, commandBarState.context.argumentsToSubmit.nodeToEdit])
   const defaultValue = useMemo(
     () =>
       arg.defaultValue
@@ -73,12 +90,15 @@ function CommandBarKclInput({
     arg.name,
     previouslySetValue,
   ])
-  const [value, setValue] = useState(
-    previouslySetValue?.valueText || defaultValue || ''
+  const initialValue = useMemo(
+    () => previouslySetValue?.valueText || defaultValue || '',
+    [previouslySetValue, defaultValue]
   )
+  const [value, setValue] = useState(initialValue)
   const [createNewVariable, setCreateNewVariable] = useState(
     (previouslySetValue && 'variableName' in previouslySetValue) ||
-      arg.createVariableByDefault ||
+      arg.createVariable === 'byDefault' ||
+      arg.createVariable === 'force' ||
       false
   )
   const [canSubmit, setCanSubmit] = useState(true)
@@ -86,24 +106,26 @@ function CommandBarKclInput({
   const editorRef = useRef<HTMLDivElement>(null)
 
   const {
-    prevVariables,
     calcResult,
     newVariableInsertIndex,
     valueNode,
     newVariableName,
     setNewVariableName,
     isNewVariableNameUnique,
+    prevVariables,
   } = useCalculateKclExpression({
     value,
     initialVariableName,
+    sourceRange: sourceRangeForPrevVariables,
   })
+
   const varMentionData: Completion[] = prevVariables.map((v) => ({
     label: v.key,
-    detail: String(roundOff(v.value as number)),
+    detail: String(roundOff(Number(v.value))),
   }))
   const varMentionsExtension = varMentions(varMentionData)
 
-  const { setContainer } = useCodeMirror({
+  const { setContainer, view } = useCodeMirror({
     container: editorRef.current,
     initialDocValue: value,
     autoFocus: true,
@@ -115,9 +137,9 @@ function CommandBarKclInput({
           : defaultValue.length,
     },
     theme:
-      settings.context.app.theme.current === 'system'
+      settings.app.theme.current === 'system'
         ? getSystemTheme()
-        : settings.context.app.theme.current,
+        : settings.app.theme.current,
     extensions: [
       varMentionsExtension,
       EditorView.updateListener.of((vu: ViewUpdate) => {
@@ -142,14 +164,10 @@ function CommandBarKclInput({
           },
         },
         {
-          key: 'Backspace',
-          run: (editor) => {
-            // Only step back if the editor is empty
-            if (editor.state.doc.toString() === '') {
-              stepBack()
-              return true
-            }
-            return false
+          key: 'Shift-Backspace',
+          run: () => {
+            stepBack()
+            return true
           },
         },
       ]),
@@ -159,6 +177,21 @@ function CommandBarKclInput({
   useEffect(() => {
     if (editorRef.current) {
       setContainer(editorRef.current)
+      // Reset the value when the arg changes and
+      // the new arg is also a KCL type, since the component
+      // sticks around.
+      view?.focus()
+      view?.dispatch({
+        changes: {
+          from: 0,
+          to: view.state.doc.length,
+          insert: initialValue,
+        },
+        selection: {
+          anchor: 0,
+          head: initialValue.length,
+        },
+      })
     }
   }, [arg, editorRef])
 
@@ -170,7 +203,15 @@ function CommandBarKclInput({
 
   function handleSubmit(e?: React.FormEvent<HTMLFormElement>) {
     e?.preventDefault()
-    if (!canSubmit || valueNode === null) return
+    if (!canSubmit || valueNode === null) {
+      // Gotcha: Our application can attempt to submit a command value before the command bar kcl input is ready. Notify the scene and user.
+      if (!canSubmit) {
+        toast.error('Unable to submit command')
+      } else if (valueNode === null) {
+        toast.error('Unable to submit undefined command value')
+      }
+      return
+    }
 
     onSubmit(
       createNewVariable
@@ -195,13 +236,18 @@ function CommandBarKclInput({
   }
 
   return (
-    <form id="arg-form" onSubmit={handleSubmit} data-can-submit={canSubmit}>
+    <form
+      id="arg-form"
+      className="mb-2"
+      onSubmit={handleSubmit}
+      data-can-submit={canSubmit}
+    >
       <label className="flex gap-4 items-center mx-4 my-4 border-solid border-b border-chalkboard-50">
         <span
           data-testid="cmd-bar-arg-name"
           className="capitalize text-chalkboard-80 dark:text-chalkboard-20"
         >
-          {arg.name}
+          {arg.displayName || arg.name}
         </span>
         <div
           data-testid="cmd-bar-arg-value"
@@ -246,7 +292,11 @@ function CommandBarKclInput({
             autoFocus
             onChange={(e) => setNewVariableName(e.target.value)}
             onKeyDown={(e) => {
-              if (e.currentTarget.value === '' && e.key === 'Backspace') {
+              if (
+                e.currentTarget.value === '' &&
+                e.key === 'Backspace' &&
+                arg.createVariable !== 'force'
+              ) {
                 setCreateNewVariable(false)
               }
             }}
@@ -267,15 +317,17 @@ function CommandBarKclInput({
           </span>
         </div>
       ) : (
-        <div className="flex justify-between gap-2 px-4">
-          <button
-            onClick={() => setCreateNewVariable(true)}
-            className="text-blue border-none bg-transparent font-sm flex gap-1 items-center pl-0 pr-1"
-          >
-            <CustomIcon name="plus" className="w-5 h-5" />
-            Create new variable
-          </button>
-        </div>
+        arg.createVariable !== 'disallow' && (
+          <div className="flex justify-between gap-2 px-4">
+            <button
+              onClick={() => setCreateNewVariable(true)}
+              className="text-blue border-none bg-transparent font-sm flex gap-1 items-center pl-0 pr-1"
+            >
+              <CustomIcon name="plus" className="w-5 h-5" />
+              Create new variable
+            </button>
+          </div>
+        )
       )}
     </form>
   )

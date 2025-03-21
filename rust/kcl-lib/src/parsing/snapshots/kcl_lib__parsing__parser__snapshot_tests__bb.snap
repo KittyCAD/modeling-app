@@ -1,0 +1,124 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 1,
+      "declaration": {
+        "commentStart": 1,
+        "end": 25,
+        "id": {
+          "commentStart": 1,
+          "end": 5,
+          "name": "my14",
+          "start": 1,
+          "type": "Identifier"
+        },
+        "init": {
+          "commentStart": 8,
+          "end": 25,
+          "left": {
+            "commentStart": 8,
+            "end": 13,
+            "left": {
+              "commentStart": 8,
+              "end": 9,
+              "raw": "4",
+              "start": 8,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 4.0,
+                "suffix": "None"
+              }
+            },
+            "operator": "^",
+            "right": {
+              "commentStart": 12,
+              "end": 13,
+              "raw": "2",
+              "start": 12,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
+            },
+            "start": 8,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "operator": "-",
+          "right": {
+            "commentStart": 16,
+            "end": 25,
+            "left": {
+              "commentStart": 16,
+              "end": 21,
+              "left": {
+                "commentStart": 16,
+                "end": 17,
+                "raw": "3",
+                "start": 16,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
+              },
+              "operator": "^",
+              "right": {
+                "commentStart": 20,
+                "end": 21,
+                "raw": "2",
+                "start": 20,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 16,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            "operator": "*",
+            "right": {
+              "commentStart": 24,
+              "end": 25,
+              "raw": "2",
+              "start": 24,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
+            },
+            "start": 16,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "start": 8,
+          "type": "BinaryExpression",
+          "type": "BinaryExpression"
+        },
+        "start": 1,
+        "type": "VariableDeclarator"
+      },
+      "end": 25,
+      "kind": "const",
+      "start": 1,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "commentStart": 0,
+  "end": 26,
+  "start": 0
+}

@@ -37,6 +37,9 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn'
       - run: yarn install
+      - uses: taiki-e/install-action@37bdc826eaedac215f638a96472df572feab0f9b
+        with:
+          tool: wasm-pack
       - run: yarn build:wasm
 
   yarn-tsc:
@@ -49,10 +52,14 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn'
       - run: yarn install
+      - run: yarn --cwd ./rust/kcl-language-server --modules-folder node_modules install
       - uses: Swatinem/rust-cache@v2
         with:
-          workspaces: './src/wasm-lib'
+          workspaces: './rust'
 
+      - uses: taiki-e/install-action@37bdc826eaedac215f638a96472df572feab0f9b
+        with:
+          tool: wasm-pack
       - run: yarn build:wasm
       - run: yarn tsc
 
@@ -66,6 +73,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn'
       - run: yarn install
+      - run: yarn --cwd ./rust/kcl-language-server --modules-folder node_modules install
       - run: yarn lint
 
   python-codespell:
@@ -92,6 +100,9 @@ jobs:
           cache: 'yarn'
 
       - run: yarn install
+      - uses: taiki-e/install-action@37bdc826eaedac215f638a96472df572feab0f9b
+        with:
+          tool: wasm-pack
       - run: yarn build:wasm
 
       - run: yarn simpleserver:bg
@@ -118,6 +129,9 @@ jobs:
           cache: 'yarn'
 
       - run: yarn install
+      - uses: taiki-e/install-action@37bdc826eaedac215f638a96472df572feab0f9b
+        with:
+          tool: wasm-pack
       - run: yarn build:wasm
 
       - run: yarn simpleserver:bg
@@ -129,7 +143,7 @@ jobs:
 
       - name: run unit tests
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
-        run: yarn test:unit
+        run: xvfb-run -a yarn test:unit
         env:
           VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
 

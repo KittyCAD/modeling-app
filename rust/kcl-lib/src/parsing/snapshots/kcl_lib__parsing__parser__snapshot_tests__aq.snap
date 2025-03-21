@@ -1,0 +1,63 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "end": 28,
+      "expression": {
+        "arguments": [
+          {
+            "commentStart": 4,
+            "end": 5,
+            "raw": "5",
+            "start": 4,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 5.0,
+              "suffix": "None"
+            }
+          },
+          {
+            "commentStart": 7,
+            "end": 14,
+            "raw": "\"hello\"",
+            "start": 7,
+            "type": "Literal",
+            "type": "Literal",
+            "value": "hello"
+          },
+          {
+            "commentStart": 16,
+            "end": 27,
+            "name": "aIdentifier",
+            "start": 16,
+            "type": "Identifier",
+            "type": "Identifier"
+          }
+        ],
+        "callee": {
+          "commentStart": 0,
+          "end": 3,
+          "name": "log",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "commentStart": 0,
+        "end": 28,
+        "start": 0,
+        "type": "CallExpression",
+        "type": "CallExpression"
+      },
+      "start": 0,
+      "type": "ExpressionStatement",
+      "type": "ExpressionStatement"
+    }
+  ],
+  "commentStart": 0,
+  "end": 28,
+  "start": 0
+}

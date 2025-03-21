@@ -1,0 +1,5 @@
+[alias]
+kcl-language-server-release = "run --manifest-path ./kcl-language-server-release/Cargo.toml --"
+
+[target.wasm32-unknown-unknown]
+rustflags = ["--cfg", "getrandom_backend=\"wasm_js\""]

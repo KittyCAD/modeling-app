@@ -4,12 +4,14 @@ import { Project, FileEntry } from 'lib/project'
 
 import {
   defaultAppSettings,
+  initPromise,
   parseAppSettings,
   parseProjectSettings,
 } from 'lang/wasm'
 import {
   PROJECT_ENTRYPOINT,
   PROJECT_FOLDER,
+  PROJECT_IMAGE_NAME,
   PROJECT_SETTINGS_FILE_NAME,
   SETTINGS_FILE_NAME,
   TELEMETRY_FILE_NAME,
@@ -18,8 +20,8 @@ import {
   FILE_EXT,
 } from './constants'
 import { DeepPartial } from './types'
-import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
-import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 
 export async function renameProjectDirectory(
   projectPath: string,
@@ -131,11 +133,20 @@ export async function createNewProjectDirectory(
 export async function listProjects(
   configuration?: DeepPartial<Configuration> | Error
 ): Promise<Project[]> {
-  if (configuration === undefined) {
-    configuration = await readAppSettingsFile()
+  // Make sure we have wasm initialized.
+  const initializedResult = await initPromise
+  if (err(initializedResult)) {
+    return Promise.reject(initializedResult)
   }
 
-  if (err(configuration)) return Promise.reject(configuration)
+  if (configuration === undefined) {
+    configuration = await readAppSettingsFile().catch((e) => {
+      console.error(e)
+      return e
+    })
+  }
+
+  if (err(configuration) || !configuration) return Promise.reject(configuration)
   const projectDir = await ensureProjectDirectoryExists(configuration)
   const projects = []
   if (!projectDir) return Promise.reject(new Error('projectDir was falsey'))
@@ -395,6 +406,8 @@ export const getAppSettingsFilePath = async () => {
   const testSettingsPath = await window.electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
+  if (isTestEnv && !testSettingsPath) return SETTINGS_FILE_NAME
+
   const appConfig = await window.electron.getPath('appData')
   const fullPath = isTestEnv
     ? testSettingsPath
@@ -627,14 +640,18 @@ export const getUser = async (
   return Promise.reject(new Error('unreachable'))
 }
 
-export const isPathAKCLFile = (path: string): boolean => {
-  return path.endsWith(FILE_EXT)
-}
-
-export const isPathASettingsFile = (path: string): boolean => {
-  return path.endsWith(SETTINGS_FILE_NAME)
-}
-
-export const isPathAProjectSettingsFile = (path: string): boolean => {
-  return path.endsWith(PROJECT_SETTINGS_FILE_NAME)
+export const writeProjectThumbnailFile = async (
+  dataUrl: string,
+  projectDirectoryPath: string
+) => {
+  const filePath = window.electron.path.join(
+    projectDirectoryPath,
+    PROJECT_IMAGE_NAME
+  )
+  const data = atob(dataUrl.substring('data:image/png;base64,'.length))
+  const asArray = new Uint8Array(data.length)
+  for (let i = 0, len = data.length; i < len; ++i) {
+    asArray[i] = data.charCodeAt(i)
+  }
+  return window.electron.writeFile(filePath, asArray)
 }

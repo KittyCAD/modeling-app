@@ -1,15 +1,19 @@
 ---
 title: "assertGreaterThan"
-excerpt: "Check that a numerical value is greater than another at runtime,"
+excerpt: "Check that a numerical value is greater than another at runtime, otherwise raise an error."
 layout: manual
 ---
 
-Check that a numerical value is greater than another at runtime,
+Check that a numerical value is greater than another at runtime, otherwise raise an error.
 
-otherwise raise an error.
+
 
 ```js
-assertGreaterThan(left: number, right: number, message: string) -> ()
+assertGreaterThan(
+  left: number,
+  right: number,
+  message: string,
+): ()
 ```
 
 
@@ -17,13 +21,13 @@ assertGreaterThan(left: number, right: number, message: string) -> ()
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `left` | `number` |  | Yes |
-| `right` | `number` |  | Yes |
-| `message` | `string` |  | Yes |
+| `left` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `right` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `message` | [`string`](/docs/kcl/types/string) |  | Yes |
 
 ### Returns
 
-`()` 
+`()`
 
 
 ### Examples

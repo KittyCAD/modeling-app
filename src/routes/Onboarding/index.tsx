@@ -5,7 +5,6 @@ import Camera from './Camera'
 import Sketching from './Sketching'
 import { useCallback, useEffect } from 'react'
 import makeUrlPathRelative from '../../lib/makeUrlPathRelative'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import Streaming from './Streaming'
 import CodeEditor from './CodeEditor'
 import ParametricModeling from './ParametricModeling'
@@ -26,6 +25,10 @@ import { reportRejection } from 'lib/trap'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { EngineConnectionStateType } from 'lang/std/engineConnection'
+import { settingsActor } from 'machines/appMachine'
+import { CustomIcon } from 'components/CustomIcon'
+import Tooltip from 'components/Tooltip'
+import { waitFor } from 'xstate'
 
 export const kbdClasses =
   'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
@@ -109,25 +112,20 @@ export function useDemoCode() {
 
 export function useNextClick(newStatus: string) {
   const filePath = useAbsoluteFilePath()
-  const {
-    settings: { send },
-  } = useSettingsAuthContext()
   const navigate = useNavigate()
 
   return useCallback(() => {
-    send({
+    settingsActor.send({
       type: 'set.app.onboardingStatus',
       data: { level: 'user', value: newStatus },
     })
     navigate(filePath + PATHS.ONBOARDING.INDEX.slice(0, -1) + newStatus)
-  }, [filePath, newStatus, send, navigate])
+  }, [filePath, newStatus, settingsActor.send, navigate])
 }
 
 export function useDismiss() {
   const filePath = useAbsoluteFilePath()
-  const {
-    settings: { state, send },
-  } = useSettingsAuthContext()
+  const send = settingsActor.send
   const navigate = useNavigate()
 
   const settingsCallback = useCallback(() => {
@@ -135,20 +133,10 @@ export function useDismiss() {
       type: 'set.app.onboardingStatus',
       data: { level: 'user', value: 'dismissed' },
     })
+    waitFor(settingsActor, (state) => state.matches('idle'))
+      .then(() => navigate(filePath))
+      .catch(reportRejection)
   }, [send])
-
-  /**
-   * A "listener" for the XState to return to "idle" state
-   * when the user dismisses the onboarding, using the callback above
-   */
-  useEffect(() => {
-    if (
-      state.context.app.onboardingStatus.user === 'dismissed' &&
-      state.matches('idle')
-    ) {
-      navigate(filePath)
-    }
-  }, [filePath, navigate, state])
 
   return settingsCallback
 }
@@ -163,58 +151,99 @@ export function useStepNumber(
       : onboardingRoutes.findIndex(
           (r) => r.path === makeUrlPathRelative(slug)
         ) + 1
-    : undefined
+    : 1
 }
 
 export function OnboardingButtons({
-  next,
-  nextText,
-  dismiss,
   currentSlug,
   className,
+  dismissClassName,
+  onNextOverride,
   ...props
 }: {
-  next: () => void
-  nextText?: string
-  dismiss: () => void
   currentSlug?: (typeof onboardingPaths)[keyof typeof onboardingPaths]
   className?: string
+  dismissClassName?: string
+  onNextOverride?: () => void
 } & React.HTMLAttributes<HTMLDivElement>) {
+  const dismiss = useDismiss()
   const stepNumber = useStepNumber(currentSlug)
+  const previousStep =
+    !stepNumber || stepNumber === 0 ? null : onboardingRoutes[stepNumber - 2]
+  const goToPrevious = useNextClick(
+    onboardingPaths.INDEX + (previousStep?.path ?? '')
+  )
+  const nextStep =
+    !stepNumber || stepNumber === onboardingRoutes.length
+      ? null
+      : onboardingRoutes[stepNumber]
+  const goToNext = useNextClick(onboardingPaths.INDEX + (nextStep?.path ?? ''))
 
   return (
-    <div
-      className={'flex items-center justify-between ' + (className ?? '')}
-      {...props}
-    >
-      <ActionButton
-        Element="button"
+    <>
+      <button
         onClick={dismiss}
-        iconStart={{
-          icon: 'close',
-          className: 'text-chalkboard-10',
-          bgClassName: 'bg-destroy-80 group-hover:bg-destroy-80',
-        }}
-        className="hover:border-destroy-40 hover:bg-destroy-10/50 dark:hover:bg-destroy-80/50"
+        className={
+          'group block !absolute left-auto right-full top-[-3px] m-2.5 p-0 border-none bg-transparent hover:bg-transparent ' +
+          dismissClassName
+        }
+        data-testid="onboarding-dismiss"
       >
-        Dismiss
-      </ActionButton>
-      {stepNumber !== undefined && (
-        <p className="font-mono text-xs text-center m-0">
-          {stepNumber} / {onboardingRoutes.length}
-        </p>
-      )}
-      <ActionButton
-        autoFocus
-        Element="button"
-        onClick={next}
-        iconStart={{ icon: 'arrowRight', bgClassName: 'dark:bg-chalkboard-80' }}
-        className="dark:hover:bg-chalkboard-80/50"
-        data-testid="onboarding-next"
+        <CustomIcon
+          name="close"
+          className="w-5 h-5 rounded-sm bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
+        />
+        <Tooltip position="bottom" delay={500}>
+          Dismiss <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">esc</kbd>
+        </Tooltip>
+      </button>
+      <div
+        className={'flex items-center justify-between ' + (className ?? '')}
+        {...props}
       >
-        {nextText ?? 'Next'}
-      </ActionButton>
-    </div>
+        <ActionButton
+          Element="button"
+          onClick={() =>
+            previousStep?.path || previousStep?.index
+              ? goToPrevious()
+              : dismiss()
+          }
+          iconStart={{
+            icon: previousStep ? 'arrowLeft' : 'close',
+            className: 'text-chalkboard-10',
+            bgClassName: 'bg-destroy-80 group-hover:bg-destroy-80',
+          }}
+          className="hover:border-destroy-40 hover:bg-destroy-10/50 dark:hover:bg-destroy-80/50"
+          data-testid="onboarding-prev"
+        >
+          {previousStep ? `Back` : 'Dismiss'}
+        </ActionButton>
+        {stepNumber !== undefined && (
+          <p className="font-mono text-xs text-center m-0">
+            {stepNumber} / {onboardingRoutes.length}
+          </p>
+        )}
+        <ActionButton
+          autoFocus
+          Element="button"
+          onClick={() => {
+            if (nextStep?.path) {
+              onNextOverride ? onNextOverride() : goToNext()
+            } else {
+              dismiss()
+            }
+          }}
+          iconStart={{
+            icon: nextStep ? 'arrowRight' : 'checkmark',
+            bgClassName: 'dark:bg-chalkboard-80',
+          }}
+          className="dark:hover:bg-chalkboard-80/50"
+          data-testid="onboarding-next"
+        >
+          {nextStep ? `Next` : 'Finish'}
+        </ActionButton>
+      </div>
+    </>
   )
 }
 

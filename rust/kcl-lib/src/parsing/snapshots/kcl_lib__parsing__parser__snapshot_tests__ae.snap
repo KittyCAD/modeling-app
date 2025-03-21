@@ -1,0 +1,106 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "declaration": {
+        "commentStart": 3,
+        "end": 49,
+        "id": {
+          "commentStart": 3,
+          "end": 8,
+          "name": "thing",
+          "start": 3,
+          "type": "Identifier"
+        },
+        "init": {
+          "body": {
+            "body": [
+              {
+                "argument": {
+                  "commentStart": 39,
+                  "end": 43,
+                  "raw": "true",
+                  "start": 39,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": true
+                },
+                "commentStart": 32,
+                "end": 43,
+                "start": 32,
+                "type": "ReturnStatement",
+                "type": "ReturnStatement"
+              }
+            ],
+            "commentStart": 22,
+            "end": 49,
+            "start": 22
+          },
+          "commentStart": 11,
+          "end": 49,
+          "params": [
+            {
+              "type": "Parameter",
+              "identifier": {
+                "commentStart": 12,
+                "end": 17,
+                "name": "param",
+                "start": 12,
+                "type": "Identifier"
+              }
+            }
+          ],
+          "start": 11,
+          "type": "FunctionExpression",
+          "type": "FunctionExpression"
+        },
+        "start": 3,
+        "type": "VariableDeclarator"
+      },
+      "end": 49,
+      "kind": "fn",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    },
+    {
+      "commentStart": 54,
+      "end": 66,
+      "expression": {
+        "arguments": [
+          {
+            "commentStart": 60,
+            "end": 65,
+            "raw": "false",
+            "start": 60,
+            "type": "Literal",
+            "type": "Literal",
+            "value": false
+          }
+        ],
+        "callee": {
+          "commentStart": 54,
+          "end": 59,
+          "name": "thing",
+          "start": 54,
+          "type": "Identifier"
+        },
+        "commentStart": 54,
+        "end": 66,
+        "start": 54,
+        "type": "CallExpression",
+        "type": "CallExpression"
+      },
+      "start": 54,
+      "type": "ExpressionStatement",
+      "type": "ExpressionStatement"
+    }
+  ],
+  "commentStart": 0,
+  "end": 66,
+  "start": 0
+}

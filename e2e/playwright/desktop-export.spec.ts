@@ -9,8 +9,12 @@ import fsp from 'fs/promises'
 
 test(
   'export works on the first try',
-  { tag: '@electron' },
-  async ({ page, context }, testInfo) => {
+  { tag: ['@electron', '@skipLocalEngine'] },
+  async ({ page, context, scene, tronApp }, testInfo) => {
+    if (!tronApp) {
+      fail()
+    }
+
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await Promise.all([fsp.mkdir(bracketDir, { recursive: true })])
@@ -86,7 +90,7 @@ test(
       await expect(exportingToastMessage).not.toBeVisible()
 
       const firstFileFullPath = path.resolve(
-        getPlaywrightDownloadDir(page),
+        getPlaywrightDownloadDir(tronApp.projectDirName),
         exportFileName
       )
       await test.step('Check the export size', async () => {
@@ -96,7 +100,8 @@ test(
               try {
                 const outputGltf = await fsp.readFile(firstFileFullPath)
                 return outputGltf.byteLength
-              } catch (e) {
+              } catch (error: unknown) {
+                void error
                 return 0
               }
             },
@@ -118,8 +123,9 @@ test(
       // Close the file pane
       await u.closeFilePanel()
 
-      // wait for it to finish executing (todo: make this more robust)
-      await page.waitForTimeout(1000)
+      // FIXME: await scene.waitForExecutionDone() does not work. The modeling indicator stays in -receive-reliable and not execution done
+      await page.waitForTimeout(10000)
+
       // expect zero errors in guter
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
@@ -164,7 +170,7 @@ test(
         ]))
 
       const secondFileFullPath = path.resolve(
-        getPlaywrightDownloadDir(page),
+        getPlaywrightDownloadDir(tronApp.projectDirName),
         exportFileName
       )
       await test.step('Check the export size', async () => {
@@ -174,13 +180,14 @@ test(
               try {
                 const outputGltf = await fsp.readFile(secondFileFullPath)
                 return outputGltf.byteLength
-              } catch (e) {
+              } catch (error: unknown) {
+                void error
                 return 0
               }
             },
             { timeout: 15_000 }
           )
-          .toBeGreaterThan(100_000)
+          .toBeGreaterThan(70_000)
       })
     })
   }

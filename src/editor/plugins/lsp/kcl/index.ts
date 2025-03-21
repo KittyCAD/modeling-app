@@ -8,10 +8,10 @@ import {
 } from '@kittycad/codemirror-lsp-client'
 import { deferExecution } from 'lib/utils'
 import { codeManager, editorManager, kclManager } from 'lib/singletons'
-import { UpdateUnitsParams } from 'wasm-lib/kcl/bindings/UpdateUnitsParams'
-import { UpdateCanExecuteParams } from 'wasm-lib/kcl/bindings/UpdateCanExecuteParams'
-import { UpdateUnitsResponse } from 'wasm-lib/kcl/bindings/UpdateUnitsResponse'
-import { UpdateCanExecuteResponse } from 'wasm-lib/kcl/bindings/UpdateCanExecuteResponse'
+import { UpdateUnitsParams } from '@rust/kcl-lib/bindings/UpdateUnitsParams'
+import { UpdateCanExecuteParams } from '@rust/kcl-lib/bindings/UpdateCanExecuteParams'
+import { UpdateUnitsResponse } from '@rust/kcl-lib/bindings/UpdateUnitsResponse'
+import { UpdateCanExecuteResponse } from '@rust/kcl-lib/bindings/UpdateCanExecuteResponse'
 import { codeManagerUpdateEvent } from 'lang/codeManager'
 import { copilotPluginEvent } from '../copilot'
 import { updateOutsideEditorEvent } from 'editor/manager'
@@ -25,6 +25,18 @@ export class KclPlugin implements PluginValue {
 
   constructor(client: LanguageServerClient) {
     this.client = client
+
+    // Gotcha: Code can be written into the CodeMirror editor but not propagated to codeManager.code
+    // because the update function has not run. We need to initialize the codeManager.code when lsp initializes
+    // because new code could have been written into the editor before the update callback is initialized.
+    // There appears to be limited ways to safely get the current doc content. This appears to be sync and safe.
+    const kclLspPlugin = this.client.plugins.find((plugin) => {
+      return plugin.client.name === 'kcl'
+    })
+    if (kclLspPlugin) {
+      // @ts-ignore Ignoring this private dereference of .view on the plugin. I do not have another helper method that can give me doc string
+      codeManager.code = kclLspPlugin.view.state.doc.toString()
+    }
   }
 
   // When a doc update needs to be sent to the server, this holds the

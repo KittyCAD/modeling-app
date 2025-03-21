@@ -1,0 +1,53 @@
+// Car wheel assembly global constants
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Car Wheel
+export lugCount = 5
+export lugSpacing = 114.3 * mm()
+export offset = -35 * mm()
+export backSpacing = 6.38
+export wheelWidth = 9.5
+export wheelDiameter = 19
+export spokeCount = 6
+export spokeGap = 0.2
+export spokeAngle = 0.02
+export spokeThickness = 0.95
+
+// Lug Nut
+export lugDiameter = 24 * mm()
+export lugHeadLength = lugDiameter * .5
+export lugThreadDiameter = lugDiameter / 2 * .85
+export lugLength = 30 * mm()
+export lugThreadDepth = lugLength - 12.7 * mm()
+
+// Car Rotor
+export rotorDiameter = 12
+export rotorInnerDiameter = 6
+export rotorSinglePlateThickness = 0.25
+export rotorInnerDiameterThickness = 0.5
+export lugHolePatternDia = 3
+export rotorTotalThickness = 1
+export spacerPatternDiameter = 11
+export spacerDiameter = 0.25
+export spacerLength = rotorTotalThickness - (2 * rotorSinglePlateThickness)
+export spacerCount = 16
+export yAxisOffset = 0.5
+export drillAndSlotCount = 5
+
+// Car Tire
+export tireInnerDiameter = 19
+export tireOuterDiameter = 24
+export tireDepth = 11.02
+export bendRadius = 1.6
+export tireTreadWidth = 0.39
+export tireTreadDepth = 0.39
+export tireTreadOffset = 3.15
+
+// Brake Caliper
+export caliperTolerance = 0.050
+export caliperPadLength = 1.6
+export caliperThickness = 0.39
+export caliperOuterEdgeRadius = 0.39
+export caliperInnerEdgeRadius = 0.12

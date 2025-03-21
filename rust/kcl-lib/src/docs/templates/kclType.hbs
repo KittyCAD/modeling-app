@@ -1,0 +1,38 @@
+---
+title: "{{name}}"
+excerpt: "{{safe_yaml summary}}"
+layout: manual
+---
+
+{{#if deprecated}}
+**WARNING:** This type is deprecated.
+
+{{/if}}
+{{{summary}}}
+
+{{#if definition}}
+```kcl
+{{{definition}}}
+```
+
+{{/if}}
+{{{description}}}
+
+
+{{#if examples}}
+### Examples
+
+{{#each examples}}
+{{#if this.content}}
+```js
+{{{this.content}}}
+```
+{{/if}}
+
+{{#if this.image_base64}}
+![Rendered example of {{@root.name}} {{@index}}](data:image/png;base64,{{{this.image_base64}}})
+{{/if}}
+
+{{/each}}
+{{/if}}
+

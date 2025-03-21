@@ -18,9 +18,9 @@ test.describe('Debug pane', () => {
     context,
     homePage,
   }) => {
-    const code = `sketch001 = startSketchOn('XZ')
+    const code = `sketch001 = startSketchOn(XZ)
     |> startProfileAt([0, 0], %)
-  |> line([1, 1], %)
+  |> line(end = [1, 1])
   `
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -61,7 +61,7 @@ test.describe('Debug pane', () => {
       }
     })
     await test.step('Enter a comment', async () => {
-      await page.keyboard.type('|> line([2, 2], %)', { delay: 0 })
+      await page.keyboard.type('|> line(end = [2, 2])', { delay: 0 })
       // Wait for keyboard input debounce and updated artifact graph.
       await page.waitForTimeout(1000)
     })

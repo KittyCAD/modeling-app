@@ -1,0 +1,5 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Variables in memory after executing comparisons.kcl
+---
+{}

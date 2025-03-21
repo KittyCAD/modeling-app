@@ -11,7 +11,7 @@ A sketch surface or a sketch.
 
 **This schema accepts any of the following:**
 
-A sketch surface or a sketch.
+A sketch type.
 
 [`SketchSurface`](/docs/kcl/types/SketchSurface)
 
@@ -23,7 +23,6 @@ A sketch surface or a sketch.
 
 
 ----
-A sketch surface or a sketch.
 
 [`Sketch`](/docs/kcl/types/Sketch)
 

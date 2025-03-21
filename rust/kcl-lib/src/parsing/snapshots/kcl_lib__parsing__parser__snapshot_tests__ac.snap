@@ -1,0 +1,64 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "declaration": {
+        "commentStart": 0,
+        "end": 17,
+        "id": {
+          "commentStart": 0,
+          "end": 7,
+          "name": "myArray",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "commentStart": 10,
+          "end": 17,
+          "endElement": {
+            "commentStart": 14,
+            "end": 16,
+            "raw": "10",
+            "start": 14,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 10.0,
+              "suffix": "None"
+            }
+          },
+          "endInclusive": true,
+          "start": 10,
+          "startElement": {
+            "commentStart": 11,
+            "end": 12,
+            "raw": "0",
+            "start": 11,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.0,
+              "suffix": "None"
+            }
+          },
+          "type": "ArrayRangeExpression",
+          "type": "ArrayRangeExpression"
+        },
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 17,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "commentStart": 0,
+  "end": 17,
+  "start": 0
+}

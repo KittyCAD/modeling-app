@@ -1,6 +1,5 @@
 import { MouseEventHandler, useEffect, useRef, useState } from 'react'
 import Loading from './Loading'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
@@ -20,8 +19,8 @@ import { IndexLoaderData } from 'lib/types'
 import { err, reportRejection } from 'lib/trap'
 import { getArtifactOfTypes } from 'lang/std/artifactGraph'
 import { ViewControlContextMenu } from './ViewControlMenu'
-import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
-import { useSelector } from '@xstate/react'
+import { useCommandBarState } from 'machines/commandBarMachine'
+import { useSettings } from 'machines/appMachine'
 
 enum StreamState {
   Playing = 'playing',
@@ -34,7 +33,7 @@ export const Stream = () => {
   const [isLoading, setIsLoading] = useState(true)
   const videoWrapperRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
-  const { settings } = useSettingsAuthContext()
+  const settings = useSettings()
   const { state, send } = useModelingContext()
   const commandBarState = useCommandBarState()
   const { mediaStream } = useAppStream()
@@ -42,11 +41,13 @@ export const Stream = () => {
   const [streamState, setStreamState] = useState(StreamState.Unset)
   const { file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
 
-  const IDLE = settings.context.app.streamIdleMode.current
+  const IDLE = settings.app.streamIdleMode.current
 
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
+
+  engineCommandManager.elVideo = videoRef.current
 
   /**
    * Execute code and show a "building scene message"
@@ -273,7 +274,7 @@ export const Stream = () => {
 
     if (btnName(e.nativeEvent).left) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sendSelectEventToEngine(e, videoRef.current)
+      sendSelectEventToEngine(e)
     }
   }
 
@@ -295,14 +296,14 @@ export const Stream = () => {
       return
     }
 
-    sendSelectEventToEngine(e, videoRef.current)
+    sendSelectEventToEngine(e)
       .then(({ entity_id }) => {
         if (!entity_id) {
           // No entity selected. This is benign
           return
         }
         const path = getArtifactOfTypes(
-          { key: entity_id, types: ['path', 'solid2d', 'segment'] },
+          { key: entity_id, types: ['path', 'solid2d', 'segment', 'helix'] },
           engineCommandManager.artifactGraph
         )
         if (err(path)) {
@@ -336,7 +337,7 @@ export const Stream = () => {
         id="video-stream"
       />
       <ClientSideScene
-        cameraControls={settings.context.modeling.mouseControls.current}
+        cameraControls={settings.modeling.mouseControls.current}
       />
       {(streamState === StreamState.Paused ||
         streamState === StreamState.Resuming) && (

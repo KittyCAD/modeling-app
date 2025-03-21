@@ -1,5 +1,8 @@
 name: update-dev-branch
 
+# This is used to sync the `dev` branch with the `main` branch to continuously
+# deploy a second instance of the app to Vercel: https://app.dev.zoo.dev
+
 on:
   push:
     branches:
@@ -26,4 +29,4 @@ jobs:
           # reset to main
           git reset --hard origin/main
           # force push it
-          git push -f origin dev
+          git push --force origin dev

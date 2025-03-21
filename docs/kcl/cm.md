@@ -15,7 +15,7 @@ For example, if the current project uses inches, this function will return `0.39
 We merely provide these functions for convenience and readability, as `10 * cm()` is more readable that your intent is "I want 10 centimeters" than `10 * 10`, if the project settings are in millimeters.
 
 ```js
-cm() -> number
+cm(): number
 ```
 
 ### Tags
@@ -26,7 +26,7 @@ cm() -> number
 
 ### Returns
 
-`number` 
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples

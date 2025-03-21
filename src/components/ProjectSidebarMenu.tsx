@@ -18,8 +18,7 @@ import { SnapshotFrom } from 'xstate'
 import { commandBarActor } from 'machines/commandBarMachine'
 import { useSelector } from '@xstate/react'
 import { copyFileShareLink } from 'lib/links'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { DEV } from 'env'
+import { useToken } from 'machines/appMachine'
 
 const ProjectSidebarMenu = ({
   project,
@@ -103,13 +102,14 @@ function ProjectMenuPopover({
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
-  const { settings, auth } = useSettingsAuthContext()
+  const token = useToken()
   const machineManager = useContext(MachineManagerContext)
   const commands = useSelector(commandBarActor, commandsSelector)
 
   const { onProjectClose } = useLspContext()
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
   const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
+  const shareCommandInfo = { name: 'share-file-link', groupId: 'code' }
   const findCommand = (obj: { name: string; groupId: string }) =>
     Boolean(
       commands.find((c) => c.name === obj.name && c.groupId === obj.groupId)
@@ -190,14 +190,13 @@ function ProjectMenuPopover({
         {
           id: 'share-link',
           Element: 'button',
-          children: 'Share link to file',
-          disabled: !DEV,
+          children: 'Share current part (via Zoo link)',
+          disabled: !findCommand(shareCommandInfo),
           onClick: async () => {
             await copyFileShareLink({
-              token: auth?.context.token || '',
+              token: token ?? '',
               code: codeManager.code,
               name: project?.name || '',
-              units: settings.context.modeling.defaultUnit.current,
             })
           },
         },
@@ -260,7 +259,7 @@ function ProjectMenuPopover({
         as={Fragment}
       >
         <Popover.Panel
-          className={`z-10 absolute top-full left-0 mt-1 pb-1 w-48 bg-chalkboard-10 dark:bg-chalkboard-90
+          className={`z-10 absolute top-full left-0 mt-1 pb-1 w-52 bg-chalkboard-10 dark:bg-chalkboard-90
           border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
           shadow-lg`}
         >

@@ -1,0 +1,5 @@
+export fn foo = () => { return 0 }
+
+// This interacts with the engine.
+part001 = startSketchOn(XY)
+  |> startProfileAt([0, 0], %)

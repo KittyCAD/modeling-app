@@ -1,0 +1,44 @@
+[package]
+name = "kcl-language-server"
+description = "A language server for KCL."
+authors = ["KittyCAD Inc <kcl@kittycad.io>"]
+version = "0.2.52"
+edition = "2021"
+license = "MIT"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "kcl-language-server"
+path = "src/main.rs"
+bench = false
+
+[dependencies]
+anyhow = { workspace = true }
+clap = { workspace = true, features = ["cargo", "derive", "env", "unicode"] }
+dashmap = { workspace = true }
+kcl-lib = { path = "../kcl-lib", default-features = false, features = [
+	"cli",
+	"engine",
+	"disable-println",
+] }
+kittycad = { workspace = true }
+lazy_static = { workspace = true }
+log = { version = "0.4.26", features = ["serde"] }
+slog = { workspace = true }
+slog-async = { workspace = true }
+slog-json = { workspace = true }
+slog-term = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+signal-hook = "0.3.17"
+tokio = { version = "1.43.0", features = ["full"] }
+tower-lsp = { version = "0.20.0", features = ["proposed"] }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+tower-lsp = { version = "0.20.0", default-features = false, features = [
+	"runtime-agnostic",
+] }
+
+[lints]
+workspace = true

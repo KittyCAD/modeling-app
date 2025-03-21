@@ -11,6 +11,7 @@ export const uuidv4 = v4
  * A safer type guard for arrays since the built-in Array.isArray() asserts `any[]`.
  */
 export function isArray(val: any): val is unknown[] {
+  // eslint-disable-next-line no-restricted-syntax
   return Array.isArray(val)
 }
 
@@ -160,25 +161,20 @@ export function toSync<F extends AsyncFn<F>>(
   }
 }
 
-export function getNormalisedCoordinates({
-  clientX,
-  clientY,
-  streamWidth,
-  streamHeight,
-  el,
-}: {
-  clientX: number
-  clientY: number
-  streamWidth: number
-  streamHeight: number
-  el: HTMLElement
-}) {
-  const { left, top, width, height } = el?.getBoundingClientRect()
-  const browserX = clientX - left
-  const browserY = clientY - top
+export function getNormalisedCoordinates(
+  e: PointerEvent | React.MouseEvent<HTMLDivElement, MouseEvent>,
+  elVideo: HTMLVideoElement,
+  streamDimensions: {
+    width: number
+    height: number
+  }
+) {
+  const { left, top, width, height } = elVideo?.getBoundingClientRect()
+  const browserX = e.clientX - left
+  const browserY = e.clientY - top
   return {
-    x: Math.round((browserX / width) * streamWidth),
-    y: Math.round((browserY / height) * streamHeight),
+    x: Math.round((browserX / width) * streamDimensions.width),
+    y: Math.round((browserY / height) * streamDimensions.height),
   }
 }
 
@@ -390,4 +386,23 @@ export function onMouseDragMakeANewNumber(
   const newVal = onDragNumberCalculation(text, e)
   if (!newVal) return
   setText(newVal)
+}
+
+export function isClockwise(points: [number, number][]): boolean {
+  // Need at least 3 points to determine orientation
+  if (points.length < 3) {
+    return false
+  }
+
+  // Calculate the sum of (x2 - x1) * (y2 + y1) for all edges
+  // This is the "shoelace formula" for calculating the signed area
+  let sum = 0
+  for (let i = 0; i < points.length; i++) {
+    const current = points[i]
+    const next = points[(i + 1) % points.length]
+    sum += (next[0] - current[0]) * (next[1] + current[1])
+  }
+
+  // If sum is positive, the points are in clockwise order
+  return sum > 0
 }

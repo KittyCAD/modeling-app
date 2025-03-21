@@ -1,0 +1,63 @@
+---
+title: "{{name}}"
+excerpt: "{{safe_yaml summary}}"
+layout: manual
+---
+
+{{#if deprecated}}
+**WARNING:** This function is deprecated.
+
+{{/if}}
+{{{summary}}}
+
+{{{description}}}
+
+```js
+{{{fn_signature}}}
+```
+
+{{#if tags}}
+### Tags
+
+{{#each tags}}
+* `{{this}}`
+{{/each}}
+
+{{/if}}
+
+{{#if args}}
+### Arguments
+
+| Name | Type | Description | Required |
+|----------|------|-------------|----------|
+{{#each args}}
+| `{{name}}` | `{{type_}}` | {{{firstLine description}}} | {{#if required}}Yes{{else}}No{{/if}} |
+{{/each}}
+{{/if}}
+
+{{#if return_value}}
+### Returns
+
+`{{return_value.type_}}`{{#if return_value.description}} - {{{firstLine return_value.description}}}{{/if}}
+
+{{/if}}
+
+{{#if examples}}
+### Examples
+
+{{#each examples}}
+{{#if this.content}}
+```js
+{{{this.content}}}
+```
+{{/if}}
+
+{{#unless @root.is_utilities}}
+{{#if this.image_base64}}
+![Rendered example of {{@root.name}} {{@index}}](data:image/png;base64,{{{this.image_base64}}})
+{{/if}}
+
+{{/unless}}
+{{/each}}
+{{/if}}
+

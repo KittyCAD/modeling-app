@@ -144,7 +144,7 @@ function CommandArgOptionInput({
             onKeyDown={(event) => {
               if (event.metaKey && event.key === 'k')
                 commandBarActor.send({ type: 'Close' })
-              if (event.key === 'Backspace' && !event.currentTarget.value) {
+              if (event.key === 'Backspace' && event.shiftKey) {
                 stepBack()
               }
 
@@ -168,37 +168,43 @@ function CommandArgOptionInput({
             autoFocus
           />
         </div>
-        <Combobox.Options
-          static
-          className="overflow-y-auto max-h-96 cursor-pointer"
-          onMouseDown={() => {
-            setShouldSubmitOnChange(true)
-          }}
-        >
-          {filteredOptions?.map((option) => (
-            <Combobox.Option
-              key={option.name}
-              value={option}
-              disabled={option.disabled}
-              className="flex items-center gap-2 px-4 py-1 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
-            >
-              <p
-                className={`flex-grow ${
-                  (option.disabled &&
-                    'text-chalkboard-70 dark:text-chalkboard-50 cursor-not-allowed') ||
-                  ''
-                }`}
+        {filteredOptions?.length ? (
+          <Combobox.Options
+            static
+            className="overflow-y-auto max-h-96 cursor-pointer"
+            onMouseDown={() => {
+              setShouldSubmitOnChange(true)
+            }}
+          >
+            {filteredOptions?.map((option) => (
+              <Combobox.Option
+                key={option.name}
+                value={option}
+                disabled={option.disabled}
+                className="flex items-center gap-2 px-4 py-1 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
               >
-                {option.name}
-              </p>
-              {option.value === currentOption?.value && (
-                <small className="text-chalkboard-70 dark:text-chalkboard-50">
-                  current
-                </small>
-              )}
-            </Combobox.Option>
-          ))}
-        </Combobox.Options>
+                <p
+                  className={`flex-grow ${
+                    (option.disabled &&
+                      'text-chalkboard-70 dark:text-chalkboard-50 cursor-not-allowed') ||
+                    ''
+                  }`}
+                >
+                  {option.name}
+                </p>
+                {option.value === currentOption?.value && (
+                  <small className="text-chalkboard-70 dark:text-chalkboard-50">
+                    current
+                  </small>
+                )}
+              </Combobox.Option>
+            ))}
+          </Combobox.Options>
+        ) : (
+          <p className="px-4 pt-2 text-chalkboard-60 dark:text-chalkboard-50">
+            No results found
+          </p>
+        )}
       </Combobox>
     </form>
   )

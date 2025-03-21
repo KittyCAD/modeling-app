@@ -1,0 +1,64 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing double_map_fn.kcl
+---
+{
+  "increment": {
+    "type": "Function"
+  },
+  "xs": {
+    "type": "MixedArray",
+    "value": [
+      {
+        "type": "Number",
+        "value": 0.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 1.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 2.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      }
+    ]
+  },
+  "ys": {
+    "type": "MixedArray",
+    "value": [
+      {
+        "type": "Number",
+        "value": 2.0,
+        "ty": {
+          "type": "Unknown"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 3.0,
+        "ty": {
+          "type": "Unknown"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 4.0,
+        "ty": {
+          "type": "Unknown"
+        }
+      }
+    ]
+  }
+}

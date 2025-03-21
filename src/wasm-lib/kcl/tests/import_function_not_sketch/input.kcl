@@ -1,6 +1,0 @@
-@settings(defaultLengthUnit = in)
-import two from "my_functions.kcl"
-
-export fn one() {
-  return two() - 1
-}

@@ -1,0 +1,121 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "declaration": {
+        "commentStart": 0,
+        "end": 56,
+        "id": {
+          "commentStart": 0,
+          "end": 8,
+          "name": "mySketch",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "body": [
+            {
+              "arguments": [
+                {
+                  "commentStart": 25,
+                  "end": 27,
+                  "name": "XY",
+                  "start": 25,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                }
+              ],
+              "callee": {
+                "commentStart": 11,
+                "end": 24,
+                "name": "startSketchOn",
+                "start": 11,
+                "type": "Identifier"
+              },
+              "commentStart": 11,
+              "end": 28,
+              "start": 11,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            {
+              "arguments": [
+                {
+                  "commentStart": 47,
+                  "elements": [
+                    {
+                      "commentStart": 48,
+                      "end": 49,
+                      "raw": "0",
+                      "start": 48,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "commentStart": 50,
+                      "end": 51,
+                      "raw": "0",
+                      "start": 50,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    }
+                  ],
+                  "end": 52,
+                  "start": 47,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                },
+                {
+                  "commentStart": 54,
+                  "end": 55,
+                  "start": 54,
+                  "type": "PipeSubstitution",
+                  "type": "PipeSubstitution"
+                }
+              ],
+              "callee": {
+                "commentStart": 32,
+                "end": 46,
+                "name": "startProfileAt",
+                "start": 32,
+                "type": "Identifier"
+              },
+              "commentStart": 32,
+              "end": 56,
+              "start": 32,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            }
+          ],
+          "commentStart": 11,
+          "end": 56,
+          "start": 11,
+          "type": "PipeExpression",
+          "type": "PipeExpression"
+        },
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 56,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "commentStart": 0,
+  "end": 56,
+  "start": 0
+}

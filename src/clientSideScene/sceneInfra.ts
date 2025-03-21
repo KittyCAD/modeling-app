@@ -110,18 +110,16 @@ interface OnMoveCallbackArgs {
 type Voidish = void | Promise<void>
 export class SceneInfra {
   static instance: SceneInfra
-  scene: Scene
-  renderer: WebGLRenderer
-  labelRenderer: CSS2DRenderer
-  camControls: CameraControls
-  isPerspective = true
-  fov = 45
-  fovBeforeAnimate = 45
+  readonly scene: Scene
+  readonly renderer: WebGLRenderer
+  readonly labelRenderer: CSS2DRenderer
+  readonly camControls: CameraControls
+  private readonly fov = 45
   isFovAnimationInProgress = false
   _baseUnit: BaseUnit = 'mm'
   _baseUnitMultiplier = 1
   _theme: Themes = Themes.System
-  extraSegmentTexture: Texture
+  readonly extraSegmentTexture: Texture
   lastMouseState: MouseState = { type: 'idle' }
   onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onDragEndCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
@@ -182,13 +180,15 @@ export class SceneInfra {
   callbacks: (() => SegmentOverlayPayload | null)[] = []
   _overlayCallbacks(callbacks: (() => SegmentOverlayPayload | null)[]) {
     const segmentOverlayPayload: SegmentOverlayPayload = {
-      type: 'set-many',
+      type: 'add-many',
       overlays: {},
     }
     callbacks.forEach((cb) => {
       const overlay = cb()
       if (overlay?.type === 'set-one') {
         segmentOverlayPayload.overlays[overlay.pathToNodeString] = overlay.seg
+      } else if (overlay?.type === 'add-many') {
+        Object.assign(segmentOverlayPayload.overlays, overlay.overlays)
       }
     })
     this.modelingSend({
@@ -213,25 +213,27 @@ export class SceneInfra {
 
   overlayThrottleMap: { [pathToNodeString: string]: number } = {}
   updateOverlayDetails({
-    arrowGroup,
+    handle,
     group,
     isHandlesVisible,
     from,
     to,
     angle,
+    hasThreeDotMenu,
   }: {
-    arrowGroup: Group
+    handle: Group
     group: Group
     isHandlesVisible: boolean
     from: Coords2d
     to: Coords2d
+    hasThreeDotMenu: boolean
     angle?: number
   }): SegmentOverlayPayload | null {
-    if (!group.userData.draft && group.userData.pathToNode && arrowGroup) {
+    if (!group.userData.draft && group.userData.pathToNode && handle) {
       const vector = new Vector3(0, 0, 0)
 
       // Get the position of the object3D in world space
-      arrowGroup.getWorldPosition(vector)
+      handle.getWorldPosition(vector)
 
       // Project that position to screen space
       vector.project(this.camControls.camera)
@@ -244,13 +246,16 @@ export class SceneInfra {
       return {
         type: 'set-one',
         pathToNodeString,
-        seg: {
-          windowCoords: [x, y],
-          angle: _angle,
-          group,
-          pathToNode: group.userData.pathToNode,
-          visible: isHandlesVisible,
-        },
+        seg: [
+          {
+            windowCoords: [x, y],
+            angle: _angle,
+            group,
+            pathToNode: group.userData.pathToNode,
+            visible: isHandlesVisible,
+            hasThreeDotMenu,
+          },
+        ],
       }
     }
     return null
@@ -284,6 +289,7 @@ export class SceneInfra {
     this.labelRenderer.domElement.style.position = 'absolute'
     this.labelRenderer.domElement.style.top = '0px'
     this.labelRenderer.domElement.style.pointerEvents = 'none'
+    this.labelRenderer.domElement.className = 'z-sketchSegmentIndicators'
     window.addEventListener('resize', this.onWindowResize)
 
     this.camControls = new CameraControls(

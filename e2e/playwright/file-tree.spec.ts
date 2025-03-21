@@ -1,7 +1,12 @@
 import { test, expect } from './zoo-test'
 import * as fsp from 'fs/promises'
 import * as fs from 'fs'
-import { createProject, executorInputPath, getUtils } from './test-utils'
+import {
+  createProject,
+  executorInputPath,
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+} from './test-utils'
 import { join } from 'path'
 import { FILE_EXT } from 'lib/constants'
 
@@ -9,7 +14,7 @@ test.describe('integrations tests', () => {
   test(
     'Creating a new file or switching file while in sketchMode should exit sketchMode',
     { tag: '@electron' },
-    async ({ page, context, homePage, scene, editor, toolbar }) => {
+    async ({ page, context, homePage, scene, editor, toolbar, cmdBar }) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'test-sample')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -19,7 +24,7 @@ test.describe('integrations tests', () => {
         )
       })
 
-      const [clickObj] = await scene.makeMouseHelpers(600, 300)
+      const [clickObj] = await scene.makeMouseHelpers(726, 272)
 
       await test.step('setup test', async () => {
         await homePage.expectState({
@@ -32,9 +37,10 @@ test.describe('integrations tests', () => {
           sortBy: 'last-modified-desc',
         })
         await homePage.openProject('test-sample')
-        await scene.waitForExecutionDone()
       })
       await test.step('enter sketch mode', async () => {
+        await scene.connectionEstablished()
+        await scene.settled(cmdBar)
         await clickObj()
         await scene.moveNoWhere()
         await editor.expectState({
@@ -61,6 +67,9 @@ test.describe('integrations tests', () => {
       })
       await test.step('setup for next assertion', async () => {
         await toolbar.openFile('main.kcl')
+
+        await scene.settled(cmdBar)
+
         await clickObj()
         await scene.moveNoWhere()
         await editor.expectState({
@@ -106,7 +115,7 @@ test.describe('when using the file tree to', () => {
 
       // File the main.kcl with contents
       const kclCube = await fsp.readFile(
-        'src/wasm-lib/tests/executor/inputs/cube.kcl',
+        'rust/kcl-lib/e2e/executor/inputs/cube.kcl',
         'utf-8'
       )
       await pasteCodeInEditor(kclCube)
@@ -154,11 +163,14 @@ test.describe('when using the file tree to', () => {
       await createNewFile('lee')
 
       await test.step('Postcondition: there are 5 new lee-*.kcl files', async () => {
-        await expect(
-          page
-            .locator('[data-testid="file-pane-scroll-container"] button')
-            .filter({ hasText: /lee[-]?[0-5]?/ })
-        ).toHaveCount(5)
+        await expect
+          .poll(() =>
+            page
+              .locator('[data-testid="file-pane-scroll-container"] button')
+              .filter({ hasText: /lee[-]?[0-5]?/ })
+              .count()
+          )
+          .toEqual(5)
       })
     }
   )
@@ -244,7 +256,7 @@ test.describe('when using the file tree to', () => {
       await createProject({ name: 'project-000', page })
       // File the main.kcl with contents
       const kclCube = await fsp.readFile(
-        'src/wasm-lib/tests/executor/inputs/cube.kcl',
+        'rust/kcl-lib/e2e/executor/inputs/cube.kcl',
         'utf-8'
       )
       await pasteCodeInEditor(kclCube)
@@ -259,12 +271,13 @@ test.describe('when using the file tree to', () => {
     }
   )
 
-  test.fixme(
+  test(
     'loading small file, then large, then back to small',
     {
       tag: '@electron',
     },
     async ({ page }, testInfo) => {
+      test.fixme(orRunWhenFullSuiteEnabled())
       const {
         panesOpen,
         pasteCodeInEditor,
@@ -282,7 +295,7 @@ test.describe('when using the file tree to', () => {
 
       // Create a small file
       const kclCube = await fsp.readFile(
-        'src/wasm-lib/tests/executor/inputs/cube.kcl',
+        'rust/kcl-lib/e2e/executor/inputs/cube.kcl',
         'utf-8'
       )
       // pasted into main.kcl
@@ -296,7 +309,7 @@ test.describe('when using the file tree to', () => {
       await expect(legoFile).toBeVisible({ timeout: 60_000 })
       await legoFile.click()
       const kclLego = await fsp.readFile(
-        'src/wasm-lib/tests/executor/inputs/lego.kcl',
+        'rust/kcl-lib/e2e/executor/inputs/lego.kcl',
         'utf-8'
       )
       await pasteCodeInEditor(kclLego)
@@ -1051,7 +1064,7 @@ test.describe('Undo and redo do not keep history when navigating between files',
         // Click in the editor and add some new lines.
         await u.codeLocator.click()
 
-        await page.keyboard.type(`sketch001 = startSketchOn('XY')
+        await page.keyboard.type(`sketch001 = startSketchOn(XY)
     some other shit`)
 
         // Ensure the content in the editor changed.
@@ -1182,6 +1195,58 @@ test.describe('Undo and redo do not keep history when navigating between files',
         await page.waitForTimeout(100)
         await expect(u.codeLocator).toContainText(originalText)
         await expect(u.codeLocator).not.toContainText(badContent)
+      })
+    }
+  )
+
+  test(
+    `cloned file has an incremented name and same contents`,
+    { tag: '@electron' },
+    async ({ page, context, homePage }, testInfo) => {
+      const { panesOpen, cloneFile } = await getUtils(page, test)
+
+      const { dir } = await context.folderSetupFn(async (dir) => {
+        const finalDir = join(dir, 'testDefault')
+        await fsp.mkdir(finalDir, { recursive: true })
+        await fsp.copyFile(
+          executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
+          join(finalDir, 'lee.kcl')
+        )
+      })
+
+      const contentOriginal = await fsp.readFile(
+        join(dir, 'testDefault', 'lee.kcl'),
+        'utf-8'
+      )
+
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      page.on('console', console.log)
+
+      await panesOpen(['files'])
+      await homePage.openProject('testDefault')
+
+      await cloneFile('lee.kcl')
+      await cloneFile('lee-1.kcl')
+      await cloneFile('lee-2.kcl')
+      await cloneFile('lee-3.kcl')
+      await cloneFile('lee-4.kcl')
+
+      await test.step('Postcondition: there are 5 new lee-*.kcl files', async () => {
+        await expect(
+          page
+            .locator('[data-testid="file-pane-scroll-container"] button')
+            .filter({ hasText: /lee[-]?[0-5]?/ })
+        ).toHaveCount(5)
+      })
+
+      await test.step('Postcondition: the files have the same contents', async () => {
+        for (let n = 0; n < 5; n += 1) {
+          const content = await fsp.readFile(
+            join(dir, 'testDefault', `lee-${n + 1}.kcl`),
+            'utf-8'
+          )
+          await expect(content).toEqual(contentOriginal)
+        }
       })
     }
   )

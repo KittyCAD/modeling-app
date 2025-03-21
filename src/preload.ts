@@ -38,6 +38,7 @@ const onUpdateDownloadStart = (
 const onUpdateError = (callback: (value: Error) => void) =>
   ipcRenderer.on('update-error', (_event: any, value) => callback(value))
 const appRestart = () => ipcRenderer.invoke('app.restart')
+const appCheckForUpdates = () => ipcRenderer.invoke('app.checkForUpdates')
 const getAppTestProperty = (propertyName: string) =>
   ipcRenderer.invoke('app.testProperty', propertyName)
 
@@ -144,6 +145,7 @@ contextBridge.exposeInMainWorld('electron', {
   // exported.
   watchFileOn,
   watchFileOff,
+  copyFile: fs.copyFile,
   readFile,
   writeFile,
   exists,
@@ -185,6 +187,7 @@ contextBridge.exposeInMainWorld('electron', {
         'VITE_KC_API_WS_MODELING_URL',
         'VITE_KC_API_BASE_URL',
         'VITE_KC_SITE_BASE_URL',
+        'VITE_KC_SITE_APP_URL',
         'VITE_KC_SKIP_AUTH',
         'VITE_KC_CONNECTION_TIMEOUT_MS',
         'VITE_KC_DEV_TOKEN',
@@ -205,6 +208,7 @@ contextBridge.exposeInMainWorld('electron', {
   onUpdateDownloaded,
   onUpdateError,
   appRestart,
+  appCheckForUpdates,
   getArgvParsed,
   resizeWindow,
 })

@@ -3,6 +3,7 @@ import { engineCommandManager } from 'lib/singletons'
 import { uuidv4 } from 'lib/utils'
 import { CommandBarContext } from 'machines/commandBarMachine'
 import { Selections } from 'lib/selections'
+import { ApiError_type } from '@kittycad/lib/dist/types/src/models'
 
 export const disableDryRunWithRetry = async (numberOfRetries = 3) => {
   for (let tries = 0; tries < numberOfRetries; tries++) {
@@ -46,6 +47,20 @@ function isSelections(selections: unknown): selections is Selections {
   )
 }
 
+export function parseEngineErrorMessage(engineError: string) {
+  const parts = engineError.split('engine error: ')
+  if (parts.length < 2) {
+    return undefined
+  }
+
+  const errors = JSON.parse(parts[1]) as ApiError_type[]
+  if (!errors[0]) {
+    return undefined
+  }
+
+  return errors[0].message
+}
+
 export const revolveAxisValidator = async ({
   data,
   context,
@@ -83,7 +98,7 @@ export const revolveAxisValidator = async ({
     value: 360,
   }
 
-  const revolveAboutEdgeCommand = async () => {
+  const command = async () => {
     return await engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -92,17 +107,18 @@ export const revolveAxisValidator = async ({
         angle: angleInDegrees,
         edge_id: edgeSelection,
         target: sketchSelection,
-        tolerance: 0.0001,
+        // Gotcha: Playwright will fail with larger tolerances, need to use a smaller one.
+        tolerance: 1e-7,
       },
     })
   }
-  const attemptRevolve = await dryRunWrapper(revolveAboutEdgeCommand)
-  if (attemptRevolve?.success) {
+  const result = await dryRunWrapper(command)
+  if (result?.success) {
     return true
-  } else {
-    // return error message for the toast
-    return 'Unable to revolve with selected edge'
   }
+
+  const reason = parseEngineErrorMessage(result) || 'unknown'
+  return `Unable to revolve with the current selection. Reason: ${reason}`
 }
 
 export const loftValidator = async ({
@@ -128,7 +144,7 @@ export const loftValidator = async ({
     return 'Unable to loft, selection contains less than two solid2ds'
   }
 
-  const loftCommand = async () => {
+  const command = async () => {
     // TODO: check what to do with these
     const DEFAULT_V_DEGREE = 2
     const DEFAULT_TOLERANCE = 2
@@ -145,13 +161,13 @@ export const loftValidator = async ({
       },
     })
   }
-  const attempt = await dryRunWrapper(loftCommand)
-  if (attempt?.success) {
+  const result = await dryRunWrapper(command)
+  if (result?.success) {
     return true
-  } else {
-    // return error message for the toast
-    return 'Unable to loft with selected sketches'
   }
+
+  const reason = parseEngineErrorMessage(result) || 'unknown'
+  return `Unable to loft with the current selection. Reason: ${reason}`
 }
 
 export const shellValidator = async ({
@@ -180,7 +196,7 @@ export const shellValidator = async ({
     return "Unable to shell, couldn't find the solid"
   }
 
-  const shellCommand = async () => {
+  const command = async () => {
     // TODO: figure out something better than an arbitrarily small value
     const DEFAULT_THICKNESS: Models['LengthUnit_type'] = 1e-9
     const DEFAULT_HOLLOW = false
@@ -200,12 +216,13 @@ export const shellValidator = async ({
     })
   }
 
-  const attemptShell = await dryRunWrapper(shellCommand)
-  if (attemptShell?.success) {
+  const result = await dryRunWrapper(command)
+  if (result?.success) {
     return true
   }
 
-  return 'Unable to shell with the provided selection'
+  const reason = parseEngineErrorMessage(result) || 'unknown'
+  return `Unable to shell with the current selection. Reason: ${reason}`
 }
 
 export const sweepValidator = async ({
@@ -241,7 +258,7 @@ export const sweepValidator = async ({
   }
   const target = targetArtifact.pathId
 
-  const sweepCommand = async () => {
+  const command = async () => {
     // TODO: second look on defaults here
     const DEFAULT_TOLERANCE: Models['LengthUnit_type'] = 1e-7
     const DEFAULT_SECTIONAL = false
@@ -261,10 +278,11 @@ export const sweepValidator = async ({
     })
   }
 
-  const attemptSweep = await dryRunWrapper(sweepCommand)
-  if (attemptSweep?.success) {
+  const result = await dryRunWrapper(command)
+  if (result?.success) {
     return true
   }
 
-  return 'Unable to sweep with the provided selection'
+  const reason = parseEngineErrorMessage(result) || 'unknown'
+  return `Unable to sweep with the current selection. Reason: ${reason}`
 }

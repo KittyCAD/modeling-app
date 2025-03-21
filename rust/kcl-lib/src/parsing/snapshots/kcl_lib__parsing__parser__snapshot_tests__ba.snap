@@ -1,0 +1,140 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 1,
+      "declaration": {
+        "commentStart": 1,
+        "end": 126,
+        "id": {
+          "commentStart": 1,
+          "end": 10,
+          "name": "sketch001",
+          "start": 1,
+          "type": "Identifier"
+        },
+        "init": {
+          "body": [
+            {
+              "arguments": [
+                {
+                  "commentStart": 27,
+                  "end": 31,
+                  "raw": "'XY'",
+                  "start": 27,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": "XY"
+                }
+              ],
+              "callee": {
+                "commentStart": 13,
+                "end": 26,
+                "name": "startSketchOn",
+                "start": 13,
+                "type": "Identifier"
+              },
+              "commentStart": 13,
+              "end": 32,
+              "start": 13,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            {
+              "arguments": [
+                {
+                  "commentStart": 124,
+                  "end": 125,
+                  "start": 124,
+                  "type": "PipeSubstitution",
+                  "type": "PipeSubstitution"
+                }
+              ],
+              "callee": {
+                "commentStart": 109,
+                "end": 123,
+                "name": "startProfileAt",
+                "start": 109,
+                "type": "Identifier"
+              },
+              "commentStart": 109,
+              "end": 126,
+              "start": 109,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            }
+          ],
+          "commentStart": 13,
+          "end": 126,
+          "nonCodeMeta": {
+            "nonCodeNodes": {
+              "0": [
+                {
+                  "commentStart": 35,
+                  "end": 46,
+                  "start": 35,
+                  "type": "NonCodeNode",
+                  "value": {
+                    "type": "blockComment",
+                    "value": "|> arc({",
+                    "style": "line"
+                  }
+                },
+                {
+                  "commentStart": 49,
+                  "end": 68,
+                  "start": 49,
+                  "type": "NonCodeNode",
+                  "value": {
+                    "type": "blockComment",
+                    "value": "angleEnd: 270,",
+                    "style": "line"
+                  }
+                },
+                {
+                  "commentStart": 71,
+                  "end": 92,
+                  "start": 71,
+                  "type": "NonCodeNode",
+                  "value": {
+                    "type": "blockComment",
+                    "value": "angleStart: 450,",
+                    "style": "line"
+                  }
+                },
+                {
+                  "commentStart": 95,
+                  "end": 103,
+                  "start": 95,
+                  "type": "NonCodeNode",
+                  "value": {
+                    "type": "blockComment",
+                    "value": "}, %)",
+                    "style": "line"
+                  }
+                }
+              ]
+            },
+            "startNodes": []
+          },
+          "start": 13,
+          "type": "PipeExpression",
+          "type": "PipeExpression"
+        },
+        "start": 1,
+        "type": "VariableDeclarator"
+      },
+      "end": 126,
+      "kind": "const",
+      "start": 1,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "commentStart": 0,
+  "end": 127,
+  "start": 0
+}

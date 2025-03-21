@@ -1,8 +1,7 @@
 import { useLayoutEffect, useEffect, useRef } from 'react'
-import { engineCommandManager, kclManager } from 'lib/singletons'
+import { engineCommandManager } from 'lib/singletons'
 import { deferExecution } from 'lib/utils'
 import { Themes } from 'lib/theme'
-import { makeDefaultPlanes } from 'lang/wasm'
 import { useModelingContext } from './useModelingContext'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { useAppState, useAppStream } from 'AppState'
@@ -16,14 +15,15 @@ export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,
   modelingSend: ReturnType<typeof useModelingContext>['send'],
   modelingContext: ReturnType<typeof useModelingContext>['context'],
-  settings = {
+  settings: SettingsViaQueryString = {
     pool: null,
     theme: Themes.System,
     highlightEdges: true,
     enableSSAO: true,
     showScaleGrid: false,
     cameraProjection: 'perspective',
-  } as SettingsViaQueryString,
+    cameraOrbit: 'spherical',
+  },
   token?: string
 ) {
   const networkContext = useNetworkContext()
@@ -53,9 +53,6 @@ export function useSetupEngineManager(
       height: quadHeight,
       token,
       settings,
-      makeDefaultPlanes: () => {
-        return makeDefaultPlanes(kclManager.engineCommandManager)
-      },
     })
     hasSetNonZeroDimensions.current = true
   }
@@ -96,14 +93,12 @@ export function useSetupEngineManager(
     engineCommandManager.settings = settings
 
     const handleResize = deferExecution(() => {
-      const { width, height } = getDimensions(
-        streamRef?.current?.offsetWidth ?? 0,
-        streamRef?.current?.offsetHeight ?? 0
+      engineCommandManager.handleResize(
+        getDimensions(
+          streamRef?.current?.offsetWidth ?? 0,
+          streamRef?.current?.offsetHeight ?? 0
+        )
       )
-      engineCommandManager.handleResize({
-        streamWidth: width,
-        streamHeight: height,
-      })
     }, 500)
 
     const onOnline = () => {

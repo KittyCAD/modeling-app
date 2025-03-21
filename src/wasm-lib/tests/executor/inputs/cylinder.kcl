@@ -1,3 +1,0 @@
-const cylinder = startSketchOn('XY')
-    |> circle({ center: [0, 0], radius: 22 }, %)
-    |> extrude(14, %)

@@ -1,0 +1,109 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "declaration": {
+        "commentStart": 4,
+        "end": 79,
+        "id": {
+          "commentStart": 4,
+          "end": 9,
+          "name": "props",
+          "start": 4,
+          "type": "Identifier"
+        },
+        "init": {
+          "commentStart": 12,
+          "end": 79,
+          "nonCodeMeta": {
+            "nonCodeNodes": {
+              "1": [
+                {
+                  "commentStart": 44,
+                  "end": 52,
+                  "start": 44,
+                  "type": "NonCodeNode",
+                  "value": {
+                    "type": "blockComment",
+                    "value": "b: 2,",
+                    "style": "line"
+                  }
+                }
+              ]
+            },
+            "startNodes": []
+          },
+          "properties": [
+            {
+              "commentStart": 26,
+              "end": 30,
+              "key": {
+                "commentStart": 26,
+                "end": 27,
+                "name": "a",
+                "start": 26,
+                "type": "Identifier"
+              },
+              "start": 26,
+              "type": "ObjectProperty",
+              "value": {
+                "commentStart": 29,
+                "end": 30,
+                "raw": "1",
+                "start": 29,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
+              }
+            },
+            {
+              "commentStart": 65,
+              "end": 69,
+              "key": {
+                "commentStart": 65,
+                "end": 66,
+                "name": "c",
+                "start": 65,
+                "type": "Identifier"
+              },
+              "start": 65,
+              "type": "ObjectProperty",
+              "value": {
+                "commentStart": 68,
+                "end": 69,
+                "raw": "3",
+                "start": 68,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
+              }
+            }
+          ],
+          "start": 12,
+          "type": "ObjectExpression",
+          "type": "ObjectExpression"
+        },
+        "start": 4,
+        "type": "VariableDeclarator"
+      },
+      "end": 79,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "commentStart": 0,
+  "end": 79,
+  "start": 0
+}

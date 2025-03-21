@@ -1,0 +1,12 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing import_function_not_sketch.kcl
+---
+{
+  "one": {
+    "type": "Function"
+  },
+  "two": {
+    "type": "Function"
+  }
+}

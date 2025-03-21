@@ -3,6 +3,7 @@ import viteTsconfigPaths from 'vite-tsconfig-paths'
 import eslint from '@nabla/vite-plugin-eslint'
 import { defineConfig, configDefaults } from 'vitest/config'
 import version from 'vite-plugin-package-version'
+import topLevelAwait from 'vite-plugin-top-level-await'
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
 
@@ -34,7 +35,7 @@ const config = defineConfig({
     coverage: {
       provider: 'istanbul', // or 'v8'
     },
-    exclude: [...configDefaults.exclude, '**/e2e/**/*'],
+    exclude: [...configDefaults.exclude, '**/e2e/**/*', 'rust'],
     deps: {
       optimizer: {
         web: {
@@ -59,9 +60,22 @@ const config = defineConfig({
     alias: {
       '@kittycad/codemirror-lsp-client': '/packages/codemirror-lsp-client/src',
       '@kittycad/codemirror-lang-kcl': '/packages/codemirror-lang-kcl/src',
+      '@rust': '/rust',
     },
   },
-  plugins: [react(), viteTsconfigPaths(), eslint(), version(), lezer()],
+  plugins: [
+    react(),
+    viteTsconfigPaths(),
+    eslint(),
+    version(),
+    lezer(),
+    topLevelAwait({
+      // The export name of top-level await promise for each chunk module
+      promiseExportName: '__tla',
+      // The function to generate import names of top-level await promise in each chunk module
+      promiseImportName: (i) => `__tla_${i}`,
+    }),
+  ],
   worker: {
     plugins: () => [viteTsconfigPaths()],
   },

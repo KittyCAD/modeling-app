@@ -12,104 +12,68 @@ wallMountL = 2 // inches
 shelfDepth = 12 // Shelf is 12 inches in depth from the wall
 moment = shelfDepth * p // assume the force is applied at the end of the shelf to be conservative (lb-in)
 
-
-filletRadius = .375 // inches
-extFilletRadius = .25 // inches
-mountingHoleDiameter = 0.5 // inches
-
-
 // Calculate required thickness of bracket
 thickness = sqrt(moment * factorOfSafety * 6 / (sigmaAllow * width)) // this is the calculation of two brackets holding up the shelf (inches)
 
+filletRadius = .25
+extFilletRadius = filletRadius + thickness
+mountingHoleDiameter = 0.5
 
-// Sketch the bracket body and fillet the inner and outer edges of the bend
-bracketLeg1Sketch = startSketchOn('XY')
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
-  |> line([shelfMountL - filletRadius, 0], %, $fillet1)
-  |> line([0, width], %, $fillet2)
-  |> line([-shelfMountL + filletRadius, 0], %)
-  |> close(%)
-  |> hole(circle({
-       center = [1, 1],
-       radius = mountingHoleDiameter / 2
-     }, %), %)
-  |> hole(circle({
-       center = [shelfMountL - 1.5, width - 1],
-       radius = mountingHoleDiameter / 2
-     }, %), %)
-  |> hole(circle({
-       center = [1, width - 1],
-       radius = mountingHoleDiameter / 2
-     }, %), %)
-  |> hole(circle({
-       center = [shelfMountL - 1.5, 1],
-       radius = mountingHoleDiameter / 2
-     }, %), %)
-
-// Extrude the leg 2 bracket sketch
-bracketLeg1Extrude = extrude(thickness, bracketLeg1Sketch)
-  |> fillet({
+  |> xLine(length = shelfMountL - thickness, tag = $seg01)
+  |> yLine(length = thickness, tag = $seg02)
+  |> xLine(length = -shelfMountL, tag = $seg03)
+  |> yLine(length = -wallMountL, tag = $seg04)
+  |> xLine(length = thickness, tag = $seg05)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg06)
+  |> close()
+  |> extrude(%, length = width)
+  |> fillet(
        radius = extFilletRadius,
-       tags = [
-         getNextAdjacentEdge(fillet1),
-         getNextAdjacentEdge(fillet2)
-       ]
-     }, %)
+       tags = [getNextAdjacentEdge(seg03)],
+     )
+  |> fillet(
+       radius = filletRadius,
+       tags = [getNextAdjacentEdge(seg06)],
+     )
+  |> fillet(
+      radius = filletRadius,
+      tags = [seg02, getOppositeEdge(seg02)],
+    )
+  |> fillet(
+      radius = filletRadius,
+      tags = [seg05, getOppositeEdge(seg05)],
+    )
 
-// Sketch the fillet arc
-filletSketch = startSketchOn('XZ')
-  |> startProfileAt([0, 0], %)
-  |> line([0, thickness], %)
-  |> arc({
-       angleEnd = 180,
-       angleStart = 90,
-       radius = filletRadius + thickness
-     }, %)
-  |> line([thickness, 0], %)
-  |> arc({
-       angleEnd = 90,
-       angleStart = 180,
-       radius = filletRadius
-     }, %)
+sketch002 = startSketchOn(sketch001, seg03)
+  |> circle(
+    center = [-1.25, 1],
+    radius = mountingHoleDiameter / 2,
+  )
+  |> patternLinear2d(
+    instances = 2,
+    distance = 2.5,
+    axis = [-1, 0],
+  )
+  |> patternLinear2d(
+    instances = 2,
+    distance = 4,
+    axis = [0, 1],
+  )
+  |> extrude(%, length = -thickness-.01)
 
-// Sketch the bend
-filletExtrude = extrude(-width, filletSketch)
-
-// Create a custom plane for the leg that sits on the wall
-customPlane = {
-  plane = {
-    origin = { x = -filletRadius, y = 0, z = 0 },
-    xAxis = { x = 0, y = 1, z = 0 },
-    yAxis = { x = 0, y = 0, z = 1 },
-    zAxis = { x = 1, y = 0, z = 0 }
-  }
-}
-
-// Create a sketch for the second leg
-bracketLeg2Sketch = startSketchOn(customPlane)
-  |> startProfileAt([0, -filletRadius], %)
-  |> line([width, 0], %)
-  |> line([0, -wallMountL], %, $fillet3)
-  |> line([-width, 0], %, $fillet4)
-  |> close(%)
-  |> hole(circle({
-       center = [1, -1.5],
-       radius = mountingHoleDiameter / 2
-     }, %), %)
-  |> hole(circle({
-       center = [5, -1.5],
-       radius = mountingHoleDiameter / 2
-     }, %), %)
-
-// Extrude the second leg
-bracketLeg2Extrude = extrude(-thickness, bracketLeg2Sketch)
-  |> fillet({
-       radius = extFilletRadius,
-       tags = [
-         getNextAdjacentEdge(fillet3),
-         getNextAdjacentEdge(fillet4)
-       ]
-     }, %)
+sketch003 = startSketchOn(sketch001, seg04)
+  |> circle(
+    center = [1, -1],
+    radius = mountingHoleDiameter / 2,
+  )
+  |> patternLinear2d(
+    instances = 2,
+    distance = 4,
+    axis = [1, 0],
+  )
+  |> extrude(%, length = -thickness-0.1)
 `
 
 /**

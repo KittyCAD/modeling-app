@@ -1,0 +1,5 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed pipe_substitution_inside_function_called_from_pipeline.kcl
+---
+[]

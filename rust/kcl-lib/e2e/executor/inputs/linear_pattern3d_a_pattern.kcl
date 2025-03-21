@@ -1,0 +1,21 @@
+exampleSketch = startSketchOn(XZ)
+  |> startProfileAt([0, 0], %)
+  |> line(end = [0, 2])
+  |> line(end = [3, 1])
+  |> line(end = [0, -4])
+  |> close()
+  |> extrude(length = 1)
+
+pattn1 = patternLinear3d(
+       exampleSketch,
+       axis = [1, 0, 0],
+       instances = 7,
+       distance = 6
+)
+
+pattn2 = patternLinear3d(
+       pattn1,
+       axis = [0, 0, 1],
+       distance = 1,
+       instances = 7
+)

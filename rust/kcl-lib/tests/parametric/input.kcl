@@ -1,0 +1,18 @@
+sigmaAllow = 35000 // psi
+width = 9 // inch
+p = 150 // Force on shelf - lbs
+distance = 6 // inches
+FOS = 2
+
+leg1 = 5 // inches
+leg2 = 8 // inches
+thickness = sqrt(distance * p * FOS * 6 / sigmaAllow / width) // inches
+bracket = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line(end = [0, leg1])
+  |> line(end = [leg2, 0])
+  |> line(end = [0, -thickness])
+  |> line(end = [-leg2 + thickness, 0])
+  |> line(end = [0, -leg1 + thickness])
+  |> close(%)
+  |> extrude(length = width)

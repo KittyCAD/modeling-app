@@ -1,0 +1,112 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "declaration": {
+        "commentStart": 0,
+        "end": 36,
+        "id": {
+          "commentStart": 0,
+          "end": 3,
+          "name": "obj",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "commentStart": 6,
+          "end": 36,
+          "properties": [
+            {
+              "commentStart": 7,
+              "end": 24,
+              "key": {
+                "commentStart": 7,
+                "end": 13,
+                "name": "center",
+                "start": 7,
+                "type": "Identifier"
+              },
+              "start": 7,
+              "type": "ObjectProperty",
+              "value": {
+                "commentStart": 16,
+                "elements": [
+                  {
+                    "commentStart": 17,
+                    "end": 19,
+                    "raw": "10",
+                    "start": 17,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 10.0,
+                      "suffix": "None"
+                    }
+                  },
+                  {
+                    "commentStart": 21,
+                    "end": 23,
+                    "raw": "10",
+                    "start": 21,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 10.0,
+                      "suffix": "None"
+                    }
+                  }
+                ],
+                "end": 24,
+                "start": 16,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              }
+            },
+            {
+              "commentStart": 26,
+              "end": 35,
+              "key": {
+                "commentStart": 26,
+                "end": 32,
+                "name": "radius",
+                "start": 26,
+                "type": "Identifier"
+              },
+              "start": 26,
+              "type": "ObjectProperty",
+              "value": {
+                "commentStart": 34,
+                "end": 35,
+                "raw": "5",
+                "start": 34,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 5.0,
+                  "suffix": "None"
+                }
+              }
+            }
+          ],
+          "start": 6,
+          "type": "ObjectExpression",
+          "type": "ObjectExpression"
+        },
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 36,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "commentStart": 0,
+  "end": 36,
+  "start": 0
+}

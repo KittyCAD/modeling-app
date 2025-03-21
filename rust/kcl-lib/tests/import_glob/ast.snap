@@ -1,0 +1,30 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing import_glob.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 0,
+        "end": 0,
+        "path": {
+          "type": "Kcl",
+          "filename": "export_constant.kcl"
+        },
+        "selector": {
+          "commentStart": 7,
+          "end": 0,
+          "start": 0,
+          "type": "Glob"
+        },
+        "start": 0,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "start": 0
+  }
+}

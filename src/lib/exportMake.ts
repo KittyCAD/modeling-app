@@ -1,4 +1,3 @@
-import { deserialize_files } from 'wasm-lib/pkg/wasm_lib'
 import { MachineManager } from 'components/MachineManagerProvider'
 import toast from 'react-hot-toast'
 import { components } from './machine-api'
@@ -6,12 +5,17 @@ import ModelingAppFile from './modelingAppFile'
 import { MAKE_TOAST_MESSAGES } from './constants'
 
 // Make files locally from an export call.
-export async function exportMake(
-  data: ArrayBuffer,
-  name: string,
-  toastId: string,
+export async function exportMake({
+  files,
+  name,
+  toastId,
+  machineManager,
+}: {
+  files: ModelingAppFile[]
+  name: string
+  toastId: string
   machineManager: MachineManager
-): Promise<Response | null> {
+}): Promise<Response | null> {
   if (name === '') {
     console.error(MAKE_TOAST_MESSAGES.NO_NAME)
     toast.error(MAKE_TOAST_MESSAGES.NO_NAME, { id: toastId })
@@ -50,10 +54,8 @@ export async function exportMake(
     job_name: name,
   }
   try {
-    console.log('params', params)
     const formData = new FormData()
     formData.append('params', JSON.stringify(params))
-    let files: ModelingAppFile[] = deserialize_files(new Uint8Array(data))
     let file = files[0]
     const fileBlob = new Blob([new Uint8Array(file.contents)], {
       type: 'text/plain',

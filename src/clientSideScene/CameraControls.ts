@@ -22,13 +22,14 @@ import {
   UnreliableSubscription,
 } from 'lang/std/engineConnection'
 import { EngineCommand } from 'lang/std/artifactGraph'
-import { toSync, uuidv4 } from 'lib/utils'
+import { toSync, uuidv4, getNormalisedCoordinates } from 'lib/utils'
 import { deg2Rad } from 'lib/utils2d'
 import { isReducedMotion, roundOff, throttle } from 'lib/utils'
 import * as TWEEN from '@tweenjs/tween.js'
 import { isQuaternionVertical } from './helpers'
 import { reportRejection } from 'lib/trap'
-import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType'
+import { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
@@ -108,6 +109,7 @@ export class CameraControls {
   interactionGuards: MouseGuard = cameraMouseDragGuards.Zoo
   isFovAnimationInProgress = false
   perspectiveFovBeforeOrtho = 45
+
   // NOTE: Duplicated state across Provider and singleton. Mapped from settingsMachine
   _setting_allowOrbitInSketchMode = false
   get isPerspective() {
@@ -286,12 +288,14 @@ export class CameraControls {
         camSettings.up.y,
         camSettings.up.z
       )
+
       this.camera.quaternion.set(
         orientation.x,
         orientation.y,
         orientation.z,
         orientation.w
       )
+
       this.camera.up.copy(newUp)
       this.camera.updateProjectionMatrix()
       if (this.camera instanceof PerspectiveCamera && camSettings.ortho) {
@@ -406,7 +410,7 @@ export class CameraControls {
         .sub(this.mouseDownPosition)
       this.mouseDownPosition.copy(this.mouseNewPosition)
 
-      const interaction = this.getInteractionType(event)
+      let interaction = this.getInteractionType(event)
       if (interaction === 'none') return
 
       // If there's a valid interaction and the mouse is moving,
@@ -455,11 +459,19 @@ export class CameraControls {
       if (this.syncDirection === 'engineToClient') {
         const newCmdId = uuidv4()
 
+        // Nonsense to do anything until the video stream is established.
+        if (!this.engineCommandManager.elVideo) return
+
+        const { x, y } = getNormalisedCoordinates(
+          event,
+          this.engineCommandManager.elVideo,
+          this.engineCommandManager.streamDimensions
+        )
         this.throttledEngCmd({
           type: 'modeling_cmd_req',
           cmd: {
             type: 'highlight_set_entity',
-            selected_at_window: { x: event.clientX, y: event.clientY },
+            selected_at_window: { x, y },
           },
           cmd_id: newCmdId,
         })
@@ -491,10 +503,13 @@ export class CameraControls {
     if (interaction === 'none') return
     event.preventDefault()
 
+    // TODO: find a better way than this clipping to +/- 100 to prevent the bug in #5120
+    const deltaY = Math.max(-100, Math.min(100, event.deltaY))
+
     if (this.syncDirection === 'engineToClient') {
       if (interaction === 'zoom') {
         this.zoomSender.send(() => {
-          this.doZoom(event.deltaY)
+          this.doZoom(deltaY)
         })
       } else {
         // This case will get handled when we add pan and rotate using Apple trackpad.
@@ -514,7 +529,7 @@ export class CameraControls {
 
     this.handleStart()
     if (interaction === 'zoom') {
-      this.pendingZoom = 1 + (event.deltaY / window.devicePixelRatio) * 0.001
+      this.pendingZoom = 1 + (deltaY / window.devicePixelRatio) * 0.001
     } else {
       // This case will get handled when we add pan and rotate using Apple trackpad.
       console.error(
@@ -752,8 +767,6 @@ export class CameraControls {
       this.pendingPan = null
       didChange = true
     }
-
-    this.safeLookAtTarget(this.camera.up)
 
     // Update the camera's matrices
     this.camera.updateMatrixWorld()
@@ -1189,14 +1202,24 @@ export class CameraControls {
     this.deferReactUpdate(this.reactCameraProperties)
     Object.values(this._camChangeCallbacks).forEach((cb) => cb())
   }
-  getInteractionType = (event: MouseEvent) =>
-    _getInteractionType(
+  getInteractionType = (
+    event: MouseEvent
+  ): CameraDragInteractionType_type | 'none' => {
+    const initialInteractionType = _getInteractionType(
       this.interactionGuards,
       event,
       this.enablePan,
       this.enableRotate,
       this.enableZoom
     )
+    if (
+      initialInteractionType === 'rotate' &&
+      this.engineCommandManager.settings.cameraOrbit === 'trackball'
+    ) {
+      return 'rotatetrackball'
+    }
+    return initialInteractionType
+  }
 }
 
 // Pure function helpers

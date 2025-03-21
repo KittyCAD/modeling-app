@@ -1,9 +1,10 @@
 import { useMachine } from '@xstate/react'
-import { useNavigate, useRouteLoaderData } from 'react-router-dom'
+import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { type IndexLoaderData } from 'lib/types'
-import { PATHS } from 'lib/paths'
+import { BROWSER_PATH, PATHS } from 'lib/paths'
 import React, { createContext, useEffect, useMemo } from 'react'
 import { toast } from 'react-hot-toast'
+import { DEV } from 'env'
 import {
   Actor,
   AnyStateMachine,
@@ -27,9 +28,13 @@ import {
   getKclSamplesManifest,
   KclSamplesManifestItem,
 } from 'lib/getKclSamplesManifest'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { markOnce } from 'lib/performance'
 import { commandBarActor } from 'machines/commandBarMachine'
+import { settingsActor, useSettings } from 'machines/appMachine'
+import { createRouteCommands } from 'lib/commandBarConfigs/routeCommandConfig'
+import { useToken } from 'machines/appMachine'
+import { createNamedViewsCommand } from 'lib/commandBarConfigs/namedViewsConfig'
+import { reportRejection } from 'lib/trap'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -47,12 +52,96 @@ export const FileMachineProvider = ({
   children: React.ReactNode
 }) => {
   const navigate = useNavigate()
-  const { settings, auth } = useSettingsAuthContext()
+  const location = useLocation()
+  const token = useToken()
+  const settings = useSettings()
   const projectData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const { project, file } = projectData
   const [kclSamples, setKclSamples] = React.useState<KclSamplesManifestItem[]>(
     []
   )
+
+  // Write code mirror content to disk when the page is trying to reroute
+  // Our logic for codeManager.writeToFile has an artificial 1000ms timeout which
+  // won't run quickly enough so users can make an edit, exit the page and lose their
+  // progress within that 1000ms window.
+  useEffect(() => {
+    const preventUnload = (event: BeforeUnloadEvent) => {
+      codeManager.writeToFileNoTimeout().catch(reportRejection)
+    }
+    window.addEventListener('beforeunload', preventUnload)
+    return () => {
+      window.removeEventListener('beforeunload', preventUnload)
+    }
+  }, [])
+
+  useEffect(() => {
+    // TODO: Engine feature is not deployed
+    if (DEV) {
+      const {
+        createNamedViewCommand,
+        deleteNamedViewCommand,
+        loadNamedViewCommand,
+      } = createNamedViewsCommand()
+
+      const commands = [
+        createNamedViewCommand,
+        deleteNamedViewCommand,
+        loadNamedViewCommand,
+      ]
+      commandBarActor.send({
+        type: 'Add commands',
+        data: {
+          commands,
+        },
+      })
+      return () => {
+        // Remove commands if you go to the home page
+        commandBarActor.send({
+          type: 'Remove commands',
+          data: {
+            commands,
+          },
+        })
+      }
+    }
+  }, [])
+
+  // Due to the route provider, i've moved this to the FileMachineProvider instead of CommandBarProvider
+  // This will register the commands to route to Telemetry, Home, and Settings.
+  useEffect(() => {
+    const filePath =
+      PATHS.FILE + '/' + encodeURIComponent(file?.path || BROWSER_PATH)
+    const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
+      createRouteCommands(navigate, location, filePath)
+    commandBarActor.send({
+      type: 'Remove commands',
+      data: {
+        commands: [
+          RouteTelemetryCommand,
+          RouteHomeCommand,
+          RouteSettingsCommand,
+        ],
+      },
+    })
+    if (location.pathname === PATHS.HOME) {
+      commandBarActor.send({
+        type: 'Add commands',
+        data: { commands: [RouteTelemetryCommand, RouteSettingsCommand] },
+      })
+    } else if (location.pathname.includes(PATHS.FILE)) {
+      commandBarActor.send({
+        type: 'Add commands',
+        data: {
+          commands: [
+            RouteTelemetryCommand,
+            RouteSettingsCommand,
+            RouteHomeCommand,
+          ],
+        },
+      })
+    }
+  }, [location])
 
   useEffect(() => {
     markOnce('code/didLoadFile')
@@ -90,6 +179,8 @@ export const FileMachineProvider = ({
         navigateToFile: ({ context, event }) => {
           if (event.type !== 'xstate.done.actor.create-and-open-file') return
           if (event.output && 'name' in event.output) {
+            // TODO: Technically this is not the same as the FileTree Onclick even if they are in the same page
+            // What is "Open file?"
             commandBarActor.send({ type: 'Close' })
             navigate(
               `..${PATHS.FILE}/${encodeURIComponent(
@@ -122,22 +213,43 @@ export const FileMachineProvider = ({
           let createdName = input.name.trim() || DEFAULT_FILE_NAME
           let createdPath: string
 
-          if (input.makeDir) {
+          if (
+            (input.targetPathToClone &&
+              (await window.electron.statIsDirectory(
+                input.targetPathToClone
+              ))) ||
+            input.makeDir
+          ) {
             let { name, path } = getNextDirName({
-              entryName: createdName,
-              baseDir: input.selectedDirectory.path,
+              entryName: input.targetPathToClone
+                ? window.electron.path.basename(input.targetPathToClone)
+                : createdName,
+              baseDir: input.targetPathToClone
+                ? window.electron.path.dirname(input.targetPathToClone)
+                : input.selectedDirectory.path,
             })
             createdName = name
             createdPath = path
             await window.electron.mkdir(createdPath)
           } else {
             const { name, path } = getNextFileName({
-              entryName: createdName,
-              baseDir: input.selectedDirectory.path,
+              entryName: input.targetPathToClone
+                ? window.electron.path.basename(input.targetPathToClone)
+                : createdName,
+              baseDir: input.targetPathToClone
+                ? window.electron.path.dirname(input.targetPathToClone)
+                : input.selectedDirectory.path,
             })
             createdName = name
             createdPath = path
-            await window.electron.writeFile(createdPath, input.content ?? '')
+            if (input.targetPathToClone) {
+              await window.electron.copyFile(
+                input.targetPathToClone,
+                createdPath
+              )
+            } else {
+              await window.electron.writeFile(createdPath, input.content ?? '')
+            }
           }
 
           return {
@@ -297,10 +409,10 @@ export const FileMachineProvider = ({
   const kclCommandMemo = useMemo(
     () =>
       kclCommands({
-        authToken: auth?.context?.token ?? '',
+        authToken: token ?? '',
         projectData,
         settings: {
-          defaultUnit: settings?.context?.modeling.defaultUnit.current ?? 'mm',
+          defaultUnit: settings.modeling.defaultUnit.current ?? 'mm',
         },
         specialPropsForSampleCommand: {
           onSubmit: async (data) => {
@@ -322,7 +434,7 @@ export const FileMachineProvider = ({
             // Either way, we want to overwrite the defaultUnit project setting
             // with the sample's setting.
             if (data.sampleUnits) {
-              settings.send({
+              settingsActor.send({
                 type: 'set.modeling.defaultUnit',
                 data: {
                   level: 'project',

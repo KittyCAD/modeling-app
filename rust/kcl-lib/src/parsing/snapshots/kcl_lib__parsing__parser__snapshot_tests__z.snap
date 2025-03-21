@@ -1,0 +1,149 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "declaration": {
+        "commentStart": 0,
+        "end": 73,
+        "id": {
+          "commentStart": 0,
+          "end": 2,
+          "name": "sg",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "body": [
+            {
+              "arguments": [
+                {
+                  "commentStart": 19,
+                  "end": 21,
+                  "name": "XY",
+                  "start": 19,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                }
+              ],
+              "callee": {
+                "commentStart": 5,
+                "end": 18,
+                "name": "startSketchOn",
+                "start": 5,
+                "type": "Identifier"
+              },
+              "commentStart": 5,
+              "end": 22,
+              "start": 5,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            {
+              "arguments": [
+                {
+                  "commentStart": 45,
+                  "end": 48,
+                  "name": "pos",
+                  "start": 45,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                }
+              ],
+              "callee": {
+                "commentStart": 30,
+                "end": 44,
+                "name": "startProfileAt",
+                "start": 30,
+                "type": "Identifier"
+              },
+              "commentStart": 30,
+              "end": 49,
+              "start": 30,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            {
+              "arguments": [
+                {
+                  "commentStart": 58,
+                  "elements": [
+                    {
+                      "commentStart": 59,
+                      "end": 60,
+                      "raw": "0",
+                      "start": 59,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "argument": {
+                        "commentStart": 63,
+                        "end": 68,
+                        "name": "scale",
+                        "start": 63,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "commentStart": 62,
+                      "end": 68,
+                      "operator": "-",
+                      "start": 62,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
+                  ],
+                  "end": 69,
+                  "start": 58,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                },
+                {
+                  "commentStart": 71,
+                  "end": 72,
+                  "start": 71,
+                  "type": "PipeSubstitution",
+                  "type": "PipeSubstitution"
+                }
+              ],
+              "callee": {
+                "commentStart": 53,
+                "end": 57,
+                "name": "line",
+                "start": 53,
+                "type": "Identifier"
+              },
+              "commentStart": 53,
+              "end": 73,
+              "start": 53,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            }
+          ],
+          "commentStart": 5,
+          "end": 73,
+          "start": 5,
+          "type": "PipeExpression",
+          "type": "PipeExpression"
+        },
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 73,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "commentStart": 0,
+  "end": 73,
+  "start": 0
+}

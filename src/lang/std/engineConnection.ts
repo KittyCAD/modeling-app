@@ -6,29 +6,24 @@ import {
 } from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from 'env'
 import { Models } from '@kittycad/lib'
-import { exportSave } from 'lib/exportSave'
 import { deferExecution, isOverlap, uuidv4 } from 'lib/utils'
+import { BSON, Binary as BSONBinary } from 'bson'
 import {
   Themes,
   getThemeColorForEngine,
   getOppositeTheme,
   darkModeMatcher,
 } from 'lib/theme'
-import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import { EngineCommand, ResponseMap } from 'lang/std/artifactGraph'
 import { useModelingContext } from 'hooks/useModelingContext'
-import { exportMake } from 'lib/exportMake'
-import toast from 'react-hot-toast'
 import { SettingsViaQueryString } from 'lib/settings/settingsTypes'
-import {
-  EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
-  EXPORT_TOAST_MESSAGES,
-  MAKE_TOAST_MESSAGES,
-} from 'lib/constants'
+import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
 import { KclManager } from 'lang/KclSingleton'
 import { reportRejection } from 'lib/trap'
 import { markOnce } from 'lib/performance'
 import { MachineManager } from 'components/MachineManagerProvider'
+import { buildArtifactIndex } from 'lib/artifactIndex'
+import { ArtifactIndex } from 'lib/artifactIndex'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 5_000
@@ -44,16 +39,6 @@ type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
 interface NewTrackArgs {
   conn: EngineConnection
   mediaStream: MediaStream
-}
-
-export enum ExportIntent {
-  Save = 'save',
-  Make = 'make',
-}
-
-export interface ExportInfo {
-  intent: ExportIntent
-  name: string
 }
 
 type ClientMetrics = Models['ClientMetrics_type']
@@ -238,6 +223,20 @@ export enum EngineConnectionEvents {
   NewTrack = 'new-track', // (track: NewTrackArgs) => void
 }
 
+function toRTCSessionDescriptionInit(
+  desc: Models['RtcSessionDescription_type']
+): RTCSessionDescriptionInit | undefined {
+  if (desc.type === 'unspecified') {
+    console.error('Invalid SDP answer: type is "unspecified".')
+    return undefined
+  }
+  return {
+    sdp: desc.sdp,
+    // Force the type to be one of the valid RTCSdpType values
+    type: desc.type as RTCSdpType,
+  }
+}
+
 // EngineConnection encapsulates the connection(s) to the Engine
 // for the EngineCommandManager; namely, the underlying WebSocket
 // and WebRTC connections.
@@ -248,6 +247,8 @@ class EngineConnection extends EventTarget {
   mediaStream?: MediaStream
   idleMode: boolean = false
   promise?: Promise<void>
+  sdpAnswer?: RTCSessionDescriptionInit
+  triggeredStart = false
 
   onIceCandidate = function (
     this: RTCPeerConnection,
@@ -545,6 +546,50 @@ class EngineConnection extends EventTarget {
     this.disconnectAll()
   }
 
+  initiateConnectionExclusive(): boolean {
+    // Only run if:
+    // - A peer connection exists,
+    // - ICE gathering is complete,
+    // - We have an SDP answer,
+    // - And we haven’t already triggered this connection.
+    if (!this.pc || this.triggeredStart || !this.sdpAnswer) {
+      return false
+    }
+    this.triggeredStart = true
+
+    // Transition to the connecting state
+    this.state = {
+      type: EngineConnectionStateType.Connecting,
+      value: { type: ConnectingType.WebRTCConnecting },
+    }
+
+    // Attempt to set the remote description to initiate connection
+    this.pc
+      .setRemoteDescription(this.sdpAnswer)
+      .then(() => {
+        // Update state once the remote description has been set
+        this.state = {
+          type: EngineConnectionStateType.Connecting,
+          value: { type: ConnectingType.SetRemoteDescription },
+        }
+      })
+      .catch((error: Error) => {
+        console.error('Failed to set remote description:', error)
+        this.state = {
+          type: EngineConnectionStateType.Disconnecting,
+          value: {
+            type: DisconnectingType.Error,
+            value: {
+              error: ConnectionError.LocalDescriptionInvalid,
+              context: error,
+            },
+          },
+        }
+        this.disconnectAll()
+      })
+    return true
+  }
+
   /**
    * Attempts to connect to the Engine over a WebSocket, and
    * establish the WebRTC connections.
@@ -553,6 +598,7 @@ class EngineConnection extends EventTarget {
    * did not establish.
    */
   connect(reconnecting?: boolean): Promise<void> {
+    const that = this
     return new Promise((resolve) => {
       if (this.isConnecting() || this.isReady()) {
         return
@@ -584,7 +630,12 @@ class EngineConnection extends EventTarget {
         }
 
         this.onIceCandidate = (event: RTCPeerConnectionIceEvent) => {
+          console.log('icecandidate', event.candidate)
+
+          // This is null when the ICE gathering state is done.
+          // Windows ONLY uses this to signal it's done!
           if (event.candidate === null) {
+            that.initiateConnectionExclusive()
             return
           }
 
@@ -595,7 +646,6 @@ class EngineConnection extends EventTarget {
             },
           }
 
-          // Request a candidate to use
           this.send({
             type: 'trickle_ice',
             candidate: {
@@ -605,8 +655,40 @@ class EngineConnection extends EventTarget {
               usernameFragment: event.candidate.usernameFragment || undefined,
             },
           })
+
+          // Sometimes the remote end doesn't report the end of candidates.
+          // They have 3 seconds to.
+          setTimeout(() => {
+            if (that.initiateConnectionExclusive()) {
+              console.warn('connected after 3 second delay')
+            }
+          }, 3000)
         }
         this.pc?.addEventListener?.('icecandidate', this.onIceCandidate)
+        this.pc?.addEventListener?.(
+          'icegatheringstatechange',
+          function (_event) {
+            console.log('icegatheringstatechange', this.iceGatheringState)
+
+            if (this.iceGatheringState !== 'complete') return
+            that.initiateConnectionExclusive()
+          }
+        )
+
+        this.pc?.addEventListener?.(
+          'iceconnectionstatechange',
+          function (_event) {
+            console.log('iceconnectionstatechange', this.iceConnectionState)
+            console.log('iceconnectionstatechange', this.iceGatheringState)
+          }
+        )
+        this.pc?.addEventListener?.('negotiationneeded', function (_event) {
+          console.log('negotiationneeded', this.iceConnectionState)
+          console.log('negotiationneeded', this.iceGatheringState)
+        })
+        this.pc?.addEventListener?.('signalingstatechange', function (event) {
+          console.log('signalingstatechange', this.signalingState)
+        })
 
         this.onIceCandidateError = (_event: Event) => {
           const event = _event as RTCPeerConnectionIceErrorEvent
@@ -633,6 +715,8 @@ class EngineConnection extends EventTarget {
                   detail: { conn: this, mediaStream: this.mediaStream! },
                 })
               )
+              break
+            case 'connecting':
               break
             case 'disconnected':
             case 'failed':
@@ -969,18 +1053,6 @@ class EngineConnection extends EventTarget {
                 `Error in response to request ${message.request_id}:\n${errorsString}
     failed cmd type was ${artifactThatFailed?.type}`
               )
-              // Check if this was a pending export command.
-              if (
-                this.engineCommandManager.pendingExport?.commandId ===
-                message.request_id
-              ) {
-                // Reject the promise with the error.
-                this.engineCommandManager.pendingExport.reject(errorsString)
-                toast.error(errorsString, {
-                  id: this.engineCommandManager.pendingExport.toastId,
-                })
-                this.engineCommandManager.pendingExport = undefined
-              }
             } else {
               console.error(`Error from server:\n${errorsString}`)
             }
@@ -1126,25 +1198,11 @@ class EngineConnection extends EventTarget {
                 },
               }
 
-              // As soon as this is set, RTCPeerConnection tries to
-              // establish a connection.
-              // @ts-ignore
-              // Have to ignore because dom.ts doesn't have the right type
-              void this.pc?.setRemoteDescription(answer)
+              this.sdpAnswer = toRTCSessionDescriptionInit(answer)
 
-              this.state = {
-                type: EngineConnectionStateType.Connecting,
-                value: {
-                  type: ConnectingType.SetRemoteDescription,
-                },
-              }
-
-              this.state = {
-                type: EngineConnectionStateType.Connecting,
-                value: {
-                  type: ConnectingType.WebRTCConnecting,
-                },
-              }
+              // We might have received this after ice candidates finish
+              // Make sure we attempt to connect when we do.
+              this.initiateConnectionExclusive()
               break
 
             case 'trickle_ice':
@@ -1235,6 +1293,7 @@ class EngineConnection extends EventTarget {
     if (closedPc && closedUDC && closedWS) {
       // Do not notify the rest of the program that we have cut off anything.
       this.state = { type: EngineConnectionStateType.Disconnected }
+      this.triggeredStart = false
     }
   }
 }
@@ -1278,10 +1337,6 @@ export type CommandLog =
       type: 'execution-done'
       data: null
     }
-  | {
-      type: 'export-done'
-      data: null
-    }
 
 export enum EngineCommandManagerEvents {
   // engineConnection is available but scene setup may not have run
@@ -1319,6 +1374,7 @@ export class EngineCommandManager extends EventTarget {
    * see: src/lang/std/artifactGraph-README.md for a full explanation.
    */
   artifactGraph: ArtifactGraph = new Map()
+  artifactIndex: ArtifactIndex = []
   /**
    * The pendingCommands object is a map of the commands that have been sent to the engine that are still waiting on a reply
    */
@@ -1343,26 +1399,17 @@ export class EngineCommandManager extends EventTarget {
    */
   inSequence = 1
   engineConnection?: EngineConnection
-  defaultPlanes: DefaultPlanes | null = null
   commandLogs: CommandLog[] = []
-  pendingExport?: {
-    /** The id of the shared loading/success/error toast for export */
-    toastId: string
-    /** An on-success callback */
-    resolve: (a: null) => void
-    /** An on-error callback */
-    reject: (reason: string) => void
-    /** The engine command uuid */
-    commandId: string
-  }
   settings: SettingsViaQueryString
 
-  /**
-   * Export intent traxcks the intent of the export. If it is null there is no
-   * export in progress. Otherwise it is an enum value of the intent.
-   * Another export cannot be started if one is already in progress.
-   */
-  private _exportInfo: ExportInfo | null = null
+  streamDimensions = {
+    // Random defaults that are overwritten pretty much immediately
+    width: 1337,
+    height: 1337,
+  }
+
+  elVideo: HTMLVideoElement | null = null
+
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
 
   subscriptions: {
@@ -1389,6 +1436,7 @@ export class EngineCommandManager extends EventTarget {
           enableSSAO: true,
           showScaleGrid: false,
           cameraProjection: 'perspective',
+          cameraOrbit: 'spherical',
         }
   }
 
@@ -1396,8 +1444,6 @@ export class EngineCommandManager extends EventTarget {
   set camControlsCameraChange(cb: () => void) {
     this._camControlsCameraChange = cb
   }
-
-  private makeDefaultPlanes: () => Promise<DefaultPlanes> | null = () => null
 
   private onEngineConnectionOpened = () => {}
   private onEngineConnectionClosed = () => {}
@@ -1415,21 +1461,12 @@ export class EngineCommandManager extends EventTarget {
   // The current "manufacturing machine" aka 3D printer, CNC, etc.
   public machineManager: MachineManager | null = null
 
-  set exportInfo(info: ExportInfo | null) {
-    this._exportInfo = info
-  }
-
-  get exportInfo() {
-    return this._exportInfo
-  }
-
   start({
     setMediaStream,
     setIsStreamReady,
     width,
     height,
     token,
-    makeDefaultPlanes,
     settings = {
       pool: null,
       theme: Themes.Dark,
@@ -1437,6 +1474,7 @@ export class EngineCommandManager extends EventTarget {
       enableSSAO: true,
       showScaleGrid: false,
       cameraProjection: 'orthographic',
+      cameraOrbit: 'spherical',
     },
     // When passed, use a completely separate connecting code path that simply
     // opens a websocket and this is a function that is called when connected.
@@ -1448,29 +1486,29 @@ export class EngineCommandManager extends EventTarget {
     width: number
     height: number
     token?: string
-    makeDefaultPlanes: () => Promise<DefaultPlanes>
     settings?: SettingsViaQueryString
   }) {
     if (settings) {
       this.settings = settings
     }
-    this.makeDefaultPlanes = makeDefaultPlanes
     if (width === 0 || height === 0) {
       return
     }
 
+    this.streamDimensions = {
+      width,
+      height,
+    }
+
     // If we already have an engine connection, just need to resize the stream.
     if (this.engineConnection) {
-      this.handleResize({
-        streamWidth: width,
-        streamHeight: height,
-      })
+      this.handleResize(this.streamDimensions)
       return
     }
 
-    const additionalSettings = this.settings.enableSSAO
-      ? '&post_effect=ssao'
-      : ''
+    let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
+    additionalSettings +=
+      '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
     const pool = !this.settings.pool ? '' : `&pool=${this.settings.pool}`
     const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}${additionalSettings}${pool}`
     this.engineConnection = new EngineConnection({
@@ -1534,7 +1572,6 @@ export class EngineCommandManager extends EventTarget {
           type: 'default_camera_get_settings',
         },
       })
-      await this.initPlanes()
       setIsStreamReady(true)
 
       // Other parts of the application should use this to react on scene ready.
@@ -1598,64 +1635,33 @@ export class EngineCommandManager extends EventTarget {
       engineConnection.websocket?.addEventListener('message', ((
         event: MessageEvent
       ) => {
+        let message: Models['WebSocketResponse_type'] | null = null
+
         if (event.data instanceof ArrayBuffer) {
-          // If the data is an ArrayBuffer, it's  the result of an export command,
-          // because in all other cases we send JSON strings. But in the case of
-          // export we send a binary blob.
-          // Pass this to our export function.
-          if (this.exportInfo === null || this.pendingExport === undefined) {
-            toast.error(
-              'Export intent was not set, but export data was received'
-            )
-            console.error(
-              'Export intent was not set, but export data was received'
-            )
-            return
+          // BSON deserialize the command.
+          message = BSON.deserialize(
+            new Uint8Array(event.data)
+          ) as Models['WebSocketResponse_type']
+          // The request id comes back as binary and we want to get the uuid
+          // string from that.
+          if (message.request_id) {
+            message.request_id = binaryToUuid(message.request_id)
           }
+        } else {
+          message = JSON.parse(event.data)
+        }
 
-          switch (this.exportInfo.intent) {
-            case ExportIntent.Save: {
-              exportSave({
-                data: event.data,
-                fileName: this.exportInfo.name,
-                toastId: this.pendingExport.toastId,
-              }).then(() => {
-                this.pendingExport?.resolve(null)
-              }, this.pendingExport?.reject)
-              break
-            }
-            case ExportIntent.Make: {
-              if (!this.machineManager) {
-                console.warn('Some how, no manufacturing machine is selected.')
-                break
-              }
-
-              exportMake(
-                event.data,
-                this.exportInfo.name,
-                this.pendingExport.toastId,
-                this.machineManager
-              ).then((result) => {
-                if (result) {
-                  this.pendingExport?.resolve(null)
-                } else {
-                  this.pendingExport?.reject('Failed to make export')
-                }
-              }, this.pendingExport?.reject)
-              break
-            }
-          }
-          // Set the export intent back to null.
-          this.exportInfo = null
+        if (message === null) {
+          // We should never get here.
+          console.error('Received a null message from the engine', event)
           return
         }
 
-        const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
         const pending = this.pendingCommands[message.request_id || '']
 
         if (pending && !message.success) {
           // handle bad case
-          pending.reject(`engine error: ${JSON.stringify(message.errors)}`)
+          pending.reject(JSON.stringify(message))
           delete this.pendingCommands[message.request_id || '']
         }
         if (
@@ -1663,12 +1669,15 @@ export class EngineCommandManager extends EventTarget {
             pending &&
             message.success &&
             (message.resp.type === 'modeling' ||
-              message.resp.type === 'modeling_batch')
+              message.resp.type === 'modeling_batch' ||
+              message.resp.type === 'export')
           )
         )
           return
 
-        if (
+        if (message.resp.type === 'export' && message.request_id) {
+          this.responseMap[message.request_id] = message.resp
+        } else if (
           message.resp.type === 'modeling' &&
           pending.command.type === 'modeling_cmd_req' &&
           message.request_id
@@ -1760,15 +1769,14 @@ export class EngineCommandManager extends EventTarget {
     return
   }
 
-  handleResize({
-    streamWidth,
-    streamHeight,
-  }: {
-    streamWidth: number
-    streamHeight: number
-  }) {
+  handleResize({ width, height }: { width: number; height: number }) {
     if (!this.engineConnection?.isReady()) {
       return
+    }
+
+    this.streamDimensions = {
+      width,
+      height,
     }
 
     const resizeCmd: EngineCommand = {
@@ -1776,8 +1784,7 @@ export class EngineCommandManager extends EventTarget {
       cmd_id: uuidv4(),
       cmd: {
         type: 'reconfigure_stream',
-        width: streamWidth,
-        height: streamHeight,
+        ...this.streamDimensions,
         fps: 60,
       },
     }
@@ -1813,7 +1820,7 @@ export class EngineCommandManager extends EventTarget {
 
       this.engineConnection?.tearDown(opts)
 
-      // Our window.tearDown assignment causes this case to happen which is
+      // Our window.engineCommandManager.tearDown assignment causes this case to happen which is
       // only really for tests.
       // @ts-ignore
     } else if (this.engineCommandManager?.engineConnection) {
@@ -1823,7 +1830,6 @@ export class EngineCommandManager extends EventTarget {
   }
   async startNewSession() {
     this.responseMap = {}
-    await this.initPlanes()
   }
   subscribeTo<T extends ModelTypes>({
     event,
@@ -1856,16 +1862,6 @@ export class EngineCommandManager extends EventTarget {
     id: string
   ) {
     delete this.unreliableSubscriptions[event][id]
-  }
-  // We make this a separate function so we can call it from wasm.
-  clearDefaultPlanes() {
-    this.defaultPlanes = null
-  }
-  async wasmGetDefaultPlanes(): Promise<string> {
-    if (this.defaultPlanes === null) {
-      await this.initPlanes()
-    }
-    return JSON.stringify(this.defaultPlanes)
   }
   addCommandLog(message: CommandLog) {
     if (this.commandLogs.length > 500) {
@@ -1946,38 +1942,6 @@ export class EngineCommandManager extends EventTarget {
       this.outSequence++
       this.engineConnection?.unreliableSend(command)
       return Promise.resolve(null)
-    } else if (cmd.type === 'export') {
-      const promise = new Promise<null>((resolve, reject) => {
-        if (this.exportInfo === null) {
-          if (this.exportInfo === null) {
-            toast.error('Export intent was not set, but export is being sent')
-            console.error('Export intent was not set, but export is being sent')
-            return
-          }
-        }
-        const toastId = toast.loading(
-          this.exportInfo.intent === ExportIntent.Save
-            ? EXPORT_TOAST_MESSAGES.START
-            : MAKE_TOAST_MESSAGES.START
-        )
-        this.pendingExport = {
-          toastId,
-          resolve: (passThrough) => {
-            this.addCommandLog({
-              type: 'export-done',
-              data: null,
-            })
-            resolve(passThrough)
-          },
-          reject: (reason: string) => {
-            this.exportInfo = null
-            reject(reason)
-          },
-          commandId: command.cmd_id,
-        }
-      })
-      this.engineConnection?.send(command)
-      return promise
     }
     if (
       command.cmd.type === 'default_camera_look_at' ||
@@ -1999,7 +1963,7 @@ export class EngineCommandManager extends EventTarget {
       .catch((e) => {
         // TODO: Previously was never caught, we are not rejecting these pendingCommands but this needs to be handled at some point.
         /*noop*/
-        return null
+        return e
       })
   }
   /**
@@ -2010,7 +1974,7 @@ export class EngineCommandManager extends EventTarget {
     rangeStr: string,
     commandStr: string,
     idToRangeStr: string
-  ): Promise<string | void> {
+  ): Promise<Uint8Array | void> {
     if (this.engineConnection === undefined) return Promise.resolve()
     if (
       !this.engineConnection?.isReady() &&
@@ -2038,7 +2002,7 @@ export class EngineCommandManager extends EventTarget {
       range,
       idToRangeMap,
     })
-    return JSON.stringify(resp[0])
+    return BSON.serialize(resp[0])
   }
   /**
    * Common send command function used for both modeling and scene commands
@@ -2086,6 +2050,7 @@ export class EngineCommandManager extends EventTarget {
   }
   updateArtifactGraph(execStateArtifactGraph: ExecState['artifactGraph']) {
     this.artifactGraph = execStateArtifactGraph
+    this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
     // TODO check if these still need to be deferred once e2e tests are working again.
     if (this.artifactGraph.size) {
       this.deferredArtifactEmptied(null)
@@ -2103,20 +2068,6 @@ export class EngineCommandManager extends EventTarget {
     Object.values(this.pendingCommands).forEach(
       ({ reject, isSceneCommand }) =>
         !isSceneCommand && reject(rejectionMessage)
-    )
-  }
-
-  async initPlanes() {
-    if (this.planesInitialized()) return
-    const planes = await this.makeDefaultPlanes()
-    this.defaultPlanes = planes
-  }
-  planesInitialized(): boolean {
-    return (
-      !!this.defaultPlanes &&
-      this.defaultPlanes.xy !== '' &&
-      this.defaultPlanes.yz !== '' &&
-      this.defaultPlanes.xz !== ''
     )
   }
 
@@ -2178,7 +2129,11 @@ export class EngineCommandManager extends EventTarget {
     commandTypeToTarget: string
   ): string | undefined {
     for (const [artifactId, artifact] of this.artifactGraph) {
-      if ('codeRef' in artifact && isOverlap(range, artifact.codeRef.range)) {
+      if (
+        'codeRef' in artifact &&
+        artifact.codeRef &&
+        isOverlap(range, artifact.codeRef.range)
+      ) {
         if (commandTypeToTarget === artifact.type) return artifactId
       }
     }
@@ -2194,4 +2149,66 @@ function promiseFactory<T>() {
     reject = _reject
   })
   return { promise, resolve, reject }
+}
+
+/**
+ * Converts a binary buffer to a UUID string.
+ *
+ * @param buffer - The binary buffer containing the UUID bytes.
+ * @returns A string representation of the UUID in the format 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.
+ */
+function binaryToUuid(
+  binaryData: Buffer | Uint8Array | BSONBinary | string
+): string {
+  if (typeof binaryData === 'string') {
+    return binaryData
+  }
+
+  let buffer: Uint8Array
+
+  // Handle MongoDB BSON Binary object
+  if (
+    binaryData &&
+    '_bsontype' in binaryData &&
+    binaryData._bsontype === 'Binary'
+  ) {
+    // Extract the buffer from the BSON Binary object
+    buffer = binaryData.buffer
+  }
+  // Handle case where buffer property exists (some MongoDB drivers structure)
+  else if (binaryData && binaryData.buffer instanceof Uint8Array) {
+    buffer = binaryData.buffer
+  }
+  // Handle direct Buffer or Uint8Array
+  else if (binaryData instanceof Uint8Array || Buffer.isBuffer(binaryData)) {
+    buffer = binaryData
+  } else {
+    console.error(
+      'Invalid input type: expected MongoDB BSON Binary, Buffer, or Uint8Array'
+    )
+    return ''
+  }
+
+  // Ensure we have exactly 16 bytes (128 bits) for a UUID
+  if (buffer.length !== 16) {
+    // For debugging
+    console.log('Buffer length:', buffer.length)
+    console.log('Buffer content:', Array.from(buffer))
+    console.error('UUID must be exactly 16 bytes')
+    return ''
+  }
+
+  // Convert each byte to a hex string and pad with zeros if needed
+  const hexValues = Array.from(buffer).map((byte) =>
+    byte.toString(16).padStart(2, '0')
+  )
+
+  // Format into UUID structure (8-4-4-4-12 characters)
+  return [
+    hexValues.slice(0, 4).join(''),
+    hexValues.slice(4, 6).join(''),
+    hexValues.slice(6, 8).join(''),
+    hexValues.slice(8, 10).join(''),
+    hexValues.slice(10, 16).join(''),
+  ].join('-')
 }

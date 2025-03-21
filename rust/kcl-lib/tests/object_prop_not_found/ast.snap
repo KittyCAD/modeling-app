@@ -1,0 +1,88 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing object_prop_not_found.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "name": "obj",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 6,
+            "end": 0,
+            "properties": [],
+            "start": 0,
+            "type": "ObjectExpression",
+            "type": "ObjectExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 11,
+        "declaration": {
+          "commentStart": 11,
+          "end": 0,
+          "id": {
+            "commentStart": 11,
+            "end": 0,
+            "name": "k",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 15,
+            "computed": false,
+            "end": 0,
+            "object": {
+              "commentStart": 15,
+              "end": 0,
+              "name": "obj",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "property": {
+              "commentStart": 19,
+              "end": 0,
+              "raw": "\"age\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "age"
+            },
+            "start": 0,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "start": 0
+  }
+}

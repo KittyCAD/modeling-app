@@ -1,7 +1,0 @@
-offsetPlane001 = offsetPlane("XY", 20)
-offsetPlane002 = offsetPlane("XZ", -50)
-offsetPlane003 = offsetPlane("YZ", 10)
-
-sketch002 = startSketchOn(offsetPlane001)
-  |> startProfileAt([0, 0], %)
-  |> line([6.78, 15.01], %)

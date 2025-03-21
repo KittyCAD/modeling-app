@@ -1,0 +1,58 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "declaration": {
+        "commentStart": 0,
+        "end": 16,
+        "id": {
+          "commentStart": 0,
+          "end": 1,
+          "name": "x",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "commentStart": 4,
+          "end": 16,
+          "left": {
+            "commentStart": 4,
+            "end": 8,
+            "raw": "true",
+            "start": 4,
+            "type": "Literal",
+            "type": "Literal",
+            "value": true
+          },
+          "operator": "|",
+          "right": {
+            "commentStart": 11,
+            "end": 16,
+            "raw": "false",
+            "start": 11,
+            "type": "Literal",
+            "type": "Literal",
+            "value": false
+          },
+          "start": 4,
+          "type": "BinaryExpression",
+          "type": "BinaryExpression"
+        },
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 16,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "commentStart": 0,
+  "end": 16,
+  "start": 0
+}

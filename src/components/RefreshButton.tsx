@@ -5,15 +5,21 @@ import { codeManager, engineCommandManager } from 'lib/singletons'
 import React, { useMemo } from 'react'
 import toast from 'react-hot-toast'
 import Tooltip from './Tooltip'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { reportRejection } from 'lib/trap'
 import { toSync } from 'lib/utils'
+import { useToken } from 'machines/appMachine'
+import { rustContext } from 'lib/singletons'
 
 export const RefreshButton = ({ children }: React.PropsWithChildren) => {
-  const { auth } = useSettingsAuthContext()
-  const token = auth?.context?.token
+  const token = useToken()
   const coreDumpManager = useMemo(
-    () => new CoreDumpManager(engineCommandManager, codeManager, token),
+    () =>
+      new CoreDumpManager(
+        engineCommandManager,
+        codeManager,
+        rustContext,
+        token
+      ),
     []
   )
 

@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing invalid_member_object.kcl
+---
+num = 999
+x = num[3]

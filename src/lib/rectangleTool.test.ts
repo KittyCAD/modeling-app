@@ -9,8 +9,7 @@ import {
 import { updateCenterRectangleSketch } from './rectangleTool'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { getNodeFromPath } from 'lang/queryAst'
-import { findUniqueName } from 'lang/modifyAst'
-import { err, trap } from './trap'
+import { trap } from './trap'
 
 beforeAll(async () => {
   await initPromise
@@ -21,7 +20,7 @@ describe('library rectangleTool helper functions', () => {
     // regression test for https://github.com/KittyCAD/modeling-app/issues/5157
     test('should update AST and source code', async () => {
       // Base source code that will be edited in place
-      const sourceCode = `sketch001 = startSketchOn('XZ')
+      const sourceCode = `sketch001 = startSketchOn(XZ)
 |> startProfileAt([120.37, 162.76], %)
 |> angledLine([0, 0], %, $rectangleSegmentA001)
 |> angledLine([segAng(rectangleSegmentA001) + 90, 0], %, $rectangleSegmentB001)
@@ -29,8 +28,8 @@ describe('library rectangleTool helper functions', () => {
 segAng(rectangleSegmentA001),
 -segLen(rectangleSegmentA001)
 ], %, $rectangleSegmentC001)
-|> lineTo([profileStartX(%), profileStartY(%)], %)
-|> close(%)
+|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+|> close()
 `
       // Create ast
       const _ast = assertParse(sourceCode)
@@ -74,16 +73,16 @@ segAng(rectangleSegmentA001),
       }
 
       // ast is edited in place from the updateCenterRectangleSketch
-      const expectedSourceCode = `sketch001 = startSketchOn('XZ')
-  |> startProfileAt([80, 120], %)
-  |> angledLine([0, 80], %, $rectangleSegmentA001)
-  |> angledLine([segAng(rectangleSegmentA001) + 90, 120], %, $rectangleSegmentB001)
+      const expectedSourceCode = `sketch001 = startSketchOn(XZ)
+  |> startProfileAt([120.37, 80], %)
+  |> angledLine([0, 0], %, $rectangleSegmentA001)
+  |> angledLine([segAng(rectangleSegmentA001) + 90, 0], %, $rectangleSegmentB001)
   |> angledLine([
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)
      ], %, $rectangleSegmentC001)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 `
       const recasted = recast(ast)
       expect(recasted).toEqual(expectedSourceCode)

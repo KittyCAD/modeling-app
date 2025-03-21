@@ -1,0 +1,35 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "type": "BinaryExpression",
+  "operator": "+",
+  "left": {
+    "type": "Literal",
+    "type": "Literal",
+    "value": {
+      "value": 1.0,
+      "suffix": "None"
+    },
+    "raw": "1",
+    "start": 0,
+    "end": 1,
+    "commentStart": 0
+  },
+  "right": {
+    "type": "Literal",
+    "type": "Literal",
+    "value": {
+      "value": 2.0,
+      "suffix": "None"
+    },
+    "raw": "2",
+    "start": 4,
+    "end": 5,
+    "commentStart": 4
+  },
+  "start": 0,
+  "end": 5,
+  "commentStart": 0
+}

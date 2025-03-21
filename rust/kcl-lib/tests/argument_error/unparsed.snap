@@ -1,0 +1,9 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing argument_error.kcl
+---
+fn f(i) {
+  return 5
+}
+
+map(f, [0, 1])

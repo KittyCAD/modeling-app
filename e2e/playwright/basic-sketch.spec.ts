@@ -1,9 +1,11 @@
-import { test, expect, Page } from './zoo-test'
+import { Page } from '@playwright/test'
+import { test, expect } from './zoo-test'
 import {
   getUtils,
   TEST_COLORS,
   commonPoints,
   PERSIST_MODELING_CONTEXT,
+  orRunWhenFullSuiteEnabled,
 } from './test-utils'
 import { HomePageFixture } from './fixtures/homePageFixture'
 
@@ -45,7 +47,7 @@ async function doBasicSketch(
   await page.mouse.click(700, 200)
 
   if (openPanes.includes('code')) {
-    await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')`)
+    await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn(XZ)`)
   }
   await u.closeDebugPanel()
 
@@ -54,36 +56,41 @@ async function doBasicSketch(
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   if (openPanes.includes('code')) {
-    await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
-  |> startProfileAt(${commonPoints.startAt}, %)`)
+    await expect(u.codeLocator).toContainText(
+      `sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)`
+    )
   }
   await page.waitForTimeout(500)
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(500)
 
   if (openPanes.includes('code')) {
-    await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
-  |> startProfileAt(${commonPoints.startAt}, %)
-  |> xLine(${commonPoints.num1}, %)`)
+    await expect(u.codeLocator)
+      .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
+  |> xLine(length = ${commonPoints.num1})`)
   }
   await page.waitForTimeout(500)
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   if (openPanes.includes('code')) {
-    await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
-  |> startProfileAt(${commonPoints.startAt}, %)
-  |> xLine(${commonPoints.num1}, %)
-  |> yLine(${commonPoints.num1 + 0.01}, %)`)
+    await expect(u.codeLocator)
+      .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
+      commonPoints.startAt
+    }, sketch001)
+  |> xLine(length = ${commonPoints.num1})
+  |> yLine(length = ${commonPoints.num1 + 0.01})`)
   } else {
     await page.waitForTimeout(500)
   }
   await page.waitForTimeout(200)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   if (openPanes.includes('code')) {
-    await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
-  |> startProfileAt(${commonPoints.startAt}, %)
-  |> xLine(${commonPoints.num1}, %)
-  |> yLine(${commonPoints.num1 + 0.01}, %)
-  |> xLine(${commonPoints.num2 * -1}, %)`)
+    await expect(u.codeLocator)
+      .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
+      commonPoints.startAt
+    }, sketch001)
+  |> xLine(length = ${commonPoints.num1})
+  |> yLine(length = ${commonPoints.num1 + 0.01})
+  |> xLine(length = ${commonPoints.num2 * -1})`)
   }
 
   // deselect line tool
@@ -137,15 +144,18 @@ async function doBasicSketch(
 
   // Open the code pane.
   await u.openKclCodePanel()
-  await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
-  |> startProfileAt(${commonPoints.startAt}, %)
-  |> xLine(${commonPoints.num1}, %, $seg01)
-  |> yLine(${commonPoints.num1 + 0.01}, %)
-  |> xLine(-segLen(seg01), %)`)
+  await expect(u.codeLocator)
+    .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
+    commonPoints.startAt
+  }, sketch001)
+  |> xLine(length = ${commonPoints.num1}, tag = $seg01)
+  |> yLine(length = ${commonPoints.num1 + 0.01})
+  |> xLine(length = -segLen(seg01))`)
 }
 
-test.describe('Basic sketch', () => {
-  test.fixme('code pane open at start', async ({ page, homePage }) => {
+test.describe('Basic sketch', { tag: ['@skipWin'] }, () => {
+  test('code pane open at start', async ({ page, homePage }) => {
+    test.fixme(orRunWhenFullSuiteEnabled())
     await doBasicSketch(page, homePage, ['code'])
   })
 

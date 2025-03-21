@@ -1,0 +1,85 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "declaration": {
+        "commentStart": 0,
+        "end": 23,
+        "id": {
+          "commentStart": 0,
+          "end": 3,
+          "name": "val",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "arguments": [
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 10,
+                "end": 11,
+                "name": "x",
+                "start": 10,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 14,
+                "end": 15,
+                "name": "a",
+                "start": 14,
+                "type": "Identifier",
+                "type": "Identifier"
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 17,
+                "end": 18,
+                "name": "y",
+                "start": 17,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 21,
+                "end": 22,
+                "name": "b",
+                "start": 21,
+                "type": "Identifier",
+                "type": "Identifier"
+              }
+            }
+          ],
+          "callee": {
+            "commentStart": 6,
+            "end": 9,
+            "name": "foo",
+            "start": 6,
+            "type": "Identifier"
+          },
+          "commentStart": 6,
+          "end": 23,
+          "start": 6,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": null
+        },
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 23,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "commentStart": 0,
+  "end": 23,
+  "start": 0
+}

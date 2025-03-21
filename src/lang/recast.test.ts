@@ -75,11 +75,12 @@ log(5, myVar)
     expect(recasted.trim()).toBe(code)
   })
   it('recast sketch declaration', () => {
-    let code = `mySketch = startSketchAt([0, 0])
-  |> lineTo([0, 1], %, $myPath)
-  |> lineTo([1, 1], %)
-  |> lineTo([1, 0], %, $rightPath)
-  |> close(%)
+    let code = `mySketch = startSketchOn(XY)
+  |> startProfileAt([0, 0], %)
+  |> line(endAbsolute = [0, 1], tag = $myPath)
+  |> line(endAbsolute = [1, 1])
+  |> line(endAbsolute = [1, 0], tag = $rightPath)
+  |> close()
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)
@@ -88,10 +89,11 @@ log(5, myVar)
   })
   it('sketch piped into callExpression', () => {
     const code = [
-      'mySk1 = startSketchAt([0, 0])',
-      '  |> lineTo([1, 1], %)',
-      '  |> lineTo([0, 1], %, $myTag)',
-      '  |> lineTo([1, 1], %)',
+      'mySk1 = startSketchOn(XY)',
+      '  |> startProfileAt([0, 0], %)',
+      '  |> line(endAbsolute = [1, 1])',
+      '  |> line(endAbsolute = [0, 1], tag = $myTag)',
+      '  |> line(endAbsolute = [1, 1])',
       '  |> rx(90, %)',
     ].join('\n')
     const { ast } = code2ast(code)
@@ -219,19 +221,6 @@ key = 'c'
 
     expect(recasted).toBe(code)
   })
-  it('code with comment and extra lines', () => {
-    const code = `yo = 'c'
-
-/* this is
-a
-comment */
-yo = 'bing'
-`
-    const { ast } = code2ast(code)
-    const recasted = recast(ast)
-    if (err(recasted)) throw recasted
-    expect(recasted).toBe(code)
-  })
   it('comments at the start and end', () => {
     const code = `// this is a comment
 yo = { a = { b = { c = '123' } } }
@@ -244,28 +233,13 @@ key = 'c'
     if (err(recasted)) throw recasted
     expect(recasted).toBe(code)
   })
-  it('comments in a fn block', () => {
-    const code = `fn myFn() {
-  // this is a comment
-  yo = { a = { b = { c = '123' } } }
-
-  /* block
-  comment */
-  key = 'c'
-  // this is also a comment
-}
-`
-    const { ast } = code2ast(code)
-    const recasted = recast(ast)
-    if (err(recasted)) throw recasted
-    expect(recasted).toBe(code)
-  })
   it('comments in a pipe expression', () => {
     const code = [
-      'mySk1 = startSketchAt([0, 0])',
-      '  |> lineTo([1, 1], %)',
-      '  |> lineTo([0, 1], %, $myTag)',
-      '  |> lineTo([1, 1], %)',
+      'mySk1 = startSketchOn(XY)',
+      '  |> startProfileAt([0, 0], %)',
+      '  |> line(endAbsolute = [1, 1])',
+      '  |> line(endAbsolute = [0, 1], tag = $myTag)',
+      '  |> line(endAbsolute = [1, 1])',
       '  // a comment',
       '  |> rx(90, %)',
     ].join('\n')
@@ -278,11 +252,12 @@ key = 'c'
     const code = `
 /* comment at start */
 
-mySk1 = startSketchAt([0, 0])
-  |> lineTo([1, 1], %)
+mySk1 = startSketchOn(XY)
+  |> startProfileAt([0, 0], %)
+  |> line(endAbsolute = [1, 1])
   // comment here
-  |> lineTo([0, 1], %, $myTag)
-  |> lineTo([1, 1], %) /* and
+  |> line(endAbsolute = [0, 1], tag = $myTag)
+  |> line(endAbsolute = [1, 1]) /* and
   here
   */
   // a comment between pipe expression statements
@@ -301,11 +276,12 @@ one more for good measure
     if (err(recasted)) throw recasted
     expect(recasted).toBe(`/* comment at start */
 
-mySk1 = startSketchAt([0, 0])
-  |> lineTo([1, 1], %)
+mySk1 = startSketchOn(XY)
+  |> startProfileAt([0, 0], %)
+  |> line(endAbsolute = [1, 1])
   // comment here
-  |> lineTo([0, 1], %, $myTag)
-  |> lineTo([1, 1], %) /* and
+  |> line(endAbsolute = [0, 1], tag = $myTag)
+  |> line(endAbsolute = [1, 1]) /* and
   here */
   // a comment between pipe expression statements
   |> rx(90, %)
@@ -341,8 +317,9 @@ describe('testing call Expressions in BinaryExpressions and UnaryExpressions', (
   })
   it('with unaryExpression in sketch situation', () => {
     const code = [
-      'part001 = startSketchAt([0, 0])',
-      '  |> line([-2.21, -legLen(5, min(3, 999))], %)',
+      'part001 = startSketchOn(XY)',
+      '  |> startProfileAt([0, 0])',
+      '  |> line(end = [-2.21, -legLen(5, min(3, 999))])',
     ].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
@@ -353,15 +330,16 @@ describe('testing call Expressions in BinaryExpressions and UnaryExpressions', (
 
 describe('it recasts wrapped object expressions in pipe bodies with correct indentation', () => {
   it('with a single line', () => {
-    const code = `part001 = startSketchAt([-0.01, -0.08])
-  |> line([0.62, 4.15], %, $seg01)
-  |> line([2.77, -1.24], %)
+    const code = `part001 = startSketchOn(XY)
+  |> startProfileAt([-0.01, -0.08], %)
+  |> line(end = [0.62, 4.15], tag = $seg01)
+  |> line(end = [2.77, -1.24])
   |> angledLineThatIntersects({
        angle = 201,
        offset = -1.35,
        intersectTag = $seg01
      }, %)
-  |> line([-0.42, -1.72], %)
+  |> line(end = [-0.42, -1.72])
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)

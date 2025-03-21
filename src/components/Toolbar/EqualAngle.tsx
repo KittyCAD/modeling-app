@@ -55,7 +55,7 @@ export function equalAngleInfo({
   )
   const isAllTooltips = nodes.every(
     (node) =>
-      node?.type === 'CallExpression' &&
+      (node?.type === 'CallExpression' || node?.type === 'CallExpressionKw') &&
       toolTips.includes(node.callee.name as any)
   )
 
@@ -95,7 +95,7 @@ export function applyConstraintEqualAngle({
     ast: kclManager.ast,
     selectionRanges,
     transformInfos: transforms,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
   })
   if (err(transform)) return transform
   const { modifiedAst, pathToNodeMap } = transform

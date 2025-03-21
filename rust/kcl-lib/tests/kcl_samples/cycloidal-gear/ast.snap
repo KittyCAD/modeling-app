@@ -1,0 +1,1694 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing cycloidal-gear.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 203,
+        "declaration": {
+          "commentStart": 209,
+          "end": 0,
+          "id": {
+            "commentStart": 209,
+            "end": 0,
+            "name": "cycloidalGear",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": {
+              "body": [
+                {
+                  "commentStart": 273,
+                  "declaration": {
+                    "commentStart": 438,
+                    "end": 0,
+                    "id": {
+                      "commentStart": 438,
+                      "end": 0,
+                      "name": "gearSketch",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "body": {
+                        "body": [
+                          {
+                            "commentStart": 464,
+                            "declaration": {
+                              "commentStart": 464,
+                              "end": 0,
+                              "id": {
+                                "commentStart": 464,
+                                "end": 0,
+                                "name": "helixAngleP",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "init": {
+                                "commentStart": 478,
+                                "end": 0,
+                                "left": {
+                                  "commentStart": 478,
+                                  "end": 0,
+                                  "left": {
+                                    "commentStart": 478,
+                                    "end": 0,
+                                    "name": "helixAngle",
+                                    "start": 0,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "*",
+                                  "right": {
+                                    "commentStart": 491,
+                                    "end": 0,
+                                    "name": "gHeight",
+                                    "start": 0,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "operator": "/",
+                                "right": {
+                                  "commentStart": 501,
+                                  "end": 0,
+                                  "name": "gearHeight",
+                                  "start": 0,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "start": 0,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "start": 0,
+                              "type": "VariableDeclarator"
+                            },
+                            "end": 0,
+                            "kind": "const",
+                            "start": 0,
+                            "type": "VariableDeclaration",
+                            "type": "VariableDeclaration"
+                          },
+                          {
+                            "commentStart": 516,
+                            "declaration": {
+                              "commentStart": 516,
+                              "end": 0,
+                              "id": {
+                                "commentStart": 516,
+                                "end": 0,
+                                "name": "gearProfile",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "init": {
+                                "body": [
+                                  {
+                                    "arguments": [
+                                      {
+                                        "arguments": [
+                                          {
+                                            "type": "LabeledArg",
+                                            "label": {
+                                              "commentStart": 562,
+                                              "end": 0,
+                                              "name": "offset",
+                                              "start": 0,
+                                              "type": "Identifier"
+                                            },
+                                            "arg": {
+                                              "commentStart": 571,
+                                              "end": 0,
+                                              "name": "gHeight",
+                                              "start": 0,
+                                              "type": "Identifier",
+                                              "type": "Identifier"
+                                            }
+                                          }
+                                        ],
+                                        "callee": {
+                                          "commentStart": 544,
+                                          "end": 0,
+                                          "name": "offsetPlane",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "commentStart": 544,
+                                        "end": 0,
+                                        "start": 0,
+                                        "type": "CallExpressionKw",
+                                        "type": "CallExpressionKw",
+                                        "unlabeled": {
+                                          "commentStart": 556,
+                                          "end": 0,
+                                          "raw": "\"XY\"",
+                                          "start": 0,
+                                          "type": "Literal",
+                                          "type": "Literal",
+                                          "value": "XY"
+                                        }
+                                      }
+                                    ],
+                                    "callee": {
+                                      "commentStart": 530,
+                                      "end": 0,
+                                      "name": "startSketchOn",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "commentStart": 530,
+                                    "end": 0,
+                                    "start": 0,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  },
+                                  {
+                                    "arguments": [
+                                      {
+                                        "commentStart": 605,
+                                        "elements": [
+                                          {
+                                            "commentStart": 618,
+                                            "end": 0,
+                                            "left": {
+                                              "commentStart": 618,
+                                              "end": 0,
+                                              "left": {
+                                                "commentStart": 618,
+                                                "end": 0,
+                                                "left": {
+                                                  "commentStart": 618,
+                                                  "end": 0,
+                                                  "name": "gearPitch",
+                                                  "start": 0,
+                                                  "type": "Identifier",
+                                                  "type": "Identifier"
+                                                },
+                                                "operator": "*",
+                                                "right": {
+                                                  "commentStart": 630,
+                                                  "end": 0,
+                                                  "raw": "1.55",
+                                                  "start": 0,
+                                                  "type": "Literal",
+                                                  "type": "Literal",
+                                                  "value": {
+                                                    "value": 1.55,
+                                                    "suffix": "None"
+                                                  }
+                                                },
+                                                "start": 0,
+                                                "type": "BinaryExpression",
+                                                "type": "BinaryExpression"
+                                              },
+                                              "operator": "*",
+                                              "right": {
+                                                "arguments": [
+                                                  {
+                                                    "arguments": [
+                                                      {
+                                                        "commentStart": 651,
+                                                        "end": 0,
+                                                        "name": "helixAngleP",
+                                                        "start": 0,
+                                                        "type": "Identifier",
+                                                        "type": "Identifier"
+                                                      }
+                                                    ],
+                                                    "callee": {
+                                                      "commentStart": 641,
+                                                      "end": 0,
+                                                      "name": "toRadians",
+                                                      "start": 0,
+                                                      "type": "Identifier"
+                                                    },
+                                                    "commentStart": 641,
+                                                    "end": 0,
+                                                    "start": 0,
+                                                    "type": "CallExpression",
+                                                    "type": "CallExpression"
+                                                  }
+                                                ],
+                                                "callee": {
+                                                  "commentStart": 637,
+                                                  "end": 0,
+                                                  "name": "cos",
+                                                  "start": 0,
+                                                  "type": "Identifier"
+                                                },
+                                                "commentStart": 637,
+                                                "end": 0,
+                                                "start": 0,
+                                                "type": "CallExpression",
+                                                "type": "CallExpression"
+                                              },
+                                              "start": 0,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            },
+                                            "operator": "+",
+                                            "right": {
+                                              "commentStart": 667,
+                                              "end": 0,
+                                              "left": {
+                                                "commentStart": 667,
+                                                "end": 0,
+                                                "name": "gearPitch",
+                                                "start": 0,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "operator": "*",
+                                              "right": {
+                                                "arguments": [
+                                                  {
+                                                    "arguments": [
+                                                      {
+                                                        "argument": {
+                                                          "commentStart": 694,
+                                                          "end": 0,
+                                                          "name": "helixAngleP",
+                                                          "start": 0,
+                                                          "type": "Identifier",
+                                                          "type": "Identifier"
+                                                        },
+                                                        "commentStart": 693,
+                                                        "end": 0,
+                                                        "operator": "-",
+                                                        "start": 0,
+                                                        "type": "UnaryExpression",
+                                                        "type": "UnaryExpression"
+                                                      }
+                                                    ],
+                                                    "callee": {
+                                                      "commentStart": 683,
+                                                      "end": 0,
+                                                      "name": "toRadians",
+                                                      "start": 0,
+                                                      "type": "Identifier"
+                                                    },
+                                                    "commentStart": 683,
+                                                    "end": 0,
+                                                    "start": 0,
+                                                    "type": "CallExpression",
+                                                    "type": "CallExpression"
+                                                  }
+                                                ],
+                                                "callee": {
+                                                  "commentStart": 679,
+                                                  "end": 0,
+                                                  "name": "sin",
+                                                  "start": 0,
+                                                  "type": "Identifier"
+                                                },
+                                                "commentStart": 679,
+                                                "end": 0,
+                                                "start": 0,
+                                                "type": "CallExpression",
+                                                "type": "CallExpression"
+                                              },
+                                              "start": 0,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            },
+                                            "start": 0,
+                                            "type": "BinaryExpression",
+                                            "type": "BinaryExpression"
+                                          },
+                                          {
+                                            "commentStart": 720,
+                                            "end": 0,
+                                            "left": {
+                                              "commentStart": 720,
+                                              "end": 0,
+                                              "left": {
+                                                "commentStart": 720,
+                                                "end": 0,
+                                                "left": {
+                                                  "commentStart": 720,
+                                                  "end": 0,
+                                                  "name": "gearPitch",
+                                                  "start": 0,
+                                                  "type": "Identifier",
+                                                  "type": "Identifier"
+                                                },
+                                                "operator": "*",
+                                                "right": {
+                                                  "commentStart": 732,
+                                                  "end": 0,
+                                                  "raw": "1.55",
+                                                  "start": 0,
+                                                  "type": "Literal",
+                                                  "type": "Literal",
+                                                  "value": {
+                                                    "value": 1.55,
+                                                    "suffix": "None"
+                                                  }
+                                                },
+                                                "start": 0,
+                                                "type": "BinaryExpression",
+                                                "type": "BinaryExpression"
+                                              },
+                                              "operator": "*",
+                                              "right": {
+                                                "arguments": [
+                                                  {
+                                                    "arguments": [
+                                                      {
+                                                        "commentStart": 753,
+                                                        "end": 0,
+                                                        "name": "helixAngleP",
+                                                        "start": 0,
+                                                        "type": "Identifier",
+                                                        "type": "Identifier"
+                                                      }
+                                                    ],
+                                                    "callee": {
+                                                      "commentStart": 743,
+                                                      "end": 0,
+                                                      "name": "toRadians",
+                                                      "start": 0,
+                                                      "type": "Identifier"
+                                                    },
+                                                    "commentStart": 743,
+                                                    "end": 0,
+                                                    "start": 0,
+                                                    "type": "CallExpression",
+                                                    "type": "CallExpression"
+                                                  }
+                                                ],
+                                                "callee": {
+                                                  "commentStart": 739,
+                                                  "end": 0,
+                                                  "name": "sin",
+                                                  "start": 0,
+                                                  "type": "Identifier"
+                                                },
+                                                "commentStart": 739,
+                                                "end": 0,
+                                                "start": 0,
+                                                "type": "CallExpression",
+                                                "type": "CallExpression"
+                                              },
+                                              "start": 0,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            },
+                                            "operator": "+",
+                                            "right": {
+                                              "commentStart": 769,
+                                              "end": 0,
+                                              "left": {
+                                                "commentStart": 769,
+                                                "end": 0,
+                                                "name": "gearPitch",
+                                                "start": 0,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "operator": "*",
+                                              "right": {
+                                                "arguments": [
+                                                  {
+                                                    "arguments": [
+                                                      {
+                                                        "argument": {
+                                                          "commentStart": 796,
+                                                          "end": 0,
+                                                          "name": "helixAngleP",
+                                                          "start": 0,
+                                                          "type": "Identifier",
+                                                          "type": "Identifier"
+                                                        },
+                                                        "commentStart": 795,
+                                                        "end": 0,
+                                                        "operator": "-",
+                                                        "start": 0,
+                                                        "type": "UnaryExpression",
+                                                        "type": "UnaryExpression"
+                                                      }
+                                                    ],
+                                                    "callee": {
+                                                      "commentStart": 785,
+                                                      "end": 0,
+                                                      "name": "toRadians",
+                                                      "start": 0,
+                                                      "type": "Identifier"
+                                                    },
+                                                    "commentStart": 785,
+                                                    "end": 0,
+                                                    "start": 0,
+                                                    "type": "CallExpression",
+                                                    "type": "CallExpression"
+                                                  }
+                                                ],
+                                                "callee": {
+                                                  "commentStart": 781,
+                                                  "end": 0,
+                                                  "name": "cos",
+                                                  "start": 0,
+                                                  "type": "Identifier"
+                                                },
+                                                "commentStart": 781,
+                                                "end": 0,
+                                                "start": 0,
+                                                "type": "CallExpression",
+                                                "type": "CallExpression"
+                                              },
+                                              "start": 0,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            },
+                                            "start": 0,
+                                            "type": "BinaryExpression",
+                                            "type": "BinaryExpression"
+                                          }
+                                        ],
+                                        "end": 0,
+                                        "start": 0,
+                                        "type": "ArrayExpression",
+                                        "type": "ArrayExpression"
+                                      },
+                                      {
+                                        "commentStart": 822,
+                                        "end": 0,
+                                        "start": 0,
+                                        "type": "PipeSubstitution",
+                                        "type": "PipeSubstitution"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "commentStart": 590,
+                                      "end": 0,
+                                      "name": "startProfileAt",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "commentStart": 590,
+                                    "end": 0,
+                                    "start": 0,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  },
+                                  {
+                                    "arguments": [
+                                      {
+                                        "commentStart": 838,
+                                        "end": 0,
+                                        "properties": [
+                                          {
+                                            "commentStart": 851,
+                                            "end": 0,
+                                            "key": {
+                                              "commentStart": 851,
+                                              "end": 0,
+                                              "name": "angleStart",
+                                              "start": 0,
+                                              "type": "Identifier"
+                                            },
+                                            "start": 0,
+                                            "type": "ObjectProperty",
+                                            "value": {
+                                              "commentStart": 864,
+                                              "end": 0,
+                                              "left": {
+                                                "commentStart": 864,
+                                                "end": 0,
+                                                "raw": "90",
+                                                "start": 0,
+                                                "type": "Literal",
+                                                "type": "Literal",
+                                                "value": {
+                                                  "value": 90.0,
+                                                  "suffix": "None"
+                                                }
+                                              },
+                                              "operator": "+",
+                                              "right": {
+                                                "commentStart": 869,
+                                                "end": 0,
+                                                "name": "helixAngleP",
+                                                "start": 0,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "start": 0,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            }
+                                          },
+                                          {
+                                            "commentStart": 893,
+                                            "end": 0,
+                                            "key": {
+                                              "commentStart": 893,
+                                              "end": 0,
+                                              "name": "angleEnd",
+                                              "start": 0,
+                                              "type": "Identifier"
+                                            },
+                                            "start": 0,
+                                            "type": "ObjectProperty",
+                                            "value": {
+                                              "commentStart": 904,
+                                              "end": 0,
+                                              "left": {
+                                                "argument": {
+                                                  "commentStart": 905,
+                                                  "end": 0,
+                                                  "raw": "90",
+                                                  "start": 0,
+                                                  "type": "Literal",
+                                                  "type": "Literal",
+                                                  "value": {
+                                                    "value": 90.0,
+                                                    "suffix": "None"
+                                                  }
+                                                },
+                                                "commentStart": 904,
+                                                "end": 0,
+                                                "operator": "-",
+                                                "start": 0,
+                                                "type": "UnaryExpression",
+                                                "type": "UnaryExpression"
+                                              },
+                                              "operator": "+",
+                                              "right": {
+                                                "commentStart": 910,
+                                                "end": 0,
+                                                "name": "helixAngleP",
+                                                "start": 0,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "start": 0,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            }
+                                          },
+                                          {
+                                            "commentStart": 934,
+                                            "end": 0,
+                                            "key": {
+                                              "commentStart": 934,
+                                              "end": 0,
+                                              "name": "radius",
+                                              "start": 0,
+                                              "type": "Identifier"
+                                            },
+                                            "start": 0,
+                                            "type": "ObjectProperty",
+                                            "value": {
+                                              "commentStart": 943,
+                                              "end": 0,
+                                              "name": "gearPitch",
+                                              "start": 0,
+                                              "type": "Identifier",
+                                              "type": "Identifier"
+                                            }
+                                          }
+                                        ],
+                                        "start": 0,
+                                        "type": "ObjectExpression",
+                                        "type": "ObjectExpression"
+                                      },
+                                      {
+                                        "commentStart": 965,
+                                        "end": 0,
+                                        "start": 0,
+                                        "type": "PipeSubstitution",
+                                        "type": "PipeSubstitution"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "commentStart": 834,
+                                      "end": 0,
+                                      "name": "arc",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "commentStart": 834,
+                                    "end": 0,
+                                    "start": 0,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  },
+                                  {
+                                    "arguments": [
+                                      {
+                                        "commentStart": 991,
+                                        "end": 0,
+                                        "properties": [
+                                          {
+                                            "commentStart": 1004,
+                                            "end": 0,
+                                            "key": {
+                                              "commentStart": 1004,
+                                              "end": 0,
+                                              "name": "radius",
+                                              "start": 0,
+                                              "type": "Identifier"
+                                            },
+                                            "start": 0,
+                                            "type": "ObjectProperty",
+                                            "value": {
+                                              "commentStart": 1013,
+                                              "end": 0,
+                                              "left": {
+                                                "commentStart": 1013,
+                                                "end": 0,
+                                                "name": "gearPitch",
+                                                "start": 0,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "operator": "*",
+                                              "right": {
+                                                "commentStart": 1025,
+                                                "end": 0,
+                                                "raw": "1.67",
+                                                "start": 0,
+                                                "type": "Literal",
+                                                "type": "Literal",
+                                                "value": {
+                                                  "value": 1.67,
+                                                  "suffix": "None"
+                                                }
+                                              },
+                                              "start": 0,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            }
+                                          },
+                                          {
+                                            "commentStart": 1042,
+                                            "end": 0,
+                                            "key": {
+                                              "commentStart": 1042,
+                                              "end": 0,
+                                              "name": "offset",
+                                              "start": 0,
+                                              "type": "Identifier"
+                                            },
+                                            "start": 0,
+                                            "type": "ObjectProperty",
+                                            "value": {
+                                              "commentStart": 1051,
+                                              "end": 0,
+                                              "raw": "60",
+                                              "start": 0,
+                                              "type": "Literal",
+                                              "type": "Literal",
+                                              "value": {
+                                                "value": 60.0,
+                                                "suffix": "None"
+                                              }
+                                            }
+                                          }
+                                        ],
+                                        "start": 0,
+                                        "type": "ObjectExpression",
+                                        "type": "ObjectExpression"
+                                      },
+                                      {
+                                        "commentStart": 1066,
+                                        "end": 0,
+                                        "start": 0,
+                                        "type": "PipeSubstitution",
+                                        "type": "PipeSubstitution"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "commentStart": 977,
+                                      "end": 0,
+                                      "name": "tangentialArc",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "commentStart": 977,
+                                    "end": 0,
+                                    "start": 0,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  },
+                                  {
+                                    "arguments": [
+                                      {
+                                        "commentStart": 1092,
+                                        "end": 0,
+                                        "properties": [
+                                          {
+                                            "commentStart": 1094,
+                                            "end": 0,
+                                            "key": {
+                                              "commentStart": 1094,
+                                              "end": 0,
+                                              "name": "radius",
+                                              "start": 0,
+                                              "type": "Identifier"
+                                            },
+                                            "start": 0,
+                                            "type": "ObjectProperty",
+                                            "value": {
+                                              "commentStart": 1103,
+                                              "end": 0,
+                                              "name": "gearPitch",
+                                              "start": 0,
+                                              "type": "Identifier",
+                                              "type": "Identifier"
+                                            }
+                                          },
+                                          {
+                                            "commentStart": 1114,
+                                            "end": 0,
+                                            "key": {
+                                              "commentStart": 1114,
+                                              "end": 0,
+                                              "name": "offset",
+                                              "start": 0,
+                                              "type": "Identifier"
+                                            },
+                                            "start": 0,
+                                            "type": "ObjectProperty",
+                                            "value": {
+                                              "argument": {
+                                                "commentStart": 1124,
+                                                "end": 0,
+                                                "raw": "180",
+                                                "start": 0,
+                                                "type": "Literal",
+                                                "type": "Literal",
+                                                "value": {
+                                                  "value": 180.0,
+                                                  "suffix": "None"
+                                                }
+                                              },
+                                              "commentStart": 1123,
+                                              "end": 0,
+                                              "operator": "-",
+                                              "start": 0,
+                                              "type": "UnaryExpression",
+                                              "type": "UnaryExpression"
+                                            }
+                                          }
+                                        ],
+                                        "start": 0,
+                                        "type": "ObjectExpression",
+                                        "type": "ObjectExpression"
+                                      },
+                                      {
+                                        "commentStart": 1131,
+                                        "end": 0,
+                                        "start": 0,
+                                        "type": "PipeSubstitution",
+                                        "type": "PipeSubstitution"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "commentStart": 1078,
+                                      "end": 0,
+                                      "name": "tangentialArc",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "commentStart": 1078,
+                                    "end": 0,
+                                    "start": 0,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  },
+                                  {
+                                    "arguments": [
+                                      {
+                                        "commentStart": 1157,
+                                        "end": 0,
+                                        "properties": [
+                                          {
+                                            "commentStart": 1170,
+                                            "end": 0,
+                                            "key": {
+                                              "commentStart": 1170,
+                                              "end": 0,
+                                              "name": "radius",
+                                              "start": 0,
+                                              "type": "Identifier"
+                                            },
+                                            "start": 0,
+                                            "type": "ObjectProperty",
+                                            "value": {
+                                              "commentStart": 1179,
+                                              "end": 0,
+                                              "left": {
+                                                "commentStart": 1179,
+                                                "end": 0,
+                                                "name": "gearPitch",
+                                                "start": 0,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "operator": "*",
+                                              "right": {
+                                                "commentStart": 1191,
+                                                "end": 0,
+                                                "raw": "1.67",
+                                                "start": 0,
+                                                "type": "Literal",
+                                                "type": "Literal",
+                                                "value": {
+                                                  "value": 1.67,
+                                                  "suffix": "None"
+                                                }
+                                              },
+                                              "start": 0,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            }
+                                          },
+                                          {
+                                            "commentStart": 1208,
+                                            "end": 0,
+                                            "key": {
+                                              "commentStart": 1208,
+                                              "end": 0,
+                                              "name": "offset",
+                                              "start": 0,
+                                              "type": "Identifier"
+                                            },
+                                            "start": 0,
+                                            "type": "ObjectProperty",
+                                            "value": {
+                                              "commentStart": 1217,
+                                              "end": 0,
+                                              "raw": "60",
+                                              "start": 0,
+                                              "type": "Literal",
+                                              "type": "Literal",
+                                              "value": {
+                                                "value": 60.0,
+                                                "suffix": "None"
+                                              }
+                                            }
+                                          }
+                                        ],
+                                        "start": 0,
+                                        "type": "ObjectExpression",
+                                        "type": "ObjectExpression"
+                                      },
+                                      {
+                                        "commentStart": 1232,
+                                        "end": 0,
+                                        "start": 0,
+                                        "type": "PipeSubstitution",
+                                        "type": "PipeSubstitution"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "commentStart": 1143,
+                                      "end": 0,
+                                      "name": "tangentialArc",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "commentStart": 1143,
+                                    "end": 0,
+                                    "start": 0,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  },
+                                  {
+                                    "arguments": [
+                                      {
+                                        "commentStart": 1258,
+                                        "end": 0,
+                                        "properties": [
+                                          {
+                                            "commentStart": 1260,
+                                            "end": 0,
+                                            "key": {
+                                              "commentStart": 1260,
+                                              "end": 0,
+                                              "name": "radius",
+                                              "start": 0,
+                                              "type": "Identifier"
+                                            },
+                                            "start": 0,
+                                            "type": "ObjectProperty",
+                                            "value": {
+                                              "commentStart": 1269,
+                                              "end": 0,
+                                              "name": "gearPitch",
+                                              "start": 0,
+                                              "type": "Identifier",
+                                              "type": "Identifier"
+                                            }
+                                          },
+                                          {
+                                            "commentStart": 1280,
+                                            "end": 0,
+                                            "key": {
+                                              "commentStart": 1280,
+                                              "end": 0,
+                                              "name": "offset",
+                                              "start": 0,
+                                              "type": "Identifier"
+                                            },
+                                            "start": 0,
+                                            "type": "ObjectProperty",
+                                            "value": {
+                                              "argument": {
+                                                "commentStart": 1290,
+                                                "end": 0,
+                                                "raw": "180",
+                                                "start": 0,
+                                                "type": "Literal",
+                                                "type": "Literal",
+                                                "value": {
+                                                  "value": 180.0,
+                                                  "suffix": "None"
+                                                }
+                                              },
+                                              "commentStart": 1289,
+                                              "end": 0,
+                                              "operator": "-",
+                                              "start": 0,
+                                              "type": "UnaryExpression",
+                                              "type": "UnaryExpression"
+                                            }
+                                          }
+                                        ],
+                                        "start": 0,
+                                        "type": "ObjectExpression",
+                                        "type": "ObjectExpression"
+                                      },
+                                      {
+                                        "commentStart": 1297,
+                                        "end": 0,
+                                        "start": 0,
+                                        "type": "PipeSubstitution",
+                                        "type": "PipeSubstitution"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "commentStart": 1244,
+                                      "end": 0,
+                                      "name": "tangentialArc",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "commentStart": 1244,
+                                    "end": 0,
+                                    "start": 0,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  },
+                                  {
+                                    "arguments": [
+                                      {
+                                        "commentStart": 1325,
+                                        "elements": [
+                                          {
+                                            "arguments": [
+                                              {
+                                                "commentStart": 1340,
+                                                "end": 0,
+                                                "start": 0,
+                                                "type": "PipeSubstitution",
+                                                "type": "PipeSubstitution"
+                                              }
+                                            ],
+                                            "callee": {
+                                              "commentStart": 1326,
+                                              "end": 0,
+                                              "name": "profileStartX",
+                                              "start": 0,
+                                              "type": "Identifier"
+                                            },
+                                            "commentStart": 1326,
+                                            "end": 0,
+                                            "start": 0,
+                                            "type": "CallExpression",
+                                            "type": "CallExpression"
+                                          },
+                                          {
+                                            "arguments": [
+                                              {
+                                                "commentStart": 1358,
+                                                "end": 0,
+                                                "start": 0,
+                                                "type": "PipeSubstitution",
+                                                "type": "PipeSubstitution"
+                                              }
+                                            ],
+                                            "callee": {
+                                              "commentStart": 1344,
+                                              "end": 0,
+                                              "name": "profileStartY",
+                                              "start": 0,
+                                              "type": "Identifier"
+                                            },
+                                            "commentStart": 1344,
+                                            "end": 0,
+                                            "start": 0,
+                                            "type": "CallExpression",
+                                            "type": "CallExpression"
+                                          }
+                                        ],
+                                        "end": 0,
+                                        "start": 0,
+                                        "type": "ArrayExpression",
+                                        "type": "ArrayExpression"
+                                      },
+                                      {
+                                        "commentStart": 1363,
+                                        "end": 0,
+                                        "start": 0,
+                                        "type": "PipeSubstitution",
+                                        "type": "PipeSubstitution"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "commentStart": 1309,
+                                      "end": 0,
+                                      "name": "tangentialArcTo",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "commentStart": 1309,
+                                    "end": 0,
+                                    "start": 0,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  },
+                                  {
+                                    "arguments": [
+                                      {
+                                        "commentStart": 1381,
+                                        "end": 0,
+                                        "start": 0,
+                                        "type": "PipeSubstitution",
+                                        "type": "PipeSubstitution"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "commentStart": 1375,
+                                      "end": 0,
+                                      "name": "close",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "commentStart": 1375,
+                                    "end": 0,
+                                    "start": 0,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  },
+                                  {
+                                    "arguments": [
+                                      {
+                                        "arguments": [
+                                          {
+                                            "type": "LabeledArg",
+                                            "label": {
+                                              "commentStart": 1417,
+                                              "end": 0,
+                                              "name": "center",
+                                              "start": 0,
+                                              "type": "Identifier"
+                                            },
+                                            "arg": {
+                                              "commentStart": 1426,
+                                              "elements": [
+                                                {
+                                                  "commentStart": 1427,
+                                                  "end": 0,
+                                                  "raw": "0",
+                                                  "start": 0,
+                                                  "type": "Literal",
+                                                  "type": "Literal",
+                                                  "value": {
+                                                    "value": 0.0,
+                                                    "suffix": "None"
+                                                  }
+                                                },
+                                                {
+                                                  "commentStart": 1430,
+                                                  "end": 0,
+                                                  "raw": "0",
+                                                  "start": 0,
+                                                  "type": "Literal",
+                                                  "type": "Literal",
+                                                  "value": {
+                                                    "value": 0.0,
+                                                    "suffix": "None"
+                                                  }
+                                                }
+                                              ],
+                                              "end": 0,
+                                              "start": 0,
+                                              "type": "ArrayExpression",
+                                              "type": "ArrayExpression"
+                                            }
+                                          },
+                                          {
+                                            "type": "LabeledArg",
+                                            "label": {
+                                              "commentStart": 1445,
+                                              "end": 0,
+                                              "name": "radius",
+                                              "start": 0,
+                                              "type": "Identifier"
+                                            },
+                                            "arg": {
+                                              "commentStart": 1454,
+                                              "end": 0,
+                                              "left": {
+                                                "commentStart": 1454,
+                                                "end": 0,
+                                                "name": "holeDiameter",
+                                                "start": 0,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "operator": "/",
+                                              "right": {
+                                                "commentStart": 1469,
+                                                "end": 0,
+                                                "raw": "2",
+                                                "start": 0,
+                                                "type": "Literal",
+                                                "type": "Literal",
+                                                "value": {
+                                                  "value": 2.0,
+                                                  "suffix": "None"
+                                                }
+                                              },
+                                              "start": 0,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            }
+                                          }
+                                        ],
+                                        "callee": {
+                                          "commentStart": 1398,
+                                          "end": 0,
+                                          "name": "circle",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "commentStart": 1398,
+                                        "end": 0,
+                                        "start": 0,
+                                        "type": "CallExpressionKw",
+                                        "type": "CallExpressionKw",
+                                        "unlabeled": null
+                                      },
+                                      {
+                                        "commentStart": 1483,
+                                        "end": 0,
+                                        "start": 0,
+                                        "type": "PipeSubstitution",
+                                        "type": "PipeSubstitution"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "commentStart": 1393,
+                                      "end": 0,
+                                      "name": "hole",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "commentStart": 1393,
+                                    "end": 0,
+                                    "start": 0,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  }
+                                ],
+                                "commentStart": 530,
+                                "end": 0,
+                                "start": 0,
+                                "type": "PipeExpression",
+                                "type": "PipeExpression"
+                              },
+                              "start": 0,
+                              "type": "VariableDeclarator"
+                            },
+                            "end": 0,
+                            "kind": "const",
+                            "start": 0,
+                            "type": "VariableDeclaration",
+                            "type": "VariableDeclaration"
+                          },
+                          {
+                            "argument": {
+                              "commentStart": 1497,
+                              "end": 0,
+                              "name": "gearProfile",
+                              "start": 0,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "commentStart": 1490,
+                            "end": 0,
+                            "start": 0,
+                            "type": "ReturnStatement",
+                            "type": "ReturnStatement"
+                          }
+                        ],
+                        "commentStart": 458,
+                        "end": 0,
+                        "start": 0
+                      },
+                      "commentStart": 448,
+                      "end": 0,
+                      "params": [
+                        {
+                          "type": "Parameter",
+                          "identifier": {
+                            "commentStart": 449,
+                            "end": 0,
+                            "name": "gHeight",
+                            "start": 0,
+                            "type": "Identifier"
+                          }
+                        }
+                      ],
+                      "start": 0,
+                      "type": "FunctionExpression",
+                      "type": "FunctionExpression"
+                    },
+                    "start": 0,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 0,
+                  "kind": "fn",
+                  "preComments": [
+                    "// Create a function to draw the gear profile as a sketch. Rotate each profile about the gear's axis by an helix angle proportional to the total gear height"
+                  ],
+                  "start": 0,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
+                {
+                  "commentStart": 1514,
+                  "declaration": {
+                    "commentStart": 1600,
+                    "end": 0,
+                    "id": {
+                      "commentStart": 1600,
+                      "end": 0,
+                      "name": "gearLoft",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "arguments": [
+                        {
+                          "commentStart": 1616,
+                          "elements": [
+                            {
+                              "arguments": [
+                                {
+                                  "commentStart": 1633,
+                                  "end": 0,
+                                  "raw": "0",
+                                  "start": 0,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
+                                }
+                              ],
+                              "callee": {
+                                "commentStart": 1622,
+                                "end": 0,
+                                "name": "gearSketch",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "commentStart": 1622,
+                              "end": 0,
+                              "start": 0,
+                              "type": "CallExpression",
+                              "type": "CallExpression"
+                            },
+                            {
+                              "arguments": [
+                                {
+                                  "commentStart": 1652,
+                                  "end": 0,
+                                  "left": {
+                                    "commentStart": 1652,
+                                    "end": 0,
+                                    "name": "gearHeight",
+                                    "start": 0,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "/",
+                                  "right": {
+                                    "commentStart": 1665,
+                                    "end": 0,
+                                    "raw": "2",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                }
+                              ],
+                              "callee": {
+                                "commentStart": 1641,
+                                "end": 0,
+                                "name": "gearSketch",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "commentStart": 1641,
+                              "end": 0,
+                              "start": 0,
+                              "type": "CallExpression",
+                              "type": "CallExpression"
+                            },
+                            {
+                              "arguments": [
+                                {
+                                  "commentStart": 1684,
+                                  "end": 0,
+                                  "name": "gearHeight",
+                                  "start": 0,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                }
+                              ],
+                              "callee": {
+                                "commentStart": 1673,
+                                "end": 0,
+                                "name": "gearSketch",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "commentStart": 1673,
+                              "end": 0,
+                              "start": 0,
+                              "type": "CallExpression",
+                              "type": "CallExpression"
+                            }
+                          ],
+                          "end": 0,
+                          "start": 0,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        }
+                      ],
+                      "callee": {
+                        "commentStart": 1611,
+                        "end": 0,
+                        "name": "loft",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "commentStart": 1611,
+                      "end": 0,
+                      "start": 0,
+                      "type": "CallExpression",
+                      "type": "CallExpression"
+                    },
+                    "start": 0,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 0,
+                  "kind": "const",
+                  "preComments": [
+                    "",
+                    "",
+                    "// Draw sketches of the gear profile along the gear height and loft them together"
+                  ],
+                  "start": 0,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
+                {
+                  "argument": {
+                    "commentStart": 1711,
+                    "end": 0,
+                    "name": "gearLoft",
+                    "start": 0,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "commentStart": 1700,
+                  "end": 0,
+                  "start": 0,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "commentStart": 273,
+              "end": 0,
+              "nonCodeMeta": {
+                "nonCodeNodes": {
+                  "1": [
+                    {
+                      "commentStart": 1700,
+                      "end": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ]
+                },
+                "startNodes": []
+              },
+              "start": 0
+            },
+            "commentStart": 222,
+            "end": 0,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "commentStart": 223,
+                  "end": 0,
+                  "name": "gearPitch",
+                  "start": 0,
+                  "type": "Identifier"
+                }
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "commentStart": 234,
+                  "end": 0,
+                  "name": "gearHeight",
+                  "start": 0,
+                  "type": "Identifier"
+                }
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "commentStart": 246,
+                  "end": 0,
+                  "name": "holeDiameter",
+                  "start": 0,
+                  "type": "Identifier"
+                }
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "commentStart": 260,
+                  "end": 0,
+                  "name": "helixAngle",
+                  "start": 0,
+                  "type": "Identifier"
+                }
+              }
+            ],
+            "start": 0,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "fn",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 1721,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 1737,
+              "end": 0,
+              "raw": ".3",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.3,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 1741,
+              "end": 0,
+              "raw": "1.5",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.5,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 1746,
+              "end": 0,
+              "raw": "0.297",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.297,
+                "suffix": "None"
+              }
+            },
+            {
+              "argument": {
+                "commentStart": 1754,
+                "end": 0,
+                "raw": "80",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 80.0,
+                  "suffix": "None"
+                }
+              },
+              "commentStart": 1753,
+              "end": 0,
+              "operator": "-",
+              "start": 0,
+              "type": "UnaryExpression",
+              "type": "UnaryExpression"
+            }
+          ],
+          "callee": {
+            "commentStart": 1723,
+            "end": 0,
+            "name": "cycloidalGear",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "commentStart": 1723,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "innerAttrs": [
+      {
+        "commentStart": 0,
+        "end": 0,
+        "name": {
+          "commentStart": 171,
+          "end": 0,
+          "name": "settings",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "preComments": [
+          "// Cycloidal Gear",
+          "// A cycloidal gear is a gear with a continuous, curved tooth profile. They are used in watchmaking and high precision robotics actuation",
+          "",
+          "",
+          "// Set Units"
+        ],
+        "properties": [
+          {
+            "commentStart": 180,
+            "end": 0,
+            "key": {
+              "commentStart": 180,
+              "end": 0,
+              "name": "defaultLengthUnit",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 200,
+              "end": 0,
+              "name": "in",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          }
+        ],
+        "start": 0,
+        "type": "Annotation"
+      }
+    ],
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "0": [
+          {
+            "commentStart": 1721,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "commentStart": 203,
+          "end": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}

@@ -1,0 +1,39 @@
+// define a plane with UID 94894440791888
+const plane94894440791888 = {
+  plane: {
+    origin: [0.005000000000000001, 0.01, -0.005],
+    xAxis: [
+      0.9285064634886234,
+      0.37131623619207604,
+      0.0
+    ],
+    yAxis: [-0.0, 0.0, 1.0],
+    zAxis: [
+      0.37131623619207604,
+      -0.9285064634886234,
+      0.0
+    ]
+  }
+}
+
+// create a sketch with UID 94894440902176
+const sketch94894440902176 = startSketchOn('-XZ')
+  |> startProfileAt([-0.005, -0.005], %)
+  |> line(end = [0.01, 0.0], tag = $line94894439494384)
+  |> line(end = [0.0, 0.01], tag = $line94894439429616)
+  |> line(end = [-0.01, 0.0], tag = $line94894439638160)
+  |> line(end = [0.0, -0.01], tag = $line94894439971808)
+
+// create a sketch with UID 94894439448464
+const sketch94894439448464 = startSketchOn(plane94894440791888)
+  |> startProfileAt([
+       0.00074557205559017,
+       0.00306415853984399
+     ], %)
+  |> line(end = [0.004999999999999999, 0.0], tag = $line94894440230336)
+  |> line(end = [0.0, -0.005], tag = $line94894439497168)
+  |> line(end = [-0.004999999999999999, 0.0], tag = $line94894439496768)
+  |> line(end = [0.0, 0.005], tag = $line94894440231952)
+
+// create an extrusion with UID 94894439487136
+const extrude94894439487136 = extrude(sketch94894440902176, length = 0.01)

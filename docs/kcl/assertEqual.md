@@ -1,15 +1,20 @@
 ---
 title: "assertEqual"
-excerpt: "Check that a numerical value equals another at runtime,"
+excerpt: "Check that a numerical value equals another at runtime, otherwise raise an error."
 layout: manual
 ---
 
-Check that a numerical value equals another at runtime,
+Check that a numerical value equals another at runtime, otherwise raise an error.
 
-otherwise raise an error.
+
 
 ```js
-assertEqual(left: number, right: number, epsilon: number, message: string) -> ()
+assertEqual(
+  left: number,
+  right: number,
+  epsilon: number,
+  message: string,
+): ()
 ```
 
 
@@ -17,14 +22,14 @@ assertEqual(left: number, right: number, epsilon: number, message: string) -> ()
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `left` | `number` |  | Yes |
-| `right` | `number` |  | Yes |
-| `epsilon` | `number` |  | Yes |
-| `message` | `string` |  | Yes |
+| `left` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `right` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `epsilon` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `message` | [`string`](/docs/kcl/types/string) |  | Yes |
 
 ### Returns
 
-`()` 
+`()`
 
 
 ### Examples

@@ -1,6 +1,0 @@
----
-source: kcl/src/simulation_tests.rs
-description: Operations executed invalid_index_str.kcl
-snapshot_kind: text
----
-[]

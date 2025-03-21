@@ -1,0 +1,203 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing import_whole.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 33,
+        "end": 0,
+        "path": {
+          "type": "Kcl",
+          "filename": "exported_mod.kcl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": {
+            "commentStart": 64,
+            "end": 0,
+            "name": "foo",
+            "start": 0,
+            "type": "Identifier"
+          }
+        },
+        "start": 0,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "commentStart": 67,
+        "declaration": {
+          "commentStart": 69,
+          "end": 0,
+          "id": {
+            "commentStart": 69,
+            "end": 0,
+            "name": "bar",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "commentStart": 75,
+                "end": 0,
+                "name": "foo",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 90,
+                      "end": 0,
+                      "name": "faces",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 98,
+                      "elements": [
+                        {
+                          "commentStart": 99,
+                          "end": 0,
+                          "raw": "'end'",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": "end"
+                        }
+                      ],
+                      "end": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 107,
+                      "end": 0,
+                      "name": "thickness",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 119,
+                      "end": 0,
+                      "raw": "0.25",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.25,
+                        "suffix": "None"
+                      }
+                    }
+                  }
+                ],
+                "callee": {
+                  "commentStart": 84,
+                  "end": 0,
+                  "name": "shell",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "commentStart": 84,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              }
+            ],
+            "commentStart": 75,
+            "end": 0,
+            "start": 0,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "innerAttrs": [
+      {
+        "commentStart": 0,
+        "end": 0,
+        "name": {
+          "commentStart": 1,
+          "end": 0,
+          "name": "settings",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "commentStart": 10,
+            "end": 0,
+            "key": {
+              "commentStart": 10,
+              "end": 0,
+              "name": "defaultLengthUnit",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 30,
+              "end": 0,
+              "name": "mm",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          }
+        ],
+        "start": 0,
+        "type": "Annotation"
+      }
+    ],
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "0": [
+          {
+            "commentStart": 67,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "commentStart": 33,
+          "end": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}

@@ -12,16 +12,22 @@ import { NavigateFunction } from 'react-router-dom'
 import crossPlatformFetch from './crossPlatformFetch'
 import { isDesktop } from 'lib/isDesktop'
 import { Themes } from './theme'
-import { commandBarMachine } from 'machines/commandBarMachine'
 import { getNextFileName } from './desktopFS'
 import { reportRejection } from './trap'
 import { toSync } from './utils'
+import { kclManager } from './singletons'
 
 async function submitTextToCadPrompt(
   prompt: string,
+  projectName: string,
   token?: string
 ): Promise<Models['TextToCad_type'] | Error> {
-  const body: Models['TextToCadCreateBody_type'] = { prompt }
+  const body: Models['TextToCadCreateBody_type'] = {
+    prompt,
+    project_name:
+      projectName !== '' && projectName !== 'browser' ? projectName : undefined,
+    kcl_version: kclManager.kclVersion,
+  }
   // Glb has a smaller footprint than gltf, should we want to render it.
   const url = VITE_KC_API_BASE_URL + '/ai/text-to-cad/glb?kcl=true'
   const data: Models['TextToCad_type'] | Error = await crossPlatformFetch(
@@ -100,7 +106,11 @@ export async function submitAndAwaitTextToKcl({
     )
   }
 
-  const textToCadQueued = await submitTextToCadPrompt(trimmedPrompt, token)
+  const textToCadQueued = await submitTextToCadPrompt(
+    trimmedPrompt,
+    context.project.name,
+    token
+  )
     .then((value) => {
       if (value instanceof Error) {
         return Promise.reject(value)
