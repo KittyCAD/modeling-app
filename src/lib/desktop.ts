@@ -17,7 +17,6 @@ import {
   TELEMETRY_FILE_NAME,
   TELEMETRY_RAW_FILE_NAME,
   TOKEN_FILE_NAME,
-  FILE_EXT,
 } from './constants'
 import { DeepPartial } from './types'
 import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
