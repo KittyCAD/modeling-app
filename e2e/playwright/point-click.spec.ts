@@ -1347,7 +1347,8 @@ loft001 = loft([sketch001, sketch002])
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `sketch001 = startSketchOn(YZ)
+    const initialCode = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(YZ)
   |> circle(
        center = [0, 0],
        radius = 500
@@ -1478,7 +1479,8 @@ sketch002 = startSketchOn(XZ)
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `sketch001 = startSketchOn(YZ)
+    const initialCode = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(YZ)
   |> circle(
        center = [0, 0],
        radius = 500
@@ -2045,7 +2047,8 @@ extrude001 = extrude(profile001, length = 5)
     cmdBar,
   }) => {
     // Code samples
-    const initialCode = `sketch001 = startSketchOn(XY)
+    const initialCode = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XY)
   |> startProfileAt([-12, -6], %)
   |> line(end = [0, 12])
   |> line(end = [24, 0])
@@ -2269,7 +2272,8 @@ extrude001 = extrude(sketch001, length = -12)
     toolbar,
   }) => {
     // Code samples
-    const initialCode = `sketch001 = startSketchOn(XY)
+    const initialCode = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XY)
   |> startProfileAt([-12, -6], %)
   |> line(end = [0, 12])
   |> line(end = [24, 0], tag = $seg02)
@@ -2423,7 +2427,8 @@ chamfer04 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
       toolbar,
       cmdBar,
     }) => {
-      const initialCode = `sketch001 = startSketchOn(XZ)
+      const initialCode = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 30)
 extrude001 = extrude(sketch001, length = 30)
     `
@@ -2558,7 +2563,8 @@ extrude001 = extrude(sketch001, length = 30)
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `sketch001 = startSketchOn(XY)
+    const initialCode = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XY)
   |> startProfileAt([-20, 20], %)
   |> xLine(length = 40)
   |> yLine(length = -60)
@@ -2676,7 +2682,8 @@ extrude001 = extrude(sketch001, length = 40)
   })
 
   const shellSketchOnFacesCases = [
-    `sketch001 = startSketchOn(XZ)
+    `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 100)
   |> extrude(length = 100)
 
@@ -2684,7 +2691,8 @@ sketch002 = startSketchOn(sketch001, 'END')
   |> circle(center = [0, 0], radius = 50)
   |> extrude(length = 50)
   `,
-    `sketch001 = startSketchOn(XZ)
+    `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 100)
 extrude001 = extrude(sketch001, length = 100)
 
