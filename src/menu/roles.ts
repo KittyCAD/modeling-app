@@ -26,6 +26,7 @@ type EditRoleLabel =
   | 'Rename project'
   | 'Delete project'
   | 'Change project directory'
+  | 'Speech'
 
 type HelpRoleLabel =
   | 'Report a bug'

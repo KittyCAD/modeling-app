@@ -654,5 +654,3 @@ const cmdBarStateSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
 export const useCommandBarState = () => {
   return useSelector(commandBarActor, cmdBarStateSelector)
 }
-
-window.dog = commandBarActor

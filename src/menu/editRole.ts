@@ -7,6 +7,23 @@ const isMac = os.platform() === 'darwin'
 export const projectEditRole = (
   mainWindow: BrowserWindow
 ): ZooMenuItemConstructorOptions => {
+  let extraBits: ZooMenuItemConstructorOptions[] = [
+    { role: 'delete' },
+    { type: 'separator' },
+    { role: 'selectAll' },
+  ]
+  if (isMac) {
+    extraBits = [
+      { role: 'pasteAndMatchStyle' },
+      { role: 'delete' },
+      { role: 'selectAll' },
+      { type: 'separator' },
+      {
+        label: 'Speech',
+        submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }],
+      },
+    ]
+  }
   return {
     label: 'Edit',
     submenu: [
@@ -42,18 +59,7 @@ export const projectEditRole = (
       { role: 'cut' },
       { role: 'copy' },
       { role: 'paste' },
-      ...(isMac
-        ? [
-            { role: 'pasteAndMatchStyle' },
-            { role: 'delete' },
-            { role: 'selectAll' },
-            { type: 'separator' },
-            {
-              label: 'Speech',
-              submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }],
-            },
-          ]
-        : [{ role: 'delete' }, { type: 'separator' }, { role: 'selectAll' }]),
+      ...extraBits,
     ],
   }
 }

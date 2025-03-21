@@ -8,6 +8,15 @@ const isMac = os.platform() === 'darwin'
 export const projectViewRole = (
   mainWindow: BrowserWindow
 ): ZooMenuItemConstructorOptions => {
+  let extraBits: ZooMenuItemConstructorOptions[] = [{ role: 'close' }]
+  if (isMac) {
+    extraBits = [
+      { type: 'separator' },
+      { role: 'front' },
+      { type: 'separator' },
+      { role: 'window' },
+    ]
+  }
   return {
     label: 'View',
     submenu: [
@@ -32,14 +41,7 @@ export const projectViewRole = (
       { type: 'separator' },
       { role: 'minimize' },
       { role: 'zoom' },
-      ...(isMac
-        ? [
-            { type: 'separator' },
-            { role: 'front' },
-            { type: 'separator' },
-            { role: 'window' },
-          ]
-        : [{ role: 'close' }]),
+      ...extraBits,
     ],
   }
 }
