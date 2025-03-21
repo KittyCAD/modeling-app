@@ -1,7 +1,12 @@
 import { test, expect } from './zoo-test'
 import fsp from 'fs/promises'
 import { uuidv4 } from 'lib/utils'
-import { executorInputPath, getUtils, TEST_COLORS } from './test-utils'
+import {
+  executorInputPath,
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+  TEST_COLORS,
+} from './test-utils'
 
 import { join } from 'path'
 
@@ -634,7 +639,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     page,
     homePage,
   }) => {
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -1121,7 +1126,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     `Can use the import stdlib function on a local OBJ file`,
     { tag: '@electron' },
     async ({ page, context }, testInfo) => {
-      test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+      test.fixme(orRunWhenFullSuiteEnabled())
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'cube')
         await fsp.mkdir(bracketDir, { recursive: true })
