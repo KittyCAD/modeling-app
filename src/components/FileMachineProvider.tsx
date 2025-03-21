@@ -67,7 +67,7 @@ export const FileMachineProvider = ({
   // progress within that 1000ms window.
   useEffect(() => {
     const preventUnload = (event: BeforeUnloadEvent) => {
-      codeManager.writeToFileNoTimeout().catch(reportRejection)
+      codeManager.writeToFileNoTimeoutForBeforeUnload().catch(reportRejection)
     }
     window.addEventListener('beforeunload', preventUnload)
     return () => {

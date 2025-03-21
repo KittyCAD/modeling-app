@@ -172,13 +172,16 @@ export default class CodeManager {
     // to catch when this.code = ''
     console.warn('beforeunload attempting to save off current code progress')
 
-    const codeToWrite = this.code.split('').join('');
+    const codeToWrite = this.code.split('').join('')
 
     if (!codeToWrite || codeToWrite === '') {
       // This limits one workflow. If the user deletes all the code then instantly invokes beforeunload
       // we would not save that to disk.
       // I am keeping this for the time being because we are getting blank writes to disk when we shouldn't.
-      console.warn('code is falsey, do not write to disk. code is ', codeToWrite)
+      console.warn(
+        'code is falsey, do not write to disk. code is ',
+        codeToWrite
+      )
       return
     }
 
