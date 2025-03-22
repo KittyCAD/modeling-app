@@ -821,7 +821,7 @@ export function addHelix({
   angleStart: Expr
   counterClockWise: boolean
   radius: Expr
-  axis: string
+  axis: Node<Literal> | Node<Identifier | CallExpression | CallExpressionKw>
   length: Expr
   insertIndex?: number
   variableName?: string
@@ -839,7 +839,7 @@ export function addHelix({
         createLabeledArg('angleStart', angleStart),
         createLabeledArg('counterClockWise', createLiteral(counterClockWise)),
         createLabeledArg('radius', radius),
-        createLabeledArg('axis', createLiteral(axis)),
+        createLabeledArg('axis', axis),
         createLabeledArg('length', length),
       ]
     )
