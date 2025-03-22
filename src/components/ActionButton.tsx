@@ -68,6 +68,7 @@ export const ActionButton = forwardRef((props: ActionButtonProps, ref) => {
         <button
           ref={ref as ForwardedRef<HTMLButtonElement>}
           className={classNames}
+          tabIndex={-1}
           {...rest}
         >
           {iconStart && <ActionIcon {...iconStart} />}
