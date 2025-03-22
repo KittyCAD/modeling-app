@@ -1,37 +1,8 @@
 //! Wasm bindings for `kcl`.
 
-use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{pretty::NumericSuffix, CoreDump, Point2d, Program};
-use tower_lsp::{LspService, Server};
 use wasm_bindgen::prelude::*;
-
-// wasm_bindgen wrapper for mock execute
-#[wasm_bindgen]
-pub async fn execute_mock(
-    program_ast_json: &str,
-    path: Option<String>,
-    settings: &str,
-    use_prev_memory: bool,
-    fs_manager: kcl_lib::wasm_engine::FileSystemManager,
-) -> Result<JsValue, String> {
-    console_error_panic_hook::set_once();
-
-    let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
-    let config: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
-    let mut settings: kcl_lib::ExecutorSettings = config.into();
-    if let Some(path) = path {
-        settings.with_current_file(std::path::PathBuf::from(path));
-    }
-
-    let ctx = kcl_lib::ExecutorContext::new_mock(fs_manager, settings.into()).await?;
-    match ctx.run_mock(program, use_prev_memory).await {
-        // The serde-wasm-bindgen does not work here because of weird HashMap issues.
-        // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
-        Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| e.to_string()),
-        Err(err) => Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?),
-    }
-}
 
 // wasm_bindgen wrapper for execute
 #[wasm_bindgen]
@@ -45,25 +16,6 @@ pub async fn kcl_lint(program_ast_json: &str) -> Result<JsValue, JsValue> {
     }
 
     Ok(JsValue::from_serde(&findings).map_err(|e| e.to_string())?)
-}
-
-#[wasm_bindgen]
-pub fn deserialize_files(data: &[u8]) -> Result<JsValue, JsError> {
-    console_error_panic_hook::set_once();
-
-    let ws_resp: kittycad::types::WebSocketResponse = bson::from_slice(data)?;
-
-    if let Some(success) = ws_resp.success {
-        if !success {
-            return Err(JsError::new(&format!("Server returned error: {:?}", ws_resp.errors)));
-        }
-    }
-
-    if let Some(kittycad::types::OkWebSocketResponseData::Export { files }) = ws_resp.resp {
-        return Ok(JsValue::from_serde(&files)?);
-    }
-
-    Err(JsError::new(&format!("Invalid response type, got: {:?}", ws_resp)))
 }
 
 #[wasm_bindgen]
@@ -92,148 +44,6 @@ pub fn format_number(value: f64, suffix_json: &str) -> Result<String, JsError> {
 
     let suffix: NumericSuffix = serde_json::from_str(suffix_json).map_err(JsError::from)?;
     Ok(kcl_lib::pretty::format_number(value, suffix))
-}
-
-#[wasm_bindgen]
-pub struct ServerConfig {
-    into_server: js_sys::AsyncIterator,
-    from_server: web_sys::WritableStream,
-    fs: kcl_lib::wasm_engine::FileSystemManager,
-}
-
-#[wasm_bindgen]
-impl ServerConfig {
-    #[wasm_bindgen(constructor)]
-    pub fn new(
-        into_server: js_sys::AsyncIterator,
-        from_server: web_sys::WritableStream,
-        fs: kcl_lib::wasm_engine::FileSystemManager,
-    ) -> Self {
-        Self {
-            into_server,
-            from_server,
-            fs,
-        }
-    }
-}
-
-/// Run the `kcl` lsp server.
-//
-// NOTE: we don't use web_sys::ReadableStream for input here because on the
-// browser side we need to use a ReadableByteStreamController to construct it
-// and so far only Chromium-based browsers support that functionality.
-
-// NOTE: input needs to be an AsyncIterator<Uint8Array, never, void> specifically
-#[wasm_bindgen]
-pub async fn kcl_lsp_run(config: ServerConfig, token: String, baseurl: String) -> Result<(), JsValue> {
-    console_error_panic_hook::set_once();
-
-    let ServerConfig {
-        into_server,
-        from_server,
-        fs,
-    } = config;
-
-    let executor_ctx = None;
-
-    let mut zoo_client = kittycad::Client::new(token);
-    zoo_client.set_base_url(baseurl.as_str());
-
-    // Check if we can send telemetry for this user.
-    let can_send_telemetry = match zoo_client.users().get_privacy_settings().await {
-        Ok(privacy_settings) => privacy_settings.can_train_on_data,
-        Err(err) => {
-            // In the case of dev we don't always have a sub set, but prod we should.
-            if err
-                .to_string()
-                .contains("The modeling app subscription type is missing.")
-            {
-                true
-            } else {
-                web_sys::console::warn_1(&format!("Failed to get privacy settings: {err:?}").into());
-                false
-            }
-        }
-    };
-
-    let (service, socket) = LspService::build(|client| {
-        kcl_lib::KclLspBackend::new_wasm(client, executor_ctx, fs, zoo_client, can_send_telemetry).unwrap()
-    })
-    .custom_method("kcl/updateUnits", kcl_lib::KclLspBackend::update_units)
-    .custom_method("kcl/updateCanExecute", kcl_lib::KclLspBackend::update_can_execute)
-    .finish();
-
-    let input = wasm_bindgen_futures::stream::JsStream::from(into_server);
-    let input = input
-        .map_ok(|value| {
-            value
-                .dyn_into::<js_sys::Uint8Array>()
-                .expect("could not cast stream item to Uint8Array")
-                .to_vec()
-        })
-        .map_err(|_err| std::io::Error::from(std::io::ErrorKind::Other))
-        .into_async_read();
-
-    let output = wasm_bindgen::JsCast::unchecked_into::<wasm_streams::writable::sys::WritableStream>(from_server);
-    let output = wasm_streams::WritableStream::from_raw(output);
-    let output = output.try_into_async_write().map_err(|err| err.0)?;
-
-    Server::new(input, output, socket).serve(service).await;
-
-    Ok(())
-}
-
-/// Run the `copilot` lsp server.
-//
-// NOTE: we don't use web_sys::ReadableStream for input here because on the
-// browser side we need to use a ReadableByteStreamController to construct it
-// and so far only Chromium-based browsers support that functionality.
-
-// NOTE: input needs to be an AsyncIterator<Uint8Array, never, void> specifically
-#[wasm_bindgen]
-pub async fn copilot_lsp_run(config: ServerConfig, token: String, baseurl: String) -> Result<(), JsValue> {
-    console_error_panic_hook::set_once();
-
-    let ServerConfig {
-        into_server,
-        from_server,
-        fs,
-    } = config;
-
-    let mut zoo_client = kittycad::Client::new(token);
-    zoo_client.set_base_url(baseurl.as_str());
-
-    let dev_mode = baseurl == "https://api.dev.zoo.dev";
-
-    let (service, socket) =
-        LspService::build(|client| kcl_lib::CopilotLspBackend::new_wasm(client, fs, zoo_client, dev_mode))
-            .custom_method("copilot/setEditorInfo", kcl_lib::CopilotLspBackend::set_editor_info)
-            .custom_method(
-                "copilot/getCompletions",
-                kcl_lib::CopilotLspBackend::get_completions_cycling,
-            )
-            .custom_method("copilot/notifyAccepted", kcl_lib::CopilotLspBackend::accept_completion)
-            .custom_method("copilot/notifyRejected", kcl_lib::CopilotLspBackend::reject_completions)
-            .finish();
-
-    let input = wasm_bindgen_futures::stream::JsStream::from(into_server);
-    let input = input
-        .map_ok(|value| {
-            value
-                .dyn_into::<js_sys::Uint8Array>()
-                .expect("could not cast stream item to Uint8Array")
-                .to_vec()
-        })
-        .map_err(|_err| std::io::Error::from(std::io::ErrorKind::Other))
-        .into_async_read();
-
-    let output = wasm_bindgen::JsCast::unchecked_into::<wasm_streams::writable::sys::WritableStream>(from_server);
-    let output = wasm_streams::WritableStream::from_raw(output);
-    let output = output.try_into_async_write().map_err(|err| err.0)?;
-
-    Server::new(input, output, socket).serve(service).await;
-
-    Ok(())
 }
 
 #[wasm_bindgen]

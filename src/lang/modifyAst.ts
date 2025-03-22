@@ -19,7 +19,6 @@ import {
   BinaryExpression,
   PathToNode,
   SourceRange,
-  sketchFromKclValue,
   isPathToNodeNumber,
   parse,
   formatNumber,
@@ -75,7 +74,6 @@ import {
 import { BodyItem } from '@rust/kcl-lib/bindings/BodyItem'
 import { findKwArg } from './util'
 import { deleteEdgeTreatment } from './modifyAst/addEdgeTreatment'
-import { codeManager } from 'lib/singletons'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -225,8 +223,8 @@ export function findUniqueName(
     if (!nameIsInString) return name
 
     // recursive case: name is not unique and ends in digits
-    const newPad = nameEndsInDigits[1].length
-    const newIndex = parseInt(nameEndsInDigits[1]) + 1
+    const newPad = nameEndsInDigits[0].length
+    const newIndex = parseInt(nameEndsInDigits[0]) + 1
     const nameWithoutDigits = name.replace(endingDigitsMatcher, '')
 
     return findUniqueName(searchStr, nameWithoutDigits, newPad, newIndex)
@@ -336,6 +334,8 @@ export function mutateObjExpProp(
         end: 0,
         moduleId: 0,
         outerAttrs: [],
+        preComments: [],
+        commentStart: 0,
       })
     }
   }
@@ -515,30 +515,54 @@ export function addShell({
   }
 }
 
-export function addSweep(
-  node: Node<Program>,
-  profileDeclarator: VariableDeclarator,
-  pathDeclarator: VariableDeclarator
-): {
+export function addSweep({
+  node,
+  targetDeclarator,
+  trajectoryDeclarator,
+  sectional,
+  variableName,
+  insertIndex,
+}: {
+  node: Node<Program>
+  targetDeclarator: VariableDeclarator
+  trajectoryDeclarator: VariableDeclarator
+  sectional: boolean
+  variableName?: string
+  insertIndex?: number
+}): {
   modifiedAst: Node<Program>
   pathToNode: PathToNode
 } {
   const modifiedAst = structuredClone(node)
-  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP)
-  const sweep = createCallExpressionStdLibKw(
+  const name =
+    variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP)
+  const call = createCallExpressionStdLibKw(
     'sweep',
-    createIdentifier(profileDeclarator.id.name),
-    [createLabeledArg('path', createIdentifier(pathDeclarator.id.name))]
+    createIdentifier(targetDeclarator.id.name),
+    [
+      createLabeledArg('path', createIdentifier(trajectoryDeclarator.id.name)),
+      createLabeledArg('sectional', createLiteral(sectional)),
+    ]
   )
-  const declaration = createVariableDeclaration(name, sweep)
-  modifiedAst.body.push(declaration)
+  const variable = createVariableDeclaration(name, call)
+  const insertAt =
+    insertIndex !== undefined
+      ? insertIndex
+      : modifiedAst.body.length
+      ? modifiedAst.body.length
+      : 0
+
+  modifiedAst.body.length
+    ? modifiedAst.body.splice(insertAt, 0, variable)
+    : modifiedAst.body.push(variable)
+  const argIndex = 0
   const pathToNode: PathToNode = [
     ['body', ''],
-    [modifiedAst.body.length - 1, 'index'],
+    [insertAt, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpressionKw'],
-    [0, ARG_INDEX_FIELD],
+    [argIndex, ARG_INDEX_FIELD],
     ['arg', LABELED_ARG_FIELD],
   ]
 
@@ -997,6 +1021,8 @@ export function createLiteral(value: LiteralValue | number): Node<Literal> {
     value,
     raw,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
   }
 }
 
@@ -1007,6 +1033,8 @@ export function createTagDeclarator(value: string): Node<TagDeclarator> {
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
 
     value,
   }
@@ -1019,6 +1047,8 @@ export function createIdentifier(name: string): Node<Identifier> {
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
 
     name,
   }
@@ -1031,6 +1061,8 @@ export function createPipeSubstitution(): Node<PipeSubstitution> {
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
   }
 }
 
@@ -1044,12 +1076,16 @@ export function createCallExpressionStdLib(
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
     callee: {
       type: 'Identifier',
       start: 0,
       end: 0,
       moduleId: 0,
       outerAttrs: [],
+      preComments: [],
+      commentStart: 0,
 
       name,
     },
@@ -1068,6 +1104,8 @@ export function createCallExpressionStdLibKw(
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
     nonCodeMeta: nonCodeMetaEmpty(),
     callee: {
       type: 'Identifier',
@@ -1075,6 +1113,8 @@ export function createCallExpressionStdLibKw(
       end: 0,
       moduleId: 0,
       outerAttrs: [],
+      preComments: [],
+      commentStart: 0,
 
       name,
     },
@@ -1093,12 +1133,16 @@ export function createCallExpression(
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
     callee: {
       type: 'Identifier',
       start: 0,
       end: 0,
       moduleId: 0,
       outerAttrs: [],
+      preComments: [],
+      commentStart: 0,
 
       name,
     },
@@ -1115,6 +1159,8 @@ export function createArrayExpression(
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
 
     nonCodeMeta: nonCodeMetaEmpty(),
     elements,
@@ -1130,6 +1176,8 @@ export function createPipeExpression(
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
 
     body,
     nonCodeMeta: nonCodeMetaEmpty(),
@@ -1148,6 +1196,8 @@ export function createVariableDeclaration(
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
 
     declaration: {
       type: 'VariableDeclarator',
@@ -1155,6 +1205,8 @@ export function createVariableDeclaration(
       end: 0,
       moduleId: 0,
       outerAttrs: [],
+      preComments: [],
+      commentStart: 0,
 
       id: createIdentifier(varName),
       init,
@@ -1173,6 +1225,8 @@ export function createObjectExpression(properties: {
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
 
     nonCodeMeta: nonCodeMetaEmpty(),
     properties: Object.entries(properties).map(([key, value]) => ({
@@ -1181,6 +1235,8 @@ export function createObjectExpression(properties: {
       end: 0,
       moduleId: 0,
       outerAttrs: [],
+      preComments: [],
+      commentStart: 0,
       key: createIdentifier(key),
 
       value,
@@ -1198,6 +1254,8 @@ export function createUnaryExpression(
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
 
     operator,
     argument,
@@ -1215,6 +1273,8 @@ export function createBinaryExpression([left, operator, right]: [
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
 
     operator,
     left,
@@ -1907,7 +1967,7 @@ export function updateSketchNodePathsWithInsertIndex({
  * 
  * Split the following pipe expression into 
  * ```ts
- * part001 = startSketchOn('XZ')
+ * part001 = startSketchOn(XZ)
   |> startProfileAt([1, 2], %)
   |> line([3, 4], %)
   |> line([5, 6], %)
@@ -1916,7 +1976,7 @@ extrude001 = extrude(5, part001)
 ```
 into
 ```ts
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
 part001 = startProfileAt([1, 2], sketch001)
   |> line([3, 4], %)
   |> line([5, 6], %)

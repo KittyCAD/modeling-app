@@ -3,7 +3,6 @@ import {
   parse_wasm,
   recast_wasm,
   format_number,
-  execute_mock,
   kcl_lint,
   is_points_ccw,
   get_tangential_arc_to_info,
@@ -27,7 +26,6 @@ import { Discovered } from '@rust/kcl-lib/bindings/Discovered'
 import { KclValue } from '@rust/kcl-lib/bindings/KclValue'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import { Coords2d } from './std/sketch'
-import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { CoreDumpInfo } from '@rust/kcl-lib/bindings/CoreDumpInfo'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
@@ -56,6 +54,7 @@ import { UnitLen } from '@rust/kcl-lib/bindings/UnitLen'
 import { UnitAngle as UnitAng } from '@rust/kcl-lib/bindings/UnitAngle'
 import { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
+import { isArray } from 'lib/utils'
 
 export type { Artifact } from '@rust/kcl-lib/bindings/Artifact'
 export type { ArtifactCommand } from '@rust/kcl-lib/bindings/Artifact'
@@ -287,6 +286,13 @@ export const isPathToNodeNumber = (
   return typeof pathToNode === 'number'
 }
 
+export const isPathToNode = (input: unknown): input is PathToNode =>
+  isArray(input) &&
+  isArray(input[0]) &&
+  input[0].length == 2 &&
+  (typeof input[0][0] === 'number' || typeof input[0][0] === 'string') &&
+  typeof input[0][1] === 'string'
+
 export interface ExecState {
   variables: { [key in string]?: KclValue }
   operations: Operation[]
@@ -319,7 +325,7 @@ export function execStateFromRust(
 ): ExecState {
   const artifactGraph = rustArtifactGraphToMap(execOutcome.artifactGraph)
   // We haven't ported pathToNode logic to Rust yet, so we need to fill it in.
-  for (const [id, artifact] of artifactGraph) {
+  for (const [_id, artifact] of artifactGraph) {
     if (!artifact) continue
     if (!('codeRef' in artifact)) continue
     const pathToNode = getNodePathFromSourceRange(
@@ -340,7 +346,7 @@ export function execStateFromRust(
   }
 }
 
-function mockExecStateFromRust(execOutcome: RustExecOutcome): ExecState {
+export function mockExecStateFromRust(execOutcome: RustExecOutcome): ExecState {
   return {
     variables: execOutcome.variables,
     operations: execOutcome.operations,
@@ -402,34 +408,6 @@ export function sketchFromKclValue(
     return result.toError()
   }
   return result
-}
-
-/**
- * Execute a KCL program.
- * @param node The AST of the program to execute.
- * @param path The full path of the file being executed.  Use `null` for
- * expressions that don't have a file, like expressions in the command bar.
- */
-export const executeMock = async (
-  node: Node<Program>,
-  usePrevMemory?: boolean,
-  path?: string
-): Promise<ExecState> => {
-  try {
-    if (usePrevMemory === undefined) {
-      usePrevMemory = true
-    }
-    const execOutcome: RustExecOutcome = await execute_mock(
-      JSON.stringify(node),
-      path,
-      JSON.stringify({ settings: await jsAppSettings() }),
-      usePrevMemory,
-      fileSystemManager
-    )
-    return mockExecStateFromRust(execOutcome)
-  } catch (e: any) {
-    return Promise.reject(errFromErrWithOutputs(e))
-  }
 }
 
 export const jsAppSettings = async () => {

@@ -1,6 +1,9 @@
 import { test, expect } from './zoo-test'
-
-import { getUtils, executorInputPath } from './test-utils'
+import {
+  orRunWhenFullSuiteEnabled,
+  getUtils,
+  executorInputPath,
+} from './test-utils'
 import { join } from 'path'
 import { bracket } from 'lib/exampleKcl'
 import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from './storageStates'
@@ -19,7 +22,7 @@ test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
       localStorage.setItem(
         'persistCode',
         `// Extruded Triangle
-  sketch001 = startSketchOn('XZ')
+  sketch001 = startSketchOn(XZ)
     |> startProfileAt([0, 0], %)
     |> line(end = [10, 0])
     |> line(end = [-5, 10])
@@ -46,11 +49,12 @@ test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
     await expect(codePaneButtonHolder).toContainText('notification')
   })
 
-  test.skip('Opening and closing the code pane will consistently show error diagnostics', async ({
+  test('Opening and closing the code pane will consistently show error diagnostics', async ({
     page,
     homePage,
     editor,
   }) => {
+    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
 
     // Load the app with the working starter code
@@ -119,45 +123,47 @@ test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
     await expect(page.locator('.cm-tooltip').first()).toBeVisible()
   })
 
-  test.fixme(
-    'When error is not in view you can click the badge to scroll to it',
-    async ({ page, homePage, context }) => {
-      // Load the app with the working starter code
-      await context.addInitScript((code) => {
-        localStorage.setItem('persistCode', code)
-      }, TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW)
+  test('When error is not in view you can click the badge to scroll to it', async ({
+    page,
+    homePage,
+    context,
+  }) => {
+    test.fixme(orRunWhenFullSuiteEnabled())
+    // Load the app with the working starter code
+    await context.addInitScript((code) => {
+      localStorage.setItem('persistCode', code)
+    }, TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW)
 
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.goToModelingScene()
 
-      await page.waitForTimeout(1000)
+    await page.waitForTimeout(1000)
 
-      // Ensure badge is present
-      const codePaneButtonHolder = page.locator('#code-button-holder')
-      await expect(codePaneButtonHolder).toContainText('notification')
+    // Ensure badge is present
+    const codePaneButtonHolder = page.locator('#code-button-holder')
+    await expect(codePaneButtonHolder).toContainText('notification')
 
-      // Ensure we have no errors in the gutter, since error out of view.
-      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+    // Ensure we have no errors in the gutter, since error out of view.
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-      // Click the badge.
-      const badge = page.locator('#code-badge')
-      await expect(badge).toBeVisible()
-      await badge.click()
+    // Click the badge.
+    const badge = page.locator('#code-badge')
+    await expect(badge).toBeVisible()
+    await badge.click()
 
-      // Ensure we have an error diagnostic.
-      await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
+    // Ensure we have an error diagnostic.
+    await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
 
-      // Hover over the error to see the error message
-      await page.hover('.cm-lint-marker-error')
-      await expect(
-        page
-          .getByText(
-            'Modeling command failed: [ApiError { error_code: InternalEngine, message: "Solid3D revolve failed:  sketch profile must lie entirely on one side of the revolution axis" }]'
-          )
-          .first()
-      ).toBeVisible()
-    }
-  )
+    // Hover over the error to see the error message
+    await page.hover('.cm-lint-marker-error')
+    await expect(
+      page
+        .getByText(
+          'Modeling command failed: [ApiError { error_code: InternalEngine, message: "Solid3D revolve failed:  sketch profile must lie entirely on one side of the revolution axis" }]'
+        )
+        .first()
+    ).toBeVisible()
+  })
 
   test('When error is not in view WITH LINTS you can click the badge to scroll to it', async ({
     context,

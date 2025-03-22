@@ -1,4 +1,3 @@
-import { MouseControlType } from '@rust/kcl-lib/bindings/MouseControlType'
 import { Settings } from '@rust/kcl-lib/bindings/Settings'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { Themes } from 'lib/theme'
@@ -78,7 +77,7 @@ export const TEST_SETTINGS_CORRUPTED = {
   },
 } satisfies Partial<SaveSettingsPayload>
 
-export const TEST_CODE_GIZMO = `part001 = startSketchOn('XZ')
+export const TEST_CODE_GIZMO = `part001 = startSketchOn(XZ)
 |> startProfileAt([20, 0], %)
 |> line(end = [7.13, 4 + 0])
 |> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
@@ -129,7 +128,7 @@ keychain2 = startSketchOn("XY")
   |> close()
   |> extrude(length = thickness)
 
-box = startSketchOn('XY')
+box = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(end = [0, 10])
   |> line(end = [10, 0])
@@ -143,12 +142,12 @@ sketch001 = startSketchOn(box, revolveAxis)
   |> line(end = [2, 0])
   |> line(end = [0, -10])
   |> close()
-  |> revolve({
-  axis: revolveAxis,
-  angle: 90
-  }, %)
+  |> revolve(
+  axis = revolveAxis,
+  angle = 90
+  )
 
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([0.0, 0.0], %)
   |> xLine(length = 0.0)
   |> close()

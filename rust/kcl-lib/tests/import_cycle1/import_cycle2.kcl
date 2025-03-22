@@ -1,4 +1,7 @@
 @settings(defaultLengthUnit = mm)
+
 import three from "import_cycle3.kcl"
 
-export fn two = () => { return three() - 1 }
+export fn two() {
+  return three() - 1
+}

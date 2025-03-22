@@ -11,11 +11,10 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::execution::kcl_value::RuntimeType;
-use crate::execution::PrimitiveType;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
+        types::{PrimitiveType, RuntimeType},
         Artifact, ArtifactId, BasePath, CodeRef, ExecState, Face, GeoMeta, KclValue, Path, Plane, Point2d, Point3d,
         Sketch, SketchSurface, Solid, StartSketchOnFace, StartSketchOnPlane, TagEngineInfo, TagIdentifier,
     },
@@ -23,8 +22,8 @@ use crate::{
     std::{
         args::{Args, TyF64},
         utils::{
-            arc_angles, arc_center_and_end, calculate_circle_center, get_tangential_arc_to_info, get_x_component,
-            get_y_component, intersection_with_parallel_line, TangentialArcInfoInput,
+            arc_angles, arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
+            intersection_with_parallel_line, TangentialArcInfoInput,
         },
     },
 };
@@ -951,6 +950,37 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 /// ```
 ///
 /// ```no_run
+/// // Sketch on the end of an extruded face by tagging the end face.
+///
+/// exampleSketch = startSketchOn(XY)
+///   |> startProfileAt([0, 0], %)
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5, tagEnd = $end01)
+///
+/// exampleSketch002 = startSketchOn(example, end01)
+///   |> startProfileAt([1, 1], %)
+///   |> line(end = [8, 0])
+///   |> line(end = [0, 8])
+///   |> line(end = [-8, 0])
+///   |> close()
+///
+/// example002 = extrude(exampleSketch002, length = 5, tagEnd = $end02)
+///
+/// exampleSketch003 = startSketchOn(example002, end02)
+///   |> startProfileAt([2, 2], %)
+///   |> line(end = [6, 0])
+///   |> line(end = [0, 6])
+///   |> line(end = [-6, 0])
+///   |> close()
+///
+/// example003 = extrude(exampleSketch003, length = 5)
+/// ```
+///
+/// ```no_run
 /// exampleSketch = startSketchOn(XY)
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [10, 0])
@@ -991,9 +1021,35 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 ///   |> line(end = [-2, 0])
 ///   |> close()
 ///
-/// example = revolve({ axis: 'y', angle: 180 }, exampleSketch)
+/// example = revolve(exampleSketch, axis = 'y', angle = 180)
 ///
 /// exampleSketch002 = startSketchOn(example, 'end')
+///   |> startProfileAt([4.5, -5], %)
+///   |> line(end = [0, 5])
+///   |> line(end = [5, 0])
+///   |> line(end = [0, -5])
+///   |> close()
+///
+/// example002 = extrude(exampleSketch002, length = 5)
+/// ```
+///
+/// ```no_run
+/// // Sketch on the end of a revolved face by tagging the end face.
+///
+/// exampleSketch = startSketchOn(XY)
+///   |> startProfileAt([4, 12], %)
+///   |> line(end = [2, 0])
+///   |> line(end = [0, -6])
+///   |> line(end = [4, -6])
+///   |> line(end = [0, -6])
+///   |> line(end = [-3.75, -4.5])
+///   |> line(end = [0, -5.5])
+///   |> line(end = [-2, 0])
+///   |> close()
+///
+/// example = revolve(exampleSketch, axis = 'y', angle = 180, tagEnd = $end01)
+///
+/// exampleSketch002 = startSketchOn(example, end01)
 ///   |> startProfileAt([4.5, -5], %)
 ///   |> line(end = [0, 5])
 ///   |> line(end = [5, 0])
@@ -1212,7 +1268,7 @@ pub(crate) async fn inner_start_profile_at(
         SketchSurface::Face(face) => {
             // Flush the batch for our fillets/chamfers if there are any.
             // If we do not do these for sketch on face, things will fail with face does not exist.
-            args.flush_batch_for_solids(exec_state, vec![(*face.solid).clone()])
+            args.flush_batch_for_solids(exec_state, &[(*face.solid).clone()])
                 .await?;
         }
         SketchSurface::Plane(plane) if !plane.is_standard() => {
@@ -1682,18 +1738,7 @@ pub(crate) async fn inner_arc_to(
     let interior = data.interior;
     let end = data.end;
 
-    // compute the center of the circle since we do not have the value returned from the engine
-    let center = calculate_circle_center(start, interior, end);
-
-    // compute the radius since we do not have the value returned from the engine
-    // Pick any of the 3 points since they all lie along the circle
-    let sum_of_square_differences =
-        (center[0] - start[0] * center[0] - start[0]) + (center[1] - start[1] * center[1] - start[1]);
-    let radius = sum_of_square_differences.sqrt();
-
-    let ccw = is_ccw(start, interior, end);
-
-    let current_path = Path::Arc {
+    let current_path = Path::ArcThreePoint {
         base: BasePath {
             from: from.into(),
             to: data.end,
@@ -1704,9 +1749,9 @@ pub(crate) async fn inner_arc_to(
                 metadata: args.source_range.into(),
             },
         },
-        center,
-        radius,
-        ccw,
+        p1: start,
+        p2: interior,
+        p3: end,
     };
 
     let mut new_sketch = sketch.clone();
@@ -1717,26 +1762,6 @@ pub(crate) async fn inner_arc_to(
     new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
-}
-
-/// Returns true if the three-point arc is counterclockwise.  The order of
-/// parameters is critical.
-///
-/// |   end
-/// |  /
-/// |  |    / interior
-/// |  /  /
-/// | | /
-/// |/_____________
-/// start
-///
-/// If the slope of the line from start to interior is less than the slope of
-/// the line from start to end, the arc is counterclockwise.
-fn is_ccw(start: [f64; 2], interior: [f64; 2], end: [f64; 2]) -> bool {
-    let t1 = (interior[0] - start[0]) * (end[1] - start[1]);
-    let t2 = (end[0] - start[0]) * (interior[1] - start[1]);
-    // If these terms are equal, the points are collinear.
-    t1 > t2
 }
 
 /// Data to draw a tangential arc.

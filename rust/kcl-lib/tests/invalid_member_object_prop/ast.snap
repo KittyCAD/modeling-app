@@ -1,23 +1,27 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing invalid_member_object_prop.kcl
 ---
 {
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 8,
+          "commentStart": 0,
+          "end": 0,
           "id": {
-            "end": 1,
+            "commentStart": 0,
+            "end": 0,
             "name": "b",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 8,
+            "commentStart": 4,
+            "end": 0,
             "raw": "true",
-            "start": 4,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": true
@@ -25,54 +29,61 @@ description: Result of parsing invalid_member_object_prop.kcl
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 8,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 9,
         "declaration": {
-          "end": 26,
+          "commentStart": 9,
+          "end": 0,
           "id": {
-            "end": 10,
+            "commentStart": 9,
+            "end": 0,
             "name": "x",
-            "start": 9,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 13,
             "computed": false,
-            "end": 26,
+            "end": 0,
             "object": {
-              "end": 14,
+              "commentStart": 13,
+              "end": 0,
               "name": "b",
-              "start": 13,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "property": {
-              "end": 25,
+              "commentStart": 15,
+              "end": 0,
               "raw": "\"property\"",
-              "start": 15,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "property"
             },
-            "start": 13,
+            "start": 0,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "start": 9,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 26,
+        "end": 0,
         "kind": "const",
-        "start": 9,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 27,
+    "commentStart": 0,
+    "end": 0,
     "start": 0
   }
 }

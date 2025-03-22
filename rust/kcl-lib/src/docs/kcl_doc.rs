@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+use regex::Regex;
 use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, CompletionItemLabelDetails, Documentation, InsertTextFormat, MarkupContent,
     MarkupKind, ParameterInformation, ParameterLabel, SignatureHelp, SignatureInformation,
@@ -8,7 +9,7 @@ use tower_lsp::lsp_types::{
 use crate::{
     execution::annotations,
     parsing::{
-        ast::types::{Annotation, Node, NonCodeNode, NonCodeValue, VariableKind},
+        ast::types::{Annotation, Node, NonCodeNode, VariableKind},
         token::NumericSuffix,
     },
     ModuleId,
@@ -36,7 +37,7 @@ impl CollectionVisitor {
             .unwrap();
         self.id += 1;
 
-        for (i, n) in parsed.body.iter().enumerate() {
+        for n in &parsed.body {
             match n {
                 crate::parsing::ast::types::BodyItem::ImportStatement(import) if !import.visibility.is_default() => {
                     // Only supports glob imports for now.
@@ -63,12 +64,11 @@ impl CollectionVisitor {
                         VariableKind::Const => DocData::Const(ConstData::from_ast(var, qual_name)),
                     };
 
-                    // FIXME this association of metadata with items is pretty flaky.
-                    if i == 0 {
-                        dd.with_meta(&parsed.non_code_meta.start_nodes, &var.outer_attrs);
-                    } else if let Some(meta) = parsed.non_code_meta.non_code_nodes.get(&(i - 1)) {
-                        dd.with_meta(meta, &var.outer_attrs);
+                    dd.with_meta(&var.outer_attrs);
+                    for a in &var.outer_attrs {
+                        dd.with_comments(&a.pre_comments);
                     }
+                    dd.with_comments(n.get_comments());
 
                     self.result.push(dd);
                 }
@@ -80,12 +80,11 @@ impl CollectionVisitor {
                     };
                     let mut dd = DocData::Ty(TyData::from_ast(ty, qual_name));
 
-                    // FIXME this association of metadata with items is pretty flaky.
-                    if i == 0 {
-                        dd.with_meta(&parsed.non_code_meta.start_nodes, &ty.outer_attrs);
-                    } else if let Some(meta) = parsed.non_code_meta.non_code_nodes.get(&(i - 1)) {
-                        dd.with_meta(meta, &ty.outer_attrs);
+                    dd.with_meta(&ty.outer_attrs);
+                    for a in &ty.outer_attrs {
+                        dd.with_comments(&a.pre_comments);
                     }
+                    dd.with_comments(n.get_comments());
 
                     self.result.push(dd);
                 }
@@ -172,11 +171,19 @@ impl DocData {
         }
     }
 
-    fn with_meta(&mut self, meta: &[Node<NonCodeNode>], attrs: &[Node<Annotation>]) {
+    fn with_meta(&mut self, attrs: &[Node<Annotation>]) {
         match self {
-            DocData::Fn(f) => f.with_meta(meta, attrs),
-            DocData::Const(c) => c.with_meta(meta, attrs),
-            DocData::Ty(t) => t.with_meta(meta, attrs),
+            DocData::Fn(f) => f.with_meta(attrs),
+            DocData::Const(c) => c.with_meta(attrs),
+            DocData::Ty(t) => t.with_meta(attrs),
+        }
+    }
+
+    fn with_comments(&mut self, comments: &[String]) {
+        match self {
+            DocData::Fn(f) => f.with_comments(comments),
+            DocData::Const(c) => c.with_comments(comments),
+            DocData::Ty(t) => t.with_comments(comments),
         }
     }
 
@@ -276,7 +283,7 @@ impl ConstData {
             documentation: self.short_docs().map(|s| {
                 Documentation::MarkupContent(MarkupContent {
                     kind: MarkupKind::Markdown,
-                    value: s,
+                    value: remove_md_links(&s),
                 })
             }),
             deprecated: Some(self.properties.deprecated),
@@ -329,7 +336,7 @@ impl FnData {
             name,
             qual_name,
             args: expr.params.iter().map(ArgData::from_ast).collect(),
-            return_type: expr.return_type.as_ref().map(|t| t.recast(&Default::default(), 0)),
+            return_type: expr.return_type.as_ref().map(|t| t.to_string()),
             properties: Properties {
                 exported: !var.visibility.is_default(),
                 deprecated: false,
@@ -387,7 +394,7 @@ impl FnData {
             documentation: self.short_docs().map(|s| {
                 Documentation::MarkupContent(MarkupContent {
                     kind: MarkupKind::Markdown,
-                    value: s,
+                    value: remove_md_links(&s),
                 })
             }),
             deprecated: Some(self.properties.deprecated),
@@ -490,7 +497,7 @@ impl ArgData {
     fn from_ast(arg: &crate::parsing::ast::types::Parameter) -> Self {
         ArgData {
             name: arg.identifier.name.clone(),
-            ty: arg.type_.as_ref().map(|t| t.recast(&Default::default(), 0)),
+            ty: arg.type_.as_ref().map(|t| t.to_string()),
             // Doc comments are not yet supported on parameters.
             docs: None,
             kind: if arg.labeled {
@@ -554,6 +561,7 @@ pub struct TyData {
     /// The fully qualified name.
     pub qual_name: String,
     pub properties: Properties,
+    pub alias: Option<String>,
 
     /// The summary of the function.
     pub summary: Option<String>,
@@ -577,6 +585,7 @@ impl TyData {
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
             },
+            alias: ty.alias.as_ref().map(|t| t.to_string()),
             summary: None,
             description: None,
             examples: Vec::new(),
@@ -603,13 +612,16 @@ impl TyData {
     fn to_completion_item(&self) -> CompletionItem {
         CompletionItem {
             label: self.name.clone(),
-            label_details: None,
+            label_details: self.alias.as_ref().map(|t| CompletionItemLabelDetails {
+                detail: Some(format!("type {} = {t}", self.name)),
+                description: None,
+            }),
             kind: Some(CompletionItemKind::FUNCTION),
             detail: Some(self.qual_name().to_owned()),
             documentation: self.short_docs().map(|s| {
                 Documentation::MarkupContent(MarkupContent {
                     kind: MarkupKind::Markdown,
-                    value: s,
+                    value: remove_md_links(&s),
                 })
             }),
             deprecated: Some(self.properties.deprecated),
@@ -629,6 +641,11 @@ impl TyData {
     }
 }
 
+fn remove_md_links(s: &str) -> String {
+    let re = Regex::new(r"\[([^\]]*)\]\([^\)]*\)").unwrap();
+    re.replace_all(s, "$1").to_string()
+}
+
 trait ApplyMeta {
     fn apply_docs(
         &mut self,
@@ -640,55 +657,20 @@ trait ApplyMeta {
     fn doc_hidden(&mut self, doc_hidden: bool);
     fn impl_kind(&mut self, impl_kind: annotations::Impl);
 
-    fn with_meta(&mut self, meta: &[Node<NonCodeNode>], attrs: &[Node<Annotation>]) {
-        for attr in attrs {
-            if let Annotation {
-                name: None,
-                properties: Some(props),
-                ..
-            } = &attr.inner
-            {
-                for p in props {
-                    match &*p.key.name {
-                        annotations::IMPL => {
-                            if let Some(s) = p.value.ident_name() {
-                                self.impl_kind(annotations::Impl::from_str(s).unwrap());
-                            }
-                        }
-                        "deprecated" => {
-                            if let Some(b) = p.value.literal_bool() {
-                                self.deprecated(b);
-                            }
-                        }
-                        "doc_hidden" => {
-                            if let Some(b) = p.value.literal_bool() {
-                                self.doc_hidden(b);
-                            }
-                        }
-                        _ => {}
-                    }
-                }
-            }
-        }
-        let mut comments = Vec::new();
-        for m in meta {
-            match &m.value {
-                NonCodeValue::BlockComment { value, .. } | NonCodeValue::NewLineBlockComment { value, .. } => {
-                    comments.push(value)
-                }
-                _ => {}
-            }
+    fn with_comments(&mut self, comments: &[String]) {
+        if comments.iter().all(|s| s.is_empty()) {
+            return;
         }
 
         let mut summary = None;
         let mut description = None;
         let mut example: Option<(String, ExampleProperties)> = None;
         let mut examples = Vec::new();
-        for l in comments.into_iter().filter(|l| l.starts_with('/')).map(|l| {
-            if let Some(ll) = l.strip_prefix("/ ") {
+        for l in comments.iter().filter(|l| l.starts_with("///")).map(|l| {
+            if let Some(ll) = l.strip_prefix("/// ") {
                 ll
             } else {
-                &l[1..]
+                &l[3..]
             }
         }) {
             if description.is_none() && summary.is_none() {
@@ -762,6 +744,38 @@ trait ApplyMeta {
             description.map(|s| s.trim().to_owned()),
             examples,
         );
+    }
+
+    fn with_meta(&mut self, attrs: &[Node<Annotation>]) {
+        for attr in attrs {
+            if let Annotation {
+                name: None,
+                properties: Some(props),
+                ..
+            } = &attr.inner
+            {
+                for p in props {
+                    match &*p.key.name {
+                        annotations::IMPL => {
+                            if let Some(s) = p.value.ident_name() {
+                                self.impl_kind(annotations::Impl::from_str(s).unwrap());
+                            }
+                        }
+                        "deprecated" => {
+                            if let Some(b) = p.value.literal_bool() {
+                                self.deprecated(b);
+                            }
+                        }
+                        "doc_hidden" => {
+                            if let Some(b) = p.value.literal_bool() {
+                                self.doc_hidden(b);
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -858,6 +872,24 @@ mod test {
             }
         }
         panic!("didn't find PI");
+    }
+
+    #[test]
+    fn test_remove_md_links() {
+        assert_eq!(
+            remove_md_links("sdf dsf sd fj sdk fasdfs. asad[sdfs] dfsdf(dsfs, dsf)"),
+            "sdf dsf sd fj sdk fasdfs. asad[sdfs] dfsdf(dsfs, dsf)".to_owned()
+        );
+        assert_eq!(remove_md_links("[]()"), "".to_owned());
+        assert_eq!(remove_md_links("[foo](bar)"), "foo".to_owned());
+        assert_eq!(
+            remove_md_links("asdasda dsa[foo](http://www.bar/baz/qux.md). asdasdasdas asdas"),
+            "asdasda dsafoo. asdasdasdas asdas".to_owned()
+        );
+        assert_eq!(
+            remove_md_links("a [foo](bar) b [2](bar) c [_](bar)"),
+            "a foo b 2 c _".to_owned()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]

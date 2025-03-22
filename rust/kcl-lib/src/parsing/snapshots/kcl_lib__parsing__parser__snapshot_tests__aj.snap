@@ -5,9 +5,12 @@ expression: actual
 {
   "body": [
     {
+      "commentStart": 0,
       "declaration": {
+        "commentStart": 0,
         "end": 71,
         "id": {
+          "commentStart": 0,
           "end": 5,
           "name": "myBox",
           "start": 0,
@@ -18,6 +21,7 @@ expression: actual
             {
               "arguments": [
                 {
+                  "commentStart": 22,
                   "end": 24,
                   "name": "XY",
                   "start": 22,
@@ -26,11 +30,13 @@ expression: actual
                 }
               ],
               "callee": {
+                "commentStart": 8,
                 "end": 21,
                 "name": "startSketchOn",
                 "start": 8,
                 "type": "Identifier"
               },
+              "commentStart": 8,
               "end": 25,
               "start": 8,
               "type": "CallExpression",
@@ -39,6 +45,7 @@ expression: actual
             {
               "arguments": [
                 {
+                  "commentStart": 44,
                   "end": 45,
                   "name": "p",
                   "start": 44,
@@ -46,6 +53,7 @@ expression: actual
                   "type": "Identifier"
                 },
                 {
+                  "commentStart": 47,
                   "end": 48,
                   "start": 47,
                   "type": "PipeSubstitution",
@@ -53,11 +61,13 @@ expression: actual
                 }
               ],
               "callee": {
+                "commentStart": 29,
                 "end": 43,
                 "name": "startProfileAt",
                 "start": 29,
                 "type": "Identifier"
               },
+              "commentStart": 29,
               "end": 49,
               "start": 29,
               "type": "CallExpression",
@@ -68,14 +78,17 @@ expression: actual
                 {
                   "type": "LabeledArg",
                   "label": {
+                    "commentStart": 58,
                     "end": 61,
                     "name": "end",
                     "start": 58,
                     "type": "Identifier"
                   },
                   "arg": {
+                    "commentStart": 64,
                     "elements": [
                       {
+                        "commentStart": 65,
                         "end": 66,
                         "raw": "0",
                         "start": 65,
@@ -87,6 +100,7 @@ expression: actual
                         }
                       },
                       {
+                        "commentStart": 68,
                         "end": 69,
                         "name": "l",
                         "start": 68,
@@ -102,11 +116,13 @@ expression: actual
                 }
               ],
               "callee": {
+                "commentStart": 53,
                 "end": 57,
                 "name": "line",
                 "start": 53,
                 "type": "Identifier"
               },
+              "commentStart": 53,
               "end": 71,
               "start": 53,
               "type": "CallExpressionKw",
@@ -114,6 +130,7 @@ expression: actual
               "unlabeled": null
             }
           ],
+          "commentStart": 8,
           "end": 71,
           "start": 8,
           "type": "PipeExpression",
@@ -129,6 +146,7 @@ expression: actual
       "type": "VariableDeclaration"
     }
   ],
+  "commentStart": 0,
   "end": 71,
   "start": 0
 }

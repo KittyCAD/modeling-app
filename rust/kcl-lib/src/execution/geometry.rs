@@ -83,16 +83,17 @@ pub struct ImportedGeometry {
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 #[allow(clippy::vec_box)]
-pub enum SolidOrImportedGeometry {
+pub enum SolidOrSketchOrImportedGeometry {
     ImportedGeometry(Box<ImportedGeometry>),
     SolidSet(Vec<Solid>),
+    SketchSet(Vec<Sketch>),
 }
 
-impl From<SolidOrImportedGeometry> for crate::execution::KclValue {
-    fn from(value: SolidOrImportedGeometry) -> Self {
+impl From<SolidOrSketchOrImportedGeometry> for crate::execution::KclValue {
+    fn from(value: SolidOrSketchOrImportedGeometry) -> Self {
         match value {
-            SolidOrImportedGeometry::ImportedGeometry(s) => crate::execution::KclValue::ImportedGeometry(*s),
-            SolidOrImportedGeometry::SolidSet(mut s) => {
+            SolidOrSketchOrImportedGeometry::ImportedGeometry(s) => crate::execution::KclValue::ImportedGeometry(*s),
+            SolidOrSketchOrImportedGeometry::SolidSet(mut s) => {
                 if s.len() == 1 {
                     crate::execution::KclValue::Solid {
                         value: Box::new(s.pop().unwrap()),
@@ -103,7 +104,22 @@ impl From<SolidOrImportedGeometry> for crate::execution::KclValue {
                             .into_iter()
                             .map(|s| crate::execution::KclValue::Solid { value: Box::new(s) })
                             .collect(),
-                        ty: crate::execution::PrimitiveType::Solid,
+                        ty: crate::execution::types::RuntimeType::solid(),
+                    }
+                }
+            }
+            SolidOrSketchOrImportedGeometry::SketchSet(mut s) => {
+                if s.len() == 1 {
+                    crate::execution::KclValue::Sketch {
+                        value: Box::new(s.pop().unwrap()),
+                    }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::Sketch { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::sketch(),
                     }
                 }
             }
@@ -111,11 +127,12 @@ impl From<SolidOrImportedGeometry> for crate::execution::KclValue {
     }
 }
 
-impl SolidOrImportedGeometry {
+impl SolidOrSketchOrImportedGeometry {
     pub(crate) fn ids(&self) -> Vec<uuid::Uuid> {
         match self {
-            SolidOrImportedGeometry::ImportedGeometry(s) => vec![s.id],
-            SolidOrImportedGeometry::SolidSet(s) => s.iter().map(|s| s.id).collect(),
+            SolidOrSketchOrImportedGeometry::ImportedGeometry(s) => vec![s.id],
+            SolidOrSketchOrImportedGeometry::SolidSet(s) => s.iter().map(|s| s.id).collect(),
+            SolidOrSketchOrImportedGeometry::SketchSet(s) => s.iter().map(|s| s.id).collect(),
         }
     }
 }
@@ -135,6 +152,8 @@ pub struct Helix {
     pub angle_start: f64,
     /// Is the helix rotation counter clockwise?
     pub ccw: bool,
+    /// The cylinder the helix was created on.
+    pub cylinder_id: Option<uuid::Uuid>,
     pub units: UnitLen,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
@@ -832,6 +851,19 @@ pub enum Path {
         #[ts(type = "[number, number]")]
         p3: [f64; 2],
     },
+    ArcThreePoint {
+        #[serde(flatten)]
+        base: BasePath,
+        /// Point 1 of the arc (base on the end of previous segment)
+        #[ts(type = "[number, number]")]
+        p1: [f64; 2],
+        /// Point 2 of the arc (interior kwarg)
+        #[ts(type = "[number, number]")]
+        p2: [f64; 2],
+        /// Point 3 of the arc (end kwarg)
+        #[ts(type = "[number, number]")]
+        p3: [f64; 2],
+    },
     /// A path that is horizontal.
     Horizontal {
         #[serde(flatten)]
@@ -892,6 +924,7 @@ impl From<&Path> for PathType {
             Path::AngledLineTo { .. } => Self::AngledLineTo,
             Path::Base { .. } => Self::Base,
             Path::Arc { .. } => Self::Arc,
+            Path::ArcThreePoint { .. } => Self::Arc,
         }
     }
 }
@@ -908,6 +941,7 @@ impl Path {
             Path::Circle { base, .. } => base.geo_meta.id,
             Path::CircleThreePoint { base, .. } => base.geo_meta.id,
             Path::Arc { base, .. } => base.geo_meta.id,
+            Path::ArcThreePoint { base, .. } => base.geo_meta.id,
         }
     }
 
@@ -922,6 +956,7 @@ impl Path {
             Path::Circle { base, .. } => base.tag.clone(),
             Path::CircleThreePoint { base, .. } => base.tag.clone(),
             Path::Arc { base, .. } => base.tag.clone(),
+            Path::ArcThreePoint { base, .. } => base.tag.clone(),
         }
     }
 
@@ -936,6 +971,7 @@ impl Path {
             Path::Circle { base, .. } => base,
             Path::CircleThreePoint { base, .. } => base,
             Path::Arc { base, .. } => base,
+            Path::ArcThreePoint { base, .. } => base,
         }
     }
 
@@ -985,6 +1021,10 @@ impl Path {
                 // TODO: Call engine utils to figure this out.
                 linear_distance(self.get_from(), self.get_to())
             }
+            Self::ArcThreePoint { .. } => {
+                // TODO: Call engine utils to figure this out.
+                linear_distance(self.get_from(), self.get_to())
+            }
         }
     }
 
@@ -999,6 +1039,7 @@ impl Path {
             Path::Circle { base, .. } => Some(base),
             Path::CircleThreePoint { base, .. } => Some(base),
             Path::Arc { base, .. } => Some(base),
+            Path::ArcThreePoint { base, .. } => Some(base),
         }
     }
 
@@ -1010,6 +1051,17 @@ impl Path {
                 center: *center,
                 ccw: *ccw,
             },
+            Path::ArcThreePoint { p1, p2, p3, .. } => {
+                let circle_center =
+                    crate::std::utils::calculate_circle_from_3_points([(*p1).into(), (*p2).into(), (*p3).into()]);
+                let radius = linear_distance(&[circle_center.center.x, circle_center.center.y], p1);
+                let center_point = [circle_center.center.x, circle_center.center.y];
+                GetTangentialInfoFromPathsResult::Circle {
+                    center: center_point,
+                    ccw: true,
+                    radius,
+                }
+            }
             Path::Circle {
                 center, ccw, radius, ..
             } => GetTangentialInfoFromPathsResult::Circle {

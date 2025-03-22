@@ -2,15 +2,12 @@ import {
   expect,
   BrowserContext,
   TestInfo,
-  _electron as electron,
-  ElectronApplication,
   Locator,
   Page,
 } from '@playwright/test'
 import { test } from './zoo-test'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import fsp from 'fs/promises'
-import fsSync from 'fs'
 import path from 'path'
 import pixelMatch from 'pixelmatch'
 import { PNG } from 'pngjs'
@@ -24,24 +21,23 @@ import {
   IS_PLAYWRIGHT_KEY,
 } from './storageStates'
 import * as TOML from '@iarna/toml'
-import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
-import { SETTINGS_FILE_NAME } from 'lib/constants'
 import { isErrorWhitelisted } from './lib/console-error-whitelist'
 import { isArray } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
 import { DeepPartial } from 'lib/types'
 import { Configuration } from 'lang/wasm'
-import { Settings } from '@rust/kcl-lib/bindings/Settings'
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
 }
 
-type TestColor = [number, number, number]
-export const TEST_COLORS = {
-  WHITE: [249, 249, 249] as TestColor,
-  YELLOW: [255, 255, 0] as TestColor,
-  BLUE: [0, 0, 255] as TestColor,
+export type TestColor = [number, number, number]
+export const TEST_COLORS: { [key: string]: TestColor } = {
+  WHITE: [249, 249, 249],
+  YELLOW: [255, 255, 0],
+  BLUE: [0, 0, 255],
+  DARK_MODE_BKGD: [27, 27, 27],
+  DARK_MODE_PLANE_XZ: [50, 50, 99],
 } as const
 
 export const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
@@ -56,16 +52,13 @@ export const commonPoints = {
   num3: -2.44,
 } as const
 
-/** A semi-reliable color to check the default XZ plane on
- * in dark mode in the default camera position
- */
-export const darkModePlaneColorXZ: [number, number, number] = [50, 50, 99]
-
-/** A semi-reliable color to check the default dark mode bg color against */
-export const darkModeBgColor: [number, number, number] = [27, 27, 27]
-
 export const editorSelector = '[role="textbox"][data-language="kcl"]'
 type PaneId = 'variables' | 'code' | 'files' | 'logs'
+
+export function orRunWhenFullSuiteEnabled() {
+  const branch = process.env.GITHUB_REF?.replace('refs/heads/', '')
+  return branch !== 'all-e2e'
+}
 
 async function waitForPageLoadWithRetry(page: Page) {
   await expect(async () => {
@@ -928,10 +921,6 @@ export async function setup(
   // await page.reload()
 }
 
-let electronApp: ElectronApplication | undefined = undefined
-let context: BrowserContext | undefined = undefined
-let page: Page | undefined = undefined
-
 function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {
   // enabled for chrome for now
   if (page.context().browser()?.browserType().name() === 'chromium') {
@@ -948,8 +937,8 @@ function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {
         // Fail when running on CI and FAIL_ON_CONSOLE_ERRORS is set
         // use expect to prevent page from closing and not cleaning up
         expect(`An error was detected in the console: \r\n message:${exception.message} \r\n name:${exception.name} \r\n stack:${exception.stack}
-          
-          *Either fix the console error or add it to the whitelist defined in ./lib/console-error-whitelist.ts (if the error can be safely ignored)       
+
+          *Either fix the console error or add it to the whitelist defined in ./lib/console-error-whitelist.ts (if the error can be safely ignored)
           `).toEqual('Console error detected')
       } else {
         // the (test-results/exceptions.txt) file will be uploaded as part of an upload artifact in GH

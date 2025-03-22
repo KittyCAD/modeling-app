@@ -1,0 +1,11 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tests/import_side_effect/export_side_effect.kcl
+---
+export fn foo() {
+  return 0
+}
+
+// This interacts with the engine.
+part001 = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 10)

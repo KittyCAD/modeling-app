@@ -13,31 +13,29 @@ use kittycad_modeling_cmds as kcmc;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{
-        kcl_value::{ArrayLen, RuntimeType},
-        ExecState, KclValue, PrimitiveType, SolidOrImportedGeometry,
-    },
+    execution::{types::RuntimeType, ExecState, KclValue, SolidOrSketchOrImportedGeometry},
     std::Args,
 };
 
-/// Scale a solid.
+/// Scale a solid or a sketch.
 pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids = args.get_unlabeled_kw_arg_typed(
-        "solids",
+    let objects = args.get_unlabeled_kw_arg_typed(
+        "objects",
         &RuntimeType::Union(vec![
-            RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty),
-            RuntimeType::Primitive(PrimitiveType::ImportedGeometry),
+            RuntimeType::sketches(),
+            RuntimeType::solids(),
+            RuntimeType::imported(),
         ]),
         exec_state,
     )?;
     let scale = args.get_kw_arg("scale")?;
     let global = args.get_kw_arg_opt("global")?;
 
-    let solids = inner_scale(solids, scale, global, exec_state, args).await?;
-    Ok(solids.into())
+    let objects = inner_scale(objects, scale, global, exec_state, args).await?;
+    Ok(objects.into())
 }
 
-/// Scale a solid.
+/// Scale a solid or a sketch.
 ///
 /// By default the transform is applied in local sketch axis, therefore the origin will not move.
 ///
@@ -134,25 +132,31 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     keywords = true,
     unlabeled_first = true,
     args = {
-        solids = {docs = "The solid or set of solids to scale."},
+        objects = {docs = "The solid, sketch, or set of solids or sketches to scale."},
         scale = {docs = "The scale factor for the x, y, and z axes."},
         global = {docs = "If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move."}
     }
 }]
 async fn inner_scale(
-    solids: SolidOrImportedGeometry,
+    objects: SolidOrSketchOrImportedGeometry,
     scale: [f64; 3],
     global: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<SolidOrImportedGeometry, KclError> {
-    for solid_id in solids.ids() {
+) -> Result<SolidOrSketchOrImportedGeometry, KclError> {
+    // If we have a solid, flush the fillets and chamfers.
+    // Only transforms needs this, it is very odd, see: https://github.com/KittyCAD/modeling-app/issues/5880
+    if let SolidOrSketchOrImportedGeometry::SolidSet(solids) = &objects {
+        args.flush_batch_for_solids(exec_state, solids).await?;
+    }
+
+    for object_id in objects.ids() {
         let id = exec_state.next_uuid();
 
         args.batch_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::SetObjectTransform {
-                object_id: solid_id,
+                object_id,
                 transforms: vec![shared::ComponentTransform {
                     scale: Some(shared::TransformBy::<Point3d<f64>> {
                         property: Point3d {
@@ -172,27 +176,28 @@ async fn inner_scale(
         .await?;
     }
 
-    Ok(solids)
+    Ok(objects)
 }
 
-/// Move a solid.
+/// Move a solid or a sketch.
 pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids = args.get_unlabeled_kw_arg_typed(
-        "solids",
+    let objects = args.get_unlabeled_kw_arg_typed(
+        "objects",
         &RuntimeType::Union(vec![
-            RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty),
-            RuntimeType::Primitive(PrimitiveType::ImportedGeometry),
+            RuntimeType::sketches(),
+            RuntimeType::solids(),
+            RuntimeType::imported(),
         ]),
         exec_state,
     )?;
     let translate = args.get_kw_arg("translate")?;
     let global = args.get_kw_arg_opt("global")?;
 
-    let solids = inner_translate(solids, translate, global, exec_state, args).await?;
-    Ok(solids.into())
+    let objects = inner_translate(objects, translate, global, exec_state, args).await?;
+    Ok(objects.into())
 }
 
-/// Move a solid.
+/// Move a solid or a sketch.
 ///
 /// ```no_run
 /// // Move a pipe.
@@ -275,31 +280,86 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// // Move the sweeps.
 /// translate(parts, translate = [1.0, 1.0, 2.5])
 /// ```
+///
+/// ```no_run
+/// // Move a sketch.
+///
+/// fn square(length){
+///     l = length / 2
+///     p0 = [-l, -l]
+///     p1 = [-l, l]
+///     p2 = [l, l]
+///     p3 = [l, -l]
+///
+///     return startSketchOn(XY)
+///         |> startProfileAt(p0, %)
+///         |> line(endAbsolute = p1)
+///         |> line(endAbsolute = p2)
+///         |> line(endAbsolute = p3)
+///         |> close()
+/// }
+///
+/// square(10)
+///     |> translate(
+///         translate = [5, 5, 0],
+///     )
+///     |> extrude(
+///         length = 10,
+///     )
+/// ```
+///
+/// ```no_run
+/// // Translate and rotate a sketch to create a loft.
+/// sketch001 = startSketchOn('XY')
+///
+/// fn square() {
+///     return  startProfileAt([-10, 10], sketch001)
+///         |> xLine(length = 20)
+///         |> yLine(length = -20)
+///         |> xLine(length = -20)
+///         |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///         |> close()
+/// }
+///
+/// profile001 = square()
+///
+/// profile002 = square()
+///     |> translate(translate = [0, 0, 20])
+///     |> rotate(axis = [0, 0, 1.0], angle = 45)
+///
+/// loft([profile001, profile002])
+/// ```
 #[stdlib {
     name = "translate",
     feature_tree_operation = false,
     keywords = true,
     unlabeled_first = true,
     args = {
-        solids = {docs = "The solid or set of solids to move."},
-        translate = {docs = "The amount to move the solid in all three axes."},
+        objects = {docs = "The solid, sketch, or set of solids or sketches to move."},
+        translate = {docs = "The amount to move the solid or sketch in all three axes."},
         global = {docs = "If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move."}
     }
 }]
 async fn inner_translate(
-    solids: SolidOrImportedGeometry,
+    objects: SolidOrSketchOrImportedGeometry,
     translate: [f64; 3],
     global: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<SolidOrImportedGeometry, KclError> {
-    for solid_id in solids.ids() {
+) -> Result<SolidOrSketchOrImportedGeometry, KclError> {
+    // If we have a solid, flush the fillets and chamfers.
+    // Only transforms needs this, it is very odd, see: https://github.com/KittyCAD/modeling-app/issues/5880
+    if let SolidOrSketchOrImportedGeometry::SolidSet(solids) = &objects {
+        args.flush_batch_for_solids(exec_state, solids).await?;
+    }
+
+    for object_id in objects.ids() {
         let id = exec_state.next_uuid();
 
         args.batch_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::SetObjectTransform {
-                object_id: solid_id,
+                object_id,
                 transforms: vec![shared::ComponentTransform {
                     translate: Some(shared::TransformBy::<Point3d<LengthUnit>> {
                         property: shared::Point3d {
@@ -319,16 +379,17 @@ async fn inner_translate(
         .await?;
     }
 
-    Ok(solids)
+    Ok(objects)
 }
 
-/// Rotate a solid.
+/// Rotate a solid or a sketch.
 pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids = args.get_unlabeled_kw_arg_typed(
-        "solid",
+    let objects = args.get_unlabeled_kw_arg_typed(
+        "objects",
         &RuntimeType::Union(vec![
-            RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty),
-            RuntimeType::Primitive(PrimitiveType::ImportedGeometry),
+            RuntimeType::sketches(),
+            RuntimeType::solids(),
+            RuntimeType::imported(),
         ]),
         exec_state,
     )?;
@@ -439,11 +500,11 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         }
     }
 
-    let solids = inner_rotate(solids, roll, pitch, yaw, axis, angle, global, exec_state, args).await?;
-    Ok(solids.into())
+    let objects = inner_rotate(objects, roll, pitch, yaw, axis, angle, global, exec_state, args).await?;
+    Ok(objects.into())
 }
 
-/// Rotate a solid.
+/// Rotate a solid or a sketch.
 ///
 /// ### Using Roll, Pitch, and Yaw
 ///
@@ -589,13 +650,35 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// // Rotate the sweeps.
 /// rotate(parts, axis =  [0, 0, 1.0], angle = 90)
 /// ```
+///
+/// ```no_run
+/// // Translate and rotate a sketch to create a loft.
+/// sketch001 = startSketchOn('XY')
+///
+/// fn square() {
+///     return  startProfileAt([-10, 10], sketch001)
+///         |> xLine(length = 20)
+///         |> yLine(length = -20)
+///         |> xLine(length = -20)
+///         |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///         |> close()
+/// }
+///
+/// profile001 = square()
+///
+/// profile002 = square()
+///     |> translate(translate = [0, 0, 20])
+///     |> rotate(axis = [0, 0, 1.0], angle = 45)
+///
+/// loft([profile001, profile002])
+/// ```
 #[stdlib {
     name = "rotate",
     feature_tree_operation = false,
     keywords = true,
     unlabeled_first = true,
     args = {
-        solids = {docs = "The solid or set of solids to rotate."},
+        objects = {docs = "The solid, sketch, or set of solids or sketches to rotate."},
         roll = {docs = "The roll angle in degrees. Must be used with `pitch` and `yaw`. Must be between -360 and 360.", include_in_snippet = true},
         pitch = {docs = "The pitch angle in degrees. Must be used with `roll` and `yaw`. Must be between -360 and 360.", include_in_snippet = true},
         yaw = {docs = "The yaw angle in degrees. Must be used with `roll` and `pitch`. Must be between -360 and 360.", include_in_snippet = true},
@@ -606,7 +689,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 }]
 #[allow(clippy::too_many_arguments)]
 async fn inner_rotate(
-    solids: SolidOrImportedGeometry,
+    objects: SolidOrSketchOrImportedGeometry,
     roll: Option<f64>,
     pitch: Option<f64>,
     yaw: Option<f64>,
@@ -615,15 +698,21 @@ async fn inner_rotate(
     global: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<SolidOrImportedGeometry, KclError> {
-    for solid_id in solids.ids() {
+) -> Result<SolidOrSketchOrImportedGeometry, KclError> {
+    // If we have a solid, flush the fillets and chamfers.
+    // Only transforms needs this, it is very odd, see: https://github.com/KittyCAD/modeling-app/issues/5880
+    if let SolidOrSketchOrImportedGeometry::SolidSet(solids) = &objects {
+        args.flush_batch_for_solids(exec_state, solids).await?;
+    }
+
+    for object_id in objects.ids() {
         let id = exec_state.next_uuid();
 
         if let (Some(roll), Some(pitch), Some(yaw)) = (roll, pitch, yaw) {
             args.batch_modeling_cmd(
                 id,
                 ModelingCmd::from(mcmd::SetObjectTransform {
-                    object_id: solid_id,
+                    object_id,
                     transforms: vec![shared::ComponentTransform {
                         rotate_rpy: Some(shared::TransformBy::<Point3d<f64>> {
                             property: shared::Point3d {
@@ -647,7 +736,7 @@ async fn inner_rotate(
             args.batch_modeling_cmd(
                 id,
                 ModelingCmd::from(mcmd::SetObjectTransform {
-                    object_id: solid_id,
+                    object_id,
                     transforms: vec![shared::ComponentTransform {
                         rotate_angle_axis: Some(shared::TransformBy::<Point4d<f64>> {
                             property: shared::Point4d {
@@ -669,7 +758,7 @@ async fn inner_rotate(
         }
     }
 
-    Ok(solids)
+    Ok(objects)
 }
 
 #[cfg(test)]

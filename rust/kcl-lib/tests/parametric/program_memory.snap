@@ -26,66 +26,42 @@ description: Variables in memory after executing parametric.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            284,
-            305,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            311,
-            332,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            338,
-            365,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            371,
-            405,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            411,
-            445,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            451,
-            459,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -97,11 +73,7 @@ description: Variables in memory after executing parametric.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                284,
-                305,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -120,11 +92,7 @@ description: Variables in memory after executing parametric.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                311,
-                332,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -143,11 +111,7 @@ description: Variables in memory after executing parametric.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                338,
-                365,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               8.0,
@@ -166,11 +130,7 @@ description: Variables in memory after executing parametric.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                371,
-                405,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               8.0,
@@ -189,11 +149,7 @@ description: Variables in memory after executing parametric.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                411,
-                445,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.1852,
@@ -212,11 +168,7 @@ description: Variables in memory after executing parametric.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                451,
-                459,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.1852,
@@ -277,11 +229,7 @@ description: Variables in memory after executing parametric.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              253,
-              278,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",

@@ -10,12 +10,7 @@ import {
   createTagDeclarator,
   createUnaryExpression,
 } from 'lang/modifyAst'
-import {
-  ArrayExpression,
-  CallExpression,
-  PipeExpression,
-  recast,
-} from 'lang/wasm'
+import { ArrayExpression, CallExpression, PipeExpression } from 'lang/wasm'
 import { roundOff } from 'lib/utils'
 import {
   isCallExpression,
@@ -29,7 +24,7 @@ import { ARG_END_ABSOLUTE } from 'lang/std/sketch'
 /**
  * It does not create the startSketchOn and it does not create the startProfileAt.
  * Returns AST expressions for this KCL code:
- * const yo = startSketchOn('XY')
+ * const yo = startSketchOn(XY)
  *  |> startProfileAt([0, 0], %)
  *  |> angledLine([0, 0], %, $a)
  *  |> angledLine([segAng(a) - 90, 0], %, $b)

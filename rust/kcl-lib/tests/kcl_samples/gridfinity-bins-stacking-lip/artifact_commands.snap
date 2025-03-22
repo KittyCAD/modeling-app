@@ -5,11 +5,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,11 +13,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -29,11 +21,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +30,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +39,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      409,
-      442,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -67,11 +47,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1570,
-      1619,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -96,11 +72,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1570,
-      1619,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -114,11 +86,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1186,
-      1232,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -134,22 +102,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1186,
-      1232,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1186,
-      1232,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -162,22 +122,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1186,
-      1232,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1240,
-      1262,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -194,11 +146,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1270,
-      1300,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -215,11 +163,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1308,
-      1367,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -236,11 +180,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1375,
-      1402,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -257,11 +197,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1410,
-      1469,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -278,11 +214,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1477,
-      1484,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -290,11 +222,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1557,
-      1662,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -310,11 +238,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1557,
-      1662,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -324,22 +248,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1557,
-      1662,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1557,
-      1662,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -347,11 +263,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1557,
-      1662,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -360,11 +272,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1557,
-      1662,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -374,11 +282,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1557,
-      1662,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -388,11 +292,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1557,
-      1662,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -402,11 +302,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1557,
-      1662,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -416,11 +312,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1557,
-      1662,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -430,11 +322,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1557,
-      1662,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -444,11 +332,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1557,
-      1662,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -458,11 +342,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1557,
-      1662,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -472,11 +352,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1557,
-      1662,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -486,11 +362,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1557,
-      1662,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -500,11 +372,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1737,
-      1946,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -525,11 +393,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2205,
-      2254,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -554,11 +418,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2205,
-      2254,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -572,11 +432,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1186,
-      1232,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -592,22 +448,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1186,
-      1232,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1186,
-      1232,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -620,22 +468,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1186,
-      1232,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1240,
-      1262,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -652,11 +492,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1270,
-      1300,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -673,11 +509,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1308,
-      1367,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -694,11 +526,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1375,
-      1402,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -715,11 +543,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1410,
-      1469,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -736,11 +560,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1477,
-      1484,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -748,11 +568,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2159,
-      2256,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "revolve",
       "target": "[uuid]",
@@ -776,11 +592,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2159,
-      2256,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -788,11 +600,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2159,
-      2256,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -801,11 +609,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2159,
-      2256,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -815,11 +619,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2159,
-      2256,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -829,11 +629,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2159,
-      2256,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -843,11 +639,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2159,
-      2256,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -857,11 +649,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2159,
-      2256,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -871,11 +659,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2159,
-      2256,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -885,11 +669,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2159,
-      2256,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -899,11 +679,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2159,
-      2256,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -913,11 +689,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2159,
-      2256,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -927,11 +699,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2159,
-      2256,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -941,11 +709,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2301,
-      2512,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -966,11 +730,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2530,
-      2549,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -995,11 +755,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2555,
-      2643,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1015,22 +771,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2555,
-      2643,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2555,
-      2643,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1043,22 +791,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2555,
-      2643,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2649,
-      2713,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1075,11 +815,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2719,
-      2783,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1096,11 +832,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2789,
-      2842,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1117,11 +849,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2848,
-      2869,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1129,11 +857,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2899,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1149,11 +873,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2899,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1163,22 +883,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2899,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2899,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1186,11 +898,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2899,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1199,11 +907,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2899,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1213,11 +917,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2899,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1227,11 +927,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2899,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1241,11 +937,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2899,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1255,11 +947,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2899,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1269,11 +957,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2899,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1283,11 +967,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2899,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1297,11 +977,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2899,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1311,11 +987,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2965,
-      2993,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1325,11 +997,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3004,
-      3036,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_prev_adjacent_edge",
       "object_id": "[uuid]",
@@ -1339,11 +1007,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3047,
-      3075,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1353,11 +1017,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3086,
-      3118,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_prev_adjacent_edge",
       "object_id": "[uuid]",
@@ -1367,11 +1027,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2905,
-      3134,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -1383,11 +1039,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2905,
-      3134,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -1399,11 +1051,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2905,
-      3134,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -1415,11 +1063,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2905,
-      3134,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -1431,11 +1075,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3194,
-      3359,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1447,22 +1087,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3194,
-      3359,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3194,
-      3359,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1475,22 +1107,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3194,
-      3359,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3194,
-      3359,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1515,11 +1139,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3194,
-      3359,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1527,11 +1147,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3365,
-      3574,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -1552,11 +1168,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1568,11 +1180,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1582,22 +1190,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1605,11 +1205,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1618,11 +1214,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1632,11 +1224,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1646,11 +1234,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1662,11 +1246,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1676,22 +1256,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1699,11 +1271,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1712,11 +1280,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1726,11 +1290,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1740,11 +1300,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1756,11 +1312,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1770,22 +1322,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1793,11 +1337,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1806,11 +1346,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1820,11 +1356,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1834,11 +1366,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1850,11 +1378,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1864,22 +1388,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1887,11 +1403,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1900,11 +1412,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1914,11 +1422,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3580,
-      3607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1928,11 +1432,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3664,
-      3807,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -1972,11 +1472,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3664,
-      3807,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2016,11 +1512,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3664,
-      3807,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2060,11 +1552,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3664,
-      3807,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2104,11 +1592,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3813,
-      3943,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2177,11 +1661,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3813,
-      3943,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2250,11 +1730,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3813,
-      3943,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2323,11 +1799,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3813,
-      3943,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2396,11 +1868,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3813,
-      3943,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2469,11 +1937,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3813,
-      3943,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2542,11 +2006,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3813,
-      3943,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2615,11 +2075,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3813,
-      3943,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2688,11 +2144,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4023,
-      4168,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2732,11 +2184,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4023,
-      4168,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2776,11 +2224,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4023,
-      4168,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2820,11 +2264,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4023,
-      4168,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2864,11 +2304,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4174,
-      4304,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2937,11 +2373,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4174,
-      4304,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -3010,11 +2442,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4174,
-      4304,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -3083,11 +2511,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4174,
-      4304,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -3156,11 +2580,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4174,
-      4304,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -3229,11 +2649,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4174,
-      4304,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -3302,11 +2718,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4174,
-      4304,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -3375,11 +2787,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4174,
-      4304,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -3448,11 +2856,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4372,
-      4523,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -3492,11 +2896,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4529,
-      4659,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -3565,11 +2965,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4529,
-      4659,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -3638,11 +3034,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4687,
-      4721,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -3667,11 +3059,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4687,
-      4721,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -3685,11 +3073,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4728,
-      4753,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3705,22 +3089,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4728,
-      4753,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4728,
-      4753,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -3733,22 +3109,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4728,
-      4753,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4759,
-      4831,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3765,11 +3133,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4837,
-      4910,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3786,11 +3150,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4916,
-      4969,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3807,11 +3167,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4975,
-      4996,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -3819,11 +3175,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5002,
-      5046,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3839,11 +3191,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5002,
-      5046,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -3853,22 +3201,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5002,
-      5046,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5002,
-      5046,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -3876,11 +3216,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5002,
-      5046,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -3889,11 +3225,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5002,
-      5046,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3903,11 +3235,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5002,
-      5046,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3917,11 +3245,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5002,
-      5046,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3931,11 +3255,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5002,
-      5046,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3945,11 +3265,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5002,
-      5046,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3959,11 +3275,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5002,
-      5046,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3973,11 +3285,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5002,
-      5046,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3987,11 +3295,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5002,
-      5046,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4001,11 +3305,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5115,
-      5143,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4015,11 +3315,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5154,
-      5186,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_prev_adjacent_edge",
       "object_id": "[uuid]",
@@ -4029,11 +3325,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5197,
-      5225,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4043,11 +3335,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5236,
-      5268,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_prev_adjacent_edge",
       "object_id": "[uuid]",
@@ -4057,11 +3345,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5052,
-      5284,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -4073,11 +3357,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5052,
-      5284,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -4089,11 +3369,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5052,
-      5284,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -4105,11 +3381,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5052,
-      5284,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -4121,11 +3393,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5290,
-      5332,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_shell_face",
       "object_id": "[uuid]",
@@ -4138,11 +3406,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5436,
-      5456,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -4167,11 +3431,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5464,
-      5489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -4187,22 +3447,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5464,
-      5489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5464,
-      5489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -4215,22 +3467,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5464,
-      5489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5549,
-      5592,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4247,11 +3491,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5600,
-      5709,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4276,11 +3516,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5784,
-      5833,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4297,11 +3533,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5841,
-      5866,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4318,11 +3550,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5874,
-      5932,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4339,11 +3567,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5940,
-      5965,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4360,11 +3584,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5973,
-      6032,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4381,11 +3601,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6040,
-      6047,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -4393,11 +3609,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6818,
-      6930,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -4413,11 +3625,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6818,
-      6930,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -4427,22 +3635,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6818,
-      6930,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6818,
-      6930,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -4450,11 +3650,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6818,
-      6930,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -4463,11 +3659,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6818,
-      6930,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4477,11 +3669,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6818,
-      6930,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4491,11 +3679,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6818,
-      6930,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4505,11 +3689,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6818,
-      6930,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4519,11 +3699,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6818,
-      6930,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4533,11 +3709,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6818,
-      6930,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4547,11 +3719,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6818,
-      6930,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4561,11 +3729,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6818,
-      6930,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4575,11 +3739,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6818,
-      6930,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4589,11 +3749,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6818,
-      6930,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4603,11 +3759,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6818,
-      6930,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4617,11 +3769,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6818,
-      6930,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4631,11 +3779,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6818,
-      6930,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4645,11 +3789,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6818,
-      6930,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4659,11 +3799,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6818,
-      6930,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4673,11 +3809,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6818,
-      6930,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4687,11 +3819,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5436,
-      5456,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -4716,11 +3844,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5464,
-      5489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -4736,22 +3860,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5464,
-      5489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5464,
-      5489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -4764,22 +3880,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5464,
-      5489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5549,
-      5592,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4796,11 +3904,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5600,
-      5709,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4825,11 +3929,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5784,
-      5833,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4846,11 +3946,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5841,
-      5866,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4867,11 +3963,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5874,
-      5932,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4888,11 +3980,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5940,
-      5965,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4909,11 +3997,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5973,
-      6032,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4930,11 +4014,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6040,
-      6047,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -4942,11 +4022,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6996,
-      7110,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -4962,11 +4038,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6996,
-      7110,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -4976,22 +4048,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6996,
-      7110,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6996,
-      7110,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -4999,11 +4063,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6996,
-      7110,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -5012,11 +4072,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6996,
-      7110,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5026,11 +4082,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6996,
-      7110,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5040,11 +4092,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6996,
-      7110,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5054,11 +4102,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6996,
-      7110,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5068,11 +4112,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6996,
-      7110,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5082,11 +4122,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6996,
-      7110,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5096,11 +4132,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6996,
-      7110,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5110,11 +4142,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6996,
-      7110,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5124,11 +4152,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6996,
-      7110,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5138,11 +4162,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6996,
-      7110,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5152,11 +4172,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6996,
-      7110,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5166,11 +4182,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6996,
-      7110,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5180,11 +4192,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6996,
-      7110,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5194,11 +4202,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6996,
-      7110,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5208,11 +4212,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6996,
-      7110,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5222,11 +4222,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6996,
-      7110,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5236,11 +4232,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7191,
-      7438,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -5261,11 +4253,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7518,
-      7764,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -5286,11 +4274,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5436,
-      5456,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -5315,11 +4299,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5464,
-      5489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -5335,22 +4315,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5464,
-      5489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5464,
-      5489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -5363,22 +4335,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5464,
-      5489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5549,
-      5592,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5395,11 +4359,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5600,
-      5709,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5424,11 +4384,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5784,
-      5833,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5445,11 +4401,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5841,
-      5866,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5466,11 +4418,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5874,
-      5932,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5487,11 +4435,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5940,
-      5965,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5508,11 +4452,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5973,
-      6032,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5529,11 +4469,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6040,
-      6047,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -5541,11 +4477,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7950,
-      8009,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "revolve",
       "target": "[uuid]",
@@ -5569,11 +4501,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7950,
-      8009,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -5581,11 +4509,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7950,
-      8009,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -5594,11 +4518,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7950,
-      8009,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5608,11 +4528,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7950,
-      8009,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5622,11 +4538,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7950,
-      8009,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5636,11 +4548,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7950,
-      8009,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5650,11 +4558,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7950,
-      8009,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5664,11 +4568,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7950,
-      8009,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5678,11 +4578,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7950,
-      8009,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5692,11 +4588,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7950,
-      8009,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5706,11 +4598,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7950,
-      8009,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5720,11 +4608,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7950,
-      8009,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5734,11 +4618,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7950,
-      8009,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5748,11 +4628,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7950,
-      8009,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5762,11 +4638,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7950,
-      8009,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5776,11 +4648,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7950,
-      8009,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5790,11 +4658,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7950,
-      8009,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5804,11 +4668,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7950,
-      8009,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5818,11 +4678,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5436,
-      5456,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -5847,11 +4703,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5464,
-      5489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -5867,22 +4719,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5464,
-      5489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5464,
-      5489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -5895,22 +4739,14 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5464,
-      5489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5549,
-      5592,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5927,11 +4763,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5600,
-      5709,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5956,11 +4788,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5784,
-      5833,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5977,11 +4805,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5841,
-      5866,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5998,11 +4822,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5874,
-      5932,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -6019,11 +4839,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5940,
-      5965,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -6040,11 +4856,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5973,
-      6032,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -6061,11 +4873,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6040,
-      6047,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -6073,11 +4881,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      8071,
-      8129,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "revolve",
       "target": "[uuid]",
@@ -6101,11 +4905,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      8071,
-      8129,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -6113,11 +4913,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      8071,
-      8129,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -6126,11 +4922,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      8071,
-      8129,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6140,11 +4932,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      8071,
-      8129,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6154,11 +4942,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      8071,
-      8129,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6168,11 +4952,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      8071,
-      8129,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6182,11 +4962,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      8071,
-      8129,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6196,11 +4972,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      8071,
-      8129,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6210,11 +4982,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      8071,
-      8129,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6224,11 +4992,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      8071,
-      8129,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6238,11 +5002,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      8071,
-      8129,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6252,11 +5012,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      8071,
-      8129,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6266,11 +5022,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      8071,
-      8129,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6280,11 +5032,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      8071,
-      8129,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6294,11 +5042,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      8071,
-      8129,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6308,11 +5052,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      8071,
-      8129,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6322,11 +5062,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      8071,
-      8129,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6336,11 +5072,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      8071,
-      8129,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6350,11 +5082,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      8180,
-      8433,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -6375,11 +5103,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      8484,
-      8736,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -6400,11 +5124,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1186,
-      1232,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -6413,11 +5133,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1186,
-      1232,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -6426,11 +5142,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4728,
-      4753,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -6439,11 +5151,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5464,
-      5489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -6452,11 +5160,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5464,
-      5489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -6465,11 +5169,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5464,
-      5489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -6478,11 +5178,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5464,
-      5489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",

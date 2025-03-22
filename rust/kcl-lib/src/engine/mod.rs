@@ -8,7 +8,13 @@ pub mod conn_mock;
 #[cfg(feature = "engine")]
 pub mod conn_wasm;
 
-use std::{collections::HashMap, sync::Arc};
+use std::{
+    collections::HashMap,
+    sync::{
+        atomic::{AtomicUsize, Ordering},
+        Arc,
+    },
+};
 
 use indexmap::IndexMap;
 use kcmc::{
@@ -58,6 +64,21 @@ impl ExecutionKind {
     }
 }
 
+#[derive(Default, Debug)]
+pub struct EngineStats {
+    pub commands_batched: AtomicUsize,
+    pub batches_sent: AtomicUsize,
+}
+
+impl Clone for EngineStats {
+    fn clone(&self) -> Self {
+        Self {
+            commands_batched: AtomicUsize::new(self.commands_batched.load(Ordering::Relaxed)),
+            batches_sent: AtomicUsize::new(self.batches_sent.load(Ordering::Relaxed)),
+        }
+    }
+}
+
 #[async_trait::async_trait]
 pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the batch of commands to be sent to the engine.
@@ -97,6 +118,8 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the default planes.
     fn get_default_planes(&self) -> Arc<RwLock<Option<DefaultPlanes>>>;
 
+    fn stats(&self) -> &EngineStats;
+
     /// Get the default planes, creating them if they don't exist.
     async fn default_planes(
         &self,
@@ -124,6 +147,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
     ) -> Result<(), crate::errors::KclError>;
 
+    async fn clear_queues(&self) {
+        self.batch().write().await.clear();
+        self.batch_end().write().await.clear();
+    }
+
     /// Send a modeling command and wait for the response message.
     async fn inner_send_modeling_cmd(
         &self,
@@ -138,6 +166,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
     ) -> Result<(), crate::errors::KclError> {
+        // Clear any batched commands leftover from previous scenes.
+        self.clear_queues().await;
+
         self.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
             source_range,
@@ -254,6 +285,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         // Add cmd to the batch.
         self.batch().write().await.push((req, source_range));
+        self.stats().commands_batched.fetch_add(1, Ordering::Relaxed);
 
         Ok(())
     }
@@ -277,6 +309,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         for cmd in cmds {
             extended_cmds.push((WebSocketRequest::ModelingCmdReq(cmd.clone()), source_range));
         }
+        self.stats()
+            .commands_batched
+            .fetch_add(extended_cmds.len(), Ordering::Relaxed);
         self.batch().write().await.extend(extended_cmds);
 
         Ok(())
@@ -303,6 +338,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         // Add cmd to the batch end.
         self.batch_end().write().await.insert(id, (req, source_range));
+        self.stats().commands_batched.fetch_add(1, Ordering::Relaxed);
         Ok(())
     }
 
@@ -405,6 +441,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         if batch_end {
             self.batch_end().write().await.clear();
         }
+        self.stats().batches_sent.fetch_add(1, Ordering::Relaxed);
 
         // We pop off the responses to cleanup our mappings.
         match final_req {

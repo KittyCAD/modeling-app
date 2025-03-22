@@ -10,19 +10,11 @@ description: Operations executed assembly_mixed_units_cubes.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          61,
-          65,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      47,
-      66,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,19 +34,11 @@ description: Operations executed assembly_mixed_units_cubes.kcl
             }
           }
         },
-        "sourceRange": [
-          285,
-          286,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      265,
-      287,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -63,11 +47,7 @@ description: Operations executed assembly_mixed_units_cubes.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        273,
-        274,
-        3
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -77,19 +57,11 @@ description: Operations executed assembly_mixed_units_cubes.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          61,
-          65,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      47,
-      66,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -109,19 +81,11 @@ description: Operations executed assembly_mixed_units_cubes.kcl
             }
           }
         },
-        "sourceRange": [
-          283,
-          284,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      263,
-      285,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -130,11 +94,7 @@ description: Operations executed assembly_mixed_units_cubes.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        271,
-        272,
-        4
-      ]
+      "sourceRange": []
     }
   }
 ]

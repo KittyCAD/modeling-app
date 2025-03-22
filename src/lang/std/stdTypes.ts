@@ -42,8 +42,10 @@ interface StraightSegmentInput {
 interface ArcSegmentInput {
   type: 'arc-segment'
   from: [number, number]
+  to: [number, number]
   center: [number, number]
   radius: number
+  ccw: boolean
 }
 /** Inputs for three point circle */
 interface CircleThreePointSegmentInput {
@@ -98,6 +100,9 @@ export type InputArgKeys =
   | 'p1'
   | 'p2'
   | 'p3'
+  | 'end'
+  | 'interior'
+  | `angle${'Start' | 'End'}`
 export interface SingleValueInput<T> {
   type: 'singleValue'
   argType: LineInputsType

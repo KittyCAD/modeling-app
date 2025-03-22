@@ -1,0 +1,14 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing bad_units_in_annotation.kcl
+---
+KCL Semantic error
+
+  × semantic: Unexpected value for length units: `nm`; expected one of `mm`,
+  │ `cm`, `m`, `in`, `ft`, `yd`
+   ╭─[1:1]
+ 1 │ @settings(defaultLengthUnit = nm)
+   · ────────────────┬────────────────
+   ·                 ╰── tests/bad_units_in_annotation/input.kcl
+ 2 │ 
+   ╰────

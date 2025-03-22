@@ -4,7 +4,6 @@ import {
   Selections,
   canSubmitSelectionArg,
   getSelectionCountByType,
-  getSelectionTypeDisplayText,
 } from 'lib/selections'
 import { useSelector } from '@xstate/react'
 import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'

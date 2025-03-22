@@ -5,9 +5,6 @@ import {
   PathToNode,
   Identifier,
   topLevelRange,
-  PipeExpression,
-  CallExpression,
-  VariableDeclarator,
 } from './wasm'
 import {
   findAllPreviousVariables,
@@ -49,7 +46,7 @@ halfArmAngle = armAngle / 2
 arrExpShouldNotBeIncluded = [1, 2, 3]
 objExpShouldNotBeIncluded = { a: 1, b: 2, c: 3 }
 
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> yLine(endAbsolute = 1)
   |> xLine(length = 3.84) // selection-range-7ish-before-this
@@ -80,7 +77,7 @@ variableBelowShouldNotBeIncluded = 3
 })
 
 describe('testing argIsNotIdentifier', () => {
-  const code = `part001 = startSketchOn('XY')
+  const code = `part001 = startSketchOn(XY)
 |> startProfileAt([-1.2, 4.83], %)
 |> line(end = [2.8, 0])
 |> angledLine([100 + 100, 3.09], %)
@@ -240,7 +237,7 @@ yo2 = hmm([identifierGuy + 5])`
 })
 
 describe('testing getNodePathFromSourceRange', () => {
-  const code = `part001 = startSketchOn('XY')
+  const code = `part001 = startSketchOn(XY)
   |> startProfileAt([0.39, -0.05], %)
   |> line(end = [0.94, 2.61])
   |> line(end = [-0.21, -1.4])`
@@ -384,7 +381,7 @@ describe('testing getNodePathFromSourceRange', () => {
 describe('testing hasExtrudeSketch', () => {
   it('find sketch', async () => {
     const exampleCode = `length001 = 2
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([-1.41, 3.46], %)
   |> line(end = [19.49, 1.16], tag = $seg01)
   |> angledLine([-35, length001], %)
@@ -404,7 +401,7 @@ part001 = startSketchOn('XY')
   })
   it('find solid', async () => {
     const exampleCode = `length001 = 2
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([-1.41, 3.46], %)
   |> line(end = [19.49, 1.16], tag = $seg01)
   |> angledLine([-35, length001], %)
@@ -440,7 +437,7 @@ part001 = startSketchOn('XY')
 })
 
 describe('Testing findUsesOfTagInPipe', () => {
-  const exampleCode = `part001 = startSketchOn('-XZ')
+  const exampleCode = `part001 = startSketchOn(-XZ)
 |> startProfileAt([68.12, 156.65], %)
 |> line(end = [306.21, 198.82])
 |> line(end = [306.21, 198.85], tag = $seg01)
@@ -479,7 +476,7 @@ describe('Testing findUsesOfTagInPipe', () => {
 })
 
 describe('Testing hasSketchPipeBeenExtruded', () => {
-  const exampleCode = `sketch001 = startSketchOn('XZ')
+  const exampleCode = `sketch001 = startSketchOn(XZ)
   |> startProfileAt([3.29, 7.86], %)
   |> line(end = [2.48, 2.44])
   |> line(end = [2.66, 1.17])
@@ -563,7 +560,7 @@ sketch003 = startSketchOn(extrude001, 'END')
 
 describe('Testing doesSceneHaveSweepableSketch', () => {
   it('finds sketch001 pipe to be extruded', async () => {
-    const exampleCode = `sketch001 = startSketchOn('XZ')
+    const exampleCode = `sketch001 = startSketchOn(XZ)
   |> startProfileAt([3.29, 7.86], %)
   |> line(end = [2.48, 2.44])
   |> line(end = [-3.86, -2.73])
@@ -582,9 +579,9 @@ sketch002 = startSketchOn(extrude001, $seg01)
     expect(extrudable).toBeTruthy()
   })
   it('finds sketch001 and sketch002 pipes to be lofted', async () => {
-    const exampleCode = `sketch001 = startSketchOn('XZ')
+    const exampleCode = `sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
-plane001 = offsetPlane('XZ', offset = 2)
+plane001 = offsetPlane(XZ, offset = 2)
 sketch002 = startSketchOn(plane001)
   |> circle(center = [0, 0], radius = 3)
 `
@@ -593,7 +590,7 @@ sketch002 = startSketchOn(plane001)
     expect(extrudable).toBeTruthy()
   })
   it('should recognize that sketch001 has been extruded', async () => {
-    const exampleCode = `sketch001 = startSketchOn('XZ')
+    const exampleCode = `sketch001 = startSketchOn(XZ)
   |> startProfileAt([3.29, 7.86], %)
   |> line(end = [2.48, 2.44])
   |> line(end = [-3.86, -2.73])
@@ -609,7 +606,7 @@ extrude001 = extrude(sketch001, length = 10)
 
 describe('Testing doesSceneHaveExtrudedSketch', () => {
   it('finds extruded sketch as variable', async () => {
-    const exampleCode = `sketch001 = startSketchOn('XZ')
+    const exampleCode = `sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
 extrude001 = extrude(sketch001, length = 1)
 `
@@ -619,7 +616,7 @@ extrude001 = extrude(sketch001, length = 1)
     expect(extrudable).toBeTruthy()
   })
   it('finds extruded sketch in pipe', async () => {
-    const exampleCode = `extrude001 = startSketchOn('XZ')
+    const exampleCode = `extrude001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
   |> extrude(length = 1)
 `
@@ -629,7 +626,7 @@ extrude001 = extrude(sketch001, length = 1)
     expect(extrudable).toBeTruthy()
   })
   it('finds no extrusion with sketch only', async () => {
-    const exampleCode = `extrude001 = startSketchOn('XZ')
+    const exampleCode = `extrude001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
 `
     const ast = assertParse(exampleCode)
@@ -648,7 +645,7 @@ describe('Testing traverse and pathToNode', () => {
     ],
   ])('testing %s', async (testName, literalOfInterest) => {
     const code = `myVar = 5
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([3.29, 7.86], %)
   |> line(end = [2.48, 2.44])
   |> line(end = [-3.86, -2.73])
@@ -690,7 +687,7 @@ myNestedVar = [
 
 describe('Testing specific sketch getNodeFromPath workflow', () => {
   it('should parse the code', () => {
-    const openSketch = `sketch001 = startSketchOn('XZ')
+    const openSketch = `sketch001 = startSketchOn(XZ)
 |> startProfileAt([0.02, 0.22], %)
 |> xLine(length = 0.39)
 |> line([0.02, -0.17], %)
@@ -701,10 +698,10 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
 |> line([-0.08, 0.05], %)`
     const ast = assertParse(openSketch)
     expect(ast.start).toEqual(0)
-    expect(ast.end).toEqual(245)
+    expect(ast.end).toEqual(243)
   })
   it('should find the location to add new lineTo', () => {
-    const openSketch = `sketch001 = startSketchOn('XZ')
+    const openSketch = `sketch001 = startSketchOn(XZ)
 |> startProfileAt([0.02, 0.22], %)
 |> xLine(length = 0.39)
 |> line([0.02, -0.17], %)
@@ -744,7 +741,7 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
     })
     if (err(modifiedAst)) throw modifiedAst
     const recasted = recast(modifiedAst)
-    const expectedCode = `sketch001 = startSketchOn('XZ')
+    const expectedCode = `sketch001 = startSketchOn(XZ)
   |> startProfileAt([0.02, 0.22], %)
   |> xLine(length = 0.39)
   |> line([0.02, -0.17], %)
@@ -758,7 +755,7 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
     expect(recasted).toEqual(expectedCode)
   })
   it('it should find the location to add close', () => {
-    const openSketch = `sketch001 = startSketchOn('XZ')
+    const openSketch = `sketch001 = startSketchOn(XZ)
 |> startProfileAt([0.02, 0.22], %)
 |> xLine(length = 0.39)
 |> line([0.02, -0.17], %)
@@ -784,7 +781,7 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
 
     if (err(modifiedAst)) throw modifiedAst
     const recasted = recast(modifiedAst)
-    const expectedCode = `sketch001 = startSketchOn('XZ')
+    const expectedCode = `sketch001 = startSketchOn(XZ)
   |> startProfileAt([0.02, 0.22], %)
   |> xLine(length = 0.39)
   |> line([0.02, -0.17], %)

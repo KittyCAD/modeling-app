@@ -10,19 +10,11 @@ description: Operations executed car-wheel-assembly.kcl
           "type": "String",
           "value": "XZ"
         },
-        "sourceRange": [
-          560,
-          564,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      546,
-      565,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,19 +34,11 @@ description: Operations executed car-wheel-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          682,
-          707,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      652,
-      708,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -63,11 +47,7 @@ description: Operations executed car-wheel-assembly.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        660,
-        671,
-        4
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -79,30 +59,18 @@ description: Operations executed car-wheel-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          809,
-          814,
-          4
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "end"
         },
-        "sourceRange": [
-          816,
-          821,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      795,
-      822,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -122,19 +90,11 @@ description: Operations executed car-wheel-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          952,
-          979,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      918,
-      980,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -143,11 +103,7 @@ description: Operations executed car-wheel-assembly.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        926,
-        941,
-        4
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -159,30 +115,18 @@ description: Operations executed car-wheel-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1007,
-          1016,
-          4
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "end"
         },
-        "sourceRange": [
-          1018,
-          1023,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      993,
-      1024,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -202,19 +146,11 @@ description: Operations executed car-wheel-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          1270,
-          1327,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1250,
-      1329,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -252,11 +188,7 @@ description: Operations executed car-wheel-assembly.kcl
           }
         ]
       },
-      "sourceRange": [
-        1258,
-        1259,
-        4
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -268,30 +200,18 @@ description: Operations executed car-wheel-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1465,
-          1470,
-          4
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "start"
         },
-        "sourceRange": [
-          1472,
-          1479,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1451,
-      1480,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -305,19 +225,11 @@ description: Operations executed car-wheel-assembly.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          1552,
-          1564,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1532,
-      1565,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -326,11 +238,7 @@ description: Operations executed car-wheel-assembly.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1540,
-        1541,
-        4
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -342,30 +250,18 @@ description: Operations executed car-wheel-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1604,
-          1616,
-          4
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "end"
         },
-        "sourceRange": [
-          1618,
-          1623,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1590,
-      1624,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -385,19 +281,11 @@ description: Operations executed car-wheel-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          1756,
-          1781,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1717,
-      1782,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -406,11 +294,7 @@ description: Operations executed car-wheel-assembly.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1725,
-        1745,
-        4
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -422,30 +306,18 @@ description: Operations executed car-wheel-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1810,
-          1821,
-          4
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "end"
         },
-        "sourceRange": [
-          1823,
-          1828,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1796,
-      1829,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -465,19 +337,11 @@ description: Operations executed car-wheel-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          2072,
-          2098,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2055,
-      2099,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -515,11 +379,7 @@ description: Operations executed car-wheel-assembly.kcl
           }
         ]
       },
-      "sourceRange": [
-        2055,
-        2099,
-        4
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -531,30 +391,18 @@ description: Operations executed car-wheel-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2130,
-          2135,
-          4
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "start"
         },
-        "sourceRange": [
-          2137,
-          2144,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      2116,
-      2145,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -568,19 +416,11 @@ description: Operations executed car-wheel-assembly.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          2429,
-          2441,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2398,
-      2442,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -684,11 +524,7 @@ description: Operations executed car-wheel-assembly.kcl
           }
         ]
       },
-      "sourceRange": [
-        2406,
-        2418,
-        4
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -700,30 +536,18 @@ description: Operations executed car-wheel-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2479,
-          2484,
-          4
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "START"
         },
-        "sourceRange": [
-          2486,
-          2493,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      2465,
-      2494,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -737,19 +561,11 @@ description: Operations executed car-wheel-assembly.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          2887,
-          2917,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2850,
-      2918,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -787,11 +603,7 @@ description: Operations executed car-wheel-assembly.kcl
           }
         ]
       },
-      "sourceRange": [
-        2858,
-        2876,
-        4
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -803,30 +615,18 @@ description: Operations executed car-wheel-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2961,
-          2972,
-          4
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          2974,
-          2979,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      2947,
-      2980,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -840,19 +640,11 @@ description: Operations executed car-wheel-assembly.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          3366,
-          3396,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      3323,
-      3397,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -890,11 +682,7 @@ description: Operations executed car-wheel-assembly.kcl
           }
         ]
       },
-      "sourceRange": [
-        3331,
-        3355,
-        4
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -904,19 +692,11 @@ description: Operations executed car-wheel-assembly.kcl
           "type": "String",
           "value": "XZ"
         },
-        "sourceRange": [
-          343,
-          347,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      329,
-      348,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -929,11 +709,7 @@ description: Operations executed car-wheel-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          442,
-          519,
-          3
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -942,19 +718,11 @@ description: Operations executed car-wheel-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          521,
-          522,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      437,
-      523,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -968,19 +736,11 @@ description: Operations executed car-wheel-assembly.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          546,
-          561,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      529,
-      562,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -989,11 +749,7 @@ description: Operations executed car-wheel-assembly.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        529,
-        562,
-        3
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1005,30 +761,18 @@ description: Operations executed car-wheel-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          663,
-          670,
-          3
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          672,
-          677,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      649,
-      678,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1041,11 +785,7 @@ description: Operations executed car-wheel-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          772,
-          849,
-          3
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -1054,19 +794,11 @@ description: Operations executed car-wheel-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          851,
-          852,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      767,
-      853,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1080,19 +812,11 @@ description: Operations executed car-wheel-assembly.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          876,
-          891,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      859,
-      892,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1101,11 +825,7 @@ description: Operations executed car-wheel-assembly.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        859,
-        892,
-        3
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1117,30 +837,18 @@ description: Operations executed car-wheel-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          967,
-          979,
-          3
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          981,
-          986,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      953,
-      987,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1154,19 +862,11 @@ description: Operations executed car-wheel-assembly.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          1231,
-          1247,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1214,
-      1248,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1204,11 +904,7 @@ description: Operations executed car-wheel-assembly.kcl
           }
         ]
       },
-      "sourceRange": [
-        1214,
-        1248,
-        3
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1220,30 +916,18 @@ description: Operations executed car-wheel-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1324,
-          1331,
-          3
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          1333,
-          1338,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1310,
-      1339,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1257,19 +941,11 @@ description: Operations executed car-wheel-assembly.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          1589,
-          1605,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1572,
-      1606,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1307,11 +983,7 @@ description: Operations executed car-wheel-assembly.kcl
           }
         ]
       },
-      "sourceRange": [
-        1572,
-        1606,
-        3
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1321,62 +993,36 @@ description: Operations executed car-wheel-assembly.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          1774,
-          1778,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1760,
-      1779,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
   {
     "labeledArgs": {
-      "data": {
+      "axis": {
         "value": {
-          "type": "Object",
-          "value": {
-            "axis": {
-              "type": "String",
-              "value": "y"
-            }
-          }
+          "type": "String",
+          "value": "y"
         },
-        "sourceRange": [
-          2117,
-          2131,
-          3
-        ]
-      },
-      "sketches": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          2133,
-          2134,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "revolve",
-    "sourceRange": [
-      2109,
-      2135,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1385,78 +1031,48 @@ description: Operations executed car-wheel-assembly.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          2235,
-          2239,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      2221,
-      2240,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
   {
     "labeledArgs": {
-      "data": {
+      "axis": {
         "value": {
-          "type": "Object",
-          "value": {
-            "axis": {
-              "type": "String",
-              "value": "y"
-            }
-          }
+          "type": "String",
+          "value": "y"
         },
-        "sourceRange": [
-          2595,
-          2609,
-          3
-        ]
-      },
-      "sketches": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          2611,
-          2612,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "revolve",
-    "sourceRange": [
-      2587,
-      2613,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "type": "UserDefinedFunctionCall",
     "name": "spoke",
     "functionSourceRange": [
-      2766,
-      4338,
+      2752,
+      4324,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      4340,
-      4383,
-      3
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -1641,19 +1257,11 @@ description: Operations executed car-wheel-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          3082,
-          3090,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      3068,
-      3091,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1673,19 +1281,11 @@ description: Operations executed car-wheel-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          4044,
-          4058,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      4013,
-      4059,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1694,11 +1294,7 @@ description: Operations executed car-wheel-assembly.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        4021,
-        4033,
-        3
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1717,11 +1313,7 @@ description: Operations executed car-wheel-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          4201,
-          4204,
-          3
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
@@ -1768,11 +1360,7 @@ description: Operations executed car-wheel-assembly.kcl
             }
           ]
         },
-        "sourceRange": [
-          4102,
-          4111,
-          3
-        ]
+        "sourceRange": []
       },
       "center": {
         "value": {
@@ -1819,11 +1407,7 @@ description: Operations executed car-wheel-assembly.kcl
             }
           ]
         },
-        "sourceRange": [
-          4131,
-          4144,
-          3
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -1839,30 +1423,18 @@ description: Operations executed car-wheel-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          4167,
-          4177,
-          3
-        ]
+        "sourceRange": []
       },
       "rotateDuplicates": {
         "value": {
           "type": "Bool",
           "value": true
         },
-        "sourceRange": [
-          4234,
-          4238,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternCircular3d",
-    "sourceRange": [
-      4067,
-      4247,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1871,11 +1443,7 @@ description: Operations executed car-wheel-assembly.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        4067,
-        4247,
-        3
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1885,17 +1453,13 @@ description: Operations executed car-wheel-assembly.kcl
     "type": "UserDefinedFunctionCall",
     "name": "spoke",
     "functionSourceRange": [
-      2766,
-      4338,
+      2752,
+      4324,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      4384,
-      4430,
-      3
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -2080,19 +1644,11 @@ description: Operations executed car-wheel-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          3082,
-          3090,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      3068,
-      3091,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -2112,19 +1668,11 @@ description: Operations executed car-wheel-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          4044,
-          4058,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      4013,
-      4059,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2133,11 +1681,7 @@ description: Operations executed car-wheel-assembly.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        4021,
-        4033,
-        3
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -2156,11 +1700,7 @@ description: Operations executed car-wheel-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          4201,
-          4204,
-          3
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
@@ -2207,11 +1747,7 @@ description: Operations executed car-wheel-assembly.kcl
             }
           ]
         },
-        "sourceRange": [
-          4102,
-          4111,
-          3
-        ]
+        "sourceRange": []
       },
       "center": {
         "value": {
@@ -2258,11 +1794,7 @@ description: Operations executed car-wheel-assembly.kcl
             }
           ]
         },
-        "sourceRange": [
-          4131,
-          4144,
-          3
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -2278,30 +1810,18 @@ description: Operations executed car-wheel-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          4167,
-          4177,
-          3
-        ]
+        "sourceRange": []
       },
       "rotateDuplicates": {
         "value": {
           "type": "Bool",
           "value": true
         },
-        "sourceRange": [
-          4234,
-          4238,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternCircular3d",
-    "sourceRange": [
-      4067,
-      4247,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2310,11 +1830,7 @@ description: Operations executed car-wheel-assembly.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        4067,
-        4247,
-        3
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -2327,78 +1843,48 @@ description: Operations executed car-wheel-assembly.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          4483,
-          4487,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      4469,
-      4488,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
   {
     "labeledArgs": {
-      "data": {
+      "axis": {
         "value": {
-          "type": "Object",
-          "value": {
-            "axis": {
-              "type": "String",
-              "value": "y"
-            }
-          }
+          "type": "String",
+          "value": "y"
         },
-        "sourceRange": [
-          5789,
-          5803,
-          3
-        ]
-      },
-      "sketches": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          5805,
-          5806,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "revolve",
-    "sourceRange": [
-      5781,
-      5807,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "type": "UserDefinedFunctionCall",
     "name": "lug",
     "functionSourceRange": [
       666,
-      1300,
+      1293,
       6
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1302,
-      1342,
-      6
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -2577,62 +2063,36 @@ description: Operations executed car-wheel-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          722,
-          733,
-          6
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      708,
-      734,
-      6
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
   {
     "labeledArgs": {
-      "data": {
+      "axis": {
         "value": {
-          "type": "Object",
-          "value": {
-            "axis": {
-              "type": "String",
-              "value": "Y"
-            }
-          }
+          "type": "String",
+          "value": "Y"
         },
-        "sourceRange": [
-          1192,
-          1206,
-          6
-        ]
-      },
-      "sketches": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          1208,
-          1209,
-          6
-        ]
+        "sourceRange": []
       }
     },
     "name": "revolve",
-    "sourceRange": [
-      1184,
-      1210,
-      6
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -2653,11 +2113,7 @@ description: Operations executed car-wheel-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          450,
-          453,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
@@ -2704,11 +2160,7 @@ description: Operations executed car-wheel-assembly.kcl
             }
           ]
         },
-        "sourceRange": [
-          467,
-          476,
-          0
-        ]
+        "sourceRange": []
       },
       "center": {
         "value": {
@@ -2755,11 +2207,7 @@ description: Operations executed car-wheel-assembly.kcl
             }
           ]
         },
-        "sourceRange": [
-          492,
-          501,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -2775,30 +2223,18 @@ description: Operations executed car-wheel-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          520,
-          528,
-          0
-        ]
+        "sourceRange": []
       },
       "rotateDuplicates": {
         "value": {
           "type": "Bool",
           "value": false
         },
-        "sourceRange": [
-          554,
-          559,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternCircular3d",
-    "sourceRange": [
-      413,
-      564,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2807,11 +2243,7 @@ description: Operations executed car-wheel-assembly.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        413,
-        564,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -2821,75 +2253,52 @@ description: Operations executed car-wheel-assembly.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          500,
-          504,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      486,
-      505,
-      5
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
   {
     "labeledArgs": {
-      "data": {
+      "angle": {
         "value": {
-          "type": "Object",
-          "value": {
-            "angle": {
-              "type": "Number",
-              "value": -70.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
+          "type": "Number",
+          "value": -70.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
             },
-            "axis": {
-              "type": "String",
-              "value": "Y"
+            "angle": {
+              "type": "Degrees"
             }
           }
         },
-        "sourceRange": [
-          2255,
-          2282,
-          5
-        ]
+        "sourceRange": []
       },
-      "sketches": {
+      "axis": {
         "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "String",
+          "value": "Y"
         },
-        "sourceRange": [
-          2284,
-          2302,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "revolve",
-    "sourceRange": [
-      2247,
-      2303,
-      5
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -2898,61 +2307,35 @@ description: Operations executed car-wheel-assembly.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          476,
-          480,
-          7
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      462,
-      481,
-      7
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
   {
     "labeledArgs": {
-      "data": {
+      "axis": {
         "value": {
-          "type": "Object",
-          "value": {
-            "axis": {
-              "type": "String",
-              "value": "Y"
-            }
-          }
+          "type": "String",
+          "value": "Y"
         },
-        "sourceRange": [
-          1470,
-          1484,
-          7
-        ]
-      },
-      "sketches": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          1486,
-          1496,
-          7
-        ]
+        "sourceRange": []
       }
     },
     "name": "revolve",
-    "sourceRange": [
-      1462,
-      1497,
-      7
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   }
 ]

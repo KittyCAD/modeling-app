@@ -15,10 +15,12 @@ use winnow::{
 use super::{
     ast::types::{Ascription, ImportPath, LabelledExpression},
     token::{NumericSuffix, RESERVED_WORDS},
+    DeprecationKind,
 };
 use crate::{
     docs::StdLibFn,
     errors::{CompilationError, Severity, Tag},
+    execution::types::ArrayLen,
     parsing::{
         ast::types::{
             Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
@@ -300,16 +302,17 @@ fn annotation(i: &mut TokenSlice) -> PResult<Node<Annotation>> {
                 terminated(one_of((TokenType::Operator, "=")), opt(whitespace)),
                 expression,
             )
-            .map(|(key, value)| Node {
-                start: key.start,
-                end: value.end(),
-                module_id: key.module_id,
-                inner: ObjectProperty {
-                    key,
-                    value,
-                    digest: None,
-                },
-                outer_attrs: Vec::new(),
+            .map(|(key, value)| {
+                Node::new_node(
+                    key.start,
+                    value.end(),
+                    key.module_id,
+                    ObjectProperty {
+                        key,
+                        value,
+                        digest: None,
+                    },
+                )
             }),
             comma_sep,
         )
@@ -417,17 +420,16 @@ fn pipe_expression(i: &mut TokenSlice) -> PResult<Node<PipeExpression>> {
             non_code_meta.insert(code_count, nc);
         }
     }
-    Ok(Node {
-        start: values.first().unwrap().start(),
-        end: values.last().unwrap().end().max(max_noncode_end),
-        module_id: values.first().unwrap().module_id(),
-        inner: PipeExpression {
+    Ok(Node::new_node(
+        values.first().unwrap().start(),
+        values.last().unwrap().end().max(max_noncode_end),
+        values.first().unwrap().module_id(),
+        PipeExpression {
             body: values,
             non_code_meta,
             digest: None,
         },
-        outer_attrs: Vec::new(),
-    })
+    ))
 }
 
 fn bool_value(i: &mut TokenSlice) -> PResult<BoxNode<Literal>> {
@@ -476,7 +478,8 @@ fn string_literal(i: &mut TokenSlice) -> PResult<Node<Literal>> {
         })
         .context(expected("string literal (like \"myPart\""))
         .parse_next(i)?;
-    Ok(Node::new(
+
+    let result = Node::new(
         Literal {
             value,
             raw: token.value.clone(),
@@ -485,7 +488,32 @@ fn string_literal(i: &mut TokenSlice) -> PResult<Node<Literal>> {
         token.start,
         token.end,
         token.module_id,
-    ))
+    );
+
+    if let Some(suggestion) = super::deprecation(result.value.string_value().unwrap(), DeprecationKind::String) {
+        ParseContext::warn(
+            CompilationError::err(
+                result.as_source_range(),
+                format!(
+                    "Using `\"{}\"` is deprecated, prefer using `{}`.",
+                    result.value.string_value().unwrap(),
+                    suggestion
+                ),
+            )
+            .with_suggestion(
+                format!(
+                    "Replace `\"{}\"` with `{}`",
+                    result.value.string_value().unwrap(),
+                    suggestion
+                ),
+                suggestion,
+                None,
+                Tag::Deprecated,
+            ),
+        );
+    }
+
+    Ok(result)
 }
 
 /// Parse a KCL literal number, with no - sign.
@@ -858,17 +886,16 @@ fn array_end_start(i: &mut TokenSlice) -> PResult<Node<ArrayRangeExpression>> {
 fn object_property_same_key_and_val(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
     let key = nameable_identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height = 4', 'height' is the property key")).parse_next(i)?;
     ignore_whitespace(i);
-    Ok(Node {
-        start: key.start,
-        end: key.end,
-        module_id: key.module_id,
-        inner: ObjectProperty {
+    Ok(Node::new_node(
+        key.start,
+        key.end,
+        key.module_id,
+        ObjectProperty {
             value: Expr::Identifier(Box::new(key.clone())),
             key,
             digest: None,
         },
-        outer_attrs: Vec::new(),
-    })
+    ))
 }
 
 fn object_property(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
@@ -899,17 +926,16 @@ fn object_property(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
         }
     };
 
-    let result = Node {
-        start: key.start,
-        end: expr.end(),
-        module_id: key.module_id,
-        inner: ObjectProperty {
+    let result = Node::new_node(
+        key.start,
+        expr.end(),
+        key.module_id,
+        ObjectProperty {
             key,
             value: expr,
             digest: None,
         },
-        outer_attrs: Vec::new(),
-    };
+    );
 
     if sep.token_type == TokenType::Colon {
         ParseContext::warn(
@@ -1552,14 +1578,57 @@ fn function_body(i: &mut TokenSlice) -> PResult<Node<Program>> {
     let mut inner_attrs = Vec::new();
     let mut pending_attrs = Vec::new();
     let mut non_code_meta = NonCodeMeta::default();
+    let mut pending_non_code: Vec<Node<NonCodeNode>> = Vec::new();
     let mut end = 0;
     let mut start = leading_whitespace_start;
+
+    macro_rules! handle_pending_non_code {
+        ($node: ident) => {
+            if !pending_non_code.is_empty() {
+                let start = pending_non_code[0].start;
+                let force_disoc = matches!(
+                    &pending_non_code.last().unwrap().inner.value,
+                    NonCodeValue::NewLine
+                );
+                let mut comments = Vec::new();
+                for nc in pending_non_code {
+                    match nc.inner.value {
+                        NonCodeValue::BlockComment { value, style } if !force_disoc => {
+                            comments.push(style.render_comment(&value));
+                        }
+                        NonCodeValue::NewLineBlockComment { value, style } if !force_disoc => {
+                            if comments.is_empty() && nc.start != 0 {
+                                comments.push(String::new());
+                                comments.push(String::new());
+                            }
+                            comments.push(style.render_comment(&value));
+                        }
+                        NonCodeValue::NewLine if !force_disoc && !comments.is_empty() => {
+                            comments.push(String::new());
+                            comments.push(String::new());
+                        }
+                        _ => {
+                            if body.is_empty() {
+                                non_code_meta.start_nodes.push(nc);
+                            } else {
+                                non_code_meta.insert(body.len() - 1, nc);
+                            }
+                        }
+                    }
+                }
+                $node.set_comments(comments, start);
+                pending_non_code = Vec::new();
+            }
+        };
+    }
+
     for thing_in_body in things_within_body {
         match thing_in_body {
-            WithinFunction::Annotation(attr) => {
+            WithinFunction::Annotation(mut attr) => {
                 if start.is_none() {
                     start = Some((attr.start, attr.module_id))
                 }
+                handle_pending_non_code!(attr);
                 if attr.is_inner() {
                     inner_attrs.push(attr);
                 } else {
@@ -1575,10 +1644,11 @@ fn function_body(i: &mut TokenSlice) -> PResult<Node<Program>> {
                     b.set_attrs(pending_attrs);
                     pending_attrs = Vec::new();
                 }
+                handle_pending_non_code!(b);
                 body.push(b);
                 if let Some(nc) = maybe_noncode {
                     end = nc.end;
-                    non_code_meta.insert(body.len() - 1, nc);
+                    pending_non_code.push(nc);
                 }
             }
             WithinFunction::NonCode(nc) => {
@@ -1586,11 +1656,7 @@ fn function_body(i: &mut TokenSlice) -> PResult<Node<Program>> {
                     start = Some((nc.start, nc.module_id));
                 }
                 end = nc.end;
-                if body.is_empty() {
-                    non_code_meta.start_nodes.push(nc);
-                } else {
-                    non_code_meta.insert(body.len() - 1, nc);
-                }
+                pending_non_code.push(nc);
             }
         }
     }
@@ -1614,6 +1680,15 @@ fn function_body(i: &mut TokenSlice) -> PResult<Node<Program>> {
             .into(),
         ));
     }
+
+    for nc in pending_non_code {
+        if body.is_empty() {
+            non_code_meta.start_nodes.push(nc);
+        } else {
+            non_code_meta.insert(body.len() - 1, nc);
+        }
+    }
+
     // Safe to unwrap `body.first()` because `body` is `separated1` therefore guaranteed
     // to have len >= 1.
     let end_ws = opt(whitespace)
@@ -1922,13 +1997,12 @@ fn return_stmt(i: &mut TokenSlice) -> PResult<Node<ReturnStatement>> {
         .parse_next(i)?;
     require_whitespace(i)?;
     let argument = expression(i)?;
-    Ok(Node {
-        start: ret.start,
-        end: argument.end(),
-        module_id: ret.module_id,
-        inner: ReturnStatement { argument, digest: None },
-        outer_attrs: Vec::new(),
-    })
+    Ok(Node::new_node(
+        ret.start,
+        argument.end(),
+        ret.module_id,
+        ReturnStatement { argument, digest: None },
+    ))
 }
 
 /// Parse a KCL expression.
@@ -2134,28 +2208,27 @@ fn declaration(i: &mut TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
         .map_err(|e| e.cut())?;
 
     let end = val.end();
-    Ok(Box::new(Node {
-        start,
-        end,
-        module_id: id.module_id,
-        inner: VariableDeclaration {
-            declaration: Node {
-                start: id.start,
+    let module_id = id.module_id;
+    Ok(Node::boxed(
+        VariableDeclaration {
+            declaration: Node::new_node(
+                id.start,
                 end,
-                module_id: id.module_id,
-                inner: VariableDeclarator {
+                module_id,
+                VariableDeclarator {
                     id,
                     init: val,
                     digest: None,
                 },
-                outer_attrs: Vec::new(),
-            },
+            ),
             visibility,
             kind,
             digest: None,
         },
-        outer_attrs: Vec::new(),
-    }))
+        start,
+        end,
+        module_id,
+    ))
 }
 
 fn ty_decl(i: &mut TokenSlice) -> PResult<BoxNode<TypeDeclaration>> {
@@ -2170,7 +2243,7 @@ fn ty_decl(i: &mut TokenSlice) -> PResult<BoxNode<TypeDeclaration>> {
     let name = identifier(i)?;
     let mut end = name.end;
 
-    let args = if peek(open_paren).parse_next(i).is_ok() {
+    let args = if peek((opt(whitespace), open_paren)).parse_next(i).is_ok() {
         ignore_whitespace(i);
         open_paren(i)?;
         ignore_whitespace(i);
@@ -2183,18 +2256,35 @@ fn ty_decl(i: &mut TokenSlice) -> PResult<BoxNode<TypeDeclaration>> {
         None
     };
 
-    let result = Box::new(Node {
-        start,
-        end,
-        module_id: name.module_id,
-        outer_attrs: Vec::new(),
-        inner: TypeDeclaration {
+    let alias = if peek((opt(whitespace), equals)).parse_next(i).is_ok() {
+        ignore_whitespace(i);
+        equals(i)?;
+        ignore_whitespace(i);
+        let ty = argument_type(i)?;
+
+        ParseContext::warn(CompilationError::err(
+            ty.as_source_range(),
+            "Type aliases are experimental, likely to change in the future, and likely to not work properly.",
+        ));
+
+        Some(ty)
+    } else {
+        None
+    };
+
+    let module_id = name.module_id;
+    let result = Node::boxed(
+        TypeDeclaration {
             name,
             args,
+            alias,
             visibility,
             digest: None,
         },
-    });
+        start,
+        end,
+        module_id,
+    );
 
     ParseContext::warn(CompilationError::err(
         result.as_source_range(),
@@ -2252,6 +2342,21 @@ fn nameable_identifier(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
         ));
     }
 
+    if let Some(suggestion) = super::deprecation(&result.name, DeprecationKind::Const) {
+        ParseContext::warn(
+            CompilationError::err(
+                result.as_source_range(),
+                format!("Using `{}` is deprecated, prefer using `{}`.", result.name, suggestion),
+            )
+            .with_suggestion(
+                format!("Replace `{}` with `{}`", result.name, suggestion),
+                suggestion,
+                None,
+                Tag::Deprecated,
+            ),
+        );
+    }
+
     Ok(result)
 }
 
@@ -2291,21 +2396,7 @@ impl TryFrom<Token> for Node<TagDeclarator> {
                 format!("Cannot assign a tag to a reserved keyword: {}", token.value.as_str()),
             )),
 
-            TokenType::Bang
-            | TokenType::At
-            | TokenType::Hash
-            | TokenType::Colon
-            | TokenType::Period
-            | TokenType::Operator
-            | TokenType::DoublePeriod
-            | TokenType::QuestionMark
-            | TokenType::BlockComment
-            | TokenType::Function
-            | TokenType::String
-            | TokenType::Dollar
-            | TokenType::Keyword
-            | TokenType::Unknown
-            | TokenType::LineComment => Err(CompilationError::fatal(
+            _ => Err(CompilationError::fatal(
                 token.as_source_range(),
                 // this is `start with` because if most of these cases are in the middle, it ends
                 // up hitting a different error path(e.g. including a bang) or being valid(e.g. including a comment) since it will get broken up into
@@ -2374,17 +2465,16 @@ fn unary_expression(i: &mut TokenSlice) -> PResult<Node<UnaryExpression>> {
         .context(expected("a unary expression, e.g. -x or -3"))
         .parse_next(i)?;
     let argument = operand.parse_next(i)?;
-    Ok(Node {
-        start: op_token.start,
-        end: argument.end(),
-        module_id: op_token.module_id,
-        inner: UnaryExpression {
+    Ok(Node::new_node(
+        op_token.start,
+        argument.end(),
+        op_token.module_id,
+        UnaryExpression {
             operator,
             argument,
             digest: None,
         },
-        outer_attrs: Vec::new(),
-    })
+    ))
 }
 
 /// Consume tokens that make up a binary expression, but don't actually return them.
@@ -2456,16 +2546,15 @@ fn expression_stmt(i: &mut TokenSlice) -> PResult<Node<ExpressionStatement>> {
             "an expression (i.e. a value, or an algorithm for calculating one), e.g. 'x + y' or '3' or 'width * 2'",
         ))
         .parse_next(i)?;
-    Ok(Node {
-        start: val.start(),
-        end: val.end(),
-        module_id: val.module_id(),
-        inner: ExpressionStatement {
+    Ok(Node::new_node(
+        val.start(),
+        val.end(),
+        val.module_id(),
+        ExpressionStatement {
             expression: val,
             digest: None,
         },
-        outer_attrs: Vec::new(),
-    })
+    ))
 }
 
 /// Parse the given brace symbol.
@@ -2574,6 +2663,14 @@ fn colon(i: &mut TokenSlice) -> PResult<Token> {
     TokenType::Colon.parse_from(i)
 }
 
+fn semi_colon(i: &mut TokenSlice) -> PResult<Token> {
+    TokenType::SemiColon.parse_from(i)
+}
+
+fn plus(i: &mut TokenSlice) -> PResult<Token> {
+    one_of((TokenType::Operator, "+")).parse_next(i)
+}
+
 fn equals(i: &mut TokenSlice) -> PResult<Token> {
     one_of((TokenType::Operator, "="))
         .context(expected("the equals operator, ="))
@@ -2616,6 +2713,12 @@ fn comma_sep(i: &mut TokenSlice) -> PResult<()> {
     Ok(())
 }
 
+/// Parse a `|`, optionally followed by some whitespace.
+fn pipe_sep(i: &mut TokenSlice) -> PResult<()> {
+    (opt(whitespace), one_of((TokenType::Operator, "|")), opt(whitespace)).parse_next(i)?;
+    Ok(())
+}
+
 /// Arguments are passed into a function.
 fn arguments(i: &mut TokenSlice) -> PResult<Vec<Expr>> {
     separated(0.., expression, comma_sep)
@@ -2642,7 +2745,15 @@ fn argument_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
     let type_ = alt((
         // Object types
         // TODO it is buggy to treat object fields like parameters since the parameters parser assumes a terminating `)`.
-        (open_brace, parameters, close_brace).map(|(open, params, close)| {
+        (open_brace, parameters, close_brace).try_map(|(open, params, close)| {
+            for p in &params {
+                if p.type_.is_none() {
+                    return Err(CompilationError::fatal(
+                        p.identifier.as_source_range(),
+                        "Missing type for field in record type",
+                    ));
+                }
+            }
             Ok(Node::new(
                 Type::Object { properties: params },
                 open.start,
@@ -2651,12 +2762,21 @@ fn argument_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
             ))
         }),
         // Array types
-        (open_bracket, primitive_type, close_bracket).map(|(_, t, _)| Ok(t.map(Type::Array))),
-        // Primitive types
-        primitive_type.map(|t| Ok(t.map(Type::Primitive))),
+        array_type,
+        // Primitive or union types
+        separated(1.., primitive_type, pipe_sep).map(|mut tys: Vec<_>| {
+            if tys.len() == 1 {
+                tys.pop().unwrap().map(Type::Primitive)
+            } else {
+                let start = tys[0].start;
+                let module_id = tys[0].module_id;
+                let end = tys.last().unwrap().end;
+                Node::new(Type::Union { tys }, start, end, module_id)
+            }
+        }),
     ))
-    .parse_next(i)?
-    .map_err(|e: CompilationError| ErrMode::Backtrack(ContextError::from(e)))?;
+    .parse_next(i)?;
+
     Ok(type_)
 }
 
@@ -2676,6 +2796,55 @@ fn primitive_type(i: &mut TokenSlice) -> PResult<Node<PrimitiveType>> {
     }
 
     Ok(result)
+}
+
+fn array_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
+    fn opt_whitespace(i: &mut TokenSlice) -> PResult<()> {
+        ignore_whitespace(i);
+        Ok(())
+    }
+
+    open_bracket(i)?;
+    let ty = primitive_type(i)?;
+    let len = opt((
+        semi_colon,
+        opt_whitespace,
+        any.try_map(|token: Token| match token.token_type {
+            TokenType::Number => {
+                let value = token.uint_value().ok_or_else(|| {
+                    CompilationError::fatal(
+                        token.as_source_range(),
+                        format!("Expected unsigned integer literal, found: {}", token.value),
+                    )
+                })?;
+
+                Ok(value as usize)
+            }
+            _ => Err(CompilationError::fatal(token.as_source_range(), "invalid array length")),
+        }),
+        opt(plus),
+    ))
+    .parse_next(i)?;
+    close_bracket(i)?;
+
+    let len = if let Some((tok, _, n, plus)) = len {
+        if plus.is_some() {
+            if n != 1 {
+                return Err(ErrMode::Cut(ContextError::from(CompilationError::fatal(
+                    tok.as_source_range(),
+                    "Non-empty arrays are specified using `1+`, for a fixed-size array use just an integer",
+                ))));
+            } else {
+                ArrayLen::NonEmpty
+            }
+        } else {
+            ArrayLen::Known(n)
+        }
+    } else {
+        ArrayLen::None
+    };
+
+    Ok(ty.map(|ty| Type::Array { ty, len }))
 }
 
 fn uom_for_type(i: &mut TokenSlice) -> PResult<NumericSuffix> {
@@ -2889,17 +3058,36 @@ fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
     }
     let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
 
-    Ok(Node {
-        start: fn_name.start,
+    let result = Node::new_node(
+        fn_name.start,
         end,
-        module_id: fn_name.module_id,
-        inner: CallExpression {
+        fn_name.module_id,
+        CallExpression {
             callee: fn_name,
             arguments: args,
             digest: None,
         },
-        outer_attrs: Vec::new(),
-    })
+    );
+
+    if let Some(suggestion) = super::deprecation(&result.callee.name, DeprecationKind::Function) {
+        ParseContext::warn(
+            CompilationError::err(
+                result.as_source_range(),
+                format!(
+                    "Calling `{}` is deprecated, prefer using `{}`.",
+                    result.callee.name, suggestion
+                ),
+            )
+            .with_suggestion(
+                format!("Replace `{}` with `{}`", result.callee.name, suggestion),
+                suggestion,
+                None,
+                Tag::Deprecated,
+            ),
+        );
+    }
+
+    Ok(result)
 }
 
 fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
@@ -2971,19 +3159,38 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
         non_code_nodes,
         ..Default::default()
     };
-    Ok(Node {
-        start: fn_name.start,
+    let result = Node::new_node(
+        fn_name.start,
         end,
-        module_id: fn_name.module_id,
-        inner: CallExpressionKw {
+        fn_name.module_id,
+        CallExpressionKw {
             callee: fn_name,
             unlabeled: initial_unlabeled_arg,
             arguments: args,
             digest: None,
             non_code_meta,
         },
-        outer_attrs: Vec::new(),
-    })
+    );
+
+    if let Some(suggestion) = super::deprecation(&result.callee.name, DeprecationKind::Function) {
+        ParseContext::warn(
+            CompilationError::err(
+                result.as_source_range(),
+                format!(
+                    "Calling `{}` is deprecated, prefer using `{}`.",
+                    result.callee.name, suggestion
+                ),
+            )
+            .with_suggestion(
+                format!("Replace `{}` with `{}`", result.callee.name, suggestion),
+                suggestion,
+                None,
+                Tag::Deprecated,
+            ),
+        );
+    }
+
+    Ok(result)
 }
 
 #[cfg(test)]
@@ -3094,18 +3301,18 @@ mod tests {
             a = 1
             // comment 1
             b = 2
-            // comment 2
+            /// comment 2
             return 1
         }"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
         let expr = function_decl.map(|t| t.0).parse_next(&mut tokens.as_slice()).unwrap();
         assert_eq!(expr.params, vec![]);
-        let comment_start = expr.body.non_code_meta.start_nodes.first().unwrap();
-        let comment0 = &expr.body.non_code_meta.non_code_nodes.get(&0).unwrap()[0];
-        let comment1 = &expr.body.non_code_meta.non_code_nodes.get(&1).unwrap()[0];
-        assert_eq!(comment_start.value(), "comment 0");
-        assert_eq!(comment0.value(), "comment 1");
-        assert_eq!(comment1.value(), "comment 2");
+        let comment_start = expr.body.body[0].get_comments();
+        let comment0 = expr.body.body[1].get_comments();
+        let comment1 = expr.body.body[2].get_comments();
+        assert_eq!(comment_start, vec!["// comment 0".to_owned()]);
+        assert_eq!(comment0, vec!["// comment 1".to_owned()]);
+        assert_eq!(comment1, vec!["/// comment 2".to_owned()]);
     }
 
     #[test]
@@ -3186,67 +3393,22 @@ mySk1 = startSketchOn(XY)
         let tokens = crate::parsing::token::lex(test_program, module_id).unwrap();
         let expr = function_decl.map(|t| t.0).parse_next(&mut tokens.as_slice()).unwrap();
         assert_eq!(
-            expr,
-            Node::new(
-                FunctionExpression {
-                    params: Default::default(),
-                    body: Node::new(
-                        Program {
-                            body: vec![BodyItem::ReturnStatement(Node::new(
-                                ReturnStatement {
-                                    argument: Expr::Literal(Box::new(Node::new(
-                                        Literal {
-                                            value: LiteralValue::Number {
-                                                value: 2.0,
-                                                suffix: NumericSuffix::None
-                                            },
-                                            raw: "2".to_owned(),
-                                            digest: None,
-                                        },
-                                        29,
-                                        30,
-                                        module_id,
-                                    ))),
-                                    digest: None,
-                                },
-                                22,
-                                30,
-                                module_id,
-                            ))],
-                            non_code_meta: NonCodeMeta {
-                                non_code_nodes: Default::default(),
-                                start_nodes: vec![Node::new(
-                                    NonCodeNode {
-                                        value: NonCodeValue::NewLine,
-                                        digest: None
-                                    },
-                                    4,
-                                    22,
-                                    module_id,
-                                )],
-                                digest: None,
-                            },
-                            inner_attrs: Vec::new(),
-                            shebang: None,
-                            digest: None,
-                        },
-                        4,
-                        44,
-                        module_id,
-                    ),
-                    return_type: None,
-                    digest: None,
+            expr.body.non_code_meta.start_nodes,
+            vec![Node::new(
+                NonCodeNode {
+                    value: NonCodeValue::NewLine,
+                    digest: None
                 },
-                0,
-                44,
+                4,
+                22,
                 module_id,
-            )
+            )]
         );
     }
 
     #[test]
     fn inline_comment_pipe_expression() {
-        let test_input = r#"a('XY')
+        let test_input = r#"a(XY)
         |> b(%)
         |> c(%) // inline-comment
         |> d(%)"#;
@@ -3282,22 +3444,10 @@ mySk1 = startSketchOn(XY)
 
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(test_program, module_id).unwrap();
-        let Program { non_code_meta, .. } = function_body.parse(tokens.as_slice()).unwrap().inner;
-        assert_eq!(
-            vec![Node::new(
-                NonCodeNode {
-                    value: NonCodeValue::BlockComment {
-                        value: "this is a comment".to_owned(),
-                        style: CommentStyle::Line
-                    },
-                    digest: None,
-                },
-                0,
-                20,
-                module_id,
-            )],
-            non_code_meta.start_nodes,
-        );
+        let Program {
+            body, non_code_meta, ..
+        } = function_body.parse(tokens.as_slice()).unwrap().inner;
+        assert_eq!(body[0].get_comments(), vec!["// this is a comment".to_owned()],);
 
         assert_eq!(
             Some(&vec![
@@ -3326,21 +3476,7 @@ mySk1 = startSketchOn(XY)
             non_code_meta.non_code_nodes.get(&0),
         );
 
-        assert_eq!(
-            Some(&vec![Node::new(
-                NonCodeNode {
-                    value: NonCodeValue::BlockComment {
-                        value: "this is also a comment".to_owned(),
-                        style: CommentStyle::Line
-                    },
-                    digest: None,
-                },
-                94,
-                120,
-                module_id,
-            )]),
-            non_code_meta.non_code_nodes.get(&1),
-        );
+        assert_eq!(body[2].get_comments(), vec!["// this is also a comment".to_owned()],);
     }
 
     #[test]
