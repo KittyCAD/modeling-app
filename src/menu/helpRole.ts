@@ -10,6 +10,7 @@ export const helpRole = (
     label: 'Help',
     submenu: [
       {
+        id: 'Help.Show all commands',
         label: 'Show all commands',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -79,6 +80,7 @@ export const helpRole = (
       },
       { type: 'separator' },
       {
+        id:'Help.Reset onboarding',
         label: 'Reset onboarding',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {

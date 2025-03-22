@@ -24,6 +24,9 @@ const SignIn = () => {
   // Only create the native file menus on desktop
   if (isDesktop()) {
     window.electron.createFallbackMenu().catch(reportRejection)
+    // Disable these since they cannot be accessed within the sign in page.
+    window.electron.disableMenu('Help.Reset onboarding')
+    window.electron.disableMenu('Help.Show all commands')
   }
 
   const [userCode, setUserCode] = useState('')
