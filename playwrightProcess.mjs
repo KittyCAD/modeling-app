@@ -2,6 +2,13 @@ import { readFileSync } from 'fs'
 
 const data = readFileSync('./test-results/report.json', 'utf8')
 
+// We need this until Playwright's JSON reporter supports `stripANSIControlSequences`
+// https://github.com/microsoft/playwright/issues/33670#issuecomment-2487941649
+const ansiRegex = new RegExp('([\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~])))', 'g');
+export function stripAnsiEscapes(str) {
+  return str ? str.replace(ansiRegex, '') : '';
+}
+
 // types, but was easier to store and run as normal js
 // interface FailedTest {
 //     name: string;
@@ -47,7 +54,7 @@ const processReport = (suites) => {
                 name: (name + ' -- ' + spec.title) + (test.title ? ` -- ${test.title}` : ''),
                 status: result.status,
                 projectName: test.projectName,
-                error: result.error?.stack,
+                error: stripAnsiEscapes(result.error?.stack),
               })
             }
           }

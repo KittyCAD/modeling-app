@@ -164,32 +164,6 @@ export default class CodeManager {
     }
   }
 
-  // When we unload the page via changing routes we want to instantly write to disk to save their progress
-  // There is a race condition in the system. writeToFile takes 1000ms to run, if they make an edit and leave within the 1000ms
-  // window they won't get their content saved. Use this to always save their file before rerouting
-  async writeToFileNoTimeout() {
-    if (isDesktop()) {
-      return new Promise((resolve, reject) => {
-        if (!this._currentFilePath)
-          return reject(new Error('currentFilePath not set'))
-
-        // Wait one event loop to give a chance for params to be set
-        // Save the file to disk
-        window.electron
-          .writeFile(this._currentFilePath, this.code ?? '')
-          .then(resolve)
-          .catch((err: Error) => {
-            // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
-            console.error('error saving file', err)
-            toast.error('Error saving file, please check file permissions')
-            reject(err)
-          })
-      })
-    } else {
-      safeLSSetItem(PERSIST_CODE_KEY, this.code)
-    }
-  }
-
   async updateEditorWithAstAndWriteToFile(ast: Program) {
     // We clear the AST when there it cannot be parsed, so if we are trying to write an empty AST, its
     // probably because of an earlier error. That's a bad state to be in and it's not going to be

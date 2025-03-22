@@ -127,13 +127,14 @@ impl StdLibFnArg {
         } else {
             ""
         };
-        if self.type_ == "Sketch"
+        if (self.type_ == "Sketch"
             || self.type_ == "[Sketch]"
             || self.type_ == "Solid"
             || self.type_ == "[Solid]"
             || self.type_ == "SketchSurface"
             || self.type_ == "SketchOrSurface"
-            || self.type_ == "SolidOrSketchOrImportedGeometry"
+            || self.type_ == "SolidOrSketchOrImportedGeometry")
+            && (self.required || self.include_in_snippet)
         {
             return Ok(Some((index, format!("{label}${{{}:{}}}", index, "%"))));
         } else if (self.type_ == "TagDeclarator" || self.type_ == "TagNode") && self.required {
@@ -1094,16 +1095,38 @@ mod tests {
 
     #[test]
     #[allow(clippy::literal_string_with_formatting_args)]
-    fn get_autocomplete_snippet_helix_revolutions() {
-        let helix_fn: Box<dyn StdLibFn> = Box::new(crate::std::helix::HelixRevolutions);
-        let snippet = helix_fn.to_autocomplete_snippet().unwrap();
+    fn get_autocomplete_snippet_union() {
+        let union_fn: Box<dyn StdLibFn> = Box::new(crate::std::csg::Union);
+        let snippet = union_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(snippet, r#"union(${0:%})${}"#);
+    }
+
+    #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
+    fn get_autocomplete_snippet_subtract() {
+        let subtract_fn: Box<dyn StdLibFn> = Box::new(crate::std::csg::Subtract);
+        let snippet = subtract_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(snippet, r#"subtract(${0:%}, tools = ${1:%})${}"#);
+    }
+
+    #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
+    fn get_autocomplete_snippet_intersect() {
+        let intersect_fn: Box<dyn StdLibFn> = Box::new(crate::std::csg::Intersect);
+        let snippet = intersect_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(snippet, r#"intersect(${0:%})${}"#);
+    }
+
+    #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
+    fn get_autocomplete_snippet_get_common_edge() {
+        let get_common_edge_fn: Box<dyn StdLibFn> = Box::new(crate::std::edge::GetCommonEdge);
+        let snippet = get_common_edge_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(
             snippet,
-            r#"helixRevolutions({
-	revolutions = ${0:3.14},
-	angleStart = ${1:3.14},
-	ccw = ${2:false},
-}, ${3:%})${}"#
+            r#"getCommonEdge(faces = [{
+	value = ${0:"string"},
+}])${}"#
         );
     }
 
