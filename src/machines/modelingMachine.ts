@@ -2321,22 +2321,25 @@ export const modelingMachine = setup({
 
         // If this is an edit flow, first we're going to remove the old one
         // The code below is stolen from apperance
-        if (nodeToEdit) {
+        if (
+          nodeToEdit &&
+          nodeToEdit[5][0] &&
+          typeof nodeToEdit[5][0] === 'number'
+        ) {
           const result = locateExtrudeDeclarator(ast, nodeToEdit)
-          if (err(result)) {
-            return result
-          }
-
-          const declarator = result.extrudeDeclarator
-          // TODO: double check this stuff below
-          if (declarator.init.type === 'PipeExpression') {
-            const existingIndex = declarator.init.body.findIndex(
-              (v) =>
-                v.type === 'CallExpressionKw' &&
-                v.callee.type === 'Identifier' &&
-                v.callee.name === 'fillet'
-            )
-            declarator.init.body.splice(existingIndex, 1)
+          if (!err(result)) {
+            const declarator = result.extrudeDeclarator
+            if (declarator.init.type === 'PipeExpression') {
+              const existingIndex = nodeToEdit[5][0]
+              const call = declarator.init.body[existingIndex]
+              if (
+                call.type === 'CallExpressionKw' &&
+                call.callee.type === 'Identifier' &&
+                call.callee.name === 'fillet'
+              ) {
+                declarator.init.body.splice(existingIndex, 1)
+              }
+            }
           }
         }
 

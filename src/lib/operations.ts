@@ -8,7 +8,7 @@ import { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { codeManager, engineCommandManager, kclManager } from './singletons'
 import { err } from './trap'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { sourceRangeFromRust } from 'lang/wasm'
+import { CodeRef, sourceRangeFromRust } from 'lang/wasm'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { stringToKclExpression } from './kclHelpers'
 import { ModelingCommandSchema } from './commandBarConfigs/modelingCommandConfig'
@@ -152,20 +152,27 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
     },
     engineCommandManager.artifactGraph
   )
-
-  if (err(edgeArtifact)) {
-    console.log('err(edgeArtifact)')
-    return baseCommand
-  }
-
+  if (err(edgeArtifact)) return baseCommand
   console.log('edgeArtifact', edgeArtifact)
 
-  // TODO: handle other cases than segment
-  if (edgeArtifact.type !== 'segment') {
+  let edgeCodeRef: CodeRef | undefined
+  if (edgeArtifact.type === 'segment') {
+    edgeCodeRef = edgeArtifact.codeRef
+  } else if (edgeArtifact.type === 'sweepEdge') {
+    // Little round about to the sketch to get the coderef
+    const correspondingSegmentArtifact = getArtifactOfTypes(
+      {
+        key: edgeArtifact.segId,
+        types: ['segment'],
+      },
+      engineCommandManager.artifactGraph
+    )
+    if (err(correspondingSegmentArtifact)) return baseCommand
+    edgeCodeRef = correspondingSegmentArtifact.codeRef
+  } else {
+    // TODO: handle edgeCut
     return baseCommand
   }
-
-  const edgeCodeRef = edgeArtifact.codeRef
 
   // Convert the radius argument from a string to a KCL expression
   const radiusResult = await stringToKclExpression(

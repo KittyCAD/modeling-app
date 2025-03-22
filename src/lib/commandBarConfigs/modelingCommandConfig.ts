@@ -587,7 +587,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       nodeToEdit: {
         description:
           'Path to the node in the AST to edit. Never shown to the user.',
-        skip: true,
         inputType: 'text',
         required: false,
         hidden: true,
@@ -597,7 +596,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
         multiple: true,
         required: true,
-        skip: true,
         warningMessage:
           'Fillets cannot touch other fillets yet. This is under development.',
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
