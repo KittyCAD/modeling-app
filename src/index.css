@@ -86,7 +86,7 @@ textarea,
 
 button {
   @apply border border-chalkboard-30 m-0.5 px-3 rounded text-xs;
-  @apply focus-visible:outline-chalkboard-100;
+  @apply focus-visible:outline-none;
 }
 
 button:hover {
@@ -94,7 +94,7 @@ button:hover {
 }
 
 .dark button {
-  @apply border-chalkboard-70 focus-visible:outline-chalkboard-10;
+  @apply border-chalkboard-70;
 }
 
 .dark button:hover {
