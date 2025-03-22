@@ -114,6 +114,7 @@ export function buildAndSetMenuForFallback(mainWindow: BrowserWindow) {
       label: 'Window',
       submenu: [{ role: 'minimize' }, { role: 'zoom' }, { role: 'close' }],
     },
+    helpRole(mainWindow)
   ]
 
   if (isMac) {
