@@ -8,7 +8,7 @@ import { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { codeManager, engineCommandManager, kclManager } from './singletons'
 import { err } from './trap'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { sourceRangeFromRust } from 'lang/wasm'
+import { CodeRef, sourceRangeFromRust } from 'lang/wasm'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { stringToKclExpression } from './kclHelpers'
 import { ModelingCommandSchema } from './commandBarConfigs/modelingCommandConfig'
@@ -120,6 +120,92 @@ const prepareToEditExtrude: PrepareToEditCallback =
       argDefaultValues,
     }
   }
+
+/**
+ * Gather up the argument values for the Fillet command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditFillet: PrepareToEditCallback = async ({
+  operation,
+  artifact,
+}) => {
+  const baseCommand = {
+    name: 'Fillet',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall' || !operation.labeledArgs) {
+    return baseCommand
+  }
+
+  if (artifact?.type !== 'edgeCut' || artifact.subType !== 'fillet') {
+    return baseCommand
+  }
+
+  // Recreate the selection argument (artiface and codeRef) from what we have
+  const edgeArtifact = getArtifactOfTypes(
+    {
+      key: artifact.consumedEdgeId,
+      types: ['segment', 'sweepEdge'],
+    },
+    engineCommandManager.artifactGraph
+  )
+  if (err(edgeArtifact)) {
+    return baseCommand
+  }
+
+  let edgeCodeRef: CodeRef | undefined
+  if (edgeArtifact.type === 'segment') {
+    edgeCodeRef = edgeArtifact.codeRef
+  } else if (edgeArtifact.type === 'sweepEdge') {
+    // Little round about to the sketch to get the coderef
+    const correspondingSegmentArtifact = getArtifactOfTypes(
+      {
+        key: edgeArtifact.segId,
+        types: ['segment'],
+      },
+      engineCommandManager.artifactGraph
+    )
+    if (err(correspondingSegmentArtifact)) return baseCommand
+    edgeCodeRef = correspondingSegmentArtifact.codeRef
+  } else {
+    return baseCommand
+  }
+
+  // Convert the radius argument from a string to a KCL expression
+  const radiusResult = await stringToKclExpression(
+    codeManager.code.slice(
+      operation.labeledArgs?.['radius']?.sourceRange[0],
+      operation.labeledArgs?.['radius']?.sourceRange[1]
+    )
+  )
+  if (err(radiusResult) || 'errors' in radiusResult) {
+    return baseCommand
+  }
+
+  // Assemble the default argument values for the Fillet command,
+  // with `nodeToEdit` set, which will let the Fillet actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Fillet'] = {
+    selection: {
+      graphSelections: [
+        {
+          artifact: edgeArtifact,
+          codeRef: edgeCodeRef,
+        },
+      ],
+      otherSelections: [],
+    },
+    radius: radiusResult,
+    nodeToEdit: getNodePathFromSourceRange(
+      kclManager.ast,
+      sourceRangeFromRust(operation.sourceRange)
+    ),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
 
 /**
  * Gather up the argument values for the Shell command
@@ -571,6 +657,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   fillet: {
     label: 'Fillet',
     icon: 'fillet3d',
+    prepareToEdit: prepareToEditFillet,
   },
   helix: {
     label: 'Helix',
