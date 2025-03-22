@@ -2320,7 +2320,6 @@ export const modelingMachine = setup({
         const { nodeToEdit, selection, radius } = input
 
         // If this is an edit flow, first we're going to remove the old one
-        // The code below is stolen from apperance
         if (
           nodeToEdit &&
           nodeToEdit[5][0] &&

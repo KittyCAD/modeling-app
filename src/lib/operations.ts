@@ -141,19 +141,17 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
     return baseCommand
   }
 
-  console.log('ag', engineCommandManager.artifactGraph)
-  console.log('operation', operation)
-  console.log('artifact', artifact)
-
+  // Recreate the selection argument (artiface and codeRef) from what we have
   const edgeArtifact = getArtifactOfTypes(
     {
       key: artifact.consumedEdgeId,
-      types: ['segment', 'sweepEdge', 'edgeCutEdge'],
+      types: ['segment', 'sweepEdge'],
     },
     engineCommandManager.artifactGraph
   )
-  if (err(edgeArtifact)) return baseCommand
-  console.log('edgeArtifact', edgeArtifact)
+  if (err(edgeArtifact)) {
+    return baseCommand
+  }
 
   let edgeCodeRef: CodeRef | undefined
   if (edgeArtifact.type === 'segment') {
@@ -170,7 +168,6 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
     if (err(correspondingSegmentArtifact)) return baseCommand
     edgeCodeRef = correspondingSegmentArtifact.codeRef
   } else {
-    // TODO: handle edgeCut
     return baseCommand
   }
 
