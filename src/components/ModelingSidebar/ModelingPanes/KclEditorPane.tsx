@@ -88,6 +88,7 @@ export const KclEditorPane = () => {
     return () => {
       kclEditorActor.send({ type: 'setKclEditorMounted', data: false })
       kclEditorActor.send({ type: 'setLastSelectionEvent', data: undefined })
+      console.log('kclEditorActor cleanup')
     }
   }, [])
 
