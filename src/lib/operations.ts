@@ -122,22 +122,25 @@ const prepareToEditExtrude: PrepareToEditCallback =
   }
 
 /**
- * Gather up the argument values for the Fillet command
+ * Gather up the argument values for the Chamfer or Fillet command
  * to be used in the command bar edit flow.
  */
-const prepareToEditChamfer: PrepareToEditCallback = async ({
+const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
   operation,
   artifact,
 }) => {
+  const isChamfer =
+    artifact?.type === 'edgeCut' && artifact.subType === 'chamfer'
+  const isFillet = artifact?.type === 'edgeCut' && artifact.subType === 'fillet'
   const baseCommand = {
-    name: 'Chamfer',
+    name: isChamfer ? 'Chamfer' : 'Fillet',
     groupId: 'modeling',
   }
-  if (operation.type !== 'StdLibCall' || !operation.labeledArgs) {
-    return baseCommand
-  }
-
-  if (artifact?.type !== 'edgeCut' || artifact.subType !== 'chamfer') {
+  if (
+    operation.type !== 'StdLibCall' ||
+    !operation.labeledArgs ||
+    (!isChamfer && !isFillet)
+  ) {
     return baseCommand
   }
 
@@ -171,122 +174,66 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
     return baseCommand
   }
 
-  // Convert the radius argument from a string to a KCL expression
-  const legnthResult = await stringToKclExpression(
-    codeManager.code.slice(
-      operation.labeledArgs?.['length']?.sourceRange[0],
-      operation.labeledArgs?.['length']?.sourceRange[1]
-    )
-  )
-  if (err(legnthResult) || 'errors' in legnthResult) {
-    return baseCommand
+  const selection = {
+    graphSelections: [
+      {
+        artifact: edgeArtifact,
+        codeRef: edgeCodeRef,
+      },
+    ],
+    otherSelections: [],
   }
+  console.log('selection', selection)
 
   // Assemble the default argument values for the Fillet command,
   // with `nodeToEdit` set, which will let the Fillet actor know
   // to edit the node that corresponds to the StdLibCall.
-  const argDefaultValues: ModelingCommandSchema['Chamfer'] = {
-    selection: {
-      graphSelections: [
-        {
-          artifact: edgeArtifact,
-          codeRef: edgeCodeRef,
-        },
-      ],
-      otherSelections: [],
-    },
-    length: legnthResult,
-    nodeToEdit: getNodePathFromSourceRange(
-      kclManager.ast,
-      sourceRangeFromRust(operation.sourceRange)
-    ),
-  }
-  return {
-    ...baseCommand,
-    argDefaultValues,
-  }
-}
-
-/**
- * Gather up the argument values for the Fillet command
- * to be used in the command bar edit flow.
- */
-const prepareToEditFillet: PrepareToEditCallback = async ({
-  operation,
-  artifact,
-}) => {
-  const baseCommand = {
-    name: 'Fillet',
-    groupId: 'modeling',
-  }
-  if (operation.type !== 'StdLibCall' || !operation.labeledArgs) {
-    return baseCommand
-  }
-
-  if (artifact?.type !== 'edgeCut' || artifact.subType !== 'fillet') {
-    return baseCommand
-  }
-
-  // Recreate the selection argument (artiface and codeRef) from what we have
-  const edgeArtifact = getArtifactOfTypes(
-    {
-      key: artifact.consumedEdgeId,
-      types: ['segment', 'sweepEdge'],
-    },
-    engineCommandManager.artifactGraph
+  const nodeToEdit = getNodePathFromSourceRange(
+    kclManager.ast,
+    sourceRangeFromRust(operation.sourceRange)
   )
-  if (err(edgeArtifact)) {
-    return baseCommand
-  }
+  let argDefaultValues:
+    | ModelingCommandSchema['Chamfer']
+    | ModelingCommandSchema['Fillet']
+    | undefined
 
-  let edgeCodeRef: CodeRef | undefined
-  if (edgeArtifact.type === 'segment') {
-    edgeCodeRef = edgeArtifact.codeRef
-  } else if (edgeArtifact.type === 'sweepEdge') {
-    // Little round about to the sketch to get the coderef
-    const correspondingSegmentArtifact = getArtifactOfTypes(
-      {
-        key: edgeArtifact.segId,
-        types: ['segment'],
-      },
-      engineCommandManager.artifactGraph
+  if (isChamfer) {
+    // Convert the length argument from a string to a KCL expression
+    const length = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs?.['length']?.sourceRange[0],
+        operation.labeledArgs?.['length']?.sourceRange[1]
+      )
     )
-    if (err(correspondingSegmentArtifact)) return baseCommand
-    edgeCodeRef = correspondingSegmentArtifact.codeRef
+    if (err(length) || 'errors' in length) {
+      return baseCommand
+    }
+
+    argDefaultValues = {
+      selection,
+      length,
+      nodeToEdit,
+    }
+  } else if (isFillet) {
+    const radius = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs?.['radius']?.sourceRange[0],
+        operation.labeledArgs?.['radius']?.sourceRange[1]
+      )
+    )
+    if (err(radius) || 'errors' in radius) {
+      return baseCommand
+    }
+
+    argDefaultValues = {
+      selection,
+      radius,
+      nodeToEdit,
+    }
   } else {
     return baseCommand
   }
 
-  // Convert the radius argument from a string to a KCL expression
-  const radiusResult = await stringToKclExpression(
-    codeManager.code.slice(
-      operation.labeledArgs?.['radius']?.sourceRange[0],
-      operation.labeledArgs?.['radius']?.sourceRange[1]
-    )
-  )
-  if (err(radiusResult) || 'errors' in radiusResult) {
-    return baseCommand
-  }
-
-  // Assemble the default argument values for the Fillet command,
-  // with `nodeToEdit` set, which will let the Fillet actor know
-  // to edit the node that corresponds to the StdLibCall.
-  const argDefaultValues: ModelingCommandSchema['Fillet'] = {
-    selection: {
-      graphSelections: [
-        {
-          artifact: edgeArtifact,
-          codeRef: edgeCodeRef,
-        },
-      ],
-      otherSelections: [],
-    },
-    radius: radiusResult,
-    nodeToEdit: getNodePathFromSourceRange(
-      kclManager.ast,
-      sourceRangeFromRust(operation.sourceRange)
-    ),
-  }
   return {
     ...baseCommand,
     argDefaultValues,
@@ -732,7 +679,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   chamfer: {
     label: 'Chamfer',
     icon: 'chamfer3d',
-    prepareToEdit: prepareToEditChamfer,
+    prepareToEdit: prepareToEditEdgeTreatment,
     // modelingEvent: 'Chamfer',
   },
   extrude: {
@@ -744,7 +691,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   fillet: {
     label: 'Fillet',
     icon: 'fillet3d',
-    prepareToEdit: prepareToEditFillet,
+    prepareToEdit: prepareToEditEdgeTreatment,
   },
   helix: {
     label: 'Helix',

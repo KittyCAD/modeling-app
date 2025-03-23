@@ -1573,7 +1573,7 @@ sketch002 = startSketchOn(XZ)
     })
   })
 
-  test(`Fillet point-and-click`, async ({
+  test(`Fillet point-and-click add`, async ({
     context,
     page,
     homePage,
@@ -2130,7 +2130,7 @@ extrude001 = extrude(profile001, length = 5)
     })
   })
 
-  test(`Chamfer point-and-click`, async ({
+  test(`Chamfer point-and-click add`, async ({
     context,
     page,
     homePage,
