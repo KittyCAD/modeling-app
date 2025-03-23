@@ -183,7 +183,6 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
     ],
     otherSelections: [],
   }
-  console.log('selection', selection)
 
   // Assemble the default argument values for the Fillet command,
   // with `nodeToEdit` set, which will let the Fillet actor know
