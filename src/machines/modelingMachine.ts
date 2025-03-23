@@ -2492,7 +2492,7 @@ export const modelingMachine = setup({
         const ast = kclManager.ast
         const { nodeToEdit, selection, length } = input
 
-        // If this is an edit flow, first we're going to remove the old node 
+        // If this is an edit flow, first we're going to remove the old node
         const pipeIndex = 5
         if (
           nodeToEdit &&
