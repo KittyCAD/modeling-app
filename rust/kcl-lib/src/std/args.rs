@@ -1,6 +1,7 @@
-use std::{collections::HashMap, num::NonZeroU32};
+use std::num::NonZeroU32;
 
 use anyhow::Result;
+use indexmap::IndexMap;
 use kcmc::{
     websocket::{ModelingCmdReq, OkWebSocketResponseData},
     ModelingCmd,
@@ -57,7 +58,7 @@ pub struct KwArgs {
     /// Unlabeled keyword args. Currently only the first arg can be unlabeled.
     pub unlabeled: Option<Arg>,
     /// Labeled args.
-    pub labeled: HashMap<String, Arg>,
+    pub labeled: IndexMap<String, Arg>,
 }
 
 impl KwArgs {

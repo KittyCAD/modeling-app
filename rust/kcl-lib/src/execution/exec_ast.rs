@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use async_recursion::async_recursion;
+use indexmap::IndexMap;
 
 use crate::{
     engine::ExecutionKind,
@@ -1134,7 +1135,7 @@ impl Node<CallExpressionKw> {
         let callsite: SourceRange = self.into();
 
         // Build a hashmap from argument labels to the final evaluated values.
-        let mut fn_args = HashMap::with_capacity(self.arguments.len());
+        let mut fn_args = IndexMap::with_capacity(self.arguments.len());
         for arg_expr in &self.arguments {
             let source_range = SourceRange::from(arg_expr.arg.clone());
             let metadata = Metadata { source_range };
@@ -1196,7 +1197,6 @@ impl Node<CallExpressionKw> {
                 };
 
                 let formals = func.args(false);
-                #[allow(clippy::iter_over_hash_type)]
                 for (label, arg) in &args.kw_args.labeled {
                     match formals.iter().find(|p| &p.name == label) {
                         Some(p) => {
@@ -2046,7 +2046,7 @@ impl FunctionSource {
                     let args = crate::std::Args::new_kw(
                         KwArgs {
                             unlabeled: args.pop(),
-                            labeled: HashMap::new(),
+                            labeled: IndexMap::new(),
                         },
                         callsite,
                         ctx.clone(),

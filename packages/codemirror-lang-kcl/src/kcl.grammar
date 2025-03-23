@@ -75,10 +75,7 @@ LabeledArgument { ArgumentLabel Equals expression }
 ArgumentList { "(" commaSep<LabeledArgument | expression> ")" }
 
 type[@isGroup=Type] {
-  @specialize[@name=PrimitiveType]<
-    identifier,
-    "bool" | "number" | "string" | "tag" | "Sketch" | "SketchSurface" | "Solid" | "Plane"
-  > |
+  PrimitiveType { identifier } |
   ArrayType { "[" type !member (";" Number "+"?)? "]" } |
   ObjectType { "{" commaSep<ObjectProperty { PropertyName ":" type }> "}" }
 }

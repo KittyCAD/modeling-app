@@ -140,14 +140,14 @@ description: Operations executed lego.kcl
           "value": [
             {
               "type": "Number",
-              "value": -16.0,
+              "value": -4.0,
               "ty": {
                 "type": "Unknown"
               }
             },
             {
               "type": "Number",
-              "value": -36.0,
+              "value": -12.0,
               "ty": {
                 "type": "Unknown"
               }
@@ -291,14 +291,14 @@ description: Operations executed lego.kcl
           "value": [
             {
               "type": "Number",
-              "value": -12.0,
+              "value": -0.0,
               "ty": {
                 "type": "Unknown"
               }
             },
             {
               "type": "Number",
-              "value": -32.0,
+              "value": -8.0,
               "ty": {
                 "type": "Unknown"
               }
