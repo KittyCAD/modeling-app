@@ -75,12 +75,13 @@ export type ModelingCommandSchema = {
   Revolve: {
     // Enables editing workflow
     nodeToEdit?: PathToNode
+    // Flow arg
+    axisOrEdge: 'Axis' | 'Edge'
     // KCL stdlib arguments
     selection: Selections
     angle: KclCommandValue
-    axisOrEdge: 'Axis' | 'Edge'
-    axis?: string
-    edge?: Selections
+    axis: string | undefined
+    edge: Selections | undefined
   }
   Fillet: {
     selection: Selections

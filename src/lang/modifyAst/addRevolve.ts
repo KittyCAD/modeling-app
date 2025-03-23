@@ -37,7 +37,7 @@ export function revolveSketch(
   pathToSketchNode: PathToNode,
   variableName: string | undefined,
   angle: Expr = createLiteral(4),
-  axisOrEdge: string,
+  axisOrEdge: 'Axis' | 'Edge',
   axis: string | undefined,
   edge: Selections | undefined,
   artifactGraph: ArtifactGraph,
