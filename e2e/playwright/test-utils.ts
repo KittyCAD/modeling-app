@@ -56,8 +56,7 @@ export const editorSelector = '[role="textbox"][data-language="kcl"]'
 type PaneId = 'variables' | 'code' | 'files' | 'logs'
 
 export function orRunWhenFullSuiteEnabled() {
-  const branch = process.env.GITHUB_REF?.replace('refs/heads/', '')
-  return branch !== 'all-e2e'
+  return process.env.GITHUB_EVENT_NAME !== 'schedule'
 }
 
 async function waitForPageLoadWithRetry(page: Page) {

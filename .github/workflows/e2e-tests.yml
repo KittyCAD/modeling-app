@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - all-e2e # this bypasses `fixme()` using `orRunWhenFullSuiteEnabled()`
   pull_request:
   schedule:
     - cron: 0 * * * *  # hourly
@@ -70,6 +69,7 @@ jobs:
         run: |
           # For debugging purposes
           set -euo pipefail
+          echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
           echo "GITHUB_REF: $GITHUB_REF"
           echo "GITHUB_HEAD_REF: $GITHUB_HEAD_REF"
           echo "GITHUB_BASE_REF: $GITHUB_BASE_REF"
