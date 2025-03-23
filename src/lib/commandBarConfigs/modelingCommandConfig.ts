@@ -87,6 +87,9 @@ export type ModelingCommandSchema = {
     radius: KclCommandValue
   }
   Chamfer: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // KCL stdlib arguments
     selection: Selections
     length: KclCommandValue
   }
@@ -613,6 +616,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     status: 'development',
     needsReview: true,
     args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        inputType: 'text',
+        required: false,
+        hidden: true,
+      },
       selection: {
         inputType: 'selection',
         selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
@@ -621,6 +631,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         skip: false,
         warningMessage:
           'Chamfers cannot touch other chamfers yet. This is under development.',
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       length: {
         inputType: 'kcl',

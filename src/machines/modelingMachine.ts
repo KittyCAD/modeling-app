@@ -2500,7 +2500,31 @@ export const modelingMachine = setup({
 
         // Extract inputs
         const ast = kclManager.ast
-        const { selection, length } = input
+        const { nodeToEdit, selection, length } = input
+
+        // If this is an edit flow, first we're going to remove the old one
+        if (
+          nodeToEdit &&
+          nodeToEdit[5][0] &&
+          typeof nodeToEdit[5][0] === 'number'
+        ) {
+          const result = locateExtrudeDeclarator(ast, nodeToEdit)
+          if (!err(result)) {
+            const declarator = result.extrudeDeclarator
+            if (declarator.init.type === 'PipeExpression') {
+              const existingIndex = nodeToEdit[5][0]
+              const call = declarator.init.body[existingIndex]
+              if (
+                call.type === 'CallExpressionKw' &&
+                call.callee.type === 'Identifier' &&
+                call.callee.name === 'chamfer'
+              ) {
+                declarator.init.body.splice(existingIndex, 1)
+              }
+            }
+          }
+        }
+
         const parameters: ChamferParameters = {
           type: EdgeTreatmentType.Chamfer,
           length,
