@@ -715,8 +715,31 @@ export const modelingMachine = setup({
       if (event.type !== 'Revolve') return
       ;(async () => {
         if (!event.data) return
-        const { selection, angle, axis, edge, axisOrEdge } = event.data
+        const { nodeToEdit, selection, angle, axis, edge, axisOrEdge } =
+          event.data
         let ast = kclManager.ast
+        let variableName: string | undefined = undefined
+
+        // If this is an edit flow, first we're going to remove the old extrusion
+        if (nodeToEdit && typeof nodeToEdit[1][0] === 'number') {
+          // Extract the plane name from the node to edit
+          const nameNode = getNodeFromPath<VariableDeclaration>(
+            ast,
+            nodeToEdit,
+            'VariableDeclaration'
+          )
+          if (err(nameNode)) {
+            console.error('Error extracting plane name')
+          } else {
+            variableName = nameNode.node.declaration.id.name
+          }
+
+          // Removing the old extrusion statement
+          const newBody = [...ast.body]
+          newBody.splice(nodeToEdit[1][0] as number, 1)
+          ast.body = newBody
+        }
+
         if (
           'variableName' in angle &&
           angle.variableName &&
@@ -736,6 +759,7 @@ export const modelingMachine = setup({
         const revolveSketchRes = revolveSketch(
           ast,
           pathToNode,
+          variableName,
           'variableName' in angle
             ? angle.variableIdentifierAst
             : angle.valueAst,

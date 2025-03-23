@@ -35,10 +35,11 @@ import { kclManager } from 'lib/singletons'
 export function revolveSketch(
   ast: Node<Program>,
   pathToSketchNode: PathToNode,
+  variableName: string | undefined,
   angle: Expr = createLiteral(4),
   axisOrEdge: string,
-  axis: string,
-  edge: Selections,
+  axis: string | undefined,
+  edge: Selections | undefined,
   artifactGraph: ArtifactGraph,
   artifact?: Artifact
 ):
@@ -62,7 +63,7 @@ export function revolveSketch(
   let generatedAxis
   let axisDeclaration: PathToNode | null = null
 
-  if (axisOrEdge === 'Edge') {
+  if (axisOrEdge === 'Edge' && edge) {
     const pathToAxisSelection = getNodePathFromSourceRange(
       clonedAst,
       edge.graphSelections[0]?.codeRef.range
@@ -92,7 +93,7 @@ export function revolveSketch(
     ) {
       axisDeclaration = axisSelection.codeRef.pathToNode
     }
-  } else {
+  } else if (axisOrEdge === 'Axis' && axis) {
     generatedAxis = createLiteral(axis)
   }
 
@@ -114,7 +115,9 @@ export function revolveSketch(
 
   // We're not creating a pipe expression,
   // but rather a separate constant for the extrusion
-  const name = findUniqueName(clonedAst, KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE)
+  const name =
+    variableName ??
+    findUniqueName(clonedAst, KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE)
   const VariableDeclaration = createVariableDeclaration(name, revolveCall)
   const lastSketchNodePath =
     orderedSketchNodePaths[orderedSketchNodePaths.length - 1]

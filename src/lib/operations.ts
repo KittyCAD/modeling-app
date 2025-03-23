@@ -3,6 +3,7 @@ import {
   Artifact,
   getArtifactOfTypes,
   getCapCodeRef,
+  getSweepEdgeCodeRef,
 } from 'lang/std/artifactGraph'
 import { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { codeManager, engineCommandManager, kclManager } from './singletons'
@@ -552,6 +553,166 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   }
 }
 
+const prepareToEditRevolve: PrepareToEditCallback = async ({
+  operation,
+  artifact,
+}) => {
+  const baseCommand = {
+    name: 'Revolve',
+    groupId: 'modeling',
+  }
+  if (
+    !artifact ||
+    !('pathId' in artifact) ||
+    operation.type !== 'StdLibCall' ||
+    !operation.labeledArgs
+  ) {
+    return baseCommand
+  }
+
+  // We have to go a little roundabout to get from the original artifact
+  // to the solid2DId that we need to pass to the Extrude command.
+  const pathArtifact = getArtifactOfTypes(
+    {
+      key: artifact.pathId,
+      types: ['path'],
+    },
+    engineCommandManager.artifactGraph
+  )
+  if (
+    err(pathArtifact) ||
+    pathArtifact.type !== 'path' ||
+    !pathArtifact.solid2dId
+  )
+    return baseCommand
+  const solid2DArtifact = getArtifactOfTypes(
+    {
+      key: pathArtifact.solid2dId,
+      types: ['solid2d'],
+    },
+    engineCommandManager.artifactGraph
+  )
+  if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2d') {
+    return baseCommand
+  }
+
+  const selection = {
+    graphSelections: [
+      {
+        artifact: solid2DArtifact,
+        codeRef: pathArtifact.codeRef,
+      },
+    ],
+    otherSelections: [],
+  }
+
+  // axis options string arg
+  if (!('axis' in operation.labeledArgs) || !operation.labeledArgs.axis) {
+    return baseCommand
+  }
+
+  const axisValue = operation.labeledArgs.axis.value
+  let axisOrEdge: 'Axis' | 'Edge' | undefined
+  let axis: string | undefined
+  let edge: Selections | undefined
+  if (axisValue.type === 'String') {
+    // default axis casee
+    axisOrEdge = 'Axis'
+    axis = axisValue.value
+  } else if (axisValue.type === 'TagIdentifier' && axisValue.artifact_id) {
+    // segment case
+    axisOrEdge = 'Edge'
+    const artifact = getArtifactOfTypes(
+      {
+        key: axisValue.artifact_id,
+        types: ['segment'],
+      },
+      engineCommandManager.artifactGraph
+    )
+    if (err(artifact)) {
+      return baseCommand
+    }
+
+    edge = {
+      graphSelections: [
+        {
+          artifact,
+          codeRef: artifact.codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+  } else if (axisValue.type === 'Uuid') {
+    // sweepEdge case
+    axisOrEdge = 'Edge'
+    const artifact = getArtifactOfTypes(
+      {
+        key: axisValue.value,
+        types: ['sweepEdge'],
+      },
+      engineCommandManager.artifactGraph
+    )
+    if (err(artifact)) {
+      return baseCommand
+    }
+
+    const codeRef = getSweepEdgeCodeRef(
+      artifact,
+      engineCommandManager.artifactGraph
+    )
+    if (err(codeRef)) {
+      return baseCommand
+    }
+
+    edge = {
+      graphSelections: [
+        {
+          artifact,
+          codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+  } else {
+    return baseCommand
+  }
+
+  // angle kcl arg
+  if (!('angle' in operation.labeledArgs) || !operation.labeledArgs.angle) {
+    return baseCommand
+  }
+  const angle = await stringToKclExpression(
+    codeManager.code.slice(
+      operation.labeledArgs.angle.sourceRange[0],
+      operation.labeledArgs.angle.sourceRange[1]
+    )
+  )
+  if (err(angle) || 'errors' in angle) {
+    return baseCommand
+  }
+
+  // Assemble the default argument values for the Offset Plane command,
+  // with `nodeToEdit` set, which will let the Offset Plane actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Revolve'] = {
+    axisOrEdge,
+    axis,
+    edge,
+    selection,
+    angle,
+    nodeToEdit: getNodePathFromSourceRange(
+      kclManager.ast,
+      sourceRangeFromRust(operation.sourceRange)
+    ),
+  }
+  console.log(argDefaultValues)
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
 /**
  * A map of standard library calls to their corresponding information
  * for use in the feature tree UI.
@@ -618,6 +779,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   revolve: {
     label: 'Revolve',
     icon: 'revolve',
+    prepareToEdit: prepareToEditRevolve,
     supportsAppearance: true,
   },
   shell: {

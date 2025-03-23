@@ -73,11 +73,14 @@ export type ModelingCommandSchema = {
     thickness: KclCommandValue
   }
   Revolve: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // KCL stdlib arguments
     selection: Selections
     angle: KclCommandValue
     axisOrEdge: 'Axis' | 'Edge'
-    axis: string
-    edge: Selections
+    axis?: string
+    edge?: Selections
   }
   Fillet: {
     selection: Selections
@@ -445,6 +448,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'revolve',
     needsReview: true,
     args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
       selection: {
         inputType: 'selection',
         selectionTypes: ['solid2d', 'segment'],
@@ -473,6 +483,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'X Axis', isCurrent: true, value: 'X' },
           { name: 'Y Axis', isCurrent: false, value: 'Y' },
         ],
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       edge: {
         required: (commandContext) =>
