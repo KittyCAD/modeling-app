@@ -1336,135 +1336,166 @@ loft001 = loft([sketch001, sketch002])
     })
   })
 
-  test(`Sweep point-and-click base`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const initialCode = `sketch001 = startSketchOn(YZ)
-  |> circle(
-       center = [0, 0],
-       radius = 500
-     )
-sketch002 = startSketchOn(XZ)
+  const sweepCases = [
+    {
+      targetType: 'circle',
+      testPoint: { x: 700, y: 250 },
+      initialCode: `sketch001 = startSketchOn('YZ')
+profile001 = circle(sketch001, center = [0, 0], radius = 500)
+sketch002 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> xLine(length = -500)
-  |> tangentialArcTo([-2000, 500], %)
-`
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+  |> tangentialArcTo([-2000, 500], %)`,
+    },
+    {
+      targetType: 'rectangle',
+      testPoint: { x: 710, y: 255 },
+      initialCode: `sketch001 = startSketchOn('YZ')
+profile001 = startProfileAt([-400, -400], sketch001)
+  |> angledLine([0, 800], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) + 90,
+       800
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+sketch002 = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> xLine(length = -500)
+  |> tangentialArcTo([-2000, 500], %)`,
+    },
+  ]
+  sweepCases.map(({ initialCode, targetType, testPoint }) => {
+    test(`Sweep point-and-click ${targetType}`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+    }) => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
 
-    // One dumb hardcoded screen pixel value
-    const testPoint = { x: 700, y: 250 }
-    const [clickOnSketch1] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-    const [clickOnSketch2] = scene.makeMouseHelpers(
-      testPoint.x - 50,
-      testPoint.y
-    )
-    const sweepDeclaration =
-      'sweep001 = sweep(sketch001, path = sketch002, sectional = false)'
-    const editedSweepDeclaration =
-      'sweep001 = sweep(sketch001, path = sketch002, sectional = true)'
+      // One dumb hardcoded screen pixel value
+      const [clickOnSketch1] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+      const [clickOnSketch2] = scene.makeMouseHelpers(
+        testPoint.x - 50,
+        testPoint.y
+      )
+      const sweepDeclaration =
+        'sweep001 = sweep(profile001, path = sketch002, sectional = false)'
+      const editedSweepDeclaration =
+        'sweep001 = sweep(profile001, path = sketch002, sectional = true)'
 
-    await test.step(`Look for sketch001`, async () => {
-      await toolbar.closePane('code')
-      await scene.expectPixelColor([53, 53, 53], testPoint, 15)
-    })
-
-    await test.step(`Go through the command bar flow`, async () => {
-      await toolbar.sweepButton.click()
-      await cmdBar.expectState({
-        commandName: 'Sweep',
-        currentArgKey: 'target',
-        currentArgValue: '',
-        headerArguments: {
-          Sectional: '',
-          Target: '',
-          Trajectory: '',
-        },
-        highlightedHeaderArg: 'target',
-        stage: 'arguments',
+      await test.step(`Look for sketch001`, async () => {
+        await toolbar.closePane('code')
+        await scene.expectPixelColor([53, 53, 53], testPoint, 15)
       })
-      await clickOnSketch1()
-      await cmdBar.expectState({
-        commandName: 'Sweep',
-        currentArgKey: 'trajectory',
-        currentArgValue: '',
-        headerArguments: {
-          Sectional: '',
-          Target: '1 face',
-          Trajectory: '',
-        },
-        highlightedHeaderArg: 'trajectory',
-        stage: 'arguments',
-      })
-      await clickOnSketch2()
-      await page.waitForTimeout(500)
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Sweep',
-        headerArguments: {
-          Target: '1 face',
-          Trajectory: '1 segment',
-          Sectional: '',
-        },
-        stage: 'review',
-      })
-      await cmdBar.progressCmdBar()
-    })
 
-    await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
-      await toolbar.openPane('code')
-      await editor.expectEditor.toContain(sweepDeclaration)
-      await toolbar.closePane('code')
-    })
-
-    await test.step('Edit sweep via feature tree selection works', async () => {
-      await toolbar.openPane('feature-tree')
-      const operationButton = await toolbar.getFeatureTreeOperation('Sweep', 0)
-      await operationButton.dblclick({ button: 'left' })
-      await cmdBar.expectState({
-        commandName: 'Sweep',
-        currentArgKey: 'sectional',
-        currentArgValue: '',
-        headerArguments: {
-          Sectional: '',
-        },
-        highlightedHeaderArg: 'sectional',
-        stage: 'arguments',
+      await test.step(`Go through the command bar flow`, async () => {
+        await toolbar.sweepButton.click()
+        await cmdBar.expectState({
+          commandName: 'Sweep',
+          currentArgKey: 'target',
+          currentArgValue: '',
+          headerArguments: {
+            Sectional: '',
+            Target: '',
+            Trajectory: '',
+          },
+          highlightedHeaderArg: 'target',
+          stage: 'arguments',
+        })
+        await clickOnSketch1()
+        await cmdBar.expectState({
+          commandName: 'Sweep',
+          currentArgKey: 'trajectory',
+          currentArgValue: '',
+          headerArguments: {
+            Sectional: '',
+            Target: '1 face',
+            Trajectory: '',
+          },
+          highlightedHeaderArg: 'trajectory',
+          stage: 'arguments',
+        })
+        await clickOnSketch2()
+        await page.waitForTimeout(500)
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          commandName: 'Sweep',
+          headerArguments: {
+            Target: '1 face',
+            Trajectory: '1 segment',
+            Sectional: '',
+          },
+          stage: 'review',
+        })
+        await cmdBar.progressCmdBar()
       })
-      await cmdBar.selectOption({ name: 'True' }).click()
-      await cmdBar.expectState({
-        commandName: 'Sweep',
-        headerArguments: {
-          Sectional: '',
-        },
-        stage: 'review',
-      })
-      await cmdBar.progressCmdBar()
-      await toolbar.closePane('feature-tree')
-      await toolbar.openPane('code')
-      await editor.expectEditor.toContain(editedSweepDeclaration)
-      await toolbar.closePane('code')
-    })
 
-    await test.step('Delete sweep via feature tree selection', async () => {
-      await toolbar.openPane('feature-tree')
-      await page.waitForTimeout(500)
-      const operationButton = await toolbar.getFeatureTreeOperation('Sweep', 0)
-      await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Delete')
-      await page.waitForTimeout(500)
-      await toolbar.closePane('feature-tree')
-      await scene.expectPixelColor([53, 53, 53], testPoint, 15)
+      await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(sweepDeclaration)
+        await scene.expectPixelColor([120, 120, 120], testPoint, 40)
+        await toolbar.closePane('code')
+      })
+
+      await test.step('Edit sweep via feature tree selection works', async () => {
+        await toolbar.openPane('feature-tree')
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'Sweep',
+          0
+        )
+        await operationButton.dblclick({ button: 'left' })
+        await cmdBar.expectState({
+          commandName: 'Sweep',
+          currentArgKey: 'sectional',
+          currentArgValue: '',
+          headerArguments: {
+            Sectional: '',
+          },
+          highlightedHeaderArg: 'sectional',
+          stage: 'arguments',
+        })
+        await cmdBar.selectOption({ name: 'True' }).click()
+        await cmdBar.expectState({
+          commandName: 'Sweep',
+          headerArguments: {
+            Sectional: '',
+          },
+          stage: 'review',
+        })
+        await cmdBar.progressCmdBar()
+        await toolbar.closePane('feature-tree')
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(editedSweepDeclaration)
+        await toolbar.closePane('code')
+      })
+
+      await test.step('Delete sweep via feature tree selection', async () => {
+        await toolbar.openPane('feature-tree')
+        await page.waitForTimeout(500)
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'Sweep',
+          0
+        )
+        await operationButton.click({ button: 'left' })
+        await page.keyboard.press('Delete')
+        await page.waitForTimeout(500)
+        await toolbar.closePane('feature-tree')
+        await scene.expectPixelColor([53, 53, 53], testPoint, 15)
+      })
     })
   })
 
