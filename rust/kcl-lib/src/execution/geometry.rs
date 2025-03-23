@@ -152,6 +152,8 @@ pub struct Helix {
     pub angle_start: f64,
     /// Is the helix rotation counter clockwise?
     pub ccw: bool,
+    /// The cylinder the helix was created on.
+    pub cylinder_id: Option<uuid::Uuid>,
     pub units: UnitLen,
     #[serde(skip)]
     pub meta: Vec<Metadata>,

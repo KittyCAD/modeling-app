@@ -35,7 +35,7 @@ import { settingsActor, useSettings } from 'machines/appMachine'
 import { createRouteCommands } from 'lib/commandBarConfigs/routeCommandConfig'
 import { useToken } from 'machines/appMachine'
 import { createNamedViewsCommand } from 'lib/commandBarConfigs/namedViewsConfig'
-import { err, reportRejection } from 'lib/trap'
+import { err } from 'lib/trap'
 import { newKclFile } from 'lang/project'
 
 type MachineContext<T extends AnyStateMachine> = {
@@ -62,20 +62,6 @@ export const FileMachineProvider = ({
   const [kclSamples, setKclSamples] = React.useState<KclSamplesManifestItem[]>(
     []
   )
-
-  // Write code mirror content to disk when the page is trying to reroute
-  // Our logic for codeManager.writeToFile has an artificial 1000ms timeout which
-  // won't run quickly enough so users can make an edit, exit the page and lose their
-  // progress within that 1000ms window.
-  useEffect(() => {
-    const preventUnload = (event: BeforeUnloadEvent) => {
-      codeManager.writeToFileNoTimeout().catch(reportRejection)
-    }
-    window.addEventListener('beforeunload', preventUnload)
-    return () => {
-      window.removeEventListener('beforeunload', preventUnload)
-    }
-  }, [])
 
   useEffect(() => {
     // TODO: Engine feature is not deployed

@@ -74,7 +74,6 @@ layout: manual
   * [`getOppositeEdge`](kcl/getOppositeEdge)
   * [`getPreviousAdjacentEdge`](kcl/getPreviousAdjacentEdge)
   * [`helix`](kcl/helix)
-  * [`helixRevolutions`](kcl/helixRevolutions)
   * [`hole`](kcl/hole)
   * [`hollow`](kcl/hollow)
   * [`inch`](kcl/inch)

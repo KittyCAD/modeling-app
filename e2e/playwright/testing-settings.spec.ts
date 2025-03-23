@@ -746,6 +746,7 @@ test.describe('Testing settings', () => {
     })
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
+    await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 15_000 })
     await scene.settled(cmdBar)
     await page.waitForTimeout(1000)
 
