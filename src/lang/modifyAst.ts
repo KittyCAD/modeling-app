@@ -810,7 +810,7 @@ export function addHelix({
   node,
   revolutions,
   angleStart,
-  counterClockWise,
+  ccw,
   radius,
   axis,
   length,
@@ -820,7 +820,7 @@ export function addHelix({
   node: Node<Program>
   revolutions: Expr
   angleStart: Expr
-  counterClockWise: boolean
+  ccw: boolean
   radius: Expr
   axis: string
   length: Expr
@@ -838,7 +838,7 @@ export function addHelix({
       [
         createLabeledArg('revolutions', revolutions),
         createLabeledArg('angleStart', angleStart),
-        createLabeledArg('counterClockWise', createLiteral(counterClockWise)),
+        createLabeledArg('ccw', createLiteral(ccw)),
         createLabeledArg('radius', radius),
         createLabeledArg('axis', createLiteral(axis)),
         createLabeledArg('length', length),

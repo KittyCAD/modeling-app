@@ -1892,7 +1892,6 @@ fn assign_args_to_params_kw(
     mut args: crate::std::args::KwArgs,
     exec_state: &mut ExecState,
 ) -> Result<(), KclError> {
-    #[allow(clippy::iter_over_hash_type)]
     for (label, arg) in &args.labeled {
         match function_expression.params.iter().find(|p| &p.identifier.name == label) {
             Some(p) => {
@@ -2086,7 +2085,6 @@ impl FunctionSource {
                     ));
                 }
 
-                #[allow(clippy::iter_over_hash_type)]
                 for (label, arg) in &mut args.kw_args.labeled {
                     match ast.params.iter().find(|p| &p.identifier.name == label) {
                         Some(p) => {
