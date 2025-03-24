@@ -11,13 +11,13 @@ export function useMenuListener(
       return
     }
 
-    window.electron.menuOn(callback)
+    const removeListener = window.electron.menuOn(callback)
     return () => {
       if (!onDesktop) {
         // NO OP for web
         return
       }
-      window.electron.menuOff(callback)
+      removeListener()
     }
   }, [])
 }

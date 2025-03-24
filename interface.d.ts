@@ -111,7 +111,6 @@ export interface IElectronAPI {
   enableMenu(menuId: string): Promise<any>
   disableMenu(menuId: string): Promise<any>
   menuOn: (callback: (payload: WebContentSendPayload) => void) => any
-  menuOff: (listener: any) => any
 }
 
 declare global {
