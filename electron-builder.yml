@@ -1,4 +1,4 @@
-appId: dev.zoo.modeling-app
+appId: dev.zoo.design-studio
 directories:
   output: out
   buildResources: assets

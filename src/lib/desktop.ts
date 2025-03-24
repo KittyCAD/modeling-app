@@ -391,7 +391,7 @@ export async function writeProjectSettingsFile(
 
 // Since we want backwards compatibility with the old settings file, we need to
 // rename the folder for macos.
-const MACOS_APP_NAME = 'dev.zoo.modeling-app'
+const MACOS_APP_NAME = 'dev.zoo.design-studio'
 
 const getAppFolderName = () => {
   if (window.electron.os.isMac || window.electron.os.isWindows) {

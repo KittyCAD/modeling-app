@@ -7,31 +7,31 @@ describe('ToastUpdate tests', () => {
     version: '0.255.255',
     files: [
       {
-        url: 'Zoo Modeling App-0.255.255-x64-mac.zip',
+        url: 'Zoo Design Studio-0.255.255-x64-mac.zip',
         sha512:
           'VJb0qlrqNr+rVx3QLATz+B28dtHw3osQb5/+UUmQUIMuF9t0i8dTKOVL/2lyJSmLJVw2/SGDB4Ud6VlTPJ6oFw==',
         size: 141277345,
       },
       {
-        url: 'Zoo Modeling App-0.255.255-arm64-mac.zip',
+        url: 'Zoo Design Studio-0.255.255-arm64-mac.zip',
         sha512:
           'b+ugdg7A4LhYYJaFkPRxh1RvmGGMlPJJj7inkLg9PwRtCnR9ePMlktj2VRciXF1iLh59XW4bLc4dK1dFQHMULA==',
         size: 135278259,
       },
       {
-        url: 'Zoo Modeling App-0.255.255-x64-mac.dmg',
+        url: 'Zoo Design Studio-0.255.255-x64-mac.dmg',
         sha512:
           'gCUqww05yj8OYwPiTq6bo5GbkpngSbXGtenmDD7+kUm0UyVK8WD3dMAfQJtGNG5HY23aHCHe9myE2W4mbZGmiQ==',
         size: 146004232,
       },
       {
-        url: 'Zoo Modeling App-0.255.255-arm64-mac.dmg',
+        url: 'Zoo Design Studio-0.255.255-arm64-mac.dmg',
         sha512:
           'ND871ayf81F1ZT+iWVLYTc2jdf/Py6KThuxX2QFWz14ebmIbJPL07lNtxQOexOFiuk0MwRhlCy1RzOSG1b9bmw==',
         size: 140021522,
       },
     ],
-    path: 'Zoo Modeling App-0.255.255-x64-mac.zip',
+    path: 'Zoo Design Studio-0.255.255-x64-mac.zip',
     sha512:
       'VJb0qlrqNr+rVx3QLATz+B28dtHw3osQb5/+UUmQUIMuF9t0i8dTKOVL/2lyJSmLJVw2/SGDB4Ud6VlTPJ6oFw==',
     releaseNotes:

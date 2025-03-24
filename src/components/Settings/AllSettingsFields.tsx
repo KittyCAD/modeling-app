@@ -302,7 +302,7 @@ export const AllSettingsFields = forwardRef(
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Click here to grab Zoo Modeling App (Nightly)
+                  Click here to grab Zoo Design Studio (Nightly)
                 </a>
                 . It can be installed side-by-side with the stable version
                 you're running now. But careful there, a lot less testing is

@@ -1,6 +1,6 @@
 ---
 title: "KCL Modules"
-excerpt: "Documentation of modules for the KCL language for the Zoo Modeling App."
+excerpt: "Documentation of modules for the KCL language for the Zoo Design Studio."
 layout: manual
 ---
 

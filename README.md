@@ -1,6 +1,6 @@
-![Zoo Modeling App](/public/zma-logomark-outlined.png)
+![Zoo Design Studio](/public/zma-logomark-outlined.png)
 
-## Zoo Modeling App
+## Zoo Design Studio
 
 download at [zoo.dev/modeling-app/download](https://zoo.dev/modeling-app/download)
 
@@ -198,13 +198,13 @@ If the prompt doesn't show up, start the app in command line to grab the electro
 
 ```
 # Windows (PowerShell)
-& 'C:\Program Files\Zoo Modeling App\Zoo Modeling App.exe'
+& 'C:\Program Files\Zoo Design Studio\Zoo Design Studio.exe'
 
 # macOS
 /Applications/Zoo\ Modeling\ App.app/Contents/MacOS/Zoo\ Modeling\ App
 
 # Linux
-./Zoo Modeling App-{version}-{arch}-linux.AppImage
+./Zoo Design Studio-{version}-{arch}-linux.AppImage
 ```
 
 #### 4. Publish the release
