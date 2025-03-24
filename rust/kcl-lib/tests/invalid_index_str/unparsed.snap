@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing invalid_index_str.kcl
+---
+arr = [1, 2, 3]
+x = arr["s"]

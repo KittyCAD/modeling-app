@@ -9,7 +9,7 @@ Compute the sine of a number (in radians).
 
 
 ```js
-sin(num: number(rad)): number(_)
+sin(@num: number(rad)): number(_)
 ```
 
 
@@ -27,7 +27,7 @@ sin(num: number(rad)): number(_)
 ### Examples
 
 ```js
-exampleSketch = startSketchOn("XZ")
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> angledLine({
     angle = 50,

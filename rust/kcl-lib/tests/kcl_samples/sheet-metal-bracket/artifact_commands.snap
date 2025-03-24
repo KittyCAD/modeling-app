@@ -5,11 +5,7 @@ description: Artifact commands sheet-metal-bracket.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,11 +13,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -29,11 +21,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +30,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +39,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      320,
-      353,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "in"
@@ -67,11 +47,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      704,
-      724,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -96,11 +72,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      730,
-      755,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -116,22 +88,14 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      730,
-      755,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      730,
-      755,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -144,22 +108,14 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      730,
-      755,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      761,
-      798,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -176,11 +132,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      804,
-      844,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -197,11 +149,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      850,
-      887,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -218,11 +166,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      893,
-      929,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -239,11 +183,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      935,
-      973,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -260,11 +200,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      979,
-      1019,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -281,11 +217,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1025,
-      1063,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -302,11 +234,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1069,
-      1122,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -323,11 +251,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1128,
-      1165,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -344,11 +268,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1171,
-      1225,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -365,11 +285,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1231,
-      1270,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -386,11 +302,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1276,
-      1293,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -398,11 +310,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -418,11 +326,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -432,22 +336,14 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -455,11 +351,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -468,11 +360,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -482,11 +370,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -496,11 +380,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -510,11 +390,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -524,11 +400,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -538,11 +410,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -552,11 +420,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -566,11 +430,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -580,11 +440,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -594,11 +450,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -608,11 +460,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -622,11 +470,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -636,11 +480,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -650,11 +490,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -664,11 +500,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -678,11 +510,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -692,11 +520,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -706,11 +530,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -720,11 +540,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -734,11 +550,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -748,11 +560,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -762,11 +570,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -776,11 +580,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -790,11 +590,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1299,
-      1325,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -804,11 +600,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1379,
-      1402,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -818,11 +610,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1471,
-      1494,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -832,11 +620,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1563,
-      1586,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -846,11 +630,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1648,
-      1671,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -860,11 +640,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1740,
-      1763,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -874,11 +650,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1825,
-      1848,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -888,11 +660,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1910,
-      1934,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -902,11 +670,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2003,
-      2027,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -916,11 +680,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2094,
-      2113,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -945,11 +705,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2119,
-      2144,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -965,22 +721,14 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2119,
-      2144,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2119,
-      2144,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -993,22 +741,14 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2119,
-      2144,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2150,
-      2175,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1025,11 +765,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2181,
-      2221,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1046,11 +782,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2227,
-      2265,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1067,11 +799,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2271,
-      2278,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1079,11 +807,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2289,
-      2355,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1099,22 +823,14 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2289,
-      2355,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2289,
-      2355,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1127,22 +843,14 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2289,
-      2355,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2289,
-      2355,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1167,11 +875,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2289,
-      2355,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1179,11 +883,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2284,
-      2359,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -1192,11 +892,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2284,
-      2359,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1205,11 +901,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2370,
-      2436,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1225,22 +917,14 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2370,
-      2436,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2370,
-      2436,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1253,22 +937,14 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2370,
-      2436,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2370,
-      2436,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1293,11 +969,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2370,
-      2436,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1305,11 +977,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2365,
-      2440,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -1318,11 +986,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2365,
-      2440,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1331,11 +995,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2446,
-      2473,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1351,11 +1011,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2446,
-      2473,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1365,22 +1021,14 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2446,
-      2473,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2446,
-      2473,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1388,11 +1036,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2446,
-      2473,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1401,11 +1045,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2446,
-      2473,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1415,11 +1055,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2446,
-      2473,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1429,11 +1065,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2446,
-      2473,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1443,11 +1075,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2446,
-      2473,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1457,11 +1085,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2446,
-      2473,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1471,11 +1095,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2446,
-      2473,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1485,11 +1105,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2446,
-      2473,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1499,11 +1115,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2446,
-      2473,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1513,11 +1125,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2446,
-      2473,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1527,11 +1135,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2446,
-      2473,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1541,11 +1145,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2446,
-      2473,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1555,11 +1155,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2446,
-      2473,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1569,11 +1165,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2533,
-      2557,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1583,11 +1175,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2568,
-      2592,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1597,11 +1185,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2620,
-      2639,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1626,11 +1210,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2645,
-      2671,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1646,22 +1226,14 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2645,
-      2671,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2645,
-      2671,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1674,22 +1246,14 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2645,
-      2671,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2677,
-      2702,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1706,11 +1270,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2708,
-      2749,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1727,11 +1287,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2755,
-      2793,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1748,11 +1304,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2799,
-      2806,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1760,11 +1312,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2817,
-      2884,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1780,22 +1328,14 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2817,
-      2884,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2817,
-      2884,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1808,22 +1348,14 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2817,
-      2884,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2817,
-      2884,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1848,11 +1380,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2817,
-      2884,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1860,11 +1388,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2812,
-      2888,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -1873,11 +1397,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2812,
-      2888,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1886,11 +1406,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2899,
-      2966,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1906,22 +1422,14 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2899,
-      2966,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2899,
-      2966,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1934,22 +1442,14 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2899,
-      2966,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2899,
-      2966,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1974,11 +1474,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2899,
-      2966,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1986,11 +1482,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2894,
-      2970,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -1999,11 +1491,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2894,
-      2970,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2012,11 +1500,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2976,
-      3003,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2032,11 +1516,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2976,
-      3003,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -2046,22 +1526,14 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2976,
-      3003,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2976,
-      3003,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -2069,11 +1541,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2976,
-      3003,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -2082,11 +1550,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2976,
-      3003,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2096,11 +1560,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2976,
-      3003,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2110,11 +1570,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2976,
-      3003,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2124,11 +1580,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2976,
-      3003,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2138,11 +1590,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2976,
-      3003,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2152,11 +1600,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2976,
-      3003,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2166,11 +1610,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2976,
-      3003,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2180,11 +1620,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2976,
-      3003,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2194,11 +1630,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2976,
-      3003,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2208,11 +1640,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2976,
-      3003,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2222,11 +1650,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2976,
-      3003,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2236,11 +1660,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2976,
-      3003,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2250,11 +1670,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3064,
-      3088,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2264,11 +1680,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3099,
-      3123,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2278,11 +1690,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1331,
-      1410,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2294,11 +1702,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1416,
-      1502,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2310,11 +1714,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1508,
-      1594,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2326,11 +1726,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1600,
-      1679,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2342,11 +1738,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1685,
-      1771,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2358,11 +1750,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1777,
-      1856,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2374,11 +1762,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1862,
-      1942,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2390,11 +1774,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1948,
-      2035,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2406,11 +1786,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2479,
-      2608,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2422,11 +1798,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2479,
-      2608,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2438,11 +1810,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3009,
-      3139,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2454,11 +1822,7 @@ description: Artifact commands sheet-metal-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3009,
-      3139,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",

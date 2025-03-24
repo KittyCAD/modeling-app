@@ -5,11 +5,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,11 +13,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -29,11 +21,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +30,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +39,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      33,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "in"
@@ -67,11 +47,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      33,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "in"
@@ -79,11 +55,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      48,
-      67,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -108,11 +80,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      77,
-      114,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -128,22 +96,14 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      77,
-      114,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      77,
-      114,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -156,22 +116,14 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      77,
-      114,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      120,
-      137,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -188,11 +140,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      143,
-      161,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -209,11 +157,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      167,
-      185,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -230,11 +174,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      191,
-      247,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -251,11 +191,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      253,
-      260,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -263,11 +199,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      266,
-      288,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -283,11 +215,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      266,
-      288,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -297,22 +225,14 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      266,
-      288,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      266,
-      288,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -320,11 +240,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      266,
-      288,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -333,11 +249,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      266,
-      288,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -347,11 +259,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      266,
-      288,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -361,11 +269,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      266,
-      288,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -375,11 +279,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      266,
-      288,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -389,11 +289,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      266,
-      288,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -403,11 +299,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      266,
-      288,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -417,11 +309,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      266,
-      288,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -431,11 +319,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      266,
-      288,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -445,11 +329,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      33,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -457,11 +337,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      48,
-      67,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -486,11 +362,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      77,
-      112,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -506,22 +378,14 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      77,
-      112,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      77,
-      112,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -534,22 +398,14 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      77,
-      112,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      118,
-      135,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -566,11 +422,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      141,
-      159,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -587,11 +439,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      165,
-      183,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -608,11 +456,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      189,
-      245,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -629,11 +473,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      251,
-      258,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -641,11 +481,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      264,
-      286,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -661,11 +497,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      264,
-      286,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -675,22 +507,14 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      264,
-      286,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      264,
-      286,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -698,11 +522,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      264,
-      286,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -711,11 +531,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      264,
-      286,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -725,11 +541,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      264,
-      286,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -739,11 +551,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      264,
-      286,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -753,11 +561,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      264,
-      286,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -767,11 +571,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      264,
-      286,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -781,11 +581,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      264,
-      286,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -795,11 +591,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      264,
-      286,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -809,11 +601,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      264,
-      286,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -823,11 +611,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "in"

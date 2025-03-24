@@ -1,4 +1,4 @@
-const svg = startSketchOn('XY')
+const svg = startSketchOn(XY)
     |> startProfileAt([0, 0], %)
 
 |> line(endAbsolute = [2.52, -26.04]) // MoveAbsolute

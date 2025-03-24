@@ -10,19 +10,11 @@ description: Operations executed parametric_with_tan_arc.kcl
           "type": "Plane",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          253,
-          255,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      239,
-      256,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,19 +34,11 @@ description: Operations executed parametric_with_tan_arc.kcl
             }
           }
         },
-        "sourceRange": [
-          639,
-          644,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      622,
-      645,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -63,11 +47,7 @@ description: Operations executed parametric_with_tan_arc.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        622,
-        645,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

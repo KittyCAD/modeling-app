@@ -147,6 +147,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
     ) -> Result<(), crate::errors::KclError>;
 
+    async fn clear_queues(&self) {
+        self.batch().write().await.clear();
+        self.batch_end().write().await.clear();
+    }
+
     /// Send a modeling command and wait for the response message.
     async fn inner_send_modeling_cmd(
         &self,
@@ -161,6 +166,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
     ) -> Result<(), crate::errors::KclError> {
+        // Clear any batched commands leftover from previous scenes.
+        self.clear_queues().await;
+
         self.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
             source_range,

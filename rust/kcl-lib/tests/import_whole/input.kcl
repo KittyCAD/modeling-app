@@ -1,5 +1,6 @@
 @settings(defaultLengthUnit = mm)
+
 import "exported_mod.kcl" as foo
 
 bar = foo
-  |> shell(faces = ['end'], thickness = 0.25)
+  |> shell(faces = ['end'], thickness = foo::thickness)

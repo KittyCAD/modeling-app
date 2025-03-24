@@ -9,10 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
-    execution::{
-        kcl_value::{ArrayLen, RuntimeType},
-        ExecState, Helix, KclValue, PrimitiveType, Sketch, Solid,
-    },
+    execution::{types::RuntimeType, ExecState, Helix, KclValue, Sketch, Solid},
     parsing::ast::types::TagNode,
     std::{extrude::do_post_extrude, fillet::default_tolerance, Args},
 };
@@ -28,11 +25,7 @@ pub enum SweepPath {
 
 /// Extrude a sketch along a path.
 pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg_typed(
-        "sketches",
-        &RuntimeType::Array(PrimitiveType::Sketch, ArrayLen::NonEmpty),
-        exec_state,
-    )?;
+    let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
     let path: SweepPath = args.get_kw_arg("path")?;
     let sectional = args.get_kw_arg_opt("sectional")?;
     let tolerance = args.get_kw_arg_opt("tolerance")?;
@@ -141,6 +134,25 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// sweep([rectangleSketch, circleSketch], path = sweepPath)
 /// ```
+/// ```
+/// // Sectionally sweep one sketch along the path
+///
+/// sketch001 = startSketchOn('XY')
+/// circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
+///
+/// sketch002 = startSketchOn('YZ')
+/// sweepPath = startProfileAt([0, 0], sketch002)
+///     |> yLine(length = 231.81)
+///     |> tangentialArc({
+///         radius = 80,
+///         offset = -90,
+///     }, %)
+///     |> xLine(length = 384.93)
+///
+/// sweep(circleSketch, path = sweepPath, sectional = true)
+/// ```
+///
+
 #[stdlib {
     name = "sweep",
     feature_tree_operation = true,
@@ -190,6 +202,7 @@ async fn inner_sweep(
                 sketch,
                 id.into(),
                 0.0,
+                sectional.unwrap_or(false),
                 &super::extrude::NamedCapTags {
                     start: tag_start.as_ref(),
                     end: tag_end.as_ref(),

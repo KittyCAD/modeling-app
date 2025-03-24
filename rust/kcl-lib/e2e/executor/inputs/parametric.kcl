@@ -7,7 +7,7 @@ const FOS = 2
 const leg1 = 5 // inches
 const leg2 = 8 // inches
 const thickness = sqrt(distance * p * FOS * 6 / sigmaAllow / width) // inches
-const bracket = startSketchOn('XY')
+const bracket = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(end = [0, leg1])
   |> line(end = [leg2, 0])

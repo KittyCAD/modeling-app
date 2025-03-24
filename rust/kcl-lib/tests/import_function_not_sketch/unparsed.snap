@@ -1,0 +1,11 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing import_function_not_sketch.kcl
+---
+@settings(defaultLengthUnit = in)
+
+import two from "my_functions.kcl"
+
+export fn one() {
+  return two() - 1
+}

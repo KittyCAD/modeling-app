@@ -60,11 +60,8 @@ pub fn parse_tokens(mut tokens: TokenStream) -> ParseResult {
         return Node::<Program>::default().into();
     }
 
-    // Check all the tokens are whitespace or comments.
-    if tokens
-        .iter()
-        .all(|t| t.token_type.is_whitespace() || t.token_type.is_comment())
-    {
+    // Check all the tokens are whitespace.
+    if tokens.iter().all(|t| t.token_type.is_whitespace()) {
         return Node::<Program>::default().into();
     }
 
@@ -143,6 +140,32 @@ impl From<Node<Program>> for ParseResult {
 impl From<KclError> for ParseResult {
     fn from(e: KclError) -> ParseResult {
         ParseResult(Err(e))
+    }
+}
+
+const STR_DEPRECATIONS: [(&str, &str); 6] = [
+    ("XY", "XY"),
+    ("XZ", "XZ"),
+    ("YZ", "YZ"),
+    ("-XY", "-XY"),
+    ("-XZ", "-XZ"),
+    ("-YZ", "-YZ"),
+];
+const FN_DEPRECATIONS: [(&str, &str); 3] = [("pi", "PI"), ("e", "E"), ("tau", "TAU")];
+const CONST_DEPRECATIONS: [(&str, &str); 0] = [];
+
+#[derive(Clone, Copy)]
+pub enum DeprecationKind {
+    String,
+    Function,
+    Const,
+}
+
+pub fn deprecation(s: &str, kind: DeprecationKind) -> Option<&'static str> {
+    match kind {
+        DeprecationKind::String => STR_DEPRECATIONS.iter().find_map(|(a, b)| (*a == s).then_some(*b)),
+        DeprecationKind::Function => FN_DEPRECATIONS.iter().find_map(|(a, b)| (*a == s).then_some(*b)),
+        DeprecationKind::Const => CONST_DEPRECATIONS.iter().find_map(|(a, b)| (*a == s).then_some(*b)),
     }
 }
 

@@ -1,25 +1,30 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing invalid_index_fractional.kcl
 ---
 {
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 15,
+          "commentStart": 0,
+          "end": 0,
           "id": {
-            "end": 3,
+            "commentStart": 0,
+            "end": 0,
             "name": "arr",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 6,
             "elements": [
               {
-                "end": 8,
+                "commentStart": 7,
+                "end": 0,
                 "raw": "1",
-                "start": 7,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -28,9 +33,10 @@ description: Result of parsing invalid_index_fractional.kcl
                 }
               },
               {
-                "end": 11,
+                "commentStart": 10,
+                "end": 0,
                 "raw": "2",
-                "start": 10,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -39,9 +45,10 @@ description: Result of parsing invalid_index_fractional.kcl
                 }
               },
               {
-                "end": 14,
+                "commentStart": 13,
+                "end": 0,
                 "raw": "3",
-                "start": 13,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -50,43 +57,49 @@ description: Result of parsing invalid_index_fractional.kcl
                 }
               }
             ],
-            "end": 15,
-            "start": 6,
+            "end": 0,
+            "start": 0,
             "type": "ArrayExpression",
             "type": "ArrayExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 15,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 16,
         "declaration": {
-          "end": 28,
+          "commentStart": 16,
+          "end": 0,
           "id": {
-            "end": 17,
+            "commentStart": 16,
+            "end": 0,
             "name": "x",
-            "start": 16,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 20,
             "computed": false,
-            "end": 28,
+            "end": 0,
             "object": {
-              "end": 23,
+              "commentStart": 20,
+              "end": 0,
               "name": "arr",
-              "start": 20,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "property": {
-              "end": 27,
+              "commentStart": 24,
+              "end": 0,
               "raw": "1.2",
-              "start": 24,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -94,21 +107,22 @@ description: Result of parsing invalid_index_fractional.kcl
                 "suffix": "None"
               }
             },
-            "start": 20,
+            "start": 0,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "start": 16,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 28,
+        "end": 0,
         "kind": "const",
-        "start": 16,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 29,
+    "commentStart": 0,
+    "end": 0,
     "start": 0
   }
 }

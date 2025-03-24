@@ -22,7 +22,6 @@ A path to sweep along.
 
 
 ----
-A helix.
 
 [`Helix`](/docs/kcl/types/Helix)
 

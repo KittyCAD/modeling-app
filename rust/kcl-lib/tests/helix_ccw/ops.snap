@@ -10,21 +10,79 @@ description: Operations executed helix_ccw.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          24,
-          28,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      10,
-      29,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 5.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 5.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 10.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -42,19 +100,11 @@ description: Operations executed helix_ccw.kcl
             }
           }
         },
-        "sourceRange": [
-          94,
-          96,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      77,
-      97,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -63,78 +113,71 @@ description: Operations executed helix_ccw.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        77,
-        97,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
     "labeledArgs": {
-      "data": {
+      "angleStart": {
         "value": {
-          "type": "Object",
-          "value": {
-            "angleStart": {
-              "type": "Number",
-              "value": 0.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
+          "type": "Number",
+          "value": 0.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
             },
-            "ccw": {
-              "type": "Bool",
-              "value": true
-            },
-            "revolutions": {
-              "type": "Number",
-              "value": 16.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
+            "angle": {
+              "type": "Degrees"
             }
           }
         },
-        "sourceRange": [
-          120,
-          194,
-          0
-        ]
+        "sourceRange": []
       },
-      "solid": {
+      "ccw": {
+        "value": {
+          "type": "Bool",
+          "value": true
+        },
+        "sourceRange": []
+      },
+      "cylinder": {
         "value": {
           "type": "Solid",
           "value": {
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          196,
-          197,
-          0
-        ]
+        "sourceRange": []
+      },
+      "revolutions": {
+        "value": {
+          "type": "Number",
+          "value": 16.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
       }
     },
-    "name": "helixRevolutions",
-    "sourceRange": [
-      103,
-      198,
-      0
-    ],
+    "name": "helix",
+    "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   }
 ]

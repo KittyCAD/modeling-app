@@ -1,5 +1,5 @@
 fn rect = (origin) => {
-  return startSketchOn('XZ')
+  return startSketchOn(XZ)
   |> startProfileAt(origin, %)
   |> angledLine([0, 191.26], %, $rectangleSegmentA001)
   |> angledLine([

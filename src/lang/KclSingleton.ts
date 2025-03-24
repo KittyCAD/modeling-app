@@ -65,6 +65,8 @@ export class KclManager {
     },
     innerAttrs: [],
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
   }
   private _execState: ExecState = emptyExecState()
   private _variables: VariableMap = {}
@@ -76,7 +78,7 @@ export class KclManager {
   private _isExecuting = false
   private _executeIsStale: ExecuteArgs | null = null
   private _wasmInitFailed = true
-  private _hasErrors = false
+  private _astParseFailed = false
   private _switchedFiles = false
   private _fileSettings: KclSettingsAnnotation = {}
   private _kclVersion: string | undefined = undefined
@@ -165,7 +167,7 @@ export class KclManager {
   }
 
   hasErrors(): boolean {
-    return this._hasErrors
+    return this._astParseFailed || this._errors.length > 0
   }
 
   setDiagnosticsForCurrentErrors() {
@@ -261,6 +263,8 @@ export class KclManager {
       },
       innerAttrs: [],
       outerAttrs: [],
+      preComments: [],
+      commentStart: 0,
     }
   }
 
@@ -274,7 +278,7 @@ export class KclManager {
   private async checkIfSwitchedFilesShouldClear() {
     // If we were switching files and we hit an error on parse we need to bust
     // the cache and clear the scene.
-    if (this._hasErrors && this._switchedFiles) {
+    if (this._astParseFailed && this._switchedFiles) {
       await rustContext.clearSceneAndBustCache(
         { settings: await jsAppSettings() },
         codeManager.currentFilePath || undefined
@@ -288,12 +292,12 @@ export class KclManager {
   async safeParse(code: string): Promise<Node<Program> | null> {
     const result = parse(code)
     this.diagnostics = []
-    this._hasErrors = false
+    this._astParseFailed = false
 
     if (err(result)) {
       const kclerror: KCLError = result as KCLError
       this.diagnostics = kclErrorsToDiagnostics([kclerror])
-      this._hasErrors = true
+      this._astParseFailed = true
 
       await this.checkIfSwitchedFilesShouldClear()
       return null
@@ -309,7 +313,7 @@ export class KclManager {
     this.addDiagnostics(complilationErrorsToDiagnostics(result.errors))
     this.addDiagnostics(complilationErrorsToDiagnostics(result.warnings))
     if (result.errors.length > 0) {
-      this._hasErrors = true
+      this._astParseFailed = true
 
       await this.checkIfSwitchedFilesShouldClear()
       return null

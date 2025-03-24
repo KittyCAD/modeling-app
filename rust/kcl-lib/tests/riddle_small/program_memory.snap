@@ -40,44 +40,28 @@ description: Variables in memory after executing riddle_small.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            199,
-            217,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            223,
-            242,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            248,
-            267,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            273,
-            281,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -89,11 +73,7 @@ description: Variables in memory after executing riddle_small.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                199,
-                217,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -26.0,
@@ -112,11 +92,7 @@ description: Variables in memory after executing riddle_small.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                223,
-                242,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -25.0,
@@ -135,11 +111,7 @@ description: Variables in memory after executing riddle_small.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                248,
-                267,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -25.0,
@@ -158,11 +130,7 @@ description: Variables in memory after executing riddle_small.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                273,
-                281,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -26.0,
@@ -223,11 +191,7 @@ description: Variables in memory after executing riddle_small.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              166,
-              193,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",

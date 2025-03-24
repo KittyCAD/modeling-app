@@ -1,29 +1,16 @@
-// Walkie talkie knob
+// Walkie Talkie Frequency Knob
 
-
-// Set units
-@settings(defaultLengthUnit = in)
-
-
-// Import constants
+// import constants
 import width, thickness, height, knobDiameter, knobHeight, knobRadius from "globals.kcl"
 
-// Define the plane for the knob
-knobPlane = {
-  plane = {
-    origin = {
-      x = width / 2 - 0.70,
-      y = -thickness / 2,
-      z = height / 2
-    },
-    xAxis = { x = 1, y = 0, z = 0 },
-    yAxis = { x = 0, y = 0, z = 1 },
-    zAxis = { x = 0, y = 1, z = 0 }
-  }
-}
+// set units
+@settings(defaultLengthUnit = in)
+
+// create a function to define the knob
+export fn knob () {
 
 // Create the knob sketch and revolve
-startSketchOn(knobPlane)
+knob = startSketchOn('XZ')
   |> startProfileAt([0.0001, 0], %)
   |> xLine(length = knobDiameter / 2)
   |> yLine(length = knobHeight - 0.05)
@@ -34,5 +21,11 @@ startSketchOn(knobPlane)
      }, %)
   |> xLine(endAbsolute = 0.0001)
   |> close()
-  |> revolve(axis = "Y")
+  |> revolve(
+    axis = "Y",
+  )
   |> appearance(color = '#D0FF01', metalness = 90, roughness = 50)
+
+  return knob
+
+}

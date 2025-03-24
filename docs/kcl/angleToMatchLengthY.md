@@ -33,7 +33,7 @@ angleToMatchLengthY(
 ### Examples
 
 ```js
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [1, 2], tag = $seg01)
   |> angledLine({

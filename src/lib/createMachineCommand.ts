@@ -160,6 +160,7 @@ export function buildCommandArgument<
   // GOTCHA: modelingCommandConfig is not a 1:1 mapping to this baseCommandArgument
   // You need to manually add key/value pairs here.
   const baseCommandArgument = {
+    displayName: arg.displayName,
     description: arg.description,
     required: arg.required,
     hidden: arg.hidden,

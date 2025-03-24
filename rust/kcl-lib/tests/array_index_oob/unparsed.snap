@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing array_index_oob.kcl
+---
+arr = []
+x = arr[0]

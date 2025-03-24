@@ -6,18 +6,22 @@ description: Result of parsing pentagon_fillet_sugar.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 20,
+          "commentStart": 0,
+          "end": 0,
           "id": {
-            "end": 14,
+            "commentStart": 0,
+            "end": 0,
             "name": "triangleHeight",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 20,
+            "commentStart": 17,
+            "end": 0,
             "raw": "200",
-            "start": 17,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -28,25 +32,29 @@ description: Result of parsing pentagon_fillet_sugar.kcl
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 20,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 21,
         "declaration": {
-          "end": 37,
+          "commentStart": 21,
+          "end": 0,
           "id": {
-            "end": 31,
+            "commentStart": 21,
+            "end": 0,
             "name": "plumbusLen",
-            "start": 21,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 37,
+            "commentStart": 34,
+            "end": 0,
             "raw": "100",
-            "start": 34,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -54,28 +62,32 @@ description: Result of parsing pentagon_fillet_sugar.kcl
               "suffix": "None"
             }
           },
-          "start": 21,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 37,
+        "end": 0,
         "kind": "const",
-        "start": 21,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 38,
         "declaration": {
-          "end": 49,
+          "commentStart": 38,
+          "end": 0,
           "id": {
-            "end": 44,
+            "commentStart": 38,
+            "end": 0,
             "name": "radius",
-            "start": 38,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 49,
+            "commentStart": 47,
+            "end": 0,
             "raw": "80",
-            "start": 47,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -83,41 +95,48 @@ description: Result of parsing pentagon_fillet_sugar.kcl
               "suffix": "None"
             }
           },
-          "start": 38,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 49,
+        "end": 0,
         "kind": "const",
-        "start": 38,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 50,
         "declaration": {
-          "end": 114,
+          "commentStart": 50,
+          "end": 0,
           "id": {
-            "end": 54,
+            "commentStart": 50,
+            "end": 0,
             "name": "circ",
-            "start": 50,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 114,
+            "commentStart": 57,
+            "end": 0,
             "properties": [
               {
-                "end": 75,
+                "commentStart": 61,
+                "end": 0,
                 "key": {
-                  "end": 71,
+                  "commentStart": 61,
+                  "end": 0,
                   "name": "angleStart",
-                  "start": 61,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "start": 61,
+                "start": 0,
                 "type": "ObjectProperty",
                 "value": {
-                  "end": 75,
+                  "commentStart": 74,
+                  "end": 0,
                   "raw": "0",
-                  "start": 74,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -127,19 +146,22 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 }
               },
               {
-                "end": 93,
+                "commentStart": 79,
+                "end": 0,
                 "key": {
-                  "end": 87,
+                  "commentStart": 79,
+                  "end": 0,
                   "name": "angleEnd",
-                  "start": 79,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "start": 79,
+                "start": 0,
                 "type": "ObjectProperty",
                 "value": {
-                  "end": 93,
+                  "commentStart": 90,
+                  "end": 0,
                   "raw": "360",
-                  "start": 90,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -149,50 +171,65 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 }
               },
               {
-                "end": 112,
+                "commentStart": 97,
+                "end": 0,
                 "key": {
-                  "end": 103,
+                  "commentStart": 97,
+                  "end": 0,
                   "name": "radius",
-                  "start": 97,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "start": 97,
+                "start": 0,
                 "type": "ObjectProperty",
                 "value": {
-                  "end": 112,
-                  "name": "radius",
-                  "start": 106,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 106,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 106,
+                    "end": 0,
+                    "name": "radius",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
                 }
               }
             ],
-            "start": 57,
+            "start": 0,
             "type": "ObjectExpression",
             "type": "ObjectExpression"
           },
-          "start": 50,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 114,
+        "end": 0,
         "kind": "const",
-        "start": 50,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 114,
         "declaration": {
-          "end": 133,
+          "commentStart": 116,
+          "end": 0,
           "id": {
-            "end": 127,
+            "commentStart": 116,
+            "end": 0,
             "name": "triangleLen",
-            "start": 116,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 133,
+            "commentStart": 130,
+            "end": 0,
             "raw": "500",
-            "start": 130,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -200,22 +237,25 @@ description: Result of parsing pentagon_fillet_sugar.kcl
               "suffix": "None"
             }
           },
-          "start": 116,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 133,
+        "end": 0,
         "kind": "const",
-        "start": 116,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 134,
         "declaration": {
-          "end": 411,
+          "commentStart": 134,
+          "end": 0,
           "id": {
-            "end": 135,
+            "commentStart": 134,
+            "end": 0,
             "name": "p",
-            "start": 134,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -223,33 +263,46 @@ description: Result of parsing pentagon_fillet_sugar.kcl
               {
                 "arguments": [
                   {
-                    "end": 156,
+                    "commentStart": 152,
+                    "end": 0,
                     "raw": "'XY'",
-                    "start": 152,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XY"
                   }
                 ],
                 "callee": {
-                  "end": 151,
-                  "name": "startSketchOn",
-                  "start": 138,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 138,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 138,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 157,
-                "start": 138,
+                "commentStart": 138,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
+                    "commentStart": 178,
                     "elements": [
                       {
-                        "end": 180,
+                        "commentStart": 179,
+                        "end": 0,
                         "raw": "0",
-                        "start": 179,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -258,9 +311,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                         }
                       },
                       {
-                        "end": 183,
+                        "commentStart": 182,
+                        "end": 0,
                         "raw": "0",
-                        "start": 182,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -269,48 +323,63 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                         }
                       }
                     ],
-                    "end": 184,
-                    "start": 178,
+                    "end": 0,
+                    "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 187,
-                    "start": 186,
+                    "commentStart": 186,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 177,
-                  "name": "startProfileAt",
-                  "start": 163,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 163,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 163,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 188,
-                "start": 163,
+                "commentStart": 163,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 241,
+                    "commentStart": 205,
+                    "end": 0,
                     "properties": [
                       {
-                        "end": 217,
+                        "commentStart": 207,
+                        "end": 0,
                         "key": {
-                          "end": 212,
+                          "commentStart": 207,
+                          "end": 0,
                           "name": "angle",
-                          "start": 207,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "start": 207,
+                        "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 217,
+                          "commentStart": 215,
+                          "end": 0,
                           "raw": "60",
-                          "start": 215,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -320,72 +389,99 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                         }
                       },
                       {
-                        "end": 239,
+                        "commentStart": 219,
+                        "end": 0,
                         "key": {
-                          "end": 225,
+                          "commentStart": 219,
+                          "end": 0,
                           "name": "length",
-                          "start": 219,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "start": 219,
+                        "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 239,
-                          "name": "triangleLen",
-                          "start": 228,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "abs_path": false,
+                          "commentStart": 228,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 228,
+                            "end": 0,
+                            "name": "triangleLen",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
-                    "start": 205,
+                    "start": 0,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 244,
-                    "start": 243,
+                    "commentStart": 243,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 248,
-                    "start": 246,
+                    "commentStart": 246,
+                    "end": 0,
+                    "start": 0,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "a"
                   }
                 ],
                 "callee": {
-                  "end": 204,
-                  "name": "angledLine",
-                  "start": 194,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 194,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 194,
+                    "end": 0,
+                    "name": "angledLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 249,
-                "start": 194,
+                "commentStart": 194,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 303,
+                    "commentStart": 266,
+                    "end": 0,
                     "properties": [
                       {
-                        "end": 279,
+                        "commentStart": 268,
+                        "end": 0,
                         "key": {
-                          "end": 273,
+                          "commentStart": 268,
+                          "end": 0,
                           "name": "angle",
-                          "start": 268,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "start": 268,
+                        "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 279,
+                          "commentStart": 276,
+                          "end": 0,
                           "raw": "180",
-                          "start": 276,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -395,72 +491,99 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                         }
                       },
                       {
-                        "end": 301,
+                        "commentStart": 281,
+                        "end": 0,
                         "key": {
-                          "end": 287,
+                          "commentStart": 281,
+                          "end": 0,
                           "name": "length",
-                          "start": 281,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "start": 281,
+                        "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 301,
-                          "name": "triangleLen",
-                          "start": 290,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "abs_path": false,
+                          "commentStart": 290,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 290,
+                            "end": 0,
+                            "name": "triangleLen",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
-                    "start": 266,
+                    "start": 0,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 306,
-                    "start": 305,
+                    "commentStart": 305,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 310,
-                    "start": 308,
+                    "commentStart": 308,
+                    "end": 0,
+                    "start": 0,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "b"
                   }
                 ],
                 "callee": {
-                  "end": 265,
-                  "name": "angledLine",
-                  "start": 255,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 255,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 255,
+                    "end": 0,
+                    "name": "angledLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 311,
-                "start": 255,
+                "commentStart": 255,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 365,
+                    "commentStart": 328,
+                    "end": 0,
                     "properties": [
                       {
-                        "end": 341,
+                        "commentStart": 330,
+                        "end": 0,
                         "key": {
-                          "end": 335,
+                          "commentStart": 330,
+                          "end": 0,
                           "name": "angle",
-                          "start": 330,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "start": 330,
+                        "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 341,
+                          "commentStart": 338,
+                          "end": 0,
                           "raw": "300",
-                          "start": 338,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -470,50 +593,73 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                         }
                       },
                       {
-                        "end": 363,
+                        "commentStart": 343,
+                        "end": 0,
                         "key": {
-                          "end": 349,
+                          "commentStart": 343,
+                          "end": 0,
                           "name": "length",
-                          "start": 343,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "start": 343,
+                        "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 363,
-                          "name": "triangleLen",
-                          "start": 352,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "abs_path": false,
+                          "commentStart": 352,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 352,
+                            "end": 0,
+                            "name": "triangleLen",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
-                    "start": 328,
+                    "start": 0,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 368,
-                    "start": 367,
+                    "commentStart": 367,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 372,
-                    "start": 370,
+                    "commentStart": 370,
+                    "end": 0,
+                    "start": 0,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "c"
                   }
                 ],
                 "callee": {
-                  "end": 327,
-                  "name": "angledLine",
-                  "start": 317,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 317,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 317,
+                    "end": 0,
+                    "name": "angledLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 373,
-                "start": 317,
+                "commentStart": 317,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -522,54 +668,78 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 393,
+                      "commentStart": 387,
+                      "end": 0,
                       "name": "length",
-                      "start": 387,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 410,
-                      "name": "triangleHeight",
-                      "start": 396,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "abs_path": false,
+                      "commentStart": 396,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 396,
+                        "end": 0,
+                        "name": "triangleHeight",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 386,
-                  "name": "extrude",
-                  "start": 379,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 379,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 379,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 411,
-                "start": 379,
+                "commentStart": 379,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 411,
-            "start": 138,
+            "commentStart": 138,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 134,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 411,
+        "end": 0,
         "kind": "const",
-        "start": 134,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 411,
         "declaration": {
-          "end": 571,
+          "commentStart": 416,
+          "end": 0,
           "id": {
-            "end": 421,
+            "commentStart": 416,
+            "end": 0,
             "name": "circl",
-            "start": 416,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -581,70 +751,129 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                       {
                         "arguments": [
                           {
-                            "end": 457,
-                            "name": "p",
-                            "start": 456,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 456,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 456,
+                              "end": 0,
+                              "name": "p",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
                           },
                           {
-                            "end": 463,
-                            "name": "face",
-                            "start": 459,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 459,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 459,
+                              "end": 0,
+                              "name": "face",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
-                          "end": 455,
-                          "name": "startSketchOn",
-                          "start": 442,
-                          "type": "Identifier"
+                          "abs_path": false,
+                          "commentStart": 442,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 442,
+                            "end": 0,
+                            "name": "startSketchOn",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name"
                         },
-                        "end": 464,
-                        "start": 442,
+                        "commentStart": 442,
+                        "end": 0,
+                        "start": 0,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       {
                         "arguments": [
                           {
+                            "commentStart": 487,
                             "elements": [
                               {
-                                "end": 498,
+                                "commentStart": 488,
+                                "end": 0,
                                 "left": {
-                                  "end": 489,
-                                  "name": "x",
-                                  "start": 488,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "abs_path": false,
+                                  "commentStart": 488,
+                                  "end": 0,
+                                  "name": {
+                                    "commentStart": 488,
+                                    "end": 0,
+                                    "name": "x",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "+",
                                 "right": {
-                                  "end": 498,
-                                  "name": "radius",
-                                  "start": 492,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "abs_path": false,
+                                  "commentStart": 492,
+                                  "end": 0,
+                                  "name": {
+                                    "commentStart": 492,
+                                    "end": 0,
+                                    "name": "radius",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
-                                "start": 488,
+                                "start": 0,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
                               {
-                                "end": 518,
+                                "commentStart": 500,
+                                "end": 0,
                                 "left": {
-                                  "end": 514,
-                                  "name": "triangleHeight",
-                                  "start": 500,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "abs_path": false,
+                                  "commentStart": 500,
+                                  "end": 0,
+                                  "name": {
+                                    "commentStart": 500,
+                                    "end": 0,
+                                    "name": "triangleHeight",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "end": 518,
+                                  "commentStart": 517,
+                                  "end": 0,
                                   "raw": "2",
-                                  "start": 517,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -652,153 +881,206 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 500,
+                                "start": 0,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               }
                             ],
-                            "end": 519,
-                            "start": 487,
+                            "end": 0,
+                            "start": 0,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
                           },
                           {
-                            "end": 522,
-                            "start": 521,
+                            "commentStart": 521,
+                            "end": 0,
+                            "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 486,
-                          "name": "startProfileAt",
-                          "start": 472,
-                          "type": "Identifier"
+                          "abs_path": false,
+                          "commentStart": 472,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 472,
+                            "end": 0,
+                            "name": "startProfileAt",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name"
                         },
-                        "end": 523,
-                        "start": 472,
+                        "commentStart": 472,
+                        "end": 0,
+                        "start": 0,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       {
                         "arguments": [
                           {
-                            "end": 539,
-                            "name": "circ",
-                            "start": 535,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 535,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 535,
+                              "end": 0,
+                              "name": "circ",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
                           },
                           {
-                            "end": 542,
-                            "start": 541,
+                            "commentStart": 541,
+                            "end": 0,
+                            "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           },
                           {
-                            "end": 552,
-                            "start": 544,
+                            "commentStart": 544,
+                            "end": 0,
+                            "start": 0,
                             "type": "TagDeclarator",
                             "type": "TagDeclarator",
                             "value": "arc_tag"
                           }
                         ],
                         "callee": {
-                          "end": 534,
-                          "name": "arc",
-                          "start": 531,
-                          "type": "Identifier"
+                          "abs_path": false,
+                          "commentStart": 531,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 531,
+                            "end": 0,
+                            "name": "arc",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name"
                         },
-                        "end": 553,
-                        "start": 531,
+                        "commentStart": 531,
+                        "end": 0,
+                        "start": 0,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       {
                         "arguments": [
                           {
-                            "end": 568,
-                            "start": 567,
+                            "commentStart": 567,
+                            "end": 0,
+                            "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 566,
-                          "name": "close",
-                          "start": 561,
-                          "type": "Identifier"
+                          "abs_path": false,
+                          "commentStart": 561,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 561,
+                            "end": 0,
+                            "name": "close",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name"
                         },
-                        "end": 569,
-                        "start": 561,
+                        "commentStart": 561,
+                        "end": 0,
+                        "start": 0,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       }
                     ],
-                    "end": 569,
-                    "start": 442,
+                    "commentStart": 442,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
-                  "end": 569,
-                  "start": 435,
+                  "commentStart": 435,
+                  "end": 0,
+                  "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 571,
-              "start": 431
+              "commentStart": 431,
+              "end": 0,
+              "start": 0
             },
-            "end": 571,
+            "commentStart": 421,
+            "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 423,
+                  "commentStart": 422,
+                  "end": 0,
                   "name": "x",
-                  "start": 422,
+                  "start": 0,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 429,
+                  "commentStart": 425,
+                  "end": 0,
                   "name": "face",
-                  "start": 425,
+                  "start": 0,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 421,
+            "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 416,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 571,
+        "end": 0,
         "kind": "fn",
-        "start": 413,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 571,
         "declaration": {
-          "end": 592,
+          "commentStart": 573,
+          "end": 0,
           "id": {
-            "end": 575,
+            "commentStart": 573,
+            "end": 0,
             "name": "c1",
-            "start": 573,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
                 "argument": {
-                  "end": 588,
+                  "commentStart": 585,
+                  "end": 0,
                   "raw": "200",
-                  "start": 585,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -806,85 +1088,137 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                     "suffix": "None"
                   }
                 },
-                "end": 588,
+                "commentStart": 584,
+                "end": 0,
                 "operator": "-",
-                "start": 584,
+                "start": 0,
                 "type": "UnaryExpression",
                 "type": "UnaryExpression"
               },
               {
-                "end": 591,
-                "name": "c",
-                "start": 590,
-                "type": "Identifier",
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 590,
+                "end": 0,
+                "name": {
+                  "commentStart": 590,
+                  "end": 0,
+                  "name": "c",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
-              "end": 583,
-              "name": "circl",
-              "start": 578,
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 578,
+              "end": 0,
+              "name": {
+                "commentStart": 578,
+                "end": 0,
+                "name": "circl",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
             },
-            "end": 592,
-            "start": 578,
+            "commentStart": 578,
+            "end": 0,
+            "start": 0,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 573,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 592,
+        "end": 0,
         "kind": "const",
-        "start": 573,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 593,
         "declaration": {
-          "end": 773,
+          "commentStart": 593,
+          "end": 0,
           "id": {
-            "end": 601,
+            "commentStart": 593,
+            "end": 0,
             "name": "plumbus1",
-            "start": 593,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "body": [
               {
-                "end": 606,
-                "name": "c1",
-                "start": 604,
-                "type": "Identifier",
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 604,
+                "end": 0,
+                "name": {
+                  "commentStart": 604,
+                  "end": 0,
+                  "name": "c1",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "arguments": [
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 626,
+                      "commentStart": 620,
+                      "end": 0,
                       "name": "length",
-                      "start": 620,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 639,
-                      "name": "plumbusLen",
-                      "start": 629,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "abs_path": false,
+                      "commentStart": 629,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 629,
+                        "end": 0,
+                        "name": "plumbusLen",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 619,
-                  "name": "extrude",
-                  "start": 612,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 612,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 612,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 640,
-                "start": 612,
+                "commentStart": 612,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -894,15 +1228,17 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 667,
+                      "commentStart": 661,
+                      "end": 0,
                       "name": "radius",
-                      "start": 661,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 671,
+                      "commentStart": 670,
+                      "end": 0,
                       "raw": "5",
-                      "start": 670,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -914,147 +1250,184 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 684,
+                      "commentStart": 680,
+                      "end": 0,
                       "name": "tags",
-                      "start": 680,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 687,
                       "elements": [
                         {
+                          "commentStart": 698,
                           "computed": false,
-                          "end": 713,
+                          "end": 0,
                           "object": {
+                            "commentStart": 698,
                             "computed": false,
-                            "end": 705,
+                            "end": 0,
                             "object": {
-                              "end": 700,
+                              "commentStart": 698,
+                              "end": 0,
                               "name": "c1",
-                              "start": 698,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "property": {
-                              "end": 705,
+                              "commentStart": 701,
+                              "end": 0,
                               "name": "tags",
-                              "start": 701,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 698,
+                            "start": 0,
                             "type": "MemberExpression",
                             "type": "MemberExpression"
                           },
                           "property": {
-                            "end": 713,
+                            "commentStart": 706,
+                            "end": 0,
                             "name": "arc_tag",
-                            "start": 706,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 698,
+                          "start": 0,
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         },
                         {
                           "arguments": [
                             {
+                              "commentStart": 740,
                               "computed": false,
-                              "end": 755,
+                              "end": 0,
                               "object": {
+                                "commentStart": 740,
                                 "computed": false,
-                                "end": 747,
+                                "end": 0,
                                 "object": {
-                                  "end": 742,
+                                  "commentStart": 740,
+                                  "end": 0,
                                   "name": "c1",
-                                  "start": 740,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "property": {
-                                  "end": 747,
+                                  "commentStart": 743,
+                                  "end": 0,
                                   "name": "tags",
-                                  "start": 743,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "start": 740,
+                                "start": 0,
                                 "type": "MemberExpression",
                                 "type": "MemberExpression"
                               },
                               "property": {
-                                "end": 755,
+                                "commentStart": 748,
+                                "end": 0,
                                 "name": "arc_tag",
-                                "start": 748,
+                                "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 740,
+                              "start": 0,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             }
                           ],
                           "callee": {
-                            "end": 739,
-                            "name": "getOppositeEdge",
-                            "start": 724,
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 724,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 724,
+                              "end": 0,
+                              "name": "getOppositeEdge",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
                           },
-                          "end": 756,
-                          "start": 724,
+                          "commentStart": 724,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 765,
-                      "start": 687,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 652,
-                  "name": "fillet",
-                  "start": 646,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 646,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 646,
+                    "end": 0,
+                    "name": "fillet",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 773,
-                "start": 646,
+                "commentStart": 646,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 773,
-            "start": 604,
+            "commentStart": 604,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 593,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 773,
+        "end": 0,
         "kind": "const",
-        "start": 593,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 774,
         "declaration": {
-          "end": 792,
+          "commentStart": 774,
+          "end": 0,
           "id": {
-            "end": 776,
+            "commentStart": 774,
+            "end": 0,
             "name": "c2",
-            "start": 774,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 788,
+                "commentStart": 785,
+                "end": 0,
                 "raw": "200",
-                "start": 785,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -1063,78 +1436,129 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 }
               },
               {
-                "end": 791,
-                "name": "a",
-                "start": 790,
-                "type": "Identifier",
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 790,
+                "end": 0,
+                "name": {
+                  "commentStart": 790,
+                  "end": 0,
+                  "name": "a",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
-              "end": 784,
-              "name": "circl",
-              "start": 779,
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 779,
+              "end": 0,
+              "name": {
+                "commentStart": 779,
+                "end": 0,
+                "name": "circl",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
             },
-            "end": 792,
-            "start": 779,
+            "commentStart": 779,
+            "end": 0,
+            "start": 0,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 774,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 792,
+        "end": 0,
         "kind": "const",
-        "start": 774,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 793,
         "declaration": {
-          "end": 973,
+          "commentStart": 793,
+          "end": 0,
           "id": {
-            "end": 801,
+            "commentStart": 793,
+            "end": 0,
             "name": "plumbus0",
-            "start": 793,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "body": [
               {
-                "end": 806,
-                "name": "c2",
-                "start": 804,
-                "type": "Identifier",
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 804,
+                "end": 0,
+                "name": {
+                  "commentStart": 804,
+                  "end": 0,
+                  "name": "c2",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "arguments": [
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 826,
+                      "commentStart": 820,
+                      "end": 0,
                       "name": "length",
-                      "start": 820,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 839,
-                      "name": "plumbusLen",
-                      "start": 829,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "abs_path": false,
+                      "commentStart": 829,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 829,
+                        "end": 0,
+                        "name": "plumbusLen",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 819,
-                  "name": "extrude",
-                  "start": 812,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 812,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 812,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 840,
-                "start": 812,
+                "commentStart": 812,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1144,15 +1568,17 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 867,
+                      "commentStart": 861,
+                      "end": 0,
                       "name": "radius",
-                      "start": 861,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 871,
+                      "commentStart": 870,
+                      "end": 0,
                       "raw": "5",
-                      "start": 870,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1164,140 +1590,175 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 884,
+                      "commentStart": 880,
+                      "end": 0,
                       "name": "tags",
-                      "start": 880,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 887,
                       "elements": [
                         {
+                          "commentStart": 898,
                           "computed": false,
-                          "end": 913,
+                          "end": 0,
                           "object": {
+                            "commentStart": 898,
                             "computed": false,
-                            "end": 905,
+                            "end": 0,
                             "object": {
-                              "end": 900,
+                              "commentStart": 898,
+                              "end": 0,
                               "name": "c2",
-                              "start": 898,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "property": {
-                              "end": 905,
+                              "commentStart": 901,
+                              "end": 0,
                               "name": "tags",
-                              "start": 901,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 898,
+                            "start": 0,
                             "type": "MemberExpression",
                             "type": "MemberExpression"
                           },
                           "property": {
-                            "end": 913,
+                            "commentStart": 906,
+                            "end": 0,
                             "name": "arc_tag",
-                            "start": 906,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 898,
+                          "start": 0,
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         },
                         {
                           "arguments": [
                             {
+                              "commentStart": 940,
                               "computed": false,
-                              "end": 955,
+                              "end": 0,
                               "object": {
+                                "commentStart": 940,
                                 "computed": false,
-                                "end": 947,
+                                "end": 0,
                                 "object": {
-                                  "end": 942,
+                                  "commentStart": 940,
+                                  "end": 0,
                                   "name": "c2",
-                                  "start": 940,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "property": {
-                                  "end": 947,
+                                  "commentStart": 943,
+                                  "end": 0,
                                   "name": "tags",
-                                  "start": 943,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "start": 940,
+                                "start": 0,
                                 "type": "MemberExpression",
                                 "type": "MemberExpression"
                               },
                               "property": {
-                                "end": 955,
+                                "commentStart": 948,
+                                "end": 0,
                                 "name": "arc_tag",
-                                "start": 948,
+                                "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 940,
+                              "start": 0,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             }
                           ],
                           "callee": {
-                            "end": 939,
-                            "name": "getOppositeEdge",
-                            "start": 924,
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 924,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 924,
+                              "end": 0,
+                              "name": "getOppositeEdge",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
                           },
-                          "end": 956,
-                          "start": 924,
+                          "commentStart": 924,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 965,
-                      "start": 887,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 852,
-                  "name": "fillet",
-                  "start": 846,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 846,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 846,
+                    "end": 0,
+                    "name": "fillet",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 973,
-                "start": 846,
+                "commentStart": 846,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 973,
-            "start": 804,
+            "commentStart": 804,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 793,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 973,
+        "end": 0,
         "kind": "const",
-        "start": 793,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 974,
+    "commentStart": 0,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "3": [
           {
-            "end": 116,
-            "start": 114,
+            "commentStart": 114,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -1306,8 +1767,9 @@ description: Result of parsing pentagon_fillet_sugar.kcl
         ],
         "5": [
           {
-            "end": 413,
-            "start": 411,
+            "commentStart": 411,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -1316,8 +1778,9 @@ description: Result of parsing pentagon_fillet_sugar.kcl
         ],
         "6": [
           {
-            "end": 573,
-            "start": 571,
+            "commentStart": 571,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

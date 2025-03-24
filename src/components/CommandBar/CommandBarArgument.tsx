@@ -54,7 +54,7 @@ function ArgumentInput({
       return (
         <CommandArgOptionInput
           arg={arg}
-          argName={arg.name}
+          argName={arg.displayName || arg.name}
           stepBack={stepBack}
           onSubmit={onSubmit}
           placeholder="Select an option"
@@ -71,7 +71,7 @@ function ArgumentInput({
               { name: 'Off', value: false },
             ],
           }}
-          argName={arg.name}
+          argName={arg.displayName || arg.name}
           stepBack={stepBack}
           onSubmit={onSubmit}
           placeholder="Select an option"

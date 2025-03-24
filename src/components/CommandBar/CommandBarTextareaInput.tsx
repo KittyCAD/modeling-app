@@ -40,7 +40,7 @@ function CommandBarTextareaInput({
           data-testid="cmd-bar-arg-name"
           className="capitalize px-2 py-1 rounded-br bg-chalkboard-100 dark:bg-chalkboard-80 text-chalkboard-10 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80"
         >
-          {arg.name}
+          {arg.displayName || arg.name}
         </span>
         <textarea
           data-testid="cmd-bar-arg-value"

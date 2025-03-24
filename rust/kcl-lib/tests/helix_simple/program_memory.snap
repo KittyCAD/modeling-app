@@ -16,6 +16,7 @@ description: Variables in memory after executing helix_simple.kcl
       "revolutions": 5.0,
       "angleStart": 0.0,
       "ccw": true,
+      "cylinderId": null,
       "units": {
         "type": "Mm"
       }
@@ -30,17 +31,14 @@ description: Variables in memory after executing helix_simple.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              102,
-              137,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
             0.0
           ],
           "tag": {
+            "commentStart": 128,
             "end": 136,
             "start": 128,
             "type": "TagDeclarator",
@@ -100,11 +98,7 @@ description: Variables in memory after executing helix_simple.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            71,
-            96,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {

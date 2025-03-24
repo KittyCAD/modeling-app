@@ -1,0 +1,7 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing circle_three_point.kcl
+---
+sketch001 = startSketchOn(XY)
+  |> circleThreePoint(p1 = [25, 25], p2 = [30, 20], p3 = [27, 15])
+  |> extrude(length = 10)

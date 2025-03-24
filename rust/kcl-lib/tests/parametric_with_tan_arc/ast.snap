@@ -6,18 +6,22 @@ description: Result of parsing parametric_with_tan_arc.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 18,
+          "commentStart": 0,
+          "end": 0,
           "id": {
-            "end": 10,
+            "commentStart": 0,
+            "end": 0,
             "name": "sigmaAllow",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 18,
+            "commentStart": 13,
+            "end": 0,
             "raw": "15000",
-            "start": 13,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -28,25 +32,29 @@ description: Result of parsing parametric_with_tan_arc.kcl
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 18,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 18,
         "declaration": {
-          "end": 36,
+          "commentStart": 26,
+          "end": 0,
           "id": {
-            "end": 31,
+            "commentStart": 26,
+            "end": 0,
             "name": "width",
-            "start": 26,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 36,
+            "commentStart": 34,
+            "end": 0,
             "raw": "11",
-            "start": 34,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -54,28 +62,32 @@ description: Result of parsing parametric_with_tan_arc.kcl
               "suffix": "None"
             }
           },
-          "start": 26,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 36,
+        "end": 0,
         "kind": "const",
-        "start": 26,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 36,
         "declaration": {
-          "end": 52,
+          "commentStart": 45,
+          "end": 0,
           "id": {
-            "end": 46,
+            "commentStart": 45,
+            "end": 0,
             "name": "p",
-            "start": 45,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 52,
+            "commentStart": 49,
+            "end": 0,
             "raw": "150",
-            "start": 49,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -83,28 +95,32 @@ description: Result of parsing parametric_with_tan_arc.kcl
               "suffix": "None"
             }
           },
-          "start": 45,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 52,
+        "end": 0,
         "kind": "const",
-        "start": 45,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 52,
         "declaration": {
-          "end": 90,
+          "commentStart": 77,
+          "end": 0,
           "id": {
-            "end": 85,
+            "commentStart": 77,
+            "end": 0,
             "name": "distance",
-            "start": 77,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 90,
+            "commentStart": 88,
+            "end": 0,
             "raw": "12",
-            "start": 88,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -112,28 +128,32 @@ description: Result of parsing parametric_with_tan_arc.kcl
               "suffix": "None"
             }
           },
-          "start": 77,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 90,
+        "end": 0,
         "kind": "const",
-        "start": 77,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 90,
         "declaration": {
-          "end": 108,
+          "commentStart": 101,
+          "end": 0,
           "id": {
-            "end": 104,
+            "commentStart": 101,
+            "end": 0,
             "name": "FOS",
-            "start": 101,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 108,
+            "commentStart": 107,
+            "end": 0,
             "raw": "2",
-            "start": 107,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -141,70 +161,105 @@ description: Result of parsing parametric_with_tan_arc.kcl
               "suffix": "None"
             }
           },
-          "start": 101,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 108,
+        "end": 0,
         "kind": "const",
-        "start": 101,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 109,
         "declaration": {
-          "end": 172,
+          "commentStart": 109,
+          "end": 0,
           "id": {
-            "end": 118,
+            "commentStart": 109,
+            "end": 0,
             "name": "thickness",
-            "start": 109,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 170,
+                "commentStart": 126,
+                "end": 0,
                 "left": {
-                  "end": 148,
+                  "commentStart": 126,
+                  "end": 0,
                   "left": {
-                    "end": 144,
+                    "commentStart": 126,
+                    "end": 0,
                     "left": {
-                      "end": 138,
+                      "commentStart": 126,
+                      "end": 0,
                       "left": {
-                        "end": 134,
-                        "name": "distance",
-                        "start": 126,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "abs_path": false,
+                        "commentStart": 126,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 126,
+                          "end": 0,
+                          "name": "distance",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "*",
                       "right": {
-                        "end": 138,
-                        "name": "p",
-                        "start": 137,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "abs_path": false,
+                        "commentStart": 137,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 137,
+                          "end": 0,
+                          "name": "p",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
                       },
-                      "start": 126,
+                      "start": 0,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
                     "operator": "*",
                     "right": {
-                      "end": 144,
-                      "name": "FOS",
-                      "start": 141,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "abs_path": false,
+                      "commentStart": 141,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 141,
+                        "end": 0,
+                        "name": "FOS",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
-                    "start": 126,
+                    "start": 0,
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
                   "operator": "*",
                   "right": {
-                    "end": 148,
+                    "commentStart": 147,
+                    "end": 0,
                     "raw": "6",
-                    "start": 147,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -212,80 +267,123 @@ description: Result of parsing parametric_with_tan_arc.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 126,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
                 "operator": "/",
                 "right": {
-                  "end": 170,
+                  "commentStart": 152,
+                  "end": 0,
                   "left": {
-                    "end": 162,
-                    "name": "sigmaAllow",
-                    "start": 152,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "abs_path": false,
+                    "commentStart": 152,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 152,
+                      "end": 0,
+                      "name": "sigmaAllow",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "*",
                   "right": {
-                    "end": 170,
-                    "name": "width",
-                    "start": 165,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "abs_path": false,
+                    "commentStart": 165,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 165,
+                      "end": 0,
+                      "name": "width",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "start": 152,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
-                "start": 126,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               }
             ],
             "callee": {
-              "end": 125,
-              "name": "sqrt",
-              "start": 121,
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 121,
+              "end": 0,
+              "name": {
+                "commentStart": 121,
+                "end": 0,
+                "name": "sqrt",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
             },
-            "end": 172,
-            "start": 121,
+            "commentStart": 121,
+            "end": 0,
+            "start": 0,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 109,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 172,
+        "end": 0,
         "kind": "const",
-        "start": 109,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 173,
         "declaration": {
-          "end": 196,
+          "commentStart": 173,
+          "end": 0,
           "id": {
-            "end": 180,
+            "commentStart": 173,
+            "end": 0,
             "name": "filletR",
-            "start": 173,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 196,
+            "commentStart": 183,
+            "end": 0,
             "left": {
-              "end": 192,
-              "name": "thickness",
-              "start": 183,
-              "type": "Identifier",
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 183,
+              "end": 0,
+              "name": {
+                "commentStart": 183,
+                "end": 0,
+                "name": "thickness",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "*",
             "right": {
-              "end": 196,
+              "commentStart": 195,
+              "end": 0,
               "raw": "2",
-              "start": 195,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -293,32 +391,36 @@ description: Result of parsing parametric_with_tan_arc.kcl
                 "suffix": "None"
               }
             },
-            "start": 183,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 173,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 196,
+        "end": 0,
         "kind": "const",
-        "start": 173,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 197,
         "declaration": {
-          "end": 212,
+          "commentStart": 197,
+          "end": 0,
           "id": {
-            "end": 208,
+            "commentStart": 197,
+            "end": 0,
             "name": "shelfMountL",
-            "start": 197,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 212,
+            "commentStart": 211,
+            "end": 0,
             "raw": "9",
-            "start": 211,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -326,28 +428,32 @@ description: Result of parsing parametric_with_tan_arc.kcl
               "suffix": "None"
             }
           },
-          "start": 197,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 212,
+        "end": 0,
         "kind": "const",
-        "start": 197,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 213,
         "declaration": {
-          "end": 227,
+          "commentStart": 213,
+          "end": 0,
           "id": {
-            "end": 223,
+            "commentStart": 213,
+            "end": 0,
             "name": "wallMountL",
-            "start": 213,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 227,
+            "commentStart": 226,
+            "end": 0,
             "raw": "8",
-            "start": 226,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -355,22 +461,25 @@ description: Result of parsing parametric_with_tan_arc.kcl
               "suffix": "None"
             }
           },
-          "start": 213,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 227,
+        "end": 0,
         "kind": "const",
-        "start": 213,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 227,
         "declaration": {
-          "end": 645,
+          "commentStart": 229,
+          "end": 0,
           "id": {
-            "end": 236,
+            "commentStart": 229,
+            "end": 0,
             "name": "bracket",
-            "start": 229,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -378,32 +487,53 @@ description: Result of parsing parametric_with_tan_arc.kcl
               {
                 "arguments": [
                   {
-                    "end": 255,
-                    "name": "XY",
-                    "start": 253,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "abs_path": false,
+                    "commentStart": 253,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 253,
+                      "end": 0,
+                      "name": "XY",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
-                  "end": 252,
-                  "name": "startSketchOn",
-                  "start": 239,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 239,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 239,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 256,
-                "start": 239,
+                "commentStart": 239,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
+                    "commentStart": 277,
                     "elements": [
                       {
-                        "end": 279,
+                        "commentStart": 278,
+                        "end": 0,
                         "raw": "0",
-                        "start": 278,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -412,9 +542,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         }
                       },
                       {
-                        "end": 282,
+                        "commentStart": 281,
+                        "end": 0,
                         "raw": "0",
-                        "start": 281,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -423,26 +554,37 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         }
                       }
                     ],
-                    "end": 283,
-                    "start": 277,
+                    "end": 0,
+                    "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 286,
-                    "start": 285,
+                    "commentStart": 285,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 276,
-                  "name": "startProfileAt",
-                  "start": 262,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 262,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 262,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 287,
-                "start": 262,
+                "commentStart": 262,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -451,17 +593,20 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 301,
+                      "commentStart": 298,
+                      "end": 0,
                       "name": "end",
-                      "start": 298,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 304,
                       "elements": [
                         {
-                          "end": 306,
+                          "commentStart": 305,
+                          "end": 0,
                           "raw": "0",
-                          "start": 305,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -470,28 +615,47 @@ description: Result of parsing parametric_with_tan_arc.kcl
                           }
                         },
                         {
-                          "end": 318,
-                          "name": "wallMountL",
-                          "start": 308,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "abs_path": false,
+                          "commentStart": 308,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 308,
+                            "end": 0,
+                            "name": "wallMountL",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
-                      "end": 319,
-                      "start": 304,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 297,
-                  "name": "line",
-                  "start": 293,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 293,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 293,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 320,
-                "start": 293,
+                "commentStart": 293,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -499,40 +663,55 @@ description: Result of parsing parametric_with_tan_arc.kcl
               {
                 "arguments": [
                   {
-                    "end": 373,
+                    "commentStart": 340,
+                    "end": 0,
                     "properties": [
                       {
-                        "end": 358,
+                        "commentStart": 342,
+                        "end": 0,
                         "key": {
-                          "end": 348,
+                          "commentStart": 342,
+                          "end": 0,
                           "name": "radius",
-                          "start": 342,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "start": 342,
+                        "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 358,
-                          "name": "filletR",
-                          "start": 351,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "abs_path": false,
+                          "commentStart": 351,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 351,
+                            "end": 0,
+                            "name": "filletR",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
                         }
                       },
                       {
-                        "end": 371,
+                        "commentStart": 360,
+                        "end": 0,
                         "key": {
-                          "end": 366,
+                          "commentStart": 360,
+                          "end": 0,
                           "name": "offset",
-                          "start": 360,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "start": 360,
+                        "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 371,
+                          "commentStart": 369,
+                          "end": 0,
                           "raw": "90",
-                          "start": 369,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -542,25 +721,36 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         }
                       }
                     ],
-                    "start": 340,
+                    "start": 0,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 376,
-                    "start": 375,
+                    "commentStart": 375,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 339,
-                  "name": "tangentialArc",
-                  "start": 326,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 326,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 326,
+                    "end": 0,
+                    "name": "tangentialArc",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 377,
-                "start": 326,
+                "commentStart": 326,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -569,31 +759,196 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 391,
+                      "commentStart": 388,
+                      "end": 0,
                       "name": "end",
-                      "start": 388,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 394,
                       "elements": [
                         {
                           "argument": {
-                            "end": 407,
+                            "abs_path": false,
+                            "commentStart": 396,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 396,
+                              "end": 0,
+                              "name": "shelfMountL",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "commentStart": 395,
+                          "end": 0,
+                          "operator": "-",
+                          "start": 0,
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
+                        },
+                        {
+                          "commentStart": 409,
+                          "end": 0,
+                          "raw": "0",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 383,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 383,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 383,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 423,
+                      "end": 0,
+                      "name": "end",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 429,
+                      "elements": [
+                        {
+                          "commentStart": 430,
+                          "end": 0,
+                          "raw": "0",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "argument": {
+                            "abs_path": false,
+                            "commentStart": 434,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 434,
+                              "end": 0,
+                              "name": "thickness",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "commentStart": 433,
+                          "end": 0,
+                          "operator": "-",
+                          "start": 0,
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
+                        }
+                      ],
+                      "end": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 418,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 418,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 418,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 456,
+                      "end": 0,
+                      "name": "end",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 462,
+                      "elements": [
+                        {
+                          "abs_path": false,
+                          "commentStart": 463,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 463,
+                            "end": 0,
                             "name": "shelfMountL",
-                            "start": 396,
-                            "type": "Identifier",
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 407,
-                          "operator": "-",
-                          "start": 395,
-                          "type": "UnaryExpression",
-                          "type": "UnaryExpression"
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
                         },
                         {
-                          "end": 410,
+                          "commentStart": 476,
+                          "end": 0,
                           "raw": "0",
-                          "start": 409,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -602,21 +957,31 @@ description: Result of parsing parametric_with_tan_arc.kcl
                           }
                         }
                       ],
-                      "end": 411,
-                      "start": 394,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 387,
-                  "name": "line",
-                  "start": 383,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 451,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 451,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 412,
-                "start": 383,
+                "commentStart": 451,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -624,162 +989,80 @@ description: Result of parsing parametric_with_tan_arc.kcl
               {
                 "arguments": [
                   {
-                    "type": "LabeledArg",
-                    "label": {
-                      "end": 426,
-                      "name": "end",
-                      "start": 423,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "elements": [
-                        {
-                          "end": 431,
-                          "raw": "0",
-                          "start": 430,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
-                        },
-                        {
-                          "argument": {
-                            "end": 443,
-                            "name": "thickness",
-                            "start": 434,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "end": 443,
-                          "operator": "-",
-                          "start": 433,
-                          "type": "UnaryExpression",
-                          "type": "UnaryExpression"
-                        }
-                      ],
-                      "end": 444,
-                      "start": 429,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    }
-                  }
-                ],
-                "callee": {
-                  "end": 422,
-                  "name": "line",
-                  "start": 418,
-                  "type": "Identifier"
-                },
-                "end": 445,
-                "start": 418,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": null
-              },
-              {
-                "arguments": [
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "end": 459,
-                      "name": "end",
-                      "start": 456,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "elements": [
-                        {
-                          "end": 474,
-                          "name": "shelfMountL",
-                          "start": 463,
-                          "type": "Identifier",
-                          "type": "Identifier"
-                        },
-                        {
-                          "end": 477,
-                          "raw": "0",
-                          "start": 476,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
-                        }
-                      ],
-                      "end": 478,
-                      "start": 462,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    }
-                  }
-                ],
-                "callee": {
-                  "end": 455,
-                  "name": "line",
-                  "start": 451,
-                  "type": "Identifier"
-                },
-                "end": 479,
-                "start": 451,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": null
-              },
-              {
-                "arguments": [
-                  {
-                    "end": 564,
+                    "commentStart": 499,
+                    "end": 0,
                     "properties": [
                       {
-                        "end": 536,
+                        "commentStart": 508,
+                        "end": 0,
                         "key": {
-                          "end": 514,
+                          "commentStart": 508,
+                          "end": 0,
                           "name": "radius",
-                          "start": 508,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "start": 508,
+                        "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 536,
+                          "commentStart": 517,
+                          "end": 0,
                           "left": {
-                            "end": 524,
-                            "name": "filletR",
-                            "start": 517,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 517,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 517,
+                              "end": 0,
+                              "name": "filletR",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "-",
                           "right": {
-                            "end": 536,
-                            "name": "thickness",
-                            "start": 527,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 527,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 527,
+                              "end": 0,
+                              "name": "thickness",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
                           },
-                          "start": 517,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       },
                       {
-                        "end": 557,
+                        "commentStart": 545,
+                        "end": 0,
                         "key": {
-                          "end": 551,
+                          "commentStart": 545,
+                          "end": 0,
                           "name": "offset",
-                          "start": 545,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "start": 545,
+                        "start": 0,
                         "type": "ObjectProperty",
                         "value": {
                           "argument": {
-                            "end": 557,
+                            "commentStart": 555,
+                            "end": 0,
                             "raw": "90",
-                            "start": 555,
+                            "start": 0,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -787,33 +1070,45 @@ description: Result of parsing parametric_with_tan_arc.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 557,
+                          "commentStart": 554,
+                          "end": 0,
                           "operator": "-",
-                          "start": 554,
+                          "start": 0,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       }
                     ],
-                    "start": 499,
+                    "start": 0,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 567,
-                    "start": 566,
+                    "commentStart": 566,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 498,
-                  "name": "tangentialArc",
-                  "start": 485,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 485,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 485,
+                    "end": 0,
+                    "name": "tangentialArc",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 568,
-                "start": 485,
+                "commentStart": 485,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -822,17 +1117,20 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 582,
+                      "commentStart": 579,
+                      "end": 0,
                       "name": "end",
-                      "start": 579,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 585,
                       "elements": [
                         {
-                          "end": 587,
+                          "commentStart": 586,
+                          "end": 0,
                           "raw": "0",
-                          "start": 586,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -842,34 +1140,54 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         },
                         {
                           "argument": {
-                            "end": 600,
-                            "name": "wallMountL",
-                            "start": 590,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 590,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 590,
+                              "end": 0,
+                              "name": "wallMountL",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
                           },
-                          "end": 600,
+                          "commentStart": 589,
+                          "end": 0,
                           "operator": "-",
-                          "start": 589,
+                          "start": 0,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       ],
-                      "end": 601,
-                      "start": 585,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 578,
-                  "name": "line",
-                  "start": 574,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 574,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 574,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 602,
-                "start": 574,
+                "commentStart": 574,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -877,20 +1195,31 @@ description: Result of parsing parametric_with_tan_arc.kcl
               {
                 "arguments": [
                   {
-                    "end": 615,
-                    "start": 614,
+                    "commentStart": 614,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 613,
-                  "name": "close",
-                  "start": 608,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 608,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 608,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 616,
-                "start": 608,
+                "commentStart": 608,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -899,55 +1228,78 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 636,
+                      "commentStart": 630,
+                      "end": 0,
                       "name": "length",
-                      "start": 630,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 644,
-                      "name": "width",
-                      "start": 639,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "abs_path": false,
+                      "commentStart": 639,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 639,
+                        "end": 0,
+                        "name": "width",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 629,
-                  "name": "extrude",
-                  "start": 622,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 622,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 622,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 645,
-                "start": 622,
+                "commentStart": 622,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 645,
-            "start": 239,
+            "commentStart": 239,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 229,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 645,
+        "end": 0,
         "kind": "const",
-        "start": 229,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 646,
+    "commentStart": 0,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "end": 25,
-            "start": 18,
+            "commentStart": 18,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "inlineComment",
@@ -958,8 +1310,9 @@ description: Result of parsing parametric_with_tan_arc.kcl
         ],
         "1": [
           {
-            "end": 44,
-            "start": 36,
+            "commentStart": 36,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "inlineComment",
@@ -970,8 +1323,9 @@ description: Result of parsing parametric_with_tan_arc.kcl
         ],
         "2": [
           {
-            "end": 76,
-            "start": 52,
+            "commentStart": 52,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "inlineComment",
@@ -982,8 +1336,9 @@ description: Result of parsing parametric_with_tan_arc.kcl
         ],
         "3": [
           {
-            "end": 100,
-            "start": 90,
+            "commentStart": 90,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "inlineComment",
@@ -994,8 +1349,9 @@ description: Result of parsing parametric_with_tan_arc.kcl
         ],
         "8": [
           {
-            "end": 229,
-            "start": 227,
+            "commentStart": 227,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

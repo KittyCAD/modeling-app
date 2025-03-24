@@ -2,7 +2,7 @@ use indexmap::IndexMap;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::{kcl_value::NumericType, ArtifactId, KclValue};
+use super::{types::NumericType, ArtifactId, KclValue};
 use crate::{docs::StdLibFn, std::get_stdlib_fn, SourceRange};
 
 /// A CAD modeling operation for display in the feature tree, AKA operations

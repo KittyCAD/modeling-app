@@ -1,12 +1,13 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing import_foreign.kcl
 ---
 {
   "Ok": {
     "body": [
       {
-        "end": 36,
+        "commentStart": 0,
+        "end": 0,
         "path": {
           "type": "Foreign",
           "path": "../inputs/cube.gltf"
@@ -14,9 +15,10 @@ description: Result of parsing import_foreign.kcl
         "selector": {
           "type": "None",
           "alias": {
-            "end": 36,
+            "commentStart": 32,
+            "end": 0,
             "name": "cube",
-            "start": 32,
+            "start": 0,
             "type": "Identifier"
           }
         },
@@ -25,38 +27,52 @@ description: Result of parsing import_foreign.kcl
         "type": "ImportStatement"
       },
       {
+        "commentStart": 36,
         "declaration": {
-          "end": 50,
+          "commentStart": 38,
+          "end": 0,
           "id": {
-            "end": 43,
+            "commentStart": 38,
+            "end": 0,
             "name": "model",
-            "start": 38,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 50,
-            "name": "cube",
-            "start": 46,
-            "type": "Identifier",
-            "type": "Identifier"
+            "abs_path": false,
+            "commentStart": 46,
+            "end": 0,
+            "name": {
+              "commentStart": 46,
+              "end": 0,
+              "name": "cube",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
           },
-          "start": 38,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 50,
+        "end": 0,
         "kind": "const",
-        "start": 38,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 51,
+    "commentStart": 0,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "end": 38,
-            "start": 36,
+            "commentStart": 36,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

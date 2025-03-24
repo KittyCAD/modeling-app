@@ -10,19 +10,11 @@ description: Operations executed import_function_not_sketch.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          67,
-          71,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      53,
-      72,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -33,19 +25,11 @@ description: Operations executed import_function_not_sketch.kcl
           "type": "String",
           "value": "y"
         },
-        "sourceRange": [
-          320,
-          323,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "revolve",
-    "sourceRange": [
-      305,
-      324,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -54,11 +38,7 @@ description: Operations executed import_function_not_sketch.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        305,
-        324,
-        3
-      ]
+      "sourceRange": []
     }
   }
 ]

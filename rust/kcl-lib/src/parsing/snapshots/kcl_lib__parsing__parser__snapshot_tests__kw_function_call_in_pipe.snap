@@ -5,9 +5,12 @@ expression: actual
 {
   "body": [
     {
+      "commentStart": 0,
       "declaration": {
+        "commentStart": 0,
         "end": 21,
         "id": {
+          "commentStart": 0,
           "end": 3,
           "name": "val",
           "start": 0,
@@ -16,6 +19,7 @@ expression: actual
         "init": {
           "body": [
             {
+              "commentStart": 6,
               "end": 7,
               "raw": "1",
               "start": 6,
@@ -31,26 +35,46 @@ expression: actual
                 {
                   "type": "LabeledArg",
                   "label": {
+                    "commentStart": 13,
                     "end": 16,
                     "name": "arg",
                     "start": 13,
                     "type": "Identifier"
                   },
                   "arg": {
+                    "abs_path": false,
+                    "commentStart": 19,
                     "end": 20,
-                    "name": "x",
+                    "name": {
+                      "commentStart": 19,
+                      "end": 20,
+                      "name": "x",
+                      "start": 19,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 19,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 }
               ],
               "callee": {
+                "abs_path": false,
+                "commentStart": 11,
                 "end": 12,
-                "name": "f",
+                "name": {
+                  "commentStart": 11,
+                  "end": 12,
+                  "name": "f",
+                  "start": 11,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 11,
-                "type": "Identifier"
+                "type": "Name"
               },
+              "commentStart": 11,
               "end": 21,
               "start": 11,
               "type": "CallExpressionKw",
@@ -58,6 +82,7 @@ expression: actual
               "unlabeled": null
             }
           ],
+          "commentStart": 6,
           "end": 21,
           "start": 6,
           "type": "PipeExpression",
@@ -73,6 +98,7 @@ expression: actual
       "type": "VariableDeclaration"
     }
   ],
+  "commentStart": 0,
   "end": 21,
   "start": 0
 }

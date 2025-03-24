@@ -10,19 +10,11 @@ description: Operations executed mike_stress_test.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          24,
-          28,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      10,
-      29,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,19 +34,11 @@ description: Operations executed mike_stress_test.kcl
             }
           }
         },
-        "sourceRange": [
-          77119,
-          77120,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      77102,
-      77121,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -63,11 +47,7 @@ description: Operations executed mike_stress_test.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        77102,
-        77121,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

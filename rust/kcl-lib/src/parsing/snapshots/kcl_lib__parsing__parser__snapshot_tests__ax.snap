@@ -1,21 +1,26 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
 ---
 {
   "body": [
     {
+      "commentStart": 0,
       "declaration": {
+        "commentStart": 4,
         "end": 91,
         "id": {
+          "commentStart": 4,
           "end": 11,
           "name": "numbers",
           "start": 4,
           "type": "Identifier"
         },
         "init": {
+          "commentStart": 14,
           "elements": [
             {
+              "commentStart": 28,
               "end": 29,
               "raw": "1",
               "start": 28,
@@ -27,6 +32,7 @@ expression: actual
               }
             },
             {
+              "commentStart": 43,
               "end": 44,
               "raw": "2",
               "start": 43,
@@ -43,6 +49,7 @@ expression: actual
             "nonCodeNodes": {
               "2": [
                 {
+                  "commentStart": 58,
                   "end": 63,
                   "start": 58,
                   "type": "NonCodeNode",
@@ -55,6 +62,7 @@ expression: actual
               ],
               "3": [
                 {
+                  "commentStart": 76,
                   "end": 81,
                   "start": 76,
                   "type": "NonCodeNode",
@@ -82,6 +90,7 @@ expression: actual
       "type": "VariableDeclaration"
     }
   ],
+  "commentStart": 0,
   "end": 91,
   "start": 0
 }

@@ -35,7 +35,7 @@ atan2(
 ### Examples
 
 ```js
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> angledLine({
        angle = toDegrees(atan2(1.25, 2)),

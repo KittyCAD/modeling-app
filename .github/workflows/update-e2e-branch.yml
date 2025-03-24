@@ -1,0 +1,29 @@
+name: update-e2e-branch
+
+# This is used to sync the `all-e2e` branch with the `main` branch for the
+# logic in the test utility `orRunWhenFullSuiteEnabled()` that allows all e2e
+# tests to run on a particular branch to analyze failures metrics in Axiom.
+
+on:
+  schedule:
+    - cron: '0 * * * *' # runs every hour
+
+permissions:
+  contents: write
+
+jobs:
+  update-branch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - shell: bash
+        run: |
+          # checkout our branch
+          git checkout all-e2e || git checkout -b all-e2e
+          # fetch origin
+          git fetch origin
+          # reset to main
+          git reset --hard origin/main
+          # force push it
+          git push --force origin all-e2e

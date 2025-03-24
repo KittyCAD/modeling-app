@@ -15,7 +15,7 @@ std::math::TAU: number = 6.28318530717958647692528676655900577_
 ### Examples
 
 ```js
-exampleSketch = startSketchOn("XZ")
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> angledLine({
     angle = 50,

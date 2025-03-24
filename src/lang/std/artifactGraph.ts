@@ -748,6 +748,9 @@ export function getPathsFromPlaneArtifact(
       )
     }
   }
+  if (nodePaths.length === 0) {
+    return []
+  }
   return onlyConsecutivePaths(nodePaths, nodePaths[0], ast)
 }
 

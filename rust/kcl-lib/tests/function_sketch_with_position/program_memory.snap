@@ -16,44 +16,28 @@ description: Variables in memory after executing function_sketch_with_position.k
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            86,
-            104,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            112,
-            130,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            138,
-            157,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            165,
-            173,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -65,11 +49,7 @@ description: Variables in memory after executing function_sketch_with_position.k
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                86,
-                104,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -88,11 +68,7 @@ description: Variables in memory after executing function_sketch_with_position.k
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                112,
-                130,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -111,11 +87,7 @@ description: Variables in memory after executing function_sketch_with_position.k
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                138,
-                157,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               10.0,
@@ -134,11 +106,7 @@ description: Variables in memory after executing function_sketch_with_position.k
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                165,
-                173,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               10.0,
@@ -199,11 +167,7 @@ description: Variables in memory after executing function_sketch_with_position.k
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              58,
-              78,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",

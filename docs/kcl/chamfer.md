@@ -41,7 +41,7 @@ length = 10
 thickness = 1
 chamferLength = 2
 
-mountingPlateSketch = startSketchOn("XY")
+mountingPlateSketch = startSketchOn(XY)
   |> startProfileAt([-width / 2, -length / 2], %)
   |> line(endAbsolute = [width / 2, -length / 2], tag = $edge1)
   |> line(endAbsolute = [width / 2, length / 2], tag = $edge2)
@@ -65,7 +65,7 @@ mountingPlate = extrude(mountingPlateSketch, length = thickness)
 ```js
 // Sketch on the face of a chamfer.
 fn cube(pos, scale) {
-  sg = startSketchOn('XY')
+  sg = startSketchOn(XY)
     |> startProfileAt(pos, %)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])

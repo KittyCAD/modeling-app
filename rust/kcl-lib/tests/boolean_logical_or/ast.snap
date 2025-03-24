@@ -1,79 +1,100 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing boolean_logical_or.kcl
 ---
 {
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 17,
+          "commentStart": 0,
+          "end": 0,
           "id": {
-            "end": 2,
+            "commentStart": 0,
+            "end": 0,
             "name": "aa",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 17,
+            "commentStart": 5,
+            "end": 0,
             "left": {
-              "end": 9,
+              "commentStart": 5,
+              "end": 0,
               "raw": "true",
-              "start": 5,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": true
             },
             "operator": "|",
             "right": {
-              "end": 17,
+              "commentStart": 12,
+              "end": 0,
               "raw": "false",
-              "start": 12,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": false
             },
-            "start": 5,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 17,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 18,
         "declaration": {
-          "end": 48,
+          "commentStart": 18,
+          "end": 0,
           "id": {
-            "end": 19,
+            "commentStart": 18,
+            "end": 0,
             "name": "a",
-            "start": 18,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 22,
             "cond": {
-              "end": 27,
-              "name": "aa",
-              "start": 25,
-              "type": "Identifier",
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 25,
+              "end": 0,
+              "name": {
+                "commentStart": 25,
+                "end": 0,
+                "name": "aa",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             },
             "digest": null,
             "else_ifs": [],
-            "end": 48,
+            "end": 0,
             "final_else": {
               "body": [
                 {
-                  "end": 46,
+                  "commentStart": 45,
+                  "end": 0,
                   "expression": {
-                    "end": 46,
+                    "commentStart": 45,
+                    "end": 0,
                     "raw": "2",
-                    "start": 45,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -81,23 +102,26 @@ description: Result of parsing boolean_logical_or.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 45,
+                  "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
                 }
               ],
-              "end": 47,
-              "start": 45
+              "commentStart": 45,
+              "end": 0,
+              "start": 0
             },
-            "start": 22,
+            "start": 0,
             "then_val": {
               "body": [
                 {
-                  "end": 33,
+                  "commentStart": 32,
+                  "end": 0,
                   "expression": {
-                    "end": 33,
+                    "commentStart": 32,
+                    "end": 0,
                     "raw": "1",
-                    "start": 32,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -105,44 +129,57 @@ description: Result of parsing boolean_logical_or.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 32,
+                  "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
                 }
               ],
-              "end": 34,
-              "start": 32
+              "commentStart": 32,
+              "end": 0,
+              "start": 0
             },
             "type": "IfExpression",
             "type": "IfExpression"
           },
-          "start": 18,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 48,
+        "end": 0,
         "kind": "const",
-        "start": 18,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 124,
+        "commentStart": 49,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 62,
+              "commentStart": 56,
+              "end": 0,
               "left": {
-                "end": 57,
-                "name": "a",
-                "start": 56,
-                "type": "Identifier",
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 56,
+                "end": 0,
+                "name": {
+                  "commentStart": 56,
+                  "end": 0,
+                  "name": "a",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "==",
               "right": {
-                "end": 62,
+                "commentStart": 61,
+                "end": 0,
                 "raw": "1",
-                "start": 61,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -150,103 +187,135 @@ description: Result of parsing boolean_logical_or.kcl
                   "suffix": "None"
                 }
               },
-              "start": 56,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 123,
+              "commentStart": 64,
+              "end": 0,
               "raw": "\"left branch of or is true makes the whole expression true\"",
-              "start": 64,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "left branch of or is true makes the whole expression true"
             }
           ],
           "callee": {
-            "end": 55,
-            "name": "assert",
-            "start": 49,
-            "type": "Identifier"
+            "abs_path": false,
+            "commentStart": 49,
+            "end": 0,
+            "name": {
+              "commentStart": 49,
+              "end": 0,
+              "name": "assert",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
           },
-          "end": 124,
-          "start": 49,
+          "commentStart": 49,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 49,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 124,
         "declaration": {
-          "end": 143,
+          "commentStart": 126,
+          "end": 0,
           "id": {
-            "end": 128,
+            "commentStart": 126,
+            "end": 0,
             "name": "bb",
-            "start": 126,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 143,
+            "commentStart": 131,
+            "end": 0,
             "left": {
-              "end": 136,
+              "commentStart": 131,
+              "end": 0,
               "raw": "false",
-              "start": 131,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": false
             },
             "operator": "|",
             "right": {
-              "end": 143,
+              "commentStart": 139,
+              "end": 0,
               "raw": "true",
-              "start": 139,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": true
             },
-            "start": 131,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 126,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 143,
+        "end": 0,
         "kind": "const",
-        "start": 126,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 144,
         "declaration": {
-          "end": 174,
+          "commentStart": 144,
+          "end": 0,
           "id": {
-            "end": 145,
+            "commentStart": 144,
+            "end": 0,
             "name": "b",
-            "start": 144,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 148,
             "cond": {
-              "end": 153,
-              "name": "bb",
-              "start": 151,
-              "type": "Identifier",
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 151,
+              "end": 0,
+              "name": {
+                "commentStart": 151,
+                "end": 0,
+                "name": "bb",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             },
             "digest": null,
             "else_ifs": [],
-            "end": 174,
+            "end": 0,
             "final_else": {
               "body": [
                 {
-                  "end": 172,
+                  "commentStart": 171,
+                  "end": 0,
                   "expression": {
-                    "end": 172,
+                    "commentStart": 171,
+                    "end": 0,
                     "raw": "2",
-                    "start": 171,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -254,23 +323,26 @@ description: Result of parsing boolean_logical_or.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 171,
+                  "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
                 }
               ],
-              "end": 173,
-              "start": 171
+              "commentStart": 171,
+              "end": 0,
+              "start": 0
             },
-            "start": 148,
+            "start": 0,
             "then_val": {
               "body": [
                 {
-                  "end": 159,
+                  "commentStart": 158,
+                  "end": 0,
                   "expression": {
-                    "end": 159,
+                    "commentStart": 158,
+                    "end": 0,
                     "raw": "1",
-                    "start": 158,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -278,44 +350,57 @@ description: Result of parsing boolean_logical_or.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 158,
+                  "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
                 }
               ],
-              "end": 160,
-              "start": 158
+              "commentStart": 158,
+              "end": 0,
+              "start": 0
             },
             "type": "IfExpression",
             "type": "IfExpression"
           },
-          "start": 144,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 174,
+        "end": 0,
         "kind": "const",
-        "start": 144,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 251,
+        "commentStart": 175,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 188,
+              "commentStart": 182,
+              "end": 0,
               "left": {
-                "end": 183,
-                "name": "b",
-                "start": 182,
-                "type": "Identifier",
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 182,
+                "end": 0,
+                "name": {
+                  "commentStart": 182,
+                  "end": 0,
+                  "name": "b",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "==",
               "right": {
-                "end": 188,
+                "commentStart": 187,
+                "end": 0,
                 "raw": "1",
-                "start": 187,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -323,103 +408,135 @@ description: Result of parsing boolean_logical_or.kcl
                   "suffix": "None"
                 }
               },
-              "start": 182,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 250,
+              "commentStart": 190,
+              "end": 0,
               "raw": "\"right branch of or is true makes the whole expression true\"",
-              "start": 190,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "right branch of or is true makes the whole expression true"
             }
           ],
           "callee": {
-            "end": 181,
-            "name": "assert",
-            "start": 175,
-            "type": "Identifier"
+            "abs_path": false,
+            "commentStart": 175,
+            "end": 0,
+            "name": {
+              "commentStart": 175,
+              "end": 0,
+              "name": "assert",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
           },
-          "end": 251,
-          "start": 175,
+          "commentStart": 175,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 175,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 251,
         "declaration": {
-          "end": 269,
+          "commentStart": 253,
+          "end": 0,
           "id": {
-            "end": 255,
+            "commentStart": 253,
+            "end": 0,
             "name": "cc",
-            "start": 253,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 269,
+            "commentStart": 258,
+            "end": 0,
             "left": {
-              "end": 262,
+              "commentStart": 258,
+              "end": 0,
               "raw": "true",
-              "start": 258,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": true
             },
             "operator": "|",
             "right": {
-              "end": 269,
+              "commentStart": 265,
+              "end": 0,
               "raw": "true",
-              "start": 265,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": true
             },
-            "start": 258,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 253,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 269,
+        "end": 0,
         "kind": "const",
-        "start": 253,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 270,
         "declaration": {
-          "end": 300,
+          "commentStart": 270,
+          "end": 0,
           "id": {
-            "end": 271,
+            "commentStart": 270,
+            "end": 0,
             "name": "c",
-            "start": 270,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 274,
             "cond": {
-              "end": 279,
-              "name": "cc",
-              "start": 277,
-              "type": "Identifier",
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 277,
+              "end": 0,
+              "name": {
+                "commentStart": 277,
+                "end": 0,
+                "name": "cc",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             },
             "digest": null,
             "else_ifs": [],
-            "end": 300,
+            "end": 0,
             "final_else": {
               "body": [
                 {
-                  "end": 298,
+                  "commentStart": 297,
+                  "end": 0,
                   "expression": {
-                    "end": 298,
+                    "commentStart": 297,
+                    "end": 0,
                     "raw": "2",
-                    "start": 297,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -427,23 +544,26 @@ description: Result of parsing boolean_logical_or.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 297,
+                  "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
                 }
               ],
-              "end": 299,
-              "start": 297
+              "commentStart": 297,
+              "end": 0,
+              "start": 0
             },
-            "start": 274,
+            "start": 0,
             "then_val": {
               "body": [
                 {
-                  "end": 285,
+                  "commentStart": 284,
+                  "end": 0,
                   "expression": {
-                    "end": 285,
+                    "commentStart": 284,
+                    "end": 0,
                     "raw": "1",
-                    "start": 284,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -451,44 +571,57 @@ description: Result of parsing boolean_logical_or.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 284,
+                  "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
                 }
               ],
-              "end": 286,
-              "start": 284
+              "commentStart": 284,
+              "end": 0,
+              "start": 0
             },
             "type": "IfExpression",
             "type": "IfExpression"
           },
-          "start": 270,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 300,
+        "end": 0,
         "kind": "const",
-        "start": 270,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 379,
+        "commentStart": 301,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 314,
+              "commentStart": 308,
+              "end": 0,
               "left": {
-                "end": 309,
-                "name": "c",
-                "start": 308,
-                "type": "Identifier",
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 308,
+                "end": 0,
+                "name": {
+                  "commentStart": 308,
+                  "end": 0,
+                  "name": "c",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "==",
               "right": {
-                "end": 314,
+                "commentStart": 313,
+                "end": 0,
                 "raw": "1",
-                "start": 313,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -496,103 +629,135 @@ description: Result of parsing boolean_logical_or.kcl
                   "suffix": "None"
                 }
               },
-              "start": 308,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 378,
+              "commentStart": 316,
+              "end": 0,
               "raw": "\"both branches of or are true makes the whole expression true\"",
-              "start": 316,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "both branches of or are true makes the whole expression true"
             }
           ],
           "callee": {
-            "end": 307,
-            "name": "assert",
-            "start": 301,
-            "type": "Identifier"
+            "abs_path": false,
+            "commentStart": 301,
+            "end": 0,
+            "name": {
+              "commentStart": 301,
+              "end": 0,
+              "name": "assert",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
           },
-          "end": 379,
-          "start": 301,
+          "commentStart": 301,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 301,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 379,
         "declaration": {
-          "end": 399,
+          "commentStart": 381,
+          "end": 0,
           "id": {
-            "end": 383,
+            "commentStart": 381,
+            "end": 0,
             "name": "dd",
-            "start": 381,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 399,
+            "commentStart": 386,
+            "end": 0,
             "left": {
-              "end": 391,
+              "commentStart": 386,
+              "end": 0,
               "raw": "false",
-              "start": 386,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": false
             },
             "operator": "|",
             "right": {
-              "end": 399,
+              "commentStart": 394,
+              "end": 0,
               "raw": "false",
-              "start": 394,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": false
             },
-            "start": 386,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 381,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 399,
+        "end": 0,
         "kind": "const",
-        "start": 381,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 400,
         "declaration": {
-          "end": 430,
+          "commentStart": 400,
+          "end": 0,
           "id": {
-            "end": 401,
+            "commentStart": 400,
+            "end": 0,
             "name": "d",
-            "start": 400,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 404,
             "cond": {
-              "end": 409,
-              "name": "dd",
-              "start": 407,
-              "type": "Identifier",
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 407,
+              "end": 0,
+              "name": {
+                "commentStart": 407,
+                "end": 0,
+                "name": "dd",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             },
             "digest": null,
             "else_ifs": [],
-            "end": 430,
+            "end": 0,
             "final_else": {
               "body": [
                 {
-                  "end": 428,
+                  "commentStart": 427,
+                  "end": 0,
                   "expression": {
-                    "end": 428,
+                    "commentStart": 427,
+                    "end": 0,
                     "raw": "2",
-                    "start": 427,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -600,23 +765,26 @@ description: Result of parsing boolean_logical_or.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 427,
+                  "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
                 }
               ],
-              "end": 429,
-              "start": 427
+              "commentStart": 427,
+              "end": 0,
+              "start": 0
             },
-            "start": 404,
+            "start": 0,
             "then_val": {
               "body": [
                 {
-                  "end": 415,
+                  "commentStart": 414,
+                  "end": 0,
                   "expression": {
-                    "end": 415,
+                    "commentStart": 414,
+                    "end": 0,
                     "raw": "1",
-                    "start": 414,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -624,44 +792,57 @@ description: Result of parsing boolean_logical_or.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 414,
+                  "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
                 }
               ],
-              "end": 416,
-              "start": 414
+              "commentStart": 414,
+              "end": 0,
+              "start": 0
             },
             "type": "IfExpression",
             "type": "IfExpression"
           },
-          "start": 400,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 430,
+        "end": 0,
         "kind": "const",
-        "start": 400,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 511,
+        "commentStart": 431,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 444,
+              "commentStart": 438,
+              "end": 0,
               "left": {
-                "end": 439,
-                "name": "d",
-                "start": 438,
-                "type": "Identifier",
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 438,
+                "end": 0,
+                "name": {
+                  "commentStart": 438,
+                  "end": 0,
+                  "name": "d",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "==",
               "right": {
-                "end": 444,
+                "commentStart": 443,
+                "end": 0,
                 "raw": "2",
-                "start": 443,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -669,42 +850,55 @@ description: Result of parsing boolean_logical_or.kcl
                   "suffix": "None"
                 }
               },
-              "start": 438,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 510,
+              "commentStart": 446,
+              "end": 0,
               "raw": "\"both branches of or are false makes the whole expression false\"",
-              "start": 446,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "both branches of or are false makes the whole expression false"
             }
           ],
           "callee": {
-            "end": 437,
-            "name": "assert",
-            "start": 431,
-            "type": "Identifier"
+            "abs_path": false,
+            "commentStart": 431,
+            "end": 0,
+            "name": {
+              "commentStart": 431,
+              "end": 0,
+              "name": "assert",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
           },
-          "end": 511,
-          "start": 431,
+          "commentStart": 431,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 431,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 512,
+    "commentStart": 0,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "2": [
           {
-            "end": 126,
-            "start": 124,
+            "commentStart": 124,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -713,8 +907,9 @@ description: Result of parsing boolean_logical_or.kcl
         ],
         "5": [
           {
-            "end": 253,
-            "start": 251,
+            "commentStart": 251,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -723,8 +918,9 @@ description: Result of parsing boolean_logical_or.kcl
         ],
         "8": [
           {
-            "end": 381,
-            "start": 379,
+            "commentStart": 379,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Error from executing kw_fn_too_few_args.kcl
 ---
 KCL Semantic error

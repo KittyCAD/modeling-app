@@ -1,25 +1,30 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing array_elem_pop_fail.kcl
 ---
 {
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 15,
+          "commentStart": 0,
+          "end": 0,
           "id": {
-            "end": 3,
+            "commentStart": 0,
+            "end": 0,
             "name": "arr",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 6,
             "elements": [
               {
-                "end": 8,
+                "commentStart": 7,
+                "end": 0,
                 "raw": "1",
-                "start": 7,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -28,9 +33,10 @@ description: Result of parsing array_elem_pop_fail.kcl
                 }
               },
               {
-                "end": 11,
+                "commentStart": 10,
+                "end": 0,
                 "raw": "2",
-                "start": 10,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -39,9 +45,10 @@ description: Result of parsing array_elem_pop_fail.kcl
                 }
               },
               {
-                "end": 14,
+                "commentStart": 13,
+                "end": 0,
                 "raw": "3",
-                "start": 13,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -50,82 +57,110 @@ description: Result of parsing array_elem_pop_fail.kcl
                 }
               }
             ],
-            "end": 15,
-            "start": 6,
+            "end": 0,
+            "start": 0,
             "type": "ArrayExpression",
             "type": "ArrayExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 15,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 16,
         "declaration": {
-          "end": 36,
+          "commentStart": 16,
+          "end": 0,
           "id": {
-            "end": 25,
+            "commentStart": 16,
+            "end": 0,
             "name": "pushedArr",
-            "start": 16,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 35,
-                "name": "arr",
-                "start": 32,
-                "type": "Identifier",
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 32,
+                "end": 0,
+                "name": {
+                  "commentStart": 32,
+                  "end": 0,
+                  "name": "arr",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
-              "end": 31,
-              "name": "pop",
-              "start": 28,
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 28,
+              "end": 0,
+              "name": {
+                "commentStart": 28,
+                "end": 0,
+                "name": "pop",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
             },
-            "end": 36,
-            "start": 28,
+            "commentStart": 28,
+            "end": 0,
+            "start": 0,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 16,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 36,
+        "end": 0,
         "kind": "const",
-        "start": 16,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 37,
         "declaration": {
-          "end": 56,
+          "commentStart": 37,
+          "end": 0,
           "id": {
-            "end": 41,
+            "commentStart": 37,
+            "end": 0,
             "name": "fail",
-            "start": 37,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 44,
             "computed": false,
-            "end": 56,
+            "end": 0,
             "object": {
-              "end": 53,
+              "commentStart": 44,
+              "end": 0,
               "name": "pushedArr",
-              "start": 44,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "property": {
-              "end": 55,
+              "commentStart": 54,
+              "end": 0,
               "raw": "2",
-              "start": 54,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -133,21 +168,22 @@ description: Result of parsing array_elem_pop_fail.kcl
                 "suffix": "None"
               }
             },
-            "start": 44,
+            "start": 0,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "start": 37,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 56,
+        "end": 0,
         "kind": "const",
-        "start": 37,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 57,
+    "commentStart": 0,
+    "end": 0,
     "start": 0
   }
 }

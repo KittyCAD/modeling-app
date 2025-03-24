@@ -1,0 +1,16 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing array_elem_push.kcl
+---
+arr = [1, 2, 3]
+new_arr1 = push(arr, 4)
+new_arr2 = push(new_arr1, 5)
+assertEqual(new_arr1[0], 1, 0.00001, "element 0 should not have changed")
+assertEqual(new_arr1[1], 2, 0.00001, "element 1 should not have changed")
+assertEqual(new_arr1[2], 3, 0.00001, "element 2 should not have changed")
+assertEqual(new_arr1[3], 4, 0.00001, "4 was added to the end of the array")
+assertEqual(new_arr2[0], 1, 0.00001, "element 0 should not have changed")
+assertEqual(new_arr2[1], 2, 0.00001, "element 1 should not have changed")
+assertEqual(new_arr2[2], 3, 0.00001, "element 2 should not have changed")
+assertEqual(new_arr2[3], 4, 0.00001, "4 was added to the end of the array")
+assertEqual(new_arr2[4], 5, 0.00001, "5 was added to the end of the array")

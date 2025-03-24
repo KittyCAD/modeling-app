@@ -31,7 +31,7 @@ min(args: [number]): number
 ### Examples
 
 ```js
-exampleSketch = startSketchOn("XZ")
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> angledLine({
        angle = 70,

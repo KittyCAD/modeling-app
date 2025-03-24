@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing non_string_key_of_object.kcl
+---
+obj = { key = 123 }
+num = obj[3]

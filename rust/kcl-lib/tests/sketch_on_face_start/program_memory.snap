@@ -16,44 +16,28 @@ description: Variables in memory after executing sketch_on_face_start.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            86,
-            108,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            116,
-            138,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            146,
-            169,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            217,
-            225,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -65,11 +49,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                86,
-                108,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -88,11 +68,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                116,
-                138,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -111,11 +87,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                146,
-                169,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               20.0,
@@ -134,11 +106,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                217,
-                225,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               20.0,
@@ -199,11 +167,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              56,
-              78,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -230,44 +194,28 @@ description: Variables in memory after executing sketch_on_face_start.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            86,
-            108,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            116,
-            138,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            146,
-            169,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            217,
-            225,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -279,11 +227,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                86,
-                108,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -302,11 +246,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                116,
-                138,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -325,11 +265,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                146,
-                169,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               20.0,
@@ -348,11 +284,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                217,
-                225,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               20.0,
@@ -413,11 +345,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              56,
-              78,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -444,44 +372,28 @@ description: Variables in memory after executing sketch_on_face_start.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            334,
-            353,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            359,
-            378,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            384,
-            404,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            410,
-            418,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -493,11 +405,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                334,
-                353,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -516,11 +424,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                359,
-                378,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -539,11 +443,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                384,
-                404,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               10.0,
@@ -562,11 +462,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                410,
-                418,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               10.0,
@@ -611,44 +507,28 @@ description: Variables in memory after executing sketch_on_face_start.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  86,
-                  108,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  116,
-                  138,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  146,
-                  169,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  217,
-                  225,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               }
@@ -660,11 +540,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      86,
-                      108,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -683,11 +559,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      116,
-                      138,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -706,11 +578,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      146,
-                      169,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     20.0,
@@ -729,11 +597,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      217,
-                      225,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     20.0,
@@ -794,11 +658,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    56,
-                    78,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "artifactId": "[uuid]",
@@ -833,11 +693,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              303,
-              328,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",

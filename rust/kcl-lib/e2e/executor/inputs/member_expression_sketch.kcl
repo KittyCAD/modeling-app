@@ -1,5 +1,5 @@
 fn square = (pos, scale) => {
-  sg = startSketchOn('XY')
+  sg = startSketchOn(XY)
     |> startProfileAt(pos, %)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])

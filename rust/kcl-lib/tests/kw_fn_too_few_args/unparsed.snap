@@ -1,0 +1,9 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing kw_fn_too_few_args.kcl
+---
+fn add(x, y) {
+  return x + y
+}
+
+three = add(x = 1)

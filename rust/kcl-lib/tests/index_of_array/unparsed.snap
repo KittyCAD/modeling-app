@@ -1,0 +1,25 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing index_of_array.kcl
+---
+// This tests indexing an array.
+
+
+arr = [90, 91, 92]
+
+// Test: literal index.
+
+
+result0 = arr[1]
+
+assertLessThanOrEq(result0, 91, "Literal property lookup")
+assertGreaterThanOrEq(result0, 91, "Literal property lookup")
+
+// Test: computed index.
+
+
+i = int(1 + 0)
+result1 = arr[i]
+
+assertLessThanOrEq(result1, 91, "Computed property lookup")
+assertGreaterThanOrEq(result1, 91, "Computed property lookup")

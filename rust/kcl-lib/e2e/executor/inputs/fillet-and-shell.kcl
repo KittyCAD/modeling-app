@@ -41,7 +41,7 @@ miniHdmiHole = startSketchOn(XY)
      ], %)
   |> close()
 
-case = startSketchOn('XY')
+case = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [caseWidth, 0], $edge1)
   |> line(endAbsolute = [caseWidth, caseLength], $edge2)

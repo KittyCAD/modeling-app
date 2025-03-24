@@ -1,6 +1,6 @@
 @settings(defaultLengthUnit = in)
-// Set units in inches (in)
 
+// Set units in inches (in)
 
 // Define constants
 innerDiameter = 0.364

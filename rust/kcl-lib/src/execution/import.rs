@@ -17,7 +17,7 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{annotations, kcl_value::UnitLen, ExecState, ExecutorContext, ImportedGeometry},
+    execution::{annotations, types::UnitLen, ExecState, ExecutorContext, ImportedGeometry},
     fs::FileSystem,
     parsing::ast::types::{Annotation, Node},
     source_range::SourceRange,

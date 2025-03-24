@@ -34,7 +34,7 @@ polygon(
 
 ```js
 // Create a regular hexagon inscribed in a circle of radius 10
-hex = startSketchOn('XY')
+hex = startSketchOn(XY)
   |> polygon({
        radius = 10,
        numSides = 6,
@@ -49,7 +49,7 @@ example = extrude(hex, length = 5)
 
 ```js
 // Create a square circumscribed around a circle of radius 5
-square = startSketchOn('XY')
+square = startSketchOn(XY)
   |> polygon({
        radius = 5.0,
        numSides = 4,

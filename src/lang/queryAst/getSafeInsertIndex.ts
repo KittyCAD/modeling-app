@@ -15,19 +15,15 @@ export function getSafeInsertIndex(
   const safeIdentifierIndex = identifiers.reduce((acc, curr) => {
     const bodyIndex = program.body.findIndex(
       (a) =>
-        a.type === 'VariableDeclaration' && a.declaration.id?.name === curr.name
+        a.type === 'VariableDeclaration' &&
+        a.declaration.id?.name === curr.name.name
     )
     return Math.max(acc, bodyIndex + 1)
   }, 0)
 
   const tagDeclarators = getTagDeclaratorsInProgram(program)
-  console.log('FRANK tagDeclarators', {
-    identifiers,
-    tagDeclarators,
-    targetExpr,
-  })
   const safeTagIndex = tagDeclarators.reduce((acc, curr) => {
-    return identifiers.findIndex((a) => a.name === curr.tag.value) === -1
+    return identifiers.findIndex((a) => a.name.name === curr.tag.value) === -1
       ? acc
       : Math.max(acc, curr.bodyIndex + 1)
   }, 0)

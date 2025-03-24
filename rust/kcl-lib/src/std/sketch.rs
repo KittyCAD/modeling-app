@@ -11,11 +11,10 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::execution::kcl_value::RuntimeType;
-use crate::execution::PrimitiveType;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
+        types::{PrimitiveType, RuntimeType},
         Artifact, ArtifactId, BasePath, CodeRef, ExecState, Face, GeoMeta, KclValue, Path, Plane, Point2d, Point3d,
         Sketch, SketchSurface, Solid, StartSketchOnFace, StartSketchOnPlane, TagEngineInfo, TagIdentifier,
     },

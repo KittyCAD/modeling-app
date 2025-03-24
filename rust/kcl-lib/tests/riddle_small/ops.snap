@@ -13,11 +13,7 @@ description: Operations executed riddle_small.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      102,
-      107,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -32,11 +28,7 @@ description: Operations executed riddle_small.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      125,
-      130,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -48,19 +40,11 @@ description: Operations executed riddle_small.kcl
           "type": "String",
           "value": "XZ"
         },
-        "sourceRange": [
-          155,
-          159,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      141,
-      160,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -80,19 +64,11 @@ description: Operations executed riddle_small.kcl
             }
           }
         },
-        "sourceRange": [
-          304,
-          305,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      287,
-      306,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -101,11 +77,7 @@ description: Operations executed riddle_small.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        287,
-        306,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

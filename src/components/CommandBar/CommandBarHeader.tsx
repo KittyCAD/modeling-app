@@ -130,7 +130,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                       data-test-name="arg-name"
                       className="capitalize"
                     >
-                      {argName}
+                      {arg.displayName || argName}
                     </span>
                     <span className="sr-only">:&nbsp;</span>
                     <span data-testid="header-arg-value">

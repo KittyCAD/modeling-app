@@ -6,21 +6,27 @@ description: Result of parsing assembly_non_default_units.kcl
   "Ok": {
     "body": [
       {
-        "end": 172,
+        "commentStart": 33,
+        "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "other1.kcl"
         },
+        "preComments": [
+          "// Use a default unit that isn't the default of mm.",
+          "// This should look like two circles barely touching each other."
+        ],
         "selector": {
           "type": "None",
           "alias": null
         },
-        "start": 153,
+        "start": 0,
         "type": "ImportStatement",
         "type": "ImportStatement"
       },
       {
-        "end": 192,
+        "commentStart": 172,
+        "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "other2.kcl"
@@ -29,64 +35,98 @@ description: Result of parsing assembly_non_default_units.kcl
           "type": "None",
           "alias": null
         },
-        "start": 173,
+        "start": 0,
         "type": "ImportStatement",
         "type": "ImportStatement"
       },
       {
-        "end": 200,
+        "commentStart": 191,
+        "end": 0,
         "expression": {
-          "end": 200,
-          "name": "other1",
-          "start": 194,
-          "type": "Identifier",
-          "type": "Identifier"
+          "abs_path": false,
+          "commentStart": 193,
+          "end": 0,
+          "name": {
+            "commentStart": 193,
+            "end": 0,
+            "name": "other1",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "path": [],
+          "start": 0,
+          "type": "Name",
+          "type": "Name"
         },
-        "start": 194,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 207,
+        "commentStart": 200,
+        "end": 0,
         "expression": {
-          "end": 207,
-          "name": "other2",
-          "start": 201,
-          "type": "Identifier",
-          "type": "Identifier"
+          "abs_path": false,
+          "commentStart": 200,
+          "end": 0,
+          "name": {
+            "commentStart": 200,
+            "end": 0,
+            "name": "other2",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "path": [],
+          "start": 0,
+          "type": "Name",
+          "type": "Name"
         },
-        "start": 201,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 208,
+    "commentStart": 0,
+    "end": 0,
     "innerAttrs": [
       {
-        "end": 33,
+        "commentStart": 0,
+        "end": 0,
         "name": {
-          "end": 9,
+          "commentStart": 1,
+          "end": 0,
           "name": "settings",
-          "start": 1,
+          "start": 0,
           "type": "Identifier"
         },
         "properties": [
           {
-            "end": 32,
+            "commentStart": 10,
+            "end": 0,
             "key": {
-              "end": 27,
+              "commentStart": 10,
+              "end": 0,
               "name": "defaultLengthUnit",
-              "start": 10,
+              "start": 0,
               "type": "Identifier"
             },
-            "start": 10,
+            "start": 0,
             "type": "ObjectProperty",
             "value": {
-              "end": 32,
-              "name": "in",
-              "start": 30,
-              "type": "Identifier",
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 30,
+              "end": 0,
+              "name": {
+                "commentStart": 30,
+                "end": 0,
+                "name": "in",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],
@@ -98,8 +138,9 @@ description: Result of parsing assembly_non_default_units.kcl
       "nonCodeNodes": {
         "1": [
           {
-            "end": 194,
-            "start": 192,
+            "commentStart": 191,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -109,31 +150,12 @@ description: Result of parsing assembly_non_default_units.kcl
       },
       "startNodes": [
         {
-          "end": 36,
-          "start": 33,
+          "commentStart": 33,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
-          }
-        },
-        {
-          "end": 87,
-          "start": 36,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Use a default unit that isn't the default of mm.",
-            "style": "line"
-          }
-        },
-        {
-          "end": 152,
-          "start": 88,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "This should look like two circles barely touching each other.",
-            "style": "line"
           }
         }
       ]

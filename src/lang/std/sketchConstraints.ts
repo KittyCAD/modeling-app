@@ -93,7 +93,7 @@ export function isSketchVariablesLinked(
   and will keep checking the second arguments recursively until it runs out of variable declarations
   to check or it finds a match.
   that way it can find fn calls that are linked to each other through variables eg:
-  const part001 = startSketchOn('XY')
+  const part001 = startSketchOn(XY)
     |> startProfileAt([0, 0],%)
     |> xLine(endAbsolute = 1.69)
     |> line(end = [myVar, 0.38]) // ❗️ <- cursor in this fn call (the primary)
@@ -124,7 +124,7 @@ export function isSketchVariablesLinked(
       : init
   if (
     !firstCallExp ||
-    !toolTips.includes(firstCallExp?.callee?.name as ToolTip)
+    !toolTips.includes(firstCallExp?.callee?.name.name as ToolTip)
   )
     return false
   // convention for sketch fns is that the second argument is the sketch
@@ -138,13 +138,13 @@ export function isSketchVariablesLinked(
         return findKwArgAny(DETERMINING_ARGS, firstCallExp)
     }
   })()
-  if (!secondArg || secondArg?.type !== 'Identifier') return false
-  if (secondArg.name === primaryVarDec?.id?.name) return true
+  if (!secondArg || secondArg?.type !== 'Name') return false
+  if (secondArg.name.name === primaryVarDec?.id?.name) return true
 
   let nextVarDec: VariableDeclarator | undefined
   for (const node of ast.body) {
     if (node.type !== 'VariableDeclaration') continue
-    if (node.declaration.id.name === secondArg.name) {
+    if (node.declaration.id.name === secondArg.name.name) {
       nextVarDec = node.declaration
       break
     }

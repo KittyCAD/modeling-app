@@ -33,7 +33,7 @@ map(
 ```js
 r = 10 // radius
 fn drawCircle(id) {
-  return startSketchOn("XY")
+  return startSketchOn(XY)
     |> circle(center = [id * 2 * r, 0], radius = r)
 }
 
@@ -49,7 +49,7 @@ circles = map([1..3], drawCircle)
 r = 10 // radius
 // Call `map`, using an anonymous function instead of a named one.
 circles = map([1..3], fn(id) {
-  return startSketchOn("XY")
+  return startSketchOn(XY)
     |> circle(center = [id * 2 * r, 0], radius = r)
 })
 ```

@@ -1,0 +1,11 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing import_cycle1.kcl
+---
+@settings(defaultLengthUnit = in)
+
+import two from "import_cycle2.kcl"
+
+export fn one() {
+  return two() - 1
+}

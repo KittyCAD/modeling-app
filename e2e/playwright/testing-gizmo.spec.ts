@@ -256,7 +256,7 @@ test.describe(`Testing gizmo, fixture-based`, () => {
       localStorage.setItem(
         'persistCode',
         `
-        const sketch002 = startSketchOn('XZ')
+        const sketch002 = startSketchOn(XZ)
           |> startProfileAt([-108.83, -57.48], %)
           |> angledLine([0, 105.13], %, $rectangleSegmentA001)
           |> angledLine([
@@ -268,7 +268,7 @@ test.describe(`Testing gizmo, fixture-based`, () => {
                -segLen(rectangleSegmentA001)
              ], %)
           |> close()
-        const sketch001 = startSketchOn('XZ')
+        const sketch001 = startSketchOn(XZ)
           |> circle(center = [818.33, 168.1], radius = 182.8)
           |> extrude(length = 50)
       `
@@ -316,14 +316,11 @@ test.describe(`Testing gizmo, fixture-based`, () => {
     })
 
     await test.step(`Gizmo should be disabled when in sketch mode`, async () => {
-      const sketchModeButton = page.getByRole('button', {
-        name: 'Edit sketch',
-      })
       const exitSketchButton = page.getByRole('button', {
         name: 'Exit sketch',
       })
 
-      await sketchModeButton.click()
+      await toolbar.editSketch()
       await expect(exitSketchButton).toBeVisible()
       const gizmoPopoverButton = page.getByRole('button', {
         name: 'view settings',

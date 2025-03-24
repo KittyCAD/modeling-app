@@ -13,11 +13,7 @@ description: Operations executed cube_with_error.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      403,
-      419,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -26,19 +22,11 @@ description: Operations executed cube_with_error.kcl
           "type": "Plane",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          191,
-          193,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      177,
-      194,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -58,19 +46,11 @@ description: Operations executed cube_with_error.kcl
             }
           }
         },
-        "sourceRange": [
-          383,
-          389,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      366,
-      390,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -79,11 +59,7 @@ description: Operations executed cube_with_error.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        366,
-        390,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {

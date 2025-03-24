@@ -31,7 +31,7 @@ ln(num: number): number
 ### Examples
 
 ```js
-exampleSketch = startSketchOn("XZ")
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [ln(100), 15])
   |> line(end = [5, -6])

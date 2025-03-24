@@ -6,7 +6,7 @@ fn m = (s) => {
 fn p = (xs, ys) => {
   let ox = 35 - (m(xs) % 70)
   let oy = 35 - (m(ys) % 70)
-  const r = startSketchOn('XZ')
+  const r = startSketchOn(XZ)
   |> startProfileAt([ox, oy], %)
   |> line(end = [1, 0])
   |> line(end = [0, -1])

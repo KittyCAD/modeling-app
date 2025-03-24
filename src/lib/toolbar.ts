@@ -20,12 +20,15 @@ export interface ToolbarItemCallbackProps {
   modelingState: StateFrom<typeof modelingMachine>
   modelingSend: (event: EventFrom<typeof modelingMachine>) => void
   sketchPathId: string | false
+  editorHasFocus: boolean | undefined
 }
 
 export type ToolbarItem = {
   id: string
   onClick: (props: ToolbarItemCallbackProps) => void
   icon?: CustomIconName
+  iconColor?: string
+  alwaysDark?: true
   status: 'available' | 'unavailable' | 'kcl-only'
   disabled?: (state: StateFrom<typeof modelingMachine>) => boolean
   disableHotkey?: (state: StateFrom<typeof modelingMachine>) => boolean
@@ -65,8 +68,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
     items: [
       {
         id: 'sketch',
-        onClick: ({ modelingSend, sketchPathId }) =>
-          !sketchPathId
+        onClick: ({ modelingSend, sketchPathId, editorHasFocus }) =>
+          !(editorHasFocus && sketchPathId)
             ? modelingSend({
                 type: 'Enter sketch',
                 data: { forceNewSketch: true },
@@ -74,8 +77,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             : modelingSend({ type: 'Enter sketch' }),
         icon: 'sketch',
         status: 'available',
-        title: ({ sketchPathId }) =>
-          sketchPathId ? 'Edit Sketch' : 'Start Sketch',
+        title: ({ editorHasFocus, sketchPathId }) =>
+          editorHasFocus && sketchPathId ? 'Edit Sketch' : 'Start Sketch',
         showTitle: true,
         hotkey: 'S',
         description: 'Start drawing a 2D sketch',
@@ -307,9 +310,11 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               data: { name: 'Text-to-CAD', groupId: 'modeling' },
             }),
           icon: 'sparkles',
+          iconColor: '#29FFA4',
+          alwaysDark: true,
           status: 'available',
-          title: 'Create with AI',
-          description: 'Generate geometry from a text prompt.',
+          title: 'Create with Zoo Text-to-CAD',
+          description: 'Create geometry with AI / ML.',
           links: [
             {
               label: 'API docs',
@@ -325,9 +330,11 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               data: { name: 'Prompt-to-edit', groupId: 'modeling' },
             }),
           icon: 'sparkles',
+          iconColor: '#29FFA4',
+          alwaysDark: true,
           status: 'available',
-          title: 'Edit with AI',
-          description: 'Edit geometry based on a text prompt.',
+          title: 'Modify with Zoo Text-to-CAD',
+          description: 'Edit geometry with AI / ML.',
           links: [],
         },
       ],

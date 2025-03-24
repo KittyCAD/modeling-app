@@ -15,7 +15,7 @@ import {
 } from '../SetAngleLengthModal'
 import {
   createBinaryExpressionWithUnary,
-  createIdentifier,
+  createLocalName,
   createVariableDeclaration,
 } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
@@ -52,7 +52,7 @@ export function angleLengthInfo({
     return (
       (meta.node?.type === 'CallExpressionKw' ||
         meta.node?.type === 'CallExpression') &&
-      toolTips.includes(meta.node.callee.name as any)
+      toolTips.includes(meta.node.callee.name.name as any)
     )
   })
 
@@ -98,7 +98,7 @@ export async function applyConstraintLength({
     const newBody = [...ast.body]
     newBody.splice(length.insertIndex, 0, length.variableDeclarationAst)
     ast.body = newBody
-    distanceExpression = createIdentifier(length.variableName)
+    distanceExpression = createLocalName(length.variableName)
   }
 
   if (!isExprBinaryPart(distanceExpression)) {
@@ -167,14 +167,14 @@ export async function applyConstraintAngleLength({
     isReferencingXAxis && angleOrLength === 'setAngle'
 
   let forceVal = valueUsedInTransform || 0
-  let calcIdentifier = createIdentifier('ZERO')
+  let calcIdentifier = createLocalName('ZERO')
   if (isReferencingYAxisAngle) {
-    calcIdentifier = createIdentifier(
+    calcIdentifier = createLocalName(
       forceVal < 0 ? 'THREE_QUARTER_TURN' : 'QUARTER_TURN'
     )
     forceVal = normaliseAngle(forceVal + (forceVal < 0 ? 90 : -90))
   } else if (isReferencingXAxisAngle) {
-    calcIdentifier = createIdentifier(
+    calcIdentifier = createLocalName(
       Math.abs(forceVal) > 90 ? 'HALF_TURN' : 'ZERO'
     )
     forceVal =
@@ -191,7 +191,7 @@ export async function applyConstraintAngleLength({
   let finalValue = removeDoubleNegatives(valueNode, sign, variableName)
   if (
     isReferencingYAxisAngle ||
-    (isReferencingXAxisAngle && calcIdentifier.name !== 'ZERO')
+    (isReferencingXAxisAngle && calcIdentifier.name.name !== 'ZERO')
   ) {
     finalValue = createBinaryExpressionWithUnary([calcIdentifier, finalValue])
   }

@@ -1,0 +1,233 @@
+// Zoo Keyboard
+// A custom keyboard with Zoo brand lettering
+
+// Set Units
+@settings(defaultLengthUnit = in)
+
+// Define constants
+baseColor = "#0f0f0f"
+highlightColor1 = "#b0b0b0"
+highlightColor2 = "#23af93"
+keyHeight = 0.8
+keyDepth = 0.1
+spacing = 0.1
+row1 = spacing * 3
+row2 = row1 + keyHeight + spacing
+row3 = row2 + keyHeight + spacing
+row4 = row3 + keyHeight + spacing
+row5 = row4 + keyHeight + spacing
+row6 = row5 + keyHeight + spacing
+
+// Sketch the side profile of the keyboard base and extrude to total width
+sketch001 = startSketchOn('YZ')
+  |> startProfileAt([0, 0], %)
+  |> line(end = [-0.14, 0.68], tag = $seg01)
+  |> angledLine([7, row6 + 3 * spacing + keyHeight], %, $seg02)
+  |> line(endAbsolute = [5.13, 0], tag = $seg03)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg04)
+  |> close()
+  |> extrude(length = 13.6)
+  |> appearance(color = baseColor)
+  |> fillet(
+       radius = .6,
+       tags = [
+         getOppositeEdge(seg01),
+         getOppositeEdge(seg03),
+         seg01,
+         seg03
+       ],
+     )
+
+// Create a short cylindrical foot at each corner of the keyboard
+sketch003 = startSketchOn(sketch001, seg04)
+profile001 = circle(sketch003, center = [0.75, 0.75], radius = 0.4)
+profile003 = circle(sketch003, center = [4.4, 0.75], radius = 0.4)
+profile004 = circle(sketch003, center = [0.73, 13.6 - .75], radius = 0.4)
+profile005 = circle(sketch003, center = [4.4, 13.6 - .75], radius = 0.4)
+extrude(
+  [
+    profile001,
+    profile003,
+    profile004,
+    profile005
+  ],
+  length = .15,
+)
+
+// Define the plane to sketch keyboard keys on
+plane001 = {
+  plane = {
+    origin = [0.0, 0.0, 0.7],
+    xAxis = [1.0, 0.0, 0.0],
+    yAxis = [0.0, 1.0, sin(toRadians(7))],
+    zAxis = [0.0, 0.0, 1.0]
+  }
+}
+
+// Create a function to build a key. Parameterize for position, width, height, number of instances, and appearance color.
+fn keyFn(originStart, keyWidth, keyHeight, repeats, color) {
+  sketch002 = startSketchOn(plane001)
+  profile002 = startProfileAt([originStart[0], originStart[1]], sketch002)
+    |> arc({
+         angleStart = 180,
+         angleEnd = 270,
+         radius = 0.1
+       }, %)
+    |> angledLine([0, keyWidth - .2], %, $rectangleSegmentA001)
+    |> tangentialArc({ radius = 0.1, offset = 90 }, %)
+    |> angledLine([
+         segAng(rectangleSegmentA001) + 90,
+         keyHeight - .2
+       ], %, $rectangleSegmentB001)
+    |> tangentialArc({ radius = 0.1, offset = 90 }, %)
+    |> angledLine([
+         segAng(rectangleSegmentA001),
+         -segLen(rectangleSegmentA001)
+       ], %, $rectangleSegmentC001)
+    |> tangentialArc({ radius = 0.1, offset = 90 }, %)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
+    |> close()
+    |> extrude(length = keyDepth)
+    |> appearance(color = color)
+// Repeat key when desired. This will default to zero
+    |> patternLinear3d(
+         %,
+         instances = repeats + 1,
+         distance = keyWidth + spacing,
+         axis = [1, 0, 0],
+       )
+  return sketch001
+}
+
+// Build the first row of keys
+keyFn([0.3, row1], 1.1, keyHeight, 0, highlightColor2)
+keyFn([1.5, row1], 0.8, keyHeight, 2, highlightColor1)
+keyFn([spacing * 7 + 3.5, row1], 5.2, keyHeight, 0, highlightColor2)
+keyFn([spacing * 8 + 8.7, row1], 0.8, keyHeight, 0, highlightColor1)
+keyFn([spacing * 8 + 9.6, row1], 0.8, keyHeight, 0, highlightColor1)
+keyFn([spacing * 10 + 10.3, row1], 1.1, keyHeight, 0, highlightColor1)
+keyFn([spacing * 12 + 10.3 + 1, row1], 0.8, keyHeight, 0, highlightColor2)
+
+// Build the second row of keys
+keyFn([spacing * 3, row2], 1.7, keyHeight, 0, highlightColor2)
+keyFn([spacing * 4 + 1.7, row2], 0.8, keyHeight, 9, highlightColor1)
+keyFn([spacing * 14 + 1.7 + 0.8 * 10, row2], 2.2, keyHeight, 0, highlightColor2)
+
+// Build the third row of keys
+keyFn([spacing * 3, row3], 1.1 + .1, keyHeight, 0, highlightColor1)
+keyFn([spacing * 4 + 1.1 + .1, row3], 0.8, keyHeight, 10, highlightColor1)
+keyFn([spacing * 3 + 11.1 + .1, row3], 1.4 + .4, keyHeight, 0, highlightColor2)
+
+// Build the fourth row of keys
+keyFn([spacing * 3, row4], 0.9, keyHeight, 0, highlightColor1)
+keyFn([spacing * 4 + 0.9, row4], 0.8, keyHeight, 11, highlightColor1)
+keyFn([spacing * 3 + 11.8, row4], 1.2, keyHeight, 0, highlightColor1)
+
+// Build the fifth row of keys
+keyFn([spacing * 3, row5], 0.8, keyHeight, 12, highlightColor1)
+keyFn([spacing * 3 + 11.7, row5], 1.3, keyHeight, 0, highlightColor2)
+
+// Build the sixth row of keys
+keyFn([spacing * 3, row6], 1.1, keyHeight * .6, 0, highlightColor2)
+keyFn([spacing * 4 + 1.1, row6], 0.8, keyHeight * .6, 11, highlightColor1)
+keyFn([spacing * 3 + 12, row6], 1, keyHeight * .6, 0, highlightColor2)
+
+// Create a plane to sketch ZOO brand letters on
+plane002 = {
+  plane = {
+    origin = [0.0, 0.0, .81],
+    xAxis = [1.0, 0.0, 0.0],
+    yAxis = [0.0, 1.0, sin(toRadians(7))],
+    zAxis = [0.0, 0.0, 1.0]
+  }
+}
+
+// Define a function to draw the ZOO 'Z'
+fn z(origin, scale, depth) {
+  z = startSketchOn(plane002)
+    |> startProfileAt([
+         0 + origin[0],
+         0.15 * scale + origin[1]
+       ], %)
+    |> yLine(length = -0.15 * scale)
+    |> xLine(length = 0.15 * scale)
+    |> angledLineToX({
+         angle = 47.15,
+         to = 0.3 * scale + origin[0]
+       }, %, $seg1)
+    |> yLine(endAbsolute = 0 + origin[1], tag = $seg3)
+    |> xLine(length = 0.63 * scale)
+    |> yLine(length = 0.225 * scale)
+    |> xLine(length = -0.57 * scale)
+    |> angledLineToX({
+         angle = 47.15,
+         to = 0.93 * scale + origin[0]
+       }, %)
+    |> yLine(length = 0.15 * scale)
+    |> xLine(length = -0.15 * scale)
+    |> angledLine({
+         angle = 47.15,
+         length = -segLen(seg1)
+       }, %, $seg2)
+    |> yLine(length = segLen(seg3))
+    |> xLine(endAbsolute = 0 + origin[0])
+    |> yLine(length = -0.225 * scale)
+    |> angledLineThatIntersects({
+         angle = 0,
+         intersectTag = seg2,
+         offset = 0
+       }, %)
+    |> close()
+    |> extrude(length = -depth)
+    |> appearance(color = baseColor)
+  return z
+}
+
+// Define a function to draw the ZOO 'O'
+fn o(origin, scale, depth) {
+  oSketch001 = startSketchOn(plane002)
+    |> startProfileAt([
+         .788 * scale + origin[0],
+         .921 * scale + origin[1]
+       ], %)
+    |> arc({
+         angleStart = 47.15 + 6,
+         angleEnd = 47.15 - 6 + 180,
+         radius = .525 * scale
+       }, %)
+    |> angledLine({ angle = 47.15, length = .24 * scale }, %)
+    |> arc({
+         angleStart = 47.15 - 11 + 180,
+         angleEnd = 47.15 + 11,
+         radius = .288 * scale
+       }, %)
+    |> close()
+    |> extrude(length = -depth)
+    |> appearance(color = baseColor)
+
+  o = startSketchOn(plane002)
+    |> startProfileAt([
+         .16 * scale + origin[0],
+         .079 * scale + origin[1]
+       ], %)
+    |> arc({
+         angleStart = 47.15 + 6 - 180,
+         angleEnd = 47.15 - 6,
+         radius = .525 * scale
+       }, %)
+    |> angledLine({ angle = 47.15, length = -.24 * scale }, %)
+    |> arc({
+         angleStart = 47.15 - 11,
+         angleEnd = 47.15 + 11 - 180,
+         radius = .288 * scale
+       }, %)
+    |> close()
+    |> extrude(length = -depth)
+    |> appearance(color = baseColor)
+  return o
+}
+
+// Place the Z logo on the Z key. Place the O logo on the O and P keys
+z([2.3, 1.3], .4, 0.03)
+o([8.71, row4 + .08], 0.4, 0.03)
+o([8.71 + 0.9, row4 + .08], 0.4, 0.03)

@@ -32,7 +32,7 @@ hollow(
 
 ```js
 // Hollow a basic sketch.
-firstSketch = startSketchOn('XY')
+firstSketch = startSketchOn(XY)
   |> startProfileAt([-12, 12], %)
   |> line(end = [24, 0])
   |> line(end = [0, -24])
@@ -46,7 +46,7 @@ firstSketch = startSketchOn('XY')
 
 ```js
 // Hollow a basic sketch.
-firstSketch = startSketchOn('-XZ')
+firstSketch = startSketchOn(-XZ)
   |> startProfileAt([-12, 12], %)
   |> line(end = [24, 0])
   |> line(end = [0, -24])
@@ -61,7 +61,7 @@ firstSketch = startSketchOn('-XZ')
 ```js
 // Hollow a sketch on face object.
 size = 100
-case = startSketchOn('-XZ')
+case = startSketchOn(-XZ)
   |> startProfileAt([-size, -size], %)
   |> line(end = [2 * size, 0])
   |> line(end = [0, 2 * size])

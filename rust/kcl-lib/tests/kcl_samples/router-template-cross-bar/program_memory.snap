@@ -33,12 +33,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            514,
-            567,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 560,
             "end": 566,
             "start": 560,
             "type": "TagDeclarator",
@@ -49,12 +46,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            573,
-            675,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 668,
             "end": 674,
             "start": 668,
             "type": "TagDeclarator",
@@ -65,12 +59,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            681,
-            734,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 727,
             "end": 733,
             "start": 727,
             "type": "TagDeclarator",
@@ -81,12 +72,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            740,
-            787,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 780,
             "end": 786,
             "start": 780,
             "type": "TagDeclarator",
@@ -97,12 +85,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            793,
-            888,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 881,
             "end": 887,
             "start": 881,
             "type": "TagDeclarator",
@@ -113,12 +98,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            894,
-            965,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 958,
             "end": 964,
             "start": 958,
             "type": "TagDeclarator",
@@ -129,12 +111,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            971,
-            1022,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 1015,
             "end": 1021,
             "start": 1015,
             "type": "TagDeclarator",
@@ -145,12 +124,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1028,
-            1081,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 1074,
             "end": 1080,
             "start": 1074,
             "type": "TagDeclarator",
@@ -161,12 +137,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1087,
-            1156,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 1149,
             "end": 1155,
             "start": 1149,
             "type": "TagDeclarator",
@@ -177,12 +150,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1162,
-            1201,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 1194,
             "end": 1200,
             "start": 1194,
             "type": "TagDeclarator",
@@ -193,99 +163,63 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1243,
-            1273,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1279,
-            1309,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1315,
-            1345,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1351,
-            1380,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1386,
-            1416,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1422,
-            1451,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1457,
-            1486,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1492,
-            1588,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1594,
-            1650,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -297,17 +231,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                514,
-                567,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
               31.8813
             ],
             "tag": {
+              "commentStart": 560,
               "end": 566,
               "start": 560,
               "type": "TagDeclarator",
@@ -325,11 +256,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                573,
-                675,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": false,
             "center": [
@@ -342,6 +269,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             ],
             "radius": 11.88125,
             "tag": {
+              "commentStart": 668,
               "end": 674,
               "start": 668,
               "type": "TagDeclarator",
@@ -359,17 +287,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                681,
-                734,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               22.6313,
               20.0
             ],
             "tag": {
+              "commentStart": 727,
               "end": 733,
               "start": 727,
               "type": "TagDeclarator",
@@ -387,17 +312,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                740,
-                787,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               22.6313,
               -10.0
             ],
             "tag": {
+              "commentStart": 780,
               "end": 786,
               "start": 780,
               "type": "TagDeclarator",
@@ -415,17 +337,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                793,
-                888,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               32.6313,
               -10.0
             ],
             "tag": {
+              "commentStart": 881,
               "end": 887,
               "start": 881,
               "type": "TagDeclarator",
@@ -443,17 +362,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                894,
-                965,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               32.6313,
               10.9406
             ],
             "tag": {
+              "commentStart": 958,
               "end": 964,
               "start": 958,
               "type": "TagDeclarator",
@@ -471,17 +387,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                971,
-                1022,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               102.6313,
               10.9406
             ],
             "tag": {
+              "commentStart": 1015,
               "end": 1021,
               "start": 1015,
               "type": "TagDeclarator",
@@ -499,17 +412,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1028,
-                1081,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               102.6313,
               30.9406
             ],
             "tag": {
+              "commentStart": 1074,
               "end": 1080,
               "start": 1074,
               "type": "TagDeclarator",
@@ -527,17 +437,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1087,
-                1156,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               32.6313,
               30.9406
             ],
             "tag": {
+              "commentStart": 1149,
               "end": 1155,
               "start": 1149,
               "type": "TagDeclarator",
@@ -555,17 +462,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1162,
-                1201,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               32.6313,
               41.8813
             ],
             "tag": {
+              "commentStart": 1194,
               "end": 1200,
               "start": 1194,
               "type": "TagDeclarator",
@@ -583,11 +487,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1207,
-                1237,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -606,11 +506,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1243,
-                1273,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -32.6313,
@@ -629,11 +525,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1279,
-                1309,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -32.6313,
@@ -652,11 +544,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1315,
-                1345,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -102.6313,
@@ -675,11 +563,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1351,
-                1380,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -102.6313,
@@ -698,11 +582,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1386,
-                1416,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -32.6312,
@@ -721,11 +601,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1422,
-                1451,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -32.6312,
@@ -744,11 +620,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1457,
-                1486,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -22.6312,
@@ -767,11 +639,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1492,
-                1588,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": false,
             "center": [
@@ -796,11 +664,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1594,
-                1650,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -10.75,
@@ -819,11 +683,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1656,
-                1663,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -884,11 +744,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              462,
-              508,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
@@ -957,12 +813,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2343,
-            2403,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 2381,
             "end": 2402,
             "start": 2381,
             "type": "TagDeclarator",
@@ -973,12 +826,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2409,
-            2522,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 2500,
             "end": 2521,
             "start": 2500,
             "type": "TagDeclarator",
@@ -989,12 +839,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2528,
-            2648,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 2626,
             "end": 2647,
             "start": 2626,
             "type": "TagDeclarator",
@@ -1005,11 +852,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2654,
-            2710,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -1021,17 +864,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2343,
-                2403,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -32.6313,
               0.0
             ],
             "tag": {
+              "commentStart": 2381,
               "end": 2402,
               "start": 2381,
               "type": "TagDeclarator",
@@ -1049,17 +889,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2409,
-                2522,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -22.6313,
               0.0
             ],
             "tag": {
+              "commentStart": 2500,
               "end": 2521,
               "start": 2500,
               "type": "TagDeclarator",
@@ -1077,17 +914,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2528,
-                2648,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -22.6313,
               -10.0
             ],
             "tag": {
+              "commentStart": 2626,
               "end": 2647,
               "start": 2626,
               "type": "TagDeclarator",
@@ -1105,11 +939,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2654,
-                2710,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -32.6313,
@@ -1128,11 +958,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2716,
-                2723,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -32.6313,
@@ -1177,12 +1003,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  514,
-                  567,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 560,
                   "end": 566,
                   "start": 560,
                   "type": "TagDeclarator",
@@ -1193,12 +1016,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  573,
-                  675,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 668,
                   "end": 674,
                   "start": 668,
                   "type": "TagDeclarator",
@@ -1209,12 +1029,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  681,
-                  734,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 727,
                   "end": 733,
                   "start": 727,
                   "type": "TagDeclarator",
@@ -1225,12 +1042,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  740,
-                  787,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 780,
                   "end": 786,
                   "start": 780,
                   "type": "TagDeclarator",
@@ -1241,12 +1055,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  793,
-                  888,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 881,
                   "end": 887,
                   "start": 881,
                   "type": "TagDeclarator",
@@ -1257,12 +1068,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  894,
-                  965,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 958,
                   "end": 964,
                   "start": 958,
                   "type": "TagDeclarator",
@@ -1273,12 +1081,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  971,
-                  1022,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 1015,
                   "end": 1021,
                   "start": 1015,
                   "type": "TagDeclarator",
@@ -1289,12 +1094,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1028,
-                  1081,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 1074,
                   "end": 1080,
                   "start": 1074,
                   "type": "TagDeclarator",
@@ -1305,12 +1107,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1087,
-                  1156,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 1149,
                   "end": 1155,
                   "start": 1149,
                   "type": "TagDeclarator",
@@ -1321,12 +1120,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1162,
-                  1201,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 1194,
                   "end": 1200,
                   "start": 1194,
                   "type": "TagDeclarator",
@@ -1337,99 +1133,63 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1243,
-                  1273,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1279,
-                  1309,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1315,
-                  1345,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1351,
-                  1380,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1386,
-                  1416,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1422,
-                  1451,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1457,
-                  1486,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1492,
-                  1588,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudeArc"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1594,
-                  1650,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               }
@@ -1441,17 +1201,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      514,
-                      567,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
                     31.8813
                   ],
                   "tag": {
+                    "commentStart": 560,
                     "end": 566,
                     "start": 560,
                     "type": "TagDeclarator",
@@ -1469,11 +1226,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      573,
-                      675,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "ccw": false,
                   "center": [
@@ -1486,6 +1239,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   ],
                   "radius": 11.88125,
                   "tag": {
+                    "commentStart": 668,
                     "end": 674,
                     "start": 668,
                     "type": "TagDeclarator",
@@ -1503,17 +1257,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      681,
-                      734,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     22.6313,
                     20.0
                   ],
                   "tag": {
+                    "commentStart": 727,
                     "end": 733,
                     "start": 727,
                     "type": "TagDeclarator",
@@ -1531,17 +1282,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      740,
-                      787,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     22.6313,
                     -10.0
                   ],
                   "tag": {
+                    "commentStart": 780,
                     "end": 786,
                     "start": 780,
                     "type": "TagDeclarator",
@@ -1559,17 +1307,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      793,
-                      888,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     32.6313,
                     -10.0
                   ],
                   "tag": {
+                    "commentStart": 881,
                     "end": 887,
                     "start": 881,
                     "type": "TagDeclarator",
@@ -1587,17 +1332,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      894,
-                      965,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     32.6313,
                     10.9406
                   ],
                   "tag": {
+                    "commentStart": 958,
                     "end": 964,
                     "start": 958,
                     "type": "TagDeclarator",
@@ -1615,17 +1357,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      971,
-                      1022,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     102.6313,
                     10.9406
                   ],
                   "tag": {
+                    "commentStart": 1015,
                     "end": 1021,
                     "start": 1015,
                     "type": "TagDeclarator",
@@ -1643,17 +1382,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1028,
-                      1081,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     102.6313,
                     30.9406
                   ],
                   "tag": {
+                    "commentStart": 1074,
                     "end": 1080,
                     "start": 1074,
                     "type": "TagDeclarator",
@@ -1671,17 +1407,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1087,
-                      1156,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     32.6313,
                     30.9406
                   ],
                   "tag": {
+                    "commentStart": 1149,
                     "end": 1155,
                     "start": 1149,
                     "type": "TagDeclarator",
@@ -1699,17 +1432,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1162,
-                      1201,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     32.6313,
                     41.8813
                   ],
                   "tag": {
+                    "commentStart": 1194,
                     "end": 1200,
                     "start": 1194,
                     "type": "TagDeclarator",
@@ -1727,11 +1457,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1207,
-                      1237,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -1750,11 +1476,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1243,
-                      1273,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -32.6313,
@@ -1773,11 +1495,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1279,
-                      1309,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -32.6313,
@@ -1796,11 +1514,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1315,
-                      1345,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -102.6313,
@@ -1819,11 +1533,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1351,
-                      1380,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -102.6313,
@@ -1842,11 +1552,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1386,
-                      1416,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -32.6312,
@@ -1865,11 +1571,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1422,
-                      1451,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -32.6312,
@@ -1888,11 +1590,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1457,
-                      1486,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -22.6312,
@@ -1911,11 +1609,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1492,
-                      1588,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "ccw": false,
                   "center": [
@@ -1940,11 +1634,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1594,
-                      1650,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -10.75,
@@ -1963,11 +1653,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1656,
-                      1663,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -2028,11 +1714,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    462,
-                    508,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "tags": {
@@ -2109,11 +1791,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2292,
-              2337,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
@@ -2154,12 +1832,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1811,
-            1873,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 1851,
             "end": 1872,
             "start": 1851,
             "type": "TagDeclarator",
@@ -2170,12 +1845,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1879,
-            1992,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 1970,
             "end": 1991,
             "start": 1970,
             "type": "TagDeclarator",
@@ -2186,12 +1858,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1998,
-            2118,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 2096,
             "end": 2117,
             "start": 2096,
             "type": "TagDeclarator",
@@ -2202,11 +1871,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2124,
-            2180,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -2218,17 +1883,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1811,
-                1873,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               32.6313,
               0.0
             ],
             "tag": {
+              "commentStart": 1851,
               "end": 1872,
               "start": 1851,
               "type": "TagDeclarator",
@@ -2246,17 +1908,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1879,
-                1992,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               22.6313,
               0.0
             ],
             "tag": {
+              "commentStart": 1970,
               "end": 1991,
               "start": 1970,
               "type": "TagDeclarator",
@@ -2274,17 +1933,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1998,
-                2118,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               22.6312,
               -10.0
             ],
             "tag": {
+              "commentStart": 2096,
               "end": 2117,
               "start": 2096,
               "type": "TagDeclarator",
@@ -2302,11 +1958,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2124,
-                2180,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               32.6312,
@@ -2325,11 +1977,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2186,
-                2193,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               32.6313,
@@ -2374,12 +2022,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  514,
-                  567,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 560,
                   "end": 566,
                   "start": 560,
                   "type": "TagDeclarator",
@@ -2390,12 +2035,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  573,
-                  675,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 668,
                   "end": 674,
                   "start": 668,
                   "type": "TagDeclarator",
@@ -2406,12 +2048,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  681,
-                  734,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 727,
                   "end": 733,
                   "start": 727,
                   "type": "TagDeclarator",
@@ -2422,12 +2061,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  740,
-                  787,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 780,
                   "end": 786,
                   "start": 780,
                   "type": "TagDeclarator",
@@ -2438,12 +2074,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  793,
-                  888,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 881,
                   "end": 887,
                   "start": 881,
                   "type": "TagDeclarator",
@@ -2454,12 +2087,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  894,
-                  965,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 958,
                   "end": 964,
                   "start": 958,
                   "type": "TagDeclarator",
@@ -2470,12 +2100,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  971,
-                  1022,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 1015,
                   "end": 1021,
                   "start": 1015,
                   "type": "TagDeclarator",
@@ -2486,12 +2113,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1028,
-                  1081,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 1074,
                   "end": 1080,
                   "start": 1074,
                   "type": "TagDeclarator",
@@ -2502,12 +2126,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1087,
-                  1156,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 1149,
                   "end": 1155,
                   "start": 1149,
                   "type": "TagDeclarator",
@@ -2518,12 +2139,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1162,
-                  1201,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 1194,
                   "end": 1200,
                   "start": 1194,
                   "type": "TagDeclarator",
@@ -2534,99 +2152,63 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1243,
-                  1273,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1279,
-                  1309,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1315,
-                  1345,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1351,
-                  1380,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1386,
-                  1416,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1422,
-                  1451,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1457,
-                  1486,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1492,
-                  1588,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudeArc"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1594,
-                  1650,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               }
@@ -2638,17 +2220,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      514,
-                      567,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
                     31.8813
                   ],
                   "tag": {
+                    "commentStart": 560,
                     "end": 566,
                     "start": 560,
                     "type": "TagDeclarator",
@@ -2666,11 +2245,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      573,
-                      675,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "ccw": false,
                   "center": [
@@ -2683,6 +2258,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   ],
                   "radius": 11.88125,
                   "tag": {
+                    "commentStart": 668,
                     "end": 674,
                     "start": 668,
                     "type": "TagDeclarator",
@@ -2700,17 +2276,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      681,
-                      734,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     22.6313,
                     20.0
                   ],
                   "tag": {
+                    "commentStart": 727,
                     "end": 733,
                     "start": 727,
                     "type": "TagDeclarator",
@@ -2728,17 +2301,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      740,
-                      787,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     22.6313,
                     -10.0
                   ],
                   "tag": {
+                    "commentStart": 780,
                     "end": 786,
                     "start": 780,
                     "type": "TagDeclarator",
@@ -2756,17 +2326,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      793,
-                      888,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     32.6313,
                     -10.0
                   ],
                   "tag": {
+                    "commentStart": 881,
                     "end": 887,
                     "start": 881,
                     "type": "TagDeclarator",
@@ -2784,17 +2351,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      894,
-                      965,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     32.6313,
                     10.9406
                   ],
                   "tag": {
+                    "commentStart": 958,
                     "end": 964,
                     "start": 958,
                     "type": "TagDeclarator",
@@ -2812,17 +2376,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      971,
-                      1022,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     102.6313,
                     10.9406
                   ],
                   "tag": {
+                    "commentStart": 1015,
                     "end": 1021,
                     "start": 1015,
                     "type": "TagDeclarator",
@@ -2840,17 +2401,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1028,
-                      1081,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     102.6313,
                     30.9406
                   ],
                   "tag": {
+                    "commentStart": 1074,
                     "end": 1080,
                     "start": 1074,
                     "type": "TagDeclarator",
@@ -2868,17 +2426,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1087,
-                      1156,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     32.6313,
                     30.9406
                   ],
                   "tag": {
+                    "commentStart": 1149,
                     "end": 1155,
                     "start": 1149,
                     "type": "TagDeclarator",
@@ -2896,17 +2451,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1162,
-                      1201,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     32.6313,
                     41.8813
                   ],
                   "tag": {
+                    "commentStart": 1194,
                     "end": 1200,
                     "start": 1194,
                     "type": "TagDeclarator",
@@ -2924,11 +2476,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1207,
-                      1237,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -2947,11 +2495,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1243,
-                      1273,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -32.6313,
@@ -2970,11 +2514,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1279,
-                      1309,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -32.6313,
@@ -2993,11 +2533,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1315,
-                      1345,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -102.6313,
@@ -3016,11 +2552,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1351,
-                      1380,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -102.6313,
@@ -3039,11 +2571,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1386,
-                      1416,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -32.6312,
@@ -3062,11 +2590,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1422,
-                      1451,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -32.6312,
@@ -3085,11 +2609,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1457,
-                      1486,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -22.6312,
@@ -3108,11 +2628,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1492,
-                      1588,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "ccw": false,
                   "center": [
@@ -3137,11 +2653,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1594,
-                      1650,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -10.75,
@@ -3160,11 +2672,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1656,
-                      1663,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -3225,11 +2733,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    462,
-                    508,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "tags": {
@@ -3306,11 +2810,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1761,
-              1805,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
@@ -3351,12 +2851,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2872,
-            2939,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 2917,
             "end": 2938,
             "start": 2917,
             "type": "TagDeclarator",
@@ -3367,12 +2864,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2945,
-            3058,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 3036,
             "end": 3057,
             "start": 3036,
             "type": "TagDeclarator",
@@ -3383,12 +2877,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3064,
-            3184,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 3162,
             "end": 3183,
             "start": 3162,
             "type": "TagDeclarator",
@@ -3399,11 +2890,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3190,
-            3246,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -3415,17 +2902,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2872,
-                2939,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -32.6313,
               0.0
             ],
             "tag": {
+              "commentStart": 2917,
               "end": 2938,
               "start": 2917,
               "type": "TagDeclarator",
@@ -3443,17 +2927,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2945,
-                3058,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               32.6313,
               0.0
             ],
             "tag": {
+              "commentStart": 3036,
               "end": 3057,
               "start": 3036,
               "type": "TagDeclarator",
@@ -3471,17 +2952,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3064,
-                3184,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               32.6313,
               -10.0
             ],
             "tag": {
+              "commentStart": 3162,
               "end": 3183,
               "start": 3162,
               "type": "TagDeclarator",
@@ -3499,11 +2977,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3190,
-                3246,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -32.6313,
@@ -3522,11 +2996,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3252,
-                3259,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -32.6313,
@@ -3571,12 +3041,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  2343,
-                  2403,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 2381,
                   "end": 2402,
                   "start": 2381,
                   "type": "TagDeclarator",
@@ -3587,12 +3054,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  2409,
-                  2522,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 2500,
                   "end": 2521,
                   "start": 2500,
                   "type": "TagDeclarator",
@@ -3603,12 +3067,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  2528,
-                  2648,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 2626,
                   "end": 2647,
                   "start": 2626,
                   "type": "TagDeclarator",
@@ -3619,11 +3080,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  2654,
-                  2710,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               }
@@ -3635,17 +3092,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      2343,
-                      2403,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -32.6313,
                     0.0
                   ],
                   "tag": {
+                    "commentStart": 2381,
                     "end": 2402,
                     "start": 2381,
                     "type": "TagDeclarator",
@@ -3663,17 +3117,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      2409,
-                      2522,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -22.6313,
                     0.0
                   ],
                   "tag": {
+                    "commentStart": 2500,
                     "end": 2521,
                     "start": 2500,
                     "type": "TagDeclarator",
@@ -3691,17 +3142,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      2528,
-                      2648,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -22.6313,
                     -10.0
                   ],
                   "tag": {
+                    "commentStart": 2626,
                     "end": 2647,
                     "start": 2626,
                     "type": "TagDeclarator",
@@ -3719,11 +3167,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      2654,
-                      2710,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -32.6313,
@@ -3742,11 +3186,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      2716,
-                      2723,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -32.6313,
@@ -3791,12 +3231,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        514,
-                        567,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": {
+                        "commentStart": 560,
                         "end": 566,
                         "start": 560,
                         "type": "TagDeclarator",
@@ -3807,12 +3244,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        573,
-                        675,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": {
+                        "commentStart": 668,
                         "end": 674,
                         "start": 668,
                         "type": "TagDeclarator",
@@ -3823,12 +3257,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        681,
-                        734,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": {
+                        "commentStart": 727,
                         "end": 733,
                         "start": 727,
                         "type": "TagDeclarator",
@@ -3839,12 +3270,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        740,
-                        787,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": {
+                        "commentStart": 780,
                         "end": 786,
                         "start": 780,
                         "type": "TagDeclarator",
@@ -3855,12 +3283,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        793,
-                        888,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": {
+                        "commentStart": 881,
                         "end": 887,
                         "start": 881,
                         "type": "TagDeclarator",
@@ -3871,12 +3296,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        894,
-                        965,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": {
+                        "commentStart": 958,
                         "end": 964,
                         "start": 958,
                         "type": "TagDeclarator",
@@ -3887,12 +3309,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        971,
-                        1022,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": {
+                        "commentStart": 1015,
                         "end": 1021,
                         "start": 1015,
                         "type": "TagDeclarator",
@@ -3903,12 +3322,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1028,
-                        1081,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": {
+                        "commentStart": 1074,
                         "end": 1080,
                         "start": 1074,
                         "type": "TagDeclarator",
@@ -3919,12 +3335,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1087,
-                        1156,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": {
+                        "commentStart": 1149,
                         "end": 1155,
                         "start": 1149,
                         "type": "TagDeclarator",
@@ -3935,12 +3348,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1162,
-                        1201,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": {
+                        "commentStart": 1194,
                         "end": 1200,
                         "start": 1194,
                         "type": "TagDeclarator",
@@ -3951,99 +3361,63 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1243,
-                        1273,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     },
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1279,
-                        1309,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     },
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1315,
-                        1345,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     },
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1351,
-                        1380,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     },
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1386,
-                        1416,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     },
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1422,
-                        1451,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     },
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1457,
-                        1486,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     },
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1492,
-                        1588,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudeArc"
                     },
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1594,
-                        1650,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     }
@@ -4055,17 +3429,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            514,
-                            567,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           0.0,
                           31.8813
                         ],
                         "tag": {
+                          "commentStart": 560,
                           "end": 566,
                           "start": 560,
                           "type": "TagDeclarator",
@@ -4083,11 +3454,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            573,
-                            675,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "ccw": false,
                         "center": [
@@ -4100,6 +3467,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         ],
                         "radius": 11.88125,
                         "tag": {
+                          "commentStart": 668,
                           "end": 674,
                           "start": 668,
                           "type": "TagDeclarator",
@@ -4117,17 +3485,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            681,
-                            734,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           22.6313,
                           20.0
                         ],
                         "tag": {
+                          "commentStart": 727,
                           "end": 733,
                           "start": 727,
                           "type": "TagDeclarator",
@@ -4145,17 +3510,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            740,
-                            787,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           22.6313,
                           -10.0
                         ],
                         "tag": {
+                          "commentStart": 780,
                           "end": 786,
                           "start": 780,
                           "type": "TagDeclarator",
@@ -4173,17 +3535,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            793,
-                            888,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           32.6313,
                           -10.0
                         ],
                         "tag": {
+                          "commentStart": 881,
                           "end": 887,
                           "start": 881,
                           "type": "TagDeclarator",
@@ -4201,17 +3560,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            894,
-                            965,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           32.6313,
                           10.9406
                         ],
                         "tag": {
+                          "commentStart": 958,
                           "end": 964,
                           "start": 958,
                           "type": "TagDeclarator",
@@ -4229,17 +3585,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            971,
-                            1022,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           102.6313,
                           10.9406
                         ],
                         "tag": {
+                          "commentStart": 1015,
                           "end": 1021,
                           "start": 1015,
                           "type": "TagDeclarator",
@@ -4257,17 +3610,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1028,
-                            1081,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           102.6313,
                           30.9406
                         ],
                         "tag": {
+                          "commentStart": 1074,
                           "end": 1080,
                           "start": 1074,
                           "type": "TagDeclarator",
@@ -4285,17 +3635,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1087,
-                            1156,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           32.6313,
                           30.9406
                         ],
                         "tag": {
+                          "commentStart": 1149,
                           "end": 1155,
                           "start": 1149,
                           "type": "TagDeclarator",
@@ -4313,17 +3660,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1162,
-                            1201,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           32.6313,
                           41.8813
                         ],
                         "tag": {
+                          "commentStart": 1194,
                           "end": 1200,
                           "start": 1194,
                           "type": "TagDeclarator",
@@ -4341,11 +3685,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1207,
-                            1237,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           0.0,
@@ -4364,11 +3704,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1243,
-                            1273,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           -32.6313,
@@ -4387,11 +3723,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1279,
-                            1309,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           -32.6313,
@@ -4410,11 +3742,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1315,
-                            1345,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           -102.6313,
@@ -4433,11 +3761,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1351,
-                            1380,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           -102.6313,
@@ -4456,11 +3780,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1386,
-                            1416,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           -32.6312,
@@ -4479,11 +3799,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1422,
-                            1451,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           -32.6312,
@@ -4502,11 +3818,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1457,
-                            1486,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           -22.6312,
@@ -4525,11 +3837,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1492,
-                            1588,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "ccw": false,
                         "center": [
@@ -4554,11 +3862,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1594,
-                            1650,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           -10.75,
@@ -4577,11 +3881,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1656,
-                            1663,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           0.0,
@@ -4642,11 +3942,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "tag": null,
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          462,
-                          508,
-                          0
-                        ]
+                        "sourceRange": []
                       }
                     },
                     "tags": {
@@ -4723,11 +4019,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2292,
-                    2337,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "tags": {
@@ -4776,11 +4068,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2821,
-              2866,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
@@ -4954,17 +4242,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              514,
-              567,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
             31.8813
           ],
           "tag": {
+            "commentStart": 560,
             "end": 566,
             "start": 560,
             "type": "TagDeclarator",
@@ -4982,11 +4267,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              573,
-              675,
-              0
-            ]
+            "sourceRange": []
           },
           "ccw": false,
           "center": [
@@ -4999,6 +4280,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           ],
           "radius": 11.88125,
           "tag": {
+            "commentStart": 668,
             "end": 674,
             "start": 668,
             "type": "TagDeclarator",
@@ -5016,17 +4298,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              681,
-              734,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             22.6313,
             20.0
           ],
           "tag": {
+            "commentStart": 727,
             "end": 733,
             "start": 727,
             "type": "TagDeclarator",
@@ -5044,17 +4323,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              740,
-              787,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             22.6313,
             -10.0
           ],
           "tag": {
+            "commentStart": 780,
             "end": 786,
             "start": 780,
             "type": "TagDeclarator",
@@ -5072,17 +4348,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              793,
-              888,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             32.6313,
             -10.0
           ],
           "tag": {
+            "commentStart": 881,
             "end": 887,
             "start": 881,
             "type": "TagDeclarator",
@@ -5100,17 +4373,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              894,
-              965,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             32.6313,
             10.9406
           ],
           "tag": {
+            "commentStart": 958,
             "end": 964,
             "start": 958,
             "type": "TagDeclarator",
@@ -5128,17 +4398,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              971,
-              1022,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             102.6313,
             10.9406
           ],
           "tag": {
+            "commentStart": 1015,
             "end": 1021,
             "start": 1015,
             "type": "TagDeclarator",
@@ -5156,17 +4423,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1028,
-              1081,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             102.6313,
             30.9406
           ],
           "tag": {
+            "commentStart": 1074,
             "end": 1080,
             "start": 1074,
             "type": "TagDeclarator",
@@ -5184,17 +4448,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1087,
-              1156,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             32.6313,
             30.9406
           ],
           "tag": {
+            "commentStart": 1149,
             "end": 1155,
             "start": 1149,
             "type": "TagDeclarator",
@@ -5212,17 +4473,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1162,
-              1201,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             32.6313,
             41.8813
           ],
           "tag": {
+            "commentStart": 1194,
             "end": 1200,
             "start": 1194,
             "type": "TagDeclarator",
@@ -5240,11 +4498,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1207,
-              1237,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -5263,11 +4517,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1243,
-              1273,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -32.6313,
@@ -5286,11 +4536,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1279,
-              1309,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -32.6313,
@@ -5309,11 +4555,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1315,
-              1345,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -102.6313,
@@ -5332,11 +4574,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1351,
-              1380,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -102.6313,
@@ -5355,11 +4593,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1386,
-              1416,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -32.6312,
@@ -5378,11 +4612,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1422,
-              1451,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -32.6312,
@@ -5401,11 +4631,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1457,
-              1486,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -22.6312,
@@ -5424,11 +4650,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1492,
-              1588,
-              0
-            ]
+            "sourceRange": []
           },
           "ccw": false,
           "center": [
@@ -5453,11 +4675,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1594,
-              1650,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -10.75,
@@ -5476,11 +4694,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1656,
-              1663,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -5541,11 +4755,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            462,
-            508,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
@@ -5606,17 +4816,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2343,
-              2403,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -32.6313,
             0.0
           ],
           "tag": {
+            "commentStart": 2381,
             "end": 2402,
             "start": 2381,
             "type": "TagDeclarator",
@@ -5634,17 +4841,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2409,
-              2522,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -22.6313,
             0.0
           ],
           "tag": {
+            "commentStart": 2500,
             "end": 2521,
             "start": 2500,
             "type": "TagDeclarator",
@@ -5662,17 +4866,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2528,
-              2648,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -22.6313,
             -10.0
           ],
           "tag": {
+            "commentStart": 2626,
             "end": 2647,
             "start": 2626,
             "type": "TagDeclarator",
@@ -5690,11 +4891,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2654,
-              2710,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -32.6313,
@@ -5713,11 +4910,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2716,
-              2723,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -32.6313,
@@ -5762,12 +4955,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                514,
-                567,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 560,
                 "end": 566,
                 "start": 560,
                 "type": "TagDeclarator",
@@ -5778,12 +4968,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                573,
-                675,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 668,
                 "end": 674,
                 "start": 668,
                 "type": "TagDeclarator",
@@ -5794,12 +4981,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                681,
-                734,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 727,
                 "end": 733,
                 "start": 727,
                 "type": "TagDeclarator",
@@ -5810,12 +4994,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                740,
-                787,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 780,
                 "end": 786,
                 "start": 780,
                 "type": "TagDeclarator",
@@ -5826,12 +5007,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                793,
-                888,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 881,
                 "end": 887,
                 "start": 881,
                 "type": "TagDeclarator",
@@ -5842,12 +5020,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                894,
-                965,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 958,
                 "end": 964,
                 "start": 958,
                 "type": "TagDeclarator",
@@ -5858,12 +5033,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                971,
-                1022,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 1015,
                 "end": 1021,
                 "start": 1015,
                 "type": "TagDeclarator",
@@ -5874,12 +5046,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1028,
-                1081,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 1074,
                 "end": 1080,
                 "start": 1074,
                 "type": "TagDeclarator",
@@ -5890,12 +5059,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1087,
-                1156,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 1149,
                 "end": 1155,
                 "start": 1149,
                 "type": "TagDeclarator",
@@ -5906,12 +5072,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1162,
-                1201,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 1194,
                 "end": 1200,
                 "start": 1194,
                 "type": "TagDeclarator",
@@ -5922,99 +5085,63 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1243,
-                1273,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1279,
-                1309,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1315,
-                1345,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1351,
-                1380,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1386,
-                1416,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1422,
-                1451,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1457,
-                1486,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1492,
-                1588,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1594,
-                1650,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -6026,17 +5153,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    514,
-                    567,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
                   31.8813
                 ],
                 "tag": {
+                  "commentStart": 560,
                   "end": 566,
                   "start": 560,
                   "type": "TagDeclarator",
@@ -6054,11 +5178,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    573,
-                    675,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": false,
                 "center": [
@@ -6071,6 +5191,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 ],
                 "radius": 11.88125,
                 "tag": {
+                  "commentStart": 668,
                   "end": 674,
                   "start": 668,
                   "type": "TagDeclarator",
@@ -6088,17 +5209,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    681,
-                    734,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   22.6313,
                   20.0
                 ],
                 "tag": {
+                  "commentStart": 727,
                   "end": 733,
                   "start": 727,
                   "type": "TagDeclarator",
@@ -6116,17 +5234,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    740,
-                    787,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   22.6313,
                   -10.0
                 ],
                 "tag": {
+                  "commentStart": 780,
                   "end": 786,
                   "start": 780,
                   "type": "TagDeclarator",
@@ -6144,17 +5259,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    793,
-                    888,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   32.6313,
                   -10.0
                 ],
                 "tag": {
+                  "commentStart": 881,
                   "end": 887,
                   "start": 881,
                   "type": "TagDeclarator",
@@ -6172,17 +5284,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    894,
-                    965,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   32.6313,
                   10.9406
                 ],
                 "tag": {
+                  "commentStart": 958,
                   "end": 964,
                   "start": 958,
                   "type": "TagDeclarator",
@@ -6200,17 +5309,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    971,
-                    1022,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   102.6313,
                   10.9406
                 ],
                 "tag": {
+                  "commentStart": 1015,
                   "end": 1021,
                   "start": 1015,
                   "type": "TagDeclarator",
@@ -6228,17 +5334,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1028,
-                    1081,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   102.6313,
                   30.9406
                 ],
                 "tag": {
+                  "commentStart": 1074,
                   "end": 1080,
                   "start": 1074,
                   "type": "TagDeclarator",
@@ -6256,17 +5359,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1087,
-                    1156,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   32.6313,
                   30.9406
                 ],
                 "tag": {
+                  "commentStart": 1149,
                   "end": 1155,
                   "start": 1149,
                   "type": "TagDeclarator",
@@ -6284,17 +5384,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1162,
-                    1201,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   32.6313,
                   41.8813
                 ],
                 "tag": {
+                  "commentStart": 1194,
                   "end": 1200,
                   "start": 1194,
                   "type": "TagDeclarator",
@@ -6312,11 +5409,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1207,
-                    1237,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -6335,11 +5428,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1243,
-                    1273,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -32.6313,
@@ -6358,11 +5447,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1279,
-                    1309,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -32.6313,
@@ -6381,11 +5466,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1315,
-                    1345,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -102.6313,
@@ -6404,11 +5485,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1351,
-                    1380,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -102.6313,
@@ -6427,11 +5504,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1386,
-                    1416,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -32.6312,
@@ -6450,11 +5523,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1422,
-                    1451,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -32.6312,
@@ -6473,11 +5542,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1457,
-                    1486,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -22.6312,
@@ -6496,11 +5561,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1492,
-                    1588,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": false,
                 "center": [
@@ -6525,11 +5586,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1594,
-                    1650,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -10.75,
@@ -6548,11 +5605,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1656,
-                    1663,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -6613,11 +5666,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  462,
-                  508,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
@@ -6694,11 +5743,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            2292,
-            2337,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
@@ -6731,17 +5776,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1811,
-              1873,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             32.6313,
             0.0
           ],
           "tag": {
+            "commentStart": 1851,
             "end": 1872,
             "start": 1851,
             "type": "TagDeclarator",
@@ -6759,17 +5801,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1879,
-              1992,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             22.6313,
             0.0
           ],
           "tag": {
+            "commentStart": 1970,
             "end": 1991,
             "start": 1970,
             "type": "TagDeclarator",
@@ -6787,17 +5826,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1998,
-              2118,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             22.6312,
             -10.0
           ],
           "tag": {
+            "commentStart": 2096,
             "end": 2117,
             "start": 2096,
             "type": "TagDeclarator",
@@ -6815,11 +5851,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2124,
-              2180,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             32.6312,
@@ -6838,11 +5870,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2186,
-              2193,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             32.6313,
@@ -6887,12 +5915,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                514,
-                567,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 560,
                 "end": 566,
                 "start": 560,
                 "type": "TagDeclarator",
@@ -6903,12 +5928,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                573,
-                675,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 668,
                 "end": 674,
                 "start": 668,
                 "type": "TagDeclarator",
@@ -6919,12 +5941,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                681,
-                734,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 727,
                 "end": 733,
                 "start": 727,
                 "type": "TagDeclarator",
@@ -6935,12 +5954,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                740,
-                787,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 780,
                 "end": 786,
                 "start": 780,
                 "type": "TagDeclarator",
@@ -6951,12 +5967,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                793,
-                888,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 881,
                 "end": 887,
                 "start": 881,
                 "type": "TagDeclarator",
@@ -6967,12 +5980,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                894,
-                965,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 958,
                 "end": 964,
                 "start": 958,
                 "type": "TagDeclarator",
@@ -6983,12 +5993,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                971,
-                1022,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 1015,
                 "end": 1021,
                 "start": 1015,
                 "type": "TagDeclarator",
@@ -6999,12 +6006,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1028,
-                1081,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 1074,
                 "end": 1080,
                 "start": 1074,
                 "type": "TagDeclarator",
@@ -7015,12 +6019,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1087,
-                1156,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 1149,
                 "end": 1155,
                 "start": 1149,
                 "type": "TagDeclarator",
@@ -7031,12 +6032,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1162,
-                1201,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 1194,
                 "end": 1200,
                 "start": 1194,
                 "type": "TagDeclarator",
@@ -7047,99 +6045,63 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1243,
-                1273,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1279,
-                1309,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1315,
-                1345,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1351,
-                1380,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1386,
-                1416,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1422,
-                1451,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1457,
-                1486,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1492,
-                1588,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1594,
-                1650,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -7151,17 +6113,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    514,
-                    567,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
                   31.8813
                 ],
                 "tag": {
+                  "commentStart": 560,
                   "end": 566,
                   "start": 560,
                   "type": "TagDeclarator",
@@ -7179,11 +6138,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    573,
-                    675,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": false,
                 "center": [
@@ -7196,6 +6151,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 ],
                 "radius": 11.88125,
                 "tag": {
+                  "commentStart": 668,
                   "end": 674,
                   "start": 668,
                   "type": "TagDeclarator",
@@ -7213,17 +6169,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    681,
-                    734,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   22.6313,
                   20.0
                 ],
                 "tag": {
+                  "commentStart": 727,
                   "end": 733,
                   "start": 727,
                   "type": "TagDeclarator",
@@ -7241,17 +6194,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    740,
-                    787,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   22.6313,
                   -10.0
                 ],
                 "tag": {
+                  "commentStart": 780,
                   "end": 786,
                   "start": 780,
                   "type": "TagDeclarator",
@@ -7269,17 +6219,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    793,
-                    888,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   32.6313,
                   -10.0
                 ],
                 "tag": {
+                  "commentStart": 881,
                   "end": 887,
                   "start": 881,
                   "type": "TagDeclarator",
@@ -7297,17 +6244,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    894,
-                    965,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   32.6313,
                   10.9406
                 ],
                 "tag": {
+                  "commentStart": 958,
                   "end": 964,
                   "start": 958,
                   "type": "TagDeclarator",
@@ -7325,17 +6269,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    971,
-                    1022,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   102.6313,
                   10.9406
                 ],
                 "tag": {
+                  "commentStart": 1015,
                   "end": 1021,
                   "start": 1015,
                   "type": "TagDeclarator",
@@ -7353,17 +6294,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1028,
-                    1081,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   102.6313,
                   30.9406
                 ],
                 "tag": {
+                  "commentStart": 1074,
                   "end": 1080,
                   "start": 1074,
                   "type": "TagDeclarator",
@@ -7381,17 +6319,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1087,
-                    1156,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   32.6313,
                   30.9406
                 ],
                 "tag": {
+                  "commentStart": 1149,
                   "end": 1155,
                   "start": 1149,
                   "type": "TagDeclarator",
@@ -7409,17 +6344,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1162,
-                    1201,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   32.6313,
                   41.8813
                 ],
                 "tag": {
+                  "commentStart": 1194,
                   "end": 1200,
                   "start": 1194,
                   "type": "TagDeclarator",
@@ -7437,11 +6369,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1207,
-                    1237,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -7460,11 +6388,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1243,
-                    1273,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -32.6313,
@@ -7483,11 +6407,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1279,
-                    1309,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -32.6313,
@@ -7506,11 +6426,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1315,
-                    1345,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -102.6313,
@@ -7529,11 +6445,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1351,
-                    1380,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -102.6313,
@@ -7552,11 +6464,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1386,
-                    1416,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -32.6312,
@@ -7575,11 +6483,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1422,
-                    1451,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -32.6312,
@@ -7598,11 +6502,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1457,
-                    1486,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -22.6312,
@@ -7621,11 +6521,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1492,
-                    1588,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": false,
                 "center": [
@@ -7650,11 +6546,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1594,
-                    1650,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -10.75,
@@ -7673,11 +6565,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1656,
-                    1663,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -7738,11 +6626,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  462,
-                  508,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
@@ -7819,11 +6703,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            1761,
-            1805,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
@@ -7856,17 +6736,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2872,
-              2939,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -32.6313,
             0.0
           ],
           "tag": {
+            "commentStart": 2917,
             "end": 2938,
             "start": 2917,
             "type": "TagDeclarator",
@@ -7884,17 +6761,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2945,
-              3058,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             32.6313,
             0.0
           ],
           "tag": {
+            "commentStart": 3036,
             "end": 3057,
             "start": 3036,
             "type": "TagDeclarator",
@@ -7912,17 +6786,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              3064,
-              3184,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             32.6313,
             -10.0
           ],
           "tag": {
+            "commentStart": 3162,
             "end": 3183,
             "start": 3162,
             "type": "TagDeclarator",
@@ -7940,11 +6811,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              3190,
-              3246,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -32.6313,
@@ -7963,11 +6830,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              3252,
-              3259,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -32.6313,
@@ -8012,12 +6875,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                2343,
-                2403,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 2381,
                 "end": 2402,
                 "start": 2381,
                 "type": "TagDeclarator",
@@ -8028,12 +6888,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                2409,
-                2522,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 2500,
                 "end": 2521,
                 "start": 2500,
                 "type": "TagDeclarator",
@@ -8044,12 +6901,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                2528,
-                2648,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 2626,
                 "end": 2647,
                 "start": 2626,
                 "type": "TagDeclarator",
@@ -8060,11 +6914,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                2654,
-                2710,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -8076,17 +6926,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2343,
-                    2403,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -32.6313,
                   0.0
                 ],
                 "tag": {
+                  "commentStart": 2381,
                   "end": 2402,
                   "start": 2381,
                   "type": "TagDeclarator",
@@ -8104,17 +6951,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2409,
-                    2522,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -22.6313,
                   0.0
                 ],
                 "tag": {
+                  "commentStart": 2500,
                   "end": 2521,
                   "start": 2500,
                   "type": "TagDeclarator",
@@ -8132,17 +6976,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2528,
-                    2648,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -22.6313,
                   -10.0
                 ],
                 "tag": {
+                  "commentStart": 2626,
                   "end": 2647,
                   "start": 2626,
                   "type": "TagDeclarator",
@@ -8160,11 +7001,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2654,
-                    2710,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -32.6313,
@@ -8183,11 +7020,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2716,
-                    2723,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -32.6313,
@@ -8232,12 +7065,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      514,
-                      567,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
+                      "commentStart": 560,
                       "end": 566,
                       "start": 560,
                       "type": "TagDeclarator",
@@ -8248,12 +7078,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      573,
-                      675,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
+                      "commentStart": 668,
                       "end": 674,
                       "start": 668,
                       "type": "TagDeclarator",
@@ -8264,12 +7091,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      681,
-                      734,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
+                      "commentStart": 727,
                       "end": 733,
                       "start": 727,
                       "type": "TagDeclarator",
@@ -8280,12 +7104,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      740,
-                      787,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
+                      "commentStart": 780,
                       "end": 786,
                       "start": 780,
                       "type": "TagDeclarator",
@@ -8296,12 +7117,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      793,
-                      888,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
+                      "commentStart": 881,
                       "end": 887,
                       "start": 881,
                       "type": "TagDeclarator",
@@ -8312,12 +7130,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      894,
-                      965,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
+                      "commentStart": 958,
                       "end": 964,
                       "start": 958,
                       "type": "TagDeclarator",
@@ -8328,12 +7143,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      971,
-                      1022,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
+                      "commentStart": 1015,
                       "end": 1021,
                       "start": 1015,
                       "type": "TagDeclarator",
@@ -8344,12 +7156,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1028,
-                      1081,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
+                      "commentStart": 1074,
                       "end": 1080,
                       "start": 1074,
                       "type": "TagDeclarator",
@@ -8360,12 +7169,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1087,
-                      1156,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
+                      "commentStart": 1149,
                       "end": 1155,
                       "start": 1149,
                       "type": "TagDeclarator",
@@ -8376,12 +7182,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1162,
-                      1201,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
+                      "commentStart": 1194,
                       "end": 1200,
                       "start": 1194,
                       "type": "TagDeclarator",
@@ -8392,99 +7195,63 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1243,
-                      1273,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1279,
-                      1309,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1315,
-                      1345,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1351,
-                      1380,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1386,
-                      1416,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1422,
-                      1451,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1457,
-                      1486,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1492,
-                      1588,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudeArc"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1594,
-                      1650,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   }
@@ -8496,17 +7263,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          514,
-                          567,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
                         31.8813
                       ],
                       "tag": {
+                        "commentStart": 560,
                         "end": 566,
                         "start": 560,
                         "type": "TagDeclarator",
@@ -8524,11 +7288,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          573,
-                          675,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "ccw": false,
                       "center": [
@@ -8541,6 +7301,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       ],
                       "radius": 11.88125,
                       "tag": {
+                        "commentStart": 668,
                         "end": 674,
                         "start": 668,
                         "type": "TagDeclarator",
@@ -8558,17 +7319,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          681,
-                          734,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         22.6313,
                         20.0
                       ],
                       "tag": {
+                        "commentStart": 727,
                         "end": 733,
                         "start": 727,
                         "type": "TagDeclarator",
@@ -8586,17 +7344,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          740,
-                          787,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         22.6313,
                         -10.0
                       ],
                       "tag": {
+                        "commentStart": 780,
                         "end": 786,
                         "start": 780,
                         "type": "TagDeclarator",
@@ -8614,17 +7369,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          793,
-                          888,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         32.6313,
                         -10.0
                       ],
                       "tag": {
+                        "commentStart": 881,
                         "end": 887,
                         "start": 881,
                         "type": "TagDeclarator",
@@ -8642,17 +7394,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          894,
-                          965,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         32.6313,
                         10.9406
                       ],
                       "tag": {
+                        "commentStart": 958,
                         "end": 964,
                         "start": 958,
                         "type": "TagDeclarator",
@@ -8670,17 +7419,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          971,
-                          1022,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         102.6313,
                         10.9406
                       ],
                       "tag": {
+                        "commentStart": 1015,
                         "end": 1021,
                         "start": 1015,
                         "type": "TagDeclarator",
@@ -8698,17 +7444,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1028,
-                          1081,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         102.6313,
                         30.9406
                       ],
                       "tag": {
+                        "commentStart": 1074,
                         "end": 1080,
                         "start": 1074,
                         "type": "TagDeclarator",
@@ -8726,17 +7469,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1087,
-                          1156,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         32.6313,
                         30.9406
                       ],
                       "tag": {
+                        "commentStart": 1149,
                         "end": 1155,
                         "start": 1149,
                         "type": "TagDeclarator",
@@ -8754,17 +7494,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1162,
-                          1201,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         32.6313,
                         41.8813
                       ],
                       "tag": {
+                        "commentStart": 1194,
                         "end": 1200,
                         "start": 1194,
                         "type": "TagDeclarator",
@@ -8782,11 +7519,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1207,
-                          1237,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
@@ -8805,11 +7538,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1243,
-                          1273,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -32.6313,
@@ -8828,11 +7557,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1279,
-                          1309,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -32.6313,
@@ -8851,11 +7576,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1315,
-                          1345,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -102.6313,
@@ -8874,11 +7595,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1351,
-                          1380,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -102.6313,
@@ -8897,11 +7614,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1386,
-                          1416,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -32.6312,
@@ -8920,11 +7633,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1422,
-                          1451,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -32.6312,
@@ -8943,11 +7652,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1457,
-                          1486,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -22.6312,
@@ -8966,11 +7671,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1492,
-                          1588,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "ccw": false,
                       "center": [
@@ -8995,11 +7696,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1594,
-                          1650,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -10.75,
@@ -9018,11 +7715,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1656,
-                          1663,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
@@ -9083,11 +7776,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": [
-                        462,
-                        508,
-                        0
-                      ]
+                      "sourceRange": []
                     }
                   },
                   "tags": {
@@ -9164,11 +7853,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  2292,
-                  2337,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
@@ -9217,11 +7902,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            2821,
-            2866,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {

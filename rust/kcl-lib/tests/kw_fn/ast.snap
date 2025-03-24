@@ -6,12 +6,15 @@ description: Result of parsing kw_fn.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 35,
+          "commentStart": 3,
+          "end": 0,
           "id": {
-            "end": 12,
+            "commentStart": 3,
+            "end": 0,
             "name": "increment",
-            "start": 3,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -19,19 +22,30 @@ description: Result of parsing kw_fn.kcl
               "body": [
                 {
                   "argument": {
-                    "end": 33,
+                    "commentStart": 28,
+                    "end": 0,
                     "left": {
-                      "end": 29,
-                      "name": "x",
-                      "start": 28,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "abs_path": false,
+                      "commentStart": 28,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 28,
+                        "end": 0,
+                        "name": "x",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "+",
                     "right": {
-                      "end": 33,
+                      "commentStart": 32,
+                      "end": 0,
                       "raw": "1",
-                      "start": 32,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -39,52 +53,59 @@ description: Result of parsing kw_fn.kcl
                         "suffix": "None"
                       }
                     },
-                    "start": 28,
+                    "start": 0,
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
-                  "end": 33,
-                  "start": 21,
+                  "commentStart": 21,
+                  "end": 0,
+                  "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 35,
-              "start": 17
+              "commentStart": 17,
+              "end": 0,
+              "start": 0
             },
-            "end": 35,
+            "commentStart": 12,
+            "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 15,
+                  "commentStart": 14,
+                  "end": 0,
                   "name": "x",
-                  "start": 14,
+                  "start": 0,
                   "type": "Identifier"
                 },
                 "labeled": false
               }
             ],
-            "start": 12,
+            "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 3,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 35,
+        "end": 0,
         "kind": "fn",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 35,
         "declaration": {
-          "end": 77,
+          "commentStart": 40,
+          "end": 0,
           "id": {
-            "end": 43,
+            "commentStart": 40,
+            "end": 0,
             "name": "add",
-            "start": 40,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -92,43 +113,66 @@ description: Result of parsing kw_fn.kcl
               "body": [
                 {
                   "argument": {
-                    "end": 75,
+                    "commentStart": 66,
+                    "end": 0,
                     "left": {
-                      "end": 67,
-                      "name": "x",
-                      "start": 66,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "abs_path": false,
+                      "commentStart": 66,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 66,
+                        "end": 0,
+                        "name": "x",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "+",
                     "right": {
-                      "end": 75,
-                      "name": "delta",
-                      "start": 70,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "abs_path": false,
+                      "commentStart": 70,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 70,
+                        "end": 0,
+                        "name": "delta",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
-                    "start": 66,
+                    "start": 0,
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
-                  "end": 75,
-                  "start": 59,
+                  "commentStart": 59,
+                  "end": 0,
+                  "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 77,
-              "start": 55
+              "commentStart": 55,
+              "end": 0,
+              "start": 0
             },
-            "end": 77,
+            "commentStart": 43,
+            "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 46,
+                  "commentStart": 45,
+                  "end": 0,
                   "name": "x",
-                  "start": 45,
+                  "start": 0,
                   "type": "Identifier"
                 },
                 "labeled": false
@@ -136,41 +180,46 @@ description: Result of parsing kw_fn.kcl
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 53,
+                  "commentStart": 48,
+                  "end": 0,
                   "name": "delta",
-                  "start": 48,
+                  "start": 0,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 43,
+            "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 40,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 77,
+        "end": 0,
         "kind": "fn",
-        "start": 37,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 77,
         "declaration": {
-          "end": 97,
+          "commentStart": 79,
+          "end": 0,
           "id": {
-            "end": 82,
+            "commentStart": 79,
+            "end": 0,
             "name": "two",
-            "start": 79,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 96,
+                "commentStart": 95,
+                "end": 0,
                 "raw": "1",
-                "start": 95,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -180,32 +229,45 @@ description: Result of parsing kw_fn.kcl
               }
             ],
             "callee": {
-              "end": 94,
-              "name": "increment",
-              "start": 85,
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 85,
+              "end": 0,
+              "name": {
+                "commentStart": 85,
+                "end": 0,
+                "name": "increment",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
             },
-            "end": 97,
-            "start": 85,
+            "commentStart": 85,
+            "end": 0,
+            "start": 0,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 79,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 97,
+        "end": 0,
         "kind": "const",
-        "start": 79,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 98,
         "declaration": {
-          "end": 123,
+          "commentStart": 98,
+          "end": 0,
           "id": {
-            "end": 103,
+            "commentStart": 98,
+            "end": 0,
             "name": "three",
-            "start": 98,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -213,15 +275,17 @@ description: Result of parsing kw_fn.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 118,
+                  "commentStart": 113,
+                  "end": 0,
                   "name": "delta",
-                  "start": 113,
+                  "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 122,
+                  "commentStart": 121,
+                  "end": 0,
                   "raw": "2",
-                  "start": 121,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -232,19 +296,30 @@ description: Result of parsing kw_fn.kcl
               }
             ],
             "callee": {
-              "end": 109,
-              "name": "add",
-              "start": 106,
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 106,
+              "end": 0,
+              "name": {
+                "commentStart": 106,
+                "end": 0,
+                "name": "add",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
             },
-            "end": 123,
-            "start": 106,
+            "commentStart": 106,
+            "end": 0,
+            "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 111,
+              "commentStart": 110,
+              "end": 0,
               "raw": "1",
-              "start": 110,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -253,23 +328,25 @@ description: Result of parsing kw_fn.kcl
               }
             }
           },
-          "start": 98,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 123,
+        "end": 0,
         "kind": "const",
-        "start": 98,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 124,
+    "commentStart": 0,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "end": 37,
-            "start": 35,
+            "commentStart": 35,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -278,8 +355,9 @@ description: Result of parsing kw_fn.kcl
         ],
         "1": [
           {
-            "end": 79,
-            "start": 77,
+            "commentStart": 77,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

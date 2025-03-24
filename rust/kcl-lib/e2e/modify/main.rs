@@ -60,7 +60,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, Modu
 async fn kcl_test_modify_sketch_part001() {
     let name = "part001";
     let code = format!(
-        r#"{} = startSketchOn("XY")
+        r#"{} = startSketchOn(XY)
   |> startProfileAt([8.41, 5.78], %)
   |> line(end = [7.37, -11])
   |> line(end = [-8.69, -3.75])
@@ -85,7 +85,7 @@ async fn kcl_test_modify_sketch_part001() {
 async fn kcl_test_modify_sketch_part002() {
     let name = "part002";
     let code = format!(
-        r#"{} = startSketchOn("XY")
+        r#"{} = startSketchOn(XY)
   |> startProfileAt([8.41, 5.78], %)
   |> line(end = [7.42, -8.62])
   |> line(end = [-6.38, -3.51])
@@ -111,7 +111,7 @@ async fn kcl_test_modify_sketch_part002() {
 async fn kcl_test_modify_close_sketch() {
     let name = "part002";
     let code = format!(
-        r#"{} = startSketchOn("XY")
+        r#"{} = startSketchOn(XY)
   |> startProfileAt([7.91, 3.89], %)
   |> line(end = [7.42, -8.62])
   |> line(end = [-6.38, -3.51])
@@ -137,7 +137,7 @@ async fn kcl_test_modify_close_sketch() {
 async fn kcl_test_modify_line_to_close_sketch() {
     let name = "part002";
     let code = format!(
-        r#"const {} = startSketchOn("XY")
+        r#"const {} = startSketchOn(XY)
   |> startProfileAt([7.91, 3.89], %)
   |> line(end = [7.42, -8.62])
   |> line(end = [-6.38, -3.51])
@@ -157,7 +157,7 @@ async fn kcl_test_modify_line_to_close_sketch() {
     assert_eq!(
         new_code,
         format!(
-            r#"{} = startSketchOn("XY")
+            r#"{} = startSketchOn(XY)
   |> startProfileAt([7.91, 3.89], %)
   |> line(end = [7.42, -8.62])
   |> line(end = [-6.38, -3.51])
@@ -174,7 +174,7 @@ async fn kcl_test_modify_with_constraint() {
     let name = "part002";
     let code = format!(
         r#"const thing = 12
-const {} = startSketchOn("XY")
+const {} = startSketchOn(XY)
   |> startProfileAt([7.91, 3.89], %)
   |> line(end = [7.42, -8.62])
   |> line(end = [-6.38, -3.51])
@@ -199,7 +199,7 @@ const {} = startSketchOn("XY")
 async fn kcl_test_modify_line_should_close_sketch() {
     let name = "part003";
     let code = format!(
-        r#"const {} = startSketchOn("XY")
+        r#"const {} = startSketchOn(XY)
   |> startProfileAt([13.69, 3.8], %)
   |> line(end = [4.23, -11.79])
   |> line(end = [-10.7, -1.16])
@@ -219,7 +219,7 @@ async fn kcl_test_modify_line_should_close_sketch() {
     assert_eq!(
         new_code,
         format!(
-            r#"{} = startSketchOn("XY")
+            r#"{} = startSketchOn(XY)
   |> startProfileAt([13.69, 3.8], %)
   |> line(end = [4.23, -11.79])
   |> line(end = [-10.7, -1.16])

@@ -47,19 +47,19 @@ fn inner_rem(num: f64, divisor: f64) -> f64 {
 
 /// Compute the cosine of a number (in radians).
 pub async fn cos(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num = args.get_number()?;
+    let num: f64 = args.get_unlabeled_kw_arg("input")?;
     Ok(args.make_user_val_from_f64_with_type(TyF64::count(num.cos())))
 }
 
 /// Compute the sine of a number (in radians).
 pub async fn sin(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num = args.get_number()?;
+    let num: f64 = args.get_unlabeled_kw_arg("input")?;
     Ok(args.make_user_val_from_f64_with_type(TyF64::count(num.sin())))
 }
 
 /// Compute the tangent of a number (in radians).
 pub async fn tan(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num = args.get_number()?;
+    let num: f64 = args.get_unlabeled_kw_arg("input")?;
     Ok(args.make_user_val_from_f64_with_type(TyF64::count(num.tan())))
 }
 

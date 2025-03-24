@@ -1,0 +1,10 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing kw_fn_with_defaults.kcl
+---
+fn increment(@x, by? = 1) {
+  return x + by
+}
+
+two = increment(1)
+twentyOne = increment(1, by = 20)

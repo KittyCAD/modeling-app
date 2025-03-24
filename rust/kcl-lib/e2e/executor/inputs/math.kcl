@@ -1,4 +1,4 @@
-const svg = startSketchOn('XY')
+const svg = startSketchOn(XY)
 |> lineTo([0],%)
 |> lineTo([0 + 1],%)
 |> lineTo([0 + 1 + 2],%)

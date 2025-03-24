@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing array_range_negative_expr.kcl
+---
+xs = [int(-5) .. 5]
+assertEqual(xs[0], -5, 0.001, "first element is -5")

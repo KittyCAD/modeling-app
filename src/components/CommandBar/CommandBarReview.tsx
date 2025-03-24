@@ -58,7 +58,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
 
   return (
     <CommandBarHeader>
-      <p className="px-4">
+      <p className="px-4 pb-2">
         {selectedCommand?.reviewMessage ? (
           selectedCommand.reviewMessage instanceof Function ? (
             selectedCommand.reviewMessage(commandBarState.context)
@@ -66,7 +66,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
             selectedCommand.reviewMessage
           )
         ) : (
-          <>Confirm {selectedCommand?.name}</>
+          <>Confirm {selectedCommand?.displayName || selectedCommand?.name}</>
         )}
       </p>
       <form

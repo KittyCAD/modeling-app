@@ -6,18 +6,22 @@ description: Result of parsing fillet-and-shell.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 14,
+          "commentStart": 0,
+          "end": 0,
           "id": {
-            "end": 9,
+            "commentStart": 0,
+            "end": 0,
             "name": "rpizWidth",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 14,
+            "commentStart": 12,
+            "end": 0,
             "raw": "30",
-            "start": 12,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -28,25 +32,29 @@ description: Result of parsing fillet-and-shell.kcl
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 14,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 15,
         "declaration": {
-          "end": 30,
+          "commentStart": 15,
+          "end": 0,
           "id": {
-            "end": 25,
+            "commentStart": 15,
+            "end": 0,
             "name": "rpizLength",
-            "start": 15,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 30,
+            "commentStart": 28,
+            "end": 0,
             "raw": "65",
-            "start": 28,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -54,28 +62,32 @@ description: Result of parsing fillet-and-shell.kcl
               "suffix": "None"
             }
           },
-          "start": 15,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 30,
+        "end": 0,
         "kind": "const",
-        "start": 15,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 30,
         "declaration": {
-          "end": 49,
+          "commentStart": 32,
+          "end": 0,
           "id": {
-            "end": 45,
+            "commentStart": 32,
+            "end": 0,
             "name": "caseThickness",
-            "start": 32,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 49,
+            "commentStart": 48,
+            "end": 0,
             "raw": "1",
-            "start": 48,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -83,28 +95,32 @@ description: Result of parsing fillet-and-shell.kcl
               "suffix": "None"
             }
           },
-          "start": 32,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 49,
+        "end": 0,
         "kind": "const",
-        "start": 32,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 49,
         "declaration": {
-          "end": 61,
+          "commentStart": 51,
+          "end": 0,
           "id": {
-            "end": 57,
+            "commentStart": 51,
+            "end": 0,
             "name": "border",
-            "start": 51,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 61,
+            "commentStart": 60,
+            "end": 0,
             "raw": "4",
-            "start": 60,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -112,28 +128,32 @@ description: Result of parsing fillet-and-shell.kcl
               "suffix": "None"
             }
           },
-          "start": 51,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 61,
+        "end": 0,
         "kind": "const",
-        "start": 51,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 61,
         "declaration": {
-          "end": 78,
+          "commentStart": 63,
+          "end": 0,
           "id": {
-            "end": 74,
+            "commentStart": 63,
+            "end": 0,
             "name": "screwHeight",
-            "start": 63,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 78,
+            "commentStart": 77,
+            "end": 0,
             "raw": "4",
-            "start": 77,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -141,48 +161,72 @@ description: Result of parsing fillet-and-shell.kcl
               "suffix": "None"
             }
           },
-          "start": 63,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 78,
+        "end": 0,
         "kind": "const",
-        "start": 63,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 78,
         "declaration": {
-          "end": 114,
+          "commentStart": 80,
+          "end": 0,
           "id": {
-            "end": 89,
+            "commentStart": 80,
+            "end": 0,
             "name": "caseWidth",
-            "start": 80,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 114,
+            "commentStart": 92,
+            "end": 0,
             "left": {
-              "end": 101,
-              "name": "rpizWidth",
-              "start": 92,
-              "type": "Identifier",
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 92,
+              "end": 0,
+              "name": {
+                "commentStart": 92,
+                "end": 0,
+                "name": "rpizWidth",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "+",
             "right": {
-              "end": 114,
+              "commentStart": 104,
+              "end": 0,
               "left": {
-                "end": 110,
-                "name": "border",
-                "start": 104,
-                "type": "Identifier",
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 104,
+                "end": 0,
+                "name": {
+                  "commentStart": 104,
+                  "end": 0,
+                  "name": "border",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "*",
               "right": {
-                "end": 114,
+                "commentStart": 113,
+                "end": 0,
                 "raw": "2",
-                "start": 113,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -190,56 +234,80 @@ description: Result of parsing fillet-and-shell.kcl
                   "suffix": "None"
                 }
               },
-              "start": 104,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
-            "start": 92,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 80,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 114,
+        "end": 0,
         "kind": "const",
-        "start": 80,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 115,
         "declaration": {
-          "end": 151,
+          "commentStart": 115,
+          "end": 0,
           "id": {
-            "end": 125,
+            "commentStart": 115,
+            "end": 0,
             "name": "caseLength",
-            "start": 115,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 151,
+            "commentStart": 128,
+            "end": 0,
             "left": {
-              "end": 138,
-              "name": "rpizLength",
-              "start": 128,
-              "type": "Identifier",
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 128,
+              "end": 0,
+              "name": {
+                "commentStart": 128,
+                "end": 0,
+                "name": "rpizLength",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "+",
             "right": {
-              "end": 151,
+              "commentStart": 141,
+              "end": 0,
               "left": {
-                "end": 147,
-                "name": "border",
-                "start": 141,
-                "type": "Identifier",
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 141,
+                "end": 0,
+                "name": {
+                  "commentStart": 141,
+                  "end": 0,
+                  "name": "border",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "*",
               "right": {
-                "end": 151,
+                "commentStart": 150,
+                "end": 0,
                 "raw": "2",
-                "start": 150,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -247,36 +315,40 @@ description: Result of parsing fillet-and-shell.kcl
                   "suffix": "None"
                 }
               },
-              "start": 141,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
-            "start": 128,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 115,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 151,
+        "end": 0,
         "kind": "const",
-        "start": 115,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 152,
         "declaration": {
-          "end": 166,
+          "commentStart": 152,
+          "end": 0,
           "id": {
-            "end": 162,
+            "commentStart": 152,
+            "end": 0,
             "name": "caseHeight",
-            "start": 152,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 166,
+            "commentStart": 165,
+            "end": 0,
             "raw": "8",
-            "start": 165,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -284,28 +356,32 @@ description: Result of parsing fillet-and-shell.kcl
               "suffix": "None"
             }
           },
-          "start": 152,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 166,
+        "end": 0,
         "kind": "const",
-        "start": 152,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 166,
         "declaration": {
-          "end": 191,
+          "commentStart": 168,
+          "end": 0,
           "id": {
-            "end": 186,
+            "commentStart": 168,
+            "end": 0,
             "name": "widthBetweenScrews",
-            "start": 168,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 191,
+            "commentStart": 189,
+            "end": 0,
             "raw": "23",
-            "start": 189,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -313,30 +389,35 @@ description: Result of parsing fillet-and-shell.kcl
               "suffix": "None"
             }
           },
-          "start": 168,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 191,
+        "end": 0,
         "kind": "const",
-        "start": 168,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 192,
         "declaration": {
-          "end": 220,
+          "commentStart": 192,
+          "end": 0,
           "id": {
-            "end": 211,
+            "commentStart": 192,
+            "end": 0,
             "name": "lengthBetweenScrews",
-            "start": 192,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 220,
+            "commentStart": 214,
+            "end": 0,
             "left": {
-              "end": 216,
+              "commentStart": 214,
+              "end": 0,
               "raw": "29",
-              "start": 214,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -346,9 +427,10 @@ description: Result of parsing fillet-and-shell.kcl
             },
             "operator": "*",
             "right": {
-              "end": 220,
+              "commentStart": 219,
+              "end": 0,
               "raw": "2",
-              "start": 219,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -356,32 +438,36 @@ description: Result of parsing fillet-and-shell.kcl
                 "suffix": "None"
               }
             },
-            "start": 214,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 192,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 220,
+        "end": 0,
         "kind": "const",
-        "start": 192,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 220,
         "declaration": {
-          "end": 245,
+          "commentStart": 222,
+          "end": 0,
           "id": {
-            "end": 238,
+            "commentStart": 222,
+            "end": 0,
             "name": "miniHdmiDistance",
-            "start": 222,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 245,
+            "commentStart": 241,
+            "end": 0,
             "raw": "12.4",
-            "start": 241,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -389,28 +475,32 @@ description: Result of parsing fillet-and-shell.kcl
               "suffix": "None"
             }
           },
-          "start": 222,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 245,
+        "end": 0,
         "kind": "const",
-        "start": 222,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 246,
         "declaration": {
-          "end": 270,
+          "commentStart": 246,
+          "end": 0,
           "id": {
-            "end": 263,
+            "commentStart": 246,
+            "end": 0,
             "name": "microUsb1Distance",
-            "start": 246,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 270,
+            "commentStart": 266,
+            "end": 0,
             "raw": "41.4",
-            "start": 266,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -418,28 +508,32 @@ description: Result of parsing fillet-and-shell.kcl
               "suffix": "None"
             }
           },
-          "start": 246,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 270,
+        "end": 0,
         "kind": "const",
-        "start": 246,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 271,
         "declaration": {
-          "end": 293,
+          "commentStart": 271,
+          "end": 0,
           "id": {
-            "end": 288,
+            "commentStart": 271,
+            "end": 0,
             "name": "microUsb2Distance",
-            "start": 271,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 293,
+            "commentStart": 291,
+            "end": 0,
             "raw": "54",
-            "start": 291,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -447,28 +541,32 @@ description: Result of parsing fillet-and-shell.kcl
               "suffix": "None"
             }
           },
-          "start": 271,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 293,
+        "end": 0,
         "kind": "const",
-        "start": 271,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 293,
         "declaration": {
-          "end": 315,
+          "commentStart": 295,
+          "end": 0,
           "id": {
-            "end": 308,
+            "commentStart": 295,
+            "end": 0,
             "name": "miniHdmiWidth",
-            "start": 295,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 315,
+            "commentStart": 311,
+            "end": 0,
             "raw": "11.2",
-            "start": 311,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -476,28 +574,32 @@ description: Result of parsing fillet-and-shell.kcl
               "suffix": "None"
             }
           },
-          "start": 295,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 315,
+        "end": 0,
         "kind": "const",
-        "start": 295,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 316,
         "declaration": {
-          "end": 335,
+          "commentStart": 316,
+          "end": 0,
           "id": {
-            "end": 329,
+            "commentStart": 316,
+            "end": 0,
             "name": "microUsbWidth",
-            "start": 316,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 335,
+            "commentStart": 332,
+            "end": 0,
             "raw": "7.4",
-            "start": 332,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -505,28 +607,32 @@ description: Result of parsing fillet-and-shell.kcl
               "suffix": "None"
             }
           },
-          "start": 316,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 335,
+        "end": 0,
         "kind": "const",
-        "start": 316,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 336,
         "declaration": {
-          "end": 356,
+          "commentStart": 336,
+          "end": 0,
           "id": {
-            "end": 352,
+            "commentStart": 336,
+            "end": 0,
             "name": "connectorPadding",
-            "start": 336,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 356,
+            "commentStart": 355,
+            "end": 0,
             "raw": "4",
-            "start": 355,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -534,22 +640,25 @@ description: Result of parsing fillet-and-shell.kcl
               "suffix": "None"
             }
           },
-          "start": 336,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 356,
+        "end": 0,
         "kind": "const",
-        "start": 336,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 356,
         "declaration": {
-          "end": 795,
+          "commentStart": 358,
+          "end": 0,
           "id": {
-            "end": 370,
+            "commentStart": 358,
+            "end": 0,
             "name": "miniHdmiHole",
-            "start": 358,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -557,32 +666,53 @@ description: Result of parsing fillet-and-shell.kcl
               {
                 "arguments": [
                   {
-                    "end": 389,
-                    "name": "XY",
-                    "start": 387,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "abs_path": false,
+                    "commentStart": 387,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 387,
+                      "end": 0,
+                      "name": "XY",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
-                  "end": 386,
-                  "name": "startSketchOn",
-                  "start": 373,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 373,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 373,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 390,
-                "start": 373,
+                "commentStart": 373,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
+                    "commentStart": 411,
                     "elements": [
                       {
-                        "end": 421,
+                        "commentStart": 420,
+                        "end": 0,
                         "raw": "0",
-                        "start": 420,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -591,43 +721,74 @@ description: Result of parsing fillet-and-shell.kcl
                         }
                       },
                       {
-                        "end": 476,
+                        "commentStart": 430,
+                        "end": 0,
                         "left": {
-                          "end": 455,
+                          "commentStart": 430,
+                          "end": 0,
                           "left": {
-                            "end": 436,
-                            "name": "border",
-                            "start": 430,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 430,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 430,
+                              "end": 0,
+                              "name": "border",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 455,
-                            "name": "miniHdmiDistance",
-                            "start": 439,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 439,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 439,
+                              "end": 0,
+                              "name": "miniHdmiDistance",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
                           },
-                          "start": 430,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
                         "operator": "-",
                         "right": {
-                          "end": 476,
+                          "commentStart": 459,
+                          "end": 0,
                           "left": {
-                            "end": 472,
-                            "name": "miniHdmiWidth",
-                            "start": 459,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 459,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 459,
+                              "end": 0,
+                              "name": "miniHdmiWidth",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 476,
+                            "commentStart": 475,
+                            "end": 0,
                             "raw": "2",
-                            "start": 475,
+                            "start": 0,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -635,35 +796,46 @@ description: Result of parsing fillet-and-shell.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 459,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
-                        "start": 430,
+                        "start": 0,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       }
                     ],
-                    "end": 484,
-                    "start": 411,
+                    "end": 0,
+                    "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 487,
-                    "start": 486,
+                    "commentStart": 486,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 410,
-                  "name": "startProfileAt",
-                  "start": 396,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 396,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 396,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 488,
-                "start": 396,
+                "commentStart": 396,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -672,17 +844,20 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 510,
+                      "commentStart": 499,
+                      "end": 0,
                       "name": "endAbsolute",
-                      "start": 499,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 513,
                       "elements": [
                         {
-                          "end": 523,
+                          "commentStart": 522,
+                          "end": 0,
                           "raw": "0",
-                          "start": 522,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -691,43 +866,74 @@ description: Result of parsing fillet-and-shell.kcl
                           }
                         },
                         {
-                          "end": 577,
+                          "commentStart": 532,
+                          "end": 0,
                           "left": {
-                            "end": 557,
+                            "commentStart": 532,
+                            "end": 0,
                             "left": {
-                              "end": 538,
-                              "name": "border",
-                              "start": 532,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "abs_path": false,
+                              "commentStart": 532,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 532,
+                                "end": 0,
+                                "name": "border",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "+",
                             "right": {
-                              "end": 557,
-                              "name": "miniHdmiDistance",
-                              "start": 541,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "abs_path": false,
+                              "commentStart": 541,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 541,
+                                "end": 0,
+                                "name": "miniHdmiDistance",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
                             },
-                            "start": 532,
+                            "start": 0,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 577,
+                            "commentStart": 560,
+                            "end": 0,
                             "left": {
-                              "end": 573,
-                              "name": "miniHdmiWidth",
-                              "start": 560,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "abs_path": false,
+                              "commentStart": 560,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 560,
+                                "end": 0,
+                                "name": "miniHdmiWidth",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
-                              "end": 577,
+                              "commentStart": 576,
+                              "end": 0,
                               "raw": "2",
-                              "start": 576,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -735,30 +941,40 @@ description: Result of parsing fillet-and-shell.kcl
                                 "suffix": "None"
                               }
                             },
-                            "start": 560,
+                            "start": 0,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "start": 532,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       ],
-                      "end": 584,
-                      "start": 513,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 498,
-                  "name": "line",
-                  "start": 494,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 494,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 494,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 585,
-                "start": 494,
+                "commentStart": 494,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -768,17 +984,20 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 607,
+                      "commentStart": 596,
+                      "end": 0,
                       "name": "endAbsolute",
-                      "start": 596,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 610,
                       "elements": [
                         {
-                          "end": 620,
+                          "commentStart": 619,
+                          "end": 0,
                           "raw": "1",
-                          "start": 619,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -787,43 +1006,74 @@ description: Result of parsing fillet-and-shell.kcl
                           }
                         },
                         {
-                          "end": 674,
+                          "commentStart": 629,
+                          "end": 0,
                           "left": {
-                            "end": 654,
+                            "commentStart": 629,
+                            "end": 0,
                             "left": {
-                              "end": 635,
-                              "name": "border",
-                              "start": 629,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "abs_path": false,
+                              "commentStart": 629,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 629,
+                                "end": 0,
+                                "name": "border",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "+",
                             "right": {
-                              "end": 654,
-                              "name": "miniHdmiDistance",
-                              "start": 638,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "abs_path": false,
+                              "commentStart": 638,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 638,
+                                "end": 0,
+                                "name": "miniHdmiDistance",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
                             },
-                            "start": 629,
+                            "start": 0,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 674,
+                            "commentStart": 657,
+                            "end": 0,
                             "left": {
-                              "end": 670,
-                              "name": "miniHdmiWidth",
-                              "start": 657,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "abs_path": false,
+                              "commentStart": 657,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 657,
+                                "end": 0,
+                                "name": "miniHdmiWidth",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
-                              "end": 674,
+                              "commentStart": 673,
+                              "end": 0,
                               "raw": "2",
-                              "start": 673,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -831,30 +1081,40 @@ description: Result of parsing fillet-and-shell.kcl
                                 "suffix": "None"
                               }
                             },
-                            "start": 657,
+                            "start": 0,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "start": 629,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       ],
-                      "end": 681,
-                      "start": 610,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 595,
-                  "name": "line",
-                  "start": 591,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 591,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 591,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 682,
-                "start": 591,
+                "commentStart": 591,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -864,17 +1124,20 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 704,
+                      "commentStart": 693,
+                      "end": 0,
                       "name": "endAbsolute",
-                      "start": 693,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 707,
                       "elements": [
                         {
-                          "end": 717,
+                          "commentStart": 716,
+                          "end": 0,
                           "raw": "1",
-                          "start": 716,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -883,43 +1146,74 @@ description: Result of parsing fillet-and-shell.kcl
                           }
                         },
                         {
-                          "end": 772,
+                          "commentStart": 726,
+                          "end": 0,
                           "left": {
-                            "end": 751,
+                            "commentStart": 726,
+                            "end": 0,
                             "left": {
-                              "end": 732,
-                              "name": "border",
-                              "start": 726,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "abs_path": false,
+                              "commentStart": 726,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 726,
+                                "end": 0,
+                                "name": "border",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "+",
                             "right": {
-                              "end": 751,
-                              "name": "miniHdmiDistance",
-                              "start": 735,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "abs_path": false,
+                              "commentStart": 735,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 735,
+                                "end": 0,
+                                "name": "miniHdmiDistance",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
                             },
-                            "start": 726,
+                            "start": 0,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
                           "operator": "-",
                           "right": {
-                            "end": 772,
+                            "commentStart": 755,
+                            "end": 0,
                             "left": {
-                              "end": 768,
-                              "name": "miniHdmiWidth",
-                              "start": 755,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "abs_path": false,
+                              "commentStart": 755,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 755,
+                                "end": 0,
+                                "name": "miniHdmiWidth",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
-                              "end": 772,
+                              "commentStart": 771,
+                              "end": 0,
                               "raw": "2",
-                              "start": 771,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -927,30 +1221,40 @@ description: Result of parsing fillet-and-shell.kcl
                                 "suffix": "None"
                               }
                             },
-                            "start": 755,
+                            "start": 0,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "start": 726,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       ],
-                      "end": 780,
-                      "start": 707,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 692,
-                  "name": "line",
-                  "start": 688,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 688,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 688,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 781,
-                "start": 688,
+                "commentStart": 688,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -958,45 +1262,60 @@ description: Result of parsing fillet-and-shell.kcl
               {
                 "arguments": [
                   {
-                    "end": 794,
-                    "start": 793,
+                    "commentStart": 793,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 792,
-                  "name": "close",
-                  "start": 787,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 787,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 787,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 795,
-                "start": 787,
+                "commentStart": 787,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 795,
-            "start": 373,
+            "commentStart": 373,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 358,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 795,
+        "end": 0,
         "kind": "const",
-        "start": 358,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 795,
         "declaration": {
-          "end": 1297,
+          "commentStart": 797,
+          "end": 0,
           "id": {
-            "end": 801,
+            "commentStart": 797,
+            "end": 0,
             "name": "case",
-            "start": 797,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -1004,33 +1323,46 @@ description: Result of parsing fillet-and-shell.kcl
               {
                 "arguments": [
                   {
-                    "end": 822,
+                    "commentStart": 818,
+                    "end": 0,
                     "raw": "'XY'",
-                    "start": 818,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XY"
                   }
                 ],
                 "callee": {
-                  "end": 817,
-                  "name": "startSketchOn",
-                  "start": 804,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 804,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 804,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 823,
-                "start": 804,
+                "commentStart": 804,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
+                    "commentStart": 844,
                     "elements": [
                       {
-                        "end": 846,
+                        "commentStart": 845,
+                        "end": 0,
                         "raw": "0",
-                        "start": 845,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -1039,9 +1371,10 @@ description: Result of parsing fillet-and-shell.kcl
                         }
                       },
                       {
-                        "end": 849,
+                        "commentStart": 848,
+                        "end": 0,
                         "raw": "0",
-                        "start": 848,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -1050,26 +1383,37 @@ description: Result of parsing fillet-and-shell.kcl
                         }
                       }
                     ],
-                    "end": 850,
-                    "start": 844,
+                    "end": 0,
+                    "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 853,
-                    "start": 852,
+                    "commentStart": 852,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 843,
-                  "name": "startProfileAt",
-                  "start": 829,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 829,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 829,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 854,
-                "start": 829,
+                "commentStart": 829,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1078,24 +1422,36 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 876,
+                      "commentStart": 865,
+                      "end": 0,
                       "name": "endAbsolute",
-                      "start": 865,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 879,
                       "elements": [
                         {
-                          "end": 889,
-                          "name": "caseWidth",
-                          "start": 880,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "abs_path": false,
+                          "commentStart": 880,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 880,
+                            "end": 0,
+                            "name": "caseWidth",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
                         },
                         {
-                          "end": 892,
+                          "commentStart": 891,
+                          "end": 0,
                           "raw": "0",
-                          "start": 891,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1104,8 +1460,8 @@ description: Result of parsing fillet-and-shell.kcl
                           }
                         }
                       ],
-                      "end": 893,
-                      "start": 879,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -1113,14 +1469,16 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 898,
+                      "commentStart": 895,
+                      "end": 0,
                       "name": "tag",
-                      "start": 895,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 907,
-                      "start": 901,
+                      "commentStart": 901,
+                      "end": 0,
+                      "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "edge1"
@@ -1128,13 +1486,23 @@ description: Result of parsing fillet-and-shell.kcl
                   }
                 ],
                 "callee": {
-                  "end": 864,
-                  "name": "line",
-                  "start": 860,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 860,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 860,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 908,
-                "start": 860,
+                "commentStart": 860,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1144,30 +1512,50 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 930,
+                      "commentStart": 919,
+                      "end": 0,
                       "name": "endAbsolute",
-                      "start": 919,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 933,
                       "elements": [
                         {
-                          "end": 943,
-                          "name": "caseWidth",
-                          "start": 934,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "abs_path": false,
+                          "commentStart": 934,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 934,
+                            "end": 0,
+                            "name": "caseWidth",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
                         },
                         {
-                          "end": 955,
-                          "name": "caseLength",
-                          "start": 945,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "abs_path": false,
+                          "commentStart": 945,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 945,
+                            "end": 0,
+                            "name": "caseLength",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
-                      "end": 956,
-                      "start": 933,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -1175,14 +1563,16 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 961,
+                      "commentStart": 958,
+                      "end": 0,
                       "name": "tag",
-                      "start": 958,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 970,
-                      "start": 964,
+                      "commentStart": 964,
+                      "end": 0,
+                      "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "edge2"
@@ -1190,13 +1580,23 @@ description: Result of parsing fillet-and-shell.kcl
                   }
                 ],
                 "callee": {
-                  "end": 918,
-                  "name": "line",
-                  "start": 914,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 914,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 914,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 971,
-                "start": 914,
+                "commentStart": 914,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1206,17 +1606,20 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 993,
+                      "commentStart": 982,
+                      "end": 0,
                       "name": "endAbsolute",
-                      "start": 982,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 996,
                       "elements": [
                         {
-                          "end": 998,
+                          "commentStart": 997,
+                          "end": 0,
                           "raw": "0",
-                          "start": 997,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1225,15 +1628,24 @@ description: Result of parsing fillet-and-shell.kcl
                           }
                         },
                         {
-                          "end": 1010,
-                          "name": "caseLength",
-                          "start": 1000,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "abs_path": false,
+                          "commentStart": 1000,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 1000,
+                            "end": 0,
+                            "name": "caseLength",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
-                      "end": 1011,
-                      "start": 996,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -1241,14 +1653,16 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1016,
+                      "commentStart": 1013,
+                      "end": 0,
                       "name": "tag",
-                      "start": 1013,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1025,
-                      "start": 1019,
+                      "commentStart": 1019,
+                      "end": 0,
+                      "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "edge3"
@@ -1256,13 +1670,23 @@ description: Result of parsing fillet-and-shell.kcl
                   }
                 ],
                 "callee": {
-                  "end": 981,
-                  "name": "line",
-                  "start": 977,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 977,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 977,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 1026,
-                "start": 977,
+                "commentStart": 977,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1272,14 +1696,16 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1041,
+                      "commentStart": 1038,
+                      "end": 0,
                       "name": "tag",
-                      "start": 1038,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1050,
-                      "start": 1044,
+                      "commentStart": 1044,
+                      "end": 0,
+                      "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "edge4"
@@ -1287,13 +1713,23 @@ description: Result of parsing fillet-and-shell.kcl
                   }
                 ],
                 "callee": {
-                  "end": 1037,
-                  "name": "close",
-                  "start": 1032,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 1032,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 1032,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 1051,
-                "start": 1032,
+                "commentStart": 1032,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1303,28 +1739,48 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1071,
+                      "commentStart": 1065,
+                      "end": 0,
                       "name": "length",
-                      "start": 1065,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1084,
-                      "name": "caseHeight",
-                      "start": 1074,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "abs_path": false,
+                      "commentStart": 1074,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 1074,
+                        "end": 0,
+                        "name": "caseHeight",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1064,
-                  "name": "extrude",
-                  "start": 1057,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 1057,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 1057,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 1085,
-                "start": 1057,
+                "commentStart": 1057,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1334,15 +1790,17 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1112,
+                      "commentStart": 1106,
+                      "end": 0,
                       "name": "radius",
-                      "start": 1106,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1116,
+                      "commentStart": 1115,
+                      "end": 0,
                       "raw": "1",
-                      "start": 1115,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1354,151 +1812,246 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1129,
+                      "commentStart": 1125,
+                      "end": 0,
                       "name": "tags",
-                      "start": 1125,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1132,
                       "elements": [
                         {
                           "arguments": [
                             {
-                              "end": 1168,
-                              "name": "edge1",
-                              "start": 1163,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "abs_path": false,
+                              "commentStart": 1163,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 1163,
+                                "end": 0,
+                                "name": "edge1",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
-                            "end": 1162,
-                            "name": "getNextAdjacentEdge",
-                            "start": 1143,
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 1143,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 1143,
+                              "end": 0,
+                              "name": "getNextAdjacentEdge",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
                           },
-                          "end": 1169,
-                          "start": 1143,
+                          "commentStart": 1143,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 1205,
-                              "name": "edge2",
-                              "start": 1200,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "abs_path": false,
+                              "commentStart": 1200,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 1200,
+                                "end": 0,
+                                "name": "edge2",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
-                            "end": 1199,
-                            "name": "getNextAdjacentEdge",
-                            "start": 1180,
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 1180,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 1180,
+                              "end": 0,
+                              "name": "getNextAdjacentEdge",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
                           },
-                          "end": 1206,
-                          "start": 1180,
+                          "commentStart": 1180,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 1242,
-                              "name": "edge3",
-                              "start": 1237,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "abs_path": false,
+                              "commentStart": 1237,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 1237,
+                                "end": 0,
+                                "name": "edge3",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
-                            "end": 1236,
-                            "name": "getNextAdjacentEdge",
-                            "start": 1217,
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 1217,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 1217,
+                              "end": 0,
+                              "name": "getNextAdjacentEdge",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
                           },
-                          "end": 1243,
-                          "start": 1217,
+                          "commentStart": 1217,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 1279,
-                              "name": "edge4",
-                              "start": 1274,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "abs_path": false,
+                              "commentStart": 1274,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 1274,
+                                "end": 0,
+                                "name": "edge4",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
-                            "end": 1273,
-                            "name": "getNextAdjacentEdge",
-                            "start": 1254,
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 1254,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 1254,
+                              "end": 0,
+                              "name": "getNextAdjacentEdge",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
                           },
-                          "end": 1280,
-                          "start": 1254,
+                          "commentStart": 1254,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 1289,
-                      "start": 1132,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1097,
-                  "name": "fillet",
-                  "start": 1091,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 1091,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 1091,
+                    "end": 0,
+                    "name": "fillet",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 1297,
-                "start": 1091,
+                "commentStart": 1091,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 1297,
-            "start": 804,
+            "commentStart": 804,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 797,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 1297,
+        "end": 0,
         "kind": "const",
-        "start": 797,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 1297,
         "declaration": {
-          "end": 1538,
+          "commentStart": 1302,
+          "end": 0,
           "id": {
-            "end": 1310,
+            "commentStart": 1302,
+            "end": 0,
             "name": "m25Screw",
-            "start": 1302,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "body": {
               "body": [
                 {
+                  "commentStart": 1329,
                   "declaration": {
-                    "end": 1521,
+                    "commentStart": 1329,
+                    "end": 0,
                     "id": {
-                      "end": 1334,
+                      "commentStart": 1329,
+                      "end": 0,
                       "name": "screw",
-                      "start": 1329,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
@@ -1506,33 +2059,46 @@ description: Result of parsing fillet-and-shell.kcl
                         {
                           "arguments": [
                             {
-                              "end": 1355,
+                              "commentStart": 1351,
+                              "end": 0,
                               "raw": "\"XY\"",
-                              "start": 1351,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": "XY"
                             }
                           ],
                           "callee": {
-                            "end": 1350,
-                            "name": "startSketchOn",
-                            "start": 1337,
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 1337,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 1337,
+                              "end": 0,
+                              "name": "startSketchOn",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
                           },
-                          "end": 1356,
-                          "start": 1337,
+                          "commentStart": 1337,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
+                              "commentStart": 1379,
                               "elements": [
                                 {
-                                  "end": 1381,
+                                  "commentStart": 1380,
+                                  "end": 0,
                                   "raw": "0",
-                                  "start": 1380,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -1541,9 +2107,10 @@ description: Result of parsing fillet-and-shell.kcl
                                   }
                                 },
                                 {
-                                  "end": 1384,
+                                  "commentStart": 1383,
+                                  "end": 0,
                                   "raw": "0",
-                                  "start": 1383,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -1552,26 +2119,37 @@ description: Result of parsing fillet-and-shell.kcl
                                   }
                                 }
                               ],
-                              "end": 1385,
-                              "start": 1379,
+                              "end": 0,
+                              "start": 0,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             },
                             {
-                              "end": 1388,
-                              "start": 1387,
+                              "commentStart": 1387,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1378,
-                            "name": "startProfileAt",
-                            "start": 1364,
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 1364,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 1364,
+                              "end": 0,
+                              "name": "startProfileAt",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
                           },
-                          "end": 1389,
-                          "start": 1364,
+                          "commentStart": 1364,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -1580,30 +2158,50 @@ description: Result of parsing fillet-and-shell.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 1410,
+                                "commentStart": 1404,
+                                "end": 0,
                                 "name": "center",
-                                "start": 1404,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "commentStart": 1413,
                                 "elements": [
                                   {
-                                    "end": 1415,
-                                    "name": "x",
-                                    "start": 1414,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "abs_path": false,
+                                    "commentStart": 1414,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 1414,
+                                      "end": 0,
+                                      "name": "x",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   {
-                                    "end": 1418,
-                                    "name": "y",
-                                    "start": 1417,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "abs_path": false,
+                                    "commentStart": 1417,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 1417,
+                                      "end": 0,
+                                      "name": "y",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 ],
-                                "end": 1419,
-                                "start": 1413,
+                                "end": 0,
+                                "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
@@ -1611,15 +2209,17 @@ description: Result of parsing fillet-and-shell.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 1427,
+                                "commentStart": 1421,
+                                "end": 0,
                                 "name": "radius",
-                                "start": 1421,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 1433,
+                                "commentStart": 1430,
+                                "end": 0,
                                 "raw": "2.5",
-                                "start": 1430,
+                                "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -1630,13 +2230,23 @@ description: Result of parsing fillet-and-shell.kcl
                             }
                           ],
                           "callee": {
-                            "end": 1403,
-                            "name": "circle",
-                            "start": 1397,
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 1397,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 1397,
+                              "end": 0,
+                              "name": "circle",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
                           },
-                          "end": 1434,
-                          "start": 1397,
+                          "commentStart": 1397,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -1648,30 +2258,50 @@ description: Result of parsing fillet-and-shell.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
-                                    "end": 1460,
+                                    "commentStart": 1454,
+                                    "end": 0,
                                     "name": "center",
-                                    "start": 1454,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
                                   "arg": {
+                                    "commentStart": 1463,
                                     "elements": [
                                       {
-                                        "end": 1465,
-                                        "name": "x",
-                                        "start": 1464,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "abs_path": false,
+                                        "commentStart": 1464,
+                                        "end": 0,
+                                        "name": {
+                                          "commentStart": 1464,
+                                          "end": 0,
+                                          "name": "x",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
                                       },
                                       {
-                                        "end": 1468,
-                                        "name": "y",
-                                        "start": 1467,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "abs_path": false,
+                                        "commentStart": 1467,
+                                        "end": 0,
+                                        "name": {
+                                          "commentStart": 1467,
+                                          "end": 0,
+                                          "name": "y",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
                                       }
                                     ],
-                                    "end": 1469,
-                                    "start": 1463,
+                                    "end": 0,
+                                    "start": 0,
                                     "type": "ArrayExpression",
                                     "type": "ArrayExpression"
                                   }
@@ -1679,15 +2309,17 @@ description: Result of parsing fillet-and-shell.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
-                                    "end": 1477,
+                                    "commentStart": 1471,
+                                    "end": 0,
                                     "name": "radius",
-                                    "start": 1471,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
                                   "arg": {
-                                    "end": 1484,
+                                    "commentStart": 1480,
+                                    "end": 0,
                                     "raw": "1.25",
-                                    "start": 1480,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -1698,32 +2330,53 @@ description: Result of parsing fillet-and-shell.kcl
                                 }
                               ],
                               "callee": {
-                                "end": 1453,
-                                "name": "circle",
-                                "start": 1447,
-                                "type": "Identifier"
+                                "abs_path": false,
+                                "commentStart": 1447,
+                                "end": 0,
+                                "name": {
+                                  "commentStart": 1447,
+                                  "end": 0,
+                                  "name": "circle",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name"
                               },
-                              "end": 1485,
-                              "start": 1447,
+                              "commentStart": 1447,
+                              "end": 0,
+                              "start": 0,
                               "type": "CallExpressionKw",
                               "type": "CallExpressionKw",
                               "unlabeled": null
                             },
                             {
-                              "end": 1488,
-                              "start": 1487,
+                              "commentStart": 1487,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1446,
-                            "name": "hole",
-                            "start": 1442,
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 1442,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 1442,
+                              "end": 0,
+                              "name": "hole",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
                           },
-                          "end": 1489,
-                          "start": 1442,
+                          "commentStart": 1442,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -1732,137 +2385,196 @@ description: Result of parsing fillet-and-shell.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 1511,
+                                "commentStart": 1505,
+                                "end": 0,
                                 "name": "length",
-                                "start": 1505,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 1520,
-                                "name": "height",
-                                "start": 1514,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "abs_path": false,
+                                "commentStart": 1514,
+                                "end": 0,
+                                "name": {
+                                  "commentStart": 1514,
+                                  "end": 0,
+                                  "name": "height",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 1504,
-                            "name": "extrude",
-                            "start": 1497,
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 1497,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 1497,
+                              "end": 0,
+                              "name": "extrude",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
                           },
-                          "end": 1521,
-                          "start": 1497,
+                          "commentStart": 1497,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
                         }
                       ],
-                      "end": 1521,
-                      "start": 1337,
+                      "commentStart": 1337,
+                      "end": 0,
+                      "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
-                    "start": 1329,
+                    "start": 0,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1521,
+                  "end": 0,
                   "kind": "const",
-                  "start": 1329,
+                  "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "argument": {
-                    "end": 1536,
-                    "name": "screw",
-                    "start": 1531,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "abs_path": false,
+                    "commentStart": 1531,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 1531,
+                      "end": 0,
+                      "name": "screw",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "end": 1536,
-                  "start": 1524,
+                  "commentStart": 1524,
+                  "end": 0,
+                  "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 1538,
-              "start": 1325
+              "commentStart": 1325,
+              "end": 0,
+              "start": 0
             },
-            "end": 1538,
+            "commentStart": 1310,
+            "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 1312,
+                  "commentStart": 1311,
+                  "end": 0,
                   "name": "x",
-                  "start": 1311,
+                  "start": 0,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 1315,
+                  "commentStart": 1314,
+                  "end": 0,
                   "name": "y",
-                  "start": 1314,
+                  "start": 0,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 1323,
+                  "commentStart": 1317,
+                  "end": 0,
                   "name": "height",
-                  "start": 1317,
+                  "start": 0,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 1310,
+            "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 1302,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 1538,
+        "end": 0,
         "kind": "fn",
-        "start": 1299,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 1669,
+        "commentStart": 1538,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 1597,
+              "commentStart": 1549,
+              "end": 0,
               "left": {
-                "end": 1571,
+                "commentStart": 1549,
+                "end": 0,
                 "left": {
-                  "end": 1555,
-                  "name": "border",
-                  "start": 1549,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 1549,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 1549,
+                    "end": 0,
+                    "name": "border",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "+",
                 "right": {
-                  "end": 1571,
+                  "commentStart": 1558,
+                  "end": 0,
                   "left": {
-                    "end": 1567,
-                    "name": "rpizWidth",
-                    "start": 1558,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "abs_path": false,
+                    "commentStart": 1558,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 1558,
+                      "end": 0,
+                      "name": "rpizWidth",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "/",
                   "right": {
-                    "end": 1571,
+                    "commentStart": 1570,
+                    "end": 0,
                     "raw": "2",
-                    "start": 1570,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -1870,29 +2582,40 @@ description: Result of parsing fillet-and-shell.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 1558,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
-                "start": 1549,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
               "operator": "-",
               "right": {
-                "end": 1597,
+                "commentStart": 1575,
+                "end": 0,
                 "left": {
-                  "end": 1593,
-                  "name": "widthBetweenScrews",
-                  "start": 1575,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 1575,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 1575,
+                    "end": 0,
+                    "name": "widthBetweenScrews",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "/",
                 "right": {
-                  "end": 1597,
+                  "commentStart": 1596,
+                  "end": 0,
                   "raw": "2",
-                  "start": 1596,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -1900,24 +2623,28 @@ description: Result of parsing fillet-and-shell.kcl
                     "suffix": "None"
                   }
                 },
-                "start": 1575,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
-              "start": 1549,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 1654,
+              "commentStart": 1600,
+              "end": 0,
               "left": {
-                "end": 1627,
+                "commentStart": 1600,
+                "end": 0,
                 "left": {
-                  "end": 1610,
+                  "commentStart": 1600,
+                  "end": 0,
                   "left": {
-                    "end": 1601,
+                    "commentStart": 1600,
+                    "end": 0,
                     "raw": "0",
-                    "start": 1600,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -1927,31 +2654,51 @@ description: Result of parsing fillet-and-shell.kcl
                   },
                   "operator": "+",
                   "right": {
-                    "end": 1610,
-                    "name": "border",
-                    "start": 1604,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "abs_path": false,
+                    "commentStart": 1604,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 1604,
+                      "end": 0,
+                      "name": "border",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "start": 1600,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
                 "operator": "+",
                 "right": {
-                  "end": 1627,
+                  "commentStart": 1613,
+                  "end": 0,
                   "left": {
-                    "end": 1623,
-                    "name": "rpizLength",
-                    "start": 1613,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "abs_path": false,
+                    "commentStart": 1613,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 1613,
+                      "end": 0,
+                      "name": "rpizLength",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "/",
                   "right": {
-                    "end": 1627,
+                    "commentStart": 1626,
+                    "end": 0,
                     "raw": "2",
-                    "start": 1626,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -1959,29 +2706,40 @@ description: Result of parsing fillet-and-shell.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 1613,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
-                "start": 1600,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
               "operator": "-",
               "right": {
-                "end": 1654,
+                "commentStart": 1631,
+                "end": 0,
                 "left": {
-                  "end": 1650,
-                  "name": "lengthBetweenScrews",
-                  "start": 1631,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 1631,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 1631,
+                    "end": 0,
+                    "name": "lengthBetweenScrews",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "/",
                 "right": {
-                  "end": 1654,
+                  "commentStart": 1653,
+                  "end": 0,
                   "raw": "2",
-                  "start": 1653,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -1989,67 +2747,109 @@ description: Result of parsing fillet-and-shell.kcl
                     "suffix": "None"
                   }
                 },
-                "start": 1631,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
-              "start": 1600,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 1668,
-              "name": "screwHeight",
-              "start": 1657,
-              "type": "Identifier",
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 1657,
+              "end": 0,
+              "name": {
+                "commentStart": 1657,
+                "end": 0,
+                "name": "screwHeight",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             }
           ],
           "callee": {
-            "end": 1548,
-            "name": "m25Screw",
-            "start": 1540,
-            "type": "Identifier"
+            "abs_path": false,
+            "commentStart": 1540,
+            "end": 0,
+            "name": {
+              "commentStart": 1540,
+              "end": 0,
+              "name": "m25Screw",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
           },
-          "end": 1669,
-          "start": 1540,
+          "commentStart": 1540,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1540,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 1798,
+        "commentStart": 1669,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 1728,
+              "commentStart": 1680,
+              "end": 0,
               "left": {
-                "end": 1702,
+                "commentStart": 1680,
+                "end": 0,
                 "left": {
-                  "end": 1686,
-                  "name": "border",
-                  "start": 1680,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 1680,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 1680,
+                    "end": 0,
+                    "name": "border",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "+",
                 "right": {
-                  "end": 1702,
+                  "commentStart": 1689,
+                  "end": 0,
                   "left": {
-                    "end": 1698,
-                    "name": "rpizWidth",
-                    "start": 1689,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "abs_path": false,
+                    "commentStart": 1689,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 1689,
+                      "end": 0,
+                      "name": "rpizWidth",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "/",
                   "right": {
-                    "end": 1702,
+                    "commentStart": 1701,
+                    "end": 0,
                     "raw": "2",
-                    "start": 1701,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -2057,29 +2857,40 @@ description: Result of parsing fillet-and-shell.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 1689,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
-                "start": 1680,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
               "operator": "-",
               "right": {
-                "end": 1728,
+                "commentStart": 1706,
+                "end": 0,
                 "left": {
-                  "end": 1724,
-                  "name": "widthBetweenScrews",
-                  "start": 1706,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 1706,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 1706,
+                    "end": 0,
+                    "name": "widthBetweenScrews",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "/",
                 "right": {
-                  "end": 1728,
+                  "commentStart": 1727,
+                  "end": 0,
                   "raw": "2",
-                  "start": 1727,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -2087,24 +2898,28 @@ description: Result of parsing fillet-and-shell.kcl
                     "suffix": "None"
                   }
                 },
-                "start": 1706,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
-              "start": 1680,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 1784,
+              "commentStart": 1731,
+              "end": 0,
               "left": {
-                "end": 1758,
+                "commentStart": 1731,
+                "end": 0,
                 "left": {
-                  "end": 1741,
+                  "commentStart": 1731,
+                  "end": 0,
                   "left": {
-                    "end": 1732,
+                    "commentStart": 1731,
+                    "end": 0,
                     "raw": "0",
-                    "start": 1731,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -2114,31 +2929,51 @@ description: Result of parsing fillet-and-shell.kcl
                   },
                   "operator": "+",
                   "right": {
-                    "end": 1741,
-                    "name": "border",
-                    "start": 1735,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "abs_path": false,
+                    "commentStart": 1735,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 1735,
+                      "end": 0,
+                      "name": "border",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "start": 1731,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
                 "operator": "+",
                 "right": {
-                  "end": 1758,
+                  "commentStart": 1744,
+                  "end": 0,
                   "left": {
-                    "end": 1754,
-                    "name": "rpizLength",
-                    "start": 1744,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "abs_path": false,
+                    "commentStart": 1744,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 1744,
+                      "end": 0,
+                      "name": "rpizLength",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "/",
                   "right": {
-                    "end": 1758,
+                    "commentStart": 1757,
+                    "end": 0,
                     "raw": "2",
-                    "start": 1757,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -2146,29 +2981,40 @@ description: Result of parsing fillet-and-shell.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 1744,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
-                "start": 1731,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
               "operator": "+",
               "right": {
-                "end": 1784,
+                "commentStart": 1761,
+                "end": 0,
                 "left": {
-                  "end": 1780,
-                  "name": "lengthBetweenScrews",
-                  "start": 1761,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 1761,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 1761,
+                    "end": 0,
+                    "name": "lengthBetweenScrews",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "/",
                 "right": {
-                  "end": 1784,
+                  "commentStart": 1783,
+                  "end": 0,
                   "raw": "2",
-                  "start": 1783,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -2176,67 +3022,109 @@ description: Result of parsing fillet-and-shell.kcl
                     "suffix": "None"
                   }
                 },
-                "start": 1761,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
-              "start": 1731,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 1797,
-              "name": "screwHeight",
-              "start": 1786,
-              "type": "Identifier",
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 1786,
+              "end": 0,
+              "name": {
+                "commentStart": 1786,
+                "end": 0,
+                "name": "screwHeight",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             }
           ],
           "callee": {
-            "end": 1679,
-            "name": "m25Screw",
-            "start": 1671,
-            "type": "Identifier"
+            "abs_path": false,
+            "commentStart": 1671,
+            "end": 0,
+            "name": {
+              "commentStart": 1671,
+              "end": 0,
+              "name": "m25Screw",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
           },
-          "end": 1798,
-          "start": 1671,
+          "commentStart": 1671,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1671,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 1925,
+        "commentStart": 1798,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 1856,
+              "commentStart": 1809,
+              "end": 0,
               "left": {
-                "end": 1831,
+                "commentStart": 1809,
+                "end": 0,
                 "left": {
-                  "end": 1815,
-                  "name": "border",
-                  "start": 1809,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 1809,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 1809,
+                    "end": 0,
+                    "name": "border",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "+",
                 "right": {
-                  "end": 1831,
+                  "commentStart": 1818,
+                  "end": 0,
                   "left": {
-                    "end": 1827,
-                    "name": "rpizWidth",
-                    "start": 1818,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "abs_path": false,
+                    "commentStart": 1818,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 1818,
+                      "end": 0,
+                      "name": "rpizWidth",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "/",
                   "right": {
-                    "end": 1831,
+                    "commentStart": 1830,
+                    "end": 0,
                     "raw": "2",
-                    "start": 1830,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -2244,29 +3132,40 @@ description: Result of parsing fillet-and-shell.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 1818,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
-                "start": 1809,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
               "operator": "+",
               "right": {
-                "end": 1856,
+                "commentStart": 1834,
+                "end": 0,
                 "left": {
-                  "end": 1852,
-                  "name": "widthBetweenScrews",
-                  "start": 1834,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 1834,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 1834,
+                    "end": 0,
+                    "name": "widthBetweenScrews",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "/",
                 "right": {
-                  "end": 1856,
+                  "commentStart": 1855,
+                  "end": 0,
                   "raw": "2",
-                  "start": 1855,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -2274,24 +3173,28 @@ description: Result of parsing fillet-and-shell.kcl
                     "suffix": "None"
                   }
                 },
-                "start": 1834,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
-              "start": 1809,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 1911,
+              "commentStart": 1858,
+              "end": 0,
               "left": {
-                "end": 1885,
+                "commentStart": 1858,
+                "end": 0,
                 "left": {
-                  "end": 1868,
+                  "commentStart": 1858,
+                  "end": 0,
                   "left": {
-                    "end": 1859,
+                    "commentStart": 1858,
+                    "end": 0,
                     "raw": "0",
-                    "start": 1858,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -2301,31 +3204,51 @@ description: Result of parsing fillet-and-shell.kcl
                   },
                   "operator": "+",
                   "right": {
-                    "end": 1868,
-                    "name": "border",
-                    "start": 1862,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "abs_path": false,
+                    "commentStart": 1862,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 1862,
+                      "end": 0,
+                      "name": "border",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "start": 1858,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
                 "operator": "+",
                 "right": {
-                  "end": 1885,
+                  "commentStart": 1871,
+                  "end": 0,
                   "left": {
-                    "end": 1881,
-                    "name": "rpizLength",
-                    "start": 1871,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "abs_path": false,
+                    "commentStart": 1871,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 1871,
+                      "end": 0,
+                      "name": "rpizLength",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "/",
                   "right": {
-                    "end": 1885,
+                    "commentStart": 1884,
+                    "end": 0,
                     "raw": "2",
-                    "start": 1884,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -2333,29 +3256,40 @@ description: Result of parsing fillet-and-shell.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 1871,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
-                "start": 1858,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
               "operator": "+",
               "right": {
-                "end": 1911,
+                "commentStart": 1888,
+                "end": 0,
                 "left": {
-                  "end": 1907,
-                  "name": "lengthBetweenScrews",
-                  "start": 1888,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 1888,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 1888,
+                    "end": 0,
+                    "name": "lengthBetweenScrews",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "/",
                 "right": {
-                  "end": 1911,
+                  "commentStart": 1910,
+                  "end": 0,
                   "raw": "2",
-                  "start": 1910,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -2363,67 +3297,109 @@ description: Result of parsing fillet-and-shell.kcl
                     "suffix": "None"
                   }
                 },
-                "start": 1888,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
-              "start": 1858,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 1924,
-              "name": "screwHeight",
-              "start": 1913,
-              "type": "Identifier",
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 1913,
+              "end": 0,
+              "name": {
+                "commentStart": 1913,
+                "end": 0,
+                "name": "screwHeight",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             }
           ],
           "callee": {
-            "end": 1808,
-            "name": "m25Screw",
-            "start": 1800,
-            "type": "Identifier"
+            "abs_path": false,
+            "commentStart": 1800,
+            "end": 0,
+            "name": {
+              "commentStart": 1800,
+              "end": 0,
+              "name": "m25Screw",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
           },
-          "end": 1925,
-          "start": 1800,
+          "commentStart": 1800,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1800,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 2054,
+        "commentStart": 1925,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 1983,
+              "commentStart": 1936,
+              "end": 0,
               "left": {
-                "end": 1958,
+                "commentStart": 1936,
+                "end": 0,
                 "left": {
-                  "end": 1942,
-                  "name": "border",
-                  "start": 1936,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 1936,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 1936,
+                    "end": 0,
+                    "name": "border",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "+",
                 "right": {
-                  "end": 1958,
+                  "commentStart": 1945,
+                  "end": 0,
                   "left": {
-                    "end": 1954,
-                    "name": "rpizWidth",
-                    "start": 1945,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "abs_path": false,
+                    "commentStart": 1945,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 1945,
+                      "end": 0,
+                      "name": "rpizWidth",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "/",
                   "right": {
-                    "end": 1958,
+                    "commentStart": 1957,
+                    "end": 0,
                     "raw": "2",
-                    "start": 1957,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -2431,29 +3407,40 @@ description: Result of parsing fillet-and-shell.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 1945,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
-                "start": 1936,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
               "operator": "+",
               "right": {
-                "end": 1983,
+                "commentStart": 1961,
+                "end": 0,
                 "left": {
-                  "end": 1979,
-                  "name": "widthBetweenScrews",
-                  "start": 1961,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 1961,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 1961,
+                    "end": 0,
+                    "name": "widthBetweenScrews",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "/",
                 "right": {
-                  "end": 1983,
+                  "commentStart": 1982,
+                  "end": 0,
                   "raw": "2",
-                  "start": 1982,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -2461,24 +3448,28 @@ description: Result of parsing fillet-and-shell.kcl
                     "suffix": "None"
                   }
                 },
-                "start": 1961,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
-              "start": 1936,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 2039,
+              "commentStart": 1985,
+              "end": 0,
               "left": {
-                "end": 2012,
+                "commentStart": 1985,
+                "end": 0,
                 "left": {
-                  "end": 1995,
+                  "commentStart": 1985,
+                  "end": 0,
                   "left": {
-                    "end": 1986,
+                    "commentStart": 1985,
+                    "end": 0,
                     "raw": "0",
-                    "start": 1985,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -2488,31 +3479,51 @@ description: Result of parsing fillet-and-shell.kcl
                   },
                   "operator": "+",
                   "right": {
-                    "end": 1995,
-                    "name": "border",
-                    "start": 1989,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "abs_path": false,
+                    "commentStart": 1989,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 1989,
+                      "end": 0,
+                      "name": "border",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "start": 1985,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
                 "operator": "+",
                 "right": {
-                  "end": 2012,
+                  "commentStart": 1998,
+                  "end": 0,
                   "left": {
-                    "end": 2008,
-                    "name": "rpizLength",
-                    "start": 1998,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "abs_path": false,
+                    "commentStart": 1998,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 1998,
+                      "end": 0,
+                      "name": "rpizLength",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "/",
                   "right": {
-                    "end": 2012,
+                    "commentStart": 2011,
+                    "end": 0,
                     "raw": "2",
-                    "start": 2011,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -2520,29 +3531,40 @@ description: Result of parsing fillet-and-shell.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 1998,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
-                "start": 1985,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
               "operator": "-",
               "right": {
-                "end": 2039,
+                "commentStart": 2016,
+                "end": 0,
                 "left": {
-                  "end": 2035,
-                  "name": "lengthBetweenScrews",
-                  "start": 2016,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 2016,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 2016,
+                    "end": 0,
+                    "name": "lengthBetweenScrews",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "/",
                 "right": {
-                  "end": 2039,
+                  "commentStart": 2038,
+                  "end": 0,
                   "raw": "2",
-                  "start": 2038,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -2550,62 +3572,85 @@ description: Result of parsing fillet-and-shell.kcl
                     "suffix": "None"
                   }
                 },
-                "start": 2016,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
-              "start": 1985,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 2053,
-              "name": "screwHeight",
-              "start": 2042,
-              "type": "Identifier",
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 2042,
+              "end": 0,
+              "name": {
+                "commentStart": 2042,
+                "end": 0,
+                "name": "screwHeight",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             }
           ],
           "callee": {
-            "end": 1935,
-            "name": "m25Screw",
-            "start": 1927,
-            "type": "Identifier"
+            "abs_path": false,
+            "commentStart": 1927,
+            "end": 0,
+            "name": {
+              "commentStart": 1927,
+              "end": 0,
+              "name": "m25Screw",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
           },
-          "end": 2054,
-          "start": 1927,
+          "commentStart": 1927,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1927,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 2111,
+        "commentStart": 2054,
+        "end": 0,
         "expression": {
           "arguments": [
             {
               "type": "LabeledArg",
               "label": {
-                "end": 2073,
+                "commentStart": 2068,
+                "end": 0,
                 "name": "faces",
-                "start": 2068,
+                "start": 0,
                 "type": "Identifier"
               },
               "arg": {
+                "commentStart": 2076,
                 "elements": [
                   {
-                    "end": 2082,
+                    "commentStart": 2077,
+                    "end": 0,
                     "raw": "'end'",
-                    "start": 2077,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "end"
                   }
                 ],
-                "end": 2083,
-                "start": 2076,
+                "end": 0,
+                "start": 0,
                 "type": "ArrayExpression",
                 "type": "ArrayExpression"
               }
@@ -2613,50 +3658,81 @@ description: Result of parsing fillet-and-shell.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "end": 2094,
+                "commentStart": 2085,
+                "end": 0,
                 "name": "thickness",
-                "start": 2085,
+                "start": 0,
                 "type": "Identifier"
               },
               "arg": {
-                "end": 2110,
-                "name": "caseThickness",
-                "start": 2097,
-                "type": "Identifier",
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 2097,
+                "end": 0,
+                "name": {
+                  "commentStart": 2097,
+                  "end": 0,
+                  "name": "caseThickness",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               }
             }
           ],
           "callee": {
-            "end": 2061,
-            "name": "shell",
-            "start": 2056,
-            "type": "Identifier"
+            "abs_path": false,
+            "commentStart": 2056,
+            "end": 0,
+            "name": {
+              "commentStart": 2056,
+              "end": 0,
+              "name": "shell",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
           },
-          "end": 2111,
-          "start": 2056,
+          "commentStart": 2056,
+          "end": 0,
+          "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
-            "end": 2066,
-            "name": "case",
-            "start": 2062,
-            "type": "Identifier",
-            "type": "Identifier"
+            "abs_path": false,
+            "commentStart": 2062,
+            "end": 0,
+            "name": {
+              "commentStart": 2062,
+              "end": 0,
+              "name": "case",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
           }
         },
-        "start": 2056,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 2112,
+    "commentStart": 0,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "1": [
           {
-            "end": 32,
-            "start": 30,
+            "commentStart": 30,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2665,8 +3741,9 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "2": [
           {
-            "end": 51,
-            "start": 49,
+            "commentStart": 49,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2675,8 +3752,9 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "3": [
           {
-            "end": 63,
-            "start": 61,
+            "commentStart": 61,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2685,8 +3763,9 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "4": [
           {
-            "end": 80,
-            "start": 78,
+            "commentStart": 78,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2695,8 +3774,9 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "7": [
           {
-            "end": 168,
-            "start": 166,
+            "commentStart": 166,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2705,8 +3785,9 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "9": [
           {
-            "end": 222,
-            "start": 220,
+            "commentStart": 220,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2715,8 +3796,9 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "12": [
           {
-            "end": 295,
-            "start": 293,
+            "commentStart": 293,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2725,8 +3807,9 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "15": [
           {
-            "end": 358,
-            "start": 356,
+            "commentStart": 356,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2735,8 +3818,9 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "16": [
           {
-            "end": 797,
-            "start": 795,
+            "commentStart": 795,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2745,8 +3829,9 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "17": [
           {
-            "end": 1299,
-            "start": 1297,
+            "commentStart": 1297,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2755,8 +3840,9 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "18": [
           {
-            "end": 1540,
-            "start": 1538,
+            "commentStart": 1538,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2765,8 +3851,9 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "19": [
           {
-            "end": 1671,
-            "start": 1669,
+            "commentStart": 1669,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2775,8 +3862,9 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "20": [
           {
-            "end": 1800,
-            "start": 1798,
+            "commentStart": 1798,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2785,8 +3873,9 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "21": [
           {
-            "end": 1927,
-            "start": 1925,
+            "commentStart": 1925,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2795,8 +3884,9 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "22": [
           {
-            "end": 2056,
-            "start": 2054,
+            "commentStart": 2054,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

@@ -50,6 +50,7 @@ e2e/playwright/**/*.png
 e2e/playwright/export-snapshots/*
 !e2e/playwright/export-snapshots/*.png
 !e2e/playwright/snapshot-tests.spec.ts-snapshots/*.png
+trace.zip
 
 /public/kcl-samples.zip
 /public/kcl-samples/.github

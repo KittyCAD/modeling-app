@@ -1,0 +1,25 @@
+// 1120t74 Pipe
+
+// import constants
+import pipeInnerDiameter, pipeOuterDiameter, pipeLength from "globals.kcl"
+
+// set units
+@settings(defaultLengthUnit = in)
+
+// create a function to make the pipe
+export fn pipe() {
+
+  // create the pipe base
+  pipeBase = startSketchOn('XZ')
+    |> circle(%, center = [0, 0], radius = pipeOuterDiameter / 2)
+    |> extrude(%, length = pipeLength)
+
+  // extrude a hole through the length of the pipe
+  pipe = startSketchOn(pipeBase, 'end')
+    |> circle(center = [0, 0], radius = pipeInnerDiameter / 2)
+    |> extrude(%, length = -pipeLength)
+    |> appearance(color = "#a24ed0")
+  return pipe
+}
+
+// https://www.mcmaster.com/1120T74/

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed kw_fn.kcl
 ---
 [
@@ -13,11 +13,7 @@ description: Operations executed kw_fn.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      85,
-      97,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -44,11 +40,7 @@ description: Operations executed kw_fn.kcl
           }
         }
       },
-      "sourceRange": [
-        110,
-        111,
-        0
-      ]
+      "sourceRange": []
     },
     "labeledArgs": {
       "delta": {
@@ -65,18 +57,10 @@ description: Operations executed kw_fn.kcl
             }
           }
         },
-        "sourceRange": [
-          121,
-          122,
-          0
-        ]
+        "sourceRange": []
       }
     },
-    "sourceRange": [
-      106,
-      123,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"

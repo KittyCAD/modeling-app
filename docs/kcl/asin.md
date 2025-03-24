@@ -31,7 +31,7 @@ asin(num: number): number
 ### Examples
 
 ```js
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> angledLine({
        angle = toDegrees(asin(0.5)),

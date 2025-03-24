@@ -1,0 +1,11 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing array_elem_pop.kcl
+---
+arr = [1, 2, 3]
+new_arr1 = pop(arr)
+new_arr2 = pop(new_arr1)
+new_arr3 = pop(new_arr2)
+assertEqual(new_arr1[0], 1, 0.00001, "element 0 should not have changed")
+assertEqual(new_arr1[1], 2, 0.00001, "element 1 should not have changed")
+assertEqual(new_arr2[0], 1, 0.00001, "element 0 should not have changed")

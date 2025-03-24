@@ -1,0 +1,11 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing pipe_substitution_inside_function_called_from_pipeline.kcl
+---
+// Make sure pipe value doesn't leak into the function call.
+fn f(ignored) {
+  return %
+}
+
+answer = %
+  |> f(%)

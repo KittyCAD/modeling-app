@@ -37,7 +37,7 @@ patternLinear3d(
 ### Examples
 
 ```js
-exampleSketch = startSketchOn('XZ')
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [0, 2])
   |> line(end = [3, 1])
@@ -53,7 +53,7 @@ example = extrude(exampleSketch, length = 1)
 ```js
 // Pattern a whole sketch on face.
 size = 100
-case = startSketchOn('XY')
+case = startSketchOn(XY)
   |> startProfileAt([-size, -size], %)
   |> line(end = [2 * size, 0])
   |> line(end = [0, 2 * size])
@@ -84,7 +84,7 @@ patternLinear3d(
 ```js
 // Pattern an object on a face.
 size = 100
-case = startSketchOn('XY')
+case = startSketchOn(XY)
   |> startProfileAt([-size, -size], %)
   |> line(end = [2 * size, 0])
   |> line(end = [0, 2 * size])

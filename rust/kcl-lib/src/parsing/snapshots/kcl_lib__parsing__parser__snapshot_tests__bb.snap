@@ -1,23 +1,29 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
 ---
 {
   "body": [
     {
+      "commentStart": 1,
       "declaration": {
+        "commentStart": 1,
         "end": 25,
         "id": {
+          "commentStart": 1,
           "end": 5,
           "name": "my14",
           "start": 1,
           "type": "Identifier"
         },
         "init": {
+          "commentStart": 8,
           "end": 25,
           "left": {
+            "commentStart": 8,
             "end": 13,
             "left": {
+              "commentStart": 8,
               "end": 9,
               "raw": "4",
               "start": 8,
@@ -30,6 +36,7 @@ expression: actual
             },
             "operator": "^",
             "right": {
+              "commentStart": 12,
               "end": 13,
               "raw": "2",
               "start": 12,
@@ -46,10 +53,13 @@ expression: actual
           },
           "operator": "-",
           "right": {
+            "commentStart": 16,
             "end": 25,
             "left": {
+              "commentStart": 16,
               "end": 21,
               "left": {
+                "commentStart": 16,
                 "end": 17,
                 "raw": "3",
                 "start": 16,
@@ -62,6 +72,7 @@ expression: actual
               },
               "operator": "^",
               "right": {
+                "commentStart": 20,
                 "end": 21,
                 "raw": "2",
                 "start": 20,
@@ -78,6 +89,7 @@ expression: actual
             },
             "operator": "*",
             "right": {
+              "commentStart": 24,
               "end": 25,
               "raw": "2",
               "start": 24,
@@ -106,6 +118,7 @@ expression: actual
       "type": "VariableDeclaration"
     }
   ],
+  "commentStart": 0,
   "end": 26,
   "start": 0
 }

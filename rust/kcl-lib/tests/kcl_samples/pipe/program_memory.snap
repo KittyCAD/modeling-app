@@ -13,88 +13,56 @@ description: Variables in memory after executing pipe.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            691,
-            717,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            723,
-            759,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            765,
-            854,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            860,
-            896,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            902,
-            928,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            934,
-            969,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            975,
-            1087,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1093,
-            1100,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -106,11 +74,7 @@ description: Variables in memory after executing pipe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                691,
-                717,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.6875,
@@ -129,11 +93,7 @@ description: Variables in memory after executing pipe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                723,
-                759,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.8125,
@@ -152,11 +112,7 @@ description: Variables in memory after executing pipe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                765,
-                854,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.8125,
@@ -175,11 +131,7 @@ description: Variables in memory after executing pipe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                860,
-                896,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.1012,
@@ -198,11 +150,7 @@ description: Variables in memory after executing pipe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                902,
-                928,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.1012,
@@ -221,11 +169,7 @@ description: Variables in memory after executing pipe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                934,
-                969,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.9762,
@@ -244,11 +188,7 @@ description: Variables in memory after executing pipe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                975,
-                1087,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.9762,
@@ -267,11 +207,7 @@ description: Variables in memory after executing pipe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1093,
-                1100,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.6875,
@@ -332,11 +268,7 @@ description: Variables in memory after executing pipe.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              630,
-              685,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -388,11 +320,7 @@ description: Variables in memory after executing pipe.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              691,
-              717,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.6875,
@@ -411,11 +339,7 @@ description: Variables in memory after executing pipe.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              723,
-              759,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.8125,
@@ -434,11 +358,7 @@ description: Variables in memory after executing pipe.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              765,
-              854,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.8125,
@@ -457,11 +377,7 @@ description: Variables in memory after executing pipe.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              860,
-              896,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             1.1012,
@@ -480,11 +396,7 @@ description: Variables in memory after executing pipe.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              902,
-              928,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             1.1012,
@@ -503,11 +415,7 @@ description: Variables in memory after executing pipe.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              934,
-              969,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.9762,
@@ -526,11 +434,7 @@ description: Variables in memory after executing pipe.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              975,
-              1087,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.9762,
@@ -549,11 +453,7 @@ description: Variables in memory after executing pipe.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1093,
-              1100,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.6875,
@@ -614,11 +514,7 @@ description: Variables in memory after executing pipe.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            630,
-            685,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",

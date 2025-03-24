@@ -1,0 +1,9 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing kw_fn_unlabeled_but_has_label.kcl
+---
+fn add(@x) {
+  return x + 1
+}
+
+two = add(x = 1)

@@ -1,12 +1,13 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing import_function_not_sketch.kcl
 ---
 {
   "Ok": {
     "body": [
       {
-        "end": 68,
+        "commentStart": 33,
+        "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "my_functions.kcl"
@@ -16,29 +17,34 @@ description: Result of parsing import_function_not_sketch.kcl
           "items": [
             {
               "alias": null,
-              "end": 44,
+              "commentStart": 42,
+              "end": 0,
               "name": {
-                "end": 44,
+                "commentStart": 42,
+                "end": 0,
                 "name": "two",
-                "start": 41,
+                "start": 0,
                 "type": "Identifier"
               },
-              "start": 41,
+              "start": 0,
               "type": "ImportItem"
             }
           ]
         },
-        "start": 34,
+        "start": 0,
         "type": "ImportStatement",
         "type": "ImportStatement"
       },
       {
+        "commentStart": 69,
         "declaration": {
-          "end": 108,
+          "commentStart": 81,
+          "end": 0,
           "id": {
-            "end": 83,
+            "commentStart": 81,
+            "end": 0,
             "name": "one",
-            "start": 80,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -46,25 +52,37 @@ description: Result of parsing import_function_not_sketch.kcl
               "body": [
                 {
                   "argument": {
-                    "end": 106,
+                    "commentStart": 98,
+                    "end": 0,
                     "left": {
                       "arguments": [],
                       "callee": {
-                        "end": 100,
-                        "name": "two",
-                        "start": 97,
-                        "type": "Identifier"
+                        "abs_path": false,
+                        "commentStart": 98,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 98,
+                          "end": 0,
+                          "name": "two",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
                       },
-                      "end": 102,
-                      "start": 97,
+                      "commentStart": 98,
+                      "end": 0,
+                      "start": 0,
                       "type": "CallExpression",
                       "type": "CallExpression"
                     },
                     "operator": "-",
                     "right": {
-                      "end": 106,
+                      "commentStart": 106,
+                      "end": 0,
                       "raw": "1",
-                      "start": 105,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -72,63 +90,80 @@ description: Result of parsing import_function_not_sketch.kcl
                         "suffix": "None"
                       }
                     },
-                    "start": 97,
+                    "start": 0,
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
-                  "end": 106,
-                  "start": 90,
+                  "commentStart": 91,
+                  "end": 0,
+                  "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 108,
-              "start": 86
+              "commentStart": 87,
+              "end": 0,
+              "start": 0
             },
-            "end": 108,
+            "commentStart": 84,
+            "end": 0,
             "params": [],
-            "start": 83,
+            "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 80,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 108,
+        "end": 0,
         "kind": "fn",
-        "start": 70,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration",
         "visibility": "export"
       }
     ],
-    "end": 109,
+    "commentStart": 0,
+    "end": 0,
     "innerAttrs": [
       {
-        "end": 33,
+        "commentStart": 0,
+        "end": 0,
         "name": {
-          "end": 9,
+          "commentStart": 1,
+          "end": 0,
           "name": "settings",
-          "start": 1,
+          "start": 0,
           "type": "Identifier"
         },
         "properties": [
           {
-            "end": 32,
+            "commentStart": 10,
+            "end": 0,
             "key": {
-              "end": 27,
+              "commentStart": 10,
+              "end": 0,
               "name": "defaultLengthUnit",
-              "start": 10,
+              "start": 0,
               "type": "Identifier"
             },
-            "start": 10,
+            "start": 0,
             "type": "ObjectProperty",
             "value": {
-              "end": 32,
-              "name": "in",
-              "start": 30,
-              "type": "Identifier",
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 30,
+              "end": 0,
+              "name": {
+                "commentStart": 30,
+                "end": 0,
+                "name": "in",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],
@@ -140,8 +175,9 @@ description: Result of parsing import_function_not_sketch.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "end": 70,
-            "start": 68,
+            "commentStart": 69,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -149,7 +185,17 @@ description: Result of parsing import_function_not_sketch.kcl
           }
         ]
       },
-      "startNodes": []
+      "startNodes": [
+        {
+          "commentStart": 33,
+          "end": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        }
+      ]
     },
     "start": 0
   }

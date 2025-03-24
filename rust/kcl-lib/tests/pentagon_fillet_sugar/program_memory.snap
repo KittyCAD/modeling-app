@@ -32,11 +32,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              531,
-              553,
-              0
-            ]
+            "sourceRange": []
           },
           "ccw": true,
           "center": [
@@ -49,6 +45,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           ],
           "radius": 80.0,
           "tag": {
+            "commentStart": 544,
             "end": 552,
             "start": 544,
             "type": "TagDeclarator",
@@ -66,11 +63,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              561,
-              569,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -120.0,
@@ -115,12 +108,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                194,
-                249,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 246,
                 "end": 248,
                 "start": 246,
                 "type": "TagDeclarator",
@@ -131,12 +121,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                255,
-                311,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 308,
                 "end": 310,
                 "start": 308,
                 "type": "TagDeclarator",
@@ -147,12 +134,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                317,
-                373,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 370,
                 "end": 372,
                 "start": 370,
                 "type": "TagDeclarator",
@@ -168,17 +152,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    194,
-                    249,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
                   0.0
                 ],
                 "tag": {
+                  "commentStart": 246,
                   "end": 248,
                   "start": 246,
                   "type": "TagDeclarator",
@@ -196,17 +177,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    255,
-                    311,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   250.0,
                   433.0127
                 ],
                 "tag": {
+                  "commentStart": 308,
                   "end": 310,
                   "start": 308,
                   "type": "TagDeclarator",
@@ -224,17 +202,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    317,
-                    373,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -250.0,
                   433.0127
                 ],
                 "tag": {
+                  "commentStart": 370,
                   "end": 372,
                   "start": 370,
                   "type": "TagDeclarator",
@@ -294,11 +269,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  163,
-                  188,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
@@ -347,11 +318,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            472,
-            523,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
@@ -376,11 +343,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              531,
-              553,
-              0
-            ]
+            "sourceRange": []
           },
           "ccw": true,
           "center": [
@@ -393,6 +356,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           ],
           "radius": 80.0,
           "tag": {
+            "commentStart": 544,
             "end": 552,
             "start": 544,
             "type": "TagDeclarator",
@@ -410,11 +374,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              561,
-              569,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             280.0,
@@ -459,12 +419,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                194,
-                249,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 246,
                 "end": 248,
                 "start": 246,
                 "type": "TagDeclarator",
@@ -475,12 +432,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                255,
-                311,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 308,
                 "end": 310,
                 "start": 308,
                 "type": "TagDeclarator",
@@ -491,12 +445,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                317,
-                373,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 370,
                 "end": 372,
                 "start": 370,
                 "type": "TagDeclarator",
@@ -512,17 +463,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    194,
-                    249,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
                   0.0
                 ],
                 "tag": {
+                  "commentStart": 246,
                   "end": 248,
                   "start": 246,
                   "type": "TagDeclarator",
@@ -540,17 +488,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    255,
-                    311,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   250.0,
                   433.0127
                 ],
                 "tag": {
+                  "commentStart": 308,
                   "end": 310,
                   "start": 308,
                   "type": "TagDeclarator",
@@ -568,17 +513,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    317,
-                    373,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -250.0,
                   433.0127
                 ],
                 "tag": {
+                  "commentStart": 370,
                   "end": 372,
                   "start": 370,
                   "type": "TagDeclarator",
@@ -638,11 +580,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  163,
-                  188,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
@@ -691,11 +629,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            472,
-            523,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
@@ -768,12 +702,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            194,
-            249,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 246,
             "end": 248,
             "start": 246,
             "type": "TagDeclarator",
@@ -784,12 +715,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            255,
-            311,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 308,
             "end": 310,
             "start": 308,
             "type": "TagDeclarator",
@@ -800,12 +728,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            317,
-            373,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 370,
             "end": 372,
             "start": 370,
             "type": "TagDeclarator",
@@ -821,17 +746,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                194,
-                249,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
               0.0
             ],
             "tag": {
+              "commentStart": 246,
               "end": 248,
               "start": 246,
               "type": "TagDeclarator",
@@ -849,17 +771,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                255,
-                311,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               250.0,
               433.0127
             ],
             "tag": {
+              "commentStart": 308,
               "end": 310,
               "start": 308,
               "type": "TagDeclarator",
@@ -877,17 +796,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                317,
-                373,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -250.0,
               433.0127
             ],
             "tag": {
+              "commentStart": 370,
               "end": 372,
               "start": 370,
               "type": "TagDeclarator",
@@ -947,11 +863,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              163,
-              188,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
@@ -992,12 +904,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            531,
-            553,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 544,
             "end": 552,
             "start": 544,
             "type": "TagDeclarator",
@@ -1013,11 +922,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                531,
-                553,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -1030,6 +935,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             ],
             "radius": 80.0,
             "tag": {
+              "commentStart": 544,
               "end": 552,
               "start": 544,
               "type": "TagDeclarator",
@@ -1047,11 +953,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                561,
-                569,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               280.0,
@@ -1096,12 +998,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  194,
-                  249,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 246,
                   "end": 248,
                   "start": 246,
                   "type": "TagDeclarator",
@@ -1112,12 +1011,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  255,
-                  311,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 308,
                   "end": 310,
                   "start": 308,
                   "type": "TagDeclarator",
@@ -1128,12 +1024,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  317,
-                  373,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 370,
                   "end": 372,
                   "start": 370,
                   "type": "TagDeclarator",
@@ -1149,17 +1042,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      194,
-                      249,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
                     0.0
                   ],
                   "tag": {
+                    "commentStart": 246,
                     "end": 248,
                     "start": 246,
                     "type": "TagDeclarator",
@@ -1177,17 +1067,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      255,
-                      311,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     250.0,
                     433.0127
                   ],
                   "tag": {
+                    "commentStart": 308,
                     "end": 310,
                     "start": 308,
                     "type": "TagDeclarator",
@@ -1205,17 +1092,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      317,
-                      373,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -250.0,
                     433.0127
                   ],
                   "tag": {
+                    "commentStart": 370,
                     "end": 372,
                     "start": 370,
                     "type": "TagDeclarator",
@@ -1275,11 +1159,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    163,
-                    188,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "tags": {
@@ -1328,11 +1208,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              472,
-              523,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
@@ -1381,12 +1257,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            531,
-            553,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 544,
             "end": 552,
             "start": 544,
             "type": "TagDeclarator",
@@ -1402,11 +1275,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                531,
-                553,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -1419,6 +1288,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             ],
             "radius": 80.0,
             "tag": {
+              "commentStart": 544,
               "end": 552,
               "start": 544,
               "type": "TagDeclarator",
@@ -1436,11 +1306,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                561,
-                569,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -120.0,
@@ -1485,12 +1351,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  194,
-                  249,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 246,
                   "end": 248,
                   "start": 246,
                   "type": "TagDeclarator",
@@ -1501,12 +1364,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  255,
-                  311,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 308,
                   "end": 310,
                   "start": 308,
                   "type": "TagDeclarator",
@@ -1517,12 +1377,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  317,
-                  373,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 370,
                   "end": 372,
                   "start": 370,
                   "type": "TagDeclarator",
@@ -1538,17 +1395,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      194,
-                      249,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
                     0.0
                   ],
                   "tag": {
+                    "commentStart": 246,
                     "end": 248,
                     "start": 246,
                     "type": "TagDeclarator",
@@ -1566,17 +1420,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      255,
-                      311,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     250.0,
                     433.0127
                   ],
                   "tag": {
+                    "commentStart": 308,
                     "end": 310,
                     "start": 308,
                     "type": "TagDeclarator",
@@ -1594,17 +1445,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      317,
-                      373,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -250.0,
                     433.0127
                   ],
                   "tag": {
+                    "commentStart": 370,
                     "end": 372,
                     "start": 370,
                     "type": "TagDeclarator",
@@ -1664,11 +1512,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    163,
-                    188,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "tags": {
@@ -1717,11 +1561,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              472,
-              523,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {

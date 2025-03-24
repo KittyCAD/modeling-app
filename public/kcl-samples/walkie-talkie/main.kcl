@@ -1,50 +1,47 @@
 // Walkie Talkie
 // A portable, handheld two-way radio device that allows users to communicate wirelessly over short to medium distances. It operates on specific radio frequencies and features a push-to-talk button for transmitting messages, making it ideal for quick and reliable communication in outdoor, work, or emergency settings.
 
-// Set units
+// set units
 @settings(defaultLengthUnit = in)
 
-// Import parts and constants
-import 'body.kcl'
-import 'antenna.kcl'
-import 'case.kcl'
-import 'talk-button.kcl' as talkButton
-import 'knob.kcl'
+// import constants
+import * from 'globals.kcl'
+
+// import parts and constants
+import body from 'body.kcl'
+import case from 'case.kcl'
+import antenna from 'antenna.kcl'
+import talkButton from 'talk-button.kcl'
+import knob from 'knob.kcl'
 import button from "button.kcl"
-import width, height, thickness, screenWidth, screenHeight, screenYPosition, tolerance from "globals.kcl"
 
-// Import the body
-body
+// import the body
+body()
 
-// Import the case
-case
+// import the antenna
+antenna()
+  |> translate(translate = [-width / 2 + .45, -0.10, height/2])
 
-// Import the antenna
-antenna
+// import the case
+case()
+  |> translate(translate = [0, -1, 0])
 
-// Import the buttons
-button([
-  -(screenWidth / 2 + tolerance),
-  screenYPosition
-], 0, offsetPlane("XZ", offset = thickness))
-button([
-  -(screenWidth / 2 + tolerance),
-  screenYPosition - (screenHeight / 2)
-], 0, offsetPlane("XZ", offset = thickness))
-button([
-  screenWidth / 2 + tolerance,
-  screenYPosition - screenHeight
-], 180, offsetPlane("XZ", offset = thickness))
-button([
-  screenWidth / 2 + tolerance,
-  screenYPosition - (screenHeight / 2)
-], 180, offsetPlane("XZ", offset = thickness))
+// import the talk button
+talkButton()
+  |> translate(translate = [width / 2, -thickness / 2, .5])
 
-// Import the talk button
-talkButton
-  
-// Import the frequency knob
-knob
-  
+// import the frequency knob
+knob()
+  |> translate(translate = [width / 2 - 0.70, -thickness / 2, height / 2])
 
-
+// import the buttons
+button()
+  |> translate(translate = [-(screenWidth / 2 + tolerance), -1, screenYPosition])
+button()
+  |> translate(translate = [-(screenWidth / 2 + tolerance), -1, screenYPosition - buttonHeight - tolerance*2])
+button()
+  |> rotate(%, roll = 0, pitch = 180, yaw = 0)
+  |> translate(translate = [screenWidth / 2 + tolerance, -1, screenYPosition - buttonHeight], global = true)
+button()
+  |> rotate(%, roll = 0, pitch = 180, yaw = 0)
+  |> translate(translate = [screenWidth / 2 + tolerance, -1, screenYPosition - buttonHeight*2 - tolerance * 2], global = true)

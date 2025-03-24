@@ -18,7 +18,7 @@ test.describe('Debug pane', () => {
     context,
     homePage,
   }) => {
-    const code = `sketch001 = startSketchOn('XZ')
+    const code = `sketch001 = startSketchOn(XZ)
     |> startProfileAt([0, 0], %)
   |> line(end = [1, 1])
   `

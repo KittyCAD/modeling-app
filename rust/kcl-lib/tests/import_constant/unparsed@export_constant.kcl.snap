@@ -1,0 +1,5 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tests/import_constant/export_constant.kcl
+---
+export three = 3

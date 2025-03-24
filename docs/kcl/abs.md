@@ -33,7 +33,7 @@ abs(num: number): number
 ```js
 myAngle = -120
 
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [8, 0])
   |> angledLine({ angle = abs(myAngle), length = 5 }, %)

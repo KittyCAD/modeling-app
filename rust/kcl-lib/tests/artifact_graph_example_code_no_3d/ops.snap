@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed artifact_graph_example_code_no_3d.kcl
 ---
 [
@@ -10,19 +10,11 @@ description: Operations executed artifact_graph_example_code_no_3d.kcl
           "type": "String",
           "value": "YZ"
         },
-        "sourceRange": [
-          26,
-          30,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      12,
-      31,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -33,19 +25,11 @@ description: Operations executed artifact_graph_example_code_no_3d.kcl
           "type": "String",
           "value": "-XZ"
         },
-        "sourceRange": [
-          455,
-          460,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      441,
-      461,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   }

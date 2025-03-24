@@ -52,44 +52,28 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1021,
-            1065,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1071,
-            1114,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1120,
-            1164,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1170,
-            1177,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -101,11 +85,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1021,
-                1065,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -2.0,
@@ -124,11 +104,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1071,
-                1114,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.0,
@@ -147,11 +123,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1120,
-                1164,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.0,
@@ -170,11 +142,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1170,
-                1177,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -2.0,
@@ -235,11 +203,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              971,
-              1015,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -269,11 +233,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1262,
-                1406,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -285,11 +245,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1262,
-                    1406,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": true,
                 "center": [
@@ -340,44 +296,28 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1021,
-                      1065,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1071,
-                      1114,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1120,
-                      1164,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1170,
-                      1177,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   }
@@ -389,11 +329,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1021,
-                          1065,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -2.0,
@@ -412,11 +348,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1071,
-                          1114,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         2.0,
@@ -435,11 +367,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1120,
-                          1164,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         2.0,
@@ -458,11 +386,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1170,
-                          1177,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -2.0,
@@ -523,11 +447,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": [
-                        971,
-                        1015,
-                        0
-                      ]
+                      "sourceRange": []
                     }
                   },
                   "artifactId": "[uuid]",
@@ -562,11 +482,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  1262,
-                  1406,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -593,11 +509,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1262,
-                1406,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -609,11 +521,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1262,
-                    1406,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": true,
                 "center": [
@@ -664,44 +572,28 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1021,
-                      1065,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1071,
-                      1114,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1120,
-                      1164,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1170,
-                      1177,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   }
@@ -713,11 +605,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1021,
-                          1065,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -2.0,
@@ -736,11 +624,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1071,
-                          1114,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         2.0,
@@ -759,11 +643,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1120,
-                          1164,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         2.0,
@@ -782,11 +662,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1170,
-                          1177,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -2.0,
@@ -847,11 +723,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": [
-                        971,
-                        1015,
-                        0
-                      ]
+                      "sourceRange": []
                     }
                   },
                   "artifactId": "[uuid]",
@@ -886,11 +758,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  1262,
-                  1406,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -917,11 +785,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1262,
-                1406,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -933,11 +797,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1262,
-                    1406,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": true,
                 "center": [
@@ -988,44 +848,28 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1021,
-                      1065,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1071,
-                      1114,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1120,
-                      1164,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1170,
-                      1177,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   }
@@ -1037,11 +881,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1021,
-                          1065,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -2.0,
@@ -1060,11 +900,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1071,
-                          1114,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         2.0,
@@ -1083,11 +919,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1120,
-                          1164,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         2.0,
@@ -1106,11 +938,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1170,
-                          1177,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -2.0,
@@ -1171,11 +999,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": [
-                        971,
-                        1015,
-                        0
-                      ]
+                      "sourceRange": []
                     }
                   },
                   "artifactId": "[uuid]",
@@ -1210,11 +1034,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  1262,
-                  1406,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -1241,11 +1061,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1262,
-                1406,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -1257,11 +1073,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1262,
-                    1406,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": true,
                 "center": [
@@ -1312,44 +1124,28 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1021,
-                      1065,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1071,
-                      1114,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1120,
-                      1164,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1170,
-                      1177,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   }
@@ -1361,11 +1157,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1021,
-                          1065,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -2.0,
@@ -1384,11 +1176,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1071,
-                          1114,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         2.0,
@@ -1407,11 +1195,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1120,
-                          1164,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         2.0,
@@ -1430,11 +1214,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1170,
-                          1177,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -2.0,
@@ -1495,11 +1275,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": [
-                        971,
-                        1015,
-                        0
-                      ]
+                      "sourceRange": []
                     }
                   },
                   "artifactId": "[uuid]",
@@ -1534,11 +1310,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  1262,
-                  1406,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -1570,11 +1342,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1706,
-                1862,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -1586,11 +1354,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1706,
-                    1862,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": true,
                 "center": [
@@ -1641,44 +1405,28 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1021,
-                      1065,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1071,
-                      1114,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1120,
-                      1164,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1170,
-                      1177,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   }
@@ -1690,11 +1438,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1021,
-                          1065,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -2.0,
@@ -1713,11 +1457,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1071,
-                          1114,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         2.0,
@@ -1736,11 +1476,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1120,
-                          1164,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         2.0,
@@ -1759,11 +1495,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1170,
-                          1177,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -2.0,
@@ -1824,11 +1556,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": [
-                        971,
-                        1015,
-                        0
-                      ]
+                      "sourceRange": []
                     }
                   },
                   "artifactId": "[uuid]",
@@ -1863,11 +1591,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  1706,
-                  1862,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -1894,11 +1618,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1706,
-                1862,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -1910,11 +1630,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1706,
-                    1862,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": true,
                 "center": [
@@ -1965,44 +1681,28 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1021,
-                      1065,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1071,
-                      1114,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1120,
-                      1164,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1170,
-                      1177,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   }
@@ -2014,11 +1714,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1021,
-                          1065,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -2.0,
@@ -2037,11 +1733,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1071,
-                          1114,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         2.0,
@@ -2060,11 +1752,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1120,
-                          1164,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         2.0,
@@ -2083,11 +1771,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1170,
-                          1177,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -2.0,
@@ -2148,11 +1832,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": [
-                        971,
-                        1015,
-                        0
-                      ]
+                      "sourceRange": []
                     }
                   },
                   "artifactId": "[uuid]",
@@ -2187,11 +1867,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  1706,
-                  1862,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -2218,11 +1894,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1706,
-                1862,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -2234,11 +1906,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1706,
-                    1862,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": true,
                 "center": [
@@ -2289,44 +1957,28 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1021,
-                      1065,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1071,
-                      1114,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1120,
-                      1164,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1170,
-                      1177,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   }
@@ -2338,11 +1990,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1021,
-                          1065,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -2.0,
@@ -2361,11 +2009,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1071,
-                          1114,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         2.0,
@@ -2384,11 +2028,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1120,
-                          1164,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         2.0,
@@ -2407,11 +2047,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1170,
-                          1177,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -2.0,
@@ -2472,11 +2108,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": [
-                        971,
-                        1015,
-                        0
-                      ]
+                      "sourceRange": []
                     }
                   },
                   "artifactId": "[uuid]",
@@ -2511,11 +2143,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  1706,
-                  1862,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -2542,11 +2170,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1706,
-                1862,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -2558,11 +2182,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1706,
-                    1862,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": true,
                 "center": [
@@ -2613,44 +2233,28 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1021,
-                      1065,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1071,
-                      1114,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1120,
-                      1164,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1170,
-                      1177,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   }
@@ -2662,11 +2266,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1021,
-                          1065,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -2.0,
@@ -2685,11 +2285,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1071,
-                          1114,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         2.0,
@@ -2708,11 +2304,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1120,
-                          1164,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         2.0,
@@ -2731,11 +2323,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1170,
-                          1177,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -2.0,
@@ -2796,11 +2384,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": [
-                        971,
-                        1015,
-                        0
-                      ]
+                      "sourceRange": []
                     }
                   },
                   "artifactId": "[uuid]",
@@ -2835,11 +2419,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  1706,
-                  1862,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -2868,11 +2448,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2165,
-            2230,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         }
@@ -2884,11 +2460,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2165,
-                2230,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -2939,44 +2511,28 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1021,
-                  1065,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1071,
-                  1114,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1120,
-                  1164,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1170,
-                  1177,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               }
@@ -2988,11 +2544,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1021,
-                      1065,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -2.0,
@@ -3011,11 +2563,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1071,
-                      1114,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     2.0,
@@ -3034,11 +2582,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1120,
-                      1164,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     2.0,
@@ -3057,11 +2601,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1170,
-                      1177,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -2.0,
@@ -3122,11 +2662,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    971,
-                    1015,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "artifactId": "[uuid]",
@@ -3161,11 +2697,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2165,
-              2230,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",

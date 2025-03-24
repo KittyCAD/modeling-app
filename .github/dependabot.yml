@@ -231,39 +231,6 @@ updates:
       - minor
       - patch
 - package-ecosystem: pip
-  directory: /public/kcl-samples
-  schedule:
-    interval: weekly
-    day: monday
-    time: '03:00'
-    timezone: America/Los_Angeles
-  open-pull-requests-limit: 5
-  reviewers:
-  - adamchalmers
-  - franknoirot
-  - irev-dev
-  - jessfraz
-  groups:
-    security:
-      applies-to: security-updates
-      update-types:
-      - major
-      - minor
-      - patch
-    patch:
-      applies-to: version-updates
-      update-types:
-      - patch
-    major:
-      applies-to: version-updates
-      update-types:
-      - major
-    minor:
-      applies-to: version-updates
-      update-types:
-      - minor
-      - patch
-- package-ecosystem: pip
   directory: /rust/kcl-python-bindings
   schedule:
     interval: weekly

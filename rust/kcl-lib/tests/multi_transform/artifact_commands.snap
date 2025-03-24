@@ -5,11 +5,7 @@ description: Artifact commands multi_transform.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,11 +13,7 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -29,11 +21,7 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +30,7 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +39,7 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      109,
-      126,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -84,11 +64,7 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      132,
-      157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -104,22 +80,14 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      132,
-      157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      132,
-      157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -132,22 +100,14 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      132,
-      157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      163,
-      273,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -163,22 +123,14 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      163,
-      273,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      163,
-      273,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -191,22 +143,14 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      163,
-      273,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      163,
-      273,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -223,11 +167,7 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      163,
-      273,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -244,11 +184,7 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      163,
-      273,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -265,11 +201,7 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      163,
-      273,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -286,11 +218,7 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      163,
-      273,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -298,11 +226,7 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      279,
-      298,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -318,11 +242,7 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      279,
-      298,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -332,22 +252,14 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      279,
-      298,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      279,
-      298,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -355,11 +267,7 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      279,
-      298,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -368,11 +276,7 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      279,
-      298,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -382,11 +286,7 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      279,
-      298,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -396,11 +296,7 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      279,
-      298,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -410,11 +306,7 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      279,
-      298,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -424,11 +316,7 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      279,
-      298,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -438,11 +326,7 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      279,
-      298,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -452,11 +336,7 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      279,
-      298,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -466,11 +346,7 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      279,
-      298,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -480,11 +356,7 @@ description: Artifact commands multi_transform.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      304,
-      358,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",

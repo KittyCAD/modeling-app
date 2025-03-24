@@ -1,0 +1,26 @@
+// 98017A257 Washer
+
+// import constants
+import washerInnerDia, washerOuterDia, washerThickness from "globals.kcl"
+
+// set units
+@settings(defaultLengthUnit = in)
+
+// create a function to make the washer
+export fn washer() {
+
+  // create the base of the washer
+  washerBase = startSketchOn('XY')
+    |> circle(center = [0, 0], radius = washerOuterDia / 2)
+    |> extrude(length = washerThickness)
+
+  // extrude a hole through the washer
+  washer = startSketchOn(washerBase, 'end')
+    |> circle(center = [0, 0], radius = washerInnerDia / 2)
+    |> extrude(%, length = -washerThickness)
+    |> appearance(%, color = "#ee4f4f")
+
+  return washer
+}
+
+// https://www.mcmaster.com/98017A257/

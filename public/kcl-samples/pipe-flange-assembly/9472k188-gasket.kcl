@@ -1,0 +1,26 @@
+// 9472K188 Gasket
+
+// import constants
+import gasketOutsideDiameter, gasketInnerDiameter, gasketThickness from "globals.kcl"
+
+// set units
+@settings(defaultLengthUnit = in)
+
+// create a function to make the gasket
+export fn gasket() {
+
+  // create the base of the gasket
+  gasketBase = startSketchOn("XY")
+    |> circle(%, center = [0, 0], radius = gasketOutsideDiameter / 2)
+    |> extrude(%, length = gasketThickness)
+
+  // extrude a circular hole through the gasket base
+  gasket = startSketchOn(gasketBase, 'end')
+    |> circle(%, center = [0, 0], radius = gasketInnerDiameter / 2)
+    |> extrude(%, length = -gasketThickness)
+    |> appearance(%, color = "#d0cb3e")
+
+  return gasket
+}
+
+// https://www.mcmaster.com/9472K616/

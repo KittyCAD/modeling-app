@@ -6,11 +6,11 @@ use crate::parsing::{
         CallExpression, CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FormatOptions, FunctionExpression,
         IfExpression, ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier,
         LiteralValue, MemberExpression, MemberObject, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter,
-        PipeExpression, Program, TagDeclarator, Type, TypeDeclaration, UnaryExpression, VariableDeclaration,
-        VariableKind,
+        PipeExpression, Program, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration, VariableKind,
     },
+    deprecation,
     token::NumericSuffix,
-    PIPE_OPERATOR,
+    DeprecationKind, PIPE_OPERATOR,
 };
 
 impl Program {
@@ -23,19 +23,31 @@ impl Program {
             .map(|sh| format!("{}\n\n", sh.inner.content))
             .unwrap_or_default();
 
-        for attr in &self.inner_attrs {
-            result.push_str(&attr.recast(options, indentation_level));
-        }
         for start in &self.non_code_meta.start_nodes {
             result.push_str(&start.recast(options, indentation_level));
         }
-        let result = result; // Remove mutation.
+        for attr in &self.inner_attrs {
+            result.push_str(&attr.recast(options, indentation_level));
+        }
+        if !self.inner_attrs.is_empty() {
+            result.push('\n');
+        }
 
+        let result = result; // Remove mutation.
         let result = self
             .body
             .iter()
             .map(|body_item| {
                 let mut result = String::new();
+                for comment in body_item.get_comments() {
+                    if !comment.is_empty() {
+                        result.push_str(&indentation);
+                        result.push_str(comment);
+                    }
+                    if !result.ends_with("\n\n") && result != "\n" {
+                        result.push('\n');
+                    }
+                }
                 for attr in body_item.get_attrs() {
                     result.push_str(&attr.recast(options, indentation_level));
                 }
@@ -173,7 +185,18 @@ impl Node<NonCodeNode> {
 
 impl Node<Annotation> {
     fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
-        let mut result = "@".to_owned();
+        let indentation = options.get_indentation(indentation_level);
+        let mut result = String::new();
+        for comment in &self.pre_comments {
+            if !comment.is_empty() {
+                result.push_str(&indentation);
+                result.push_str(comment);
+            }
+            if !comment.ends_with("*/") && !result.ends_with("\n\n") && result != "\n" {
+                result.push('\n');
+            }
+        }
+        result.push('@');
         if let Some(name) = &self.name {
             result.push_str(&name.name);
         }
@@ -270,7 +293,13 @@ impl Expr {
             }
             Expr::CallExpression(call_exp) => call_exp.recast(options, indentation_level, ctxt),
             Expr::CallExpressionKw(call_exp) => call_exp.recast(options, indentation_level, ctxt),
-            Expr::Identifier(ident) => ident.name.to_string(),
+            Expr::Name(name) => {
+                let result = name.to_string();
+                match deprecation(&result, DeprecationKind::Const) {
+                    Some(suggestion) => suggestion.to_owned(),
+                    None => result,
+                }
+            }
             Expr::TagDeclarator(tag) => tag.recast(),
             Expr::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
             Expr::UnaryExpression(unary_exp) => unary_exp.recast(options),
@@ -285,7 +314,7 @@ impl Expr {
             Expr::AscribedExpression(e) => {
                 let mut result = e.expr.recast(options, indentation_level, ctxt);
                 result += ": ";
-                result += &e.ty.recast(options, indentation_level);
+                result += &e.ty.to_string();
                 result
             }
             Expr::None(_) => {
@@ -299,7 +328,13 @@ impl BinaryPart {
     fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         match &self {
             BinaryPart::Literal(literal) => literal.recast(),
-            BinaryPart::Identifier(identifier) => identifier.name.to_string(),
+            BinaryPart::Name(name) => {
+                let result = name.to_string();
+                match deprecation(&result, DeprecationKind::Const) {
+                    Some(suggestion) => suggestion.to_owned(),
+                    None => result,
+                }
+            }
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.recast(options),
             BinaryPart::CallExpression(call_expression) => {
                 call_expression.recast(options, indentation_level, ExprContext::Other)
@@ -323,7 +358,7 @@ impl CallExpression {
             } else {
                 options.get_indentation(indentation_level)
             },
-            self.callee.name,
+            self.callee,
             self.arguments
                 .iter()
                 .map(|arg| arg.recast(options, indentation_level, ctxt))
@@ -353,7 +388,12 @@ impl CallExpressionKw {
         } else {
             options.get_indentation(indentation_level)
         };
-        let name = &self.callee.name;
+        let name = self.callee.to_string();
+
+        if let Some(suggestion) = deprecation(&name, DeprecationKind::Function) {
+            return format!("{indent}{suggestion}");
+        }
+
         let arg_list = self.recast_args(options, indentation_level, ctxt);
         let args = arg_list.clone().join(", ");
         let has_lots_of_args = arg_list.len() >= 4;
@@ -434,6 +474,10 @@ impl TypeDeclaration {
             }
             arg_str.push(')');
         }
+        if let Some(alias) = &self.alias {
+            arg_str.push_str(" = ");
+            arg_str.push_str(&alias.to_string());
+        }
         format!("{}type {}{}", vis, self.name.name, arg_str)
     }
 }
@@ -454,6 +498,9 @@ impl Literal {
                 }
             }
             LiteralValue::String(ref s) => {
+                if let Some(suggestion) = deprecation(s, DeprecationKind::String) {
+                    return suggestion.to_owned();
+                }
                 let quote = if self.raw.trim().starts_with('"') { '"' } else { '\'' };
                 format!("{quote}{s}{quote}")
             }
@@ -542,7 +589,7 @@ impl ArrayExpression {
 fn expr_is_trivial(expr: &Expr) -> bool {
     matches!(
         expr,
-        Expr::Literal(_) | Expr::Identifier(_) | Expr::TagDeclarator(_) | Expr::PipeSubstitution(_) | Expr::None(_)
+        Expr::Literal(_) | Expr::Name(_) | Expr::TagDeclarator(_) | Expr::PipeSubstitution(_) | Expr::None(_)
     )
 }
 
@@ -692,7 +739,7 @@ impl UnaryExpression {
     fn recast(&self, options: &FormatOptions) -> String {
         match self.argument {
             BinaryPart::Literal(_)
-            | BinaryPart::Identifier(_)
+            | BinaryPart::Name(_)
             | BinaryPart::MemberExpression(_)
             | BinaryPart::IfExpression(_)
             | BinaryPart::CallExpressionKw(_)
@@ -789,7 +836,7 @@ impl FunctionExpression {
         let tab0 = options.get_indentation(indentation_level);
         let tab1 = options.get_indentation(indentation_level + 1);
         let return_type = match &self.return_type {
-            Some(rt) => format!(": {}", rt.recast(&new_options, indentation_level)),
+            Some(rt) => format!(": {rt}"),
             None => String::new(),
         };
         let body = self.body.recast(&new_options, indentation_level + 1);
@@ -799,14 +846,14 @@ impl FunctionExpression {
 }
 
 impl Parameter {
-    pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
+    pub fn recast(&self, _options: &FormatOptions, _indentation_level: usize) -> String {
         let at_sign = if self.labeled { "" } else { "@" };
         let identifier = &self.identifier.name;
         let question_mark = if self.default_value.is_some() { "?" } else { "" };
         let mut result = format!("{at_sign}{identifier}{question_mark}");
         if let Some(ty) = &self.type_ {
             result += ": ";
-            result += &ty.recast(options, indentation_level);
+            result += &ty.to_string();
         }
         if let Some(DefaultParamVal::Literal(ref literal)) = self.default_value {
             let lit = literal.recast();
@@ -814,31 +861,6 @@ impl Parameter {
         };
 
         result
-    }
-}
-
-impl Type {
-    pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
-        match self {
-            Type::Primitive(t) => t.to_string(),
-            Type::Array(t) => format!("[{t}]"),
-            Type::Object { properties } => {
-                let mut result = "{".to_owned();
-                for p in properties {
-                    result += " ";
-                    result += &p.recast(options, indentation_level);
-                    result += ",";
-                }
-
-                if result.ends_with(',') {
-                    result.pop();
-                    result += " ";
-                }
-                result += "}";
-
-                result
-            }
-        }
     }
 }
 
@@ -869,7 +891,7 @@ pub(crate) async fn walk_dir(dir: &std::path::PathBuf) -> Result<Vec<std::path::
 
 /// Recast all the kcl files in a directory, recursively.
 #[cfg(not(target_arch = "wasm32"))]
-pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -> Result<(), crate::KclError> {
+pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -> Result<(), anyhow::Error> {
     let files = walk_dir(&dir.to_path_buf()).await.map_err(|err| {
         crate::KclError::Internal(crate::errors::KclErrorDetails {
             message: format!("Failed to walk directory `{}`: {:?}", dir.display(), err),
@@ -882,33 +904,38 @@ pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -
         .map(|file| {
             let options = options.clone();
             tokio::spawn(async move {
-                let contents = tokio::fs::read_to_string(&file).await.map_err(|err| {
-                    crate::KclError::Internal(crate::errors::KclErrorDetails {
-                        message: format!("Failed to read file `{}`: {:?}", file.display(), err),
-                        source_ranges: vec![crate::SourceRange::default()],
-                    })
+                let contents = tokio::fs::read_to_string(&file)
+                    .await
+                    .map_err(|err| anyhow::anyhow!("Failed to read file `{}`: {:?}", file.display(), err))?;
+                let (program, ces) = crate::Program::parse(&contents).map_err(|err| {
+                    let report = crate::Report {
+                        kcl_source: contents.to_string(),
+                        error: err.clone(),
+                        filename: file.to_string_lossy().to_string(),
+                    };
+                    let report = miette::Report::new(report);
+                    anyhow::anyhow!("{:?}", report)
                 })?;
-                let (program, ces) = crate::Program::parse(&contents)?;
                 for ce in &ces {
                     if ce.severity != crate::errors::Severity::Warning {
-                        return Err(crate::KclError::Semantic(ce.clone().into()));
+                        let report = crate::Report {
+                            kcl_source: contents.to_string(),
+                            error: crate::KclError::Semantic(ce.clone().into()),
+                            filename: file.to_string_lossy().to_string(),
+                        };
+                        let report = miette::Report::new(report);
+                        anyhow::bail!("{:?}", report);
                     }
                 }
                 let Some(program) = program else {
-                    return Err(crate::KclError::Internal(crate::errors::KclErrorDetails {
-                        message: format!("Failed to parse file `{}`: {:?}", file.display(), ces),
-                        source_ranges: vec![crate::SourceRange::default()],
-                    }));
+                    anyhow::bail!("Failed to parse file `{}`", file.display());
                 };
                 let recast = program.recast_with_options(&options);
-                tokio::fs::write(&file, recast).await.map_err(|err| {
-                    crate::KclError::Internal(crate::errors::KclErrorDetails {
-                        message: format!("Failed to write file `{}`: {:?}", file.display(), err),
-                        source_ranges: vec![crate::SourceRange::default()],
-                    })
-                })?;
+                tokio::fs::write(&file, recast)
+                    .await
+                    .map_err(|err| anyhow::anyhow!("Failed to write file `{}`: {:?}", file.display(), err))?;
 
-                Ok::<(), crate::KclError>(())
+                Ok::<(), anyhow::Error>(())
             })
         })
         .collect::<Vec<_>>();
@@ -919,21 +946,13 @@ pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -
     // Check if any of the futures failed.
     let mut errors = Vec::new();
     for result in results {
-        if let Err(err) = result.map_err(|err| {
-            crate::KclError::Internal(crate::errors::KclErrorDetails {
-                message: format!("Failed to recast file: {:?}", err),
-                source_ranges: vec![crate::SourceRange::default()],
-            })
-        })? {
+        if let Err(err) = result? {
             errors.push(err);
         }
     }
 
     if !errors.is_empty() {
-        return Err(crate::KclError::Internal(crate::errors::KclErrorDetails {
-            message: format!("Failed to recast files: {:?}", errors),
-            source_ranges: vec![crate::SourceRange::default()],
-        }));
+        anyhow::bail!("Failed to recast some files: {:?}", errors);
     }
 
     Ok(())
@@ -959,6 +978,7 @@ mod tests {
     fn test_recast_annotations_in_function_body() {
         let input = r#"fn myFunc() {
   @meta(yes = true)
+
   x = 2
 }
 "#;
@@ -972,6 +992,25 @@ mod tests {
         let input = r#"fn myFunc() {
   @meta(yes = true)
 }
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn recast_annotations_with_comments() {
+        let input = r#"// Start comment
+
+// Comment on attr
+@settings(defaultLengthUnit = in)
+
+// Comment on item
+foo = 42
+
+// Comment on another item
+@(impl = kcl)
+bar = 0
 "#;
         let program = crate::parsing::top_level_parse(input).unwrap();
         let output = program.recast(&Default::default(), 0);
@@ -1060,7 +1099,7 @@ s = 1 // s = 1 -> height of Z is 13.4mm
 d = 1
 
 fn rect(x, y, w, h) {
-  startSketchOn('XY')
+  startSketchOn(XY)
     |> startProfileAt([x, y], %)
     |> xLine(length = w)
     |> yLine(length = h)
@@ -1070,7 +1109,7 @@ fn rect(x, y, w, h) {
 }
 
 fn quad(x1, y1, x2, y2, x3, y3, x4, y4) {
-  startSketchOn('XY')
+  startSketchOn(XY)
     |> startProfileAt([x1, y1], %)
     |> line(endAbsolute = [x2, y2])
     |> line(endAbsolute = [x3, y3])
@@ -1080,7 +1119,7 @@ fn quad(x1, y1, x2, y2, x3, y3, x4, y4) {
 }
 
 fn crosshair(x, y) {
-  startSketchOn('XY')
+  startSketchOn(XY)
     |> startProfileAt([x, y], %)
     |> yLine(length = 1)
     |> yLine(length = -2)
@@ -1126,7 +1165,7 @@ fn o(c_x, c_y) {
   // crosshair(c_x, c_y)
 
 
-  startSketchOn('XY')
+  startSketchOn(XY)
     |> startProfileAt([o_x1, o_y1], %)
     |> arc({
          radius = o_r,
@@ -1142,7 +1181,7 @@ fn o(c_x, c_y) {
     |> close()
     |> extrude(d, %)
 
-  startSketchOn('XY')
+  startSketchOn(XY)
     |> startProfileAt([o_x2, o_y2], %)
     |> arc({
          radius = o_r,
@@ -1185,7 +1224,7 @@ thickness = 0.25
 overHangLength = .4
 
 // Sketch and revolve the inside bearing piece
-insideRevolve = startSketchOn('XZ')
+insideRevolve = startSketchOn(XZ)
   |> startProfileAt([insideDia / 2, 0], %)
   |> line([0, thickness + sphereDia / 2], %)
   |> line([overHangLength, 0], %)
@@ -1199,7 +1238,7 @@ insideRevolve = startSketchOn('XZ')
   |> revolve({ axis: 'y' }, %)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
-sphere = startSketchOn('XZ')
+sphere = startSketchOn(XZ)
   |> startProfileAt([
        0.05 + insideDia / 2 + thickness,
        0 - 0.05
@@ -1221,7 +1260,7 @@ sphere = startSketchOn('XZ')
      )
 
 // Sketch and revolve the outside bearing
-outsideRevolve = startSketchOn('XZ')
+outsideRevolve = startSketchOn(XZ)
   |> startProfileAt([
        insideDia / 2 + thickness + sphereDia,
        0
@@ -1244,7 +1283,6 @@ outsideRevolve = startSketchOn('XZ')
             r#"// Ball Bearing
 // A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.
 
-
 // Define constants like ball diameter, inside diameter, overhange length, and thickness
 sphereDia = 0.5
 insideDia = 1
@@ -1252,7 +1290,7 @@ thickness = 0.25
 overHangLength = .4
 
 // Sketch and revolve the inside bearing piece
-insideRevolve = startSketchOn('XZ')
+insideRevolve = startSketchOn(XZ)
   |> startProfileAt([insideDia / 2, 0], %)
   |> line([0, thickness + sphereDia / 2], %)
   |> line([overHangLength, 0], %)
@@ -1266,7 +1304,7 @@ insideRevolve = startSketchOn('XZ')
   |> revolve({ axis = 'y' }, %)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
-sphere = startSketchOn('XZ')
+sphere = startSketchOn(XZ)
   |> startProfileAt([
        0.05 + insideDia / 2 + thickness,
        0 - 0.05
@@ -1288,7 +1326,7 @@ sphere = startSketchOn('XZ')
      )
 
 // Sketch and revolve the outside bearing
-outsideRevolve = startSketchOn('XZ')
+outsideRevolve = startSketchOn(XZ)
   |> startProfileAt([
        insideDia / 2 + thickness + sphereDia,
        0
@@ -1376,6 +1414,21 @@ thing(1)
     }
 
     #[test]
+    fn test_recast_typed_consts() {
+        let some_program_string = r#"a = 42: number
+export b = 3.2: number(ft)
+c = "dsfds": A | B | C
+d = [1]: [number]
+e = foo: [number; 3]
+f = [1, 2, 3]: [number; 1+]
+"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
+    }
+
+    #[test]
     fn test_recast_object_fn_in_array_weird_bracket() {
         let some_program_string = r#"bing = { yo = 55 }
 myNestedVar = [
@@ -1423,7 +1476,7 @@ myNestedVar = [
     #[test]
     fn test_recast_shebang() {
         let some_program_string = r#"#!/usr/local/env zoo kcl
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -1438,7 +1491,7 @@ part001 = startSketchOn('XY')
             recasted,
             r#"#!/usr/local/env zoo kcl
 
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -1454,7 +1507,7 @@ part001 = startSketchOn('XY')
         
 
 
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -1469,7 +1522,7 @@ part001 = startSketchOn('XY')
             recasted,
             r#"#!/usr/local/env zoo kcl
 
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -1484,7 +1537,7 @@ part001 = startSketchOn('XY')
         let some_program_string = r#"#!/usr/local/env zoo kcl
         
 // Yo yo my comments.
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -1500,7 +1553,7 @@ part001 = startSketchOn('XY')
             r#"#!/usr/local/env zoo kcl
 
 // Yo yo my comments.
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -1646,6 +1699,7 @@ tabs_l = startSketchOn({
         assert_eq!(
             recasted,
             r#"@settings(units = mm)
+
 // define nts
 radius = 6.0
 width = 144.0
@@ -1762,7 +1816,7 @@ tabs_l = startSketchOn({
     #[test]
     fn test_recast_nested_var_declaration_in_fn_body() {
         let some_program_string = r#"fn cube = (pos, scale) => {
-   sg = startSketchOn('XY')
+   sg = startSketchOn(XY)
   |> startProfileAt(pos, %)
   |> line([0, scale], %)
   |> line([scale, 0], %)
@@ -1776,7 +1830,7 @@ tabs_l = startSketchOn({
         assert_eq!(
             recasted,
             r#"fn cube(pos, scale) {
-  sg = startSketchOn('XY')
+  sg = startSketchOn(XY)
     |> startProfileAt(pos, %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
@@ -1793,7 +1847,7 @@ tabs_l = startSketchOn({
         let some_program_string = r#"fn cube(pos, scale) {
   x = dfsfs + dfsfsd as y
 
-  sg = startSketchOn('XY')
+  sg = startSketchOn(XY)
     |> startProfileAt(pos, %) as foo
     |> line([0, scale], %)
     |> line([scale, 0], %) as bar
@@ -1812,7 +1866,7 @@ cube(0, 0) as cub
 
     #[test]
     fn test_recast_with_bad_indentation() {
-        let some_program_string = r#"part001 = startSketchOn('XY')
+        let some_program_string = r#"part001 = startSketchOn(XY)
   |> startProfileAt([0.0, 5.0], %)
               |> line([0.4900857016, -0.0240763666], %)
     |> line([0.6804562304, 0.9087880491], %)"#;
@@ -1821,7 +1875,7 @@ cube(0, 0) as cub
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"part001 = startSketchOn('XY')
+            r#"part001 = startSketchOn(XY)
   |> startProfileAt([0.0, 5.0], %)
   |> line([0.4900857016, -0.0240763666], %)
   |> line([0.6804562304, 0.9087880491], %)
@@ -1831,7 +1885,7 @@ cube(0, 0) as cub
 
     #[test]
     fn test_recast_with_bad_indentation_and_inline_comment() {
-        let some_program_string = r#"part001 = startSketchOn('XY')
+        let some_program_string = r#"part001 = startSketchOn(XY)
   |> startProfileAt([0.0, 5.0], %)
               |> line([0.4900857016, -0.0240763666], %) // hello world
     |> line([0.6804562304, 0.9087880491], %)"#;
@@ -1840,7 +1894,7 @@ cube(0, 0) as cub
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"part001 = startSketchOn('XY')
+            r#"part001 = startSketchOn(XY)
   |> startProfileAt([0.0, 5.0], %)
   |> line([0.4900857016, -0.0240763666], %) // hello world
   |> line([0.6804562304, 0.9087880491], %)
@@ -1849,7 +1903,7 @@ cube(0, 0) as cub
     }
     #[test]
     fn test_recast_with_bad_indentation_and_line_comment() {
-        let some_program_string = r#"part001 = startSketchOn('XY')
+        let some_program_string = r#"part001 = startSketchOn(XY)
   |> startProfileAt([0.0, 5.0], %)
               |> line([0.4900857016, -0.0240763666], %)
         // hello world
@@ -1859,7 +1913,7 @@ cube(0, 0) as cub
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"part001 = startSketchOn('XY')
+            r#"part001 = startSketchOn(XY)
   |> startProfileAt([0.0, 5.0], %)
   |> line([0.4900857016, -0.0240763666], %)
   // hello world
@@ -1992,6 +2046,15 @@ thing = 'foo'
     }
 
     #[test]
+    fn test_recast_only_line_comments() {
+        let code = r#"// comment at start
+"#;
+        let program = crate::parsing::top_level_parse(code).unwrap();
+
+        assert_eq!(program.recast(&Default::default(), 0), code);
+    }
+
+    #[test]
     fn test_recast_comment_at_start() {
         let test_program = r#"
 /* comment at start */
@@ -2014,7 +2077,7 @@ mySk1 = startSketchOn(XY)
     #[test]
     fn test_recast_lots_of_comments() {
         let some_program_string = r#"// comment at start
-mySk1 = startSketchOn('XY')
+mySk1 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [1, 1])
   // comment here
@@ -2035,7 +2098,7 @@ mySk1 = startSketchOn('XY')
         assert_eq!(
             recasted,
             r#"// comment at start
-mySk1 = startSketchOn('XY')
+mySk1 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [1, 1])
   // comment here
@@ -2055,7 +2118,7 @@ mySk1 = startSketchOn('XY')
 
     #[test]
     fn test_recast_multiline_object() {
-        let some_program_string = r#"part001 = startSketchOn('XY')
+        let some_program_string = r#"part001 = startSketchOn(XY)
   |> startProfileAt([-0.01, -0.08], %)
   |> line([0.62, 4.15], %, $seg01)
   |> line([2.77, -1.24], %)
@@ -2137,7 +2200,7 @@ myVar2 = 5
 myVar3 = 6
 myAng = 40
 myAng2 = 134
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line([1, 3.82], %, $seg01) // ln-should-get-tag
   |> angledLineToX([
@@ -2161,7 +2224,7 @@ myVar2 = 5
 myVar3 = 6
 myAng = 40
 myAng2 = 134
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
    |> startProfileAt([0, 0], %)
    |> line([1, 3.82], %, $seg01) // ln-should-get-tag
    |> angledLineToX([
@@ -2188,7 +2251,7 @@ part001 = startSketchOn('XY')
 
     #[test]
     fn test_recast_after_rename_std() {
-        let some_program_string = r#"part001 = startSketchOn('XY')
+        let some_program_string = r#"part001 = startSketchOn(XY)
   |> startProfileAt([0.0000000000, 5.0000000000], %)
     |> line([0.4900857016, -0.0240763666], %)
 
@@ -2208,7 +2271,7 @@ fn ghi = (part001) => {
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"mySuperCoolPart = startSketchOn('XY')
+            r#"mySuperCoolPart = startSketchOn(XY)
   |> startProfileAt([0.0, 5.0], %)
   |> line([0.4900857016, -0.0240763666], %)
 
@@ -2245,7 +2308,7 @@ fn ghi(part001) {
 
     #[test]
     fn test_recast_trailing_comma() {
-        let some_program_string = r#"startSketchOn('XY')
+        let some_program_string = r#"startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> arc({
     radius = 1,
@@ -2257,7 +2320,7 @@ fn ghi(part001) {
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"startSketchOn('XY')
+            r#"startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> arc({
        radius = 1,
@@ -2274,7 +2337,7 @@ fn ghi(part001) {
 l = 8
 h = 10
 
-firstExtrude = startSketchOn('XY')
+firstExtrude = startSketchOn(XY)
   |> startProfileAt([0,0], %)
   |> line([0, l], %)
   |> line([w, 0], %)
@@ -2291,7 +2354,7 @@ firstExtrude = startSketchOn('XY')
 l = 8
 h = 10
 
-firstExtrude = startSketchOn('XY')
+firstExtrude = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line([0, l], %)
   |> line([w, 0], %)
@@ -2311,7 +2374,7 @@ h = 10
 // This is my comment
 // It has multiple lines
 // And it's really long
-firstExtrude = startSketchOn('XY')
+firstExtrude = startSketchOn(XY)
   |> startProfileAt([0,0], %)
   |> line([0, l], %)
   |> line([w, 0], %)
@@ -2331,7 +2394,7 @@ h = 10
 // This is my comment
 // It has multiple lines
 // And it's really long
-firstExtrude = startSketchOn('XY')
+firstExtrude = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line([0, l], %)
   |> line([w, 0], %)
@@ -2356,7 +2419,7 @@ firstExtrude = startSketchOn('XY')
         let some_program_string = r#"wallMountL = 3.82
 thickness = 0.5
 
-startSketchOn('XY')
+startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line([0, -(wallMountL - thickness)], %)
   |> line([0, -(5 - thickness)], %)
@@ -2398,6 +2461,7 @@ thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
 // A comment
 @(impl = primitive)
 export type bar(unit, baz)
+type baz = Foo | Bar
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
         let recasted = program.recast(&Default::default(), 0);
@@ -2635,5 +2699,36 @@ sketch002 = startSketchOn({
                 "failed test {i}, which is testing that recasting {reason}"
             );
         }
+    }
+
+    #[test]
+    fn code_with_comment_and_extra_lines() {
+        let code = r#"yo = 'c'
+
+/* this is
+a
+comment */
+yo = 'bing'
+"#;
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast(&FormatOptions::new(), 0);
+        assert_eq!(recasted, code);
+    }
+
+    #[test]
+    fn comments_in_a_fn_block() {
+        let code = r#"fn myFn() {
+  // this is a comment
+  yo = { a = { b = { c = '123' } } }
+
+  /* block
+  comment */
+  key = 'c'
+  // this is also a comment
+}
+"#;
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast(&FormatOptions::new(), 0);
+        assert_eq!(recasted, code);
     }
 }

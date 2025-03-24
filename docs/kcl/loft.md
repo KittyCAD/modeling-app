@@ -42,7 +42,7 @@ loft(
 
 ```js
 // Loft a square and a triangle.
-squareSketch = startSketchOn('XY')
+squareSketch = startSketchOn(XY)
   |> startProfileAt([-100, 200], %)
   |> line(end = [200, 0])
   |> line(end = [0, -200])
@@ -50,7 +50,7 @@ squareSketch = startSketchOn('XY')
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
-triangleSketch = startSketchOn(offsetPlane('XY', offset = 75))
+triangleSketch = startSketchOn(offsetPlane(XY, offset = 75))
   |> startProfileAt([0, 125], %)
   |> line(end = [-15, -30])
   |> line(end = [30, 0])
@@ -64,7 +64,7 @@ loft([squareSketch, triangleSketch])
 
 ```js
 // Loft a square, a circle, and another circle.
-squareSketch = startSketchOn('XY')
+squareSketch = startSketchOn(XY)
   |> startProfileAt([-100, 200], %)
   |> line(end = [200, 0])
   |> line(end = [0, -200])
@@ -72,10 +72,10 @@ squareSketch = startSketchOn('XY')
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
-circleSketch0 = startSketchOn(offsetPlane('XY', offset = 75))
+circleSketch0 = startSketchOn(offsetPlane(XY, offset = 75))
   |> circle(center = [0, 100], radius = 50)
 
-circleSketch1 = startSketchOn(offsetPlane('XY', offset = 150))
+circleSketch1 = startSketchOn(offsetPlane(XY, offset = 150))
   |> circle(center = [0, 100], radius = 20)
 
 loft([
@@ -89,7 +89,7 @@ loft([
 
 ```js
 // Loft a square, a circle, and another circle with options.
-squareSketch = startSketchOn('XY')
+squareSketch = startSketchOn(XY)
   |> startProfileAt([-100, 200], %)
   |> line(end = [200, 0])
   |> line(end = [0, -200])
@@ -97,10 +97,10 @@ squareSketch = startSketchOn('XY')
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
-circleSketch0 = startSketchOn(offsetPlane('XY', offset = 75))
+circleSketch0 = startSketchOn(offsetPlane(XY, offset = 75))
   |> circle(center = [0, 100], radius = 50)
 
-circleSketch1 = startSketchOn(offsetPlane('XY', offset = 150))
+circleSketch1 = startSketchOn(offsetPlane(XY, offset = 150))
   |> circle(center = [0, 100], radius = 20)
 
 loft(

@@ -1,12 +1,17 @@
 import { Models } from '@kittycad/lib'
 import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
 import { transformAstSketchLines } from 'lang/std/sketchcombos'
-import { PathToNode } from 'lang/wasm'
+import {
+  isPathToNode,
+  PathToNode,
+  SourceRange,
+  VariableDeclarator,
+} from 'lang/wasm'
 import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
 import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE } from 'lib/constants'
 import { components } from 'lib/machine-api'
 import { Selections } from 'lib/selections'
-import { kclManager } from 'lib/singletons'
+import { codeManager, kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 import { modelingMachine, SketchTool } from 'machines/modelingMachine'
 import {
@@ -15,6 +20,9 @@ import {
   shellValidator,
   sweepValidator,
 } from './validators'
+import { getVariableDeclaration } from 'lang/queryAst/getVariableDeclaration'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import { getNodeFromPath } from 'lang/queryAst'
 
 type OutputFormat = Models['OutputFormat_type']
 type OutputTypeKey = OutputFormat['type']
@@ -47,8 +55,12 @@ export type ModelingCommandSchema = {
     distance: KclCommandValue
   }
   Sweep: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // Arguments
     target: Selections
     trajectory: Selections
+    sectional: boolean
   }
   Loft: {
     selection: Selections
@@ -87,12 +99,16 @@ export type ModelingCommandSchema = {
     // KCL stdlib arguments
     revolutions: KclCommandValue
     angleStart: KclCommandValue
-    counterClockWise: boolean
+    ccw: boolean
     radius: KclCommandValue
     axis: string
     length: KclCommandValue
   }
   'event.parameter.create': {
+    value: KclCommandValue
+  }
+  'event.parameter.edit': {
+    nodeToEdit: PathToNode
     value: KclCommandValue
   }
   'change tool': {
@@ -345,22 +361,40 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description:
       'Create a 3D body by moving a sketch region along an arbitrary path.',
     icon: 'sweep',
-    needsReview: false,
+    needsReview: true,
     args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
       target: {
         inputType: 'selection',
         selectionTypes: ['solid2d'],
         required: true,
         skip: true,
         multiple: false,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       trajectory: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'path'],
+        selectionTypes: ['segment'],
         required: true,
-        skip: false,
+        skip: true,
         multiple: false,
         validation: sweepValidator,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      sectional: {
+        inputType: 'options',
+        required: true,
+        options: [
+          { name: 'False', value: false },
+          { name: 'True', value: true },
+        ],
+        // No validation possible here until we have rollback
       },
     },
   },
@@ -510,7 +544,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_DEGREE,
         required: true,
       },
-      counterClockWise: {
+      ccw: {
         inputType: 'options',
         required: true,
         defaultValue: false,
@@ -598,6 +632,77 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         createVariable: 'force',
         variableName: 'myParameter',
         defaultValue: '5',
+      },
+    },
+  },
+  'event.parameter.edit': {
+    displayName: 'Edit parameter',
+    description: 'Edit the value of a named constant',
+    icon: 'make-variable',
+    status: 'development',
+    needsReview: false,
+    args: {
+      nodeToEdit: {
+        displayName: 'Name',
+        inputType: 'options',
+        valueSummary: (nodeToEdit: PathToNode) => {
+          const node = getNodeFromPath<VariableDeclarator>(
+            kclManager.ast,
+            nodeToEdit
+          )
+          if (err(node) || node.node.type !== 'VariableDeclarator')
+            return 'Error'
+          return node.node.id.name || ''
+        },
+        required: true,
+        options() {
+          return (
+            Object.entries(kclManager.execState.variables)
+              // TODO: @franknoirot && @jtran would love to make this go away soon 🥺
+              .filter(([_, variable]) => variable?.type === 'Number')
+              .map(([name, variable]) => {
+                const node = getVariableDeclaration(kclManager.ast, name)
+                if (node === undefined) return
+                const range: SourceRange = [node.start, node.end, node.moduleId]
+                const pathToNode = getNodePathFromSourceRange(
+                  kclManager.ast,
+                  range
+                )
+                return {
+                  name,
+                  value: pathToNode,
+                }
+              })
+              .filter((a) => !!a) || []
+          )
+        },
+      },
+      value: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue(commandBarContext) {
+          const nodeToEdit = commandBarContext.argumentsToSubmit.nodeToEdit
+          if (!nodeToEdit || !isPathToNode(nodeToEdit)) return '5'
+          const node = getNodeFromPath<VariableDeclarator>(
+            kclManager.ast,
+            nodeToEdit
+          )
+          if (err(node) || node.node.type !== 'VariableDeclarator')
+            return 'Error'
+          const variableName = node.node.id.name || ''
+          if (typeof variableName !== 'string') return '5'
+          const variableNode = getVariableDeclaration(
+            kclManager.ast,
+            variableName
+          )
+          if (!variableNode) return '5'
+          const code = codeManager.code.slice(
+            variableNode.declaration.init.start,
+            variableNode.declaration.init.end
+          )
+          return code
+        },
+        createVariable: 'disallow',
       },
     },
   },

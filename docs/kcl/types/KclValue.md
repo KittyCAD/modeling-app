@@ -188,7 +188,7 @@ Any KCL value.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`Face`](/docs/kcl/types/Face)|  | No |
-| `value` |[`Face`](/docs/kcl/types/Face)| A face. | No |
+| `value` |[`Face`](/docs/kcl/types/Face)|  | No |
 
 
 ----
@@ -236,7 +236,7 @@ Any KCL value.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`Helix`](/docs/kcl/types/Helix)|  | No |
-| `value` |[`Helix`](/docs/kcl/types/Helix)| A helix. | No |
+| `value` |[`Helix`](/docs/kcl/types/Helix)|  | No |
 
 
 ----

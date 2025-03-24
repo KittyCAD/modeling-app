@@ -152,9 +152,15 @@ export class EditorFixture {
   }
   replaceCode = async (findCode: string, replaceCode: string) => {
     const lines = await this.page.locator('.cm-line').all()
+
     let code = (await Promise.all(lines.map((c) => c.textContent()))).join('\n')
-    if (!lines) return
-    code = code.replace(findCode, replaceCode)
+    if (!findCode) {
+      // nuke everything
+      code = replaceCode
+    } else {
+      if (!lines) return
+      code = code.replace(findCode, replaceCode)
+    }
     await this.codeContent.fill(code)
   }
   checkIfPaneIsOpen() {
@@ -199,7 +205,7 @@ export class EditorFixture {
 
     // Use Playwright's built-in text selection on the code content
     // it seems to only select whole divs, which works out to align with syntax highlighting
-    // for code mirror, so you can probably select "sketch002 = startSketchOn('XZ')"
+    // for code mirror, so you can probably select "sketch002 = startSketchOn(XZ)"
     // but less so for exactly "sketch002 = startS"
     await this.codeContent.getByText(text).first().selectText()
 

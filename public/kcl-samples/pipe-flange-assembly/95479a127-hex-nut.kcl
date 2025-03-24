@@ -1,0 +1,49 @@
+// 95479A127 Hex Nut
+
+// import constants
+import hexNutDiameter, hexNutFlatToFlat, hexNutThickness, hexNutFlatLength from "globals.kcl"
+
+// set units
+@settings(defaultLengthUnit = in)
+
+// create a function to make the hex nut
+export fn hexNut() {
+
+  // create the base of the hex nut
+  hexNutBase = startSketchOn('XY')
+    |> startProfileAt([
+         hexNutFlatToFlat / 2,
+         hexNutFlatLength / 2
+       ], %)
+    |> angledLine({
+         angle = 270,
+         length = hexNutFlatLength
+       }, %)
+    |> angledLine({
+         angle = 210,
+         length = hexNutFlatLength
+       }, %)
+    |> angledLine({
+         angle = 150,
+         length = hexNutFlatLength
+       }, %)
+    |> angledLine({
+         angle = 90,
+         length = hexNutFlatLength
+       }, %)
+    |> angledLine({
+         angle = 30,
+         length = hexNutFlatLength
+       }, %)
+    |> close()
+    |> extrude(length = hexNutThickness)
+
+  // create the hole in the center of the hex nut
+  hexNut = startSketchOn(hexNutBase, 'end')
+    |> circle(center = [0, 0], radius = hexNutDiameter / 2)
+    |> extrude(%, length = -hexNutThickness)
+    |> appearance(%, color = "#4edfd5")
+
+  return hexNut
+}
+// https://www.mcmaster.com/95479A127/

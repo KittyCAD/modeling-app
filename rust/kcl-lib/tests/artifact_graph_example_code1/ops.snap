@@ -10,19 +10,11 @@ description: Operations executed artifact_graph_example_code1.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          26,
-          30,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      12,
-      31,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,19 +34,11 @@ description: Operations executed artifact_graph_example_code1.kcl
             }
           }
         },
-        "sourceRange": [
-          288,
-          291,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      260,
-      292,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -63,11 +47,7 @@ description: Operations executed artifact_graph_example_code1.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        268,
-        277,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -86,11 +66,7 @@ description: Operations executed artifact_graph_example_code1.kcl
             }
           }
         },
-        "sourceRange": [
-          314,
-          315,
-          0
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -103,19 +79,11 @@ description: Operations executed artifact_graph_example_code1.kcl
             }
           ]
         },
-        "sourceRange": [
-          324,
-          331,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      298,
-      332,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -124,11 +92,7 @@ description: Operations executed artifact_graph_example_code1.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        298,
-        332,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -140,11 +104,7 @@ description: Operations executed artifact_graph_example_code1.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          359,
-          369,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
@@ -152,19 +112,11 @@ description: Operations executed artifact_graph_example_code1.kcl
           "value": "seg02",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          371,
-          376,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      345,
-      377,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -184,19 +136,11 @@ description: Operations executed artifact_graph_example_code1.kcl
             }
           }
         },
-        "sourceRange": [
-          576,
-          577,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      548,
-      578,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -205,11 +149,7 @@ description: Operations executed artifact_graph_example_code1.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        556,
-        565,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

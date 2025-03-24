@@ -13,4 +13,4 @@ cargo test -p kcl-lib export_bindings
 cd ..
 
 cp rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public
-yarn fmt
+yarn fmt:generated

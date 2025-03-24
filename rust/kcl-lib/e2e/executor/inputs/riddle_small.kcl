@@ -8,7 +8,7 @@ let xs = 205804
 let ys = 71816
   let ox = 35 - (t(xs) % 70)
   let oy = 35 - (t(ys) % 70)
-  const r = startSketchOn('XZ')
+  const r = startSketchOn(XZ)
     |> startProfileAt([ox, oy], %)
     |> line(end = [1, 0])
     |> line(end = [0, -1])

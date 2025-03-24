@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed kw_fn_too_few_args.kcl
 ---
 [
@@ -27,17 +27,9 @@ description: Operations executed kw_fn_too_few_args.kcl
             }
           }
         },
-        "sourceRange": [
-          49,
-          50,
-          0
-        ]
+        "sourceRange": []
       }
     },
-    "sourceRange": [
-      41,
-      51,
-      0
-    ]
+    "sourceRange": []
   }
 ]

@@ -1,12 +1,13 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing import_file_parse_error.kcl
 ---
 {
   "Ok": {
     "body": [
       {
-        "end": 38,
+        "commentStart": 0,
+        "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "parse-failure.kcl"
@@ -16,14 +17,16 @@ description: Result of parsing import_file_parse_error.kcl
           "items": [
             {
               "alias": null,
-              "end": 13,
+              "commentStart": 7,
+              "end": 0,
               "name": {
-                "end": 13,
+                "commentStart": 7,
+                "end": 0,
                 "name": "hotdog",
-                "start": 7,
+                "start": 0,
                 "type": "Identifier"
               },
-              "start": 7,
+              "start": 0,
               "type": "ImportItem"
             }
           ]
@@ -33,7 +36,8 @@ description: Result of parsing import_file_parse_error.kcl
         "type": "ImportStatement"
       }
     ],
-    "end": 39,
+    "commentStart": 0,
+    "end": 0,
     "start": 0
   }
 }

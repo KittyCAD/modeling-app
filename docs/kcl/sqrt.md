@@ -31,7 +31,7 @@ sqrt(num: number): number
 ### Examples
 
 ```js
-exampleSketch = startSketchOn("XZ")
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> angledLine({ angle = 50, length = sqrt(2500) }, %)
   |> yLine(endAbsolute = 0)

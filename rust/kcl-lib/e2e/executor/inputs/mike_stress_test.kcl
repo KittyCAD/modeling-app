@@ -1,4 +1,4 @@
-const part001 = startSketchOn('XY')
+const part001 = startSketchOn(XY)
   |> startProfileAt([0.0, 0.0], %)
   |> line(end = [-0.3670208139314082, 0.21201331909674526])
   |> line(end = [-0.4707511307971115, 0.4905279615419764])

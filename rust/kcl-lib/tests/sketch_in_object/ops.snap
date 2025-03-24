@@ -13,11 +13,7 @@ description: Operations executed sketch_in_object.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      411,
-      417,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -26,19 +22,11 @@ description: Operations executed sketch_in_object.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          35,
-          39,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      21,
-      40,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -61,19 +49,11 @@ description: Operations executed sketch_in_object.kcl
             }
           }
         },
-        "sourceRange": [
-          442,
-          445,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      425,
-      446,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -82,11 +62,7 @@ description: Operations executed sketch_in_object.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        425,
-        446,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -99,11 +75,7 @@ description: Operations executed sketch_in_object.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      453,
-      460,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -112,19 +84,11 @@ description: Operations executed sketch_in_object.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          240,
-          244,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      226,
-      245,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -147,19 +111,11 @@ description: Operations executed sketch_in_object.kcl
             }
           }
         },
-        "sourceRange": [
-          500,
-          502,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      483,
-      503,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -168,11 +124,7 @@ description: Operations executed sketch_in_object.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        483,
-        503,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

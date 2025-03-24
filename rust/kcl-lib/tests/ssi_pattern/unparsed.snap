@@ -1,0 +1,21 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing ssi_pattern.kcl
+---
+sketch001 = startSketchOn(XZ)
+  |> startProfileAt([-4.35, -12.26], %)
+  |> yLine(length = 10.2)
+  |> line(end = [0.54, -0.03])
+  |> tangentialArcTo([20.4, 14.61], %)
+  |> yLine(length = -26.76)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> close()
+
+extrude001 = extrude(sketch001, length = 50)
+
+sketch002 = startSketchOn(extrude001, seg01)
+  |> circle(center = [-2.08, 47.7], radius = 1.4)
+  |> patternLinear2d(instances = 5, distance = 5, axis = [1, 0])
+  // Instances was reduced from 12 to speed this up.
+  |> patternLinear2d(instances = 6, distance = 4, axis = [0, -1])
+  |> extrude(length = -40)

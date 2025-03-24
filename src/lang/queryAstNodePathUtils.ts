@@ -6,6 +6,7 @@ import {
   SourceRange,
   PathToNode,
   Program,
+  Identifier,
 } from './wasm'
 import { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import { Node } from '@rust/kcl-lib/bindings/Node'
@@ -20,6 +21,7 @@ function moreNodePathFromSourceRange(
     | VariableDeclaration
     | TypeDeclaration
     | ReturnStatement
+    | Identifier
   >,
   sourceRange: SourceRange,
   previousPath: PathToNode = [['body', '']]
@@ -33,7 +35,7 @@ function moreNodePathFromSourceRange(
   const isInRange = _node.start <= start && _node.end >= end
 
   if (
-    (_node.type === 'Identifier' ||
+    (_node.type === 'Name' ||
       _node.type === 'Literal' ||
       _node.type === 'TagDeclarator') &&
     isInRange
@@ -43,11 +45,7 @@ function moreNodePathFromSourceRange(
 
   if (_node.type === 'CallExpression' && isInRange) {
     const { callee, arguments: args } = _node
-    if (
-      callee.type === 'Identifier' &&
-      callee.start <= start &&
-      callee.end >= end
-    ) {
+    if (callee.type === 'Name' && callee.start <= start && callee.end >= end) {
       path.push(['callee', 'CallExpression'])
       return path
     }
@@ -66,11 +64,7 @@ function moreNodePathFromSourceRange(
 
   if (_node.type === 'CallExpressionKw' && isInRange) {
     const { callee, arguments: args } = _node
-    if (
-      callee.type === 'Identifier' &&
-      callee.start <= start &&
-      callee.end >= end
-    ) {
+    if (callee.type === 'Name' && callee.start <= start && callee.end >= end) {
       path.push(['callee', 'CallExpressionKw'])
       return path
     }

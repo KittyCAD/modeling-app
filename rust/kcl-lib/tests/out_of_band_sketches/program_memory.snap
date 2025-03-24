@@ -12,11 +12,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              164,
-              187,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             27.67,
@@ -35,11 +31,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              208,
-              236,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             442.28,
@@ -100,11 +92,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            45,
-            87,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",
@@ -123,11 +111,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              164,
-              187,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             27.67,
@@ -146,11 +130,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              208,
-              236,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             442.28,
@@ -169,11 +149,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              543,
-              567,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             476.26,
@@ -192,11 +168,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              588,
-              595,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             20.88,
@@ -257,11 +229,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            45,
-            87,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",
@@ -280,11 +248,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              416,
-              439,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             67.04,
@@ -303,11 +267,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              460,
-              489,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             349.41,
@@ -368,11 +328,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            298,
-            339,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",
@@ -391,11 +347,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              416,
-              439,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             67.04,
@@ -414,11 +366,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              460,
-              489,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             349.41,
@@ -437,11 +385,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              643,
-              671,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             336.64,
@@ -460,11 +404,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              692,
-              699,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             37.25,
@@ -525,11 +465,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            298,
-            339,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",

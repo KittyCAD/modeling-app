@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing array_elem_pop_empty_fail.kcl
+---
+arr = []
+fail = pop(arr)

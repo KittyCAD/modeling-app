@@ -1,0 +1,12 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing double_map_fn.kcl
+---
+fn increment(i) {
+  return i + 1
+}
+
+xs = [0..2]
+ys = xs
+  |> map(%, increment)
+  |> map(%, increment)

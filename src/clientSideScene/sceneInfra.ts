@@ -110,18 +110,16 @@ interface OnMoveCallbackArgs {
 type Voidish = void | Promise<void>
 export class SceneInfra {
   static instance: SceneInfra
-  scene: Scene
-  renderer: WebGLRenderer
-  labelRenderer: CSS2DRenderer
-  camControls: CameraControls
-  isPerspective = true
-  fov = 45
-  fovBeforeAnimate = 45
+  readonly scene: Scene
+  readonly renderer: WebGLRenderer
+  readonly labelRenderer: CSS2DRenderer
+  readonly camControls: CameraControls
+  private readonly fov = 45
   isFovAnimationInProgress = false
   _baseUnit: BaseUnit = 'mm'
   _baseUnitMultiplier = 1
   _theme: Themes = Themes.System
-  extraSegmentTexture: Texture
+  readonly extraSegmentTexture: Texture
   lastMouseState: MouseState = { type: 'idle' }
   onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onDragEndCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}

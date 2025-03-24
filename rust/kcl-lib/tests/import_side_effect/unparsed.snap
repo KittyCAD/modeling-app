@@ -1,0 +1,5 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing import_side_effect.kcl
+---
+import foo from "export_side_effect.kcl"

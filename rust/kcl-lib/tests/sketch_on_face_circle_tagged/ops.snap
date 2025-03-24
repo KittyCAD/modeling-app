@@ -13,11 +13,7 @@ description: Operations executed sketch_on_face_circle_tagged.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      195,
-      211,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -26,19 +22,11 @@ description: Operations executed sketch_on_face_circle_tagged.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          43,
-          47,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      29,
-      48,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -61,19 +49,11 @@ description: Operations executed sketch_on_face_circle_tagged.kcl
             }
           }
         },
-        "sourceRange": [
-          248,
-          250,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      231,
-      251,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -82,11 +62,7 @@ description: Operations executed sketch_on_face_circle_tagged.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        231,
-        251,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -98,32 +74,93 @@ description: Operations executed sketch_on_face_circle_tagged.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          277,
-          284,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "end"
         },
-        "sourceRange": [
-          286,
-          291,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      263,
-      292,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 5.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "tag": {
+        "value": {
+          "type": "TagDeclarator",
+          "name": "myCircle"
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -141,19 +178,11 @@ description: Operations executed sketch_on_face_circle_tagged.kcl
             }
           }
         },
-        "sourceRange": [
-          373,
-          374,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      356,
-      375,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -162,11 +191,7 @@ description: Operations executed sketch_on_face_circle_tagged.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        356,
-        375,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

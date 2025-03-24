@@ -28,7 +28,7 @@ e(): number
 ### Examples
 
 ```js
-exampleSketch = startSketchOn("XZ")
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> angledLine({ angle = 30, length = 2 * e() ^ 2 }, %)
   |> yLine(endAbsolute = 0)

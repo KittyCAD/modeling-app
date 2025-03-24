@@ -5,11 +5,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,11 +13,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -29,11 +21,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +30,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +39,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      562,
-      595,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "in"
@@ -67,11 +47,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      946,
-      965,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -96,11 +72,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      971,
-      1015,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -116,22 +88,14 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      971,
-      1015,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      971,
-      1015,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -144,22 +108,14 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      971,
-      1015,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1021,
-      1065,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -176,11 +132,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1071,
-      1114,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -197,11 +149,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1120,
-      1164,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -218,11 +166,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1170,
-      1177,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -230,11 +174,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1183,
-      1207,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -250,11 +190,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1183,
-      1207,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -264,22 +200,14 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1183,
-      1207,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1183,
-      1207,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -287,11 +215,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1183,
-      1207,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -300,11 +224,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1183,
-      1207,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -314,11 +234,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1183,
-      1207,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -328,11 +244,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1183,
-      1207,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -342,11 +254,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1183,
-      1207,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -356,11 +264,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1183,
-      1207,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -370,11 +274,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1183,
-      1207,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -384,11 +284,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1183,
-      1207,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -398,11 +294,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1183,
-      1207,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -412,11 +304,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1262,
-      1406,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -428,22 +316,14 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1262,
-      1406,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1262,
-      1406,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -456,22 +336,14 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1262,
-      1406,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1262,
-      1406,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -496,11 +368,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1262,
-      1406,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -508,11 +376,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1412,
-      1512,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -552,11 +416,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1518,
-      1616,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -596,11 +456,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1518,
-      1616,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -640,11 +496,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -656,11 +508,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -670,22 +518,14 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -693,11 +533,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -706,11 +542,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -720,11 +552,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -734,11 +562,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -750,11 +574,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -764,22 +584,14 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -787,11 +599,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -800,11 +608,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -814,11 +618,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -828,11 +628,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -844,11 +640,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -858,22 +650,14 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -881,11 +665,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -894,11 +674,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -908,11 +684,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -922,11 +694,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -938,11 +706,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -952,22 +716,14 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -975,11 +731,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -988,11 +740,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1002,11 +750,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1622,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1016,11 +760,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1706,
-      1862,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1032,22 +772,14 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1706,
-      1862,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1706,
-      1862,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1060,22 +792,14 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1706,
-      1862,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1706,
-      1862,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1100,11 +824,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1706,
-      1862,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1112,11 +832,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1868,
-      1967,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -1156,11 +872,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1973,
-      2071,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -1200,11 +912,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1973,
-      2071,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -1244,11 +952,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1260,11 +964,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1274,22 +974,14 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1297,11 +989,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1310,11 +998,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1324,11 +1008,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1338,11 +1018,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1354,11 +1030,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1368,22 +1040,14 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1391,11 +1055,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1404,11 +1064,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1418,11 +1074,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1432,11 +1084,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1448,11 +1096,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1462,22 +1106,14 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1485,11 +1121,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1498,11 +1130,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1512,11 +1140,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1526,11 +1150,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1542,11 +1162,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1556,22 +1172,14 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1579,11 +1187,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1592,11 +1196,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1606,11 +1206,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2112,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1620,11 +1216,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2165,
-      2230,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1636,22 +1228,14 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2165,
-      2230,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2165,
-      2230,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1664,22 +1248,14 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2165,
-      2230,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2165,
-      2230,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1704,11 +1280,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2165,
-      2230,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1716,11 +1288,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2236,
-      2261,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1732,11 +1300,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2236,
-      2261,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1746,22 +1310,14 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2236,
-      2261,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2236,
-      2261,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1769,11 +1325,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2236,
-      2261,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1782,11 +1334,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2236,
-      2261,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1796,11 +1344,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2236,
-      2261,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",

@@ -67,7 +67,7 @@ fn transform(id) {
 }
 
 // Sketch 4 cylinders.
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 2)
   |> extrude(length = 5)
   |> patternTransform(instances = 4, transform = transform)
@@ -83,7 +83,7 @@ fn transform(id) {
   return { translate = [4 * (1 + id), 0, 0] }
 }
 
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 2)
   |> extrude(length = 5)
   |> patternTransform(instances = 4, transform = transform)
@@ -101,7 +101,7 @@ fn cube(length, center) {
   p2 = [l + x, l + y]
   p3 = [l + x, -l + y]
 
-  return startSketchOn('XY')
+  return startSketchOn(XY)
     |> startProfileAt(p0, %)
     |> line(endAbsolute = p1)
     |> line(endAbsolute = p2)
@@ -139,7 +139,7 @@ fn cube(length, center) {
   p2 = [l + x, l + y]
   p3 = [l + x, -l + y]
 
-  return startSketchOn('XY')
+  return startSketchOn(XY)
     |> startProfileAt(p0, %)
     |> line(endAbsolute = p1)
     |> line(endAbsolute = p2)
@@ -182,7 +182,7 @@ fn transform(replicaId) {
 }
 // Each layer is just a pretty thin cylinder.
 fn layer() {
-  return startSketchOn("XY")
+  return startSketchOn(XY)
     // or some other plane idk
     |> circle(center = [0, 0], radius = 1, tag = $tag1)
     |> extrude(length = h)
@@ -203,7 +203,7 @@ fn transform(i) {
     { rotation = { angle = 45 * i } }
   ]
 }
-startSketchOn('XY')
+startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> polygon({
        radius = 10,
