@@ -93,12 +93,20 @@ description: Result of parsing multi-axis-robot.kcl
         "commentStart": 386,
         "end": 0,
         "expression": {
+          "abs_path": false,
           "commentStart": 388,
           "end": 0,
-          "name": "robotArmBase",
+          "name": {
+            "commentStart": 388,
+            "end": 0,
+            "name": "robotArmBase",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 0,
-          "type": "Identifier",
-          "type": "Identifier"
+          "type": "Name",
+          "type": "Name"
         },
         "start": 0,
         "type": "ExpressionStatement",
@@ -108,12 +116,20 @@ description: Result of parsing multi-axis-robot.kcl
         "commentStart": 401,
         "end": 0,
         "expression": {
+          "abs_path": false,
           "commentStart": 401,
           "end": 0,
-          "name": "rotatingBase",
+          "name": {
+            "commentStart": 401,
+            "end": 0,
+            "name": "rotatingBase",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 0,
-          "type": "Identifier",
-          "type": "Identifier"
+          "type": "Name",
+          "type": "Name"
         },
         "start": 0,
         "type": "ExpressionStatement",
@@ -123,12 +139,20 @@ description: Result of parsing multi-axis-robot.kcl
         "commentStart": 414,
         "end": 0,
         "expression": {
+          "abs_path": false,
           "commentStart": 414,
           "end": 0,
-          "name": "j2RobotArm",
+          "name": {
+            "commentStart": 414,
+            "end": 0,
+            "name": "j2RobotArm",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 0,
-          "type": "Identifier",
-          "type": "Identifier"
+          "type": "Name",
+          "type": "Name"
         },
         "start": 0,
         "type": "ExpressionStatement",
@@ -138,12 +162,20 @@ description: Result of parsing multi-axis-robot.kcl
         "commentStart": 425,
         "end": 0,
         "expression": {
+          "abs_path": false,
           "commentStart": 425,
           "end": 0,
-          "name": "j3RobotArm",
+          "name": {
+            "commentStart": 425,
+            "end": 0,
+            "name": "j3RobotArm",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 0,
-          "type": "Identifier",
-          "type": "Identifier"
+          "type": "Name",
+          "type": "Name"
         },
         "start": 0,
         "type": "ExpressionStatement",
@@ -184,12 +216,20 @@ description: Result of parsing multi-axis-robot.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "commentStart": 209,
               "end": 0,
-              "name": "in",
+              "name": {
+                "commentStart": 209,
+                "end": 0,
+                "name": "in",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

@@ -96,7 +96,7 @@ function getConstraintTypeFromSourceHelper(
         )
       }
       const args = arg.elements as [Expr, Expr]
-      const fnName = expr.callee.name as ToolTip
+      const fnName = expr.callee.name.name as ToolTip
       return getConstraintType(args, fnName, false)
     }
     case 'CallExpressionKw': {
@@ -107,7 +107,7 @@ function getConstraintTypeFromSourceHelper(
         return new Error("couldn't find either end or endAbsolute in KW call")
       }
       const isAbsolute = endAbsolute ? true : false
-      const fnName = expr.callee.name as ToolTip
+      const fnName = expr.callee.name.name as ToolTip
       if (arg.type === 'ArrayExpression') {
         return getConstraintType(
           arg.elements as [Expr, Expr],
@@ -156,7 +156,7 @@ function getConstraintTypeFromSourceHelper2(
     default:
       return new Error('was not a call expression')
   }
-  const fnName = callExpr.callee.name as ToolTip
+  const fnName = callExpr.callee.name.name as ToolTip
   const constraintType = getConstraintType(arg, fnName, isAbsolute)
   return constraintType
 }

@@ -13,7 +13,7 @@ import { Selections } from 'lib/selections'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   createLiteral,
-  createIdentifier,
+  createLocalName,
   findUniqueName,
   createVariableDeclaration,
   createCallExpressionStdLibKw,
@@ -108,7 +108,7 @@ export function revolveSketch(
 
   const revolveCall = createCallExpressionStdLibKw(
     'revolve',
-    createIdentifier(sketchVariableDeclarator.id.name),
+    createLocalName(sketchVariableDeclarator.id.name),
     [createLabeledArg('angle', angle), createLabeledArg('axis', generatedAxis)]
   )
 

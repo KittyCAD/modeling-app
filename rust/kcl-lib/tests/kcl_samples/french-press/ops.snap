@@ -481,6 +481,66 @@ description: Operations executed french-press.kcl
     "unlabeledArg": null
   },
   {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 2.055,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
     "labeledArgs": {
       "length": {
         "value": {
@@ -707,6 +767,132 @@ description: Operations executed french-press.kcl
     "unlabeledArg": null
   },
   {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 1.965,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.15,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
     "labeledArgs": {
       "holeSketch": {
         "value": {
@@ -789,6 +975,72 @@ description: Operations executed french-press.kcl
     "unlabeledArg": null
   },
   {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 1.4,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.3,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
     "labeledArgs": {
       "length": {
         "value": {
@@ -892,6 +1144,72 @@ description: Operations executed french-press.kcl
     "unlabeledArg": null
   },
   {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.6,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.2,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
     "labeledArgs": {
       "length": {
         "value": {
@@ -960,6 +1278,66 @@ description: Operations executed french-press.kcl
     "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 2.205,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {

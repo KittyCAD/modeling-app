@@ -1,6 +1,6 @@
 import { BinaryPart } from '../lang/wasm'
 import {
-  createIdentifier,
+  createLocalName,
   createLiteral,
   createUnaryExpression,
 } from '../lang/modifyAst'
@@ -151,7 +151,7 @@ export function removeDoubleNegatives(
   variableName?: string
 ): BinaryPart {
   let finValue: BinaryPart = variableName
-    ? createIdentifier(variableName)
+    ? createLocalName(variableName)
     : valueNode
   if (sign === -1) finValue = createUnaryExpression(finValue)
   if (

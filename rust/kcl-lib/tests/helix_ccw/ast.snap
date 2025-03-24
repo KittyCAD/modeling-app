@@ -32,11 +32,19 @@ description: Result of parsing helix_ccw.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 10,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 10,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 10,
                 "end": 0,
@@ -113,11 +121,19 @@ description: Result of parsing helix_ccw.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 35,
                   "end": 0,
-                  "name": "circle",
+                  "name": {
+                    "commentStart": 35,
+                    "end": 0,
+                    "name": "circle",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 35,
                 "end": 0,
@@ -152,11 +168,19 @@ description: Result of parsing helix_ccw.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 77,
                   "end": 0,
-                  "name": "extrude",
+                  "name": {
+                    "commentStart": 77,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 77,
                 "end": 0,
@@ -249,11 +273,19 @@ description: Result of parsing helix_ccw.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 103,
                   "end": 0,
-                  "name": "helix",
+                  "name": {
+                    "commentStart": 103,
+                    "end": 0,
+                    "name": "helix",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 103,
                 "end": 0,

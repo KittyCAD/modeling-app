@@ -10,10 +10,10 @@ Construct a circle derived from 3 points.
 
 ```js
 circleThreePoint(
+  sketchSurfaceOrGroup: SketchOrSurface,
   p1: [number],
   p2: [number],
   p3: [number],
-  sketchSurfaceOrGroup: SketchOrSurface,
   tag?: TagDeclarator,
 ): Sketch
 ```
@@ -23,10 +23,10 @@ circleThreePoint(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
+| `sketchSurfaceOrGroup` | [`SketchOrSurface`](/docs/kcl/types/SketchOrSurface) | Plane or surface to sketch on. | Yes |
 | `p1` | [`[number]`](/docs/kcl/types/number) | 1st point to derive the circle. | Yes |
 | `p2` | [`[number]`](/docs/kcl/types/number) | 2nd point to derive the circle. | Yes |
 | `p3` | [`[number]`](/docs/kcl/types/number) | 3rd point to derive the circle. | Yes |
-| `sketchSurfaceOrGroup` | [`SketchOrSurface`](/docs/kcl/types/SketchOrSurface) | Plane or surface to sketch on. | Yes |
 | [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Identifier for the circle to reference elsewhere. | No |
 
 ### Returns
