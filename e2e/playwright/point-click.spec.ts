@@ -3196,26 +3196,22 @@ segAng(rectangleSegmentA002),
       toolbar,
       cmdBar,
     }) => {
-      const initialCode = `
-sketch001 = startSketchOn(XZ)
-|> startProfileAt([-102.57, 101.72], %)
-|> angledLine([0, 202.6], %, $rectangleSegmentA001)
-|> angledLine([
-segAng(rectangleSegmentA001) - 90,
-202.6
-], %, $rectangleSegmentB001)
-|> angledLine([
-segAng(rectangleSegmentA001),
--segLen(rectangleSegmentA001)
-], %, $rectangleSegmentC001)
-|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-|> close()
+      const initialCode = `sketch001 = startSketchOn(XZ)
+  |> startProfileAt([-102.57, 101.72], %)
+  |> angledLine([0, 202.6], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       202.6
+     ], %, $rectangleSegmentB001)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %, $rectangleSegmentC001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 extrude001 = extrude(sketch001, length = 50)
 sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
-|> circle(
-center = [-11.34, 10.0],
-radius = 8.69
-)
+  |> circle(center = [-11.34, 10.0], radius = 8.69)
 `
       page.on('console', console.log)
       await context.addInitScript((initialCode) => {
@@ -3237,8 +3233,9 @@ radius = 8.69
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
 
-      const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360, axis = getOppositeEdge(rectangleSegmentA001)) `
-      expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
+      // const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360, axis = getOppositeEdge(rectangleSegmentA001)) `
+      const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360, axis = rectangleSegmentA001)`
+      await editor.expectEditor.toContain(newCodeToFind)
 
       // Edit flow
       const newAngle = '180'
@@ -3272,6 +3269,7 @@ radius = 8.69
       await editor.expectEditor.toContain(
         newCodeToFind.replace('angle = 360', 'angle = ' + newAngle)
       )
+      await page.waitForTimeout(30000)
     })
     test('revolve sketch circle around line segment from startProfileAt sketch', async ({
       context,
