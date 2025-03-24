@@ -74,6 +74,7 @@ import {
 import { BodyItem } from '@rust/kcl-lib/bindings/BodyItem'
 import { findKwArg } from './util'
 import { deleteEdgeTreatment } from './modifyAst/addEdgeTreatment'
+import { Name } from '@rust/kcl-lib/bindings/Name'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -135,7 +136,7 @@ export function insertNewStartProfileAt(
         createLiteral(roundOff(at[0])),
         createLiteral(roundOff(at[1])),
       ]),
-      createIdentifier(varDec.node.id.name),
+      createLocalName(varDec.node.id.name),
     ])
   )
   const insertIndex = getInsertIndex(sketchNodePaths, planeNodePath, insertType)
@@ -392,7 +393,7 @@ export function extrudeSketch({
 
   const extrudeCall = createCallExpressionStdLibKw(
     'extrude',
-    createIdentifier(variableDeclarator.id.name),
+    createLocalName(variableDeclarator.id.name),
     [createLabeledArg('length', distance)]
   )
   // index of the 'length' arg above. If you reorder the labeled args above,
@@ -436,7 +437,7 @@ export function loftSketches(
 } {
   const modifiedAst = structuredClone(node)
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.LOFT)
-  const elements = declarators.map((d) => createIdentifier(d.id.name))
+  const elements = declarators.map((d) => createLocalName(d.id.name))
   const loft = createCallExpressionStdLib('loft', [
     createArrayExpression(elements),
   ])
@@ -477,7 +478,7 @@ export function addShell({
     variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SHELL)
   const shell = createCallExpressionStdLibKw(
     'shell',
-    createIdentifier(sweepName),
+    createLocalName(sweepName),
     [
       createLabeledArg('faces', createArrayExpression(faces)),
       createLabeledArg('thickness', thickness),
@@ -515,30 +516,54 @@ export function addShell({
   }
 }
 
-export function addSweep(
-  node: Node<Program>,
-  profileDeclarator: VariableDeclarator,
-  pathDeclarator: VariableDeclarator
-): {
+export function addSweep({
+  node,
+  targetDeclarator,
+  trajectoryDeclarator,
+  sectional,
+  variableName,
+  insertIndex,
+}: {
+  node: Node<Program>
+  targetDeclarator: VariableDeclarator
+  trajectoryDeclarator: VariableDeclarator
+  sectional: boolean
+  variableName?: string
+  insertIndex?: number
+}): {
   modifiedAst: Node<Program>
   pathToNode: PathToNode
 } {
   const modifiedAst = structuredClone(node)
-  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP)
-  const sweep = createCallExpressionStdLibKw(
+  const name =
+    variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP)
+  const call = createCallExpressionStdLibKw(
     'sweep',
-    createIdentifier(profileDeclarator.id.name),
-    [createLabeledArg('path', createIdentifier(pathDeclarator.id.name))]
+    createLocalName(targetDeclarator.id.name),
+    [
+      createLabeledArg('path', createLocalName(trajectoryDeclarator.id.name)),
+      createLabeledArg('sectional', createLiteral(sectional)),
+    ]
   )
-  const declaration = createVariableDeclaration(name, sweep)
-  modifiedAst.body.push(declaration)
+  const variable = createVariableDeclaration(name, call)
+  const insertAt =
+    insertIndex !== undefined
+      ? insertIndex
+      : modifiedAst.body.length
+      ? modifiedAst.body.length
+      : 0
+
+  modifiedAst.body.length
+    ? modifiedAst.body.splice(insertAt, 0, variable)
+    : modifiedAst.body.push(variable)
+  const argIndex = 0
   const pathToNode: PathToNode = [
     ['body', ''],
-    [modifiedAst.body.length - 1, 'index'],
+    [insertAt, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpressionKw'],
-    [0, ARG_INDEX_FIELD],
+    [argIndex, ARG_INDEX_FIELD],
     ['arg', LABELED_ARG_FIELD],
   ]
 
@@ -590,7 +615,7 @@ export function revolveSketch(
       // TODO: hard coded 'X' axis for revolve MVP, should be changed.
       axis: createLiteral('X'),
     }),
-    createIdentifier(variableDeclarator.id.name),
+    createLocalName(variableDeclarator.id.name),
   ])
 
   if (shouldPipe) {
@@ -688,12 +713,12 @@ export function sketchOnExtrudedFace(
         pathToNode: sketchPathToNode,
         node: _node,
       },
-      expression.callee.name,
+      expression.callee.name.name,
       info.type === 'edgeCut' ? info : null
     )
     if (err(__tag)) return __tag
     const { modifiedAst, tag } = __tag
-    _tag = createIdentifier(tag)
+    _tag = createLocalName(tag)
     _node = modifiedAst
   } else {
     _tag = createLiteral(info.subType.toUpperCase())
@@ -701,7 +726,7 @@ export function sketchOnExtrudedFace(
   const newSketch = createVariableDeclaration(
     newSketchName,
     createCallExpressionStdLib('startSketchOn', [
-      createIdentifier(extrudeName ? extrudeName : oldSketchName),
+      createLocalName(extrudeName ? extrudeName : oldSketchName),
       _tag,
     ]),
     undefined,
@@ -785,7 +810,7 @@ export function addHelix({
   node,
   revolutions,
   angleStart,
-  counterClockWise,
+  ccw,
   radius,
   axis,
   length,
@@ -795,7 +820,7 @@ export function addHelix({
   node: Node<Program>
   revolutions: Expr
   angleStart: Expr
-  counterClockWise: boolean
+  ccw: boolean
   radius: Expr
   axis: Node<Literal> | Node<Identifier | CallExpression | CallExpressionKw>
   length: Expr
@@ -813,7 +838,7 @@ export function addHelix({
       [
         createLabeledArg('revolutions', revolutions),
         createLabeledArg('angleStart', angleStart),
-        createLabeledArg('counterClockWise', createLiteral(counterClockWise)),
+        createLabeledArg('ccw', createLiteral(ccw)),
         createLabeledArg('radius', radius),
         createLabeledArg('axis', axis),
         createLabeledArg('length', length),
@@ -897,7 +922,7 @@ export function sketchOnOffsetPlane(
   const newSketch = createVariableDeclaration(
     newSketchName,
     createCallExpressionStdLib('startSketchOn', [
-      createIdentifier(offsetPlaneName),
+      createLocalName(offsetPlaneName),
     ]),
     undefined,
     'const'
@@ -1030,6 +1055,22 @@ export function createIdentifier(name: string): Node<Identifier> {
   }
 }
 
+export function createLocalName(name: string): Node<Name> {
+  return {
+    type: 'Name',
+    start: 0,
+    end: 0,
+    moduleId: 0,
+    outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
+
+    abs_path: false,
+    path: [],
+    name: createIdentifier(name),
+  }
+}
+
 export function createPipeSubstitution(): Node<PipeSubstitution> {
   return {
     type: 'PipeSubstitution',
@@ -1054,17 +1095,7 @@ export function createCallExpressionStdLib(
     outerAttrs: [],
     preComments: [],
     commentStart: 0,
-    callee: {
-      type: 'Identifier',
-      start: 0,
-      end: 0,
-      moduleId: 0,
-      outerAttrs: [],
-      preComments: [],
-      commentStart: 0,
-
-      name,
-    },
+    callee: createLocalName(name),
     arguments: args,
   }
 }
@@ -1083,17 +1114,7 @@ export function createCallExpressionStdLibKw(
     preComments: [],
     commentStart: 0,
     nonCodeMeta: nonCodeMetaEmpty(),
-    callee: {
-      type: 'Identifier',
-      start: 0,
-      end: 0,
-      moduleId: 0,
-      outerAttrs: [],
-      preComments: [],
-      commentStart: 0,
-
-      name,
-    },
+    callee: createLocalName(name),
     unlabeled,
     arguments: args,
   }
@@ -1111,17 +1132,7 @@ export function createCallExpression(
     outerAttrs: [],
     preComments: [],
     commentStart: 0,
-    callee: {
-      type: 'Identifier',
-      start: 0,
-      end: 0,
-      moduleId: 0,
-      outerAttrs: [],
-      preComments: [],
-      commentStart: 0,
-
-      name,
-    },
+    callee: createLocalName(name),
     arguments: args,
   }
 }
@@ -1351,7 +1362,7 @@ export function replaceValueAtNodePath({
   }
   const { isSafe, value, replacer } = replaceCheckResult
 
-  if (!isSafe || value.type === 'Identifier') {
+  if (!isSafe || value.type === 'Name') {
     return new Error('Not safe to replace')
   }
 
@@ -1371,7 +1382,7 @@ export function moveValueIntoNewVariablePath(
   if (trap(meta)) return { modifiedAst: ast }
   const { isSafe, value, replacer } = meta
 
-  if (!isSafe || value.type === 'Identifier') return { modifiedAst: ast }
+  if (!isSafe || value.type === 'Name') return { modifiedAst: ast }
 
   const { insertIndex } = findAllPreviousVariablesPath(ast, memVars, pathToNode)
   let _node = structuredClone(ast)
@@ -1399,7 +1410,7 @@ export function moveValueIntoNewVariable(
   const meta = isNodeSafeToReplace(ast, sourceRange)
   if (trap(meta)) return { modifiedAst: ast }
   const { isSafe, value, replacer } = meta
-  if (!isSafe || value.type === 'Identifier') return { modifiedAst: ast }
+  if (!isSafe || value.type === 'Name') return { modifiedAst: ast }
 
   const { insertIndex } = findAllPreviousVariables(ast, memVars, sourceRange)
   let _node = structuredClone(ast)
@@ -1624,25 +1635,25 @@ export async function deleteFromSelection(
             const dec = node.declaration
             if (
               (dec.init.type === 'CallExpression' &&
-                (dec.init.callee.name === 'extrude' ||
-                  dec.init.callee.name === 'revolve') &&
-                dec.init.arguments?.[1].type === 'Identifier' &&
-                dec.init.arguments?.[1].name === varDecName) ||
+                (dec.init.callee.name.name === 'extrude' ||
+                  dec.init.callee.name.name === 'revolve') &&
+                dec.init.arguments?.[1].type === 'Name' &&
+                dec.init.arguments?.[1].name.name === varDecName) ||
               (dec.init.type === 'CallExpressionKw' &&
-                (dec.init.callee.name === 'extrude' ||
-                  dec.init.callee.name === 'revolve') &&
-                dec.init.unlabeled?.type === 'Identifier' &&
-                dec.init.unlabeled?.name === varDecName)
+                (dec.init.callee.name.name === 'extrude' ||
+                  dec.init.callee.name.name === 'revolve') &&
+                dec.init.unlabeled?.type === 'Name' &&
+                dec.init.unlabeled?.name.name === varDecName)
             ) {
               pathToNode = path
               extrudeNameToDelete = dec.id.name
             }
             if (
               dec.init.type === 'CallExpression' &&
-              dec.init.callee.name === 'loft' &&
+              dec.init.callee.name.name === 'loft' &&
               dec.init.arguments?.[0].type === 'ArrayExpression' &&
               dec.init.arguments?.[0].elements.some(
-                (a) => a.type === 'Identifier' && a.name === varDecName
+                (a) => a.type === 'Name' && a.name.name === varDecName
               )
             ) {
               pathToNode = path
@@ -1661,7 +1672,7 @@ export async function deleteFromSelection(
           'CallExpression'
         )
         if (err(callExp)) return callExp
-        extrudeNameToDelete = callExp.node.callee.name
+        extrudeNameToDelete = callExp.node.callee.name.name
       } else {
         extrudeNameToDelete = varDec.node.id.name
       }
@@ -1857,8 +1868,8 @@ export async function deleteFromSelection(
     if (
       pipeBody[0].type === 'CallExpression' &&
       doNotDeleteProfileIfItHasBeenExtruded &&
-      (pipeBody[0].callee.name === 'startSketchOn' ||
-        pipeBody[0].callee.name === 'startProfileAt')
+      (pipeBody[0].callee.name.name === 'startSketchOn' ||
+        pipeBody[0].callee.name.name === 'startProfileAt')
     ) {
       // remove varDec
       const varDecIndex = varDec.shallowPath[1][0] as number
@@ -1869,7 +1880,7 @@ export async function deleteFromSelection(
     // single expression profiles
     (varDec.node.init.type === 'CallExpressionKw' ||
       varDec.node.init.type === 'CallExpression') &&
-    ['circleThreePoint', 'circle'].includes(varDec.node.init.callee.name)
+    ['circleThreePoint', 'circle'].includes(varDec.node.init.callee.name.name)
   ) {
     const varDecIndex = varDec.shallowPath[1][0] as number
     astClone.body.splice(varDecIndex, 1)
@@ -1943,7 +1954,7 @@ export function updateSketchNodePathsWithInsertIndex({
  * 
  * Split the following pipe expression into 
  * ```ts
- * part001 = startSketchOn('XZ')
+ * part001 = startSketchOn(XZ)
   |> startProfileAt([1, 2], %)
   |> line([3, 4], %)
   |> line([5, 6], %)
@@ -1952,7 +1963,7 @@ extrude001 = extrude(5, part001)
 ```
 into
 ```ts
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
 part001 = startProfileAt([1, 2], sketch001)
   |> line([3, 4], %)
   |> line([5, 6], %)
@@ -1997,7 +2008,7 @@ export function splitPipedProfile(
   const varName = varDec.node.declaration.id.name
   const newVarName = findUniqueName(_ast, 'sketch')
   const secondCallArgs = structuredClone(secondCall.arguments)
-  secondCallArgs[1] = createIdentifier(newVarName)
+  secondCallArgs[1] = createLocalName(newVarName)
   const firstCallOfNewPipe = createCallExpression(
     'startProfileAt',
     secondCallArgs

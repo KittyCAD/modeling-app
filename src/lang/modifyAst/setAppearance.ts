@@ -46,8 +46,8 @@ export function setAppearance({
     const existingIndex = declarator.init.body.findIndex(
       (v) =>
         v.type === 'CallExpressionKw' &&
-        v.callee.type === 'Identifier' &&
-        v.callee.name === 'appearance'
+        v.callee.type === 'Name' &&
+        v.callee.name.name === 'appearance'
     )
     if (existingIndex > -1) {
       if (color === COMMAND_APPEARANCE_COLOR_DEFAULT) {

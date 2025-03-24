@@ -11,7 +11,7 @@ FOS = 2
 leg1 = 5 // inches
 leg2 = 8 // inches
 thickness = sqrt(distance * p * FOS * 6 / sigmaAllow / width) // inches
-bracket = startSketchOn('XY')
+bracket = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(end = [0, leg1])
   |> line(end = [leg2, 0])

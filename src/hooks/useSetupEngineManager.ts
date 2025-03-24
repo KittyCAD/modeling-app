@@ -93,7 +93,12 @@ export function useSetupEngineManager(
     engineCommandManager.settings = settings
 
     const handleResize = deferExecution(() => {
-      engineCommandManager.handleResize(engineCommandManager.streamDimensions)
+      engineCommandManager.handleResize(
+        getDimensions(
+          streamRef?.current?.offsetWidth ?? 0,
+          streamRef?.current?.offsetHeight ?? 0
+        )
+      )
     }, 500)
 
     const onOnline = () => {

@@ -31,7 +31,7 @@ pub fn lint_should_be_offset_plane(node: Node) -> Result<Vec<Discovered>> {
         return Ok(vec![]);
     };
 
-    if call.inner.callee.inner.name != "startSketchOn" {
+    if call.inner.callee.inner.name.name != "startSketchOn" {
         return Ok(vec![]);
     }
 

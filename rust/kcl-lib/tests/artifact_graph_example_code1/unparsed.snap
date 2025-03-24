@@ -2,7 +2,7 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing artifact_graph_example_code1.kcl
 ---
-sketch001 = startSketchOn('XY')
+sketch001 = startSketchOn(XY)
   |> startProfileAt([-5, -5], %)
   |> line(end = [0, 10])
   |> line(end = [10.55, 0], tag = $seg01)

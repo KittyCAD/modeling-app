@@ -86,20 +86,36 @@ description: Result of parsing array_elem_pop.kcl
           "init": {
             "arguments": [
               {
+                "abs_path": false,
                 "commentStart": 31,
                 "end": 0,
-                "name": "arr",
+                "name": {
+                  "commentStart": 31,
+                  "end": 0,
+                  "name": "arr",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 27,
               "end": 0,
-              "name": "pop",
+              "name": {
+                "commentStart": 27,
+                "end": 0,
+                "name": "pop",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 27,
             "end": 0,
@@ -131,20 +147,36 @@ description: Result of parsing array_elem_pop.kcl
           "init": {
             "arguments": [
               {
+                "abs_path": false,
                 "commentStart": 51,
                 "end": 0,
-                "name": "new_arr1",
+                "name": {
+                  "commentStart": 51,
+                  "end": 0,
+                  "name": "new_arr1",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 47,
               "end": 0,
-              "name": "pop",
+              "name": {
+                "commentStart": 47,
+                "end": 0,
+                "name": "pop",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 47,
             "end": 0,
@@ -176,20 +208,36 @@ description: Result of parsing array_elem_pop.kcl
           "init": {
             "arguments": [
               {
+                "abs_path": false,
                 "commentStart": 76,
                 "end": 0,
-                "name": "new_arr2",
+                "name": {
+                  "commentStart": 76,
+                  "end": 0,
+                  "name": "new_arr2",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 72,
               "end": 0,
-              "name": "pop",
+              "name": {
+                "commentStart": 72,
+                "end": 0,
+                "name": "pop",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 72,
             "end": 0,
@@ -274,11 +322,19 @@ description: Result of parsing array_elem_pop.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 86,
             "end": 0,
-            "name": "assertEqual",
+            "name": {
+              "commentStart": 86,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 86,
           "end": 0,
@@ -358,11 +414,19 @@ description: Result of parsing array_elem_pop.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 160,
             "end": 0,
-            "name": "assertEqual",
+            "name": {
+              "commentStart": 160,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 160,
           "end": 0,
@@ -442,11 +506,19 @@ description: Result of parsing array_elem_pop.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 234,
             "end": 0,
-            "name": "assertEqual",
+            "name": {
+              "commentStart": 234,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 234,
           "end": 0,

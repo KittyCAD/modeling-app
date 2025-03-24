@@ -55,8 +55,12 @@ export type ModelingCommandSchema = {
     distance: KclCommandValue
   }
   Sweep: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // Arguments
     target: Selections
     trajectory: Selections
+    sectional: boolean
   }
   Loft: {
     selection: Selections
@@ -99,7 +103,7 @@ export type ModelingCommandSchema = {
     edge: Selections | undefined
     revolutions: KclCommandValue
     angleStart: KclCommandValue
-    counterClockWise: boolean
+    ccw: boolean
     radius: KclCommandValue
     length: KclCommandValue
   }
@@ -360,22 +364,40 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description:
       'Create a 3D body by moving a sketch region along an arbitrary path.',
     icon: 'sweep',
-    needsReview: false,
+    needsReview: true,
     args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
       target: {
         inputType: 'selection',
         selectionTypes: ['solid2d'],
         required: true,
         skip: true,
         multiple: false,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       trajectory: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'path'],
+        selectionTypes: ['segment'],
         required: true,
-        skip: false,
+        skip: true,
         multiple: false,
         validation: sweepValidator,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      sectional: {
+        inputType: 'options',
+        required: true,
+        options: [
+          { name: 'False', value: false },
+          { name: 'True', value: true },
+        ],
+        // No validation possible here until we have rollback
       },
     },
   },
@@ -557,7 +579,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_DEGREE,
         required: true,
       },
-      counterClockWise: {
+      ccw: {
         inputType: 'options',
         required: true,
         defaultValue: false,

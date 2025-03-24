@@ -8,5 +8,5 @@ description: Result of unparsing tests/assembly_non_default_units/other1.kcl
 import radius from "globals.kcl"
 
 // Use the same units as in the main importing file.
-startSketchOn('XZ')
+startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)

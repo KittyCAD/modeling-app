@@ -82,7 +82,7 @@ fn decagon(radius) {
   stepAngle = 1 / 10 * TAU
 
   // Start the decagon sketch at this point.
-  startOfDecagonSketch = startSketchOn('XY')
+  startOfDecagonSketch = startSketchOn(XY)
     |> startProfileAt([cos(0) * radius, sin(0) * radius], %)
 
     // Use a `reduce` to draw the remaining decagon sides.

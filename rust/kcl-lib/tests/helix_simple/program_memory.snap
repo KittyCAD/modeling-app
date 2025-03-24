@@ -16,6 +16,7 @@ description: Variables in memory after executing helix_simple.kcl
       "revolutions": 5.0,
       "angleStart": 0.0,
       "ccw": true,
+      "cylinderId": null,
       "units": {
         "type": "Mm"
       }

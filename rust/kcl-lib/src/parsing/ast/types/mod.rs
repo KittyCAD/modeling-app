@@ -35,6 +35,7 @@ mod condition;
 mod literal_value;
 mod none;
 
+#[derive(Debug)]
 pub enum Definition<'a> {
     Variable(&'a VariableDeclarator),
     Import(NodeRef<'a, ImportStatement>),
@@ -165,6 +166,18 @@ impl<T> Node<T> {
     pub fn set_comments(&mut self, comments: Vec<String>, start: usize) {
         self.pre_comments = comments;
         self.comment_start = start;
+    }
+
+    pub fn map_ref<'a, U: 'a>(&'a self, f: fn(&'a T) -> U) -> Node<U> {
+        Node {
+            inner: f(&self.inner),
+            start: self.start,
+            end: self.end,
+            module_id: self.module_id,
+            outer_attrs: self.outer_attrs.clone(),
+            pre_comments: self.pre_comments.clone(),
+            comment_start: self.start,
+        }
     }
 }
 
@@ -762,7 +775,7 @@ impl From<&BodyItem> for SourceRange {
 #[allow(clippy::large_enum_variant)]
 pub enum Expr {
     Literal(BoxNode<Literal>),
-    Identifier(BoxNode<Identifier>),
+    Name(BoxNode<Name>),
     TagDeclarator(BoxNode<TagDeclarator>),
     BinaryExpression(BoxNode<BinaryExpression>),
     FunctionExpression(BoxNode<FunctionExpression>),
@@ -814,7 +827,7 @@ impl Expr {
             Expr::FunctionExpression(_func_exp) => None,
             Expr::CallExpression(_call_exp) => None,
             Expr::CallExpressionKw(_call_exp) => None,
-            Expr::Identifier(_ident) => None,
+            Expr::Name(_ident) => None,
             Expr::TagDeclarator(_tag) => None,
             Expr::PipeExpression(pipe_exp) => Some(&pipe_exp.non_code_meta),
             Expr::UnaryExpression(_unary_exp) => None,
@@ -842,7 +855,7 @@ impl Expr {
             Expr::FunctionExpression(ref mut func_exp) => func_exp.replace_value(source_range, new_value),
             Expr::CallExpression(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
             Expr::CallExpressionKw(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
-            Expr::Identifier(_) => {}
+            Expr::Name(_) => {}
             Expr::TagDeclarator(_) => {}
             Expr::PipeExpression(ref mut pipe_exp) => pipe_exp.replace_value(source_range, new_value),
             Expr::UnaryExpression(ref mut unary_exp) => unary_exp.replace_value(source_range, new_value),
@@ -857,7 +870,7 @@ impl Expr {
     pub fn start(&self) -> usize {
         match self {
             Expr::Literal(literal) => literal.start,
-            Expr::Identifier(identifier) => identifier.start,
+            Expr::Name(identifier) => identifier.start,
             Expr::TagDeclarator(tag) => tag.start,
             Expr::BinaryExpression(binary_expression) => binary_expression.start,
             Expr::FunctionExpression(function_expression) => function_expression.start,
@@ -880,7 +893,7 @@ impl Expr {
     pub fn end(&self) -> usize {
         match self {
             Expr::Literal(literal) => literal.end,
-            Expr::Identifier(identifier) => identifier.end,
+            Expr::Name(identifier) => identifier.end,
             Expr::TagDeclarator(tag) => tag.end,
             Expr::BinaryExpression(binary_expression) => binary_expression.end,
             Expr::FunctionExpression(function_expression) => function_expression.end,
@@ -904,7 +917,7 @@ impl Expr {
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         match self {
             Expr::Literal(_literal) => {}
-            Expr::Identifier(ref mut identifier) => identifier.rename(old_name, new_name),
+            Expr::Name(ref mut identifier) => identifier.rename(old_name, new_name),
             Expr::TagDeclarator(ref mut tag) => tag.rename(old_name, new_name),
             Expr::BinaryExpression(ref mut binary_expression) => {
                 binary_expression.rename_identifiers(old_name, new_name)
@@ -934,7 +947,7 @@ impl Expr {
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         match self {
             Expr::Literal(literal) => literal.get_constraint_level(),
-            Expr::Identifier(identifier) => identifier.get_constraint_level(),
+            Expr::Name(identifier) => identifier.get_constraint_level(),
             Expr::TagDeclarator(tag) => tag.get_constraint_level(),
             Expr::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
 
@@ -964,35 +977,6 @@ impl Expr {
             Expr::LabelledExpression(expr) => expr.expr.has_substitution_arg(),
             Expr::AscribedExpression(expr) => expr.expr.has_substitution_arg(),
             _ => false,
-        }
-    }
-
-    /// Describe this expression's type for a human, for typechecking.
-    /// This is a best-effort function, it's OK to give a shitty string here (but we should work on improving it)
-    pub fn human_friendly_type(&self) -> &'static str {
-        match self {
-            Expr::Literal(node) => match node.inner.value {
-                LiteralValue::Number { .. } => "number",
-                LiteralValue::String(_) => "string (text)",
-                LiteralValue::Bool(_) => "boolean (true/false value)",
-            },
-            Expr::Identifier(_) => "named constant",
-            Expr::TagDeclarator(_) => "tag declarator",
-            Expr::BinaryExpression(_) => "expression",
-            Expr::FunctionExpression(_) => "function definition",
-            Expr::CallExpression(_) => "function call",
-            Expr::CallExpressionKw(_) => "function call",
-            Expr::PipeExpression(_) => "pipeline of function calls",
-            Expr::PipeSubstitution(_) => "left-hand side of a |> pipeline",
-            Expr::ArrayExpression(_) => "array",
-            Expr::ArrayRangeExpression(_) => "array",
-            Expr::ObjectExpression(_) => "object",
-            Expr::MemberExpression(_) => "property of an object/array",
-            Expr::UnaryExpression(_) => "expression",
-            Expr::IfExpression(_) => "if expression",
-            Expr::LabelledExpression(_) => "labelled expression",
-            Expr::AscribedExpression(_) => "type-ascribed expression",
-            Expr::None(_) => "none",
         }
     }
 
@@ -1028,7 +1012,7 @@ impl Expr {
 
     pub fn ident_name(&self) -> Option<&str> {
         match self {
-            Expr::Identifier(ident) => Some(&ident.name),
+            Expr::Name(ident) => Some(&ident.name.name),
             _ => None,
         }
     }
@@ -1102,7 +1086,7 @@ impl Ascription {
 #[serde(tag = "type")]
 pub enum BinaryPart {
     Literal(BoxNode<Literal>),
-    Identifier(BoxNode<Identifier>),
+    Name(BoxNode<Name>),
     BinaryExpression(BoxNode<BinaryExpression>),
     CallExpression(BoxNode<CallExpression>),
     CallExpressionKw(BoxNode<CallExpressionKw>),
@@ -1128,7 +1112,7 @@ impl BinaryPart {
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         match self {
             BinaryPart::Literal(literal) => literal.get_constraint_level(),
-            BinaryPart::Identifier(identifier) => identifier.get_constraint_level(),
+            BinaryPart::Name(identifier) => identifier.get_constraint_level(),
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
             BinaryPart::CallExpression(call_expression) => call_expression.get_constraint_level(),
             BinaryPart::CallExpressionKw(call_expression) => call_expression.get_constraint_level(),
@@ -1141,7 +1125,7 @@ impl BinaryPart {
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         match self {
             BinaryPart::Literal(_) => {}
-            BinaryPart::Identifier(_) => {}
+            BinaryPart::Name(_) => {}
             BinaryPart::BinaryExpression(ref mut binary_expression) => {
                 binary_expression.replace_value(source_range, new_value)
             }
@@ -1162,7 +1146,7 @@ impl BinaryPart {
     pub fn start(&self) -> usize {
         match self {
             BinaryPart::Literal(literal) => literal.start,
-            BinaryPart::Identifier(identifier) => identifier.start,
+            BinaryPart::Name(identifier) => identifier.start,
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.start,
             BinaryPart::CallExpression(call_expression) => call_expression.start,
             BinaryPart::CallExpressionKw(call_expression) => call_expression.start,
@@ -1175,7 +1159,7 @@ impl BinaryPart {
     pub fn end(&self) -> usize {
         match self {
             BinaryPart::Literal(literal) => literal.end,
-            BinaryPart::Identifier(identifier) => identifier.end,
+            BinaryPart::Name(identifier) => identifier.end,
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.end,
             BinaryPart::CallExpression(call_expression) => call_expression.end,
             BinaryPart::CallExpressionKw(call_expression) => call_expression.end,
@@ -1189,7 +1173,7 @@ impl BinaryPart {
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         match self {
             BinaryPart::Literal(_literal) => {}
-            BinaryPart::Identifier(ref mut identifier) => identifier.rename(old_name, new_name),
+            BinaryPart::Name(ref mut identifier) => identifier.rename(old_name, new_name),
             BinaryPart::BinaryExpression(ref mut binary_expression) => {
                 binary_expression.rename_identifiers(old_name, new_name)
             }
@@ -1418,13 +1402,13 @@ impl Annotation {
     pub fn new_from_meta_settings(settings: &crate::execution::MetaSettings) -> Annotation {
         let mut properties: Vec<Node<ObjectProperty>> = vec![ObjectProperty::new(
             Identifier::new(annotations::SETTINGS_UNIT_LENGTH),
-            Expr::Identifier(Box::new(Identifier::new(&settings.default_length_units.to_string()))),
+            Expr::Name(Box::new(Name::new(&settings.default_length_units.to_string()))),
         )];
 
         if settings.default_angle_units != Default::default() {
             properties.push(ObjectProperty::new(
                 Identifier::new(annotations::SETTINGS_UNIT_ANGLE),
-                Expr::Identifier(Box::new(Identifier::new(&settings.default_angle_units.to_string()))),
+                Expr::Name(Box::new(Name::new(&settings.default_angle_units.to_string()))),
             ));
         }
         Annotation {
@@ -1689,7 +1673,7 @@ pub struct ExpressionStatement {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct CallExpression {
-    pub callee: Node<Identifier>,
+    pub callee: Node<Name>,
     pub arguments: Vec<Expr>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1701,7 +1685,7 @@ pub struct CallExpression {
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct CallExpressionKw {
-    pub callee: Node<Identifier>,
+    pub callee: Node<Name>,
     pub unlabeled: Option<Expr>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub arguments: Vec<LabeledArg>,
@@ -1775,7 +1759,7 @@ impl Node<CallExpressionKw> {
 impl CallExpression {
     pub fn new(name: &str, arguments: Vec<Expr>) -> Result<Node<Self>, KclError> {
         Ok(Node::no_src(Self {
-            callee: Identifier::new(name),
+            callee: Name::new(name),
             arguments,
             digest: None,
         }))
@@ -1807,7 +1791,7 @@ impl CallExpression {
 impl CallExpressionKw {
     pub fn new(name: &str, unlabeled: Option<Expr>, arguments: Vec<LabeledArg>) -> Result<Node<Self>, KclError> {
         Ok(Node::no_src(Self {
-            callee: Identifier::new(name),
+            callee: Name::new(name),
             unlabeled,
             arguments,
             digest: None,
@@ -2215,6 +2199,99 @@ impl Identifier {
         if self.name == old_name {
             self.name = new_name.to_string();
         }
+    }
+}
+
+/// A qualified name, e.g., `foo`, `bar::foo`, or `::bar::foo`.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct Name {
+    pub name: Node<Identifier>,
+    // The qualifying parts of the name.
+    pub path: NodeList<Identifier>,
+    // The path starts with `::`.
+    pub abs_path: bool,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+impl Node<Name> {
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        match &*self.name.name {
+            "XY" | "XZ" | "YZ" => ConstraintLevel::None {
+                source_ranges: vec![self.into()],
+            },
+            _ => ConstraintLevel::Full {
+                source_ranges: vec![self.into()],
+            },
+        }
+    }
+}
+
+impl Name {
+    pub fn new(name: &str) -> Node<Self> {
+        Node::no_src(Name {
+            name: Node::no_src(Identifier {
+                name: name.to_string(),
+                digest: None,
+            }),
+            path: Vec::new(),
+            abs_path: false,
+            digest: None,
+        })
+    }
+
+    pub fn local_ident(&self) -> Option<Node<&str>> {
+        if self.path.is_empty() && !self.abs_path {
+            Some(self.name.map_ref(|n| &n.name))
+        } else {
+            None
+        }
+    }
+
+    /// Rename all identifiers that have the old name to the new given name.
+    fn rename(&mut self, old_name: &str, new_name: &str) {
+        if let Some(n) = self.local_ident() {
+            if n.inner == old_name {
+                self.name.name = new_name.to_owned();
+            }
+        }
+    }
+}
+
+impl From<Node<Identifier>> for Node<Name> {
+    fn from(value: Node<Identifier>) -> Self {
+        let start = value.start;
+        let end = value.end;
+        let mod_id = value.module_id;
+
+        Node::new(
+            Name {
+                name: value,
+                path: Vec::new(),
+                abs_path: false,
+                digest: None,
+            },
+            start,
+            end,
+            mod_id,
+        )
+    }
+}
+
+impl fmt::Display for Name {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if self.abs_path {
+            f.write_str("::")?;
+        }
+        for p in &self.path {
+            f.write_str(&p.name)?;
+            f.write_str("::")?;
+        }
+        f.write_str(&self.name.name)
     }
 }
 
@@ -3484,11 +3561,11 @@ mod tests {
 
     #[test]
     fn test_get_lsp_folding_ranges() {
-        let code = r#"const part001 = startSketchOn('XY')
+        let code = r#"const part001 = startSketchOn(XY)
   |> startProfileAt([0.0000000000, 5.0000000000], %)
     |> line([0.4900857016, -0.0240763666], %)
 
-startSketchOn('XY')
+startSketchOn(XY)
   |> startProfileAt([0.0000000000, 5.0000000000], %)
     |> line([0.4900857016, -0.0240763666], %)
 
@@ -3507,20 +3584,17 @@ ghi("things")
         let program = crate::parsing::top_level_parse(code).unwrap();
         let folding_ranges = program.get_lsp_folding_ranges();
         assert_eq!(folding_ranges.len(), 3);
-        assert_eq!(folding_ranges[0].start_line, 29);
-        assert_eq!(folding_ranges[0].end_line, 134);
+        assert_eq!(folding_ranges[0].start_line, 27);
+        assert_eq!(folding_ranges[0].end_line, 132);
         assert_eq!(
             folding_ranges[0].collapsed_text,
-            Some("part001 = startSketchOn('XY')".to_string())
+            Some("part001 = startSketchOn(XY)".to_string())
         );
-        assert_eq!(folding_ranges[1].start_line, 155);
-        assert_eq!(folding_ranges[1].end_line, 254);
-        assert_eq!(
-            folding_ranges[1].collapsed_text,
-            Some("startSketchOn('XY')".to_string())
-        );
-        assert_eq!(folding_ranges[2].start_line, 384);
-        assert_eq!(folding_ranges[2].end_line, 403);
+        assert_eq!(folding_ranges[1].start_line, 151);
+        assert_eq!(folding_ranges[1].end_line, 250);
+        assert_eq!(folding_ranges[1].collapsed_text, Some("startSketchOn(XY)".to_string()));
+        assert_eq!(folding_ranges[2].start_line, 380);
+        assert_eq!(folding_ranges[2].end_line, 399);
         assert_eq!(folding_ranges[2].collapsed_text, Some("fn ghi(x) {".to_string()));
     }
 
@@ -3986,7 +4060,7 @@ const cylinder = startSketchOn('-XZ')
     async fn test_parse_get_meta_settings_inch() {
         let some_program_string = r#"@settings(defaultLengthUnit = inch)
 
-startSketchOn('XY')"#;
+startSketchOn(XY)"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
         let result = program.meta_settings().unwrap();
         assert!(result.is_some());
@@ -4002,7 +4076,7 @@ startSketchOn('XY')"#;
     async fn test_parse_get_meta_settings_inch_to_mm() {
         let some_program_string = r#"@settings(defaultLengthUnit = inch)
 
-startSketchOn('XY')"#;
+startSketchOn(XY)"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
         let result = program.meta_settings().unwrap();
         assert!(result.is_some());
@@ -4033,14 +4107,14 @@ startSketchOn('XY')"#;
             formatted,
             r#"@settings(defaultLengthUnit = mm)
 
-startSketchOn('XY')
+startSketchOn(XY)
 "#
         );
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_get_meta_settings_nothing_to_mm() {
-        let some_program_string = r#"startSketchOn('XY')"#;
+        let some_program_string = r#"startSketchOn(XY)"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
         let result = program.meta_settings().unwrap();
         assert!(result.is_none());
@@ -4065,7 +4139,7 @@ startSketchOn('XY')
             formatted,
             r#"@settings(defaultLengthUnit = mm)
 
-startSketchOn('XY')
+startSketchOn(XY)
 "#
         );
     }
