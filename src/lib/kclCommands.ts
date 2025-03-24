@@ -48,7 +48,19 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       description: 'Imports an example KCL program into the editor.',
       needsReview: true,
       icon: 'code',
-      reviewMessage: ({ argumentsToSubmit }) => CommandBarOverwriteWarning({}),
+      reviewMessage: ({ argumentsToSubmit }) =>
+        CommandBarOverwriteWarning({
+          heading:
+            'method' in argumentsToSubmit &&
+            argumentsToSubmit.method === 'newFile'
+              ? 'Create a new file from sample?'
+              : 'Overwrite current file with sample?',
+          message:
+            'method' in argumentsToSubmit &&
+            argumentsToSubmit.method === 'newFile'
+              ? 'This will create a new file in the current project and open it.'
+              : 'This will erase your current file and load the sample part.',
+        }),
       groupId: 'code',
       onSubmit(data) {
         if (!data?.sample) {

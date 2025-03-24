@@ -430,18 +430,6 @@ export const FileMachineProvider = ({
                 },
               })
             }
-
-            // Either way, we want to overwrite the defaultUnit project setting
-            // with the sample's setting.
-            if (data.sampleUnits) {
-              settingsActor.send({
-                type: 'set.modeling.defaultUnit',
-                data: {
-                  level: 'project',
-                  value: data.sampleUnits,
-                },
-              })
-            }
           },
           providedOptions: kclSamples.map((sample) => ({
             value: sample.pathFromProjectDirectoryToFirstFile,
