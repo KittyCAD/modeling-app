@@ -44,6 +44,9 @@ export interface IElectronAPI {
   rm: typeof fs.rm
   stat: (path: string) => ReturnType<fs.stat>
   statIsDirectory: (path: string) => Promise<boolean>
+  canReadWriteDirectory: (
+    path: string
+  ) => Promise<{ value: boolean; error: unknown }>
   path: typeof path
   mkdir: typeof fs.mkdir
   join: typeof path.join
