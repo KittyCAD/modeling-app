@@ -46,7 +46,7 @@ export function HelpMenu(props: React.PropsWithChildren) {
       resetOnboardingWorkflow()
     }
   }
-  useMenuListener(cb)
+  /* useMenuListener(cb) */
 
   return (
     <Popover className="relative">

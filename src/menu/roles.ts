@@ -21,6 +21,11 @@ type FileRoleLabel =
   | 'Sign out'
   | 'Theme'
   | 'Theme color'
+  | 'Export current part'
+  | 'Create new file'
+  | 'Create new folder'
+  | 'Share current part (via Zoo link)'
+  | 'Project settings'
 
 type EditRoleLabel =
   | 'Rename project'

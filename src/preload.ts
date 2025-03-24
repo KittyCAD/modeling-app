@@ -12,12 +12,17 @@ import type { WebContentSendPayload } from './menu/channels'
 const typeSafeIpcRendererOn = (
   channel: Channel,
   listener: (event: IpcRendererEvent, ...args: any[]) => Promise<void> | any
-) => ipcRenderer.on(channel, listener)
+) => {
+  console.log('[okay] on', channel, listener)
+  return ipcRenderer.on(channel, listener)
+}
 
 const typeSafeIpcRendererOff = (
   channel: Channel,
   listener: (event: IpcRendererEvent, ...args: any[]) => Promise<void> | any
-) => ipcRenderer.off(channel, listener)
+) => {
+  return ipcRenderer.removeListener(channel, listener)
+}
 
 const resizeWindow = (width: number, height: number) =>
   ipcRenderer.invoke('app.resizeWindow', [width, height])
@@ -189,6 +194,7 @@ const menuOn = (callback: (payload: WebContentSendPayload) => void) => {
 
 const menuOff = (listener: any) => {
   typeSafeIpcRendererOff('menu-action-clicked', listener)
+  console.log('[okay]', ipcRenderer.eventNames())
 }
 
 contextBridge.exposeInMainWorld('electron', {

@@ -1,5 +1,5 @@
 import { app, Menu, BrowserWindow } from 'electron'
-import { projectFileRole } from 'menu/fileRole'
+import { projectFileRole, modelingFileRole } from 'menu/fileRole'
 import { projectEditRole } from 'menu/editRole'
 import { helpRole } from 'menu/helpRole'
 import { projectViewRole } from 'menu/viewRole'
@@ -128,7 +128,15 @@ export function buildAndSetMenuForFallback(mainWindow: BrowserWindow) {
 // This will generate a new menu from the initial state
 // All state management from the previous menu is going to be lost.
 export function buildAndSetMenuForModelingPage(mainWindow: BrowserWindow) {
-  return buildAndSetMenuForFallback(mainWindow)
+  const template = [
+    modelingFileRole(mainWindow),
+    projectEditRole(mainWindow),
+    projectViewRole(mainWindow),
+    // Help role is the same for all pages
+    helpRole(mainWindow),
+  ]
+  const menu = Menu.buildFromTemplate(template)
+  Menu.setApplicationMenu(menu)
 }
 
 // This will generate a new menu from the initial state

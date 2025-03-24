@@ -11,8 +11,11 @@ export function useMenuListener(
       return
     }
 
+    var a = new Error()
+    console.log("[okay]re initializing")
     window.electron.menuOn(callback)
     return () => {
+      console.log("[okay]exiting!", callback)
       if (!onDesktop) {
         // NO OP for web
         return
