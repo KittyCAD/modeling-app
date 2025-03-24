@@ -2552,7 +2552,7 @@ export class SceneEntities {
   }: {
     intersects: Intersection<Object3D<Object3DEventMap>>[]
     intersection2d: Vector2
-    event: MouseEvent
+    mouseEvent: MouseEvent
   }): { snappedPoint: [number, number]; isSnapped: boolean } {
     const intersectsYAxis = intersects.find(
       (sceneObject) => sceneObject.object.name === Y_AXIS
@@ -2569,7 +2569,7 @@ export class SceneEntities {
     const segments = Object.values(this.activeSegments)
     const prev = segments[segments.length - 2]
 
-    const disableSnap = mouseEvent.shiftKey || mouseEvent.ctrlKey
+    const disableSnap = mouseEvent.ctrlKey || mouseEvent.altKey
     if (!disableSnap && prev.userData.type === TANGENTIAL_ARC_TO_SEGMENT) {
       const prevSegment = prev.userData.prevSegment
 
@@ -2608,15 +2608,23 @@ export class SceneEntities {
         Math.cos(tangentAngle),
         Math.sin(tangentAngle),
       ]
-      // Find closest point to the line
-      const p = closestPointOnRay(
+      const closestPoint = closestPointOnRay(
         prev.userData.to,
         tangentDirection,
         snappedPoint
       )
 
-      if (getLength(p, snappedPoint) < 20) {
-        snappedPoint = p
+      const forceSnapping = mouseEvent.shiftKey
+      const tolerance_in_screenspace = 10 * window.devicePixelRatio
+      const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+      console.log('zoom', orthoFactor, getLength(closestPoint, snappedPoint))
+
+      if (
+        forceSnapping ||
+        getLength(closestPoint, snappedPoint) / orthoFactor <
+          tolerance_in_screenspace
+      ) {
+        snappedPoint = closestPoint
       }
     }
 
