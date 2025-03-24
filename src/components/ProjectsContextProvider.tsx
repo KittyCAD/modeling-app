@@ -145,6 +145,7 @@ const ProjectsContextWeb = ({ children }: { children: React.ReactNode }) => {
         projects: [],
         defaultProjectName: settings.projects.defaultProjectName.current,
         defaultDirectory: settings.app.projectDirectory.current,
+        hasListedProjects: false,
       },
     }
   )
@@ -190,19 +191,10 @@ const ProjectsContextDesktop = ({
   }, [searchParams, setSearchParams])
   const { onProjectOpen } = useLspContext()
   const settings = useSettings()
-
   const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
   const { projectPaths, projectsDir } = useProjectsLoader([
     projectsLoaderTrigger,
   ])
-
-  // Re-read projects listing if the projectDir has any updates.
-  useFileSystemWatcher(
-    async () => {
-      return setProjectsLoaderTrigger(projectsLoaderTrigger + 1)
-    },
-    projectsDir ? [projectsDir] : []
-  )
 
   const [state, send, actor] = useMachine(
     projectsMachine.provide({
@@ -321,7 +313,9 @@ const ProjectsContextDesktop = ({
           ),
       },
       actors: {
-        readProjects: fromPromise(() => listProjects()),
+        readProjects: fromPromise(() => {
+          return listProjects()
+        }),
         createProject: fromPromise(async ({ input }) => {
           let name = (
             input && 'name' in input && input.name
@@ -445,13 +439,33 @@ const ProjectsContextDesktop = ({
         projects: projectPaths,
         defaultProjectName: settings.projects.defaultProjectName.current,
         defaultDirectory: settings.app.projectDirectory.current,
+        hasListedProjects: false,
       },
     }
   )
 
+  useFileSystemWatcher(
+    async () => {
+      // Gotcha: Chokidar is buggy. It will emit addDir or add on files that did not get created.
+      // This means while the application initialize and Chokidar initializes you cannot tell if
+      // a directory or file is actually created or they are buggy signals. This means you must
+      // ignore all signals during initialization because it is ambiguous. Once those signals settle
+      // you can actually start listening to real signals.
+      // If someone creates folders or files during initialization we ignore those events!
+      if (!actor.getSnapshot().context.hasListedProjects) {
+        return
+      }
+      return setProjectsLoaderTrigger(projectsLoaderTrigger + 1)
+    },
+    projectsDir ? [projectsDir] : []
+  )
+
+  // Gotcha: Triggers listProjects() on chokidar changes
+  // Gotcha: Load the projects when the projectDirectory changes.
+  const projectDirectory = settings.app.projectDirectory.current
   useEffect(() => {
     send({ type: 'Read projects', data: {} })
-  }, [projectPaths])
+  }, [projectPaths, projectDirectory])
 
   // register all project-related command palette commands
   useStateMachineCommands({

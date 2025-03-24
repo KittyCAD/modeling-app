@@ -9,6 +9,7 @@ export const projectsMachine = setup({
       projects: Project[]
       defaultProjectName: string
       defaultDirectory: string
+      hasListedProjects: boolean
     },
     events: {} as
       | { type: 'Read projects'; data: {} }
@@ -55,6 +56,7 @@ export const projectsMachine = setup({
       projects: Project[]
       defaultProjectName: string
       defaultDirectory: string
+      hasListedProjects: boolean
     },
   },
   actions: {
@@ -63,6 +65,9 @@ export const projectsMachine = setup({
         'output' in event && isArray(event.output)
           ? event.output
           : context.projects,
+    }),
+    setHasListedProjects: assign({
+      hasListedProjects: () => true,
     }),
     toastSuccess: () => {},
     toastError: () => {},
@@ -128,7 +133,6 @@ export const projectsMachine = setup({
       actions: assign(({ event }) => ({
         ...event.data,
       })),
-      target: '.Reading projects',
     },
 
     'Import file from URL': '.Creating file',
@@ -281,11 +285,11 @@ export const projectsMachine = setup({
           {
             guard: 'Has at least 1 project',
             target: 'Has projects',
-            actions: ['setProjects'],
+            actions: ['setProjects', 'setHasListedProjects'],
           },
           {
             target: 'Has no projects',
-            actions: ['setProjects'],
+            actions: ['setProjects', 'setHasListedProjects'],
           },
         ],
         onError: [
