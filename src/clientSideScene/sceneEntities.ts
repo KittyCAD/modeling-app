@@ -2583,11 +2583,11 @@ export class SceneEntities {
       const prev = segments[segments.length - 2]
       const disableSnap = mouseEvent.ctrlKey || mouseEvent.altKey
       if (!disableSnap && ARC_SEGMENT_TYPES.includes(prev.userData.type)) {
-        const tangentDirection = findTangendDirection(prev)
-        if (tangentDirection) {
+        const snapDirection = findTangentDirection(prev)
+        if (snapDirection) {
           const closestPoint = closestPointOnRay(
             prev.userData.to,
-            tangentDirection,
+            snapDirection,
             snappedPoint
           )
           const forceSnapping = mouseEvent.shiftKey
@@ -3751,7 +3751,7 @@ function isGroupStartProfileForCurrentProfile(sketchEntryNodePath: PathToNode) {
   }
 }
 
-function findTangendDirection(prev: Group) {
+function findTangentDirection(prev: Group) {
   let tangentDirection: Coords2d | undefined
   if (TAN_ARC_SEGMENT_TYPES.includes(prev.userData.type)) {
     const prevSegment = prev.userData.prevSegment
