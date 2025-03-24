@@ -772,7 +772,7 @@ export const modelingMachine = setup({
           engineCommandManager.artifactGraph,
           selection.graphSelections[0]?.artifact
         )
-        if (trap(revolveSketchRes)) return new Error('yo bad revolve')
+        if (trap(revolveSketchRes)) return
         const { modifiedAst, pathToRevolveArg } = revolveSketchRes
 
         const updatedAst = await kclManager.updateAst(modifiedAst, true, {
