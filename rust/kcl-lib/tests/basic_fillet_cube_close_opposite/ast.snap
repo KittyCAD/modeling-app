@@ -32,11 +32,19 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 10,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 10,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 10,
                 "end": 0,
@@ -88,11 +96,19 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 35,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 35,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 35,
                 "end": 0,
@@ -165,11 +181,19 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 66,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 66,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 66,
                 "end": 0,
@@ -225,11 +249,19 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 105,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 105,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 105,
                 "end": 0,
@@ -311,11 +343,19 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 130,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 130,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 130,
                 "end": 0,
@@ -346,11 +386,19 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 171,
                   "end": 0,
-                  "name": "close",
+                  "name": {
+                    "commentStart": 171,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 171,
                 "end": 0,
@@ -385,11 +433,19 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 197,
                   "end": 0,
-                  "name": "extrude",
+                  "name": {
+                    "commentStart": 197,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 197,
                 "end": 0,
@@ -435,30 +491,54 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                       "commentStart": 249,
                       "elements": [
                         {
+                          "abs_path": false,
                           "commentStart": 250,
                           "end": 0,
-                          "name": "thing3",
+                          "name": {
+                            "commentStart": 250,
+                            "end": 0,
+                            "name": "thing3",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "commentStart": 274,
                               "end": 0,
-                              "name": "thing3",
+                              "name": {
+                                "commentStart": 274,
+                                "end": 0,
+                                "name": "thing3",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 258,
                             "end": 0,
-                            "name": "getOppositeEdge",
+                            "name": {
+                              "commentStart": 258,
+                              "end": 0,
+                              "name": "getOppositeEdge",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 258,
                           "end": 0,
@@ -475,11 +555,19 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 223,
                   "end": 0,
-                  "name": "fillet",
+                  "name": {
+                    "commentStart": 223,
+                    "end": 0,
+                    "name": "fillet",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 223,
                 "end": 0,

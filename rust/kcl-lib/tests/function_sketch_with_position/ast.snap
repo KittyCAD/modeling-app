@@ -47,11 +47,19 @@ description: Result of parsing function_sketch_with_position.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 31,
                             "end": 0,
-                            "name": "startSketchOn",
+                            "name": {
+                              "commentStart": 31,
+                              "end": 0,
+                              "name": "startSketchOn",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 31,
                           "end": 0,
@@ -62,12 +70,20 @@ description: Result of parsing function_sketch_with_position.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "commentStart": 73,
                               "end": 0,
-                              "name": "p",
+                              "name": {
+                                "commentStart": 73,
+                                "end": 0,
+                                "name": "p",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             {
                               "commentStart": 76,
@@ -78,11 +94,19 @@ description: Result of parsing function_sketch_with_position.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 58,
                             "end": 0,
-                            "name": "startProfileAt",
+                            "name": {
+                              "commentStart": 58,
+                              "end": 0,
+                              "name": "startProfileAt",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 58,
                           "end": 0,
@@ -117,12 +141,20 @@ description: Result of parsing function_sketch_with_position.kcl
                                     }
                                   },
                                   {
+                                    "abs_path": false,
                                     "commentStart": 101,
                                     "end": 0,
-                                    "name": "l",
+                                    "name": {
+                                      "commentStart": 101,
+                                      "end": 0,
+                                      "name": "l",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 ],
                                 "end": 0,
@@ -133,11 +165,19 @@ description: Result of parsing function_sketch_with_position.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 86,
                             "end": 0,
-                            "name": "line",
+                            "name": {
+                              "commentStart": 86,
+                              "end": 0,
+                              "name": "line",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 86,
                           "end": 0,
@@ -161,12 +201,20 @@ description: Result of parsing function_sketch_with_position.kcl
                                 "commentStart": 123,
                                 "elements": [
                                   {
+                                    "abs_path": false,
                                     "commentStart": 124,
                                     "end": 0,
-                                    "name": "w",
+                                    "name": {
+                                      "commentStart": 124,
+                                      "end": 0,
+                                      "name": "w",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   {
                                     "commentStart": 127,
@@ -189,11 +237,19 @@ description: Result of parsing function_sketch_with_position.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 112,
                             "end": 0,
-                            "name": "line",
+                            "name": {
+                              "commentStart": 112,
+                              "end": 0,
+                              "name": "line",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 112,
                           "end": 0,
@@ -230,12 +286,20 @@ description: Result of parsing function_sketch_with_position.kcl
                                   },
                                   {
                                     "argument": {
+                                      "abs_path": false,
                                       "commentStart": 154,
                                       "end": 0,
-                                      "name": "l",
+                                      "name": {
+                                        "commentStart": 154,
+                                        "end": 0,
+                                        "name": "l",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "commentStart": 153,
                                     "end": 0,
@@ -253,11 +317,19 @@ description: Result of parsing function_sketch_with_position.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 138,
                             "end": 0,
-                            "name": "line",
+                            "name": {
+                              "commentStart": 138,
+                              "end": 0,
+                              "name": "line",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 138,
                           "end": 0,
@@ -277,11 +349,19 @@ description: Result of parsing function_sketch_with_position.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 165,
                             "end": 0,
-                            "name": "close",
+                            "name": {
+                              "commentStart": 165,
+                              "end": 0,
+                              "name": "close",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 165,
                           "end": 0,
@@ -301,21 +381,37 @@ description: Result of parsing function_sketch_with_position.kcl
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "abs_path": false,
                                 "commentStart": 198,
                                 "end": 0,
-                                "name": "h",
+                                "name": {
+                                  "commentStart": 198,
+                                  "end": 0,
+                                  "name": "h",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               }
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 181,
                             "end": 0,
-                            "name": "extrude",
+                            "name": {
+                              "commentStart": 181,
+                              "end": 0,
+                              "name": "extrude",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 181,
                           "end": 0,
@@ -342,12 +438,20 @@ description: Result of parsing function_sketch_with_position.kcl
                 },
                 {
                   "argument": {
+                    "abs_path": false,
                     "commentStart": 211,
                     "end": 0,
-                    "name": "myBox",
+                    "name": {
+                      "commentStart": 211,
+                      "end": 0,
+                      "name": "myBox",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "commentStart": 200,
                   "end": 0,
@@ -518,11 +622,19 @@ description: Result of parsing function_sketch_with_position.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 228,
               "end": 0,
-              "name": "box",
+              "name": {
+                "commentStart": 228,
+                "end": 0,
+                "name": "box",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 228,
             "end": 0,

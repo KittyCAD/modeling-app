@@ -84,12 +84,20 @@ description: Result of parsing boolean_logical_multiple.kcl
           "init": {
             "commentStart": 30,
             "cond": {
+              "abs_path": false,
               "commentStart": 33,
               "end": 0,
-              "name": "ii",
+              "name": {
+                "commentStart": 33,
+                "end": 0,
+                "name": "ii",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "digest": null,
             "else_ifs": [],
@@ -168,12 +176,20 @@ description: Result of parsing boolean_logical_multiple.kcl
               "commentStart": 64,
               "end": 0,
               "left": {
+                "abs_path": false,
                 "commentStart": 64,
                 "end": 0,
-                "name": "i",
+                "name": {
+                  "commentStart": 64,
+                  "end": 0,
+                  "name": "i",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "==",
               "right": {
@@ -203,11 +219,19 @@ description: Result of parsing boolean_logical_multiple.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 57,
             "end": 0,
-            "name": "assert",
+            "name": {
+              "commentStart": 57,
+              "end": 0,
+              "name": "assert",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 57,
           "end": 0,
@@ -340,12 +364,20 @@ description: Result of parsing boolean_logical_multiple.kcl
           "init": {
             "commentStart": 156,
             "cond": {
+              "abs_path": false,
               "commentStart": 159,
               "end": 0,
-              "name": "jj",
+              "name": {
+                "commentStart": 159,
+                "end": 0,
+                "name": "jj",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "digest": null,
             "else_ifs": [],
@@ -424,12 +456,20 @@ description: Result of parsing boolean_logical_multiple.kcl
               "commentStart": 190,
               "end": 0,
               "left": {
+                "abs_path": false,
                 "commentStart": 190,
                 "end": 0,
-                "name": "j",
+                "name": {
+                  "commentStart": 190,
+                  "end": 0,
+                  "name": "j",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "==",
               "right": {
@@ -459,11 +499,19 @@ description: Result of parsing boolean_logical_multiple.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 183,
             "end": 0,
-            "name": "assert",
+            "name": {
+              "commentStart": 183,
+              "end": 0,
+              "name": "assert",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 183,
           "end": 0,

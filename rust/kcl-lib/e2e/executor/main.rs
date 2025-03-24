@@ -837,10 +837,10 @@ holeIndex = 6
 
 // Create the mounting plate extrusion, holes, and fillets
 part = rectShape([0, 0], 20, 20)
-  |> hole(circle(XY, [-holeIndex, holeIndex], holeRadius), %)
-  |> hole(circle(XY, [holeIndex, holeIndex], holeRadius), %)
-  |> hole(circle(XY, [-holeIndex, -holeIndex], holeRadius), %)
-  |> hole(circle(XY, [holeIndex, -holeIndex], holeRadius), %)
+  |> hole(circle('XY', center = [-holeIndex, holeIndex], radius = holeRadius), %)
+  |> hole(circle('XY', center = [holeIndex, holeIndex], radius = holeRadius), %)
+  |> hole(circle('XY', center = [-holeIndex, -holeIndex], radius = holeRadius), %)
+  |> hole(circle('XY', center = [holeIndex, -holeIndex], radius = holeRadius), %)
   |> extrude(length = 2)
   |> fillet(
        radius = 4,
@@ -860,7 +860,7 @@ part = rectShape([0, 0], 20, 20)
     };
     assert_eq!(
         err.error.message(),
-        "This function requires a keyword argument 'center'"
+        "The input argument of std::sketch::circle requires a value with type `Sketch | Plane | Face`, but found string (text)"
     );
 }
 
@@ -1347,7 +1347,7 @@ secondSketch = startSketchOn(part001, '')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([297, 299, 0])], message: "Argument at index 1 was supposed to be type Option<kcl_lib::std::sketch::FaceTag> but found string (text)" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([297, 299, 0])], message: "Argument at index 1 was supposed to be type Option<FaceTag> but found string (text)" }"#
     );
 }
 
@@ -1983,7 +1983,7 @@ someFunction('INVALID')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([51, 60, 0]), SourceRange([65, 88, 0])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but found string (text)" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([51, 60, 0]), SourceRange([65, 88, 0])], message: "Argument at index 0 was supposed to be type SketchData but found string (text)" }"#
     );
 }
 
@@ -2004,7 +2004,7 @@ someFunction('INVALID')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([103, 113, 0]), SourceRange([126, 155, 0]), SourceRange([159, 182, 0])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but found string (text)" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([103, 113, 0]), SourceRange([126, 155, 0]), SourceRange([159, 182, 0])], message: "Argument at index 0 was supposed to be type SketchData but found string (text)" }"#
     );
 }
 

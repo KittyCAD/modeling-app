@@ -46,38 +46,6 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     })
 }
 
-/// Construct a 2-dimensional circle, of the specified radius, centered at
-/// the provided (x, y) origin point.
-///
-/// ```no_run
-/// exampleSketch = startSketchOn("-XZ")
-///   |> circle( center = [0, 0], radius = 10 )
-///
-/// example = extrude(exampleSketch, length = 5)
-/// ```
-///
-/// ```no_run
-/// exampleSketch = startSketchOn("XZ")
-///   |> startProfileAt([-15, 0], %)
-///   |> line(end = [30, 0])
-///   |> line(end = [0, 30])
-///   |> line(end = [-30, 0])
-///   |> close()
-///   |> hole(circle( center = [0, 15], radius = 5), %)
-///
-/// example = extrude(exampleSketch, length = 5)
-/// ```
-#[stdlib {
-    name = "circle",
-    keywords = true,
-    unlabeled_first = true,
-    args = {
-        sketch_or_surface = {docs = "Plane or surface to sketch on."},
-        center = {docs = "The center of the circle."},
-        radius = {docs = "The radius of the circle."},
-        tag = { docs = "Create a new tag which refers to this circle"},
-    }
-}]
 async fn inner_circle(
     sketch_or_surface: SketchOrSurface,
     center: [f64; 2],
@@ -152,13 +120,13 @@ async fn inner_circle(
 
 /// Sketch a 3-point circle.
 pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let sketch_surface_or_group = args.get_unlabeled_kw_arg("sketch_surface_or_group")?;
     let p1 = args.get_kw_arg("p1")?;
     let p2 = args.get_kw_arg("p2")?;
     let p3 = args.get_kw_arg("p3")?;
-    let sketch_surface_or_group = args.get_unlabeled_kw_arg("sketch_surface_or_group")?;
     let tag = args.get_kw_arg_opt("tag")?;
 
-    let sketch = inner_circle_three_point(p1, p2, p3, sketch_surface_or_group, tag, exec_state, args).await?;
+    let sketch = inner_circle_three_point(sketch_surface_or_group, p1, p2, p3, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(sketch),
     })
@@ -176,10 +144,10 @@ pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Resul
     keywords = true,
     unlabeled_first = true,
     args = {
+        sketch_surface_or_group = {docs = "Plane or surface to sketch on."},
         p1 = {docs = "1st point to derive the circle."},
         p2 = {docs = "2nd point to derive the circle."},
         p3 = {docs = "3rd point to derive the circle."},
-        sketch_surface_or_group = {docs = "Plane or surface to sketch on."},
         tag = {docs = "Identifier for the circle to reference elsewhere."},
     }
 }]
@@ -187,10 +155,10 @@ pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Resul
 // Similar to inner_circle, but needs to retain 3-point information in the
 // path so it can be used for other features, otherwise it's lost.
 async fn inner_circle_three_point(
+    sketch_surface_or_group: SketchOrSurface,
     p1: [f64; 2],
     p2: [f64; 2],
     p3: [f64; 2],
-    sketch_surface_or_group: SketchOrSurface,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,

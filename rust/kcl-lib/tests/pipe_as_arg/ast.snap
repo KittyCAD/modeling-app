@@ -36,12 +36,20 @@ description: Result of parsing pipe_as_arg.kcl
                       "commentStart": 32,
                       "end": 0,
                       "left": {
+                        "abs_path": false,
                         "commentStart": 32,
                         "end": 0,
-                        "name": "length",
+                        "name": {
+                          "commentStart": 32,
+                          "end": 0,
+                          "name": "length",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -187,12 +195,20 @@ description: Result of parsing pipe_as_arg.kcl
                           "end": 0,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "commentStart": 84,
                               "end": 0,
-                              "name": "l",
+                              "name": {
+                                "commentStart": 84,
+                                "end": 0,
+                                "name": "l",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "commentStart": 83,
                             "end": 0,
@@ -203,12 +219,20 @@ description: Result of parsing pipe_as_arg.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "commentStart": 88,
                             "end": 0,
-                            "name": "x",
+                            "name": {
+                              "commentStart": 88,
+                              "end": 0,
+                              "name": "x",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 0,
                           "type": "BinaryExpression",
@@ -219,12 +243,20 @@ description: Result of parsing pipe_as_arg.kcl
                           "end": 0,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "commentStart": 92,
                               "end": 0,
-                              "name": "l",
+                              "name": {
+                                "commentStart": 92,
+                                "end": 0,
+                                "name": "l",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "commentStart": 91,
                             "end": 0,
@@ -235,12 +267,20 @@ description: Result of parsing pipe_as_arg.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "commentStart": 96,
                             "end": 0,
-                            "name": "y",
+                            "name": {
+                              "commentStart": 96,
+                              "end": 0,
+                              "name": "y",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 0,
                           "type": "BinaryExpression",
@@ -281,12 +321,20 @@ description: Result of parsing pipe_as_arg.kcl
                           "end": 0,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "commentStart": 108,
                               "end": 0,
-                              "name": "l",
+                              "name": {
+                                "commentStart": 108,
+                                "end": 0,
+                                "name": "l",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "commentStart": 107,
                             "end": 0,
@@ -297,12 +345,20 @@ description: Result of parsing pipe_as_arg.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "commentStart": 112,
                             "end": 0,
-                            "name": "x",
+                            "name": {
+                              "commentStart": 112,
+                              "end": 0,
+                              "name": "x",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 0,
                           "type": "BinaryExpression",
@@ -312,21 +368,37 @@ description: Result of parsing pipe_as_arg.kcl
                           "commentStart": 115,
                           "end": 0,
                           "left": {
+                            "abs_path": false,
                             "commentStart": 115,
                             "end": 0,
-                            "name": "l",
+                            "name": {
+                              "commentStart": 115,
+                              "end": 0,
+                              "name": "l",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "commentStart": 119,
                             "end": 0,
-                            "name": "y",
+                            "name": {
+                              "commentStart": 119,
+                              "end": 0,
+                              "name": "y",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 0,
                           "type": "BinaryExpression",
@@ -366,21 +438,37 @@ description: Result of parsing pipe_as_arg.kcl
                           "commentStart": 130,
                           "end": 0,
                           "left": {
+                            "abs_path": false,
                             "commentStart": 130,
                             "end": 0,
-                            "name": "l",
+                            "name": {
+                              "commentStart": 130,
+                              "end": 0,
+                              "name": "l",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "commentStart": 134,
                             "end": 0,
-                            "name": "x",
+                            "name": {
+                              "commentStart": 134,
+                              "end": 0,
+                              "name": "x",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 0,
                           "type": "BinaryExpression",
@@ -390,21 +478,37 @@ description: Result of parsing pipe_as_arg.kcl
                           "commentStart": 137,
                           "end": 0,
                           "left": {
+                            "abs_path": false,
                             "commentStart": 137,
                             "end": 0,
-                            "name": "l",
+                            "name": {
+                              "commentStart": 137,
+                              "end": 0,
+                              "name": "l",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "commentStart": 141,
                             "end": 0,
-                            "name": "y",
+                            "name": {
+                              "commentStart": 141,
+                              "end": 0,
+                              "name": "y",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 0,
                           "type": "BinaryExpression",
@@ -444,21 +548,37 @@ description: Result of parsing pipe_as_arg.kcl
                           "commentStart": 152,
                           "end": 0,
                           "left": {
+                            "abs_path": false,
                             "commentStart": 152,
                             "end": 0,
-                            "name": "l",
+                            "name": {
+                              "commentStart": 152,
+                              "end": 0,
+                              "name": "l",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "commentStart": 156,
                             "end": 0,
-                            "name": "x",
+                            "name": {
+                              "commentStart": 156,
+                              "end": 0,
+                              "name": "x",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 0,
                           "type": "BinaryExpression",
@@ -469,12 +589,20 @@ description: Result of parsing pipe_as_arg.kcl
                           "end": 0,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "commentStart": 160,
                               "end": 0,
-                              "name": "l",
+                              "name": {
+                                "commentStart": 160,
+                                "end": 0,
+                                "name": "l",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "commentStart": 159,
                             "end": 0,
@@ -485,12 +613,20 @@ description: Result of parsing pipe_as_arg.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "commentStart": 164,
                             "end": 0,
-                            "name": "y",
+                            "name": {
+                              "commentStart": 164,
+                              "end": 0,
+                              "name": "y",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 0,
                           "type": "BinaryExpression",
@@ -517,20 +653,36 @@ description: Result of parsing pipe_as_arg.kcl
                       {
                         "arguments": [
                           {
+                            "abs_path": false,
                             "commentStart": 191,
                             "end": 0,
-                            "name": "XY",
+                            "name": {
+                              "commentStart": 191,
+                              "end": 0,
+                              "name": "XY",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "commentStart": 177,
                           "end": 0,
-                          "name": "startSketchOn",
+                          "name": {
+                            "commentStart": 177,
+                            "end": 0,
+                            "name": "startSketchOn",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "commentStart": 177,
                         "end": 0,
@@ -541,12 +693,20 @@ description: Result of parsing pipe_as_arg.kcl
                       {
                         "arguments": [
                           {
+                            "abs_path": false,
                             "commentStart": 217,
                             "end": 0,
-                            "name": "p0",
+                            "name": {
+                              "commentStart": 217,
+                              "end": 0,
+                              "name": "p0",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           {
                             "commentStart": 221,
@@ -557,11 +717,19 @@ description: Result of parsing pipe_as_arg.kcl
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "commentStart": 202,
                           "end": 0,
-                          "name": "startProfileAt",
+                          "name": {
+                            "commentStart": 202,
+                            "end": 0,
+                            "name": "startProfileAt",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "commentStart": 202,
                         "end": 0,
@@ -581,21 +749,37 @@ description: Result of parsing pipe_as_arg.kcl
                               "type": "Identifier"
                             },
                             "arg": {
+                              "abs_path": false,
                               "commentStart": 250,
                               "end": 0,
-                              "name": "p1",
+                              "name": {
+                                "commentStart": 250,
+                                "end": 0,
+                                "name": "p1",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "commentStart": 231,
                           "end": 0,
-                          "name": "line",
+                          "name": {
+                            "commentStart": 231,
+                            "end": 0,
+                            "name": "line",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "commentStart": 231,
                         "end": 0,
@@ -616,21 +800,37 @@ description: Result of parsing pipe_as_arg.kcl
                               "type": "Identifier"
                             },
                             "arg": {
+                              "abs_path": false,
                               "commentStart": 280,
                               "end": 0,
-                              "name": "p2",
+                              "name": {
+                                "commentStart": 280,
+                                "end": 0,
+                                "name": "p2",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "commentStart": 261,
                           "end": 0,
-                          "name": "line",
+                          "name": {
+                            "commentStart": 261,
+                            "end": 0,
+                            "name": "line",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "commentStart": 261,
                         "end": 0,
@@ -651,21 +851,37 @@ description: Result of parsing pipe_as_arg.kcl
                               "type": "Identifier"
                             },
                             "arg": {
+                              "abs_path": false,
                               "commentStart": 310,
                               "end": 0,
-                              "name": "p3",
+                              "name": {
+                                "commentStart": 310,
+                                "end": 0,
+                                "name": "p3",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "commentStart": 291,
                           "end": 0,
-                          "name": "line",
+                          "name": {
+                            "commentStart": 291,
+                            "end": 0,
+                            "name": "line",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "commentStart": 291,
                         "end": 0,
@@ -686,21 +902,37 @@ description: Result of parsing pipe_as_arg.kcl
                               "type": "Identifier"
                             },
                             "arg": {
+                              "abs_path": false,
                               "commentStart": 340,
                               "end": 0,
-                              "name": "p0",
+                              "name": {
+                                "commentStart": 340,
+                                "end": 0,
+                                "name": "p0",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "commentStart": 321,
                           "end": 0,
-                          "name": "line",
+                          "name": {
+                            "commentStart": 321,
+                            "end": 0,
+                            "name": "line",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "commentStart": 321,
                         "end": 0,
@@ -720,11 +952,19 @@ description: Result of parsing pipe_as_arg.kcl
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "commentStart": 351,
                           "end": 0,
-                          "name": "close",
+                          "name": {
+                            "commentStart": 351,
+                            "end": 0,
+                            "name": "close",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "commentStart": 351,
                         "end": 0,
@@ -744,21 +984,37 @@ description: Result of parsing pipe_as_arg.kcl
                               "type": "Identifier"
                             },
                             "arg": {
+                              "abs_path": false,
                               "commentStart": 384,
                               "end": 0,
-                              "name": "length",
+                              "name": {
+                                "commentStart": 384,
+                                "end": 0,
+                                "name": "length",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "commentStart": 367,
                           "end": 0,
-                          "name": "extrude",
+                          "name": {
+                            "commentStart": 367,
+                            "end": 0,
+                            "name": "extrude",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "commentStart": 367,
                         "end": 0,
@@ -858,12 +1114,20 @@ description: Result of parsing pipe_as_arg.kcl
                     "commentStart": 419,
                     "end": 0,
                     "left": {
+                      "abs_path": false,
                       "commentStart": 419,
                       "end": 0,
-                      "name": "x",
+                      "name": {
+                        "commentStart": 419,
+                        "end": 0,
+                        "name": "x",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "*",
                     "right": {
@@ -1014,11 +1278,19 @@ description: Result of parsing pipe_as_arg.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "commentStart": 479,
                       "end": 0,
-                      "name": "double",
+                      "name": {
+                        "commentStart": 479,
+                        "end": 0,
+                        "name": "double",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "commentStart": 479,
                     "end": 0,
@@ -1068,11 +1340,19 @@ description: Result of parsing pipe_as_arg.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 465,
               "end": 0,
-              "name": "cube",
+              "name": {
+                "commentStart": 465,
+                "end": 0,
+                "name": "cube",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 465,
             "end": 0,

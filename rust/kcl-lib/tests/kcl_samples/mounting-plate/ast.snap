@@ -215,11 +215,19 @@ description: Result of parsing mounting-plate.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 540,
                             "end": 0,
-                            "name": "startSketchOn",
+                            "name": {
+                              "commentStart": 540,
+                              "end": 0,
+                              "name": "startSketchOn",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 540,
                           "end": 0,
@@ -268,12 +276,20 @@ description: Result of parsing mounting-plate.kcl
                                     "commentStart": 593,
                                     "end": 0,
                                     "left": {
+                                      "abs_path": false,
                                       "commentStart": 593,
                                       "end": 0,
-                                      "name": "w",
+                                      "name": {
+                                        "commentStart": 593,
+                                        "end": 0,
+                                        "name": "w",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "/",
                                     "right": {
@@ -332,12 +348,20 @@ description: Result of parsing mounting-plate.kcl
                                     "commentStart": 611,
                                     "end": 0,
                                     "left": {
+                                      "abs_path": false,
                                       "commentStart": 611,
                                       "end": 0,
-                                      "name": "l",
+                                      "name": {
+                                        "commentStart": 611,
+                                        "end": 0,
+                                        "name": "l",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "/",
                                     "right": {
@@ -375,11 +399,19 @@ description: Result of parsing mounting-plate.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 567,
                             "end": 0,
-                            "name": "startProfileAt",
+                            "name": {
+                              "commentStart": 567,
+                              "end": 0,
+                              "name": "startProfileAt",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 567,
                           "end": 0,
@@ -437,12 +469,20 @@ description: Result of parsing mounting-plate.kcl
                                       "commentStart": 659,
                                       "end": 0,
                                       "left": {
+                                        "abs_path": false,
                                         "commentStart": 659,
                                         "end": 0,
-                                        "name": "w",
+                                        "name": {
+                                          "commentStart": 659,
+                                          "end": 0,
+                                          "name": "w",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 0,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "type": "Name",
+                                        "type": "Name"
                                       },
                                       "operator": "/",
                                       "right": {
@@ -501,12 +541,20 @@ description: Result of parsing mounting-plate.kcl
                                       "commentStart": 676,
                                       "end": 0,
                                       "left": {
+                                        "abs_path": false,
                                         "commentStart": 676,
                                         "end": 0,
-                                        "name": "l",
+                                        "name": {
+                                          "commentStart": 676,
+                                          "end": 0,
+                                          "name": "l",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 0,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "type": "Name",
+                                        "type": "Name"
                                       },
                                       "operator": "/",
                                       "right": {
@@ -556,11 +604,19 @@ description: Result of parsing mounting-plate.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 630,
                             "end": 0,
-                            "name": "line",
+                            "name": {
+                              "commentStart": 630,
+                              "end": 0,
+                              "name": "line",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 630,
                           "end": 0,
@@ -619,12 +675,20 @@ description: Result of parsing mounting-plate.kcl
                                       "commentStart": 735,
                                       "end": 0,
                                       "left": {
+                                        "abs_path": false,
                                         "commentStart": 735,
                                         "end": 0,
-                                        "name": "w",
+                                        "name": {
+                                          "commentStart": 735,
+                                          "end": 0,
+                                          "name": "w",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 0,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "type": "Name",
+                                        "type": "Name"
                                       },
                                       "operator": "/",
                                       "right": {
@@ -683,12 +747,20 @@ description: Result of parsing mounting-plate.kcl
                                       "commentStart": 751,
                                       "end": 0,
                                       "left": {
+                                        "abs_path": false,
                                         "commentStart": 751,
                                         "end": 0,
-                                        "name": "l",
+                                        "name": {
+                                          "commentStart": 751,
+                                          "end": 0,
+                                          "name": "l",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 0,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "type": "Name",
+                                        "type": "Name"
                                       },
                                       "operator": "/",
                                       "right": {
@@ -738,11 +810,19 @@ description: Result of parsing mounting-plate.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 706,
                             "end": 0,
-                            "name": "line",
+                            "name": {
+                              "commentStart": 706,
+                              "end": 0,
+                              "name": "line",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 706,
                           "end": 0,
@@ -801,12 +881,20 @@ description: Result of parsing mounting-plate.kcl
                                       "commentStart": 810,
                                       "end": 0,
                                       "left": {
+                                        "abs_path": false,
                                         "commentStart": 810,
                                         "end": 0,
-                                        "name": "w",
+                                        "name": {
+                                          "commentStart": 810,
+                                          "end": 0,
+                                          "name": "w",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 0,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "type": "Name",
+                                        "type": "Name"
                                       },
                                       "operator": "/",
                                       "right": {
@@ -865,12 +953,20 @@ description: Result of parsing mounting-plate.kcl
                                       "commentStart": 827,
                                       "end": 0,
                                       "left": {
+                                        "abs_path": false,
                                         "commentStart": 827,
                                         "end": 0,
-                                        "name": "l",
+                                        "name": {
+                                          "commentStart": 827,
+                                          "end": 0,
+                                          "name": "l",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 0,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "type": "Name",
+                                        "type": "Name"
                                       },
                                       "operator": "/",
                                       "right": {
@@ -920,11 +1016,19 @@ description: Result of parsing mounting-plate.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 780,
                             "end": 0,
-                            "name": "line",
+                            "name": {
+                              "commentStart": 780,
+                              "end": 0,
+                              "name": "line",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 780,
                           "end": 0,
@@ -955,11 +1059,19 @@ description: Result of parsing mounting-plate.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 856,
                             "end": 0,
-                            "name": "close",
+                            "name": {
+                              "commentStart": 856,
+                              "end": 0,
+                              "name": "close",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 856,
                           "end": 0,
@@ -986,12 +1098,20 @@ description: Result of parsing mounting-plate.kcl
                 },
                 {
                   "argument": {
+                    "abs_path": false,
                     "commentStart": 885,
                     "end": 0,
-                    "name": "rr",
+                    "name": {
+                      "commentStart": 885,
+                      "end": 0,
+                      "name": "rr",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "commentStart": 878,
                   "end": 0,
@@ -1175,28 +1295,52 @@ description: Result of parsing mounting-plate.kcl
                 "type": "ArrayExpression"
               },
               {
+                "abs_path": false,
                 "commentStart": 1061,
                 "end": 0,
-                "name": "plateWidth",
+                "name": {
+                  "commentStart": 1061,
+                  "end": 0,
+                  "name": "plateWidth",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
+                "abs_path": false,
                 "commentStart": 1073,
                 "end": 0,
-                "name": "plateLength",
+                "name": {
+                  "commentStart": 1073,
+                  "end": 0,
+                  "name": "plateLength",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 1043,
               "end": 0,
-              "name": "rectShape",
+              "name": {
+                "commentStart": 1043,
+                "end": 0,
+                "name": "rectShape",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 1043,
             "end": 0,
@@ -1233,12 +1377,20 @@ description: Result of parsing mounting-plate.kcl
           "init": {
             "body": [
               {
+                "abs_path": false,
                 "commentStart": 1093,
                 "end": 0,
-                "name": "rs",
+                "name": {
+                  "commentStart": 1093,
+                  "end": 0,
+                  "name": "rs",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "arguments": [
@@ -1264,12 +1416,20 @@ description: Result of parsing mounting-plate.kcl
                                 "end": 0,
                                 "left": {
                                   "argument": {
+                                    "abs_path": false,
                                     "commentStart": 1142,
                                     "end": 0,
-                                    "name": "plateWidth",
+                                    "name": {
+                                      "commentStart": 1142,
+                                      "end": 0,
+                                      "name": "plateWidth",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "commentStart": 1141,
                                   "end": 0,
@@ -1297,12 +1457,20 @@ description: Result of parsing mounting-plate.kcl
                               },
                               "operator": "+",
                               "right": {
+                                "abs_path": false,
                                 "commentStart": 1159,
                                 "end": 0,
-                                "name": "holeIndex",
+                                "name": {
+                                  "commentStart": 1159,
+                                  "end": 0,
+                                  "name": "holeIndex",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 0,
                               "type": "BinaryExpression",
@@ -1315,12 +1483,20 @@ description: Result of parsing mounting-plate.kcl
                                 "commentStart": 1179,
                                 "end": 0,
                                 "left": {
+                                  "abs_path": false,
                                   "commentStart": 1179,
                                   "end": 0,
-                                  "name": "plateLength",
+                                  "name": {
+                                    "commentStart": 1179,
+                                    "end": 0,
+                                    "name": "plateLength",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 0,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "/",
                                 "right": {
@@ -1341,12 +1517,20 @@ description: Result of parsing mounting-plate.kcl
                               },
                               "operator": "-",
                               "right": {
+                                "abs_path": false,
                                 "commentStart": 1197,
                                 "end": 0,
-                                "name": "holeIndex",
+                                "name": {
+                                  "commentStart": 1197,
+                                  "end": 0,
+                                  "name": "holeIndex",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 0,
                               "type": "BinaryExpression",
@@ -1369,21 +1553,37 @@ description: Result of parsing mounting-plate.kcl
                           "type": "Identifier"
                         },
                         "arg": {
+                          "abs_path": false,
                           "commentStart": 1233,
                           "end": 0,
-                          "name": "holeRadius",
+                          "name": {
+                            "commentStart": 1233,
+                            "end": 0,
+                            "name": "holeRadius",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "commentStart": 1106,
                       "end": 0,
-                      "name": "circle",
+                      "name": {
+                        "commentStart": 1106,
+                        "end": 0,
+                        "name": "circle",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "commentStart": 1106,
                     "end": 0,
@@ -1401,11 +1601,19 @@ description: Result of parsing mounting-plate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1101,
                   "end": 0,
-                  "name": "hole",
+                  "name": {
+                    "commentStart": 1101,
+                    "end": 0,
+                    "name": "hole",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1101,
                 "end": 0,
@@ -1436,12 +1644,20 @@ description: Result of parsing mounting-plate.kcl
                                 "commentStart": 1300,
                                 "end": 0,
                                 "left": {
+                                  "abs_path": false,
                                   "commentStart": 1300,
                                   "end": 0,
-                                  "name": "plateWidth",
+                                  "name": {
+                                    "commentStart": 1300,
+                                    "end": 0,
+                                    "name": "plateWidth",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 0,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "/",
                                 "right": {
@@ -1462,12 +1678,20 @@ description: Result of parsing mounting-plate.kcl
                               },
                               "operator": "-",
                               "right": {
+                                "abs_path": false,
                                 "commentStart": 1317,
                                 "end": 0,
-                                "name": "holeIndex",
+                                "name": {
+                                  "commentStart": 1317,
+                                  "end": 0,
+                                  "name": "holeIndex",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 0,
                               "type": "BinaryExpression",
@@ -1480,12 +1704,20 @@ description: Result of parsing mounting-plate.kcl
                                 "commentStart": 1337,
                                 "end": 0,
                                 "left": {
+                                  "abs_path": false,
                                   "commentStart": 1337,
                                   "end": 0,
-                                  "name": "plateLength",
+                                  "name": {
+                                    "commentStart": 1337,
+                                    "end": 0,
+                                    "name": "plateLength",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 0,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "/",
                                 "right": {
@@ -1506,12 +1738,20 @@ description: Result of parsing mounting-plate.kcl
                               },
                               "operator": "-",
                               "right": {
+                                "abs_path": false,
                                 "commentStart": 1355,
                                 "end": 0,
-                                "name": "holeIndex",
+                                "name": {
+                                  "commentStart": 1355,
+                                  "end": 0,
+                                  "name": "holeIndex",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 0,
                               "type": "BinaryExpression",
@@ -1534,21 +1774,37 @@ description: Result of parsing mounting-plate.kcl
                           "type": "Identifier"
                         },
                         "arg": {
+                          "abs_path": false,
                           "commentStart": 1391,
                           "end": 0,
-                          "name": "holeRadius",
+                          "name": {
+                            "commentStart": 1391,
+                            "end": 0,
+                            "name": "holeRadius",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "commentStart": 1265,
                       "end": 0,
-                      "name": "circle",
+                      "name": {
+                        "commentStart": 1265,
+                        "end": 0,
+                        "name": "circle",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "commentStart": 1265,
                     "end": 0,
@@ -1566,11 +1822,19 @@ description: Result of parsing mounting-plate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1260,
                   "end": 0,
-                  "name": "hole",
+                  "name": {
+                    "commentStart": 1260,
+                    "end": 0,
+                    "name": "hole",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1260,
                 "end": 0,
@@ -1602,12 +1866,20 @@ description: Result of parsing mounting-plate.kcl
                                 "end": 0,
                                 "left": {
                                   "argument": {
+                                    "abs_path": false,
                                     "commentStart": 1459,
                                     "end": 0,
-                                    "name": "plateWidth",
+                                    "name": {
+                                      "commentStart": 1459,
+                                      "end": 0,
+                                      "name": "plateWidth",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "commentStart": 1458,
                                   "end": 0,
@@ -1635,12 +1907,20 @@ description: Result of parsing mounting-plate.kcl
                               },
                               "operator": "+",
                               "right": {
+                                "abs_path": false,
                                 "commentStart": 1476,
                                 "end": 0,
-                                "name": "holeIndex",
+                                "name": {
+                                  "commentStart": 1476,
+                                  "end": 0,
+                                  "name": "holeIndex",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 0,
                               "type": "BinaryExpression",
@@ -1654,12 +1934,20 @@ description: Result of parsing mounting-plate.kcl
                                 "end": 0,
                                 "left": {
                                   "argument": {
+                                    "abs_path": false,
                                     "commentStart": 1497,
                                     "end": 0,
-                                    "name": "plateLength",
+                                    "name": {
+                                      "commentStart": 1497,
+                                      "end": 0,
+                                      "name": "plateLength",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "commentStart": 1496,
                                   "end": 0,
@@ -1687,12 +1975,20 @@ description: Result of parsing mounting-plate.kcl
                               },
                               "operator": "+",
                               "right": {
+                                "abs_path": false,
                                 "commentStart": 1515,
                                 "end": 0,
-                                "name": "holeIndex",
+                                "name": {
+                                  "commentStart": 1515,
+                                  "end": 0,
+                                  "name": "holeIndex",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 0,
                               "type": "BinaryExpression",
@@ -1715,21 +2011,37 @@ description: Result of parsing mounting-plate.kcl
                           "type": "Identifier"
                         },
                         "arg": {
+                          "abs_path": false,
                           "commentStart": 1551,
                           "end": 0,
-                          "name": "holeRadius",
+                          "name": {
+                            "commentStart": 1551,
+                            "end": 0,
+                            "name": "holeRadius",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "commentStart": 1423,
                       "end": 0,
-                      "name": "circle",
+                      "name": {
+                        "commentStart": 1423,
+                        "end": 0,
+                        "name": "circle",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "commentStart": 1423,
                     "end": 0,
@@ -1747,11 +2059,19 @@ description: Result of parsing mounting-plate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1418,
                   "end": 0,
-                  "name": "hole",
+                  "name": {
+                    "commentStart": 1418,
+                    "end": 0,
+                    "name": "hole",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1418,
                 "end": 0,
@@ -1782,12 +2102,20 @@ description: Result of parsing mounting-plate.kcl
                                 "commentStart": 1618,
                                 "end": 0,
                                 "left": {
+                                  "abs_path": false,
                                   "commentStart": 1618,
                                   "end": 0,
-                                  "name": "plateWidth",
+                                  "name": {
+                                    "commentStart": 1618,
+                                    "end": 0,
+                                    "name": "plateWidth",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 0,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "/",
                                 "right": {
@@ -1808,12 +2136,20 @@ description: Result of parsing mounting-plate.kcl
                               },
                               "operator": "-",
                               "right": {
+                                "abs_path": false,
                                 "commentStart": 1635,
                                 "end": 0,
-                                "name": "holeIndex",
+                                "name": {
+                                  "commentStart": 1635,
+                                  "end": 0,
+                                  "name": "holeIndex",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 0,
                               "type": "BinaryExpression",
@@ -1827,12 +2163,20 @@ description: Result of parsing mounting-plate.kcl
                                 "end": 0,
                                 "left": {
                                   "argument": {
+                                    "abs_path": false,
                                     "commentStart": 1656,
                                     "end": 0,
-                                    "name": "plateLength",
+                                    "name": {
+                                      "commentStart": 1656,
+                                      "end": 0,
+                                      "name": "plateLength",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "commentStart": 1655,
                                   "end": 0,
@@ -1860,12 +2204,20 @@ description: Result of parsing mounting-plate.kcl
                               },
                               "operator": "+",
                               "right": {
+                                "abs_path": false,
                                 "commentStart": 1674,
                                 "end": 0,
-                                "name": "holeIndex",
+                                "name": {
+                                  "commentStart": 1674,
+                                  "end": 0,
+                                  "name": "holeIndex",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 0,
                               "type": "BinaryExpression",
@@ -1888,21 +2240,37 @@ description: Result of parsing mounting-plate.kcl
                           "type": "Identifier"
                         },
                         "arg": {
+                          "abs_path": false,
                           "commentStart": 1710,
                           "end": 0,
-                          "name": "holeRadius",
+                          "name": {
+                            "commentStart": 1710,
+                            "end": 0,
+                            "name": "holeRadius",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "commentStart": 1583,
                       "end": 0,
-                      "name": "circle",
+                      "name": {
+                        "commentStart": 1583,
+                        "end": 0,
+                        "name": "circle",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "commentStart": 1583,
                     "end": 0,
@@ -1920,11 +2288,19 @@ description: Result of parsing mounting-plate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1578,
                   "end": 0,
-                  "name": "hole",
+                  "name": {
+                    "commentStart": 1578,
+                    "end": 0,
+                    "name": "hole",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1578,
                 "end": 0,
@@ -1989,21 +2365,37 @@ description: Result of parsing mounting-plate.kcl
                           "type": "Identifier"
                         },
                         "arg": {
+                          "abs_path": false,
                           "commentStart": 1790,
                           "end": 0,
-                          "name": "centerHoleDiameter",
+                          "name": {
+                            "commentStart": 1790,
+                            "end": 0,
+                            "name": "centerHoleDiameter",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "commentStart": 1742,
                       "end": 0,
-                      "name": "circle",
+                      "name": {
+                        "commentStart": 1742,
+                        "end": 0,
+                        "name": "circle",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "commentStart": 1742,
                     "end": 0,
@@ -2021,11 +2413,19 @@ description: Result of parsing mounting-plate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1737,
                   "end": 0,
-                  "name": "hole",
+                  "name": {
+                    "commentStart": 1737,
+                    "end": 0,
+                    "name": "hole",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1737,
                 "end": 0,
@@ -2045,21 +2445,37 @@ description: Result of parsing mounting-plate.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "commentStart": 1842,
                       "end": 0,
-                      "name": "plateThickness",
+                      "name": {
+                        "commentStart": 1842,
+                        "end": 0,
+                        "name": "plateThickness",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1825,
                   "end": 0,
-                  "name": "extrude",
+                  "name": {
+                    "commentStart": 1825,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1825,
                 "end": 0,
@@ -2080,12 +2496,20 @@ description: Result of parsing mounting-plate.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "commentStart": 1887,
                       "end": 0,
-                      "name": "filletRadius",
+                      "name": {
+                        "commentStart": 1887,
+                        "end": 0,
+                        "name": "filletRadius",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -2144,11 +2568,19 @@ description: Result of parsing mounting-plate.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 1926,
                             "end": 0,
-                            "name": "getPreviousAdjacentEdge",
+                            "name": {
+                              "commentStart": 1926,
+                              "end": 0,
+                              "name": "getPreviousAdjacentEdge",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 1926,
                           "end": 0,
@@ -2200,11 +2632,19 @@ description: Result of parsing mounting-plate.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 1975,
                             "end": 0,
-                            "name": "getPreviousAdjacentEdge",
+                            "name": {
+                              "commentStart": 1975,
+                              "end": 0,
+                              "name": "getPreviousAdjacentEdge",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 1975,
                           "end": 0,
@@ -2256,11 +2696,19 @@ description: Result of parsing mounting-plate.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 2024,
                             "end": 0,
-                            "name": "getPreviousAdjacentEdge",
+                            "name": {
+                              "commentStart": 2024,
+                              "end": 0,
+                              "name": "getPreviousAdjacentEdge",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 2024,
                           "end": 0,
@@ -2312,11 +2760,19 @@ description: Result of parsing mounting-plate.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 2073,
                             "end": 0,
-                            "name": "getPreviousAdjacentEdge",
+                            "name": {
+                              "commentStart": 2073,
+                              "end": 0,
+                              "name": "getPreviousAdjacentEdge",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 2073,
                           "end": 0,
@@ -2333,11 +2789,19 @@ description: Result of parsing mounting-plate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1863,
                   "end": 0,
-                  "name": "fillet",
+                  "name": {
+                    "commentStart": 1863,
+                    "end": 0,
+                    "name": "fillet",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1863,
                 "end": 0,
@@ -2397,12 +2861,20 @@ description: Result of parsing mounting-plate.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "commentStart": 237,
               "end": 0,
-              "name": "in",
+              "name": {
+                "commentStart": 237,
+                "end": 0,
+                "name": "in",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

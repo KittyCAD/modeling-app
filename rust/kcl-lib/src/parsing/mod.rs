@@ -60,11 +60,8 @@ pub fn parse_tokens(mut tokens: TokenStream) -> ParseResult {
         return Node::<Program>::default().into();
     }
 
-    // Check all the tokens are whitespace or comments.
-    if tokens
-        .iter()
-        .all(|t| t.token_type.is_whitespace() || t.token_type.is_comment())
-    {
+    // Check all the tokens are whitespace.
+    if tokens.iter().all(|t| t.token_type.is_whitespace()) {
         return Node::<Program>::default().into();
     }
 

@@ -25,12 +25,20 @@ description: Result of parsing kw_fn_unlabeled_but_has_label.kcl
                     "commentStart": 22,
                     "end": 0,
                     "left": {
+                      "abs_path": false,
                       "commentStart": 22,
                       "end": 0,
-                      "name": "x",
+                      "name": {
+                        "commentStart": 22,
+                        "end": 0,
+                        "name": "x",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "+",
                     "right": {
@@ -126,11 +134,19 @@ description: Result of parsing kw_fn_unlabeled_but_has_label.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 37,
               "end": 0,
-              "name": "add",
+              "name": {
+                "commentStart": 37,
+                "end": 0,
+                "name": "add",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 37,
             "end": 0,

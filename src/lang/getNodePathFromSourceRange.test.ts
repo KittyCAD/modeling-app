@@ -1,13 +1,8 @@
 import { getNodeFromPath, LABELED_ARG_FIELD, ARG_INDEX_FIELD } from './queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import {
-  Identifier,
-  assertParse,
-  initPromise,
-  Parameter,
-  topLevelRange,
-} from './wasm'
+import { assertParse, initPromise, Parameter, topLevelRange } from './wasm'
 import { err } from 'lib/trap'
+import { Name } from '@rust/kcl-lib/bindings/Name'
 
 beforeAll(async () => {
   await initPromise
@@ -90,7 +85,7 @@ const b1 = cube([0,0], 10)`
 
     const ast = assertParse(code)
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
-    const _node = getNodeFromPath<Identifier>(ast, nodePath)
+    const _node = getNodeFromPath<Name>(ast, nodePath)
     if (err(_node)) throw _node
     const node = _node.node
     expect(nodePath).toEqual([
@@ -111,7 +106,7 @@ const b1 = cube([0,0], 10)`
       ['elements', 'ArrayExpression'],
       [0, 'index'],
     ])
-    expect(node.type).toBe('Identifier')
-    expect(node.name).toBe('scale')
+    expect(node.type).toBe('Name')
+    expect(node.name.name).toBe('scale')
   })
 })

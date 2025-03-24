@@ -30,6 +30,7 @@ import {
 import { err } from 'lib/trap'
 import { codeRefFromRange } from './std/artifactGraph'
 import { addCallExpressionsToPipe, addCloseToPipe } from 'lang/std/sketch'
+import { Name } from '@rust/kcl-lib/bindings/Name'
 
 beforeAll(async () => {
   await initPromise
@@ -112,7 +113,7 @@ yo2 = hmm([identifierGuy + 5])`
     )
     if (err(result)) throw result
     expect(result.isSafe).toBe(true)
-    expect(result.value?.type).toBe('Identifier')
+    expect(result.value?.type).toBe('Name')
     expect(code.slice(result.value.start, result.value.end)).toBe('abc')
   })
   it('find a safe CallExpression', () => {
@@ -315,10 +316,10 @@ describe('testing getNodePathFromSourceRange', () => {
       ['cond', 'IfExpression'],
       ['left', 'BinaryExpression'],
     ])
-    const _node = getNodeFromPath<Identifier>(ast, result)
+    const _node = getNodeFromPath<Name>(ast, result)
     if (err(_node)) throw _node
-    expect(_node.node.type).toEqual('Identifier')
-    expect(_node.node.name).toEqual('x')
+    expect(_node.node.type).toEqual('Name')
+    expect(_node.node.name.name).toEqual('x')
   })
 
   it('finds the node in if-else then', () => {
@@ -347,10 +348,10 @@ describe('testing getNodePathFromSourceRange', () => {
       ['expression', 'ExpressionStatement'],
       ['left', 'BinaryExpression'],
     ])
-    const _node = getNodeFromPath<Identifier>(ast, result)
+    const _node = getNodeFromPath<Name>(ast, result)
     if (err(_node)) throw _node
-    expect(_node.node.type).toEqual('Identifier')
-    expect(_node.node.name).toEqual('x')
+    expect(_node.node.type).toEqual('Name')
+    expect(_node.node.name.name).toEqual('x')
   })
 
   it('finds the node in import statement item', () => {
