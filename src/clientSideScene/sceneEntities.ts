@@ -54,6 +54,7 @@ import {
   topLevelRange,
   CallExpressionKw,
   VariableMap,
+  getTangentialArcToInfo,
 } from 'lang/wasm'
 import {
   engineCommandManager,
@@ -81,7 +82,7 @@ import {
   Coords2d,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
-import { isArray, isOverlap, roundOff } from 'lib/utils'
+import { getLength, isArray, isClockwise, isOverlap, roundOff } from 'lib/utils'
 import {
   createArrayExpression,
   createCallExpressionStdLib,
@@ -123,6 +124,11 @@ import { Node } from '@rust/kcl-lib/bindings/Node'
 import { radToDeg } from 'three/src/math/MathUtils'
 import toast from 'react-hot-toast'
 import { getArtifactFromRange, codeRefFromRange } from 'lang/std/artifactGraph'
+import {
+  closestPointOnRay,
+  getTangentPointFromPreviousArc,
+} from '../lib/utils2d'
+import { calculate_circle_from_3_points } from '@rust/kcl-wasm-lib/pkg'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -1115,6 +1121,7 @@ export class SceneEntities {
             truncatedAst,
             variableDeclarationName,
           },
+          mouseEvent: args.mouseEvent,
         })
       },
     })
@@ -1257,6 +1264,7 @@ export class SceneEntities {
         const { snappedPoint, isSnapped } = this.getSnappedDragPoint({
           intersection2d: intersectionPoint.twoD,
           intersects: args.intersects,
+          event: args.mouseEvent,
         })
         if (isSnapped) {
           this.positionDraftPoint({
@@ -2019,6 +2027,7 @@ export class SceneEntities {
         const maybeSnapToAxis = this.getSnappedDragPoint({
           intersection2d: args.intersectionPoint.twoD,
           intersects: args.intersects,
+          event: args.mouseEvent,
         }).snappedPoint
 
         const maybeSnapToProfileStart = doNotSnapAsThreePointArcIsTheOnlySegment
@@ -2121,6 +2130,7 @@ export class SceneEntities {
               p3: this.getSnappedDragPoint({
                 intersection2d: args.intersectionPoint.twoD,
                 intersects: args.intersects,
+                event: args.mouseEvent,
               }).snappedPoint,
             }
           )
@@ -2483,6 +2493,7 @@ export class SceneEntities {
               object: selected,
               intersection2d: intersectionPoint.twoD,
               intersects,
+              mouseEvent: mouseEvent,
             })
           }
           return
@@ -2495,6 +2506,7 @@ export class SceneEntities {
           intersects,
           sketchNodePaths,
           sketchEntryNodePath,
+          mouseEvent: mouseEvent,
         })
       },
       onMove: () => {},
@@ -2536,9 +2548,11 @@ export class SceneEntities {
   getSnappedDragPoint({
     intersects,
     intersection2d,
+    mouseEvent,
   }: {
     intersects: Intersection<Object3D<Object3DEventMap>>[]
     intersection2d: Vector2
+    event: MouseEvent
   }): { snappedPoint: [number, number]; isSnapped: boolean } {
     const intersectsYAxis = intersects.find(
       (sceneObject) => sceneObject.object.name === Y_AXIS
@@ -2547,13 +2561,67 @@ export class SceneEntities {
       (sceneObject) => sceneObject.object.name === X_AXIS
     )
 
-    const snappedPoint = new Vector2(
+    let snappedPoint: Coords2d = [
       intersectsYAxis ? 0 : intersection2d.x,
-      intersectsXAxis ? 0 : intersection2d.y
-    )
+      intersectsXAxis ? 0 : intersection2d.y,
+    ]
+
+    const segments = Object.values(this.activeSegments)
+    const prev = segments[segments.length - 2]
+
+    const disableSnap = mouseEvent.shiftKey || mouseEvent.ctrlKey
+    if (!disableSnap && prev.userData.type === TANGENTIAL_ARC_TO_SEGMENT) {
+      const prevSegment = prev.userData.prevSegment
+
+      let previousPoint = prevSegment.from
+      if (prevSegment?.type === 'TangentialArcTo') {
+        previousPoint = getTangentPointFromPreviousArc(
+          prevSegment.center,
+          prevSegment.ccw,
+          prevSegment.to
+        )
+      } else if (prevSegment?.type === 'ArcThreePoint') {
+        const arcDetails = calculate_circle_from_3_points(
+          prevSegment.p1[0],
+          prevSegment.p1[1],
+          prevSegment.p2[0],
+          prevSegment.p2[1],
+          prevSegment.p3[0],
+          prevSegment.p3[1]
+        )
+        previousPoint = getTangentPointFromPreviousArc(
+          [arcDetails.center_x, arcDetails.center_y],
+          !isClockwise([prevSegment.p1, prevSegment.p2, prevSegment.p3]),
+          prevSegment.p3
+        )
+      }
+
+      const arcInfo = getTangentialArcToInfo({
+        arcStartPoint: prev.userData.from,
+        arcEndPoint: prev.userData.to,
+        tanPreviousPoint: previousPoint,
+        obtuse: true,
+      })
+      const tangentAngle =
+        arcInfo.endAngle + (Math.PI / 2) * (arcInfo.ccw ? 1 : -1)
+      const tangentDirection: Coords2d = [
+        Math.cos(tangentAngle),
+        Math.sin(tangentAngle),
+      ]
+      // Find closest point to the line
+      const p = closestPointOnRay(
+        prev.userData.to,
+        tangentDirection,
+        snappedPoint
+      )
+
+      if (getLength(p, snappedPoint) < 20) {
+        snappedPoint = p
+      }
+    }
 
     return {
-      snappedPoint: [snappedPoint.x, snappedPoint.y],
+      snappedPoint,
       isSnapped: !!(intersectsYAxis || intersectsXAxis),
     }
   }
@@ -2617,6 +2685,7 @@ export class SceneEntities {
     planeNodePath,
     draftInfo,
     intersects,
+    mouseEvent,
   }: {
     object: Object3D<Object3DEventMap>
     intersection2d: Vector2
@@ -2628,6 +2697,7 @@ export class SceneEntities {
       truncatedAst: Node<Program>
       variableDeclarationName: string
     }
+    mouseEvent: MouseEvent
   }) {
     const intersection2d = this.maybeSnapProfileStartIntersect2d({
       sketchEntryNodePath,
@@ -2663,6 +2733,7 @@ export class SceneEntities {
     const dragTo = this.getSnappedDragPoint({
       intersects,
       intersection2d,
+      mouseEvent: mouseEvent,
     }).snappedPoint
     let modifiedAst = draftInfo ? draftInfo.truncatedAst : { ...kclManager.ast }
 

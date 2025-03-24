@@ -892,6 +892,7 @@ export const modelingMachine = setup({
               data: sceneEntitiesManager.getSnappedDragPoint({
                 intersection2d: twoD,
                 intersects: args.intersects,
+                event: args.mouseEvent,
               }).snappedPoint,
             })
           } else {
@@ -1266,6 +1267,7 @@ export const modelingMachine = setup({
             sceneEntitiesManager.getSnappedDragPoint({
               intersection2d: intersectionPoint.twoD,
               intersects: args.intersects,
+              event: args.mouseEvent,
             })
           if (isSnapped) {
             sceneEntitiesManager.positionDraftPoint({
