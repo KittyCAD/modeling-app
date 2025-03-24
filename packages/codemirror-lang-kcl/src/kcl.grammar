@@ -75,17 +75,14 @@ LabeledArgument { ArgumentLabel Equals expression }
 ArgumentList { "(" commaSep<LabeledArgument | expression> ")" }
 
 type[@isGroup=Type] {
-  @specialize[@name=PrimitiveType]<
-    identifier,
-    "bool" | "number" | "string" | "tag" | "Sketch" | "SketchSurface" | "Solid" | "Plane"
-  > |
+  PrimitiveType { identifier } |
   ArrayType { "[" type !member (";" Number "+"?)? "]" } |
   ObjectType { "{" commaSep<ObjectProperty { PropertyName ":" type }> "}" }
 }
 
 VariableDefinition { identifier }
 
-VariableName { identifier }
+VariableName { identifier ("::" identifier)*}
 
 ArgumentLabel { identifier }
 
@@ -137,7 +134,7 @@ commaSep1NoTrailingComma<term> { term ("," term)* }
   "(" ")"
   "{" "}"
   "[" "]"
-  "," "?" ":" "." ".." ";"
+  "," "?" ":" "." ".." ";" "::"
 }
 
 @external propSource kclHighlight from "./highlight"

@@ -28,12 +28,20 @@ expression: actual
                 "type": "Identifier"
               },
               "arg": {
+                "abs_path": false,
                 "commentStart": 14,
                 "end": 15,
-                "name": "a",
+                "name": {
+                  "commentStart": 14,
+                  "end": 15,
+                  "name": "a",
+                  "start": 14,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 14,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             },
             {
@@ -46,21 +54,37 @@ expression: actual
                 "type": "Identifier"
               },
               "arg": {
+                "abs_path": false,
                 "commentStart": 21,
                 "end": 22,
-                "name": "b",
+                "name": {
+                  "commentStart": 21,
+                  "end": 22,
+                  "name": "b",
+                  "start": 21,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 21,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 6,
             "end": 9,
-            "name": "foo",
+            "name": {
+              "commentStart": 6,
+              "end": 9,
+              "name": "foo",
+              "start": 6,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 6,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 6,
           "end": 23,

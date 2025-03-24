@@ -1084,7 +1084,7 @@ openSketch = startSketchOn(XY)
   }) => {
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 620, y: 257 }
-    const expectedOutput = `helix001 = helix(  revolutions = 1,  angleStart = 360,  counterClockWise = false,  radius = 5,  axis = 'X',  length = 5,)`
+    const expectedOutput = `helix001 = helix(  revolutions = 1,  angleStart = 360,  ccw = false,  radius = 5,  axis = 'X',  length = 5,)`
     const expectedLine = `revolutions=1,`
 
     await homePage.goToModelingScene()
@@ -1101,7 +1101,7 @@ openSketch = startSketchOn(XY)
         headerArguments: {
           AngleStart: '',
           Axis: '',
-          CounterClockWise: '',
+          Ccw: '',
           Length: '',
           Radius: '',
           Revolutions: '',
@@ -1143,7 +1143,7 @@ openSketch = startSketchOn(XY)
         headerArguments: {
           AngleStart: '360',
           Axis: 'X',
-          CounterClockWise: '',
+          Ccw: '',
           Length: initialInput,
           Radius: '5',
           Revolutions: '1',
@@ -1158,7 +1158,7 @@ openSketch = startSketchOn(XY)
         headerArguments: {
           AngleStart: '360',
           Axis: 'X',
-          CounterClockWise: '',
+          Ccw: '',
           Length: newInput,
           Radius: '5',
           Revolutions: '1',

@@ -25,12 +25,20 @@ expression: actual
                 }
               },
               {
+                "abs_path": false,
                 "commentStart": 9,
                 "end": 10,
-                "name": "l",
+                "name": {
+                  "commentStart": 9,
+                  "end": 10,
+                  "name": "l",
+                  "start": 9,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 9,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "end": 11,
@@ -47,11 +55,19 @@ expression: actual
           }
         ],
         "callee": {
+          "abs_path": false,
           "commentStart": 0,
           "end": 4,
-          "name": "line",
+          "name": {
+            "commentStart": 0,
+            "end": 4,
+            "name": "line",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 0,
-          "type": "Identifier"
+          "type": "Name"
         },
         "commentStart": 0,
         "end": 15,

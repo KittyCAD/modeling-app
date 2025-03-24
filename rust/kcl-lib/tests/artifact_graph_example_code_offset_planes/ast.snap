@@ -43,11 +43,19 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 17,
               "end": 0,
-              "name": "offsetPlane",
+              "name": {
+                "commentStart": 17,
+                "end": 0,
+                "name": "offsetPlane",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 17,
             "end": 0,
@@ -119,11 +127,19 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 65,
               "end": 0,
-              "name": "offsetPlane",
+              "name": {
+                "commentStart": 65,
+                "end": 0,
+                "name": "offsetPlane",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 65,
             "end": 0,
@@ -187,11 +203,19 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 114,
               "end": 0,
-              "name": "offsetPlane",
+              "name": {
+                "commentStart": 114,
+                "end": 0,
+                "name": "offsetPlane",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 114,
             "end": 0,
@@ -234,20 +258,36 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "commentStart": 172,
                     "end": 0,
-                    "name": "offsetPlane001",
+                    "name": {
+                      "commentStart": 172,
+                      "end": 0,
+                      "name": "offsetPlane001",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 158,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 158,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 158,
                 "end": 0,
@@ -299,11 +339,19 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 193,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 193,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 193,
                 "end": 0,
@@ -358,11 +406,19 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 224,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 224,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 224,
                 "end": 0,

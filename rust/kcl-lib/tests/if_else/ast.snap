@@ -145,12 +145,20 @@ description: Result of parsing if_else.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "commentStart": 114,
               "end": 0,
-              "name": "a",
+              "name": {
+                "commentStart": 114,
+                "end": 0,
+                "name": "a",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "commentStart": 117,
@@ -187,11 +195,19 @@ description: Result of parsing if_else.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 102,
             "end": 0,
-            "name": "assertEqual",
+            "name": {
+              "commentStart": 102,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 102,
           "end": 0,
@@ -343,12 +359,20 @@ description: Result of parsing if_else.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "commentStart": 228,
               "end": 0,
-              "name": "b",
+              "name": {
+                "commentStart": 228,
+                "end": 0,
+                "name": "b",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "commentStart": 231,
@@ -385,11 +409,19 @@ description: Result of parsing if_else.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 216,
             "end": 0,
-            "name": "assertEqual",
+            "name": {
+              "commentStart": 216,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 216,
           "end": 0,
@@ -541,12 +573,20 @@ description: Result of parsing if_else.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "commentStart": 348,
               "end": 0,
-              "name": "c",
+              "name": {
+                "commentStart": 348,
+                "end": 0,
+                "name": "c",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "commentStart": 351,
@@ -583,11 +623,19 @@ description: Result of parsing if_else.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 336,
             "end": 0,
-            "name": "assertEqual",
+            "name": {
+              "commentStart": 336,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 336,
           "end": 0,
