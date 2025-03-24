@@ -4,7 +4,6 @@ import { type IndexLoaderData } from 'lib/types'
 import { BROWSER_PATH, PATHS } from 'lib/paths'
 import React, { createContext, useEffect, useMemo } from 'react'
 import { toast } from 'react-hot-toast'
-import { DEV } from 'env'
 import {
   Actor,
   AnyStateMachine,

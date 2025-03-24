@@ -1,13 +1,12 @@
 import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import { Command, CommandArgumentOption } from '../commandTypes'
 import toast from 'react-hot-toast'
-import { engineCommandManager, sceneInfra } from 'lib/singletons'
+import { engineCommandManager } from 'lib/singletons'
 import { uuidv4 } from 'lib/utils'
 import { settingsActor, getSettings } from 'machines/appMachine'
 import { err, reportRejection } from 'lib/trap'
 import {
   CameraViewState_type,
-  DefaultCameraGetView_type,
   WorldCoordinateSystem_type,
 } from '@kittycad/lib/dist/types/src/models'
 
