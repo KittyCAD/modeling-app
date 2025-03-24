@@ -132,11 +132,7 @@ import { Node } from '@rust/kcl-lib/bindings/Node'
 import { radToDeg } from 'three/src/math/MathUtils'
 import toast from 'react-hot-toast'
 import { getArtifactFromRange, codeRefFromRange } from 'lang/std/artifactGraph'
-import {
-  closestPointOnRay,
-  getTangentPointFromPreviousArc,
-} from '../lib/utils2d'
-import { calculate_circle_from_3_points } from '@rust/kcl-wasm-lib/pkg'
+import { closestPointOnRay } from '../lib/utils2d'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -180,6 +176,12 @@ export const THREE_POINT_ARC_SEGMENT_BODY = 'three-point-arc-segment-body'
 export const THREE_POINT_ARC_SEGMENT_DASH = 'three-point-arc-segment-dash'
 export const THREE_POINT_ARC_HANDLE2 = 'three-point-arc-handle2'
 export const THREE_POINT_ARC_HANDLE3 = 'three-point-arc-handle3'
+
+const TAN_ARC_SEGMENT_TYPES = [
+  TANGENTIAL_ARC_TO_SEGMENT,
+  THREE_POINT_ARC_SEGMENT,
+]
+const ARC_SEGMENT_TYPES = [...TAN_ARC_SEGMENT_TYPES, ARC_SEGMENT]
 
 export const HIDE_SEGMENT_LENGTH = 75 // in pixels
 export const HIDE_HOVER_SEGMENT_LENGTH = 60 // in pixels
@@ -2583,39 +2585,17 @@ export class SceneEntities {
     if (current.userData.type === STRAIGHT_SEGMENT) {
       const prev = segments[segments.length - 2]
       const disableSnap = mouseEvent.ctrlKey || mouseEvent.altKey
-      const tanArcTypes = [TANGENTIAL_ARC_TO_SEGMENT, THREE_POINT_ARC_SEGMENT]
-      const arcTypes = [...tanArcTypes, ARC_SEGMENT]
-      if (!disableSnap && arcTypes.includes(prev.userData.type)) {
-        let tangentDirection: Coords2d | undefined
-        if (tanArcTypes.includes(prev.userData.type)) {
-          const prevSegment = prev.userData.prevSegment
-          const arcInfo = getTangentialArcToInfo({
-            arcStartPoint: prev.userData.from,
-            arcEndPoint: prev.userData.to,
-            tanPreviousPoint: getTanPreviousPoint(prevSegment),
-            obtuse: true,
-          })
-          const tangentAngle =
-            arcInfo.endAngle + (Math.PI / 2) * (arcInfo.ccw ? 1 : -1)
-          tangentDirection = [Math.cos(tangentAngle), Math.sin(tangentAngle)]
-        } else if (prev.userData.type === ARC_SEGMENT) {
-          const tangentAngle =
-            (getAngle(prev.userData.center, prev.userData.to) * Math.PI) / 180 +
-            (Math.PI / 2) * (prev.userData.ccw ? 1 : -1)
-          tangentDirection = [Math.cos(tangentAngle), Math.sin(tangentAngle)]
-        }
-
+      if (!disableSnap && ARC_SEGMENT_TYPES.includes(prev.userData.type)) {
+        const tangentDirection = findTangendDirection(prev)
         if (tangentDirection) {
           const closestPoint = closestPointOnRay(
             prev.userData.to,
             tangentDirection,
             snappedPoint
           )
-
           const forceSnapping = mouseEvent.shiftKey
           const tolerance_in_screenspace = 10 * window.devicePixelRatio
           const orthoFactor = orthoScale(sceneInfra.camControls.camera)
-
           if (
             forceSnapping ||
             getLength(closestPoint, snappedPoint) / orthoFactor <
@@ -3774,4 +3754,26 @@ function isGroupStartProfileForCurrentProfile(sketchEntryNodePath: PathToNode) {
       groupExpressionIndex === sketchEntryNodePath[1][0]
     return isProfileStartOfCurrentExpr
   }
+}
+
+function findTangendDirection(prev: Group) {
+  let tangentDirection: Coords2d | undefined
+  if (TAN_ARC_SEGMENT_TYPES.includes(prev.userData.type)) {
+    const prevSegment = prev.userData.prevSegment
+    const arcInfo = getTangentialArcToInfo({
+      arcStartPoint: prev.userData.from,
+      arcEndPoint: prev.userData.to,
+      tanPreviousPoint: getTanPreviousPoint(prevSegment),
+      obtuse: true,
+    })
+    const tangentAngle =
+      arcInfo.endAngle + (Math.PI / 2) * (arcInfo.ccw ? 1 : -1)
+    tangentDirection = [Math.cos(tangentAngle), Math.sin(tangentAngle)]
+  } else if (prev.userData.type === ARC_SEGMENT) {
+    const tangentAngle =
+      (getAngle(prev.userData.center, prev.userData.to) * Math.PI) / 180 +
+      (Math.PI / 2) * (prev.userData.ccw ? 1 : -1)
+    tangentDirection = [Math.cos(tangentAngle), Math.sin(tangentAngle)]
+  }
+  return tangentDirection
 }

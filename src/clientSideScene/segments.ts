@@ -189,7 +189,6 @@ class StraightSegment implements SegmentUtils {
       callExpName,
       baseColor,
       selection,
-      // TODO add snap direction here
     }
 
     // All segment types get an extra segment handle,
