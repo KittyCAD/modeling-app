@@ -4,9 +4,7 @@ import {
   Program,
   PathToNode,
   Expr,
-  CallExpression,
   VariableDeclarator,
-  CallExpressionKw,
   ArtifactGraph,
 } from 'lang/wasm'
 import { Selections } from 'lib/selections'
