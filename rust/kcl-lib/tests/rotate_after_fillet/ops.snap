@@ -13,11 +13,7 @@ description: Operations executed rotate_after_fillet.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      198,
-      216,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -32,11 +28,7 @@ description: Operations executed rotate_after_fillet.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1575,
-      1581,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -45,19 +37,11 @@ description: Operations executed rotate_after_fillet.kcl
           "type": "String",
           "value": "XZ"
         },
-        "sourceRange": [
-          334,
-          338,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      320,
-      339,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -77,19 +61,11 @@ description: Operations executed rotate_after_fillet.kcl
             }
           }
         },
-        "sourceRange": [
-          442,
-          457,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      425,
-      458,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -98,11 +74,7 @@ description: Operations executed rotate_after_fillet.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        425,
-        458,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -121,11 +93,7 @@ description: Operations executed rotate_after_fillet.kcl
             }
           }
         },
-        "sourceRange": [
-          482,
-          487,
-          0
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -142,19 +110,11 @@ description: Operations executed rotate_after_fillet.kcl
             }
           ]
         },
-        "sourceRange": [
-          496,
-          531,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      466,
-      532,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -163,11 +123,7 @@ description: Operations executed rotate_after_fillet.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        466,
-        532,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -179,30 +135,18 @@ description: Operations executed rotate_after_fillet.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          629,
-          637,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "start"
         },
-        "sourceRange": [
-          639,
-          646,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      615,
-      647,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -216,19 +160,11 @@ description: Operations executed rotate_after_fillet.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          1235,
-          1257,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1218,
-      1258,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -237,11 +173,7 @@ description: Operations executed rotate_after_fillet.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1218,
-        1258,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -253,30 +185,18 @@ description: Operations executed rotate_after_fillet.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1287,
-          1295,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "end"
         },
-        "sourceRange": [
-          1297,
-          1302,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1273,
-      1303,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -296,19 +216,11 @@ description: Operations executed rotate_after_fillet.kcl
             }
           }
         },
-        "sourceRange": [
-          1405,
-          1415,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1388,
-      1416,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -317,11 +229,7 @@ description: Operations executed rotate_after_fillet.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1388,
-        1416,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -340,11 +248,7 @@ description: Operations executed rotate_after_fillet.kcl
             }
           }
         },
-        "sourceRange": [
-          1440,
-          1444,
-          0
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -356,19 +260,11 @@ description: Operations executed rotate_after_fillet.kcl
             }
           ]
         },
-        "sourceRange": [
-          1453,
-          1482,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      1424,
-      1483,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -377,11 +273,7 @@ description: Operations executed rotate_after_fillet.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1424,
-        1483,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {

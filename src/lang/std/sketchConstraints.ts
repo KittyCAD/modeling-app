@@ -1,22 +1,23 @@
-import { getNodeFromPath } from 'lang/queryAst'
-import { ToolTip, toolTips } from 'lang/langHelpers'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import {
-  Program,
-  VariableDeclarator,
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import { DETERMINING_ARGS } from '@src/lang/constants'
+import type { ToolTip } from '@src/lang/langHelpers'
+import { toolTips } from '@src/lang/langHelpers'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { findKwArgAny, topLevelRange } from '@src/lang/util'
+import type {
   CallExpression,
-  Sketch,
-  SourceRange,
+  CallExpressionKw,
+  Expr,
+  LabeledArg,
   Path,
   PathToNode,
-  Expr,
-  topLevelRange,
-  LabeledArg,
-  CallExpressionKw,
-} from '../wasm'
-import { err } from 'lib/trap'
-import { findKwArgAny } from 'lang/util'
-import { DETERMINING_ARGS } from './sketch'
+  Program,
+  Sketch,
+  SourceRange,
+  VariableDeclarator,
+} from '@src/lang/wasm'
+import { err } from '@src/lib/trap'
 
 export function getSketchSegmentFromPathToNode(
   sketch: Sketch,
@@ -93,7 +94,7 @@ export function isSketchVariablesLinked(
   and will keep checking the second arguments recursively until it runs out of variable declarations
   to check or it finds a match.
   that way it can find fn calls that are linked to each other through variables eg:
-  const part001 = startSketchOn('XY')
+  const part001 = startSketchOn(XY)
     |> startProfileAt([0, 0],%)
     |> xLine(endAbsolute = 1.69)
     |> line(end = [myVar, 0.38]) // ❗️ <- cursor in this fn call (the primary)
@@ -124,7 +125,7 @@ export function isSketchVariablesLinked(
       : init
   if (
     !firstCallExp ||
-    !toolTips.includes(firstCallExp?.callee?.name as ToolTip)
+    !toolTips.includes(firstCallExp?.callee?.name.name as ToolTip)
   )
     return false
   // convention for sketch fns is that the second argument is the sketch
@@ -138,13 +139,13 @@ export function isSketchVariablesLinked(
         return findKwArgAny(DETERMINING_ARGS, firstCallExp)
     }
   })()
-  if (!secondArg || secondArg?.type !== 'Identifier') return false
-  if (secondArg.name === primaryVarDec?.id?.name) return true
+  if (!secondArg || secondArg?.type !== 'Name') return false
+  if (secondArg.name.name === primaryVarDec?.id?.name) return true
 
   let nextVarDec: VariableDeclarator | undefined
   for (const node of ast.body) {
     if (node.type !== 'VariableDeclaration') continue
-    if (node.declaration.id.name === secondArg.name) {
+    if (node.declaration.id.name === secondArg.name.name) {
       nextVarDec = node.declaration
       break
     }

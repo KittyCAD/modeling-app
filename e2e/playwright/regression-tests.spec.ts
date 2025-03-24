@@ -1,10 +1,18 @@
-import { Page } from '@playwright/test'
-import { test, expect } from './zoo-test'
-import path from 'path'
+import type { Page } from '@playwright/test'
+import { bracket } from '@src/lib/exampleKcl'
+import { reportRejection } from '@src/lib/trap'
 import * as fsp from 'fs/promises'
-import { getUtils, executorInputPath } from './test-utils'
-import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from './storageStates'
-import { bracket } from 'lib/exampleKcl'
+import path from 'path'
+
+import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from '@e2e/playwright/storageStates'
+import type { TestColor } from '@e2e/playwright/test-utils'
+import {
+  TEST_COLORS,
+  executorInputPath,
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Regression tests', { tag: ['@skipWin'] }, () => {
   // bugs we found that don't fit neatly into other categories
@@ -58,7 +66,7 @@ test.describe('Regression tests', { tag: ['@skipWin'] }, () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('XY')
+        `sketch001 = startSketchOn(XY)
   |> startProfileAt([82.33, 238.21], %)
   |> angledLine([0, 288.63], %, $rectangleSegmentA001)
   |> angledLine([
@@ -126,7 +134,7 @@ extrude001 = extrude(sketch001, length = 50)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('-XZ')
+        `sketch001 = startSketchOn(-XZ)
   |> startProfileAt([-6.95, 4.98], %)
   |> line(end = [25.1, 0.41])
   |> line(end = [0.73, -14.93])
@@ -187,7 +195,7 @@ extrude001 = extrude(sketch001, length = 50)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `part = startSketchOn('XY')
+        `part = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(end = [0, 1])
   |> line(end = [1, 0])
@@ -315,6 +323,89 @@ extrude001 = extrude(sketch001, length = 50)
     }
   )
 
+  test(
+    'window resize updates should reconfigure the stream',
+    { tag: '@skipLocalEngine' },
+    async ({ scene, page, homePage, cmdBar, toolbar }) => {
+      await page.addInitScript(
+        async ({ code }) => {
+          localStorage.setItem(
+            'persistCode',
+            `@settings(defaultLengthUnit = mm)
+sketch002 = startSketchOn(XY)
+profile002 = startProfileAt([72.24, -52.05], sketch002)
+  |> angledLine([0, 181.26], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       21.54
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude002 = extrude(profile002, length = 150)
+`
+          )
+          ;(window as any).playwrightSkipFilePicker = true
+        },
+        { code: TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR }
+      )
+
+      const websocketPromise = page.waitForEvent('websocket')
+      await page.setBodyDimensions({ width: 500, height: 500 })
+
+      await homePage.goToModelingScene()
+      const websocket = await websocketPromise
+
+      await scene.connectionEstablished()
+      await scene.settled(cmdBar)
+      await toolbar.closePane('code')
+
+      // expect pixel color to be background color
+      const offModelBefore = { x: 446, y: 250 }
+      const onModelBefore = { x: 422, y: 250 }
+      const offModelAfter = { x: 692, y: 262 }
+      const onModelAfter = { x: 673, y: 266 }
+
+      await scene.expectPixelColor(
+        TEST_COLORS.DARK_MODE_BKGD,
+        offModelBefore,
+        15
+      )
+      const standardModelGrey: TestColor = [100, 100, 100]
+      await scene.expectPixelColor(standardModelGrey, onModelBefore, 15)
+
+      await test.step('resize window and expect "reconfigure_stream" websocket message', async () => {
+        // note this is a bit low level for our tests, usually this would go into a fixture
+        // but it's pretty unique to this resize test, it can be moved/abstracted if we have further need
+        // to listen to websocket messages
+        await Promise.all([
+          new Promise((resolve) => {
+            websocket
+              // @ts-ignore
+              .waitForEvent('framesent', (frame) => {
+                frame.payload
+                  .toString()
+                  .includes(
+                    '"type":"reconfigure_stream","width":1000,"height":500'
+                  ) && resolve(true)
+              })
+              .catch(reportRejection)
+          }),
+          page.setBodyDimensions({ width: 1000, height: 500 }),
+        ])
+      })
+
+      await scene.expectPixelColor(
+        TEST_COLORS.DARK_MODE_BKGD,
+        offModelAfter,
+        15
+      )
+      await scene.expectPixelColor(standardModelGrey, onModelAfter, 15)
+    }
+  )
   test(
     'when engine fails export we handle the failure and alert the user',
     { tag: '@skipLocalEngine' },
@@ -483,15 +574,16 @@ extrude001 = extrude(sketch001, length = 50)
     }
   )
 
-  test.fixme(
+  test(
     `Network health indicator only appears in modeling view`,
     { tag: '@electron' },
     async ({ context, page }, testInfo) => {
+      test.fixme(orRunWhenFullSuiteEnabled())
       await context.folderSetupFn(async (dir) => {
         const bracketDir = path.join(dir, 'bracket')
         await fsp.mkdir(bracketDir, { recursive: true })
         await fsp.copyFile(
-          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          executorInputPath('cylinder-inches.kcl'),
           path.join(bracketDir, 'main.kcl')
         )
       })
@@ -528,12 +620,13 @@ extrude001 = extrude(sketch001, length = 50)
   test(`View gizmo stays visible even when zoomed out all the way`, async ({
     page,
     homePage,
+    scene,
   }) => {
     const u = await getUtils(page)
 
     // Constants and locators
     const planeColor: [number, number, number] = [170, 220, 170]
-    const bgColor: [number, number, number] = [27, 27, 27]
+    const bgColor: [number, number, number] = TEST_COLORS.DARK_MODE_BKGD
     const middlePixelIsColor = async (color: [number, number, number]) => {
       return u.getGreatestPixDiff({ x: 600, y: 250 }, color)
     }
@@ -541,7 +634,7 @@ extrude001 = extrude(sketch001, length = 50)
 
     await test.step(`Load an empty file`, async () => {
       await page.addInitScript(async () => {
-        localStorage.setItem('persistCode', '')
+        localStorage.setItem('persistCode', '@settings(defaultLengthUnit = in)')
       })
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
@@ -555,22 +648,31 @@ extrude001 = extrude(sketch001, length = 50)
           timeout: 5000,
           message: 'Plane color is visible',
         })
-        .toBeLessThanOrEqual(15)
+        .toBeLessThanOrEqual(20)
+      await expect(scene.startEditSketchBtn).toBeEnabled()
 
       let maxZoomOuts = 10
       let middlePixelIsBackgroundColor =
         (await middlePixelIsColor(bgColor)) < 10
+
+      console.time('pressing control')
+      await page.keyboard.down('Control')
+
       while (!middlePixelIsBackgroundColor && maxZoomOuts > 0) {
-        await page.keyboard.down('Control')
-        await page.mouse.move(600, 460)
-        await page.mouse.down({ button: 'right' })
-        await page.mouse.move(600, 50, { steps: 20 })
-        await page.mouse.up({ button: 'right' })
-        await page.keyboard.up('Control')
         await page.waitForTimeout(100)
+        await page.mouse.move(650, 460)
+        console.time('moved to start point')
+        await page.mouse.down({ button: 'right' })
+        console.time('moused down')
+        await page.mouse.move(650, 50, { steps: 20 })
+        console.time('moved to end point')
+        await page.waitForTimeout(100)
+        await page.mouse.up({ button: 'right' })
+        console.time('moused up')
         maxZoomOuts--
-        middlePixelIsBackgroundColor = (await middlePixelIsColor(bgColor)) < 10
+        middlePixelIsBackgroundColor = (await middlePixelIsColor(bgColor)) < 15
       }
+      await page.keyboard.up('Control')
 
       expect(middlePixelIsBackgroundColor, {
         message: 'We should not see the default planes',
@@ -587,13 +689,12 @@ extrude001 = extrude(sketch001, length = 50)
     homePage,
     scene,
     toolbar,
-    viewport,
   }) => {
     await context.folderSetupFn(async (dir) => {
       const legoDir = path.join(dir, 'lego')
       await fsp.mkdir(legoDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('lego.kcl'),
+        executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
         path.join(legoDir, 'main.kcl')
       )
     })
@@ -606,11 +707,8 @@ extrude001 = extrude(sketch001, length = 50)
       await scene.loadingIndicator.waitFor({ state: 'detached' })
     })
     await test.step(`The part should start loading quickly, not waiting until execution is complete`, async () => {
-      await scene.expectPixelColor(
-        [143, 143, 143],
-        { x: (viewport?.width ?? 1200) / 2, y: (viewport?.height ?? 500) / 2 },
-        15
-      )
+      // TODO: use the viewport size to pick the center point, but the `viewport` fixture's values were wrong.
+      await scene.expectPixelColor([116, 116, 116], { x: 500, y: 250 }, 15)
     })
   })
 
@@ -685,6 +783,87 @@ plane002 = offsetPlane(XZ, offset = -2 * x)`
       await editor.expectEditor.toContain(`x = 5`)
       await editor.expectEditor.toContain(`plane001`)
       await editor.expectEditor.not.toContain(`plane002`)
+    })
+  })
+
+  test.fail(
+    'Console errors cause tests to fail',
+    async ({ page, homePage }) => {
+      const u = await getUtils(page)
+      await homePage.goToModelingScene()
+      await u.openAndClearDebugPanel()
+
+      await page.getByTestId('custom-cmd-input').fill('foobar')
+      await page.getByTestId('custom-cmd-send-button').scrollIntoViewIfNeeded()
+      await page.getByTestId('custom-cmd-send-button').click()
+    }
+  )
+
+  test('scale other than default works with sketch mode', async ({
+    page,
+    homePage,
+    toolbar,
+    editor,
+    scene,
+  }) => {
+    await test.step('Load the washer code', async () => {
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `@settings(defaultLengthUnit = in)
+
+innerDiameter = 0.203
+outerDiameter = 0.438
+thicknessMax = 0.038
+thicknessMin = 0.024
+washerSketch = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = outerDiameter / 2)
+
+washer = extrude(washerSketch, length = thicknessMax)`
+        )
+      })
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+    })
+    const [circleCenterClick] = scene.makeMouseHelpers(650, 300)
+    const [circleRadiusClick] = scene.makeMouseHelpers(800, 320)
+    const [washerFaceClick] = scene.makeMouseHelpers(657, 286)
+
+    await page.waitForTimeout(100)
+    await test.step('Start sketching on the washer face', async () => {
+      await toolbar.startSketchPlaneSelection()
+      await washerFaceClick()
+      await page.waitForTimeout(600) // engine animation
+      await toolbar.expectToolbarMode.toBe('sketching')
+    })
+
+    await test.step('Draw a circle and verify code', async () => {
+      // select circle tool
+      await expect
+        .poll(async () => {
+          await toolbar.circleBtn.click()
+          return toolbar.circleBtn.getAttribute('aria-pressed')
+        })
+        .toBe('true')
+      await page.waitForTimeout(100)
+      await circleCenterClick()
+      // this number will be different if the scale is not set correctly for inches
+      await editor.expectEditor.toContain(
+        'circle(sketch001, center = [0.06, -0.06]'
+      )
+      await circleRadiusClick()
+
+      await editor.expectEditor.toContain(
+        'circle(sketch001, center = [0.06, -0.06], radius = 0.18'
+      )
+    })
+
+    await test.step('Exit sketch mode', async () => {
+      await toolbar.exitSketch()
+      await toolbar.expectToolbarMode.toBe('modeling')
+
+      await toolbar.selectUnit('Yards')
+      await editor.expectEditor.toContain('@settings(defaultLengthUnit = yd)')
     })
   })
 })

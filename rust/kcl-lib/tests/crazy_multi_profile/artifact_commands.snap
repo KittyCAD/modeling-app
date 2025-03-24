@@ -5,11 +5,7 @@ description: Artifact commands crazy_multi_profile.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,23 +13,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +22,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +31,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      12,
-      31,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -84,11 +56,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      45,
-      85,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -104,22 +72,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      45,
-      85,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      45,
-      85,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -132,22 +92,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      45,
-      85,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      91,
-      129,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -164,11 +116,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      135,
-      174,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -185,11 +133,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      180,
-      236,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -206,11 +150,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      242,
-      249,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -218,11 +158,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      263,
-      295,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -238,11 +174,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      263,
-      295,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -252,22 +184,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      263,
-      295,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      263,
-      295,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -275,11 +199,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      263,
-      295,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -288,11 +208,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      263,
-      295,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -302,11 +218,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      263,
-      295,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -316,11 +228,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      263,
-      295,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -330,11 +238,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      263,
-      295,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -344,11 +248,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      263,
-      295,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -358,11 +258,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      263,
-      295,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -372,11 +268,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      354,
-      394,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -388,22 +280,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      354,
-      394,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      354,
-      394,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -416,22 +300,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      354,
-      394,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      400,
-      424,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -448,11 +324,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      430,
-      455,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -469,11 +341,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      469,
-      508,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -485,22 +353,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      469,
-      508,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      469,
-      508,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -513,22 +373,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      469,
-      508,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      514,
-      561,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -545,11 +397,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      567,
-      644,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -566,11 +414,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      650,
-      747,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -587,11 +431,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      753,
-      809,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -608,11 +448,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      815,
-      822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -620,11 +456,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      836,
-      875,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -636,22 +468,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      836,
-      875,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      836,
-      875,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -664,22 +488,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      836,
-      875,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      881,
-      901,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -696,11 +512,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      907,
-      933,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -717,11 +529,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      939,
-      995,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -738,11 +546,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1001,
-      1008,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -750,11 +554,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1022,
-      1077,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -766,22 +566,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1022,
-      1077,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1022,
-      1077,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -794,22 +586,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1022,
-      1077,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1022,
-      1077,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -834,11 +618,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1022,
-      1077,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -846,11 +626,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1091,
-      1130,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -862,22 +638,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1091,
-      1130,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1091,
-      1130,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -890,22 +658,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1091,
-      1130,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1136,
-      1160,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -922,11 +682,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1166,
-      1191,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -943,11 +699,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1197,
-      1253,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -964,11 +716,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1259,
-      1266,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -976,11 +724,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1319,
-      1345,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -990,11 +734,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1280,
-      1346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "revolve_about_edge",
       "target": "[uuid]",
@@ -1008,11 +748,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1280,
-      1346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1020,11 +756,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1280,
-      1346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1033,11 +765,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1280,
-      1346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1047,11 +775,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1280,
-      1346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1061,11 +785,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1280,
-      1346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1075,11 +795,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1280,
-      1346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1089,11 +805,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1280,
-      1346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1103,11 +815,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1280,
-      1346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1117,11 +825,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1360,
-      1391,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1133,11 +837,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1360,
-      1391,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1147,22 +847,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1360,
-      1391,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1360,
-      1391,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1170,11 +862,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1360,
-      1391,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1183,11 +871,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1360,
-      1391,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1197,11 +881,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1360,
-      1391,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1211,11 +891,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1360,
-      1391,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1225,11 +901,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1360,
-      1391,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1239,11 +911,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1360,
-      1391,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1253,11 +921,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1360,
-      1391,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1267,11 +931,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1404,
-      1424,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1296,11 +956,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1438,
-      1476,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1316,22 +972,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1438,
-      1476,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1438,
-      1476,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1344,22 +992,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1438,
-      1476,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1482,
-      1506,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1376,11 +1016,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1512,
-      1537,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1397,11 +1033,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1551,
-      1590,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1417,22 +1049,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1551,
-      1590,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1551,
-      1590,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1445,22 +1069,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1551,
-      1590,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1596,
-      1620,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1477,11 +1093,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1626,
-      1651,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1498,11 +1110,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1657,
-      1713,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1519,11 +1127,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1719,
-      1726,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1531,11 +1135,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1740,
-      1779,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1551,22 +1151,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1740,
-      1779,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1740,
-      1779,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1579,22 +1171,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1740,
-      1779,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1785,
-      1808,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1611,11 +1195,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1814,
-      1839,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1632,11 +1212,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1845,
-      1901,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1653,11 +1229,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1907,
-      1914,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1665,11 +1237,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1928,
-      1984,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1685,22 +1253,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1928,
-      1984,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1928,
-      1984,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1713,22 +1273,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1928,
-      1984,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1928,
-      1984,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1753,11 +1305,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1928,
-      1984,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1765,11 +1313,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1998,
-      2038,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1785,22 +1329,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1998,
-      2038,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1998,
-      2038,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1813,22 +1349,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1998,
-      2038,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2044,
-      2091,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1845,11 +1373,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2097,
-      2174,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1866,11 +1390,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2180,
-      2277,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1887,11 +1407,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2283,
-      2339,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1908,11 +1424,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2345,
-      2352,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1920,11 +1432,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2366,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1940,11 +1448,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2366,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1954,22 +1458,14 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2366,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2366,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1977,11 +1473,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2366,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1990,11 +1482,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2366,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2004,11 +1492,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2366,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2018,11 +1502,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2366,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2032,11 +1512,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2366,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2046,11 +1522,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2366,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2060,11 +1532,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2366,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2074,11 +1542,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2366,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2088,11 +1552,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2366,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2102,11 +1562,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2413,
-      2458,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "revolve_about_edge",
       "target": "[uuid]",
@@ -2120,11 +1576,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2413,
-      2458,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -2132,11 +1584,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2413,
-      2458,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -2145,11 +1593,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2413,
-      2458,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2159,11 +1603,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2413,
-      2458,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2173,11 +1613,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2413,
-      2458,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2187,11 +1623,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2413,
-      2458,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2201,11 +1633,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2413,
-      2458,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2215,11 +1643,7 @@ description: Artifact commands crazy_multi_profile.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2413,
-      2458,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",

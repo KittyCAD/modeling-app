@@ -1,25 +1,29 @@
+import toast from 'react-hot-toast'
+
+import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
+import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
+import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Program } from '@rust/kcl-lib/bindings/Program'
+import type { Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+
+import type { EngineCommandManager } from '@src/lang/std/engineConnection'
+import { fileSystemManager } from '@src/lang/std/fileSystemManager'
+import type { ExecState } from '@src/lang/wasm'
 import {
   errFromErrWithOutputs,
-  ExecState,
   execStateFromRust,
   initPromise,
   mockExecStateFromRust,
-} from 'lang/wasm'
-import { getModule, ModuleType } from 'lib/wasm_lib_wrapper'
-import { fileSystemManager } from 'lang/std/fileSystemManager'
-import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import { DeepPartial } from 'lib/types'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import type { Program } from '@rust/kcl-lib/bindings/Program'
-import { Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
-import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
-import { DefaultPlaneStr, defaultPlaneStrToKey } from 'lib/planes'
-import { err } from 'lib/trap'
-import { EngineCommandManager } from 'lang/std/engineConnection'
-import { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
-import ModelingAppFile from './modelingAppFile'
-import toast from 'react-hot-toast'
-import { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
+} from '@src/lang/wasm'
+import type ModelingAppFile from '@src/lib/modelingAppFile'
+import type { DefaultPlaneStr } from '@src/lib/planes'
+import { defaultPlaneStrToKey } from '@src/lib/planes'
+import { err, reportRejection } from '@src/lib/trap'
+import type { DeepPartial } from '@src/lib/types'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { getModule } from '@src/lib/wasm_lib_wrapper'
 
 export default class RustContext {
   private wasmInitFailed: boolean = true
@@ -44,10 +48,11 @@ export default class RustContext {
   constructor(engineCommandManager: EngineCommandManager) {
     this.engineCommandManager = engineCommandManager
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.ensureWasmInit().then(async () => {
-      this.ctxInstance = await this.create()
-    })
+    this.ensureWasmInit()
+      .then(async () => {
+        this.ctxInstance = await this.create()
+      })
+      .catch(reportRejection)
   }
 
   // Create a new context instance
@@ -146,16 +151,13 @@ export default class RustContext {
     return this._defaultPlanes
   }
 
-  // Clear the scene and bust the cache.
+  // Clear/reset the scene and bust the cache.
   async clearSceneAndBustCache(
     settings: DeepPartial<Configuration>,
     path?: string
-  ) {
-    // Send through and empty ast to clear the scene.
-    // This will also bust the cache and reset the default planes.
-    // We do it like this so it works better with adding stuff later and the
-    // cache.
-    // It also works better with the id generator.
+  ): Promise<ExecState> {
+    const instance = await this._checkInstance()
+
     const ast: Node<Program> = {
       body: [],
       shebang: null,
@@ -168,9 +170,27 @@ export default class RustContext {
       },
       innerAttrs: [],
       outerAttrs: [],
+      preComments: [],
+      commentStart: 0,
     }
 
-    await this.execute(ast, settings, path)
+    try {
+      const result = await instance.bustCacheAndResetScene(
+        JSON.stringify(settings),
+        path
+      )
+      /* Set the default planes, safe to call after execute. */
+      const outcome = execStateFromRust(result, ast)
+
+      this._defaultPlanes = outcome.defaultPlanes
+
+      // Return the result.
+      return outcome
+    } catch (e: any) {
+      const err = errFromErrWithOutputs(e)
+      this._defaultPlanes = err.defaultPlanes
+      return Promise.reject(err)
+    }
   }
 
   getDefaultPlaneId(name: DefaultPlaneStr): string | Error {

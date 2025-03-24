@@ -1,25 +1,30 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing computed_var.kcl
 ---
 {
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 56,
+          "commentStart": 37,
+          "end": 0,
           "id": {
-            "end": 40,
+            "commentStart": 37,
+            "end": 0,
             "name": "arr",
-            "start": 37,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 43,
             "elements": [
               {
-                "end": 45,
+                "commentStart": 44,
+                "end": 0,
                 "raw": "0",
-                "start": 44,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -28,9 +33,10 @@ description: Result of parsing computed_var.kcl
                 }
               },
               {
-                "end": 48,
+                "commentStart": 47,
+                "end": 0,
                 "raw": "0",
-                "start": 47,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -39,9 +45,10 @@ description: Result of parsing computed_var.kcl
                 }
               },
               {
-                "end": 51,
+                "commentStart": 50,
+                "end": 0,
                 "raw": "0",
-                "start": 50,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -50,9 +57,10 @@ description: Result of parsing computed_var.kcl
                 }
               },
               {
-                "end": 55,
+                "commentStart": 53,
+                "end": 0,
                 "raw": "10",
-                "start": 53,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -61,33 +69,37 @@ description: Result of parsing computed_var.kcl
                 }
               }
             ],
-            "end": 56,
-            "start": 43,
+            "end": 0,
+            "start": 0,
             "type": "ArrayExpression",
             "type": "ArrayExpression"
           },
-          "start": 37,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 56,
+        "end": 0,
         "kind": "const",
-        "start": 37,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 57,
         "declaration": {
-          "end": 62,
+          "commentStart": 57,
+          "end": 0,
           "id": {
-            "end": 58,
+            "commentStart": 57,
+            "end": 0,
             "name": "i",
-            "start": 57,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 62,
+            "commentStart": 61,
+            "end": 0,
             "raw": "3",
-            "start": 61,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -95,69 +107,86 @@ description: Result of parsing computed_var.kcl
               "suffix": "None"
             }
           },
-          "start": 57,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 62,
+        "end": 0,
         "kind": "const",
-        "start": 57,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 63,
         "declaration": {
-          "end": 75,
+          "commentStart": 63,
+          "end": 0,
           "id": {
-            "end": 66,
+            "commentStart": 63,
+            "end": 0,
             "name": "ten",
-            "start": 63,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 69,
             "computed": true,
-            "end": 75,
+            "end": 0,
             "object": {
-              "end": 72,
+              "commentStart": 69,
+              "end": 0,
               "name": "arr",
-              "start": 69,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "property": {
-              "end": 74,
+              "commentStart": 73,
+              "end": 0,
               "name": "i",
-              "start": 73,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
-            "start": 69,
+            "start": 0,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "start": 63,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 75,
+        "end": 0,
         "kind": "const",
-        "start": 63,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 115,
+        "commentStart": 75,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 92,
-              "name": "ten",
-              "start": 89,
-              "type": "Identifier",
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 89,
+              "end": 0,
+              "name": {
+                "commentStart": 89,
+                "end": 0,
+                "name": "ten",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             },
             {
-              "end": 96,
+              "commentStart": 94,
+              "end": 0,
               "raw": "10",
-              "start": 94,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -166,9 +195,10 @@ description: Result of parsing computed_var.kcl
               }
             },
             {
-              "end": 106,
+              "commentStart": 98,
+              "end": 0,
               "raw": "0.000001",
-              "start": 98,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -177,81 +207,103 @@ description: Result of parsing computed_var.kcl
               }
             },
             {
-              "end": 114,
+              "commentStart": 108,
+              "end": 0,
               "raw": "\"oops\"",
-              "start": 108,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "oops"
             }
           ],
           "callee": {
-            "end": 88,
-            "name": "assertEqual",
-            "start": 77,
-            "type": "Identifier"
+            "abs_path": false,
+            "commentStart": 77,
+            "end": 0,
+            "name": {
+              "commentStart": 77,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
           },
-          "end": 115,
-          "start": 77,
+          "commentStart": 77,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 77,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 115,
         "declaration": {
-          "end": 126,
+          "commentStart": 117,
+          "end": 0,
           "id": {
-            "end": 118,
+            "commentStart": 117,
+            "end": 0,
             "name": "p",
-            "start": 117,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 126,
+            "commentStart": 121,
+            "end": 0,
             "raw": "\"foo\"",
-            "start": 121,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": "foo"
           },
-          "start": 117,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 126,
+        "end": 0,
         "kind": "const",
-        "start": 117,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 127,
         "declaration": {
-          "end": 153,
+          "commentStart": 127,
+          "end": 0,
           "id": {
-            "end": 130,
+            "commentStart": 127,
+            "end": 0,
             "name": "obj",
-            "start": 127,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 153,
+            "commentStart": 133,
+            "end": 0,
             "properties": [
               {
-                "end": 142,
+                "commentStart": 135,
+                "end": 0,
                 "key": {
-                  "end": 138,
+                  "commentStart": 135,
+                  "end": 0,
                   "name": "foo",
-                  "start": 135,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "start": 135,
+                "start": 0,
                 "type": "ObjectProperty",
                 "value": {
-                  "end": 142,
+                  "commentStart": 141,
+                  "end": 0,
                   "raw": "1",
-                  "start": 141,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -261,19 +313,22 @@ description: Result of parsing computed_var.kcl
                 }
               },
               {
-                "end": 151,
+                "commentStart": 144,
+                "end": 0,
                 "key": {
-                  "end": 147,
+                  "commentStart": 144,
+                  "end": 0,
                   "name": "bar",
-                  "start": 144,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "start": 144,
+                "start": 0,
                 "type": "ObjectProperty",
                 "value": {
-                  "end": 151,
+                  "commentStart": 150,
+                  "end": 0,
                   "raw": "0",
-                  "start": 150,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -283,73 +338,90 @@ description: Result of parsing computed_var.kcl
                 }
               }
             ],
-            "start": 133,
+            "start": 0,
             "type": "ObjectExpression",
             "type": "ObjectExpression"
           },
-          "start": 127,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 153,
+        "end": 0,
         "kind": "const",
-        "start": 127,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 154,
         "declaration": {
-          "end": 166,
+          "commentStart": 154,
+          "end": 0,
           "id": {
-            "end": 157,
+            "commentStart": 154,
+            "end": 0,
             "name": "one",
-            "start": 154,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 160,
             "computed": true,
-            "end": 166,
+            "end": 0,
             "object": {
-              "end": 163,
+              "commentStart": 160,
+              "end": 0,
               "name": "obj",
-              "start": 160,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "property": {
-              "end": 165,
+              "commentStart": 164,
+              "end": 0,
               "name": "p",
-              "start": 164,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
-            "start": 160,
+            "start": 0,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "start": 154,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 166,
+        "end": 0,
         "kind": "const",
-        "start": 154,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 206,
+        "commentStart": 166,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 183,
-              "name": "one",
-              "start": 180,
-              "type": "Identifier",
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 180,
+              "end": 0,
+              "name": {
+                "commentStart": 180,
+                "end": 0,
+                "name": "one",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             },
             {
-              "end": 186,
+              "commentStart": 185,
+              "end": 0,
               "raw": "1",
-              "start": 185,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -358,9 +430,10 @@ description: Result of parsing computed_var.kcl
               }
             },
             {
-              "end": 197,
+              "commentStart": 188,
+              "end": 0,
               "raw": "0.0000001",
-              "start": 188,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -369,44 +442,66 @@ description: Result of parsing computed_var.kcl
               }
             },
             {
-              "end": 205,
+              "commentStart": 199,
+              "end": 0,
               "raw": "\"oops\"",
-              "start": 199,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "oops"
             }
           ],
           "callee": {
-            "end": 179,
-            "name": "assertEqual",
-            "start": 168,
-            "type": "Identifier"
+            "abs_path": false,
+            "commentStart": 168,
+            "end": 0,
+            "name": {
+              "commentStart": 168,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
           },
-          "end": 206,
-          "start": 168,
+          "commentStart": 168,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 168,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 242,
+        "commentStart": 206,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 222,
-              "name": "PI",
-              "start": 220,
-              "type": "Identifier",
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 220,
+              "end": 0,
+              "name": {
+                "commentStart": 220,
+                "end": 0,
+                "name": "PI",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             },
             {
-              "end": 225,
+              "commentStart": 224,
+              "end": 0,
               "raw": "3",
-              "start": 224,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -415,9 +510,10 @@ description: Result of parsing computed_var.kcl
               }
             },
             {
-              "end": 230,
+              "commentStart": 227,
+              "end": 0,
               "raw": "0.2",
-              "start": 227,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -426,46 +522,62 @@ description: Result of parsing computed_var.kcl
               }
             },
             {
-              "end": 241,
+              "commentStart": 232,
+              "end": 0,
               "raw": "\"oops pi\"",
-              "start": 232,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "oops pi"
             }
           ],
           "callee": {
-            "end": 219,
-            "name": "assertEqual",
-            "start": 208,
-            "type": "Identifier"
+            "abs_path": false,
+            "commentStart": 208,
+            "end": 0,
+            "name": {
+              "commentStart": 208,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
           },
-          "end": 242,
-          "start": 208,
+          "commentStart": 208,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 208,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 243,
         "declaration": {
-          "end": 258,
+          "commentStart": 243,
+          "end": 0,
           "id": {
-            "end": 244,
+            "commentStart": 243,
+            "end": 0,
             "name": "x",
-            "start": 243,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 257,
+                "commentStart": 251,
+                "end": 0,
                 "left": {
-                  "end": 252,
+                  "commentStart": 251,
+                  "end": 0,
                   "raw": "2",
-                  "start": 251,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -475,52 +587,82 @@ description: Result of parsing computed_var.kcl
                 },
                 "operator": "*",
                 "right": {
-                  "end": 257,
-                  "name": "PI",
-                  "start": 255,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 255,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 255,
+                    "end": 0,
+                    "name": "PI",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
                 },
-                "start": 251,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               }
             ],
             "callee": {
-              "end": 250,
-              "name": "cos",
-              "start": 247,
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 247,
+              "end": 0,
+              "name": {
+                "commentStart": 247,
+                "end": 0,
+                "name": "cos",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
             },
-            "end": 258,
-            "start": 247,
+            "commentStart": 247,
+            "end": 0,
+            "start": 0,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 243,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 258,
+        "end": 0,
         "kind": "const",
-        "start": 243,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 298,
+        "commentStart": 259,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 272,
-              "name": "x",
-              "start": 271,
-              "type": "Identifier",
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 271,
+              "end": 0,
+              "name": {
+                "commentStart": 271,
+                "end": 0,
+                "name": "x",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             },
             {
-              "end": 275,
+              "commentStart": 274,
+              "end": 0,
               "raw": "1",
-              "start": 274,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -529,9 +671,10 @@ description: Result of parsing computed_var.kcl
               }
             },
             {
-              "end": 285,
+              "commentStart": 277,
+              "end": 0,
               "raw": "0.000001",
-              "start": 277,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -540,37 +683,50 @@ description: Result of parsing computed_var.kcl
               }
             },
             {
-              "end": 297,
+              "commentStart": 287,
+              "end": 0,
               "raw": "\"oops cos\"",
-              "start": 287,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "oops cos"
             }
           ],
           "callee": {
-            "end": 270,
-            "name": "assertEqual",
-            "start": 259,
-            "type": "Identifier"
+            "abs_path": false,
+            "commentStart": 259,
+            "end": 0,
+            "name": {
+              "commentStart": 259,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
           },
-          "end": 298,
-          "start": 259,
+          "commentStart": 259,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 259,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 299,
+    "commentStart": 0,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "2": [
           {
-            "end": 77,
-            "start": 75,
+            "commentStart": 75,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -579,8 +735,9 @@ description: Result of parsing computed_var.kcl
         ],
         "3": [
           {
-            "end": 117,
-            "start": 115,
+            "commentStart": 115,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -589,8 +746,9 @@ description: Result of parsing computed_var.kcl
         ],
         "6": [
           {
-            "end": 168,
-            "start": 166,
+            "commentStart": 166,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -599,8 +757,9 @@ description: Result of parsing computed_var.kcl
         ],
         "7": [
           {
-            "end": 208,
-            "start": 206,
+            "commentStart": 206,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -610,7 +769,8 @@ description: Result of parsing computed_var.kcl
       },
       "startNodes": [
         {
-          "end": 34,
+          "commentStart": 0,
+          "end": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
@@ -620,8 +780,9 @@ description: Result of parsing computed_var.kcl
           }
         },
         {
-          "end": 37,
-          "start": 34,
+          "commentStart": 34,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"

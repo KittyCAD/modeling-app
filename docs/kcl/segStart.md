@@ -28,7 +28,7 @@ segStart(tag: TagIdentifier): [number]
 
 ```js
 w = 15
-cube = startSketchOn('XY')
+cube = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(end = [w, 0], tag = $line1)
   |> line(end = [0, w], tag = $line2)
@@ -38,7 +38,7 @@ cube = startSketchOn('XY')
   |> extrude(length = 5)
 
 fn cylinder(radius, tag) {
-  return startSketchOn('XY')
+  return startSketchOn(XY)
     |> startProfileAt([0, 0], %)
     |> circle(radius = radius, center = segStart(tag))
     |> extrude(length = radius)

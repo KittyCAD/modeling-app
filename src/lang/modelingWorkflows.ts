@@ -5,12 +5,18 @@
  * coordinate between different subsystems in the modeling app:
  * AST, code editor, file system and 3D engine.
  */
+import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { KclManager } from 'lang/KclSingleton'
-import { PathToNode, Program, SourceRange } from 'lang/wasm'
-import EditorManager from 'editor/manager'
-import CodeManager from 'lang/codeManager'
+import type EditorManager from '@src/editor/manager'
+import type { KclManager } from '@src/lang/KclSingleton'
+import type CodeManager from '@src/lang/codeManager'
+import type { PathToNode, Program } from '@src/lang/wasm'
+import type { ExecutionType } from '@src/lib/constants'
+import {
+  EXECUTION_TYPE_MOCK,
+  EXECUTION_TYPE_NONE,
+  EXECUTION_TYPE_REAL,
+} from '@src/lib/constants'
 
 /**
  * Updates the complete modeling state:
@@ -32,12 +38,13 @@ import CodeManager from 'lang/codeManager'
  * regardless of geometric validity issues.
  *
  * @param ast - AST to commit
+ * @param executionType - How to execute the AST
  * @param dependencies - Required system components
  * @param options - Optional parameters for focus, zoom, etc.
  */
-
 export async function updateModelingState(
   ast: Node<Program>,
+  executionType: ExecutionType,
   dependencies: {
     kclManager: KclManager
     editorManager: EditorManager
@@ -45,16 +52,12 @@ export async function updateModelingState(
   },
   options?: {
     focusPath?: Array<PathToNode>
-    zoomToFit?: boolean
-    zoomOnRangeAndType?: {
-      range: SourceRange
-      type: string
-    }
   }
 ): Promise<void> {
   // Step 1: Update AST without executing (prepare selections)
   const updatedAst = await dependencies.kclManager.updateAst(
     ast,
+    // false == mock execution. Is this what we want?
     false, // Execution handled separately for error resilience
     options
   )
@@ -69,14 +72,18 @@ export async function updateModelingState(
     dependencies.editorManager.selectRange(updatedAst.selections)
   }
 
-  // Step 4: Try to execute the new code in the engine
+  // Step 4: Try to execute the new code
   // and continue regardless of errors
   try {
-    await dependencies.kclManager.executeAst({
-      ast: updatedAst.newAst,
-      zoomToFit: options?.zoomToFit,
-      zoomOnRangeAndType: options?.zoomOnRangeAndType,
-    })
+    if (executionType === EXECUTION_TYPE_REAL) {
+      await dependencies.kclManager.executeAst({
+        ast: updatedAst.newAst,
+      })
+    } else if (executionType === EXECUTION_TYPE_MOCK) {
+      await dependencies.kclManager.executeAstMock(updatedAst.newAst)
+    } else if (executionType === EXECUTION_TYPE_NONE) {
+      // No execution.
+    }
   } catch (e) {
     console.error('Engine execution error (UI is still updated):', e)
   }

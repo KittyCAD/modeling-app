@@ -5,11 +5,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,23 +13,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +22,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +31,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      16,
-      35,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -84,11 +56,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      41,
-      66,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -104,22 +72,14 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      41,
-      66,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      41,
-      66,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -132,22 +92,14 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      41,
-      66,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      72,
-      90,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -164,11 +116,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      96,
-      114,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -185,11 +133,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      120,
-      139,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -206,11 +150,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      145,
-      153,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -218,11 +158,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      159,
-      178,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -238,11 +174,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      159,
-      178,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -252,22 +184,14 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      159,
-      178,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      159,
-      178,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -275,11 +199,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      159,
-      178,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -288,11 +208,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      159,
-      178,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -302,11 +218,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      159,
-      178,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -316,11 +228,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      159,
-      178,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -330,11 +238,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      159,
-      178,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -344,11 +248,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      159,
-      178,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -358,11 +258,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      159,
-      178,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -372,11 +268,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      159,
-      178,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -386,11 +278,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      159,
-      178,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -400,11 +288,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      189,
-      277,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -589,11 +473,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      288,
-      432,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -614,11 +494,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      288,
-      432,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -639,11 +515,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      288,
-      432,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -664,11 +536,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      288,
-      432,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -689,11 +557,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      288,
-      432,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -714,11 +578,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      288,
-      432,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -739,11 +599,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      288,
-      432,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",

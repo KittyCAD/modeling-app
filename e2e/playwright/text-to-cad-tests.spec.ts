@@ -1,8 +1,13 @@
-import { Page } from '@playwright/test'
-import { test, expect } from './zoo-test'
-import { getUtils, createProject } from './test-utils'
-import { join } from 'path'
+import type { Page } from '@playwright/test'
 import fs from 'fs'
+import { join } from 'path'
+
+import {
+  createProject,
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
   test('basic lego happy case', async ({ page, homePage }) => {
@@ -431,10 +436,11 @@ test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
   })
 
   // This will be fine once greg makes prompt at top of file deterministic
-  test.fixme(
+  test(
     'can do many at once and get many prompts back, and interact with many',
     { tag: ['@skipWin'] },
     async ({ page, homePage }) => {
+      test.fixme(orRunWhenFullSuiteEnabled())
       // Let this test run longer since we've seen it timeout.
       test.setTimeout(180_000)
 
@@ -619,10 +625,11 @@ async function sendPromptFromCommandBar(page: Page, promptStr: string) {
   })
 }
 
-test.fixme(
+test(
   'Text-to-CAD functionality',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
+    test.fixme(orRunWhenFullSuiteEnabled())
     const projectName = 'project-000'
     const prompt = 'lego 2x4'
     const textToCadFileName = 'lego-2x4.kcl'

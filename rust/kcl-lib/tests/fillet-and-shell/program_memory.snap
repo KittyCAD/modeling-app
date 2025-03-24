@@ -26,12 +26,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            860,
-            908,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 901,
             "end": 907,
             "start": 901,
             "type": "TagDeclarator",
@@ -42,12 +39,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            914,
-            971,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 964,
             "end": 970,
             "start": 964,
             "type": "TagDeclarator",
@@ -58,12 +52,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            977,
-            1026,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 1019,
             "end": 1025,
             "start": 1019,
             "type": "TagDeclarator",
@@ -74,12 +65,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1032,
-            1051,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 1044,
             "end": 1050,
             "start": 1044,
             "type": "TagDeclarator",
@@ -95,17 +83,14 @@ description: Variables in memory after executing fillet-and-shell.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                860,
-                908,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
               0.0
             ],
             "tag": {
+              "commentStart": 901,
               "end": 907,
               "start": 901,
               "type": "TagDeclarator",
@@ -123,17 +108,14 @@ description: Variables in memory after executing fillet-and-shell.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                914,
-                971,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               38.0,
               0.0
             ],
             "tag": {
+              "commentStart": 964,
               "end": 970,
               "start": 964,
               "type": "TagDeclarator",
@@ -151,17 +133,14 @@ description: Variables in memory after executing fillet-and-shell.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                977,
-                1026,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               38.0,
               73.0
             ],
             "tag": {
+              "commentStart": 1019,
               "end": 1025,
               "start": 1019,
               "type": "TagDeclarator",
@@ -179,17 +158,14 @@ description: Variables in memory after executing fillet-and-shell.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1032,
-                1051,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
               73.0
             ],
             "tag": {
+              "commentStart": 1044,
               "end": 1050,
               "start": 1044,
               "type": "TagDeclarator",
@@ -249,11 +225,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              829,
-              854,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
@@ -462,11 +434,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              494,
-              585,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -485,11 +453,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              591,
-              682,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -508,11 +472,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              688,
-              781,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             1.0,
@@ -531,11 +491,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              787,
-              795,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             1.0,
@@ -596,11 +552,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            396,
-            488,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",

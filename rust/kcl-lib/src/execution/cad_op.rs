@@ -2,7 +2,7 @@ use indexmap::IndexMap;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::{kcl_value::NumericType, ArtifactId, KclValue};
+use super::{types::NumericType, ArtifactId, KclValue};
 use crate::{docs::StdLibFn, std::get_stdlib_fn, SourceRange};
 
 /// A CAD modeling operation for display in the feature tree, AKA operations
@@ -16,6 +16,19 @@ pub enum Operation {
         /// The standard library function being called.
         #[serde(flatten)]
         std_lib_fn: StdLibFnRef,
+        /// The unlabeled argument to the function.
+        unlabeled_arg: Option<OpArg>,
+        /// The labeled keyword arguments to the function.
+        labeled_args: IndexMap<String, OpArg>,
+        /// The source range of the operation in the source code.
+        source_range: SourceRange,
+        /// True if the operation resulted in an error.
+        #[serde(default, skip_serializing_if = "is_false")]
+        is_error: bool,
+    },
+    #[serde(rename_all = "camelCase")]
+    KclStdLibCall {
+        name: String,
         /// The unlabeled argument to the function.
         unlabeled_arg: Option<OpArg>,
         /// The labeled keyword arguments to the function.
@@ -49,6 +62,7 @@ impl Operation {
     pub(crate) fn set_std_lib_call_is_error(&mut self, is_err: bool) {
         match self {
             Self::StdLibCall { ref mut is_error, .. } => *is_error = is_err,
+            Self::KclStdLibCall { ref mut is_error, .. } => *is_error = is_err,
             Self::UserDefinedFunctionCall { .. } | Self::UserDefinedFunctionReturn => {}
         }
     }

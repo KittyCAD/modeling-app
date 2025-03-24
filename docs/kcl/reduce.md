@@ -52,7 +52,6 @@ fn sum(arr):
         sumSoFar = add(sumSoFar, i)
     return sumSoFar */
 
-
 // We use `assertEqual` to check that our `sum` function gives the
 // expected result. It's good to check your work!
 assertEqual(sum([1, 2, 3]), 6, 0.00001, "1 + 2 + 3 summed is 6")
@@ -83,7 +82,7 @@ fn decagon(radius) {
   stepAngle = 1 / 10 * TAU
 
   // Start the decagon sketch at this point.
-  startOfDecagonSketch = startSketchOn('XY')
+  startOfDecagonSketch = startSketchOn(XY)
     |> startProfileAt([cos(0) * radius, sin(0) * radius], %)
 
     // Use a `reduce` to draw the remaining decagon sides.
@@ -113,7 +112,6 @@ fn decagon(radius):
         partialDecagon = line(partialDecagon, end = [x, y])
     fullDecagon = partialDecagon // it's now full
     return fullDecagon */
-
 
 // Use the `decagon` function declared above, to sketch a decagon with radius 5.
 decagon(5.0)

@@ -1,83 +1,46 @@
-import { err } from 'lib/trap'
-import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
 import {
-  Program,
-  PathToNode,
-  Expr,
-  CallExpression,
-  VariableDeclarator,
-  CallExpressionKw,
-  ArtifactGraph,
-} from 'lang/wasm'
-import { Selections } from 'lib/selections'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import {
-  createLiteral,
-  createIdentifier,
-  findUniqueName,
-  createVariableDeclaration,
   createCallExpressionStdLibKw,
   createLabeledArg,
-} from 'lang/modifyAst'
+  createLocalName,
+  createVariableDeclaration,
+  findUniqueName,
+} from '@src/lang/create'
 import {
-  ARG_INDEX_FIELD,
-  getNodeFromPath,
-  LABELED_ARG_FIELD,
-} from 'lang/queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import {
-  mutateAstWithTagForSketchSegment,
   getEdgeTagCall,
-} from 'lang/modifyAst/addEdgeTreatment'
-import { Artifact, getPathsFromArtifact } from 'lang/std/artifactGraph'
-import { kclManager } from 'lib/singletons'
+  mutateAstWithTagForSketchSegment,
+} from '@src/lang/modifyAst/addEdgeTreatment'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getSafeInsertIndex } from '@src/lang/queryAst/getSafeInsertIndex'
+import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import type {
+  Expr,
+  PathToNode,
+  Program,
+  VariableDeclarator,
+} from '@src/lang/wasm'
+import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import type { Selections } from '@src/lib/selections'
+import { err } from '@src/lib/trap'
 
-export function revolveSketch(
-  ast: Node<Program>,
-  pathToSketchNode: PathToNode,
-  angle: Expr = createLiteral(4),
-  axisOrEdge: string,
-  axis: string,
-  edge: Selections,
-  artifactGraph: ArtifactGraph,
-  artifact?: Artifact
-):
-  | {
-      modifiedAst: Node<Program>
-      pathToSketchNode: PathToNode
-      pathToRevolveArg: PathToNode
-    }
-  | Error {
-  const orderedSketchNodePaths = getPathsFromArtifact({
-    artifact: artifact,
-    sketchPathToNode: pathToSketchNode,
-    artifactGraph,
-    ast: kclManager.ast,
-  })
-  if (err(orderedSketchNodePaths)) return orderedSketchNodePaths
-  const clonedAst = structuredClone(ast)
-  const sketchNode = getNodeFromPath(clonedAst, pathToSketchNode)
-  if (err(sketchNode)) return sketchNode
-
+export function getAxisExpressionAndIndex(
+  axisOrEdge: 'Axis' | 'Edge',
+  axis: string | undefined,
+  edge: Selections | undefined,
+  ast: Node<Program>
+) {
   let generatedAxis
   let axisDeclaration: PathToNode | null = null
+  let axisIndexIfAxis: number | undefined = undefined
 
-  if (axisOrEdge === 'Edge') {
+  if (axisOrEdge === 'Edge' && edge) {
     const pathToAxisSelection = getNodePathFromSourceRange(
-      clonedAst,
+      ast,
       edge.graphSelections[0]?.codeRef.range
     )
-    const lineNode = getNodeFromPath<CallExpression | CallExpressionKw>(
-      clonedAst,
-      pathToAxisSelection,
-      ['CallExpression', 'CallExpressionKw']
-    )
-    if (err(lineNode)) return lineNode
-
-    const tagResult = mutateAstWithTagForSketchSegment(
-      clonedAst,
-      pathToAxisSelection
-    )
+    const tagResult = mutateAstWithTagForSketchSegment(ast, pathToAxisSelection)
 
     // Have the tag whether it is already created or a new one is generated
     if (err(tagResult)) return tagResult
@@ -91,11 +54,42 @@ export function revolveSketch(
       axisSelection.type === 'edgeCut'
     ) {
       axisDeclaration = axisSelection.codeRef.pathToNode
+      if (!axisDeclaration)
+        return new Error('Expected to fine axis declaration')
+      const axisIndexInPathToNode =
+        axisDeclaration.findIndex((a) => a[0] === 'body') + 1
+      const value = axisDeclaration[axisIndexInPathToNode][0]
+      if (typeof value !== 'number')
+        return new Error('expected axis index value to be a number')
+      axisIndexIfAxis = value
     }
-  } else {
-    generatedAxis = createLiteral(axis)
+  } else if (axisOrEdge === 'Axis' && axis) {
+    generatedAxis = createLocalName(axis)
   }
 
+  return {
+    generatedAxis,
+    axisIndexIfAxis,
+  }
+}
+
+export function revolveSketch(
+  ast: Node<Program>,
+  pathToSketchNode: PathToNode,
+  angle: Expr,
+  axisOrEdge: 'Axis' | 'Edge',
+  axis: string | undefined,
+  edge: Selections | undefined,
+  variableName?: string,
+  insertIndex?: number
+):
+  | {
+      modifiedAst: Node<Program>
+      pathToSketchNode: PathToNode
+      pathToRevolveArg: PathToNode
+    }
+  | Error {
+  const clonedAst = structuredClone(ast)
   const sketchVariableDeclaratorNode = getNodeFromPath<VariableDeclarator>(
     clonedAst,
     pathToSketchNode,
@@ -104,46 +98,39 @@ export function revolveSketch(
   if (err(sketchVariableDeclaratorNode)) return sketchVariableDeclaratorNode
   const { node: sketchVariableDeclarator } = sketchVariableDeclaratorNode
 
+  const getAxisResult = getAxisExpressionAndIndex(
+    axisOrEdge,
+    axis,
+    edge,
+    clonedAst
+  )
+  if (err(getAxisResult)) return getAxisResult
+  const { generatedAxis } = getAxisResult
   if (!generatedAxis) return new Error('Generated axis selection is missing.')
 
   const revolveCall = createCallExpressionStdLibKw(
     'revolve',
-    createIdentifier(sketchVariableDeclarator.id.name),
+    createLocalName(sketchVariableDeclarator.id.name),
     [createLabeledArg('angle', angle), createLabeledArg('axis', generatedAxis)]
   )
 
   // We're not creating a pipe expression,
   // but rather a separate constant for the extrusion
-  const name = findUniqueName(clonedAst, KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE)
-  const VariableDeclaration = createVariableDeclaration(name, revolveCall)
-  const lastSketchNodePath =
-    orderedSketchNodePaths[orderedSketchNodePaths.length - 1]
-  let sketchIndexInBody = Number(lastSketchNodePath[1][0])
-  if (typeof sketchIndexInBody !== 'number') {
-    return new Error('expected sketchIndexInBody to be a number')
-  }
-
-  // If an axis was selected in KCL, find the max index to insert the revolve command
-  if (axisDeclaration) {
-    const axisIndexInPathToNode =
-      axisDeclaration.findIndex((a) => a[0] === 'body') + 1
-    const axisIndex = axisDeclaration[axisIndexInPathToNode][0]
-
-    if (typeof axisIndex !== 'number')
-      return new Error('expected axisIndex to be a number')
-
-    sketchIndexInBody = Math.max(sketchIndexInBody, axisIndex)
-  }
-
-  clonedAst.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)
-
+  const name =
+    variableName ??
+    findUniqueName(clonedAst, KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE)
+  const variableDeclaration = createVariableDeclaration(name, revolveCall)
+  const bodyInsertIndex =
+    insertIndex ?? getSafeInsertIndex(revolveCall, clonedAst)
+  clonedAst.body.splice(bodyInsertIndex, 0, variableDeclaration)
+  const argIndex = 0
   const pathToRevolveArg: PathToNode = [
     ['body', ''],
-    [sketchIndexInBody + 1, 'index'],
+    [bodyInsertIndex, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpressionKw'],
-    [0, ARG_INDEX_FIELD],
+    [argIndex, ARG_INDEX_FIELD],
     ['arg', LABELED_ARG_FIELD],
   ]
 

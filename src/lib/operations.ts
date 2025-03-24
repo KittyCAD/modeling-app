@@ -1,20 +1,28 @@
-import { CustomIconName } from 'components/CustomIcon'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { OpKclValue } from '@rust/kcl-lib/bindings/OpKclValue'
+
+import type { CustomIconName } from '@src/components/CustomIcon'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
-  Artifact,
   getArtifactOfTypes,
   getCapCodeRef,
-} from 'lang/std/artifactGraph'
-import { Operation } from '@rust/kcl-lib/bindings/Operation'
-import { codeManager, engineCommandManager, kclManager } from './singletons'
-import { err } from './trap'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { sourceRangeFromRust } from 'lang/wasm'
-import { CommandBarMachineEvent } from 'machines/commandBarMachine'
-import { stringToKclExpression } from './kclHelpers'
-import { ModelingCommandSchema } from './commandBarConfigs/modelingCommandConfig'
-import { isDefaultPlaneStr } from './planes'
-import { Selection, Selections } from './selections'
-import { rustContext } from './singletons'
+  getEdgeCutConsumedCodeRef,
+  getSweepEdgeCodeRef,
+  getWallCodeRef,
+} from '@src/lang/std/artifactGraph'
+import { sourceRangeFromRust } from '@src/lang/wasm'
+import type {
+  HelixModes,
+  ModelingCommandSchema,
+} from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import type { KclExpression } from '@src/lib/commandTypes'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
+import { isDefaultPlaneStr } from '@src/lib/planes'
+import type { Selection, Selections } from '@src/lib/selections'
+import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
+import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -54,7 +62,7 @@ const prepareToEditExtrude: PrepareToEditCallback =
     if (
       !artifact ||
       !('pathId' in artifact) ||
-      operation.type !== 'StdLibCall'
+      (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall')
     ) {
       return baseCommand
     }
@@ -66,7 +74,7 @@ const prepareToEditExtrude: PrepareToEditCallback =
         key: artifact.pathId,
         types: ['path'],
       },
-      engineCommandManager.artifactGraph
+      kclManager.artifactGraph
     )
     if (
       err(pathArtifact) ||
@@ -79,7 +87,7 @@ const prepareToEditExtrude: PrepareToEditCallback =
         key: pathArtifact.solid2dId,
         types: ['solid2d'],
       },
-      engineCommandManager.artifactGraph
+      kclManager.artifactGraph
     )
     if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2d') {
       return baseCommand
@@ -122,6 +130,121 @@ const prepareToEditExtrude: PrepareToEditCallback =
   }
 
 /**
+ * Gather up the argument values for the Chamfer or Fillet command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
+  operation,
+  artifact,
+}) => {
+  const isChamfer =
+    artifact?.type === 'edgeCut' && artifact.subType === 'chamfer'
+  const isFillet = artifact?.type === 'edgeCut' && artifact.subType === 'fillet'
+  const baseCommand = {
+    name: isChamfer ? 'Chamfer' : 'Fillet',
+    groupId: 'modeling',
+  }
+  if (
+    (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
+    !operation.labeledArgs ||
+    (!isChamfer && !isFillet)
+  ) {
+    return { reason: 'Wrong operation type or artifact' }
+  }
+
+  // Recreate the selection argument (artiface and codeRef) from what we have
+  const edgeArtifact = getArtifactOfTypes(
+    {
+      key: artifact.consumedEdgeId,
+      types: ['segment', 'sweepEdge'],
+    },
+    kclManager.artifactGraph
+  )
+  if (err(edgeArtifact)) {
+    return { reason: "Couldn't find edge artifact" }
+  }
+
+  let edgeCodeRef = getEdgeCutConsumedCodeRef(
+    artifact,
+    kclManager.artifactGraph
+  )
+  if (err(edgeCodeRef)) {
+    return { reason: "Couldn't find edge coderef" }
+  }
+  const selection = {
+    graphSelections: [
+      {
+        artifact: edgeArtifact,
+        codeRef: edgeCodeRef,
+      },
+    ],
+    otherSelections: [],
+  }
+
+  // Assemble the default argument values for the Fillet command,
+  // with `nodeToEdit` set, which will let the Fillet actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const nodeToEdit = getNodePathFromSourceRange(
+    kclManager.ast,
+    sourceRangeFromRust(operation.sourceRange)
+  )
+  const isPipeExpression = nodeToEdit.some(
+    ([_, type]) => type === 'PipeExpression'
+  )
+  if (!isPipeExpression) {
+    return {
+      reason:
+        'Only chamfer and fillet in pipe expressions are supported for edits',
+    }
+  }
+
+  let argDefaultValues:
+    | ModelingCommandSchema['Chamfer']
+    | ModelingCommandSchema['Fillet']
+    | undefined
+
+  if (isChamfer) {
+    // Convert the length argument from a string to a KCL expression
+    const length = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs?.['length']?.sourceRange[0],
+        operation.labeledArgs?.['length']?.sourceRange[1]
+      )
+    )
+    if (err(length) || 'errors' in length) {
+      return { reason: 'Error in length argument retrieval' }
+    }
+
+    argDefaultValues = {
+      selection,
+      length,
+      nodeToEdit,
+    }
+  } else if (isFillet) {
+    const radius = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs?.['radius']?.sourceRange[0],
+        operation.labeledArgs?.['radius']?.sourceRange[1]
+      )
+    )
+    if (err(radius) || 'errors' in radius) {
+      return { reason: 'Error in radius argument retrieval' }
+    }
+
+    argDefaultValues = {
+      selection,
+      radius,
+      nodeToEdit,
+    }
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
  * Gather up the argument values for the Shell command
  * to be used in the command bar edit flow.
  */
@@ -133,7 +256,7 @@ const prepareToEditShell: PrepareToEditCallback =
     }
 
     if (
-      operation.type !== 'StdLibCall' ||
+      (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
       !operation.labeledArgs ||
       !operation.unlabeledArg ||
       operation.unlabeledArg.value.type !== 'Solid' ||
@@ -150,16 +273,13 @@ const prepareToEditShell: PrepareToEditCallback =
     // that we can query in another loop later
     const sweepId = operation.unlabeledArg.value.value.artifactId
     const candidates: Map<string, Selection> = new Map()
-    for (const artifact of engineCommandManager.artifactGraph.values()) {
+    for (const artifact of kclManager.artifactGraph.values()) {
       if (
         artifact.type === 'cap' &&
         artifact.sweepId === sweepId &&
         artifact.subType
       ) {
-        const codeRef = getCapCodeRef(
-          artifact,
-          engineCommandManager.artifactGraph
-        )
+        const codeRef = getCapCodeRef(artifact, kclManager.artifactGraph)
         if (err(codeRef)) {
           return baseCommand
         }
@@ -175,7 +295,7 @@ const prepareToEditShell: PrepareToEditCallback =
       ) {
         const segArtifact = getArtifactOfTypes(
           { key: artifact.segId, types: ['segment'] },
-          engineCommandManager.artifactGraph
+          kclManager.artifactGraph
         )
         if (err(segArtifact)) {
           return baseCommand
@@ -246,7 +366,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
     groupId: 'modeling',
   }
   if (
-    operation.type !== 'StdLibCall' ||
+    (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
     !operation.labeledArgs ||
     !operation.unlabeledArg ||
     !('offset' in operation.labeledArgs) ||
@@ -311,104 +431,562 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   }
 }
 
-const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
+const prepareToEditSweep: PrepareToEditCallback = async ({
+  artifact,
+  operation,
+}) => {
   const baseCommand = {
-    name: 'Helix',
+    name: 'Sweep',
     groupId: 'modeling',
   }
-  if (operation.type !== 'StdLibCall' || !operation.labeledArgs) {
+  if (
+    (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
+    !operation.labeledArgs ||
+    !operation.unlabeledArg ||
+    !('sectional' in operation.labeledArgs) ||
+    !operation.labeledArgs.sectional
+  ) {
+    return baseCommand
+  }
+  if (
+    !artifact ||
+    !('pathId' in artifact) ||
+    (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall')
+  ) {
     return baseCommand
   }
 
-  // TODO: find a way to loop over the arguments while keeping it safe
-  // revolutions kcl arg
-  if (
-    !('revolutions' in operation.labeledArgs) ||
-    !operation.labeledArgs.revolutions
+  // We have to go a little roundabout to get from the original artifact
+  // to the solid2DId that we need to pass to the Sweep command, just like Extrude.
+  const pathArtifact = getArtifactOfTypes(
+    {
+      key: artifact.pathId,
+      types: ['path'],
+    },
+    kclManager.artifactGraph
   )
-    return baseCommand
-  const revolutions = await stringToKclExpression(
-    codeManager.code.slice(
-      operation.labeledArgs.revolutions.sourceRange[0],
-      operation.labeledArgs.revolutions.sourceRange[1]
-    )
-  )
-  if (err(revolutions) || 'errors' in revolutions) return baseCommand
 
-  // angleStart kcl arg
   if (
-    !('angleStart' in operation.labeledArgs) ||
-    !operation.labeledArgs.angleStart
-  )
+    err(pathArtifact) ||
+    pathArtifact.type !== 'path' ||
+    !pathArtifact.solid2dId
+  ) {
     return baseCommand
-  const angleStart = await stringToKclExpression(
-    codeManager.code.slice(
-      operation.labeledArgs.angleStart.sourceRange[0],
-      operation.labeledArgs.angleStart.sourceRange[1]
-    )
-  )
-  if (err(angleStart) || 'errors' in angleStart) return baseCommand
+  }
 
-  // counterClockWise options boolean arg
-  if (
-    !('counterClockWise' in operation.labeledArgs) ||
-    !operation.labeledArgs.counterClockWise
+  const targetArtifact = getArtifactOfTypes(
+    {
+      key: pathArtifact.solid2dId,
+      types: ['solid2d'],
+    },
+    kclManager.artifactGraph
   )
+
+  if (err(targetArtifact) || targetArtifact.type !== 'solid2d') {
     return baseCommand
-  const counterClockWise =
+  }
+
+  const target = {
+    graphSelections: [
+      {
+        artifact: targetArtifact,
+        codeRef: pathArtifact.codeRef,
+      },
+    ],
+    otherSelections: [],
+  }
+
+  // Same roundabout but twice for 'path' aka trajectory: sketch -> path -> segment
+  if (!('path' in operation.labeledArgs) || !operation.labeledArgs.path) {
+    return baseCommand
+  }
+
+  if (operation.labeledArgs.path.value.type !== 'Sketch') {
+    return baseCommand
+  }
+
+  const trajectoryPathArtifact = getArtifactOfTypes(
+    {
+      key: operation.labeledArgs.path.value.value.artifactId,
+      types: ['path'],
+    },
+    kclManager.artifactGraph
+  )
+
+  if (err(trajectoryPathArtifact) || trajectoryPathArtifact.type !== 'path') {
+    return baseCommand
+  }
+
+  const trajectoryArtifact = getArtifactOfTypes(
+    {
+      key: trajectoryPathArtifact.segIds[0],
+      types: ['segment'],
+    },
+    kclManager.artifactGraph
+  )
+
+  if (err(trajectoryArtifact) || trajectoryArtifact.type !== 'segment') {
+    return baseCommand
+  }
+
+  const trajectory = {
+    graphSelections: [
+      {
+        artifact: trajectoryArtifact,
+        codeRef: trajectoryArtifact.codeRef,
+      },
+    ],
+    otherSelections: [],
+  }
+
+  // sectional options boolean arg
+  if (
+    !('sectional' in operation.labeledArgs) ||
+    !operation.labeledArgs.sectional
+  ) {
+    return baseCommand
+  }
+
+  const sectional =
     codeManager.code.slice(
-      operation.labeledArgs.counterClockWise.sourceRange[0],
-      operation.labeledArgs.counterClockWise.sourceRange[1]
+      operation.labeledArgs.sectional.sourceRange[0],
+      operation.labeledArgs.sectional.sourceRange[1]
     ) === 'true'
-
-  // radius kcl arg
-  if (!('radius' in operation.labeledArgs) || !operation.labeledArgs.radius)
-    return baseCommand
-  const radius = await stringToKclExpression(
-    codeManager.code.slice(
-      operation.labeledArgs.radius.sourceRange[0],
-      operation.labeledArgs.radius.sourceRange[1]
-    )
-  )
-  if (err(radius) || 'errors' in radius) return baseCommand
-
-  // axis options string arg
-  if (!('axis' in operation.labeledArgs) || !operation.labeledArgs.axis)
-    return baseCommand
-  const axis = codeManager.code
-    .slice(
-      operation.labeledArgs.axis.sourceRange[0],
-      operation.labeledArgs.axis.sourceRange[1]
-    )
-    .replaceAll("'", '') // TODO: fix this crap
-
-  // length kcl arg
-  if (!('length' in operation.labeledArgs) || !operation.labeledArgs.length)
-    return baseCommand
-  const length = await stringToKclExpression(
-    codeManager.code.slice(
-      operation.labeledArgs.length.sourceRange[0],
-      operation.labeledArgs.length.sourceRange[1]
-    )
-  )
-  if (err(length) || 'errors' in length) return baseCommand
 
   // Assemble the default argument values for the Offset Plane command,
   // with `nodeToEdit` set, which will let the Offset Plane actor know
   // to edit the node that corresponds to the StdLibCall.
-  const argDefaultValues: ModelingCommandSchema['Helix'] = {
-    revolutions,
-    angleStart,
-    counterClockWise,
-    radius,
-    axis,
-    length,
+  const argDefaultValues: ModelingCommandSchema['Sweep'] = {
+    target: target,
+    trajectory,
+    sectional,
     nodeToEdit: getNodePathFromSourceRange(
       kclManager.ast,
       sourceRangeFromRust(operation.sourceRange)
     ),
   }
 
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+const nonZero = (val: OpKclValue): number => {
+  if (val.type === 'Number') {
+    return val.value
+  } else {
+    return 0
+  }
+}
+
+const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
+  const baseCommand = {
+    name: 'Helix',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'KclStdLibCall' || !operation.labeledArgs) {
+    return { reason: 'Wrong operation type or arguments' }
+  }
+
+  // Flow arg
+  let mode: HelixModes | undefined
+  // Three different arguments depending on mode
+  let axis: string | undefined
+  let edge: Selections | undefined
+  let cylinder: Selections | undefined
+  // Rest of stdlib args
+  let revolutions: KclExpression | undefined // common to all modes, can't remain undefined
+  let angleStart: KclExpression | undefined // common to all modes, can't remain undefined
+  let length: KclExpression | undefined // axis or edge modes only
+  let radius: KclExpression | undefined // axis or edge modes only
+  let ccw = false // optional boolean argument, default value
+
+  if ('axis' in operation.labeledArgs && operation.labeledArgs.axis) {
+    // axis options string or selection arg
+    const axisValue = operation.labeledArgs.axis.value
+    if (axisValue.type === 'Object') {
+      // default axis case
+      mode = 'Axis'
+      const direction = axisValue.value['direction']
+      if (!direction || direction.type !== 'Array') {
+        return { reason: 'No direction vector for axis' }
+      }
+      if (nonZero(direction.value[0])) {
+        axis = 'X'
+      } else if (nonZero(direction.value[1])) {
+        axis = 'Y'
+      } else if (nonZero(direction.value[2])) {
+        axis = 'Z'
+      } else {
+        return { reason: 'Bad direction vector for axis' }
+      }
+    } else if (axisValue.type === 'TagIdentifier' && axisValue.artifact_id) {
+      // segment case
+      mode = 'Edge'
+      const artifact = getArtifactOfTypes(
+        {
+          key: axisValue.artifact_id,
+          types: ['segment'],
+        },
+        kclManager.artifactGraph
+      )
+      if (err(artifact)) {
+        return { reason: "Couldn't find related edge artifact" }
+      }
+
+      edge = {
+        graphSelections: [
+          {
+            artifact,
+            codeRef: artifact.codeRef,
+          },
+        ],
+        otherSelections: [],
+      }
+    } else if (axisValue.type === 'Uuid') {
+      // sweepEdge case
+      mode = 'Edge'
+      const artifact = getArtifactOfTypes(
+        {
+          key: axisValue.value,
+          types: ['sweepEdge'],
+        },
+        kclManager.artifactGraph
+      )
+      if (err(artifact)) {
+        return { reason: "Couldn't find related edge artifact" }
+      }
+
+      const codeRef = getSweepEdgeCodeRef(artifact, kclManager.artifactGraph)
+      if (err(codeRef)) {
+        return { reason: "Couldn't find related edge code ref" }
+      }
+
+      edge = {
+        graphSelections: [
+          {
+            artifact,
+            codeRef,
+          },
+        ],
+        otherSelections: [],
+      }
+    } else {
+      return { reason: 'The type of the axis argument is unsupported' }
+    }
+  } else if (
+    'cylinder' in operation.labeledArgs &&
+    operation.labeledArgs.cylinder
+  ) {
+    mode = 'Cylinder'
+    // axis cylinder selection arg
+    if (operation.labeledArgs.cylinder.value.type !== 'Solid') {
+      return { reason: "Cylinder arg found isn't of type Solid" }
+    }
+
+    const sweepId = operation.labeledArgs.cylinder.value.value.artifactId
+    const wallArtifact = [...kclManager.artifactGraph.values()].find(
+      (p) => p.type === 'wall' && p.sweepId === sweepId
+    )
+    if (!wallArtifact || wallArtifact.type !== 'wall') {
+      return {
+        reason: "Cylinder arg found doesn't point to a valid sweep wall",
+      }
+    }
+
+    const wallCodeRef = getWallCodeRef(wallArtifact, kclManager.artifactGraph)
+    if (err(wallCodeRef)) {
+      return {
+        reason: "Cylinder arg found doesn't point to a valid sweep code ref",
+      }
+    }
+
+    cylinder = {
+      graphSelections: [
+        {
+          artifact: wallArtifact,
+          codeRef: wallCodeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+  } else {
+    return {
+      reason: "The axis or cylinder arguments couldn't be prepared for edit",
+    }
+  }
+
+  // revolutions kcl arg (common for all)
+  if (
+    'revolutions' in operation.labeledArgs &&
+    operation.labeledArgs.revolutions
+  ) {
+    const r = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.revolutions.sourceRange[0],
+        operation.labeledArgs.revolutions.sourceRange[1]
+      )
+    )
+    if (err(r) || 'errors' in r) {
+      return { reason: 'Errors found in revolutions argument' }
+    }
+
+    revolutions = r
+  } else {
+    return { reason: "Couldn't find revolutions argument" }
+  }
+
+  // angleStart kcl arg (common for all)
+  if (
+    'angleStart' in operation.labeledArgs &&
+    operation.labeledArgs.angleStart
+  ) {
+    const r = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.angleStart.sourceRange[0],
+        operation.labeledArgs.angleStart.sourceRange[1]
+      )
+    )
+    if (err(r) || 'errors' in r) {
+      return { reason: 'Errors found in angleStart argument' }
+    }
+
+    angleStart = r
+  } else {
+    return { reason: "Couldn't find angleStart argument" }
+  }
+
+  // radius and cylinder and kcl arg (only for axis or edge)
+  if (mode !== 'Cylinder') {
+    if ('radius' in operation.labeledArgs && operation.labeledArgs.radius) {
+      const r = await stringToKclExpression(
+        codeManager.code.slice(
+          operation.labeledArgs.radius.sourceRange[0],
+          operation.labeledArgs.radius.sourceRange[1]
+        )
+      )
+      if (err(r) || 'errors' in r) {
+        return { reason: 'Error in radius argument retrieval' }
+      }
+      radius = r
+    } else {
+      return { reason: "Couldn't find radius argument" }
+    }
+  }
+
+  if (mode === 'Axis') {
+    if ('length' in operation.labeledArgs && operation.labeledArgs.length) {
+      const r = await stringToKclExpression(
+        codeManager.code.slice(
+          operation.labeledArgs.length.sourceRange[0],
+          operation.labeledArgs.length.sourceRange[1]
+        )
+      )
+      if (err(r) || 'errors' in r) {
+        return { reason: 'Error in length argument retrieval' }
+      }
+      length = r
+    } else {
+      return { reason: "Couldn't find length argument" }
+    }
+  }
+
+  // counterClockWise boolean arg (optional)
+  if ('ccw' in operation.labeledArgs && operation.labeledArgs.ccw) {
+    ccw =
+      codeManager.code.slice(
+        operation.labeledArgs.ccw.sourceRange[0],
+        operation.labeledArgs.ccw.sourceRange[1]
+      ) === 'true'
+  }
+
+  // Assemble the default argument values for the Offset Plane command,
+  // with `nodeToEdit` set, which will let the Offset Plane actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Helix'] = {
+    mode,
+    axis,
+    edge,
+    cylinder,
+    revolutions,
+    angleStart,
+    radius,
+    length,
+    ccw,
+    nodeToEdit: getNodePathFromSourceRange(
+      kclManager.ast,
+      sourceRangeFromRust(operation.sourceRange)
+    ),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+const prepareToEditRevolve: PrepareToEditCallback = async ({
+  operation,
+  artifact,
+}) => {
+  const baseCommand = {
+    name: 'Revolve',
+    groupId: 'modeling',
+  }
+  if (
+    !artifact ||
+    !('pathId' in artifact) ||
+    operation.type !== 'KclStdLibCall' ||
+    !operation.labeledArgs
+  ) {
+    return { reason: 'Wrong operation type or artifact' }
+  }
+
+  // We have to go a little roundabout to get from the original artifact
+  // to the solid2DId that we need to pass to the command.
+  const pathArtifact = getArtifactOfTypes(
+    {
+      key: artifact.pathId,
+      types: ['path'],
+    },
+    kclManager.artifactGraph
+  )
+  if (
+    err(pathArtifact) ||
+    pathArtifact.type !== 'path' ||
+    !pathArtifact.solid2dId
+  ) {
+    return { reason: "Couldn't find related path artifact" }
+  }
+
+  const solid2DArtifact = getArtifactOfTypes(
+    {
+      key: pathArtifact.solid2dId,
+      types: ['solid2d'],
+    },
+    kclManager.artifactGraph
+  )
+  if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2d') {
+    return { reason: "Couldn't find related solid2d artifact" }
+  }
+
+  const selection = {
+    graphSelections: [
+      {
+        artifact: solid2DArtifact,
+        codeRef: pathArtifact.codeRef,
+      },
+    ],
+    otherSelections: [],
+  }
+
+  // axis options string arg
+  if (!('axis' in operation.labeledArgs) || !operation.labeledArgs.axis) {
+    return { reason: "Couldn't find axis argument" }
+  }
+
+  const axisValue = operation.labeledArgs.axis.value
+  let axisOrEdge: 'Axis' | 'Edge' | undefined
+  let axis: string | undefined
+  let edge: Selections | undefined
+  if (axisValue.type === 'Object') {
+    // default axis casee
+    axisOrEdge = 'Axis'
+    const direction = axisValue.value['direction']
+    if (!direction || direction.type !== 'Array') {
+      return { reason: 'No direction vector for axis' }
+    }
+    if (nonZero(direction.value[0])) {
+      axis = 'X'
+    } else if (nonZero(direction.value[1])) {
+      axis = 'Y'
+    } else {
+      return { reason: 'Bad direction vector for axis' }
+    }
+  } else if (axisValue.type === 'TagIdentifier' && axisValue.artifact_id) {
+    // segment case
+    axisOrEdge = 'Edge'
+    const artifact = getArtifactOfTypes(
+      {
+        key: axisValue.artifact_id,
+        types: ['segment'],
+      },
+      kclManager.artifactGraph
+    )
+    if (err(artifact)) {
+      return { reason: "Couldn't find related edge artifact" }
+    }
+
+    edge = {
+      graphSelections: [
+        {
+          artifact,
+          codeRef: artifact.codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+  } else if (axisValue.type === 'Uuid') {
+    // sweepEdge case
+    axisOrEdge = 'Edge'
+    const artifact = getArtifactOfTypes(
+      {
+        key: axisValue.value,
+        types: ['sweepEdge'],
+      },
+      kclManager.artifactGraph
+    )
+    if (err(artifact)) {
+      return { reason: "Couldn't find related edge artifact" }
+    }
+
+    const codeRef = getSweepEdgeCodeRef(artifact, kclManager.artifactGraph)
+    if (err(codeRef)) {
+      return { reason: "Couldn't find related edge code ref" }
+    }
+
+    edge = {
+      graphSelections: [
+        {
+          artifact,
+          codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+  } else {
+    return { reason: 'The type of the axis argument is unsupported' }
+  }
+
+  // angle kcl arg
+  if (!('angle' in operation.labeledArgs) || !operation.labeledArgs.angle) {
+    return { reason: "Couldn't find angle argument" }
+  }
+  const angle = await stringToKclExpression(
+    codeManager.code.slice(
+      operation.labeledArgs.angle.sourceRange[0],
+      operation.labeledArgs.angle.sourceRange[1]
+    )
+  )
+  if (err(angle) || 'errors' in angle) {
+    return { reason: 'Error in angle argument retrieval' }
+  }
+
+  // Assemble the default argument values for the Offset Plane command,
+  // with `nodeToEdit` set, which will let the Offset Plane actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Revolve'] = {
+    axisOrEdge,
+    axis,
+    edge,
+    selection,
+    angle,
+    nodeToEdit: getNodePathFromSourceRange(
+      kclManager.ast,
+      sourceRangeFromRust(operation.sourceRange)
+    ),
+  }
   return {
     ...baseCommand,
     argDefaultValues,
@@ -423,6 +1001,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   chamfer: {
     label: 'Chamfer',
     icon: 'chamfer3d',
+    prepareToEdit: prepareToEditEdgeTreatment,
     // modelingEvent: 'Chamfer',
   },
   extrude: {
@@ -434,6 +1013,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   fillet: {
     label: 'Fillet',
     icon: 'fillet3d',
+    prepareToEdit: prepareToEditEdgeTreatment,
   },
   helix: {
     label: 'Helix',
@@ -451,6 +1031,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   import: {
     label: 'Import',
     icon: 'import',
+  },
+  intersect: {
+    label: 'Intersect',
+    icon: 'booleanIntersect',
   },
   loft: {
     label: 'Loft',
@@ -481,6 +1065,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   revolve: {
     label: 'Revolve',
     icon: 'revolve',
+    prepareToEdit: prepareToEditRevolve,
     supportsAppearance: true,
   },
   shell: {
@@ -508,10 +1093,19 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
       }
     },
   },
+  subtract: {
+    label: 'Subtract',
+    icon: 'booleanSubtract',
+  },
   sweep: {
     label: 'Sweep',
     icon: 'sweep',
+    prepareToEdit: prepareToEditSweep,
     supportsAppearance: true,
+  },
+  union: {
+    label: 'Union',
+    icon: 'booleanUnion',
   },
 }
 
@@ -521,6 +1115,8 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
 export function getOperationLabel(op: Operation): string {
   switch (op.type) {
     case 'StdLibCall':
+      return stdLibMap[op.name]?.label ?? op.name
+    case 'KclStdLibCall':
       return stdLibMap[op.name]?.label ?? op.name
     case 'UserDefinedFunctionCall':
       return op.name ?? 'Anonymous custom function'
@@ -535,6 +1131,8 @@ export function getOperationLabel(op: Operation): string {
 export function getOperationIcon(op: Operation): CustomIconName {
   switch (op.type) {
     case 'StdLibCall':
+      return stdLibMap[op.name]?.icon ?? 'questionMark'
+    case 'KclStdLibCall':
       return stdLibMap[op.name]?.icon ?? 'questionMark'
     default:
       return 'make-variable'
@@ -630,7 +1228,7 @@ export async function enterEditFlow({
   operation,
   artifact,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  if (operation.type !== 'StdLibCall') {
+  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
     return new Error(
       'Feature tree editing not yet supported for user-defined functions. Please edit in the code editor.'
     )
@@ -669,7 +1267,7 @@ export async function enterAppearanceFlow({
   operation,
   artifact,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  if (operation.type !== 'StdLibCall') {
+  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
     return new Error(
       'Appearance setting not yet supported for user-defined functions. Please edit in the code editor.'
     )

@@ -1,20 +1,23 @@
 import { expect } from 'vitest'
-import { assertParse, initPromise, ArtifactGraph, SourceRange } from 'lang/wasm'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import type { Artifact } from '@src/lang/std/artifactGraph'
+import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
+import { assertParse, initPromise } from '@src/lang/wasm'
+import type { ArtifactIndex } from '@src/lib/artifactIndex'
+import { buildArtifactIndex } from '@src/lib/artifactIndex'
+import type { Selection } from '@src/lib/selections'
 import {
   codeToIdSelections,
-  Selection,
   findLastRangeStartingBefore,
-} from './selections'
-import { buildArtifactIndex, ArtifactIndex } from './artifactIndex'
-import { Artifact } from 'lang/std/artifactGraph'
+} from '@src/lib/selections'
 
 beforeAll(async () => {
   await initPromise
 })
 
 describe('testing source range to artifact conversion', () => {
-  const MY_CODE = `sketch001 = startSketchOn('XZ')
+  const MY_CODE = `sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([105.55, 105.55], sketch001)
   |> xLine(332.55, %, $seg01)
   |> yLine(-310.12, %, $seg02)
@@ -1114,7 +1117,7 @@ profile004 = circle(sketch003,
     [
       'default plane selection',
       {
-        snippet: "sketch001 = startSketchOn('XZ')",
+        snippet: 'sketch001 = startSketchOn(XZ)',
         artifactDetails: {
           type: 'plane',
           range: [31, 31, 0],

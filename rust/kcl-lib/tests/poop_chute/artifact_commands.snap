@@ -5,11 +5,7 @@ description: Artifact commands poop_chute.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,23 +13,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +22,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +31,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      182,
-      202,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -84,11 +56,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      208,
-      252,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -104,22 +72,14 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      208,
-      252,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      208,
-      252,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -132,22 +92,14 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      208,
-      252,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      258,
-      292,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -164,11 +116,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      298,
-      361,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -185,11 +133,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      367,
-      394,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -206,11 +150,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      400,
-      431,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -227,11 +167,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      437,
-      472,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -248,11 +184,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      478,
-      577,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -269,11 +201,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      583,
-      614,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -290,11 +218,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      620,
-      698,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -311,11 +235,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      704,
-      731,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -332,11 +252,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      737,
-      759,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -353,11 +269,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      765,
-      800,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -374,11 +286,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      806,
-      852,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -395,11 +303,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      858,
-      866,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -407,11 +311,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "revolve",
       "target": "[uuid]",
@@ -435,11 +335,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -447,11 +343,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -460,11 +352,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -474,11 +362,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -488,11 +372,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -502,11 +382,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -516,11 +392,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -530,11 +402,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -544,11 +412,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -558,11 +422,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -572,11 +432,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -586,11 +442,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -600,11 +452,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -614,11 +462,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -628,11 +472,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -642,11 +482,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -656,11 +492,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -670,11 +502,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -684,11 +512,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -698,11 +522,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -712,11 +532,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -726,11 +542,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -740,11 +552,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -754,11 +562,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -768,11 +572,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -782,11 +582,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -796,11 +592,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -810,11 +602,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      1016,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -824,11 +612,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1030,
-      1050,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -853,11 +637,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1056,
-      1100,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -873,22 +653,14 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1056,
-      1100,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1056,
-      1100,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -901,22 +673,14 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1056,
-      1100,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1106,
-      1140,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -933,11 +697,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1146,
-      1209,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -954,11 +714,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1215,
-      1242,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -975,11 +731,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1248,
-      1279,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -996,11 +748,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1285,
-      1320,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1017,11 +765,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1326,
-      1425,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1038,11 +782,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1431,
-      1462,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1059,11 +799,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1468,
-      1546,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1080,11 +816,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1552,
-      1579,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1101,11 +833,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1585,
-      1607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1122,11 +850,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1613,
-      1648,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1143,11 +867,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1654,
-      1700,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1164,11 +884,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1706,
-      1714,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1176,11 +892,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1196,11 +908,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1210,22 +918,14 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1233,11 +933,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1246,11 +942,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1260,11 +952,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1274,11 +962,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1288,11 +972,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1302,11 +982,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1316,11 +992,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1330,11 +1002,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1344,11 +1012,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1358,11 +1022,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1372,11 +1032,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1386,11 +1042,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1400,11 +1052,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1414,11 +1062,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1428,11 +1072,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1442,11 +1082,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1456,11 +1092,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1470,11 +1102,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1484,11 +1112,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1498,11 +1122,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1512,11 +1132,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1526,11 +1142,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1540,11 +1152,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1554,11 +1162,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1568,11 +1172,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1582,11 +1182,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1596,11 +1192,7 @@ description: Artifact commands poop_chute.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1720,
-      1758,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",

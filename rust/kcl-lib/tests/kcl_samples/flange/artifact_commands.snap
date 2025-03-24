@@ -5,11 +5,7 @@ description: Artifact commands flange.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,23 +13,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +22,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +31,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      300,
-      333,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "in"
@@ -67,11 +39,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      826,
-      845,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -96,11 +64,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      851,
-      957,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -116,22 +80,14 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      851,
-      957,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      851,
-      957,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -144,22 +100,14 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      851,
-      957,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      851,
-      957,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -184,11 +132,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      851,
-      957,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -196,11 +140,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      963,
-      1095,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -221,11 +161,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1170,
-      1189,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -250,11 +186,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1195,
-      1261,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -270,22 +202,14 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1195,
-      1261,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1195,
-      1261,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -298,22 +222,14 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1195,
-      1261,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1195,
-      1261,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -338,11 +254,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1195,
-      1261,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -350,11 +262,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1267,
-      1283,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -363,11 +271,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1267,
-      1283,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -376,11 +280,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1267,
-      1283,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -389,11 +289,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1267,
-      1283,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -402,11 +298,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1267,
-      1283,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -415,11 +307,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1267,
-      1283,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -428,11 +316,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1267,
-      1283,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -441,11 +325,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1267,
-      1283,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -454,11 +334,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1289,
-      1320,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -474,11 +350,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1289,
-      1320,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -488,22 +360,14 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1289,
-      1320,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1289,
-      1320,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -511,11 +375,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1289,
-      1320,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -524,11 +384,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1289,
-      1320,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -538,11 +394,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1289,
-      1320,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -552,11 +404,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1289,
-      1320,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -566,11 +414,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1289,
-      1320,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -580,11 +424,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1289,
-      1320,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -594,11 +434,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1289,
-      1320,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -608,11 +444,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1289,
-      1320,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -622,11 +454,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1289,
-      1320,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -636,11 +464,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1289,
-      1320,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -650,11 +474,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1289,
-      1320,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -664,11 +484,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1429,
-      1504,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -680,22 +496,14 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1429,
-      1504,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1429,
-      1504,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -708,22 +516,14 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1429,
-      1504,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1429,
-      1504,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -748,11 +548,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1429,
-      1504,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -760,11 +556,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1510,
-      1545,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -776,11 +568,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1510,
-      1545,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -790,22 +578,14 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1510,
-      1545,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1510,
-      1545,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -813,11 +593,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1510,
-      1545,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -826,11 +602,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1510,
-      1545,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -840,11 +612,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1510,
-      1545,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -854,11 +622,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1662,
-      1740,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -870,22 +634,14 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1662,
-      1740,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1662,
-      1740,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -898,22 +654,14 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1662,
-      1740,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1662,
-      1740,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -938,11 +686,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1662,
-      1740,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -950,11 +694,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1746,
-      1779,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -966,11 +706,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1746,
-      1779,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -980,22 +716,14 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1746,
-      1779,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1746,
-      1779,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1003,11 +731,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1746,
-      1779,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1016,11 +740,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1746,
-      1779,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1030,11 +750,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1746,
-      1779,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1044,11 +760,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1870,
-      1913,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1060,22 +772,14 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1870,
-      1913,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1870,
-      1913,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1088,22 +792,14 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1870,
-      1913,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1870,
-      1913,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1128,11 +824,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1870,
-      1913,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1140,11 +832,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1919,
-      1994,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1156,11 +844,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1919,
-      1994,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1170,22 +854,14 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1919,
-      1994,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1919,
-      1994,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1193,11 +869,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1919,
-      1994,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1206,11 +878,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1919,
-      1994,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1220,11 +888,7 @@ description: Artifact commands flange.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1919,
-      1994,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",

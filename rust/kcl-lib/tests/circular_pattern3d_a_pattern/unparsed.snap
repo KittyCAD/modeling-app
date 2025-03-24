@@ -1,0 +1,27 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing circular_pattern3d_a_pattern.kcl
+---
+exampleSketch = startSketchOn(XZ)
+  |> startProfileAt([0, 0], %)
+  |> line(end = [0, 2])
+  |> line(end = [3, 1])
+  |> line(end = [0, -4])
+  |> close(%)
+  |> extrude(length = 1)
+
+pattn1 = patternLinear3d(
+  exampleSketch,
+  axis = [1, 0, 0],
+  instances = 7,
+  distance = 6,
+)
+
+pattn2 = patternCircular3d(
+  pattn1,
+  axis = [0, 0, 1],
+  center = [-20, -20, -20],
+  instances = 41,
+  arcDegrees = 360,
+  rotateDuplicates = false,
+)

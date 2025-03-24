@@ -1,12 +1,22 @@
-import { assertParse, initPromise } from 'lang/wasm'
-import { getIdentifiersInProgram } from './getIndentifiersInProgram'
+import { getIdentifiersInProgram } from '@src/lang/queryAst/getIndentifiersInProgram'
+import { assertParse, initPromise } from '@src/lang/wasm'
 
 function identifier(name: string, start: number, end: number) {
   return {
-    type: 'Identifier',
-    name,
+    type: 'Name',
     start,
     end,
+    commentStart: start,
+
+    abs_path: false,
+    path: [],
+    name: {
+      start,
+      end,
+      commentStart: start,
+      type: 'Identifier',
+      name,
+    },
   }
 }
 

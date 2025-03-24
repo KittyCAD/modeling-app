@@ -1,24 +1,30 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
 ---
 {
   "body": [
     {
+      "commentStart": 0,
       "declaration": {
+        "commentStart": 0,
         "end": 20,
         "id": {
+          "commentStart": 0,
           "end": 3,
           "name": "obj",
           "start": 0,
           "type": "Identifier"
         },
         "init": {
+          "commentStart": 6,
           "end": 20,
           "properties": [
             {
+              "commentStart": 8,
               "end": 12,
               "key": {
+                "commentStart": 8,
                 "end": 9,
                 "name": "a",
                 "start": 8,
@@ -27,6 +33,7 @@ expression: actual
               "start": 8,
               "type": "ObjectProperty",
               "value": {
+                "commentStart": 11,
                 "end": 12,
                 "raw": "1",
                 "start": 11,
@@ -39,8 +46,10 @@ expression: actual
               }
             },
             {
+              "commentStart": 14,
               "end": 18,
               "key": {
+                "commentStart": 14,
                 "end": 15,
                 "name": "b",
                 "start": 14,
@@ -49,6 +58,7 @@ expression: actual
               "start": 14,
               "type": "ObjectProperty",
               "value": {
+                "commentStart": 17,
                 "end": 18,
                 "raw": "2",
                 "start": 17,
@@ -75,17 +85,22 @@ expression: actual
       "type": "VariableDeclaration"
     },
     {
+      "commentStart": 25,
       "declaration": {
+        "commentStart": 25,
         "end": 43,
         "id": {
+          "commentStart": 25,
           "end": 31,
           "name": "height",
           "start": 25,
           "type": "Identifier"
         },
         "init": {
+          "commentStart": 34,
           "end": 43,
           "left": {
+            "commentStart": 34,
             "end": 35,
             "raw": "1",
             "start": 34,
@@ -98,9 +113,11 @@ expression: actual
           },
           "operator": "-",
           "right": {
+            "commentStart": 38,
             "computed": false,
             "end": 43,
             "object": {
+              "commentStart": 38,
               "end": 41,
               "name": "obj",
               "start": 38,
@@ -108,6 +125,7 @@ expression: actual
               "type": "Identifier"
             },
             "property": {
+              "commentStart": 42,
               "end": 43,
               "name": "a",
               "start": 42,
@@ -132,6 +150,7 @@ expression: actual
       "type": "VariableDeclaration"
     }
   ],
+  "commentStart": 0,
   "end": 43,
   "start": 0
 }

@@ -15,7 +15,7 @@ pub(crate) use import::{
     import_foreign, send_to_engine as send_import_to_engine, PreImportedGeometry, ZOO_COORD_SYSTEM,
 };
 use indexmap::IndexMap;
-pub use kcl_value::{KclObjectFields, KclValue, PrimitiveType, UnitAngle, UnitLen};
+pub use kcl_value::{KclObjectFields, KclValue};
 use kcmc::{
     each_cmd as mcmd,
     ok_response::{output::TakeSnapshot, OkModelingCmdResponse},
@@ -34,11 +34,11 @@ use crate::{
     execution::{
         artifact::build_artifact_graph,
         cache::{CacheInformation, CacheResult},
+        types::{UnitAngle, UnitLen},
     },
     fs::FileManager,
     modules::{ModuleId, ModulePath},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
-    settings::types::UnitLength,
     source_range::SourceRange,
     std::StdLib,
     CompilationError, ExecError, ExecutionKind, KclErrorWithOutputs,
@@ -55,6 +55,7 @@ mod import;
 pub(crate) mod kcl_value;
 mod memory;
 mod state;
+pub(crate) mod types;
 
 /// Outcome of executing a program.  This is used in TS.
 #[derive(Debug, Clone, Serialize, ts_rs::TS)]
@@ -263,8 +264,6 @@ pub struct ExecutorContext {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct ExecutorSettings {
-    /// The project-default unit to use in modeling dimensions.
-    pub units: UnitLength,
     /// Highlight edges of 3D objects?
     pub highlight_edges: bool,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
@@ -285,7 +284,6 @@ pub struct ExecutorSettings {
 impl Default for ExecutorSettings {
     fn default() -> Self {
         Self {
-            units: Default::default(),
             highlight_edges: true,
             enable_ssao: false,
             show_grid: false,
@@ -299,7 +297,6 @@ impl Default for ExecutorSettings {
 impl From<crate::settings::types::Configuration> for ExecutorSettings {
     fn from(config: crate::settings::types::Configuration) -> Self {
         Self {
-            units: config.settings.modeling.base_unit,
             highlight_edges: config.settings.modeling.highlight_edges.into(),
             enable_ssao: config.settings.modeling.enable_ssao.into(),
             show_grid: config.settings.modeling.show_scale_grid,
@@ -313,7 +310,6 @@ impl From<crate::settings::types::Configuration> for ExecutorSettings {
 impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSettings {
     fn from(config: crate::settings::types::project::ProjectConfiguration) -> Self {
         Self {
-            units: config.settings.modeling.base_unit,
             highlight_edges: config.settings.modeling.highlight_edges.into(),
             enable_ssao: config.settings.modeling.enable_ssao.into(),
             show_grid: Default::default(),
@@ -327,7 +323,6 @@ impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSet
 impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
     fn from(modeling: crate::settings::types::ModelingSettings) -> Self {
         Self {
-            units: modeling.base_unit,
             highlight_edges: modeling.highlight_edges.into(),
             enable_ssao: modeling.enable_ssao.into(),
             show_grid: modeling.show_scale_grid,
@@ -341,7 +336,6 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
 impl From<crate::settings::types::project::ProjectModelingSettings> for ExecutorSettings {
     fn from(modeling: crate::settings::types::project::ProjectModelingSettings) -> Self {
         Self {
-            units: modeling.base_unit,
             highlight_edges: modeling.highlight_edges.into(),
             enable_ssao: modeling.enable_ssao.into(),
             show_grid: Default::default(),
@@ -474,26 +468,17 @@ impl ExecutorContext {
     /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
     /// variables.
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new_with_default_client(units: UnitLength) -> Result<Self> {
+    pub async fn new_with_default_client() -> Result<Self> {
         // Create the client.
-        let ctx = Self::new_with_client(
-            ExecutorSettings {
-                units,
-                ..Default::default()
-            },
-            None,
-            None,
-        )
-        .await?;
+        let ctx = Self::new_with_client(Default::default(), None, None).await?;
         Ok(ctx)
     }
 
     /// For executing unit tests.
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new_for_unit_test(units: UnitLength, engine_addr: Option<String>) -> Result<Self> {
+    pub async fn new_for_unit_test(engine_addr: Option<String>) -> Result<Self> {
         let ctx = ExecutorContext::new_with_client(
             ExecutorSettings {
-                units,
                 highlight_edges: true,
                 enable_ssao: false,
                 show_grid: false,
@@ -512,9 +497,13 @@ impl ExecutorContext {
         self.context_type == ContextType::Mock || self.context_type == ContextType::MockCustomForwarded
     }
 
+    pub async fn is_isolated_execution(&self) -> bool {
+        self.engine.execution_kind().await.is_isolated()
+    }
+
     /// Returns true if we should not send engine commands for any reason.
     pub async fn no_engine_commands(&self) -> bool {
-        self.is_mock() || self.engine.execution_kind().await.is_isolated()
+        self.is_mock() || self.is_isolated_execution().await
     }
 
     pub async fn send_clear_scene(
@@ -525,6 +514,18 @@ impl ExecutorContext {
         self.engine
             .clear_scene(&mut exec_state.mod_local.id_generator, source_range)
             .await
+    }
+
+    pub async fn bust_cache_and_reset_scene(&self) -> Result<ExecOutcome, KclErrorWithOutputs> {
+        cache::bust_cache().await;
+
+        // Execute an empty program to clear and reset the scene.
+        // We specifically want to be returned the objects after the scene is reset.
+        // Like the default planes so it is easier to just execute an empty program
+        // after the cache is busted.
+        let outcome = self.run_with_caching(crate::Program::empty()).await?;
+
+        Ok(outcome)
     }
 
     async fn prepare_mem(&self, exec_state: &mut ExecState) -> Result<(), KclErrorWithOutputs> {
@@ -545,7 +546,10 @@ impl ExecutorContext {
         let mut exec_state = ExecState::new(self);
         if use_prev_memory {
             match cache::read_old_memory().await {
-                Some(mem) => *exec_state.mut_stack() = mem,
+                Some(mem) => {
+                    *exec_state.mut_stack() = mem.0;
+                    exec_state.global.module_infos = mem.1;
+                }
                 None => self.prepare_mem(&mut exec_state).await?,
             }
         } else {
@@ -563,10 +567,11 @@ impl ExecutorContext {
         // memory, not to the exec_state which is not cached for mock execution.
 
         let mut mem = exec_state.stack().clone();
+        let module_infos = exec_state.global.module_infos.clone();
         let outcome = exec_state.to_mock_wasm_outcome(result.0).await;
 
         mem.squash_env(result.0);
-        cache::write_old_memory(mem).await;
+        cache::write_old_memory((mem, module_infos)).await;
 
         Ok(outcome)
     }
@@ -600,7 +605,7 @@ impl ExecutorContext {
                     if reapply_settings
                         && self
                             .engine
-                            .reapply_settings(&self.settings, Default::default())
+                            .reapply_settings(&self.settings, Default::default(), old_state.id_generator())
                             .await
                             .is_err()
                     {
@@ -618,7 +623,7 @@ impl ExecutorContext {
                 CacheResult::NoAction(true) => {
                     if self
                         .engine
-                        .reapply_settings(&self.settings, Default::default())
+                        .reapply_settings(&self.settings, Default::default(), old_state.id_generator())
                         .await
                         .is_ok()
                     {
@@ -719,32 +724,14 @@ impl ExecutorContext {
 
         // Re-apply the settings, in case the cache was busted.
         self.engine
-            .reapply_settings(&self.settings, Default::default())
+            .reapply_settings(&self.settings, Default::default(), exec_state.id_generator())
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
         let default_planes = self.engine.get_default_planes().read().await.clone();
-        let env_ref = self
+        let result = self
             .execute_and_build_graph(&program.ast, exec_state, preserve_mem)
-            .await
-            .map_err(|e| {
-                let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
-                    .global
-                    .path_to_source_id
-                    .iter()
-                    .map(|(k, v)| ((*v), k.clone()))
-                    .collect();
-
-                KclErrorWithOutputs::new(
-                    e,
-                    exec_state.global.operations.clone(),
-                    exec_state.global.artifact_commands.clone(),
-                    exec_state.global.artifact_graph.clone(),
-                    module_id_to_module_path,
-                    exec_state.global.id_to_source.clone(),
-                    default_planes,
-                )
-            })?;
+            .await;
 
         crate::log::log(format!(
             "Post interpretation KCL memory stats: {:#?}",
@@ -752,10 +739,29 @@ impl ExecutorContext {
         ));
         crate::log::log(format!("Engine stats: {:?}", self.engine.stats()));
 
+        let env_ref = result.map_err(|e| {
+            let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
+                .global
+                .path_to_source_id
+                .iter()
+                .map(|(k, v)| ((*v), k.clone()))
+                .collect();
+
+            KclErrorWithOutputs::new(
+                e,
+                exec_state.global.operations.clone(),
+                exec_state.global.artifact_commands.clone(),
+                exec_state.global.artifact_graph.clone(),
+                module_id_to_module_path,
+                exec_state.global.id_to_source.clone(),
+                default_planes,
+            )
+        })?;
+
         if !self.is_mock() {
             let mut mem = exec_state.stack().deep_clone();
             mem.restore_env(env_ref);
-            cache::write_old_memory(mem).await;
+            cache::write_old_memory((mem, exec_state.global.module_infos.clone())).await;
         }
         let session_data = self.engine.get_session_data().await;
         Ok((env_ref, session_data))
@@ -785,6 +791,10 @@ impl ExecutorContext {
                 &ModulePath::Main,
             )
             .await;
+
+        // If we errored out and early-returned, there might be commands which haven't been executed
+        // and should be dropped.
+        self.engine.clear_queues().await;
 
         // Move the artifact commands and responses to simplify cache management
         // and error creation.
@@ -837,11 +847,6 @@ impl ExecutorContext {
         }
 
         Ok(())
-    }
-
-    /// Update the units for the executor.
-    pub(crate) fn update_units(&mut self, units: UnitLength) {
-        self.settings.units = units;
     }
 
     /// Get a snapshot of the current scene.
@@ -1393,6 +1398,22 @@ const answer = returnX()"#;
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn type_aliases() {
+        let text = r#"type MyTy = [number; 2]
+fn foo(x: MyTy) {
+    return x[0]
+}
+
+foo([0, 1])
+
+type Other = MyTy | Helix
+"#;
+        let result = parse_execute(text).await.unwrap();
+        let errs = result.exec_state.errors();
+        assert!(errs.is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_cannot_shebang_in_fn() {
         let ast = r#"
 fn foo () {
@@ -1587,6 +1608,18 @@ const bracket = startSketchOn(XY)
   |> line(end = [-leg2 + thickness(), 0])
 "#;
         parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_bad_arg_count_std() {
+        let ast = "startSketchOn(XY)
+  |> startProfileAt([0, 0], %)
+  |> profileStartX()";
+        assert!(parse_execute(ast)
+            .await
+            .unwrap_err()
+            .message()
+            .contains("Expected a sketch argument"));
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1888,9 +1921,7 @@ let w = f() + f()
 )
 "#;
 
-        let ctx = crate::test_server::new_context(UnitLength::Mm, true, None)
-            .await
-            .unwrap();
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
 
         // Execute the program.
@@ -1943,9 +1974,7 @@ let w = f() + f()
 )
 "#;
 
-        let mut ctx = crate::test_server::new_context(UnitLength::Mm, true, None)
-            .await
-            .unwrap();
+        let mut ctx = crate::test_server::new_context(true, None).await.unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
 
         // Execute the program.
@@ -1977,11 +2006,13 @@ let w = f() + f()
 
         // Ensure the settings are as expected.
         assert_eq!(settings_state, ctx.settings);
+
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_after_not_mock() {
-        let ctx = ExecutorContext::new_with_default_client(UnitLength::Mm).await.unwrap();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let program = crate::Program::parse_no_errs("x = 2").unwrap();
         let result = ctx.run_with_caching(program).await.unwrap();
         assert_eq!(result.variables.get("x").unwrap().as_f64().unwrap(), 2.0);
@@ -1990,6 +2021,9 @@ let w = f() + f()
         let program2 = crate::Program::parse_no_errs("z = x + 1").unwrap();
         let result = ctx2.run_mock(program2, true).await.unwrap();
         assert_eq!(result.variables.get("z").unwrap().as_f64().unwrap(), 3.0);
+
+        ctx.close().await;
+        ctx2.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]

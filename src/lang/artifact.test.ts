@@ -1,5 +1,5 @@
-import { assertParse, initPromise } from './wasm'
-import { enginelessExecutor } from '../lib/testHelpers'
+import { assertParse, initPromise } from '@src/lang/wasm'
+import { enginelessExecutor } from '@src/lib/testHelpers'
 
 beforeAll(async () => {
   await initPromise
@@ -9,7 +9,7 @@ describe('testing artifacts', () => {
   // Enable rotations #152
   test('sketch artifacts', async () => {
     const code = `
-const mySketch001 = startSketchOn('XY')
+const mySketch001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [-1.59, -1.54])
   |> line(endAbsolute = [0.46, -5.82])
@@ -67,7 +67,7 @@ const mySketch001 = startSketchOn('XY')
   test('extrude artifacts', async () => {
     // Enable rotations #152
     const code = `
-const mySketch001 = startSketchOn('XY')
+const mySketch001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [-1.59, -1.54])
   |> line(endAbsolute = [0.46, -5.82])
@@ -145,7 +145,7 @@ const mySketch001 = startSketchOn('XY')
     // Enable rotations #152
     // TODO #153 in order for getExtrudeWallTransform to work we need to query the engine for the location of a face.
     const code = `
-const sk1 = startSketchOn('XY')
+const sk1 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [-2.5, 0])
   |> line(endAbsolute = [0, 10], tag = $p)
@@ -155,7 +155,7 @@ const sk1 = startSketchOn('XY')
   // |> ry(5, %)
 const theExtrude = extrude(sk1, length = 2)
 // const theTransf = getExtrudeWallTransform('p', theExtrude)
-const sk2 = startSketchOn('XY')
+const sk2 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [-2.5, 0])
   |> line(endAbsolute = [0, 3], tag = $o)
@@ -187,8 +187,9 @@ const sk2 = startSketchOn('XY')
               type: 'extrudePlane',
               faceId: expect.any(String),
               tag: {
-                end: 140,
-                start: 138,
+                end: 138,
+                start: 136,
+                commentStart: expect.any(Number),
                 type: 'TagDeclarator',
                 value: 'p',
               },
@@ -239,6 +240,7 @@ const sk2 = startSketchOn('XY')
                 tag: {
                   end: expect.any(Number),
                   start: expect.any(Number),
+                  commentStart: expect.any(Number),
                   type: 'TagDeclarator',
                   value: 'p',
                 },
@@ -288,6 +290,7 @@ const sk2 = startSketchOn('XY')
               tag: {
                 end: expect.any(Number),
                 start: expect.any(Number),
+                commentStart: expect.any(Number),
                 type: 'TagDeclarator',
                 value: 'o',
               },
@@ -338,6 +341,7 @@ const sk2 = startSketchOn('XY')
                 tag: {
                   end: expect.any(Number),
                   start: expect.any(Number),
+                  commentStart: expect.any(Number),
                   type: 'TagDeclarator',
                   value: 'o',
                 },

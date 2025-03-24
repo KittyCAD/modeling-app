@@ -1,37 +1,41 @@
 import { useMachine } from '@xstate/react'
-import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
-import { useProjectsLoader } from 'hooks/useProjectsLoader'
-import { projectsMachine } from 'machines/projectsMachine'
 import { createContext, useCallback, useEffect, useState } from 'react'
-import { Actor, AnyStateMachine, fromPromise, Prop, StateFrom } from 'xstate'
-import { useLspContext } from './LspProvider'
 import toast from 'react-hot-toast'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { PATHS } from 'lib/paths'
-import {
-  createNewProjectDirectory,
-  listProjects,
-  renameProjectDirectory,
-} from 'lib/desktop'
-import {
-  getNextProjectIndex,
-  interpolateProjectNameWithIndex,
-  doesProjectNameNeedInterpolated,
-  getUniqueProjectName,
-  getNextFileName,
-} from 'lib/desktopFS'
-import useStateMachineCommands from 'hooks/useStateMachineCommands'
-import { projectsCommandBarConfig } from 'lib/commandBarConfigs/projectsCommandConfig'
-import { isDesktop } from 'lib/isDesktop'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { useSettings } from 'machines/appMachine'
+import type { Actor, AnyStateMachine, Prop, StateFrom } from 'xstate'
+import { fromPromise } from 'xstate'
+
+import { useLspContext } from '@src/components/LspProvider'
+import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
+import { useProjectsLoader } from '@src/hooks/useProjectsLoader'
+import useStateMachineCommands from '@src/hooks/useStateMachineCommands'
+import { newKclFile } from '@src/lang/project'
+import { projectsCommandBarConfig } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
   CREATE_FILE_URL_PARAM,
   FILE_EXT,
   PROJECT_ENTRYPOINT,
-} from 'lib/constants'
-import { codeManager, kclManager } from 'lib/singletons'
-import { Project } from 'lib/project'
+} from '@src/lib/constants'
+import {
+  createNewProjectDirectory,
+  listProjects,
+  renameProjectDirectory,
+} from '@src/lib/desktop'
+import {
+  doesProjectNameNeedInterpolated,
+  getNextFileName,
+  getNextProjectIndex,
+  getUniqueProjectName,
+  interpolateProjectNameWithIndex,
+} from '@src/lib/desktopFS'
+import { isDesktop } from '@src/lib/isDesktop'
+import { PATHS } from '@src/lib/paths'
+import type { Project } from '@src/lib/project'
+import { codeManager, kclManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
+import { useSettings } from '@src/machines/appMachine'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import { projectsMachine } from '@src/machines/projectsMachine'
 
 type MachineContext<T extends AnyStateMachine> = {
   state?: StateFrom<T>
@@ -120,9 +124,15 @@ const ProjectsContextWeb = ({ children }: { children: React.ReactNode }) => {
         createFile: fromPromise(async ({ input }) => {
           // Browser version doesn't navigate, just overwrites the current file
           clearImportSearchParams()
-          codeManager.updateCodeStateEditor(input.code || '')
+
+          const codeToWrite = newKclFile(
+            input.code,
+            settings.modeling.defaultUnit.current
+          )
+          if (err(codeToWrite)) return Promise.reject(codeToWrite)
+          codeManager.updateCodeStateEditor(codeToWrite)
           await codeManager.writeToFile()
-          await kclManager.executeCode(true)
+          await kclManager.executeCode()
 
           return {
             message: 'File overwritten successfully',
@@ -137,6 +147,7 @@ const ProjectsContextWeb = ({ children }: { children: React.ReactNode }) => {
         projects: [],
         defaultProjectName: settings.projects.defaultProjectName.current,
         defaultDirectory: settings.app.projectDirectory.current,
+        hasListedProjects: false,
       },
     }
   )
@@ -182,19 +193,10 @@ const ProjectsContextDesktop = ({
   }, [searchParams, setSearchParams])
   const { onProjectOpen } = useLspContext()
   const settings = useSettings()
-
   const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
   const { projectPaths, projectsDir } = useProjectsLoader([
     projectsLoaderTrigger,
   ])
-
-  // Re-read projects listing if the projectDir has any updates.
-  useFileSystemWatcher(
-    async () => {
-      return setProjectsLoaderTrigger(projectsLoaderTrigger + 1)
-    },
-    projectsDir ? [projectsDir] : []
-  )
 
   const [state, send, actor] = useMachine(
     projectsMachine.provide({
@@ -313,7 +315,9 @@ const ProjectsContextDesktop = ({
           ),
       },
       actors: {
-        readProjects: fromPromise(() => listProjects()),
+        readProjects: fromPromise(() => {
+          return listProjects()
+        }),
         createProject: fromPromise(async ({ input }) => {
           let name = (
             input && 'name' in input && input.name
@@ -380,8 +384,8 @@ const ProjectsContextDesktop = ({
             input.method === 'newProject'
               ? PROJECT_ENTRYPOINT
               : input.name.endsWith(FILE_EXT)
-              ? input.name
-              : input.name + FILE_EXT
+                ? input.name
+                : input.name + FILE_EXT
           let message = 'File created successfully'
 
           const needsInterpolated = doesProjectNameNeedInterpolated(projectName)
@@ -394,8 +398,10 @@ const ProjectsContextDesktop = ({
           }
 
           // Create the project around the file if newProject
+          let fileLoaded = false
           if (input.method === 'newProject') {
             await createNewProjectDirectory(projectName, input.code)
+            fileLoaded = true
             message = `Project "${projectName}" created successfully with link contents`
           } else {
             message = `File "${fileName}" created successfully`
@@ -412,8 +418,16 @@ const ProjectsContextDesktop = ({
           })
 
           fileName = name
-          await window.electron.writeFile(path, input.code || '')
+          if (!fileLoaded) {
+            const codeToWrite = newKclFile(
+              input.code,
+              settings.modeling.defaultUnit.current
+            )
+            if (err(codeToWrite)) return Promise.reject(codeToWrite)
+            await window.electron.writeFile(path, codeToWrite)
+          }
 
+          // TODO: Return the project's file name if one was created.
           return {
             message,
             fileName,
@@ -427,13 +441,33 @@ const ProjectsContextDesktop = ({
         projects: projectPaths,
         defaultProjectName: settings.projects.defaultProjectName.current,
         defaultDirectory: settings.app.projectDirectory.current,
+        hasListedProjects: false,
       },
     }
   )
 
+  useFileSystemWatcher(
+    async () => {
+      // Gotcha: Chokidar is buggy. It will emit addDir or add on files that did not get created.
+      // This means while the application initialize and Chokidar initializes you cannot tell if
+      // a directory or file is actually created or they are buggy signals. This means you must
+      // ignore all signals during initialization because it is ambiguous. Once those signals settle
+      // you can actually start listening to real signals.
+      // If someone creates folders or files during initialization we ignore those events!
+      if (!actor.getSnapshot().context.hasListedProjects) {
+        return
+      }
+      return setProjectsLoaderTrigger(projectsLoaderTrigger + 1)
+    },
+    projectsDir ? [projectsDir] : []
+  )
+
+  // Gotcha: Triggers listProjects() on chokidar changes
+  // Gotcha: Load the projects when the projectDirectory changes.
+  const projectDirectory = settings.app.projectDirectory.current
   useEffect(() => {
     send({ type: 'Read projects', data: {} })
-  }, [projectPaths])
+  }, [projectPaths, projectDirectory])
 
   // register all project-related command palette commands
   useStateMachineCommands({

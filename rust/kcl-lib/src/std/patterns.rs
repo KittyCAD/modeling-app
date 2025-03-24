@@ -20,8 +20,9 @@ use super::args::Arg;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        kcl_value::{ArrayLen, FunctionSource, NumericType, RuntimeType},
-        ExecState, Geometries, Geometry, KclObjectFields, KclValue, Point2d, Point3d, PrimitiveType, Sketch, Solid,
+        kcl_value::FunctionSource,
+        types::{NumericType, RuntimeType},
+        ExecState, Geometries, Geometry, KclObjectFields, KclValue, Point2d, Point3d, Sketch, Solid,
     },
     std::Args,
     ExecutorContext, SourceRange,
@@ -47,11 +48,7 @@ pub struct LinearPattern3dData {
 
 /// Repeat some 3D solid, changing each repetition slightly.
 pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids = args.get_unlabeled_kw_arg_typed(
-        "solids",
-        &RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty),
-        exec_state,
-    )?;
+    let solids = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
     let instances: u32 = args.get_kw_arg("instances")?;
     let transform: &FunctionSource = args.get_kw_arg("transform")?;
     let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
@@ -62,11 +59,7 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
 
 /// Repeat some 2D sketch, changing each repetition slightly.
 pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg_typed(
-        "sketches",
-        &RuntimeType::Array(PrimitiveType::Sketch, ArrayLen::NonEmpty),
-        exec_state,
-    )?;
+    let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
     let instances: u32 = args.get_kw_arg("instances")?;
     let transform: &FunctionSource = args.get_kw_arg("transform")?;
     let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
@@ -388,6 +381,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
     args: &Args,
 ) -> Result<Vec<T>, KclError> {
     let id = exec_state.next_uuid();
+    let extra_instances = transforms.len();
 
     let resp = args
         .send_modeling_cmd(
@@ -400,10 +394,19 @@ async fn send_pattern_transform<T: GeometryTrait>(
         )
         .await?;
 
-    let OkWebSocketResponseData::Modeling {
+    let mut mock_ids = Vec::new();
+    let entity_ids = if let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::EntityLinearPatternTransform(pattern_info),
     } = &resp
-    else {
+    {
+        &pattern_info.entity_ids
+    } else if args.ctx.no_engine_commands().await {
+        mock_ids.reserve(extra_instances);
+        for _ in 0..extra_instances {
+            mock_ids.push(exec_state.next_uuid());
+        }
+        &mock_ids
+    } else {
         return Err(KclError::Engine(KclErrorDetails {
             message: format!("EntityLinearPattern response was not as expected: {:?}", resp),
             source_ranges: vec![args.source_range],
@@ -411,7 +414,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
     };
 
     let mut geometries = vec![solid.clone()];
-    for id in pattern_info.entity_ids.iter().copied() {
+    for id in entity_ids.iter().copied() {
         let mut new_solid = solid.clone();
         new_solid.set_id(id);
         geometries.push(new_solid);
@@ -434,7 +437,7 @@ async fn make_transform<T: GeometryTrait>(
     };
     let transform_fn_args = vec![Arg::synthetic(repetition_num)];
     let transform_fn_return = transform
-        .call(exec_state, ctxt, transform_fn_args, source_range)
+        .call(None, exec_state, ctxt, transform_fn_args, source_range)
         .await?;
 
     // Unpack the returned transform object.
@@ -664,7 +667,7 @@ impl GeometryTrait for Solid {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::execution::kcl_value::NumericType;
+    use crate::execution::types::NumericType;
 
     #[test]
     fn test_array_to_point3d() {
@@ -696,11 +699,7 @@ mod tests {
 
 /// A linear pattern on a 2D sketch.
 pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg_typed(
-        "sketches",
-        &RuntimeType::Array(PrimitiveType::Sketch, ArrayLen::NonEmpty),
-        exec_state,
-    )?;
+    let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
     let instances: u32 = args.get_kw_arg("instances")?;
     let distance: f64 = args.get_kw_arg("distance")?;
     let axis: [f64; 2] = args.get_kw_arg("axis")?;
@@ -779,11 +778,7 @@ async fn inner_pattern_linear_2d(
 
 /// A linear pattern on a 3D model.
 pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids = args.get_unlabeled_kw_arg_typed(
-        "solids",
-        &RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty),
-        exec_state,
-    )?;
+    let solids = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
     let instances: u32 = args.get_kw_arg("instances")?;
     let distance: f64 = args.get_kw_arg("distance")?;
     let axis: [f64; 3] = args.get_kw_arg("axis")?;
@@ -1028,11 +1023,7 @@ impl CircularPattern {
 
 /// A circular pattern on a 2D sketch.
 pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg_typed(
-        "sketches",
-        &RuntimeType::Array(PrimitiveType::Sketch, ArrayLen::NonEmpty),
-        exec_state,
-    )?;
+    let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
     let instances: u32 = args.get_kw_arg("instances")?;
     let center: [f64; 2] = args.get_kw_arg("center")?;
     let arc_degrees: f64 = args.get_kw_arg("arcDegrees")?;
@@ -1136,11 +1127,7 @@ async fn inner_pattern_circular_2d(
 
 /// A circular pattern on a 3D model.
 pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids = args.get_unlabeled_kw_arg_typed(
-        "solids",
-        &RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty),
-        exec_state,
-    )?;
+    let solids = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
     // The number of total instances. Must be greater than or equal to 1.
     // This includes the original entity. For example, if instances is 2,
     // there will be two copies -- the original, and one new copy.
@@ -1303,10 +1290,21 @@ async fn pattern_circular(
         )
         .await?;
 
-    let OkWebSocketResponseData::Modeling {
+    // The common case is borrowing from the response.  Instead of cloning,
+    // create a Vec to borrow from in mock mode.
+    let mut mock_ids = Vec::new();
+    let entity_ids = if let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::EntityCircularPattern(pattern_info),
     } = &resp
-    else {
+    {
+        &pattern_info.entity_ids
+    } else if args.ctx.no_engine_commands().await {
+        mock_ids.reserve(num_repetitions as usize);
+        for _ in 0..num_repetitions {
+            mock_ids.push(exec_state.next_uuid());
+        }
+        &mock_ids
+    } else {
         return Err(KclError::Engine(KclErrorDetails {
             message: format!("EntityCircularPattern response was not as expected: {:?}", resp),
             source_ranges: vec![args.source_range],
@@ -1316,18 +1314,18 @@ async fn pattern_circular(
     let geometries = match geometry {
         Geometry::Sketch(sketch) => {
             let mut geometries = vec![sketch.clone()];
-            for id in pattern_info.entity_ids.iter() {
+            for id in entity_ids.iter().copied() {
                 let mut new_sketch = sketch.clone();
-                new_sketch.id = *id;
+                new_sketch.id = id;
                 geometries.push(new_sketch);
             }
             Geometries::Sketches(geometries)
         }
         Geometry::Solid(solid) => {
             let mut geometries = vec![solid.clone()];
-            for id in pattern_info.entity_ids.iter() {
+            for id in entity_ids.iter().copied() {
                 let mut new_solid = solid.clone();
-                new_solid.id = *id;
+                new_solid.id = id;
                 geometries.push(new_solid);
             }
             Geometries::Solids(geometries)

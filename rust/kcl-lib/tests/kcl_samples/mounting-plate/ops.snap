@@ -8,37 +8,25 @@ description: Operations executed mounting-plate.kcl
     "name": "rectShape",
     "functionSourceRange": [
       519,
-      889,
+      887,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1043,
-      1085,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          554,
-          558,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      540,
-      559,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -54,11 +42,7 @@ description: Operations executed mounting-plate.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1106,
-          1250,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -67,19 +51,11 @@ description: Operations executed mounting-plate.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1252,
-          1253,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      1101,
-      1254,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -92,11 +68,7 @@ description: Operations executed mounting-plate.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1265,
-          1408,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -105,19 +77,11 @@ description: Operations executed mounting-plate.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1410,
-          1411,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      1260,
-      1412,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -130,11 +94,7 @@ description: Operations executed mounting-plate.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1423,
-          1568,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -143,19 +103,11 @@ description: Operations executed mounting-plate.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1570,
-          1571,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      1418,
-      1572,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -168,11 +120,7 @@ description: Operations executed mounting-plate.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1583,
-          1727,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -181,19 +129,11 @@ description: Operations executed mounting-plate.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1729,
-          1730,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      1578,
-      1731,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -206,11 +146,7 @@ description: Operations executed mounting-plate.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1742,
-          1815,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -219,19 +155,11 @@ description: Operations executed mounting-plate.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1817,
-          1818,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      1737,
-      1819,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -251,19 +179,11 @@ description: Operations executed mounting-plate.kcl
             }
           }
         },
-        "sourceRange": [
-          1842,
-          1856,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1825,
-      1857,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -272,11 +192,7 @@ description: Operations executed mounting-plate.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1825,
-        1857,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -295,11 +211,7 @@ description: Operations executed mounting-plate.kcl
             }
           }
         },
-        "sourceRange": [
-          1887,
-          1899,
-          0
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -323,19 +235,11 @@ description: Operations executed mounting-plate.kcl
             }
           ]
         },
-        "sourceRange": [
-          1915,
-          2120,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      1863,
-      2127,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -344,11 +248,7 @@ description: Operations executed mounting-plate.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1863,
-        2127,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

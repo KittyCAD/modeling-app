@@ -1,0 +1,9 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tests/import_glob/export_constant.kcl
+---
+export three = 3
+
+export fn foo() {
+  return 42
+}

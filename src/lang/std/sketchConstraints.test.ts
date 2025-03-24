@@ -1,21 +1,20 @@
+import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
+import type { ConstraintType } from '@src/lang/std/sketchcombos'
 import {
-  assertParse,
-  Sketch,
-  recast,
-  initPromise,
-  sketchFromKclValue,
-  SourceRange,
-  topLevelRange,
-} from '../wasm'
-import {
-  ConstraintType,
   getTransformInfos,
   transformAstSketchLines,
-} from './sketchcombos'
-import { getSketchSegmentFromSourceRange } from './sketchConstraints'
-import { enginelessExecutor } from '../../lib/testHelpers'
-import { err } from 'lib/trap'
-import { codeRefFromRange } from './artifactGraph'
+} from '@src/lang/std/sketchcombos'
+import { topLevelRange } from '@src/lang/util'
+import type { Sketch, SourceRange } from '@src/lang/wasm'
+import {
+  assertParse,
+  initPromise,
+  recast,
+  sketchFromKclValue,
+} from '@src/lang/wasm'
+import { enginelessExecutor } from '@src/lib/testHelpers'
+import { err } from '@src/lib/trap'
 
 beforeAll(async () => {
   await initPromise
@@ -71,7 +70,7 @@ async function testingSwapSketchFnCall({
 
 describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   const bigExampleArr = [
-    `part001 = startSketchOn('XY')`,
+    `part001 = startSketchOn(XY)`,
     `  |> startProfileAt([0, 0], %)`,
     `  |> line(endAbsolute = [1, 1], tag = $abc1)`,
     `  |> line(end = [-2.04, -0.7], tag = $abc2)`,
@@ -269,7 +268,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo while keeping var
     `angledLineOfYLengthY = 0.89`,
     `angledLineToXx = -1.86`,
     `angledLineToYy = -0.76`,
-    `part001 = startSketchOn('XY')`,
+    `part001 = startSketchOn(XY)`,
     `  |> startProfileAt([0, 0], %)`,
     // `  |> rx(90, %)`,
     `  |> line(endAbsolute = [1, 1])`,
@@ -363,7 +362,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo while keeping var
 
 describe('testing getSketchSegmentIndexFromSourceRange', () => {
   const code = `
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([0, 0.04], %) // segment-in-start
   |> line(end = [0, 0.4])
   |> xLine(length = 3.48)

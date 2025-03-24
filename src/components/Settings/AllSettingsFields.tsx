@@ -1,31 +1,36 @@
+import { useSelector } from '@xstate/react'
 import decamelize from 'decamelize'
-import { Setting } from 'lib/settings/initialSettings'
-import { SetEventTypes, SettingsLevel } from 'lib/settings/settingsTypes'
-import {
-  shouldHideSetting,
-  shouldShowSettingInput,
-} from 'lib/settings/settingsUtils'
-import { Fragment } from 'react/jsx-runtime'
-import { SettingsSection } from './SettingsSection'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { isDesktop } from 'lib/isDesktop'
-import { ActionButton } from 'components/ActionButton'
-import { SettingsFieldInput } from './SettingsFieldInput'
+import type { ForwardedRef } from 'react'
+import { forwardRef, useEffect, useMemo } from 'react'
 import toast from 'react-hot-toast'
-import { APP_VERSION, IS_NIGHTLY, getReleaseUrl } from 'routes/Settings'
-import { PATHS } from 'lib/paths'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { Fragment } from 'react/jsx-runtime'
+
+import { ActionButton } from '@src/components/ActionButton'
+import { useLspContext } from '@src/components/LspProvider'
+import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
+import { SettingsSection } from '@src/components/Settings/SettingsSection'
+import { useDotDotSlash } from '@src/hooks/useDotDotSlash'
 import {
   createAndOpenNewTutorialProject,
   getSettingsFolderPaths,
-} from 'lib/desktopFS'
-import { useDotDotSlash } from 'hooks/useDotDotSlash'
-import { ForwardedRef, forwardRef, useEffect, useMemo } from 'react'
-import { useLspContext } from 'components/LspProvider'
-import { toSync } from 'lib/utils'
-import { reportRejection } from 'lib/trap'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import { settingsActor, useSettings } from 'machines/appMachine'
-import { useSelector } from '@xstate/react'
+} from '@src/lib/desktopFS'
+import { isDesktop } from '@src/lib/isDesktop'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { PATHS } from '@src/lib/paths'
+import type { Setting } from '@src/lib/settings/initialSettings'
+import type {
+  SetEventTypes,
+  SettingsLevel,
+} from '@src/lib/settings/settingsTypes'
+import {
+  shouldHideSetting,
+  shouldShowSettingInput,
+} from '@src/lib/settings/settingsUtils'
+import { reportRejection } from '@src/lib/trap'
+import { toSync } from '@src/lib/utils'
+import { settingsActor, useSettings } from '@src/machines/appMachine'
+import { APP_VERSION, IS_NIGHTLY, getReleaseUrl } from '@src/routes/utils'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
@@ -91,8 +96,7 @@ export const AllSettingsFields = forwardRef(
           }
         }
       }
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      navigateToOnboardingStart()
+      navigateToOnboardingStart().catch(reportRejection)
     }, [
       isFileSettings,
       navigate,

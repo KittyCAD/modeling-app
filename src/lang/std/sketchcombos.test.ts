@@ -1,32 +1,24 @@
+import { ARG_END, ARG_END_ABSOLUTE } from '@src/lang/constants'
+import type { ToolTip } from '@src/lang/langHelpers'
+import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import { getArgForEnd, isAbsoluteLine } from '@src/lang/std/sketch'
+import type {
+  ConstraintLevel,
+  ConstraintType,
+} from '@src/lang/std/sketchcombos'
 import {
-  assertParse,
-  Expr,
-  recast,
-  initPromise,
-  Program,
-  topLevelRange,
-} from '../wasm'
-import {
+  getConstraintLevelFromSourceRange,
   getConstraintType,
   getTransformInfos,
   transformAstSketchLines,
   transformSecondarySketchLinesTagFirst,
-  ConstraintType,
-  ConstraintLevel,
-  getConstraintLevelFromSourceRange,
-} from './sketchcombos'
-import { ToolTip } from 'lang/langHelpers'
-import { Selections, Selection } from 'lib/selections'
-import { err } from 'lib/trap'
-import { enginelessExecutor } from '../../lib/testHelpers'
-import { codeRefFromRange } from './artifactGraph'
-import { findKwArg } from 'lang/util'
-import {
-  ARG_END,
-  ARG_END_ABSOLUTE,
-  getArgForEnd,
-  isAbsoluteLine,
-} from './sketch'
+} from '@src/lang/std/sketchcombos'
+import { findKwArg, topLevelRange } from '@src/lang/util'
+import type { Expr, Program } from '@src/lang/wasm'
+import { assertParse, initPromise, recast } from '@src/lang/wasm'
+import type { Selection, Selections } from '@src/lib/selections'
+import { enginelessExecutor } from '@src/lib/testHelpers'
+import { err } from '@src/lib/trap'
 
 beforeAll(async () => {
   await initPromise
@@ -96,7 +88,7 @@ function getConstraintTypeFromSourceHelper(
         )
       }
       const args = arg.elements as [Expr, Expr]
-      const fnName = expr.callee.name as ToolTip
+      const fnName = expr.callee.name.name as ToolTip
       return getConstraintType(args, fnName, false)
     }
     case 'CallExpressionKw': {
@@ -107,7 +99,7 @@ function getConstraintTypeFromSourceHelper(
         return new Error("couldn't find either end or endAbsolute in KW call")
       }
       const isAbsolute = endAbsolute ? true : false
-      const fnName = expr.callee.name as ToolTip
+      const fnName = expr.callee.name.name as ToolTip
       if (arg.type === 'ArrayExpression') {
         return getConstraintType(
           arg.elements as [Expr, Expr],
@@ -156,7 +148,7 @@ function getConstraintTypeFromSourceHelper2(
     default:
       return new Error('was not a call expression')
   }
-  const fnName = callExpr.callee.name as ToolTip
+  const fnName = callExpr.callee.name.name as ToolTip
   const constraintType = getConstraintType(arg, fnName, isAbsolute)
   return constraintType
 }
@@ -172,14 +164,14 @@ function makeSelections(
 
 describe('testing transformAstForSketchLines for equal length constraint', () => {
   describe(`should always reorder selections to have the base selection first`, () => {
-    const inputScript = `sketch001 = startSketchOn('XZ')
+    const inputScript = `sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [5, 5])
   |> line(end = [-2, 5])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()`
 
-    const expectedModifiedScript = `sketch001 = startSketchOn('XZ')
+    const expectedModifiedScript = `sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [5, 5], tag = $seg01)
   |> angledLine([112, segLen(seg01)], %)
@@ -260,7 +252,7 @@ myVar2 = 5
 myVar3 = 6
 myAng = 40
 myAng2 = 134
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(end = [1, 3.82]) // ln-should-get-tag
   |> line(endAbsolute = [myVar, 1]) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
@@ -296,7 +288,7 @@ myVar2 = 5
 myVar3 = 6
 myAng = 40
 myAng2 = 134
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(end = [1, 3.82], tag = $seg01) // ln-should-get-tag
   |> angledLineToX([
@@ -401,7 +393,7 @@ describe('testing transformAstForSketchLines for vertical and horizontal constra
   const inputScript = `myVar = 2
 myVar2 = 12
 myVar3 = -10
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [1, 1])
   |> line(end = [-6.28, 1.4]) // select for horizontal constraint 1
@@ -429,7 +421,7 @@ part001 = startSketchOn('XY')
     const expectModifiedScript = `myVar = 2
 myVar2 = 12
 myVar3 = -10
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [1, 1])
   |> xLine(length = -6.28) // select for horizontal constraint 1
@@ -489,7 +481,7 @@ part001 = startSketchOn('XY')
     const expectModifiedScript = `myVar = 2
 myVar2 = 12
 myVar3 = -10
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [1, 1])
   |> line(end = [-6.28, 1.4]) // select for horizontal constraint 1
@@ -550,7 +542,7 @@ part001 = startSketchOn('XY')
 describe('testing transformAstForSketchLines for vertical and horizontal distance constraints', () => {
   describe('testing setHorzDistance for line', () => {
     const inputScript = `myVar = 1
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(end = [0.31, 1.67]) // base selection
   |> line(end = [0.45, 1.46])
@@ -656,7 +648,7 @@ baseThickHalf = baseThick / 2
 halfHeight = totalHeight / 2
 halfArmAngle = armAngle / 2
 
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([-0.01, -0.05], %)
   |> line(end = [0.01, 0.94 + 0]) // partial
   |> xLine(length = 3.03) // partial

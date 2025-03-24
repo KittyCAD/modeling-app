@@ -1,0 +1,67 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing poop_chute.kcl
+---
+wall_thickness = 0.125
+back_walls_width = 2
+front_walls_width = 2.5
+height = 5.5
+filletRadius = 0.050
+back_length = 7
+exit_height = 1
+front_length = 6
+Fx = 0.5
+Fy = 0.5
+
+sketch001 = startSketchOn(-YZ)
+  |> startProfileAt([back_walls_width / 2, 0], %)
+  |> xLine(length = wall_thickness / 2)
+  |> angledLineToX({ angle = 45, to = back_walls_width }, %, $seg01)
+  |> yLine(endAbsolute = height)
+  |> xLine(length = -wall_thickness)
+  |> yLine(endAbsolute = segEndY(seg01))
+  |> angledLineToX({
+       angle = 45,
+       to = back_walls_width / 2 + wall_thickness / 2
+     }, %)
+  |> xLine(length = -wall_thickness)
+  |> angledLineToX({
+       angle = 180 - 45,
+       to = wall_thickness
+     }, %)
+  |> yLine(endAbsolute = height)
+  |> xLine(endAbsolute = 0)
+  |> yLine(endAbsolute = segEndY(seg01))
+  |> angledLineToY({ angle = 180 - 45, to = 0 }, %)
+  |> close(%)
+part001 = revolve(
+  sketch001,
+  angle = 90,
+  axis = {
+    direction = [1.0, 0.0],
+    origin = [0.0, height + .0000001]
+  },
+)
+
+sketch002 = startSketchOn(-YZ)
+  |> startProfileAt([back_walls_width / 2, 0], %)
+  |> xLine(length = wall_thickness / 2)
+  |> angledLineToX({ angle = 45, to = back_walls_width }, %, $seg02)
+  |> yLine(endAbsolute = height)
+  |> xLine(length = -wall_thickness)
+  |> yLine(endAbsolute = segEndY(seg01))
+  |> angledLineToX({
+       angle = 45,
+       to = back_walls_width / 2 + wall_thickness / 2
+     }, %)
+  |> xLine(length = -wall_thickness)
+  |> angledLineToX({
+       angle = 180 - 45,
+       to = wall_thickness
+     }, %)
+  |> yLine(endAbsolute = height)
+  |> xLine(endAbsolute = 0)
+  |> yLine(endAbsolute = segEndY(seg02))
+  |> angledLineToY({ angle = 180 - 45, to = 0 }, %)
+  |> close(%)
+  |> extrude(length = back_length - height)

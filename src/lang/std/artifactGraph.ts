@@ -1,35 +1,41 @@
-import {
-  Expr,
-  Artifact,
-  ArtifactGraph,
-  ArtifactId,
-  PathToNode,
-  Program,
-  SourceRange,
-  PathArtifact,
-  PlaneArtifact,
-  WallArtifact,
-  SegmentArtifact,
-  Solid2dArtifact as Solid2D,
-  SweepArtifact,
-  SweepEdge,
-  CapArtifact,
-  EdgeCut,
-} from 'lang/wasm'
-import { Models } from '@kittycad/lib'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { Selection } from 'lib/selections'
-import { err } from 'lib/trap'
-import {
+import type { Models } from '@kittycad/lib'
+
+import type {
   Cap,
+  CapSubType,
   Plane,
   StartSketchOnFace,
   StartSketchOnPlane,
   Wall,
 } from '@rust/kcl-lib/bindings/Artifact'
-import { CapSubType } from '@rust/kcl-lib/bindings/Artifact'
 
-export type { Artifact, ArtifactId, SegmentArtifact } from 'lang/wasm'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import type {
+  Artifact,
+  ArtifactGraph,
+  ArtifactId,
+  CapArtifact,
+  EdgeCut,
+  Expr,
+  PathArtifact,
+  PathToNode,
+  PlaneArtifact,
+  Program,
+  SegmentArtifact,
+  Solid2dArtifact as Solid2D,
+  SourceRange,
+  SweepArtifact,
+  SweepEdge,
+  WallArtifact,
+} from '@src/lang/wasm'
+import type { Selection } from '@src/lib/selections'
+import { err } from '@src/lib/trap'
+
+export type { Artifact, ArtifactId, SegmentArtifact } from '@src/lang/wasm'
+
+export function defaultArtifactGraph(): ArtifactGraph {
+  return new Map()
+}
 
 interface BaseArtifact {
   id: ArtifactId
@@ -747,6 +753,9 @@ export function getPathsFromPlaneArtifact(
           : path.codeRef.pathToNode
       )
     }
+  }
+  if (nodePaths.length === 0) {
+    return []
   }
   return onlyConsecutivePaths(nodePaths, nodePaths[0], ast)
 }

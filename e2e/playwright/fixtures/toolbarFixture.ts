@@ -1,14 +1,18 @@
-import type { Page, Locator } from '@playwright/test'
-import { expect } from '../zoo-test'
+import { type Locator, type Page, test } from '@playwright/test'
+import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
+import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
+import type { ToolbarModeName } from '@src/lib/toolbar'
+
 import {
   checkIfPaneIsOpen,
   closePane,
   doAndWaitForImageDiff,
   openPane,
-} from '../test-utils'
-import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
-import { SIDEBAR_BUTTON_SUFFIX } from 'lib/constants'
-import { ToolbarModeName } from 'lib/toolbar'
+} from '@e2e/playwright/test-utils'
+import { expect } from '@e2e/playwright/zoo-test'
+import { type baseUnitLabels } from '@src/lib/settings/settingsTypes'
+
+type LengthUnitLabel = (typeof baseUnitLabels)[keyof typeof baseUnitLabels]
 
 export class ToolbarFixture {
   public page: Page
@@ -76,10 +80,6 @@ export class ToolbarFixture {
     this.gizmoDisabled = page.getByTestId('gizmo-disabled')
   }
 
-  get editSketchBtn() {
-    return this.page.locator('[name="Edit Sketch"]')
-  }
-
   get logoLink() {
     return this.page.getByTestId('app-logo')
   }
@@ -115,11 +115,20 @@ export class ToolbarFixture {
     ).not.toBeDisabled()
   }
 
-  editSketch = async () => {
-    await this.editSketchBtn.first().click()
-    // One of the rare times we want to allow a arbitrary wait
-    // this is for the engine animation, as it takes 500ms to complete
-    await this.page.waitForTimeout(600)
+  editSketch = async (operationIndex = 0) => {
+    await test.step(`Editing sketch`, async () => {
+      await this.openFeatureTreePane()
+      const operation = await this.getFeatureTreeOperation(
+        'Sketch',
+        operationIndex
+      )
+      await operation.dblclick()
+      // One of the rare times we want to allow a arbitrary wait
+      // this is for the engine animation, as it takes 500ms to complete
+      await this.page.waitForTimeout(600)
+      await expect(this.exitSketchBtn).toBeEnabled()
+      await this.closeFeatureTreePane()
+    })
   }
   private _getMode = () =>
     this.page.locator('[data-current-mode]').getAttribute('data-current-mode')
@@ -176,6 +185,14 @@ export class ToolbarFixture {
     ).toBeVisible()
     await this.page.getByTestId('dropdown-center-rectangle').click()
   }
+  selectBoolean = async (operation: 'union' | 'subtract' | 'intersect') => {
+    await this.page
+      .getByRole('button', { name: 'caret down Union: open menu' })
+      .click()
+    const operationTestId = `dropdown-boolean-${operation}`
+    await expect(this.page.getByTestId(operationTestId)).toBeVisible()
+    await this.page.getByTestId(operationTestId).click()
+  }
 
   selectCircleThreePoint = async () => {
     await this.page
@@ -221,6 +238,12 @@ export class ToolbarFixture {
   }
   async checkIfFeatureTreePaneIsOpen() {
     return this.checkIfPaneIsOpen(this.featureTreeId)
+  }
+  async selectUnit(unit: LengthUnitLabel) {
+    await this.page.getByTestId('units-menu').click()
+    const optionLocator = this.page.getByRole('button', { name: unit })
+    await expect(optionLocator).toBeVisible()
+    await optionLocator.click()
   }
 
   /**

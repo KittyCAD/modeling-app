@@ -5,9 +5,12 @@ expression: actual
 {
   "body": [
     {
+      "commentStart": 0,
       "declaration": {
+        "commentStart": 0,
         "end": 90,
         "id": {
+          "commentStart": 0,
           "end": 3,
           "name": "val",
           "start": 0,
@@ -18,47 +21,78 @@ expression: actual
             {
               "type": "LabeledArg",
               "label": {
+                "commentStart": 22,
                 "end": 25,
                 "name": "arg",
                 "start": 22,
                 "type": "Identifier"
               },
               "arg": {
+                "abs_path": false,
+                "commentStart": 28,
                 "end": 29,
-                "name": "x",
+                "name": {
+                  "commentStart": 28,
+                  "end": 29,
+                  "name": "x",
+                  "start": 28,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 28,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             },
             {
               "type": "LabeledArg",
               "label": {
+                "commentStart": 69,
                 "end": 72,
                 "name": "bar",
                 "start": 69,
                 "type": "Identifier"
               },
               "arg": {
+                "abs_path": false,
+                "commentStart": 75,
                 "end": 76,
-                "name": "x",
+                "name": {
+                  "commentStart": 75,
+                  "end": 76,
+                  "name": "x",
+                  "start": 75,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 75,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             }
           ],
           "callee": {
+            "abs_path": false,
+            "commentStart": 6,
             "end": 7,
-            "name": "f",
+            "name": {
+              "commentStart": 6,
+              "end": 7,
+              "name": "f",
+              "start": 6,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 6,
-            "type": "Identifier"
+            "type": "Name"
           },
+          "commentStart": 6,
           "end": 90,
           "nonCodeMeta": {
             "nonCodeNodes": {
               "1": [
                 {
+                  "commentStart": 44,
                   "end": 55,
                   "start": 44,
                   "type": "NonCodeNode",
@@ -87,6 +121,7 @@ expression: actual
       "type": "VariableDeclaration"
     }
   ],
+  "commentStart": 0,
   "end": 90,
   "start": 0
 }

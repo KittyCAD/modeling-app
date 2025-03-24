@@ -1,13 +1,12 @@
-import { getNodeFromPath, LABELED_ARG_FIELD, ARG_INDEX_FIELD } from './queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import {
-  Identifier,
-  assertParse,
-  initPromise,
-  Parameter,
-  topLevelRange,
-} from './wasm'
-import { err } from 'lib/trap'
+import type { Name } from '@rust/kcl-lib/bindings/Name'
+
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { topLevelRange } from '@src/lang/util'
+import type { Parameter } from '@src/lang/wasm'
+import { assertParse, initPromise } from '@src/lang/wasm'
+import { err } from '@src/lib/trap'
 
 beforeAll(async () => {
   await initPromise
@@ -17,7 +16,7 @@ describe('testing getNodePathFromSourceRange', () => {
   it('test it gets the right path for a `lineTo` CallExpression within a SketchExpression', () => {
     const code = `
 const myVar = 5
-const sk3 = startSketchOn('XY')
+const sk3 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [1, 2])
   |> line(endAbsolute = [3, 4], tag = $yo)
@@ -41,7 +40,7 @@ const sk3 = startSketchOn('XY')
   })
   it('gets path right for function definition params', () => {
     const code = `fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
+  const sg = startSketchOn(XY)
     |> startProfileAt(pos, %)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
@@ -74,7 +73,7 @@ const b1 = cube([0,0], 10)`
   })
   it('gets path right for deep within function definition body', () => {
     const code = `fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
+  const sg = startSketchOn(XY)
     |> startProfileAt(pos, %)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
@@ -90,7 +89,7 @@ const b1 = cube([0,0], 10)`
 
     const ast = assertParse(code)
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
-    const _node = getNodeFromPath<Identifier>(ast, nodePath)
+    const _node = getNodeFromPath<Name>(ast, nodePath)
     if (err(_node)) throw _node
     const node = _node.node
     expect(nodePath).toEqual([
@@ -111,7 +110,7 @@ const b1 = cube([0,0], 10)`
       ['elements', 'ArrayExpression'],
       [0, 'index'],
     ])
-    expect(node.type).toBe('Identifier')
-    expect(node.name).toBe('scale')
+    expect(node.type).toBe('Name')
+    expect(node.name.name).toBe('scale')
   })
 })

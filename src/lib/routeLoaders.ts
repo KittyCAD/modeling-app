@@ -1,21 +1,26 @@
-import { LoaderFunction, redirect } from 'react-router-dom'
-import { FileLoaderData, HomeLoaderData, IndexLoaderData } from './types'
-import { getProjectMetaByRouteId, PATHS } from './paths'
-import { isDesktop } from './isDesktop'
-import { BROWSER_PATH } from 'lib/paths'
+import type { LoaderFunction } from 'react-router-dom'
+import { redirect } from 'react-router-dom'
+import { waitFor } from 'xstate'
+
+import { fileSystemManager } from '@src/lang/std/fileSystemManager'
+import { normalizeLineEndings } from '@src/lib/codeEditor'
 import {
   BROWSER_FILE_NAME,
   BROWSER_PROJECT_NAME,
   FILE_EXT,
   PROJECT_ENTRYPOINT,
-} from 'lib/constants'
-import { loadAndValidateSettings } from './settings/settingsUtils'
-import { codeManager } from 'lib/singletons'
-import { fileSystemManager } from 'lang/std/fileSystemManager'
-import { getProjectInfo } from './desktop'
-import { normalizeLineEndings } from 'lib/codeEditor'
-import { settingsActor } from 'machines/appMachine'
-import { waitFor } from 'xstate'
+} from '@src/lib/constants'
+import { getProjectInfo } from '@src/lib/desktop'
+import { isDesktop } from '@src/lib/isDesktop'
+import { BROWSER_PATH, PATHS, getProjectMetaByRouteId } from '@src/lib/paths'
+import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
+import { codeManager } from '@src/lib/singletons'
+import type {
+  FileLoaderData,
+  HomeLoaderData,
+  IndexLoaderData,
+} from '@src/lib/types'
+import { settingsActor } from '@src/machines/appMachine'
 
 export const telemetryLoader: LoaderFunction = async ({
   params,
@@ -98,6 +103,7 @@ export const fileLoader: LoaderFunction = async (
       directory_count: 0,
       metadata: null,
       default_file: projectPath,
+      readWriteAccess: true,
     }
 
     const maybeProjectInfo = isDesktop()
@@ -143,6 +149,7 @@ export const fileLoader: LoaderFunction = async (
     directory_count: 0,
     kcl_file_count: 1,
     metadata: null,
+    readWriteAccess: true,
   }
 
   // Fire off the event to load the project settings

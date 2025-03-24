@@ -1,10 +1,11 @@
-import type { ConfigEnv, UserConfig } from 'vite'
-import { defineConfig } from 'vite'
-import { pluginExposeRenderer } from './vite.base.config'
-import viteTsconfigPaths from 'vite-tsconfig-paths'
-import topLevelAwait from 'vite-plugin-top-level-await'
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
+import type { ConfigEnv, UserConfig } from 'vite'
+import { defineConfig } from 'vite'
+import topLevelAwait from 'vite-plugin-top-level-await'
+import viteTsconfigPaths from 'vite-tsconfig-paths'
+
+import { pluginExposeRenderer } from './vite.base.config'
 
 // https://vitejs.dev/config
 export default defineConfig((env) => {
@@ -19,10 +20,13 @@ export default defineConfig((env) => {
     build: {
       outDir: `.vite/renderer/${name}`,
     },
+    // Needed for electron-forge (in yarn tron:start)
+    optimizeDeps: { esbuildOptions: { target: 'es2022' } },
     plugins: [
       pluginExposeRenderer(name),
       viteTsconfigPaths(),
       lezer(),
+      // Needed for electron-builder (in yarn tronb:vite scripts)
       topLevelAwait({
         // The export name of top-level await promise for each chunk module
         promiseExportName: '__tla',

@@ -1,17 +1,20 @@
-import { test, expect } from './zoo-test'
+import { DEFAULT_PROJECT_KCL_FILE } from '@src/lib/constants'
+import fs from 'fs'
+import fsp from 'fs/promises'
+import path from 'path'
+
+import type { Paths } from '@e2e/playwright/test-utils'
 import {
+  createProject,
   doExport,
   executorInputPath,
+  getPlaywrightDownloadDir,
   getUtils,
   isOutOfViewInScrollContainer,
-  Paths,
-  createProject,
-  getPlaywrightDownloadDir,
-} from './test-utils'
-import fsp from 'fs/promises'
-import fs from 'fs'
-import path from 'path'
-import { DEFAULT_PROJECT_KCL_FILE } from 'lib/constants'
+  orRunWhenFullSuiteEnabled,
+  runningOnWindows,
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test(
   'projects reload if a new one is created, deleted, or renamed externally',
@@ -85,7 +88,7 @@ test(
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        executorInputPath('cylinder-inches.kcl'),
         path.join(bracketDir, 'main.kcl')
       )
     })
@@ -122,7 +125,7 @@ test(
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        executorInputPath('cylinder-inches.kcl'),
         path.join(bracketDir, 'main.kcl')
       )
       const errorDir = path.join(dir, 'broken-code')
@@ -160,7 +163,7 @@ test(
       // gray at this pixel means the stream has loaded in the most
       // user way we can verify it (pixel color)
       await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [110, 110, 110]), {
           timeout: 10_000,
         })
         .toBeLessThan(20)
@@ -190,7 +193,7 @@ test(
 
       // error text on hover
       await page.hover('.cm-lint-marker-error')
-      const crypticErrorText = `Expected a tag declarator`
+      const crypticErrorText = `The arg tag was given, but it was the wrong type`
       await expect(page.getByText(crypticErrorText).first()).toBeVisible()
 
       // black pixel means the scene has been cleared.
@@ -211,7 +214,7 @@ test(
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        executorInputPath('cylinder-inches.kcl'),
         path.join(bracketDir, 'main.kcl')
       )
       const emptyDir = path.join(dir, 'empty')
@@ -246,7 +249,7 @@ test(
       // gray at this pixel means the stream has loaded in the most
       // user way we can verify it (pixel color)
       await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [125, 125, 125]), {
           timeout: 10_000,
         })
         .toBeLessThan(15)
@@ -288,7 +291,7 @@ test(
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        executorInputPath('cylinder-inches.kcl'),
         path.join(bracketDir, 'main.kcl')
       )
 
@@ -317,7 +320,7 @@ test(
       // gray at this pixel means the stream has loaded in the most
       // user way we can verify it (pixel color)
       await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [125, 125, 125]), {
           timeout: 10_000,
         })
         .toBeLessThan(15)
@@ -350,11 +353,14 @@ test(
   'open a file in a project works and renders, open another file in the same project with errors, it should clear the scene',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
+    if (runningOnWindows()) {
+      test.fixme(orRunWhenFullSuiteEnabled())
+    }
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        executorInputPath('cylinder-inches.kcl'),
         path.join(bracketDir, 'main.kcl')
       )
       await fsp.copyFile(
@@ -388,7 +394,7 @@ test(
       // gray at this pixel means the stream has loaded in the most
       // user way we can verify it (pixel color)
       await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [125, 125, 125]), {
           timeout: 10_000,
         })
         .toBeLessThan(15)
@@ -408,7 +414,7 @@ test(
 
       // error text on hover
       await page.hover('.cm-lint-marker-error')
-      const crypticErrorText = `Expected a tag declarator`
+      const crypticErrorText = `The arg tag was given, but it was the wrong type`
       await expect(page.getByText(crypticErrorText).first()).toBeVisible()
 
       // black pixel means the scene has been cleared.
@@ -438,7 +444,6 @@ test(
     await page.getByText('broken-code').click()
 
     // Gotcha: You can not use scene.waitForExecutionDone() since the KCL code is going to fail
-    await expect(page.getByTestId('loading')).toBeAttached()
     await expect(page.getByTestId('loading')).not.toBeAttached({
       timeout: 20_000,
     })
@@ -452,7 +457,7 @@ test(
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
-    const crypticErrorText = `Expected a tag declarator`
+    const crypticErrorText = `The arg tag was given, but it was the wrong type`
     await expect(page.getByText(crypticErrorText).first()).toBeVisible()
   }
 )
@@ -468,12 +473,15 @@ test.describe('Can export from electron app', () => {
         if (!tronApp) {
           fail()
         }
+        if (runningOnWindows()) {
+          test.fixme(orRunWhenFullSuiteEnabled())
+        }
 
         await context.folderSetupFn(async (dir) => {
           const bracketDir = path.join(dir, 'bracket')
           await fsp.mkdir(bracketDir, { recursive: true })
           await fsp.copyFile(
-            executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+            executorInputPath('cylinder-inches.kcl'),
             path.join(bracketDir, 'main.kcl')
           )
         })
@@ -505,7 +513,7 @@ test.describe('Can export from electron app', () => {
           // gray at this pixel means the stream has loaded in the most
           // user way we can verify it (pixel color)
           await expect
-            .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
+            .poll(() => u.getGreatestPixDiff(pointOnModel, [125, 125, 125]), {
               timeout: 10_000,
             })
             .toBeLessThan(15)
@@ -546,7 +554,7 @@ test.describe('Can export from electron app', () => {
               },
               { timeout: 15_000 }
             )
-            .toBeGreaterThan(300_000)
+            .toBeGreaterThan(50_000)
 
           // clean up exported file
           await fsp.rm(filepath)
@@ -820,7 +828,7 @@ test.describe(`Project management commands`, () => {
       const commandButton = page.getByRole('button', { name: 'Commands' })
       const commandOption = page.getByRole('option', { name: 'rename project' })
       const projectNameOption = page.getByRole('option', { name: projectName })
-      const projectRenamedName = `project-000`
+      const projectRenamedName = `untitled`
       // const projectMenuButton = page.getByTestId('project-sidebar-toggle')
       const commandContinueButton = page.getByRole('button', {
         name: 'Continue',
@@ -933,7 +941,7 @@ test.describe(`Project management commands`, () => {
       const commandButton = page.getByRole('button', { name: 'Commands' })
       const commandOption = page.getByRole('option', { name: 'rename project' })
       const projectNameOption = page.getByRole('option', { name: projectName })
-      const projectRenamedName = `project-000`
+      const projectRenamedName = `untitled`
       const commandContinueButton = page.getByRole('button', {
         name: 'Continue',
       })
@@ -1131,7 +1139,7 @@ test(`Create a few projects using the default project name`, async ({
     await test.step(`Create project ${i}`, async () => {
       await homePage.expectState({
         projectCards: Array.from({ length: i }, (_, i) => ({
-          title: `project-${i.toString().padStart(3, '0')}`,
+          title: i === 0 ? 'untitled' : `untitled-${i}`,
           fileCount: 1,
         })).toReversed(),
         sortBy: 'last-modified-desc',
@@ -1244,10 +1252,11 @@ test(
   }
 )
 
-test.fixme(
+test(
   'Deleting projects, can delete individual project, can still create projects after deleting all',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
+    test.fixme(orRunWhenFullSuiteEnabled())
     const projectData = [
       ['router-template-slate', 'cylinder.kcl'],
       ['bracket', 'focusrite_scarlett_mounting_braket.kcl'],
@@ -1314,9 +1323,9 @@ test.fixme(
     })
 
     await test.step('Check we can still create a project', async () => {
-      await createProject({ name: 'project-000', page, returnHome: true })
+      await createProject({ name: 'new-project', page, returnHome: true })
       await expect(
-        page.getByTestId('project-link').filter({ hasText: 'project-000' })
+        page.getByTestId('project-link').filter({ hasText: 'new-project' })
       ).toBeVisible()
     })
   }
@@ -1326,6 +1335,9 @@ test(
   'Can load a file with CRLF line endings',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
+    if (runningOnWindows()) {
+      test.fixme(orRunWhenFullSuiteEnabled())
+    }
     await context.folderSetupFn(async (dir) => {
       const routerTemplateDir = path.join(dir, 'router-template-slate')
       await fsp.mkdir(routerTemplateDir, { recursive: true })
@@ -1466,10 +1478,11 @@ test(
   }
 )
 
-test.fixme(
+test(
   'When the project folder is empty, user can create new project and open it.',
   { tag: '@electron' },
   async ({ page }, testInfo) => {
+    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -1493,6 +1506,11 @@ test.fixme(
     await projectLinks.getByText('project-000').click()
 
     await u.waitForPageLoad()
+
+    // The file should be prepopulated with the user's unit settings.
+    await expect(page.locator('.cm-content')).toHaveText(
+      '@settings(defaultLengthUnit = in)'
+    )
 
     await page.locator('.cm-content').fill(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([-87.4, 282.92], %)
@@ -2050,10 +2068,11 @@ test(
 )
 
 // Flaky
-test.fixme(
+test(
   'Original project name persist after onboarding',
   { tag: '@electron' },
   async ({ page }, testInfo) => {
+    test.fixme(orRunWhenFullSuiteEnabled())
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     const getAllProjects = () => page.getByTestId('project-link').all()

@@ -6,7 +6,10 @@ use kittycad_modeling_cmds::shared::Angle;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{kcl_value::RuntimeType, ExecState, KclValue, Point2d, PrimitiveType, Sketch, TagIdentifier},
+    execution::{
+        types::{PrimitiveType, RuntimeType},
+        ExecState, KclValue, Point2d, Sketch, TagIdentifier,
+    },
     std::{utils::between, Args},
 };
 

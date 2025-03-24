@@ -1,69 +1,74 @@
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
 import {
-  CreatedSketchExprResult,
-  CreateStdLibSketchCallExpr,
-  InputArg,
-  InputArgs,
-  SimplifiedArgDetails,
-  TransformInfo,
-} from './stdTypes'
-import { ToolTip, toolTips } from 'lang/langHelpers'
-import { Selections } from 'lib/selections'
-import { cleanErrs, err } from 'lib/trap'
-import {
-  CallExpression,
-  CallExpressionKw,
-  Program,
-  Expr,
-  BinaryPart,
-  VariableDeclarator,
-  PathToNode,
-  sketchFromKclValue,
-  Literal,
-  SourceRange,
-  LiteralValue,
-  LabeledArg,
-  VariableMap,
-} from '../wasm'
-import { getNodeFromPath, getNodeFromPathCurry } from '../queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+  ARG_END,
+  ARG_END_ABSOLUTE,
+  ARG_LENGTH,
+  ARG_TAG,
+  DETERMINING_ARGS,
+} from '@src/lang/constants'
 import {
   createArrayExpression,
   createBinaryExpression,
   createBinaryExpressionWithUnary,
   createCallExpression,
   createCallExpressionStdLibKw,
-  createIdentifier,
   createLabeledArg,
   createLiteral,
+  createLocalName,
+  createName,
   createObjectExpression,
   createPipeSubstitution,
   createUnaryExpression,
   giveSketchFnCallTag,
-} from '../modifyAst'
+} from '@src/lang/create'
+import type { ToolTip } from '@src/lang/langHelpers'
+import { toolTips } from '@src/lang/langHelpers'
+import { getNodeFromPath, getNodeFromPathCurry } from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   createFirstArg,
-  getConstraintInfo,
-  getFirstArg,
-  getArgForEnd,
-  replaceSketchLine,
-  ARG_TAG,
-  ARG_END,
-  ARG_END_ABSOLUTE,
-  getConstraintInfoKw,
-  isAbsoluteLine,
-  getCircle,
-  ARG_LENGTH,
-  tooltipToFnName,
   fnNameToTooltip,
-  DETERMINING_ARGS,
-} from './sketch'
+  getArgForEnd,
+  getCircle,
+  getConstraintInfo,
+  getConstraintInfoKw,
+  getFirstArg,
+  isAbsoluteLine,
+  replaceSketchLine,
+  tooltipToFnName,
+} from '@src/lang/std/sketch'
 import {
   getSketchSegmentFromPathToNode,
   getSketchSegmentFromSourceRange,
-} from './sketchConstraints'
-import { getAngle, roundOff, normaliseAngle, isArray } from '../../lib/utils'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { findKwArg, findKwArgAny } from 'lang/util'
+} from '@src/lang/std/sketchConstraints'
+import type {
+  CreateStdLibSketchCallExpr,
+  CreatedSketchExprResult,
+  InputArg,
+  InputArgs,
+  SimplifiedArgDetails,
+  TransformInfo,
+} from '@src/lang/std/stdTypes'
+import { findKwArg, findKwArgAny } from '@src/lang/util'
+import type {
+  BinaryPart,
+  CallExpression,
+  CallExpressionKw,
+  Expr,
+  LabeledArg,
+  Literal,
+  LiteralValue,
+  PathToNode,
+  Program,
+  SourceRange,
+  VariableDeclarator,
+  VariableMap,
+} from '@src/lang/wasm'
+import { sketchFromKclValue } from '@src/lang/wasm'
+import type { Selections } from '@src/lib/selections'
+import { cleanErrs, err } from '@src/lib/trap'
+import { getAngle, isArray, normaliseAngle, roundOff } from '@src/lib/utils'
 
 export type LineInputsType =
   | 'xAbsolute'
@@ -321,8 +326,8 @@ const xyLineSetLength =
     const lineVal = forceValueUsedInTransform
       ? forceValueUsedInTransform
       : referenceSeg
-      ? segRef
-      : args[0].expr
+        ? segRef
+        : args[0].expr
     const literalArg = asNum(args[0].expr.value)
     if (err(literalArg)) return literalArg
     return createCallWrapper(xOrY, lineVal, tag, literalArg)
@@ -350,18 +355,18 @@ const basicAngledLineCreateNode =
       varValToUse === 'ang'
         ? inputs[0].expr
         : referenceSeg === 'ang'
-        ? getClosesAngleDirection(
-            argValue,
-            refAng,
-            createSegAngle(referenceSegName)
-          )
-        : args[0].expr
+          ? getClosesAngleDirection(
+              argValue,
+              refAng,
+              createSegAngle(referenceSegName)
+            )
+          : args[0].expr
     const nonForcedLen =
       varValToUse === 'len'
         ? inputs[1].expr
         : referenceSeg === 'len'
-        ? createSegLen(referenceSegName)
-        : args[1].expr
+          ? createSegLen(referenceSegName)
+          : args[1].expr
     const shouldForceAng = valToForce === 'ang' && forceValueUsedInTransform
     const shouldForceLen = valToForce === 'len' && forceValueUsedInTransform
     const literalArg = asNum(
@@ -612,13 +617,13 @@ const setAngledIntersectLineForLines: CreateStdLibSketchCallExpr = ({
     270: 'THREE_QUARTER_TURN',
   }
   const angleVal = [0, 90, 180, 270].includes(angle)
-    ? createIdentifier(varNamMap[angle])
+    ? createName(['turns'], varNamMap[angle])
     : createLiteral(angle)
   return intersectCallWrapper({
     fnName: 'angledLineThatIntersects',
     angleVal,
     offsetVal: forceValueUsedInTransform || createLiteral(valueUsedInTransform),
-    intersectTag: createIdentifier(referenceSegName),
+    intersectTag: createLocalName(referenceSegName),
     tag,
     valueUsedInTransform,
   })
@@ -638,7 +643,7 @@ const setAngledIntersectForAngledLines: CreateStdLibSketchCallExpr = ({
     fnName: 'angledLineThatIntersects',
     angleVal: inputs[0].expr,
     offsetVal: forceValueUsedInTransform || createLiteral(valueUsedInTransform),
-    intersectTag: createIdentifier(referenceSegName),
+    intersectTag: createLocalName(referenceSegName),
     tag,
     valueUsedInTransform,
   })
@@ -665,7 +670,7 @@ const setAngleBetweenCreateNode =
       firstHalfValue = createBinaryExpression([
         firstHalfValue,
         '+',
-        createIdentifier('HALF_TURN'),
+        createName(['turns'], 'HALF_TURN'),
       ])
       valueUsedInTransform = normaliseAngle(valueUsedInTransform - 180)
     }
@@ -677,13 +682,13 @@ const setAngleBetweenCreateNode =
       tranformToType === 'none'
         ? 'angledLine'
         : tranformToType === 'xAbs'
-        ? 'angledLineToX'
-        : 'angledLineToY',
+          ? 'angledLineToX'
+          : 'angledLineToY',
       tranformToType === 'none'
         ? [binExp, args[1].expr]
         : tranformToType === 'xAbs'
-        ? [binExp, inputs[0].expr]
-        : [binExp, inputs[1].expr],
+          ? [binExp, inputs[0].expr]
+          : [binExp, inputs[1].expr],
       tag,
       valueUsedInTransform
     )
@@ -844,7 +849,7 @@ const transformMap: TransformMap = {
           const angleToMatchLengthXCall = createCallExpression(
             'angleToMatchLengthX',
             [
-              createIdentifier(referenceSegName),
+              createLocalName(referenceSegName),
               inputs[0].expr,
               createPipeSubstitution(),
             ]
@@ -875,7 +880,7 @@ const transformMap: TransformMap = {
           const angleToMatchLengthYCall = createCallExpression(
             'angleToMatchLengthY',
             [
-              createIdentifier(referenceSegName),
+              createLocalName(referenceSegName),
               inputs[1].expr,
               createPipeSubstitution(),
             ]
@@ -1141,7 +1146,7 @@ const transformMap: TransformMap = {
           const angleToMatchLengthXCall = createCallExpression(
             'angleToMatchLengthX',
             [
-              createIdentifier(referenceSegName),
+              createLocalName(referenceSegName),
               inputs[1].expr,
               createPipeSubstitution(),
             ]
@@ -1191,7 +1196,7 @@ const transformMap: TransformMap = {
           const angleToMatchLengthXCall = createCallExpression(
             'angleToMatchLengthY',
             [
-              createIdentifier(referenceSegName),
+              createLocalName(referenceSegName),
               inputs[1].expr,
               createPipeSubstitution(),
             ]
@@ -1312,7 +1317,7 @@ export function getRemoveConstraintsTransform(
   sketchFnExp: CallExpression | CallExpressionKw,
   constraintType: ConstraintType
 ): TransformInfo | false {
-  let name = sketchFnExp.callee.name as ToolTip
+  let name = sketchFnExp.callee.name.name as ToolTip
   if (!toolTips.includes(name)) {
     return false
   }
@@ -1352,10 +1357,10 @@ export function getRemoveConstraintsTransform(
 
   if (
     (sketchFnExp.type === 'CallExpressionKw' &&
-      sketchFnExp.callee.name === 'circleThreePoint') ||
+      sketchFnExp.callee.name.name === 'circleThreePoint') ||
     (sketchFnExp.type === 'CallExpression' &&
-      (sketchFnExp.callee.name === 'arcTo' ||
-        sketchFnExp.callee.name === 'arc'))
+      (sketchFnExp.callee.name.name === 'arcTo' ||
+        sketchFnExp.callee.name.name === 'arc'))
   ) {
     return false
   }
@@ -1428,7 +1433,7 @@ export function removeSingleConstraint({
   }
 
   const transform: TransformInfo = {
-    tooltip: callExp.node.callee.name as any,
+    tooltip: callExp.node.callee.name.name as any,
     createNode: ({ tag, inputs, rawArgs }) => {
       // inputs is the current values for each of the inputs
       // rawValues is the raw 'literal' values equivalent to the inputs
@@ -1455,13 +1460,13 @@ export function removeSingleConstraint({
         })
         if (callExp.node.type === 'CallExpression') {
           return createStdlibCallExpression(
-            callExp.node.callee.name as any,
+            callExp.node.callee.name.name as any,
             createArrayExpression(values),
             tag
           )
         } else {
           // It's a kw call.
-          const isAbsolute = callExp.node.callee.name == 'lineTo'
+          const isAbsolute = callExp.node.callee.name.name == 'lineTo'
           if (isAbsolute) {
             const args = [
               createLabeledArg(ARG_END_ABSOLUTE, createArrayExpression(values)),
@@ -1472,7 +1477,7 @@ export function removeSingleConstraint({
               createLabeledArg(ARG_END, createArrayExpression(values)),
             ]
             return createStdlibCallExpressionKw(
-              callExp.node.callee.name as ToolTip,
+              callExp.node.callee.name.name as ToolTip,
               args,
               tag
             )
@@ -1568,13 +1573,13 @@ export function removeSingleConstraint({
           createObjParam[key] = createArrayExpression(value)
         })
         if (
-          callExp.node.callee.name === 'circleThreePoint' &&
+          callExp.node.callee.name.name === 'circleThreePoint' &&
           callExp.node.type === 'CallExpressionKw'
         ) {
           // it's kwarg
           const inputPlane = callExp.node.unlabeled as Expr
           return createStdlibCallExpressionKw(
-            callExp.node.callee.name as any,
+            callExp.node.callee.name.name as any,
             kwArgInput,
             tag,
             undefined,
@@ -1586,14 +1591,14 @@ export function removeSingleConstraint({
           ...objInput,
         })
         return createStdlibCallExpression(
-          callExp.node.callee.name as any,
+          callExp.node.callee.name.name as any,
           objExp,
           tag
         )
       }
 
       return createCallWrapper(
-        callExp.node.callee.name as any,
+        callExp.node.callee.name.name as any,
         rawArgs[0].expr,
         tag
       )
@@ -1612,7 +1617,7 @@ function getTransformMapPath(
       constraintType: ConstraintType
     }
   | false {
-  const name = sketchFnExp.callee.name as ToolTip
+  const name = sketchFnExp.callee.name.name as ToolTip
   if (!toolTips.includes(name)) {
     return false
   }
@@ -1669,7 +1674,7 @@ function getTransformMapPathKw(
       constraintType: ConstraintType
     }
   | false {
-  const name = sketchFnExp.callee.name as ToolTip
+  const name = sketchFnExp.callee.name.name as ToolTip
   if (name === 'circleThreePoint') {
     const info = transformMap?.circleThreePoint?.free?.[constraintType]
     if (info)
@@ -2001,8 +2006,8 @@ export function transformAstSketchLines({
     const _referencedSegmentName =
       referenceSegName ||
       (_referencedSegmentNameVal &&
-        _referencedSegmentNameVal.type === 'Identifier' &&
-        String(_referencedSegmentNameVal.name)) ||
+        _referencedSegmentNameVal.type === 'Name' &&
+        String(_referencedSegmentNameVal.name.name)) ||
       ''
     const inputs: InputArgs = []
 
@@ -2091,7 +2096,7 @@ export function transformAstSketchLines({
       variables: memVars,
       pathToNode: _pathToNode,
       referencedSegment,
-      fnName: transformTo || (call.node.callee.name as ToolTip),
+      fnName: transformTo || (call.node.callee.name.name as ToolTip),
       segmentInput:
         seg.type === 'Circle'
           ? {
@@ -2103,17 +2108,17 @@ export function transformAstSketchLines({
               ccw: true, // Default to counter-clockwise for circles
             }
           : seg.type === 'CircleThreePoint' || seg.type === 'ArcThreePoint'
-          ? {
-              type: 'circle-three-point-segment',
-              p1: seg.p1,
-              p2: seg.p2,
-              p3: seg.p3,
-            }
-          : {
-              type: 'straight-segment',
-              to,
-              from,
-            },
+            ? {
+                type: 'circle-three-point-segment',
+                p1: seg.p1,
+                p2: seg.p2,
+                p3: seg.p3,
+              }
+            : {
+                type: 'straight-segment',
+                to,
+                from,
+              },
 
       replaceExistingCallback: (rawArgs) =>
         callBack({
@@ -2160,11 +2165,11 @@ export function transformAstSketchLines({
 }
 
 function createSegLen(referenceSegName: string): BinaryPart {
-  return createCallExpression('segLen', [createIdentifier(referenceSegName)])
+  return createCallExpression('segLen', [createLocalName(referenceSegName)])
 }
 
 function createSegAngle(referenceSegName: string): BinaryPart {
-  return createCallExpression('segAng', [createIdentifier(referenceSegName)])
+  return createCallExpression('segAng', [createLocalName(referenceSegName)])
 }
 
 function createSegEnd(
@@ -2172,7 +2177,7 @@ function createSegEnd(
   isX: boolean
 ): Node<CallExpression> {
   return createCallExpression(isX ? 'segEndX' : 'segEndY', [
-    createIdentifier(referenceSegName),
+    createLocalName(referenceSegName),
   ])
 }
 
@@ -2197,7 +2202,7 @@ export function getConstraintLevelFromSourceRange(
     if (err(nodeMeta)) return nodeMeta
 
     const { node: sketchFnExp } = nodeMeta
-    const name = sketchFnExp?.callee?.name as ToolTip
+    const name = sketchFnExp?.callee?.name.name as ToolTip
     const range: [number, number] = [sketchFnExp.start, sketchFnExp.end]
     const firstArg = (() => {
       switch (nodeMeta.node.type) {
@@ -2282,7 +2287,7 @@ export function isNotLiteralArrayOrStatic(
 export function isExprBinaryPart(expr: Expr): expr is BinaryPart {
   if (
     expr.type === 'Literal' ||
-    expr.type === 'Identifier' ||
+    expr.type === 'Name' ||
     expr.type === 'BinaryExpression' ||
     expr.type === 'CallExpression' ||
     expr.type === 'UnaryExpression' ||

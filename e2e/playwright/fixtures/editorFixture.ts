@@ -1,11 +1,12 @@
-import type { Page, Locator } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
+
 import {
-  closePane,
   checkIfPaneIsOpen,
+  closePane,
   openPane,
   sansWhitespace,
-} from '../test-utils'
+} from '@e2e/playwright/test-utils'
 
 interface EditorState {
   activeLines: Array<string>
@@ -81,6 +82,13 @@ export class EditorFixture {
   expectEditor = {
     toContain: this._expectEditorToContain(),
     not: { toContain: this._expectEditorToContain(true) },
+    toBe: async (code: string) => {
+      const currentCode = await this.getCurrentCode()
+      return expect(currentCode).toBe(code)
+    },
+  }
+  getCurrentCode = async () => {
+    return await this.codeContent.innerText()
   }
   snapshot = async (options?: { timeout?: number; name?: string }) => {
     const wasPaneOpen = await this.checkIfPaneIsOpen()
@@ -152,9 +160,15 @@ export class EditorFixture {
   }
   replaceCode = async (findCode: string, replaceCode: string) => {
     const lines = await this.page.locator('.cm-line').all()
+
     let code = (await Promise.all(lines.map((c) => c.textContent()))).join('\n')
-    if (!lines) return
-    code = code.replace(findCode, replaceCode)
+    if (!findCode) {
+      // nuke everything
+      code = replaceCode
+    } else {
+      if (!lines) return
+      code = code.replace(findCode, replaceCode)
+    }
     await this.codeContent.fill(code)
   }
   checkIfPaneIsOpen() {
@@ -199,7 +213,7 @@ export class EditorFixture {
 
     // Use Playwright's built-in text selection on the code content
     // it seems to only select whole divs, which works out to align with syntax highlighting
-    // for code mirror, so you can probably select "sketch002 = startSketchOn('XZ')"
+    // for code mirror, so you can probably select "sketch002 = startSketchOn(XZ)"
     // but less so for exactly "sketch002 = startS"
     await this.codeContent.getByText(text).first().selectText()
 

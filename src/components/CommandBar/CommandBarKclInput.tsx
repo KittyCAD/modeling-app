@@ -1,30 +1,45 @@
+import type { Completion } from '@codemirror/autocomplete'
 import {
   closeBrackets,
   closeBracketsKeymap,
-  Completion,
   completionKeymap,
   completionStatus,
 } from '@codemirror/autocomplete'
-import { EditorView, keymap, ViewUpdate } from '@codemirror/view'
-import { CustomIcon } from 'components/CustomIcon'
-import { CommandArgument, KclCommandValue } from 'lib/commandTypes'
-import { getSystemTheme } from 'lib/theme'
-import { useCalculateKclExpression } from 'lib/useCalculateKclExpression'
-import { roundOff } from 'lib/utils'
-import { varMentions } from 'lib/varCompletionExtension'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
-import styles from './CommandBarKclInput.module.css'
-import { createIdentifier, createVariableDeclaration } from 'lang/modifyAst'
-import { useCodeMirror } from 'components/ModelingSidebar/ModelingPanes/CodeEditor'
+import type { ViewUpdate } from '@codemirror/view'
+import { EditorView, keymap } from '@codemirror/view'
 import { useSelector } from '@xstate/react'
-import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
-import { useSettings } from 'machines/appMachine'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useHotkeys } from 'react-hotkeys-hook'
+import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 
-const machineContextSelector = (snapshot?: {
-  context: Record<string, unknown>
-}) => snapshot?.context
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import { CustomIcon } from '@src/components/CustomIcon'
+import { useCodeMirror } from '@src/components/ModelingSidebar/ModelingPanes/CodeEditor'
+import { Spinner } from '@src/components/Spinner'
+import { createLocalName, createVariableDeclaration } from '@src/lang/create'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import type { SourceRange, VariableDeclarator } from '@src/lang/wasm'
+import { isPathToNode } from '@src/lang/wasm'
+import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
+import { kclManager } from '@src/lib/singletons'
+import { getSystemTheme } from '@src/lib/theme'
+import { err } from '@src/lib/trap'
+import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
+import { roundOff } from '@src/lib/utils'
+import { varMentions } from '@src/lib/varCompletionExtension'
+import { useSettings } from '@src/machines/appMachine'
+import {
+  commandBarActor,
+  useCommandBarState,
+} from '@src/machines/commandBarMachine'
+
+import styles from './CommandBarKclInput.module.css'
+
+// TODO: remove the need for this selector once we decouple all actors from React
+const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
+  snapshot?.context
 
 function CommandBarKclInput({
   arg,
@@ -47,6 +62,16 @@ function CommandBarKclInput({
     arg.machineActor,
     machineContextSelector
   )
+  const sourceRangeForPrevVariables = useMemo<SourceRange | undefined>(() => {
+    const nodeToEdit = commandBarState.context.argumentsToSubmit.nodeToEdit
+    const pathToNode = isPathToNode(nodeToEdit) ? nodeToEdit : undefined
+    const node = pathToNode
+      ? getNodeFromPath<Node<VariableDeclarator>>(kclManager.ast, pathToNode)
+      : undefined
+    return !err(node) && node && node.node.type === 'VariableDeclarator'
+      ? [node.node.start, node.node.end, node.node.moduleId]
+      : undefined
+  }, [kclManager.ast, commandBarState.context.argumentsToSubmit.nodeToEdit])
   const defaultValue = useMemo(
     () =>
       arg.defaultValue
@@ -64,7 +89,8 @@ function CommandBarKclInput({
         : arg.variableName
     }
     // or derive it from the previously set value or the argument name
-    return previouslySetValue && 'variableName' in previouslySetValue
+    return typeof previouslySetValue === 'object' &&
+      'variableName' in previouslySetValue
       ? previouslySetValue.variableName
       : arg.name
   }, [
@@ -80,7 +106,8 @@ function CommandBarKclInput({
   )
   const [value, setValue] = useState(initialValue)
   const [createNewVariable, setCreateNewVariable] = useState(
-    (previouslySetValue && 'variableName' in previouslySetValue) ||
+    (typeof previouslySetValue === 'object' &&
+      'variableName' in previouslySetValue) ||
       arg.createVariable === 'byDefault' ||
       arg.createVariable === 'force' ||
       false
@@ -90,21 +117,23 @@ function CommandBarKclInput({
   const editorRef = useRef<HTMLDivElement>(null)
 
   const {
-    prevVariables,
     calcResult,
     newVariableInsertIndex,
     valueNode,
     newVariableName,
     setNewVariableName,
     isNewVariableNameUnique,
+    prevVariables,
+    isExecuting,
   } = useCalculateKclExpression({
     value,
     initialVariableName,
+    sourceRange: sourceRangeForPrevVariables,
   })
 
   const varMentionData: Completion[] = prevVariables.map((v) => ({
     label: v.key,
-    detail: String(roundOff(v.value as number)),
+    detail: String(roundOff(Number(v.value))),
   }))
   const varMentionsExtension = varMentions(varMentionData)
 
@@ -115,7 +144,8 @@ function CommandBarKclInput({
     selection: {
       anchor: 0,
       head:
-        previouslySetValue && 'valueText' in previouslySetValue
+        typeof previouslySetValue === 'object' &&
+        'valueText' in previouslySetValue
           ? previouslySetValue.valueText.length
           : defaultValue.length,
     },
@@ -180,9 +210,11 @@ function CommandBarKclInput({
 
   useEffect(() => {
     setCanSubmit(
-      calcResult !== 'NAN' && (!createNewVariable || isNewVariableNameUnique)
+      calcResult !== 'NAN' &&
+        (!createNewVariable || isNewVariableNameUnique) &&
+        !isExecuting
     )
-  }, [calcResult, createNewVariable, isNewVariableNameUnique])
+  }, [calcResult, createNewVariable, isNewVariableNameUnique, isExecuting])
 
   function handleSubmit(e?: React.FormEvent<HTMLFormElement>) {
     e?.preventDefault()
@@ -204,7 +236,7 @@ function CommandBarKclInput({
             valueCalculated: calcResult,
             variableName: newVariableName,
             insertIndex: newVariableInsertIndex,
-            variableIdentifierAst: createIdentifier(newVariableName),
+            variableIdentifierAst: createLocalName(newVariableName),
             variableDeclarationAst: createVariableDeclaration(
               newVariableName,
               valueNode
@@ -219,13 +251,18 @@ function CommandBarKclInput({
   }
 
   return (
-    <form id="arg-form" onSubmit={handleSubmit} data-can-submit={canSubmit}>
+    <form
+      id="arg-form"
+      className="mb-2"
+      onSubmit={handleSubmit}
+      data-can-submit={canSubmit}
+    >
       <label className="flex gap-4 items-center mx-4 my-4 border-solid border-b border-chalkboard-50">
         <span
           data-testid="cmd-bar-arg-name"
           className="capitalize text-chalkboard-80 dark:text-chalkboard-20"
         >
-          {arg.name}
+          {arg.displayName || arg.name}
         </span>
         <div
           data-testid="cmd-bar-arg-value"
@@ -243,13 +280,17 @@ function CommandBarKclInput({
               : 'text-succeed-80 dark:text-succeed-40'
           }
         >
-          {calcResult === 'NAN'
-            ? "Can't calculate"
-            : roundOff(Number(calcResult), 4)}
+          {isExecuting === true || !calcResult ? (
+            <Spinner className="text-inherit w-4 h-4" />
+          ) : calcResult === 'NAN' ? (
+            "Can't calculate"
+          ) : (
+            roundOff(Number(calcResult), 4)
+          )}
         </span>
       </label>
       {createNewVariable ? (
-        <div className="flex mb-2 items-baseline gap-4 mx-4 border-solid border-0 border-b border-chalkboard-50">
+        <div className="flex items-baseline gap-4 mx-4 border-solid border-0 border-b border-chalkboard-50">
           <label
             htmlFor="variable-name"
             className="text-base text-chalkboard-80 dark:text-chalkboard-20"

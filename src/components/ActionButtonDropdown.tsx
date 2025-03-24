@@ -1,7 +1,8 @@
 import { Popover } from '@headlessui/react'
-import { ActionButtonProps } from './ActionButton'
-import { CustomIcon } from './CustomIcon'
-import Tooltip from './Tooltip'
+
+import type { ActionButtonProps } from '@src/components/ActionButton'
+import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
 
 type ActionButtonSplitProps = ActionButtonProps & { Element: 'button' } & {
   name?: string
@@ -48,7 +49,6 @@ export function ActionButtonDropdown({
               {props.name ? props.name + ': ' : ''}open menu
             </span>
             <Tooltip
-              delay={0}
               position="bottom"
               hoverOnly
               wrapperClassName="ui-open:!hidden"

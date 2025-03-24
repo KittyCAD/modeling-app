@@ -19,30 +19,18 @@ description: Operations executed gridfinity-bins.kcl
             }
           }
         },
-        "sourceRange": [
-          1338,
-          1359,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "offsetPlane",
-    "sourceRange": [
-      1311,
-      1360,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "YZ"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
-      "sourceRange": [
-        1323,
-        1327,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -55,11 +43,7 @@ description: Operations executed gridfinity-bins.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1306,
-      1361,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -68,19 +52,11 @@ description: Operations executed gridfinity-bins.kcl
           "type": "Plane",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          913,
-          918,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      899,
-      919,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -97,19 +73,11 @@ description: Operations executed gridfinity-bins.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          1372,
-          1401,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1298,
-      1405,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -118,11 +86,7 @@ description: Operations executed gridfinity-bins.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1306,
-        1361,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -141,11 +105,7 @@ description: Operations executed gridfinity-bins.kcl
             }
           }
         },
-        "sourceRange": [
-          1528,
-          1531,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
@@ -192,11 +152,7 @@ description: Operations executed gridfinity-bins.kcl
             }
           ]
         },
-        "sourceRange": [
-          1542,
-          1551,
-          0
-        ]
+        "sourceRange": []
       },
       "center": {
         "value": {
@@ -231,11 +187,7 @@ description: Operations executed gridfinity-bins.kcl
             }
           ]
         },
-        "sourceRange": [
-          1564,
-          1643,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -251,30 +203,18 @@ description: Operations executed gridfinity-bins.kcl
             }
           }
         },
-        "sourceRange": [
-          1659,
-          1660,
-          0
-        ]
+        "sourceRange": []
       },
       "rotateDuplicates": {
         "value": {
           "type": "Bool",
           "value": true
         },
-        "sourceRange": [
-          1683,
-          1687,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternCircular3d",
-    "sourceRange": [
-      1480,
-      1689,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -283,11 +223,7 @@ description: Operations executed gridfinity-bins.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1501,
-        1511,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -306,30 +242,18 @@ description: Operations executed gridfinity-bins.kcl
             }
           }
         },
-        "sourceRange": [
-          1942,
-          1963,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "offsetPlane",
-    "sourceRange": [
-      1915,
-      1964,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "YZ"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
-      "sourceRange": [
-        1927,
-        1931,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -342,11 +266,7 @@ description: Operations executed gridfinity-bins.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1910,
-      1965,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -355,19 +275,11 @@ description: Operations executed gridfinity-bins.kcl
           "type": "Plane",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          913,
-          918,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      899,
-      919,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -375,6 +287,22 @@ description: Operations executed gridfinity-bins.kcl
     "type": "UserDefinedFunctionReturn"
   },
   {
+    "type": "KclStdLibCall",
+    "name": "revolve",
+    "unlabeledArg": {
+      "value": {
+        "type": "Array",
+        "value": [
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "angle": {
         "value": {
@@ -390,112 +318,80 @@ description: Operations executed gridfinity-bins.kcl
             }
           }
         },
-        "sourceRange": [
-          1975,
-          1978,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
           "type": "Object",
           "value": {
-            "custom": {
-              "type": "Object",
-              "value": {
-                "axis": {
-                  "type": "Array",
-                  "value": [
-                    {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
+            "direction": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
                     },
-                    {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
+                    "angle": {
+                      "type": "Degrees"
                     }
-                  ]
+                  }
                 },
-                "origin": {
-                  "type": "Array",
-                  "value": [
-                    {
-                      "type": "Number",
-                      "value": 4.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
+                {
+                  "type": "Number",
+                  "value": 1.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
                     },
-                    {
-                      "type": "Number",
-                      "value": 4.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
+                    "angle": {
+                      "type": "Degrees"
                     }
-                  ]
+                  }
                 }
-              }
+              ]
+            },
+            "origin": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 4.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 4.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                }
+              ]
             }
           }
         },
-        "sourceRange": [
-          1987,
-          1994,
-          0
-        ]
+        "sourceRange": []
       }
     },
-    "name": "revolve",
-    "sourceRange": [
-      1902,
-      1995,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": [
-        1910,
-        1965,
-        0
-      ]
-    }
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -513,11 +409,7 @@ description: Operations executed gridfinity-bins.kcl
             }
           }
         },
-        "sourceRange": [
-          2090,
-          2093,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
@@ -564,11 +456,7 @@ description: Operations executed gridfinity-bins.kcl
             }
           ]
         },
-        "sourceRange": [
-          2104,
-          2113,
-          0
-        ]
+        "sourceRange": []
       },
       "center": {
         "value": {
@@ -603,11 +491,7 @@ description: Operations executed gridfinity-bins.kcl
             }
           ]
         },
-        "sourceRange": [
-          2126,
-          2205,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -623,30 +507,18 @@ description: Operations executed gridfinity-bins.kcl
             }
           }
         },
-        "sourceRange": [
-          2221,
-          2222,
-          0
-        ]
+        "sourceRange": []
       },
       "rotateDuplicates": {
         "value": {
           "type": "Bool",
           "value": true
         },
-        "sourceRange": [
-          2245,
-          2249,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternCircular3d",
-    "sourceRange": [
-      2040,
-      2251,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -655,33 +527,21 @@ description: Operations executed gridfinity-bins.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        2061,
-        2073,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          2283,
-          2287,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      2269,
-      2288,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -701,19 +561,11 @@ description: Operations executed gridfinity-bins.kcl
             }
           }
         },
-        "sourceRange": [
-          2631,
-          2637,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2614,
-      2638,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -722,11 +574,7 @@ description: Operations executed gridfinity-bins.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        2614,
-        2638,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -745,11 +593,7 @@ description: Operations executed gridfinity-bins.kcl
             }
           }
         },
-        "sourceRange": [
-          2668,
-          2677,
-          0
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -773,19 +617,11 @@ description: Operations executed gridfinity-bins.kcl
             }
           ]
         },
-        "sourceRange": [
-          2693,
-          2866,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      2644,
-      2873,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -794,11 +630,7 @@ description: Operations executed gridfinity-bins.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        2644,
-        2873,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -810,30 +642,18 @@ description: Operations executed gridfinity-bins.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2904,
-          2917,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "start"
         },
-        "sourceRange": [
-          2919,
-          2926,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      2890,
-      2927,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -853,19 +673,11 @@ description: Operations executed gridfinity-bins.kcl
             }
           }
         },
-        "sourceRange": [
-          3336,
-          3345,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      3319,
-      3346,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -897,11 +709,7 @@ description: Operations executed gridfinity-bins.kcl
           }
         ]
       },
-      "sourceRange": [
-        3319,
-        3346,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -951,11 +759,7 @@ description: Operations executed gridfinity-bins.kcl
             }
           ]
         },
-        "sourceRange": [
-          3448,
-          3463,
-          0
-        ]
+        "sourceRange": []
       },
       "distance": {
         "value": {
@@ -965,11 +769,7 @@ description: Operations executed gridfinity-bins.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          3517,
-          3539,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -985,19 +785,11 @@ description: Operations executed gridfinity-bins.kcl
             }
           }
         },
-        "sourceRange": [
-          3484,
-          3497,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternLinear3d",
-    "sourceRange": [
-      3403,
-      3546,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1029,11 +821,7 @@ description: Operations executed gridfinity-bins.kcl
           }
         ]
       },
-      "sourceRange": [
-        3427,
-        3432,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1083,11 +871,7 @@ description: Operations executed gridfinity-bins.kcl
             }
           ]
         },
-        "sourceRange": [
-          3583,
-          3598,
-          0
-        ]
+        "sourceRange": []
       },
       "distance": {
         "value": {
@@ -1097,11 +881,7 @@ description: Operations executed gridfinity-bins.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          3653,
-          3675,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -1117,19 +897,11 @@ description: Operations executed gridfinity-bins.kcl
             }
           }
         },
-        "sourceRange": [
-          3619,
-          3633,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternLinear3d",
-    "sourceRange": [
-      3552,
-      3682,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1185,11 +957,7 @@ description: Operations executed gridfinity-bins.kcl
           }
         ]
       },
-      "sourceRange": [
-        3552,
-        3682,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1239,11 +1007,7 @@ description: Operations executed gridfinity-bins.kcl
             }
           ]
         },
-        "sourceRange": [
-          3809,
-          3824,
-          0
-        ]
+        "sourceRange": []
       },
       "distance": {
         "value": {
@@ -1253,11 +1017,7 @@ description: Operations executed gridfinity-bins.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          3878,
-          3900,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -1273,19 +1033,11 @@ description: Operations executed gridfinity-bins.kcl
             }
           }
         },
-        "sourceRange": [
-          3845,
-          3858,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternLinear3d",
-    "sourceRange": [
-      3762,
-      3907,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1317,11 +1069,7 @@ description: Operations executed gridfinity-bins.kcl
           }
         ]
       },
-      "sourceRange": [
-        3786,
-        3793,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1371,11 +1119,7 @@ description: Operations executed gridfinity-bins.kcl
             }
           ]
         },
-        "sourceRange": [
-          3944,
-          3959,
-          0
-        ]
+        "sourceRange": []
       },
       "distance": {
         "value": {
@@ -1385,11 +1129,7 @@ description: Operations executed gridfinity-bins.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          4014,
-          4036,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -1405,19 +1145,11 @@ description: Operations executed gridfinity-bins.kcl
             }
           }
         },
-        "sourceRange": [
-          3980,
-          3994,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternLinear3d",
-    "sourceRange": [
-      3913,
-      4043,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1473,11 +1205,7 @@ description: Operations executed gridfinity-bins.kcl
           }
         ]
       },
-      "sourceRange": [
-        3913,
-        4043,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1527,11 +1255,7 @@ description: Operations executed gridfinity-bins.kcl
             }
           ]
         },
-        "sourceRange": [
-          4164,
-          4179,
-          0
-        ]
+        "sourceRange": []
       },
       "distance": {
         "value": {
@@ -1541,11 +1265,7 @@ description: Operations executed gridfinity-bins.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          4233,
-          4255,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -1561,19 +1281,11 @@ description: Operations executed gridfinity-bins.kcl
             }
           }
         },
-        "sourceRange": [
-          4200,
-          4213,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternLinear3d",
-    "sourceRange": [
-      4111,
-      4262,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1582,11 +1294,7 @@ description: Operations executed gridfinity-bins.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        4135,
-        4148,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1636,11 +1344,7 @@ description: Operations executed gridfinity-bins.kcl
             }
           ]
         },
-        "sourceRange": [
-          4299,
-          4314,
-          0
-        ]
+        "sourceRange": []
       },
       "distance": {
         "value": {
@@ -1650,11 +1354,7 @@ description: Operations executed gridfinity-bins.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          4369,
-          4391,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -1670,19 +1370,11 @@ description: Operations executed gridfinity-bins.kcl
             }
           }
         },
-        "sourceRange": [
-          4335,
-          4349,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternLinear3d",
-    "sourceRange": [
-      4268,
-      4398,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1702,11 +1394,7 @@ description: Operations executed gridfinity-bins.kcl
           }
         ]
       },
-      "sourceRange": [
-        4268,
-        4398,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1725,30 +1413,18 @@ description: Operations executed gridfinity-bins.kcl
             }
           }
         },
-        "sourceRange": [
-          4479,
-          4485,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "offsetPlane",
-    "sourceRange": [
-      4452,
-      4486,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "XY"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
-      "sourceRange": [
-        4464,
-        4468,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1758,19 +1434,11 @@ description: Operations executed gridfinity-bins.kcl
           "type": "Plane",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          4452,
-          4486,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      4438,
-      4487,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1784,19 +1452,11 @@ description: Operations executed gridfinity-bins.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          4784,
-          4810,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      4767,
-      4811,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1805,11 +1465,7 @@ description: Operations executed gridfinity-bins.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        4767,
-        4811,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1828,11 +1484,7 @@ description: Operations executed gridfinity-bins.kcl
             }
           }
         },
-        "sourceRange": [
-          4841,
-          4853,
-          0
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -1856,19 +1508,11 @@ description: Operations executed gridfinity-bins.kcl
             }
           ]
         },
-        "sourceRange": [
-          4869,
-          5042,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      4817,
-      5049,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1877,11 +1521,7 @@ description: Operations executed gridfinity-bins.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        4817,
-        5049,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1896,11 +1536,7 @@ description: Operations executed gridfinity-bins.kcl
             }
           ]
         },
-        "sourceRange": [
-          5069,
-          5076,
-          0
-        ]
+        "sourceRange": []
       },
       "thickness": {
         "value": {
@@ -1916,19 +1552,11 @@ description: Operations executed gridfinity-bins.kcl
             }
           }
         },
-        "sourceRange": [
-          5090,
-          5096,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "shell",
-    "sourceRange": [
-      5055,
-      5097,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1937,11 +1565,7 @@ description: Operations executed gridfinity-bins.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        5055,
-        5097,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

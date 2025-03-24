@@ -7,25 +7,19 @@ use kcl_derive_docs::stdlib;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 
+use super::DEFAULT_TOLERANCE;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{
-        kcl_value::{ArrayLen, RuntimeType},
-        ExecState, KclValue, PrimitiveType, Sketch, Solid,
-    },
+    execution::{types::RuntimeType, ExecState, KclValue, Sketch, Solid},
     parsing::ast::types::TagNode,
-    std::{extrude::do_post_extrude, fillet::default_tolerance, Args},
+    std::{extrude::do_post_extrude, Args},
 };
 
 const DEFAULT_V_DEGREE: u32 = 2;
 
 /// Create a 3D surface or solid by interpolating between two or more sketches.
 pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg_typed(
-        "sketches",
-        &RuntimeType::Array(PrimitiveType::Sketch, ArrayLen::NonEmpty),
-        exec_state,
-    )?;
+    let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
     let v_degree: NonZeroU32 = args
         .get_kw_arg_opt("vDegree")?
         .unwrap_or(NonZeroU32::new(DEFAULT_V_DEGREE).unwrap());
@@ -166,7 +160,7 @@ async fn inner_loft(
             section_ids: sketches.iter().map(|group| group.id).collect(),
             base_curve_index,
             bez_approximate_rational,
-            tolerance: LengthUnit(tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
+            tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
             v_degree,
         }),
     )
@@ -181,6 +175,7 @@ async fn inner_loft(
             &sketch,
             id.into(),
             0.0,
+            false,
             &super::extrude::NamedCapTags {
                 start: tag_start.as_ref(),
                 end: tag_end.as_ref(),

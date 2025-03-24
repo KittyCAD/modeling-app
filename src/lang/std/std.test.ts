@@ -1,5 +1,5 @@
-import { assertParse, initPromise } from '../wasm'
-import { enginelessExecutor } from '../../lib/testHelpers'
+import { assertParse, initPromise } from '@src/lang/wasm'
+import { enginelessExecutor } from '@src/lib/testHelpers'
 
 beforeAll(async () => {
   await initPromise
@@ -7,7 +7,7 @@ beforeAll(async () => {
 
 describe('testing angledLineThatIntersects', () => {
   it('angledLineThatIntersects should intersect with another line', async () => {
-    const code = (offset: string) => `part001 = startSketchOn('XY')
+    const code = (offset: string) => `part001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [2, 2], tag = $yo)
   |> line(endAbsolute = [3, 1])

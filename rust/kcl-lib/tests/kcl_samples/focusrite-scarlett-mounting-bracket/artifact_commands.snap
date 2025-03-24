@@ -5,11 +5,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,23 +13,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +22,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +31,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      324,
-      357,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -67,11 +39,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1230,
-      1257,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -96,11 +64,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1265,
-      1303,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -116,22 +80,14 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1265,
-      1303,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1265,
-      1303,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -144,22 +100,14 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1265,
-      1303,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1311,
-      1361,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -176,11 +124,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1369,
-      1418,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -197,11 +141,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1426,
-      1478,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -218,11 +158,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1486,
-      1534,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -239,11 +175,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1542,
-      1586,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -260,11 +192,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1594,
-      1639,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -281,11 +209,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1647,
-      1696,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -302,11 +226,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1704,
-      1723,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -314,11 +234,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1831,
-      1865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -334,11 +250,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1831,
-      1865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -348,22 +260,14 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1831,
-      1865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1831,
-      1865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -371,11 +275,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1831,
-      1865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -384,11 +284,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1831,
-      1865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -398,11 +294,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1831,
-      1865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -412,11 +304,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1831,
-      1865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -426,11 +314,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1831,
-      1865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -440,11 +324,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1831,
-      1865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -454,11 +334,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1831,
-      1865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -468,11 +344,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1831,
-      1865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -482,11 +354,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1831,
-      1865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -496,11 +364,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1831,
-      1865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -510,11 +374,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1831,
-      1865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -524,11 +384,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1831,
-      1865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -538,11 +394,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1831,
-      1865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -552,11 +404,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1831,
-      1865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -566,11 +414,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1831,
-      1865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -580,11 +424,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1831,
-      1865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -594,11 +434,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1831,
-      1865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -608,11 +444,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1928,
-      1966,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_prev_adjacent_edge",
       "object_id": "[uuid]",
@@ -622,11 +454,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1977,
-      2015,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_prev_adjacent_edge",
       "object_id": "[uuid]",
@@ -636,11 +464,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2026,
-      2064,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_prev_adjacent_edge",
       "object_id": "[uuid]",
@@ -650,11 +474,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2075,
-      2113,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_prev_adjacent_edge",
       "object_id": "[uuid]",
@@ -664,11 +484,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2408,
-      2431,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -693,11 +509,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2437,
-      2491,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -713,22 +525,14 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2437,
-      2491,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2437,
-      2491,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -741,22 +545,14 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2437,
-      2491,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2497,
-      2550,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -773,11 +569,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2556,
-      2606,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -794,11 +586,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2612,
-      2666,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -815,11 +603,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2672,
-      2692,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -827,11 +611,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2703,
-      2865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -847,22 +627,14 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2703,
-      2865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2703,
-      2865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -875,22 +647,14 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2703,
-      2865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2703,
-      2865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -915,11 +679,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2703,
-      2865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -927,11 +687,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2698,
-      2869,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -940,11 +696,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2698,
-      2869,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -953,11 +705,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2900,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -973,11 +721,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2900,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -987,22 +731,14 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2900,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2900,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1010,11 +746,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2900,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1023,11 +755,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2900,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1037,11 +765,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2900,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1051,11 +775,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2900,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1065,11 +785,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2900,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1079,11 +795,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2900,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1093,11 +805,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2900,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1107,11 +815,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2900,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1121,11 +825,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2900,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1135,11 +835,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2900,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1149,11 +845,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2875,
-      2900,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1163,11 +855,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2969,
-      2996,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1177,11 +865,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3007,
-      3034,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1191,11 +875,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2906,
-      3050,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -1207,11 +887,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2906,
-      3050,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -1223,11 +899,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3056,
-      3184,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -1267,11 +939,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3248,
-      3271,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1296,11 +964,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3277,
-      3332,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1316,22 +980,14 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3277,
-      3332,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3277,
-      3332,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1344,22 +1000,14 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3277,
-      3332,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3338,
-      3392,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1376,11 +1024,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3398,
-      3448,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1397,11 +1041,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3454,
-      3507,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1418,11 +1058,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3513,
-      3533,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1430,11 +1066,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3544,
-      3709,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1450,22 +1082,14 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3544,
-      3709,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3544,
-      3709,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1478,22 +1102,14 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3544,
-      3709,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3544,
-      3709,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1518,11 +1134,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3544,
-      3709,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1530,11 +1142,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3539,
-      3713,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -1543,11 +1151,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3539,
-      3713,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1556,11 +1160,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3719,
-      3744,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1576,11 +1176,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3719,
-      3744,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1590,22 +1186,14 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3719,
-      3744,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3719,
-      3744,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1613,11 +1201,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3719,
-      3744,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1626,11 +1210,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3719,
-      3744,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1640,11 +1220,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3719,
-      3744,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1654,11 +1230,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3719,
-      3744,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1668,11 +1240,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3719,
-      3744,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1682,11 +1250,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3719,
-      3744,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1696,11 +1260,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3719,
-      3744,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1710,11 +1270,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3719,
-      3744,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1724,11 +1280,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3719,
-      3744,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1738,11 +1290,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3719,
-      3744,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1752,11 +1300,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3719,
-      3744,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1766,11 +1310,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3813,
-      3840,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1780,11 +1320,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3851,
-      3878,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1794,11 +1330,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3750,
-      3894,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -1810,11 +1342,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3750,
-      3894,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -1826,11 +1354,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3900,
-      4028,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -1870,11 +1394,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4314,
-      4337,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1899,11 +1419,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4343,
-      4384,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1919,22 +1435,14 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4343,
-      4384,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4343,
-      4384,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1947,22 +1455,14 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4343,
-      4384,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4390,
-      4410,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1979,11 +1479,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4416,
-      4439,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2000,11 +1496,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4445,
-      4452,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2012,11 +1504,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4458,
-      4486,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2032,11 +1520,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4458,
-      4486,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -2046,22 +1530,14 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4458,
-      4486,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4458,
-      4486,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -2069,11 +1545,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4458,
-      4486,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -2082,11 +1554,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4458,
-      4486,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2096,11 +1564,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4458,
-      4486,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2110,11 +1574,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4458,
-      4486,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2124,11 +1584,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4458,
-      4486,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2138,11 +1594,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4458,
-      4486,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2152,11 +1604,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4458,
-      4486,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2166,11 +1614,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4538,
-      4561,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -2195,11 +1639,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4567,
-      4607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2215,22 +1655,14 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4567,
-      4607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4567,
-      4607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2243,22 +1675,14 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4567,
-      4607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4613,
-      4633,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2275,11 +1699,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4639,
-      4660,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2296,11 +1716,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4666,
-      4687,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2317,11 +1733,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4693,
-      4700,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2329,11 +1741,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4706,
-      4734,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2349,11 +1757,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4706,
-      4734,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -2363,22 +1767,14 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4706,
-      4734,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4706,
-      4734,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -2386,11 +1782,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4706,
-      4734,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -2399,11 +1791,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4706,
-      4734,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2413,11 +1801,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4706,
-      4734,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2427,11 +1811,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4706,
-      4734,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2441,11 +1821,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4706,
-      4734,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2455,11 +1831,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4706,
-      4734,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2469,11 +1841,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4706,
-      4734,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2483,11 +1851,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4706,
-      4734,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2497,11 +1861,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4706,
-      4734,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2511,11 +1871,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1265,
-      1303,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2524,11 +1880,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1871,
-      2129,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2540,11 +1892,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1871,
-      2129,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2556,11 +1904,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1871,
-      2129,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2572,11 +1916,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1871,
-      2129,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2588,11 +1928,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2437,
-      2491,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2601,11 +1937,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2703,
-      2865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2614,11 +1946,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3277,
-      3332,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2627,11 +1955,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3544,
-      3709,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2640,11 +1964,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4343,
-      4384,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2653,11 +1973,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4567,
-      4607,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",

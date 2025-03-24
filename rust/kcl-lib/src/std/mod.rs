@@ -7,6 +7,8 @@ pub mod assert;
 pub mod axis_or_reference;
 pub mod chamfer;
 pub mod convert;
+pub mod csg;
+pub mod edge;
 pub mod extrude;
 pub mod fillet;
 pub mod helix;
@@ -24,7 +26,6 @@ pub mod shell;
 pub mod sketch;
 pub mod sweep;
 pub mod transform;
-pub mod types;
 pub mod units;
 pub mod utils;
 
@@ -40,7 +41,8 @@ use serde::{Deserialize, Serialize};
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    execution::{ExecState, KclValue},
+    execution::{types::PrimitiveType, ExecState, KclValue},
+    parsing::ast::types::Name,
 };
 
 pub type StdFn = fn(
@@ -69,7 +71,6 @@ lazy_static! {
         Box::new(crate::std::segment::TangentToEnd),
         Box::new(crate::std::segment::AngleToMatchLengthX),
         Box::new(crate::std::segment::AngleToMatchLengthY),
-        Box::new(crate::std::shapes::Circle),
         Box::new(crate::std::shapes::CircleThreePoint),
         Box::new(crate::std::shapes::Polygon),
         Box::new(crate::std::sketch::Line),
@@ -94,7 +95,6 @@ lazy_static! {
         Box::new(crate::std::sketch::TangentialArcToRelative),
         Box::new(crate::std::sketch::BezierCurve),
         Box::new(crate::std::sketch::Hole),
-        Box::new(crate::std::mirror::Mirror2D),
         Box::new(crate::std::patterns::PatternLinear2D),
         Box::new(crate::std::patterns::PatternLinear3D),
         Box::new(crate::std::patterns::PatternCircular2D),
@@ -107,14 +107,12 @@ lazy_static! {
         Box::new(crate::std::array::Pop),
         Box::new(crate::std::chamfer::Chamfer),
         Box::new(crate::std::fillet::Fillet),
-        Box::new(crate::std::fillet::GetOppositeEdge),
-        Box::new(crate::std::fillet::GetNextAdjacentEdge),
-        Box::new(crate::std::fillet::GetPreviousAdjacentEdge),
-        Box::new(crate::std::helix::Helix),
-        Box::new(crate::std::helix::HelixRevolutions),
+        Box::new(crate::std::edge::GetOppositeEdge),
+        Box::new(crate::std::edge::GetNextAdjacentEdge),
+        Box::new(crate::std::edge::GetPreviousAdjacentEdge),
+        Box::new(crate::std::edge::GetCommonEdge),
         Box::new(crate::std::shell::Shell),
         Box::new(crate::std::shell::Hollow),
-        Box::new(crate::std::revolve::Revolve),
         Box::new(crate::std::sweep::Sweep),
         Box::new(crate::std::loft::Loft),
         Box::new(crate::std::planes::OffsetPlane),
@@ -157,6 +155,9 @@ lazy_static! {
         Box::new(crate::std::transform::Scale),
         Box::new(crate::std::transform::Translate),
         Box::new(crate::std::transform::Rotate),
+        Box::new(crate::std::csg::Intersect),
+        Box::new(crate::std::csg::Union),
+        Box::new(crate::std::csg::Subtract),
     ];
 }
 
@@ -172,6 +173,7 @@ pub fn get_stdlib_fn(name: &str) -> Option<Box<dyn StdLibFn>> {
 pub struct StdFnProps {
     pub name: String,
     pub deprecated: bool,
+    pub include_in_feature_tree: bool,
 }
 
 impl StdFnProps {
@@ -179,7 +181,13 @@ impl StdFnProps {
         Self {
             name: name.to_owned(),
             deprecated: false,
+            include_in_feature_tree: false,
         }
+    }
+
+    fn include_in_feature_tree(mut self) -> Self {
+        self.include_in_feature_tree = true;
+        self
     }
 }
 
@@ -197,24 +205,36 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::math::tan(e, a)),
             StdFnProps::default("std::math::tan"),
         ),
+        ("sketch", "circle") => (
+            |e, a| Box::pin(crate::std::shapes::circle(e, a)),
+            StdFnProps::default("std::sketch::circle"),
+        ),
+        ("prelude", "helix") => (
+            |e, a| Box::pin(crate::std::helix::helix(e, a)),
+            StdFnProps::default("std::helix").include_in_feature_tree(),
+        ),
+        ("sketch", "mirror2d") => (
+            |e, a| Box::pin(crate::std::mirror::mirror_2d(e, a)),
+            StdFnProps::default("std::sketch::mirror2d"),
+        ),
+        ("prelude", "revolve") => (
+            |e, a| Box::pin(crate::std::revolve::revolve(e, a)),
+            StdFnProps::default("std::revolve").include_in_feature_tree(),
+        ),
         _ => unreachable!(),
     }
 }
 
-pub(crate) fn std_ty(path: &str, fn_name: &str) -> (crate::execution::PrimitiveType, StdFnProps) {
+pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
     match (path, fn_name) {
-        ("prelude", "Sketch") => (
-            crate::execution::PrimitiveType::Sketch,
-            StdFnProps::default("std::Sketch"),
-        ),
-        ("prelude", "Solid") => (
-            crate::execution::PrimitiveType::Solid,
-            StdFnProps::default("std::Solid"),
-        ),
-        ("prelude", "Plane") => (
-            crate::execution::PrimitiveType::Plane,
-            StdFnProps::default("std::Plane"),
-        ),
+        ("prelude", "Sketch") => (PrimitiveType::Sketch, StdFnProps::default("std::Sketch")),
+        ("prelude", "Solid") => (PrimitiveType::Solid, StdFnProps::default("std::Solid")),
+        ("prelude", "Plane") => (PrimitiveType::Plane, StdFnProps::default("std::Plane")),
+        ("prelude", "Face") => (PrimitiveType::Face, StdFnProps::default("std::Face")),
+        ("prelude", "Helix") => (PrimitiveType::Helix, StdFnProps::default("std::Helix")),
+        ("prelude", "Edge") => (PrimitiveType::Edge, StdFnProps::default("std::Edge")),
+        ("prelude", "Axis2d") => (PrimitiveType::Axis2d, StdFnProps::default("std::Axis2d")),
+        ("prelude", "Axis3d") => (PrimitiveType::Axis3d, StdFnProps::default("std::Axis3d")),
         _ => unreachable!(),
     }
 }
@@ -249,12 +269,14 @@ impl StdLib {
         self.fns.get(name).cloned()
     }
 
-    pub fn get_either(&self, name: &str) -> FunctionKind {
-        if let Some(f) = self.get(name) {
-            FunctionKind::Core(f)
-        } else {
-            FunctionKind::UserDefined
+    pub fn get_either(&self, name: &Name) -> FunctionKind {
+        if let Some(name) = name.local_ident() {
+            if let Some(f) = self.get(name.inner) {
+                return FunctionKind::Core(f);
+            }
         }
+
+        FunctionKind::UserDefined
     }
 
     pub fn contains_key(&self, key: &str) -> bool {
@@ -273,6 +295,9 @@ pub enum FunctionKind {
     Core(Box<dyn StdLibFn>),
     UserDefined,
 }
+
+/// The default tolerance for modeling commands in [`kittycad_modeling_cmds::length_unit::LengthUnit`].
+const DEFAULT_TOLERANCE: f64 = 0.0000001;
 
 /// Compute the length of the given leg.
 pub async fn leg_length(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {

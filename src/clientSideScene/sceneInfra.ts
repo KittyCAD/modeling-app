@@ -1,69 +1,54 @@
+import * as TWEEN from '@tweenjs/tween.js'
+import type {
+  Group,
+  Intersection,
+  Mesh,
+  MeshBasicMaterial,
+  Object3D,
+  Object3DEventMap,
+  Texture,
+} from 'three'
 import {
   AmbientLight,
   Color,
   GridHelper,
   LineBasicMaterial,
   OrthographicCamera,
-  PerspectiveCamera,
+  Raycaster,
   Scene,
+  TextureLoader,
+  Vector2,
   Vector3,
   WebGLRenderer,
-  Raycaster,
-  Vector2,
-  Group,
-  MeshBasicMaterial,
-  Mesh,
-  Intersection,
-  Object3D,
-  Object3DEventMap,
-  TextureLoader,
-  Texture,
 } from 'three'
-import { Coords2d, compareVec2Epsilon2 } from 'lang/std/sketch'
-import { useModelingContext } from 'hooks/useModelingContext'
-import * as TWEEN from '@tweenjs/tween.js'
-import { Axis, NonCodeSelection } from 'lib/selections'
-import { type BaseUnit } from 'lib/settings/settingsTypes'
-import { CameraControls } from './CameraControls'
-import { EngineCommandManager } from 'lang/std/engineConnection'
-import { MouseState, SegmentOverlayPayload } from 'machines/modelingMachine'
-import { getAngle, throttle } from 'lib/utils'
-import { Themes } from 'lib/theme'
 import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { orthoScale, perspScale } from './helpers'
+
+import { CameraControls } from '@src/clientSideScene/CameraControls'
+import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
+import {
+  AXIS_GROUP,
+  DEBUG_SHOW_INTERSECTION_PLANE,
+  INTERSECTION_PLANE_LAYER,
+  RAYCASTABLE_PLANE,
+  SKETCH_LAYER,
+  X_AXIS,
+  Y_AXIS,
+  getSceneScale,
+} from '@src/clientSideScene/sceneUtils'
+import type { useModelingContext } from '@src/hooks/useModelingContext'
+import type { EngineCommandManager } from '@src/lang/std/engineConnection'
+import type { Coords2d } from '@src/lang/std/sketch'
+import { compareVec2Epsilon2 } from '@src/lang/std/sketch'
+import type { Axis, NonCodeSelection } from '@src/lib/selections'
+import { type BaseUnit } from '@src/lib/settings/settingsTypes'
+import { Themes } from '@src/lib/theme'
+import { getAngle, throttle } from '@src/lib/utils'
+import type {
+  MouseState,
+  SegmentOverlayPayload,
+} from '@src/machines/modelingMachine'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
-
-// 63.5 is definitely a bit of a magic number, play with it until it looked right
-// if it were 64, that would feel like it's something in the engine where a random
-// power of 2 is used, but it's the 0.5 seems to make things look much more correct
-export const ZOOM_MAGIC_NUMBER = 63.5
-
-export const INTERSECTION_PLANE_LAYER = 1
-export const SKETCH_LAYER = 2
-
-// redundant types so that it can be changed temporarily but CI will catch the wrong type
-export const DEBUG_SHOW_INTERSECTION_PLANE: false = false
-export const DEBUG_SHOW_BOTH_SCENES: false = false
-
-export const RAYCASTABLE_PLANE = 'raycastable-plane'
-
-export const X_AXIS = 'xAxis'
-export const Y_AXIS = 'yAxis'
-/** If a segment angle is less than this many degrees off a meanginful angle it'll snap to it */
-export const ANGLE_SNAP_THRESHOLD_DEGREES = 3
-/** the THREEjs representation of the group surrounding a "snapped" point that is not yet placed */
-export const DRAFT_POINT_GROUP = 'draft-point-group'
-/** the THREEjs representation of a "snapped" point that is not yet placed */
-export const DRAFT_POINT = 'draft-point'
-export const AXIS_GROUP = 'axisGroup'
-export const SKETCH_GROUP_SEGMENTS = 'sketch-group-segments'
-export const ARROWHEAD = 'arrowhead'
-export const SEGMENT_LENGTH_LABEL = 'segment-length-label'
-export const SEGMENT_LENGTH_LABEL_TEXT = 'segment-length-label-text'
-export const SEGMENT_LENGTH_LABEL_OFFSET_PX = 30
-export const CIRCLE_3_POINT_DRAFT_POINT = 'circle-3-point-draft-point'
-export const CIRCLE_3_POINT_DRAFT_CIRCLE = 'circle-3-point-draft-circle'
 
 export interface OnMouseEnterLeaveArgs {
   selected: Object3D<Object3DEventMap>
@@ -110,18 +95,15 @@ interface OnMoveCallbackArgs {
 type Voidish = void | Promise<void>
 export class SceneInfra {
   static instance: SceneInfra
-  scene: Scene
-  renderer: WebGLRenderer
-  labelRenderer: CSS2DRenderer
-  camControls: CameraControls
-  isPerspective = true
-  fov = 45
-  fovBeforeAnimate = 45
+  readonly scene: Scene
+  readonly renderer: WebGLRenderer
+  readonly labelRenderer: CSS2DRenderer
+  readonly camControls: CameraControls
+  private readonly fov = 45
   isFovAnimationInProgress = false
-  _baseUnit: BaseUnit = 'mm'
   _baseUnitMultiplier = 1
   _theme: Themes = Themes.System
-  extraSegmentTexture: Texture
+  readonly extraSegmentTexture: Texture
   lastMouseState: MouseState = { type: 'idle' }
   onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onDragEndCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
@@ -149,7 +131,6 @@ export class SceneInfra {
     this.selected = null // following selections between callbacks being set is too tricky
   }
   set baseUnit(unit: BaseUnit) {
-    this._baseUnit = unit
     this._baseUnitMultiplier = baseUnitTomm(unit)
     this.scene.scale.set(
       this._baseUnitMultiplier,
@@ -263,7 +244,7 @@ export class SceneInfra {
     return null
   }
 
-  hoveredObject: null | any = null
+  hoveredObject: null | Object3D<Object3DEventMap> = null
   raycaster = new Raycaster()
   planeRaycaster = new Raycaster()
   currentMouseVector = new Vector2()
@@ -489,11 +470,13 @@ export class SceneInfra {
       if (this.hoveredObject !== firstIntersectObject) {
         const hoveredObj = this.hoveredObject
         this.hoveredObject = null
-        await this.onMouseLeave({
-          selected: hoveredObj,
-          mouseEvent: mouseEvent,
-          intersectionPoint,
-        })
+        if (hoveredObj) {
+          await this.onMouseLeave({
+            selected: hoveredObj,
+            mouseEvent: mouseEvent,
+            intersectionPoint,
+          })
+        }
         this.hoveredObject = firstIntersectObject
         await this.onMouseEnter({
           selected: this.hoveredObject,
@@ -682,24 +665,6 @@ export class SceneInfra {
       }
     })
   }
-}
-
-export function getSceneScale(
-  camera: PerspectiveCamera | OrthographicCamera,
-  target: Vector3
-): number {
-  const distance =
-    camera instanceof PerspectiveCamera
-      ? camera.position.distanceTo(target)
-      : 63.7942123 / camera.zoom
-
-  if (distance <= 20) return 0.1
-  else if (distance > 20 && distance <= 200) return 1
-  else if (distance > 200 && distance <= 2000) return 10
-  else if (distance > 2000 && distance <= 20000) return 100
-  else if (distance > 20000) return 1000
-
-  return 1
 }
 
 function baseUnitTomm(baseUnit: BaseUnit) {

@@ -1,15 +1,12 @@
 import { expect } from 'vitest'
-import {
-  recast,
-  assertParse,
-  topLevelRange,
-  VariableDeclaration,
-  initPromise,
-} from 'lang/wasm'
-import { updateCenterRectangleSketch } from './rectangleTool'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { getNodeFromPath } from 'lang/queryAst'
-import { trap } from './trap'
+
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { topLevelRange } from '@src/lang/util'
+import type { VariableDeclaration } from '@src/lang/wasm'
+import { assertParse, initPromise, recast } from '@src/lang/wasm'
+import { updateCenterRectangleSketch } from '@src/lib/rectangleTool'
+import { trap } from '@src/lib/trap'
 
 beforeAll(async () => {
   await initPromise
@@ -20,7 +17,7 @@ describe('library rectangleTool helper functions', () => {
     // regression test for https://github.com/KittyCAD/modeling-app/issues/5157
     test('should update AST and source code', async () => {
       // Base source code that will be edited in place
-      const sourceCode = `sketch001 = startSketchOn('XZ')
+      const sourceCode = `sketch001 = startSketchOn(XZ)
 |> startProfileAt([120.37, 162.76], %)
 |> angledLine([0, 0], %, $rectangleSegmentA001)
 |> angledLine([segAng(rectangleSegmentA001) + 90, 0], %, $rectangleSegmentB001)
@@ -73,7 +70,7 @@ segAng(rectangleSegmentA001),
       }
 
       // ast is edited in place from the updateCenterRectangleSketch
-      const expectedSourceCode = `sketch001 = startSketchOn('XZ')
+      const expectedSourceCode = `sketch001 = startSketchOn(XZ)
   |> startProfileAt([120.37, 80], %)
   |> angledLine([0, 0], %, $rectangleSegmentA001)
   |> angledLine([segAng(rectangleSegmentA001) + 90, 0], %, $rectangleSegmentB001)

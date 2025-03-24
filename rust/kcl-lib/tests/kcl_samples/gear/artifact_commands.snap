@@ -5,11 +5,7 @@ description: Artifact commands gear.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,23 +13,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +22,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +31,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      439,
-      472,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "in"
@@ -67,11 +39,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1303,
-      1322,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -96,11 +64,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -116,22 +80,14 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -144,22 +100,14 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -184,11 +132,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -196,11 +140,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1405,
-      1433,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -216,11 +156,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1405,
-      1433,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -230,22 +166,14 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1405,
-      1433,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1405,
-      1433,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -253,11 +181,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1405,
-      1433,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -266,11 +190,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1405,
-      1433,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -280,11 +200,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1405,
-      1433,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -294,11 +210,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1853,
-      1872,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -323,11 +235,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1878,
-      1915,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -343,22 +251,14 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1878,
-      1915,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1878,
-      1915,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -371,22 +271,14 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1878,
-      1915,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -403,11 +295,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -424,11 +312,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -445,11 +329,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -466,11 +346,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -487,11 +363,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -508,11 +380,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -529,11 +397,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -550,11 +414,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -571,11 +431,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -592,11 +448,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -613,11 +465,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -634,11 +482,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -655,11 +499,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -676,11 +516,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -697,11 +533,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -718,11 +550,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -739,11 +567,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -760,11 +584,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -781,11 +601,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -802,11 +618,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -823,11 +635,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -844,11 +652,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -865,11 +669,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -886,11 +686,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -907,11 +703,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -928,11 +720,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -949,11 +737,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -970,11 +754,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -991,11 +771,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1012,11 +788,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1033,11 +805,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1054,11 +822,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1075,11 +839,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1096,11 +856,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1117,11 +873,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1138,11 +890,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1159,11 +907,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1180,11 +924,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1201,11 +941,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1222,11 +958,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1243,11 +975,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1264,11 +992,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1285,11 +1009,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1306,11 +1026,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1327,11 +1043,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1348,11 +1060,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1369,11 +1077,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1390,11 +1094,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1411,11 +1111,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1432,11 +1128,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1453,11 +1145,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1474,11 +1162,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1495,11 +1179,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1516,11 +1196,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1537,11 +1213,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1558,11 +1230,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1579,11 +1247,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1600,11 +1264,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1621,11 +1281,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1642,11 +1298,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1663,11 +1315,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1684,11 +1332,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1705,11 +1349,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1726,11 +1366,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1747,11 +1383,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1768,11 +1400,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1789,11 +1417,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1810,11 +1434,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1831,11 +1451,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1852,11 +1468,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1873,11 +1485,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1894,11 +1502,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1915,11 +1519,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1936,11 +1536,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1957,11 +1553,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1978,11 +1570,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1999,11 +1587,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2020,11 +1604,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2041,11 +1621,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2062,11 +1638,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2083,11 +1655,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2104,11 +1672,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2125,11 +1689,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2146,11 +1706,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2167,11 +1723,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2188,11 +1740,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2209,11 +1757,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2230,11 +1774,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2251,11 +1791,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2272,11 +1808,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2293,11 +1825,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2314,11 +1842,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2335,11 +1859,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2356,11 +1876,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2377,11 +1893,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2398,11 +1910,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2419,11 +1927,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2440,11 +1944,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2461,11 +1961,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2482,11 +1978,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1564,
-      1602,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2503,11 +1995,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1967,
-      2069,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2532,11 +2020,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2553,11 +2037,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2574,11 +2054,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2595,11 +2071,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2616,11 +2088,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2637,11 +2105,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2658,11 +2122,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2679,11 +2139,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2700,11 +2156,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2721,11 +2173,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2742,11 +2190,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2763,11 +2207,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2784,11 +2224,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2805,11 +2241,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2826,11 +2258,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2847,11 +2275,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2868,11 +2292,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2889,11 +2309,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2910,11 +2326,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2931,11 +2343,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2952,11 +2360,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2973,11 +2377,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2994,11 +2394,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3015,11 +2411,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3036,11 +2428,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3057,11 +2445,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3078,11 +2462,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3099,11 +2479,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3120,11 +2496,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3141,11 +2513,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3162,11 +2530,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3183,11 +2547,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3204,11 +2564,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3225,11 +2581,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3246,11 +2598,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3267,11 +2615,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3288,11 +2632,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3309,11 +2649,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3330,11 +2666,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3351,11 +2683,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3372,11 +2700,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3393,11 +2717,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3414,11 +2734,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3435,11 +2751,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3456,11 +2768,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3477,11 +2785,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3498,11 +2802,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3519,11 +2819,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3540,11 +2836,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3561,11 +2853,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3582,11 +2870,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3603,11 +2887,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3624,11 +2904,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3645,11 +2921,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3666,11 +2938,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3687,11 +2955,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3708,11 +2972,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3729,11 +2989,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3750,11 +3006,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3771,11 +3023,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3792,11 +3040,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3813,11 +3057,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3834,11 +3074,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3855,11 +3091,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3876,11 +3108,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3897,11 +3125,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3918,11 +3142,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3939,11 +3159,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3960,11 +3176,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3981,11 +3193,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4002,11 +3210,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4023,11 +3227,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4044,11 +3244,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4065,11 +3261,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4086,11 +3278,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4107,11 +3295,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4128,11 +3312,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4149,11 +3329,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4170,11 +3346,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4191,11 +3363,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4212,11 +3380,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4233,11 +3397,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4254,11 +3414,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4275,11 +3431,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4296,11 +3448,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4317,11 +3465,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4338,11 +3482,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4359,11 +3499,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4380,11 +3516,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4401,11 +3533,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4422,11 +3550,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4443,11 +3567,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4464,11 +3584,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4485,11 +3601,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4506,11 +3618,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4527,11 +3635,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4548,11 +3652,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4569,11 +3669,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4590,11 +3686,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4611,11 +3703,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4632,11 +3720,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1792,
-      1822,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4653,11 +3737,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2115,
-      2122,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -4665,11 +3745,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2128,
-      2156,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -4685,11 +3761,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2128,
-      2156,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -4699,22 +3771,14 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2128,
-      2156,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2128,
-      2156,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -4722,11 +3786,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2128,
-      2156,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -4735,11 +3795,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2162,
-      2322,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -4760,11 +3816,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2597,
-      2697,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -4776,22 +3828,14 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2597,
-      2697,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2597,
-      2697,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -4804,22 +3848,14 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2597,
-      2697,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2703,
-      2730,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4836,11 +3872,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2736,
-      2764,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4857,11 +3889,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2770,
-      2798,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4878,11 +3906,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2804,
-      2924,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4907,11 +3931,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2930,
-      3039,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4936,11 +3956,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3045,
-      3052,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -4948,11 +3964,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3058,
-      3087,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -4964,11 +3976,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3058,
-      3087,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -4978,22 +3986,14 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3058,
-      3087,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3058,
-      3087,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -5001,11 +4001,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3058,
-      3087,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -5014,11 +4010,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3058,
-      3087,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5028,11 +4020,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3058,
-      3087,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5042,11 +4030,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3058,
-      3087,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5056,11 +4040,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3058,
-      3087,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5070,11 +4050,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3058,
-      3087,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5084,11 +4060,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3058,
-      3087,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5098,11 +4070,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3058,
-      3087,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5112,11 +4080,7 @@ description: Artifact commands gear.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3058,
-      3087,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",

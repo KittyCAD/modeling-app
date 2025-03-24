@@ -1,30 +1,34 @@
+import { ARG_END_ABSOLUTE } from '@src/lang/constants'
 import {
   createArrayExpression,
   createBinaryExpression,
   createCallExpressionStdLib,
   createCallExpressionStdLibKw,
-  createIdentifier,
   createLabeledArg,
   createLiteral,
+  createLocalName,
   createPipeSubstitution,
   createTagDeclarator,
   createUnaryExpression,
-} from 'lang/modifyAst'
-import { ArrayExpression, CallExpression, PipeExpression } from 'lang/wasm'
-import { roundOff } from 'lib/utils'
+} from '@src/lang/create'
 import {
-  isCallExpression,
   isArrayExpression,
-  isLiteral,
   isBinaryExpression,
+  isCallExpression,
+  isLiteral,
   isLiteralValueNumber,
-} from 'lang/util'
-import { ARG_END_ABSOLUTE } from 'lang/std/sketch'
+} from '@src/lang/util'
+import type {
+  ArrayExpression,
+  CallExpression,
+  PipeExpression,
+} from '@src/lang/wasm'
+import { roundOff } from '@src/lib/utils'
 
 /**
  * It does not create the startSketchOn and it does not create the startProfileAt.
  * Returns AST expressions for this KCL code:
- * const yo = startSketchOn('XY')
+ * const yo = startSketchOn(XY)
  *  |> startProfileAt([0, 0], %)
  *  |> angledLine([0, 0], %, $a)
  *  |> angledLine([segAng(a) - 90, 0], %, $b)
@@ -46,7 +50,7 @@ export const getRectangleCallExpressions = (
   createCallExpressionStdLib('angledLine', [
     createArrayExpression([
       createBinaryExpression([
-        createCallExpressionStdLib('segAng', [createIdentifier(tag)]),
+        createCallExpressionStdLib('segAng', [createLocalName(tag)]),
         '+',
         createLiteral(90),
       ]), // 90 offset from the previous line
@@ -56,9 +60,9 @@ export const getRectangleCallExpressions = (
   ]),
   createCallExpressionStdLib('angledLine', [
     createArrayExpression([
-      createCallExpressionStdLib('segAng', [createIdentifier(tag)]), // same angle as the first line
+      createCallExpressionStdLib('segAng', [createLocalName(tag)]), // same angle as the first line
       createUnaryExpression(
-        createCallExpressionStdLib('segLen', [createIdentifier(tag)]),
+        createCallExpressionStdLib('segLen', [createLocalName(tag)]),
         '-'
       ), // negative height
     ]),
@@ -97,7 +101,7 @@ export function updateRectangleSketch(
   ;((pipeExpression.body[2] as CallExpression)
     .arguments[0] as ArrayExpression) = createArrayExpression([
     createBinaryExpression([
-      createCallExpressionStdLib('segAng', [createIdentifier(tag)]),
+      createCallExpressionStdLib('segAng', [createLocalName(tag)]),
       Math.sign(y) === Math.sign(x) ? '+' : '-',
       createLiteral(90),
     ]), // 90 offset from the previous line
@@ -161,7 +165,7 @@ export function updateCenterRectangleSketch(
       if (isBinaryExpression(binaryExpression)) {
         callExpression.arguments[0] = createArrayExpression([
           createBinaryExpression([
-            createCallExpressionStdLib('segAng', [createIdentifier(tag)]),
+            createCallExpressionStdLib('segAng', [createLocalName(tag)]),
             binaryExpression.operator,
             createLiteral(90),
           ]), // 90 offset from the previous line

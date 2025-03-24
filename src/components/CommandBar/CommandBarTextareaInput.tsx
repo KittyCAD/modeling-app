@@ -1,7 +1,12 @@
-import { CommandArgument } from 'lib/commandTypes'
-import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
-import { RefObject, useEffect, useRef } from 'react'
+import type { RefObject } from 'react'
+import { useEffect, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
+
+import type { CommandArgument } from '@src/lib/commandTypes'
+import {
+  commandBarActor,
+  useCommandBarState,
+} from '@src/machines/commandBarMachine'
 
 function CommandBarTextareaInput({
   arg,
@@ -40,7 +45,7 @@ function CommandBarTextareaInput({
           data-testid="cmd-bar-arg-name"
           className="capitalize px-2 py-1 rounded-br bg-chalkboard-100 dark:bg-chalkboard-80 text-chalkboard-10 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80"
         >
-          {arg.name}
+          {arg.displayName || arg.name}
         </span>
         <textarea
           data-testid="cmd-bar-arg-value"

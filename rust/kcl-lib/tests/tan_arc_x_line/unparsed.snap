@@ -1,0 +1,23 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tan_arc_x_line.kcl
+---
+startX = 0
+startY = 0
+angleOffset = 135
+r = 1
+angleStart = 110
+
+startSketchOn(XY)
+  |> startProfileAt([startX, startY], %)
+  |> angledLine({ angle = angleStart, length = .000001 }, %)
+  |> tangentialArc({ offset = angleOffset, radius = r }, %, $arc1)
+  |> tangentialArc({
+       offset = angleOffset,
+       radius = 0.5 * r
+     }, %, $arc2)
+  |> tangentialArc({
+       offset = -angleOffset,
+       radius = 0.5 * r
+     }, %, $arc3)
+  |> xLine(endAbsolute = 1)

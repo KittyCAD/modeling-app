@@ -9,7 +9,7 @@ Compute the tangent of a number (in radians).
 
 
 ```js
-tan(num: number(rad)): number(_)
+tan(@num: number(rad)): number(_)
 ```
 
 
@@ -27,7 +27,7 @@ tan(num: number(rad)): number(_)
 ### Examples
 
 ```js
-exampleSketch = startSketchOn("XZ")
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> angledLine({
     angle = 50,

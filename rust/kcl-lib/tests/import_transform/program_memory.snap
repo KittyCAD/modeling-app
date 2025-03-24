@@ -5,6 +5,6 @@ description: Variables in memory after executing import_transform.kcl
 {
   "screw": {
     "type": "Module",
-    "value": 3
+    "value": 5
   }
 }

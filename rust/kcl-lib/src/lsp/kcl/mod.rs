@@ -523,7 +523,7 @@ impl Backend {
                                     None => token_type_index,
                                 };
 
-                                if self.stdlib_completions.contains_key(&call_expr.callee.name) {
+                                if self.stdlib_completions.contains_key(&call_expr.callee.name.name) {
                                     // This is a stdlib function.
                                     return get_modifier(vec![SemanticTokenModifier::DEFAULT_LIBRARY]);
                                 }
@@ -786,7 +786,7 @@ impl Backend {
                 vec![kittycad::types::multipart::Attachment {
                     // Clean the URI part.
                     name: "attachment".to_string(),
-                    filename: Some("attachment.zip".to_string()),
+                    filepath: Some("attachment.zip".into()),
                     content_type: Some("application/x-zip".to_string()),
                     data: self.create_zip().await?,
                 }],
@@ -810,56 +810,6 @@ impl Backend {
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(())
-    }
-
-    pub async fn update_units(
-        &self,
-        params: custom_notifications::UpdateUnitsParams,
-    ) -> RpcResult<Option<custom_notifications::UpdateUnitsResponse>> {
-        {
-            let mut ctx = self.executor_ctx.write().await;
-            // Borrow the executor context mutably.
-            let Some(ref mut executor_ctx) = *ctx else {
-                self.client
-                    .log_message(MessageType::ERROR, "no executor context set to update units for")
-                    .await;
-                return Ok(None);
-            };
-
-            self.client
-                .log_message(MessageType::INFO, format!("update units: {:?}", params))
-                .await;
-
-            if executor_ctx.settings.units == params.units
-                && !self.has_diagnostics(params.text_document.uri.as_ref()).await
-            {
-                // Return early the units are the same.
-                return Ok(None);
-            }
-
-            // Set the engine units.
-            executor_ctx.update_units(params.units);
-        }
-        // Lock is dropped here since nested.
-        // This is IMPORTANT.
-
-        let new_params = TextDocumentItem {
-            uri: params.text_document.uri.clone(),
-            text: std::mem::take(&mut params.text.to_string()),
-            version: Default::default(),
-            language_id: Default::default(),
-        };
-
-        // Force re-execution.
-        self.inner_on_change(new_params, true).await;
-
-        // Check if we have diagnostics.
-        // If we do we return early, since we failed in some way.
-        if self.has_diagnostics(params.text_document.uri.as_ref()).await {
-            return Ok(None);
-        }
-
-        Ok(Some(custom_notifications::UpdateUnitsResponse {}))
     }
 
     pub async fn update_can_execute(
@@ -1635,7 +1585,7 @@ fn position_to_char_index(position: Position, code: &str) -> usize {
 
 async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T> {
     let mem = cache::read_old_memory().await?;
-    let value = mem.get(name, SourceRange::default()).ok()?;
+    let value = mem.0.get(name, SourceRange::default()).ok()?;
 
     Some(f(value))
 }

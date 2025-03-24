@@ -5,11 +5,7 @@ description: Artifact commands gridfinity-bins.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,23 +13,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +22,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +31,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      306,
-      339,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -67,11 +39,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1311,
-      1360,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -96,11 +64,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1311,
-      1360,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -114,11 +78,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      927,
-      973,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -134,22 +94,14 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      927,
-      973,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      927,
-      973,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -162,22 +114,14 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      927,
-      973,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      981,
-      1003,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -194,11 +138,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1011,
-      1041,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -215,11 +155,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1049,
-      1108,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -236,11 +172,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1116,
-      1143,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -257,11 +189,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1151,
-      1210,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -278,11 +206,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1218,
-      1225,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -290,11 +214,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1298,
-      1405,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -310,11 +230,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1298,
-      1405,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -324,22 +240,14 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1298,
-      1405,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1298,
-      1405,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -347,11 +255,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1298,
-      1405,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -360,11 +264,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1298,
-      1405,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -374,11 +274,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1298,
-      1405,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -388,11 +284,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1298,
-      1405,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -402,11 +294,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1298,
-      1405,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -416,11 +304,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1298,
-      1405,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -430,11 +314,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1298,
-      1405,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -444,11 +324,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1298,
-      1405,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -458,11 +334,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1298,
-      1405,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -472,11 +344,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1298,
-      1405,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -486,11 +354,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1298,
-      1405,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -500,11 +364,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1480,
-      1689,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -525,11 +385,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1915,
-      1964,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -554,11 +410,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1915,
-      1964,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -572,11 +424,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      927,
-      973,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -592,22 +440,14 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      927,
-      973,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      927,
-      973,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -620,22 +460,14 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      927,
-      973,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      981,
-      1003,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -652,11 +484,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1011,
-      1041,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -673,11 +501,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1049,
-      1108,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -694,11 +518,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1116,
-      1143,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -715,11 +535,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1151,
-      1210,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -736,11 +552,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1218,
-      1225,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -748,11 +560,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1902,
-      1995,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "revolve",
       "target": "[uuid]",
@@ -776,11 +584,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1902,
-      1995,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -788,11 +592,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1902,
-      1995,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -801,11 +601,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1902,
-      1995,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -815,11 +611,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1902,
-      1995,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -829,11 +621,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1902,
-      1995,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -843,11 +631,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1902,
-      1995,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -857,11 +641,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1902,
-      1995,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -871,11 +651,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1902,
-      1995,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -885,11 +661,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1902,
-      1995,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -899,11 +671,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1902,
-      1995,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -913,11 +681,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1902,
-      1995,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -927,11 +691,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1902,
-      1995,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -941,11 +701,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2040,
-      2251,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -966,11 +722,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2269,
-      2288,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -995,11 +747,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2294,
-      2382,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1015,22 +763,14 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2294,
-      2382,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2294,
-      2382,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1043,22 +783,14 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2294,
-      2382,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2388,
-      2452,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1075,11 +807,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2458,
-      2522,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1096,11 +824,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2528,
-      2581,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1117,11 +841,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2587,
-      2608,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1129,11 +849,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2614,
-      2638,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1149,11 +865,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2614,
-      2638,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1163,22 +875,14 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2614,
-      2638,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2614,
-      2638,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1186,11 +890,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2614,
-      2638,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1199,11 +899,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2614,
-      2638,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1213,11 +909,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2614,
-      2638,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1227,11 +919,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2614,
-      2638,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1241,11 +929,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2614,
-      2638,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1255,11 +939,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2614,
-      2638,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1269,11 +949,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2614,
-      2638,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1283,11 +959,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2614,
-      2638,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1297,11 +969,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2614,
-      2638,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1311,11 +979,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2704,
-      2732,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1325,11 +989,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2743,
-      2775,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_prev_adjacent_edge",
       "object_id": "[uuid]",
@@ -1339,11 +999,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2786,
-      2814,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1353,11 +1009,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2825,
-      2857,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_prev_adjacent_edge",
       "object_id": "[uuid]",
@@ -1367,11 +1019,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2644,
-      2873,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -1383,11 +1031,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2644,
-      2873,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -1399,11 +1043,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2644,
-      2873,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -1415,11 +1055,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2644,
-      2873,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -1431,11 +1067,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2933,
-      3098,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1447,22 +1079,14 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2933,
-      3098,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2933,
-      3098,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1475,22 +1099,14 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2933,
-      3098,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2933,
-      3098,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1515,11 +1131,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2933,
-      3098,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1527,11 +1139,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3104,
-      3313,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -1552,11 +1160,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1568,11 +1172,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1582,22 +1182,14 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1605,11 +1197,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1618,11 +1206,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1632,11 +1216,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1646,11 +1226,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1662,11 +1238,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1676,22 +1248,14 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1699,11 +1263,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1712,11 +1272,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1726,11 +1282,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1740,11 +1292,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1756,11 +1304,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1770,22 +1314,14 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1793,11 +1329,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1806,11 +1338,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1820,11 +1348,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1834,11 +1358,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1850,11 +1370,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1864,22 +1380,14 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1887,11 +1395,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1900,11 +1404,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1914,11 +1414,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3319,
-      3346,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1928,11 +1424,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3403,
-      3546,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -1972,11 +1464,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3403,
-      3546,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2016,11 +1504,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3403,
-      3546,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2060,11 +1544,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3403,
-      3546,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2104,11 +1584,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3552,
-      3682,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2177,11 +1653,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3552,
-      3682,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2250,11 +1722,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3552,
-      3682,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2323,11 +1791,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3552,
-      3682,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2396,11 +1860,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3552,
-      3682,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2469,11 +1929,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3552,
-      3682,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2542,11 +1998,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3552,
-      3682,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2615,11 +2067,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3552,
-      3682,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2688,11 +2136,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3762,
-      3907,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2732,11 +2176,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3762,
-      3907,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2776,11 +2216,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3762,
-      3907,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2820,11 +2256,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3762,
-      3907,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2864,11 +2296,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3913,
-      4043,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2937,11 +2365,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3913,
-      4043,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -3010,11 +2434,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3913,
-      4043,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -3083,11 +2503,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3913,
-      4043,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -3156,11 +2572,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3913,
-      4043,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -3229,11 +2641,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3913,
-      4043,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -3302,11 +2710,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3913,
-      4043,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -3375,11 +2779,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3913,
-      4043,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -3448,11 +2848,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4111,
-      4262,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -3492,11 +2888,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4268,
-      4398,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -3565,11 +2957,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4268,
-      4398,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -3638,11 +3026,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4452,
-      4486,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -3667,11 +3051,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4452,
-      4486,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -3685,11 +3065,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4493,
-      4518,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3705,22 +3081,14 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4493,
-      4518,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4493,
-      4518,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -3733,22 +3101,14 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4493,
-      4518,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4524,
-      4596,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3765,11 +3125,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4602,
-      4675,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3786,11 +3142,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4681,
-      4734,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3807,11 +3159,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4740,
-      4761,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -3819,11 +3167,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4767,
-      4811,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3839,11 +3183,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4767,
-      4811,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -3853,22 +3193,14 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4767,
-      4811,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4767,
-      4811,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -3876,11 +3208,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4767,
-      4811,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -3889,11 +3217,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4767,
-      4811,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3903,11 +3227,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4767,
-      4811,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3917,11 +3237,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4767,
-      4811,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3931,11 +3247,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4767,
-      4811,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3945,11 +3257,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4767,
-      4811,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3959,11 +3267,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4767,
-      4811,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3973,11 +3277,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4767,
-      4811,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3987,11 +3287,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4767,
-      4811,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4001,11 +3297,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4880,
-      4908,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4015,11 +3307,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4919,
-      4951,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_prev_adjacent_edge",
       "object_id": "[uuid]",
@@ -4029,11 +3317,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4962,
-      4990,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4043,11 +3327,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5001,
-      5033,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_prev_adjacent_edge",
       "object_id": "[uuid]",
@@ -4057,11 +3337,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4817,
-      5049,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -4073,11 +3349,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4817,
-      5049,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -4089,11 +3361,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4817,
-      5049,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -4105,11 +3373,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4817,
-      5049,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -4121,11 +3385,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5055,
-      5097,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_shell_face",
       "object_id": "[uuid]",
@@ -4138,11 +3398,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      927,
-      973,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -4151,11 +3407,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      927,
-      973,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -4164,11 +3416,7 @@ description: Artifact commands gridfinity-bins.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4493,
-      4518,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",

@@ -17,7 +17,7 @@ mySketch = startSketchOn('XY')
     |> close()
 ```
 
-The `mySketch` variable will be an executed `Sketch` object. Executed being past
+The `mySketch` variable will be an executed [`Sketch`](/docs/kcl/types/Sketch) object. Executed being past
 tense, because the engine has already executed the commands to create the sketch.
 
 The previous sketch commands will never be executed again, in this case.

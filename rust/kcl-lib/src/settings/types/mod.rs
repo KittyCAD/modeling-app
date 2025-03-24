@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use validator::{Validate, ValidateRange};
 
 const DEFAULT_THEME_COLOR: f64 = 264.5;
-const DEFAULT_PROJECT_NAME_TEMPLATE: &str = "project-$nnn";
+const DEFAULT_PROJECT_NAME_TEMPLATE: &str = "untitled";
 
 /// User specific settings for the app.
 /// These live in `user.toml` in the app's configuration directory.
@@ -113,15 +113,19 @@ pub struct AppSettings {
     pub onboarding_status: OnboardingStatus,
     /// Backwards compatible project directory setting.
     #[serde(default, alias = "projectDirectory", skip_serializing_if = "Option::is_none")]
+    #[ts(skip)]
     pub project_directory: Option<std::path::PathBuf>,
     /// Backwards compatible theme setting.
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(skip)]
     pub theme: Option<AppTheme>,
     /// The hue of the primary theme color for the app.
     #[serde(default, skip_serializing_if = "Option::is_none", alias = "themeColor")]
+    #[ts(skip)]
     pub theme_color: Option<FloatOrInt>,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     #[serde(default, alias = "enableSSAO", skip_serializing_if = "Option::is_none")]
+    #[ts(skip)]
     pub enable_ssao: Option<bool>,
     /// Permanently dismiss the banner warning to download the desktop app.
     /// This setting only applies to the web app. And is temporary until we have Linux support.
@@ -285,6 +289,7 @@ pub struct ModelingSettings {
     /// of the app to aid in development.
     /// Remove this when we remove backwards compatibility with the old settings file.
     #[serde(default, alias = "showDebugPanel", skip_serializing_if = "is_default")]
+    #[ts(skip)]
     pub show_debug_panel: bool,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     #[serde(default, skip_serializing_if = "is_default")]
@@ -598,7 +603,7 @@ mouseControls = "KittyCAD"
 showDebugPanel = true
 
 [settings.projects]
-defaultProjectName = "project-$nnn"
+defaultProjectName = "untitled"
 
 [settings.textEditor]
 textWrapping = true
@@ -855,7 +860,7 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                     },
                     project: ProjectSettings {
                         directory: "/Users/macinatormax/Documents/kittycad-modeling-projects".into(),
-                        default_project_name: "project-$nnn".to_string().into()
+                        default_project_name: "untitled".to_string().into()
                     },
                     command_bar: CommandBarSettings {
                         include_settings: true.into()

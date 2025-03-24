@@ -1,13 +1,15 @@
-import { CustomIconName } from 'components/CustomIcon'
-import { DEV } from 'env'
-import { commandBarActor } from 'machines/commandBarMachine'
+import { DEV } from '@src/env'
+import type { EventFrom, StateFrom } from 'xstate'
+
+import type { CustomIconName } from '@src/components/CustomIcon'
+import { createLiteral } from '@src/lang/create'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
   isEditingExistingSketch,
-  modelingMachine,
   pipeHasCircle,
-} from 'machines/modelingMachine'
-import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
-import { EventFrom, StateFrom } from 'xstate'
+} from '@src/machines/modelingMachine'
+import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 
 export type ToolbarModeName = 'modeling' | 'sketching'
 
@@ -20,12 +22,15 @@ export interface ToolbarItemCallbackProps {
   modelingState: StateFrom<typeof modelingMachine>
   modelingSend: (event: EventFrom<typeof modelingMachine>) => void
   sketchPathId: string | false
+  editorHasFocus: boolean | undefined
 }
 
 export type ToolbarItem = {
   id: string
   onClick: (props: ToolbarItemCallbackProps) => void
   icon?: CustomIconName
+  iconColor?: string
+  alwaysDark?: true
   status: 'available' | 'unavailable' | 'kcl-only'
   disabled?: (state: StateFrom<typeof modelingMachine>) => boolean
   disableHotkey?: (state: StateFrom<typeof modelingMachine>) => boolean
@@ -65,8 +70,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
     items: [
       {
         id: 'sketch',
-        onClick: ({ modelingSend, sketchPathId }) =>
-          !sketchPathId
+        onClick: ({ modelingSend, sketchPathId, editorHasFocus }) =>
+          !(editorHasFocus && sketchPathId)
             ? modelingSend({
                 type: 'Enter sketch',
                 data: { forceNewSketch: true },
@@ -74,8 +79,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             : modelingSend({ type: 'Enter sketch' }),
         icon: 'sketch',
         status: 'available',
-        title: ({ sketchPathId }) =>
-          sketchPathId ? 'Edit Sketch' : 'Start Sketch',
+        title: ({ editorHasFocus, sketchPathId }) =>
+          editorHasFocus && sketchPathId ? 'Edit Sketch' : 'Start Sketch',
         showTitle: true,
         hotkey: 'S',
         description: 'Start drawing a 2D sketch',
@@ -97,27 +102,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         hotkey: 'E',
         description: 'Pull a sketch into 3D along its normal or perpendicular.',
         links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/extrude' }],
-      },
-      {
-        id: 'revolve',
-        onClick: () =>
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Revolve', groupId: 'modeling' },
-          }),
-        icon: 'revolve',
-        status: 'available',
-        title: 'Revolve',
-        hotkey: 'R',
-        description:
-          'Create a 3D body by rotating a sketch region about an axis.',
-        links: [
-          { label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/revolve' },
-          {
-            label: 'KCL example',
-            url: 'https://zoo.dev/docs/kcl-samples/ball-bearing',
-          },
-        ],
       },
       {
         id: 'sweep',
@@ -156,6 +140,27 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           {
             label: 'KCL docs',
             url: 'https://zoo.dev/docs/kcl/loft',
+          },
+        ],
+      },
+      {
+        id: 'revolve',
+        onClick: () =>
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Revolve', groupId: 'modeling' },
+          }),
+        icon: 'revolve',
+        status: 'available',
+        title: 'Revolve',
+        hotkey: 'R',
+        description:
+          'Create a 3D body by rotating a sketch region about an axis.',
+        links: [
+          { label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/revolve' },
+          {
+            label: 'KCL example',
+            url: 'https://zoo.dev/docs/kcl-samples/ball-bearing',
           },
         ],
       },
@@ -206,9 +211,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'boolean-union',
-          onClick: () => console.error('Boolean union not yet implemented'),
+          onClick: () =>
+            commandBarActor.send({
+              type: 'Find and select command',
+              data: { name: 'Boolean Union', groupId: 'modeling' },
+            }),
           icon: 'booleanUnion',
-          status: 'unavailable',
+          status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'unavailable',
           title: 'Union',
           hotkey: 'Shift + B U',
           description: 'Combine two or more solids into a single solid.',
@@ -221,9 +230,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         },
         {
           id: 'boolean-subtract',
-          onClick: () => console.error('Boolean subtract not yet implemented'),
+          onClick: () =>
+            commandBarActor.send({
+              type: 'Find and select command',
+              data: { name: 'Boolean Subtract', groupId: 'modeling' },
+            }),
           icon: 'booleanSubtract',
-          status: 'unavailable',
+          status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'unavailable',
           title: 'Subtract',
           hotkey: 'Shift + B S',
           description: 'Subtract one solid from another.',
@@ -236,9 +249,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         },
         {
           id: 'boolean-intersect',
-          onClick: () => console.error('Boolean intersect not yet implemented'),
+          onClick: () =>
+            commandBarActor.send({
+              type: 'Find and select command',
+              data: { name: 'Boolean Intersect', groupId: 'modeling' },
+            }),
           icon: 'booleanIntersect',
-          status: 'unavailable',
+          status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'unavailable',
           title: 'Intersect',
           hotkey: 'Shift + B I',
           description: 'Create a solid from the intersection of two solids.',
@@ -292,7 +309,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         },
         hotkey: 'H',
         icon: 'helix',
-        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
+        status: 'available',
         title: 'Helix',
         description: 'Create a helix or spiral in 3D about an axis.',
         links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/helix' }],
@@ -307,9 +324,11 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               data: { name: 'Text-to-CAD', groupId: 'modeling' },
             }),
           icon: 'sparkles',
+          iconColor: '#29FFA4',
+          alwaysDark: true,
           status: 'available',
-          title: 'Create with AI',
-          description: 'Generate geometry from a text prompt.',
+          title: 'Create with Zoo Text-to-CAD',
+          description: 'Create geometry with AI / ML.',
           links: [
             {
               label: 'API docs',
@@ -325,9 +344,11 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               data: { name: 'Prompt-to-edit', groupId: 'modeling' },
             }),
           icon: 'sparkles',
+          iconColor: '#29FFA4',
+          alwaysDark: true,
           status: 'available',
-          title: 'Edit with AI',
-          description: 'Edit geometry based on a text prompt.',
+          title: 'Modify with Zoo Text-to-CAD',
+          description: 'Edit geometry with AI / ML.',
           links: [],
         },
       ],
@@ -601,7 +622,22 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'constraint-length',
-          disabled: (state) => !state.matches({ Sketch: 'SketchIdle' }),
+          disabled: (state) =>
+            !(
+              state.matches({ Sketch: 'SketchIdle' }) &&
+              state.can({
+                type: 'Constrain length',
+                data: {
+                  selection: state.context.selectionRanges,
+                  // dummy data is okay for checking if the constrain is possible
+                  length: {
+                    valueAst: createLiteral(1),
+                    valueText: '1',
+                    valueCalculated: '1',
+                  },
+                },
+              })
+            ),
           onClick: () =>
             commandBarActor.send({
               type: 'Find and select command',

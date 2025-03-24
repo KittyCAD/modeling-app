@@ -1,7 +1,8 @@
 import { assign, fromPromise, setup } from 'xstate'
-import { ProjectsCommandSchema } from 'lib/commandBarConfigs/projectsCommandConfig'
-import { Project } from 'lib/project'
-import { isArray } from 'lib/utils'
+
+import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
+import type { Project } from '@src/lib/project'
+import { isArray } from '@src/lib/utils'
 
 export const projectsMachine = setup({
   types: {
@@ -9,9 +10,10 @@ export const projectsMachine = setup({
       projects: Project[]
       defaultProjectName: string
       defaultDirectory: string
+      hasListedProjects: boolean
     },
     events: {} as
-      | { type: 'Read projects'; data: {} }
+      | { type: 'Read projects'; data: ProjectsCommandSchema['Read projects'] }
       | { type: 'Open project'; data: ProjectsCommandSchema['Open project'] }
       | {
           type: 'Rename project'
@@ -55,6 +57,7 @@ export const projectsMachine = setup({
       projects: Project[]
       defaultProjectName: string
       defaultDirectory: string
+      hasListedProjects: boolean
     },
   },
   actions: {
@@ -63,6 +66,9 @@ export const projectsMachine = setup({
         'output' in event && isArray(event.output)
           ? event.output
           : context.projects,
+    }),
+    setHasListedProjects: assign({
+      hasListedProjects: () => true,
     }),
     toastSuccess: () => {},
     toastError: () => {},
@@ -128,7 +134,6 @@ export const projectsMachine = setup({
       actions: assign(({ event }) => ({
         ...event.data,
       })),
-      target: '.Reading projects',
     },
 
     'Import file from URL': '.Creating file',
@@ -281,11 +286,11 @@ export const projectsMachine = setup({
           {
             guard: 'Has at least 1 project',
             target: 'Has projects',
-            actions: ['setProjects'],
+            actions: ['setProjects', 'setHasListedProjects'],
           },
           {
             target: 'Has no projects',
-            actions: ['setProjects'],
+            actions: ['setProjects', 'setHasListedProjects'],
           },
         ],
         onError: [

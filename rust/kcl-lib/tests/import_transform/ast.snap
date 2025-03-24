@@ -6,7 +6,48 @@ description: Result of parsing import_transform.kcl
   "Ok": {
     "body": [
       {
-        "end": 43,
+        "commentStart": 18,
+        "end": 0,
+        "outerAttrs": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "name": null,
+            "properties": [
+              {
+                "commentStart": 2,
+                "end": 0,
+                "key": {
+                  "commentStart": 2,
+                  "end": 0,
+                  "name": "lengthUnit",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "start": 0,
+                "type": "ObjectProperty",
+                "value": {
+                  "abs_path": false,
+                  "commentStart": 15,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 15,
+                    "end": 0,
+                    "name": "m",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
+              }
+            ],
+            "start": 0,
+            "type": "Annotation"
+          }
+        ],
         "path": {
           "type": "Foreign",
           "path": "2-5-long-m8-chc-screw.stl"
@@ -14,9 +55,10 @@ description: Result of parsing import_transform.kcl
         "selector": {
           "type": "None",
           "alias": {
-            "end": 43,
+            "commentStart": 56,
+            "end": 0,
             "name": "screw",
-            "start": 38,
+            "start": 0,
             "type": "Identifier"
           }
         },
@@ -25,30 +67,42 @@ description: Result of parsing import_transform.kcl
         "type": "ImportStatement"
       },
       {
-        "end": 232,
+        "commentStart": 61,
+        "end": 0,
         "expression": {
           "body": [
             {
-              "end": 50,
-              "name": "screw",
-              "start": 45,
-              "type": "Identifier",
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 63,
+              "end": 0,
+              "name": {
+                "commentStart": 63,
+                "end": 0,
+                "name": "screw",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             },
             {
               "arguments": [
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "end": 85,
+                    "commentStart": 84,
+                    "end": 0,
                     "name": "roll",
-                    "start": 81,
+                    "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "end": 92,
+                    "commentStart": 91,
+                    "end": 0,
                     "raw": "3.14",
-                    "start": 88,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -60,15 +114,17 @@ description: Result of parsing import_transform.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "end": 106,
+                    "commentStart": 97,
+                    "end": 0,
                     "name": "pitch",
-                    "start": 101,
+                    "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "end": 113,
+                    "commentStart": 105,
+                    "end": 0,
                     "raw": "3.14",
-                    "start": 109,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -80,15 +136,17 @@ description: Result of parsing import_transform.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "end": 125,
+                    "commentStart": 111,
+                    "end": 0,
                     "name": "yaw",
-                    "start": 122,
+                    "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "end": 132,
+                    "commentStart": 117,
+                    "end": 0,
                     "raw": "3.14",
-                    "start": 128,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -99,18 +157,29 @@ description: Result of parsing import_transform.kcl
                 }
               ],
               "callee": {
-                "end": 62,
-                "name": "rotate",
-                "start": 56,
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 74,
+                "end": 0,
+                "name": {
+                  "commentStart": 74,
+                  "end": 0,
+                  "name": "rotate",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name"
               },
-              "end": 140,
-              "start": 56,
+              "commentStart": 74,
+              "end": 0,
+              "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
-                "end": 72,
-                "start": 71,
+                "commentStart": 81,
+                "end": 0,
+                "start": 0,
                 "type": "PipeSubstitution",
                 "type": "PipeSubstitution"
               }
@@ -120,67 +189,94 @@ description: Result of parsing import_transform.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "end": 168,
-                    "name": "translate",
-                    "start": 159,
+                    "commentStart": 141,
+                    "end": 0,
+                    "name": "x",
+                    "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "elements": [
-                      {
-                        "end": 176,
-                        "raw": "3.14",
-                        "start": 172,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 3.14,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "end": 182,
-                        "raw": "3.14",
-                        "start": 178,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 3.14,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "end": 188,
-                        "raw": "3.14",
-                        "start": 184,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 3.14,
-                          "suffix": "None"
-                        }
-                      }
-                    ],
-                    "end": 189,
-                    "start": 171,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
+                    "commentStart": 145,
+                    "end": 0,
+                    "raw": "3.14",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 3.14,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 151,
+                    "end": 0,
+                    "name": "y",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 155,
+                    "end": 0,
+                    "raw": "3.14",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 3.14,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 161,
+                    "end": 0,
+                    "name": "z",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 165,
+                    "end": 0,
+                    "raw": "3.14",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 3.14,
+                      "suffix": "None"
+                    }
                   }
                 }
               ],
               "callee": {
-                "end": 155,
-                "name": "translate",
-                "start": 146,
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 128,
+                "end": 0,
+                "name": {
+                  "commentStart": 128,
+                  "end": 0,
+                  "name": "translate",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name"
               },
-              "end": 190,
-              "start": 146,
+              "commentStart": 128,
+              "end": 0,
+              "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
-                "end": 157,
-                "start": 156,
+                "commentStart": 138,
+                "end": 0,
+                "start": 0,
                 "type": "PipeSubstitution",
                 "type": "PipeSubstitution"
               }
@@ -190,89 +286,119 @@ description: Result of parsing import_transform.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "end": 210,
-                    "name": "scale",
-                    "start": 205,
+                    "commentStart": 185,
+                    "end": 0,
+                    "name": "x",
+                    "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "elements": [
-                      {
-                        "end": 218,
-                        "raw": "3.14",
-                        "start": 214,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 3.14,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "end": 224,
-                        "raw": "3.14",
-                        "start": 220,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 3.14,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "end": 230,
-                        "raw": "3.14",
-                        "start": 226,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 3.14,
-                          "suffix": "None"
-                        }
-                      }
-                    ],
-                    "end": 231,
-                    "start": 213,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
+                    "commentStart": 189,
+                    "end": 0,
+                    "raw": "3.14",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 3.14,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 195,
+                    "end": 0,
+                    "name": "y",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 199,
+                    "end": 0,
+                    "raw": "3.14",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 3.14,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 205,
+                    "end": 0,
+                    "name": "z",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 209,
+                    "end": 0,
+                    "raw": "3.14",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 3.14,
+                      "suffix": "None"
+                    }
                   }
                 }
               ],
               "callee": {
-                "end": 201,
-                "name": "scale",
-                "start": 196,
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 176,
+                "end": 0,
+                "name": {
+                  "commentStart": 176,
+                  "end": 0,
+                  "name": "scale",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name"
               },
-              "end": 232,
-              "start": 196,
+              "commentStart": 176,
+              "end": 0,
+              "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
-                "end": 203,
-                "start": 202,
+                "commentStart": 182,
+                "end": 0,
+                "start": 0,
                 "type": "PipeSubstitution",
                 "type": "PipeSubstitution"
               }
             }
           ],
-          "end": 232,
-          "start": 45,
+          "commentStart": 63,
+          "end": 0,
+          "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
-        "start": 45,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 233,
+    "commentStart": 0,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "end": 45,
-            "start": 43,
+            "commentStart": 61,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

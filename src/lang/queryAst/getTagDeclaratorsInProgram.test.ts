@@ -1,5 +1,5 @@
-import { assertParse, initPromise } from 'lang/wasm'
-import { getTagDeclaratorsInProgram } from './getTagDeclaratorsInProgram'
+import { getTagDeclaratorsInProgram } from '@src/lang/queryAst/getTagDeclaratorsInProgram'
+import { assertParse, initPromise } from '@src/lang/wasm'
 
 function tagDeclaratorWithIndex(
   value: string,
@@ -13,6 +13,7 @@ function tagDeclaratorWithIndex(
       value,
       start,
       end,
+      commentStart: start,
     },
     bodyIndex,
   }
@@ -29,14 +30,14 @@ describe(`getTagDeclaratorsInProgram`, () => {
   })
   it(`finds a single tag declarators in a small program`, () => {
     const tagDeclarators = getTagDeclaratorsInProgram(
-      assertParse(`sketch001 = startSketchOn('XZ')
+      assertParse(`sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([0, 0], sketch001)
   |> angledLine([0, 11], %, $a)`)
     )
-    expect(tagDeclarators).toEqual([tagDeclaratorWithIndex('a', 107, 109, 1)])
+    expect(tagDeclarators).toEqual([tagDeclaratorWithIndex('a', 105, 107, 1)])
   })
   it(`finds multiple tag declarators in a small program`, () => {
-    const program = `sketch001 = startSketchOn('XZ')
+    const program = `sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([0.07, 0], sketch001)
   |> angledLine([0, 11], %, $a)
   |> angledLine([segAng(a) + 90, 11.17], %, $b)
@@ -45,13 +46,13 @@ profile001 = startProfileAt([0.07, 0], sketch001)
   |> close()`
     const tagDeclarators = getTagDeclaratorsInProgram(assertParse(program))
     expect(tagDeclarators).toEqual([
-      tagDeclaratorWithIndex('a', 110, 112, 1),
-      tagDeclaratorWithIndex('b', 158, 160, 1),
-      tagDeclaratorWithIndex('c', 206, 208, 1),
+      tagDeclaratorWithIndex('a', 108, 110, 1),
+      tagDeclaratorWithIndex('b', 156, 158, 1),
+      tagDeclaratorWithIndex('c', 204, 206, 1),
     ])
   })
   it(`finds tag declarators at different indices`, () => {
-    const program = `sketch001 = startSketchOn('XZ')
+    const program = `sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([0.07, 0], sketch001)
   |> angledLine([0, 11], %, $a)
 profile002 = angledLine([segAng(a) + 90, 11.17], profile001, $b)
@@ -60,9 +61,9 @@ profile002 = angledLine([segAng(a) + 90, 11.17], profile001, $b)
   |> close()`
     const tagDeclarators = getTagDeclaratorsInProgram(assertParse(program))
     expect(tagDeclarators).toEqual([
-      tagDeclaratorWithIndex('a', 110, 112, 1),
-      tagDeclaratorWithIndex('b', 175, 177, 2),
-      tagDeclaratorWithIndex('c', 223, 225, 2),
+      tagDeclaratorWithIndex('a', 108, 110, 1),
+      tagDeclaratorWithIndex('b', 173, 175, 2),
+      tagDeclaratorWithIndex('c', 221, 223, 2),
     ])
   })
 })

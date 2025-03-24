@@ -85,14 +85,11 @@ description: Variables in memory after executing mounting-plate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            630,
-            698,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 697,
-            "start": 691,
+            "commentStart": 689,
+            "end": 695,
+            "start": 689,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -101,14 +98,11 @@ description: Variables in memory after executing mounting-plate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            706,
-            772,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 771,
-            "start": 765,
+            "commentStart": 763,
+            "end": 769,
+            "start": 763,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -117,14 +111,11 @@ description: Variables in memory after executing mounting-plate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            780,
-            848,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 847,
-            "start": 841,
+            "commentStart": 839,
+            "end": 845,
+            "start": 839,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -133,14 +124,11 @@ description: Variables in memory after executing mounting-plate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            856,
-            875,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 874,
-            "start": 868,
+            "commentStart": 866,
+            "end": 872,
+            "start": 866,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -154,19 +142,16 @@ description: Variables in memory after executing mounting-plate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                630,
-                698,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -3.0,
               -5.0
             ],
             "tag": {
-              "end": 697,
-              "start": 691,
+              "commentStart": 689,
+              "end": 695,
+              "start": 689,
               "type": "TagDeclarator",
               "value": "edge1"
             },
@@ -182,19 +167,16 @@ description: Variables in memory after executing mounting-plate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                706,
-                772,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.0,
               -5.0
             ],
             "tag": {
-              "end": 771,
-              "start": 765,
+              "commentStart": 763,
+              "end": 769,
+              "start": 763,
               "type": "TagDeclarator",
               "value": "edge2"
             },
@@ -210,19 +192,16 @@ description: Variables in memory after executing mounting-plate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                780,
-                848,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.0,
               5.0
             ],
             "tag": {
-              "end": 847,
-              "start": 841,
+              "commentStart": 839,
+              "end": 845,
+              "start": 839,
               "type": "TagDeclarator",
               "value": "edge3"
             },
@@ -238,19 +217,16 @@ description: Variables in memory after executing mounting-plate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                856,
-                875,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -3.0,
               5.0
             ],
             "tag": {
-              "end": 874,
-              "start": 868,
+              "commentStart": 866,
+              "end": 872,
+              "start": 866,
               "type": "TagDeclarator",
               "value": "edge4"
             },
@@ -308,11 +284,7 @@ description: Variables in memory after executing mounting-plate.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              567,
-              622,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
@@ -428,19 +400,16 @@ description: Variables in memory after executing mounting-plate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              630,
-              698,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -3.0,
             -5.0
           ],
           "tag": {
-            "end": 697,
-            "start": 691,
+            "commentStart": 689,
+            "end": 695,
+            "start": 689,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -456,19 +425,16 @@ description: Variables in memory after executing mounting-plate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              706,
-              772,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             3.0,
             -5.0
           ],
           "tag": {
-            "end": 771,
-            "start": 765,
+            "commentStart": 763,
+            "end": 769,
+            "start": 763,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -484,19 +450,16 @@ description: Variables in memory after executing mounting-plate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              780,
-              848,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             3.0,
             5.0
           ],
           "tag": {
-            "end": 847,
-            "start": 841,
+            "commentStart": 839,
+            "end": 845,
+            "start": 839,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -512,19 +475,16 @@ description: Variables in memory after executing mounting-plate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              856,
-              875,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -3.0,
             5.0
           ],
           "tag": {
-            "end": 874,
-            "start": 868,
+            "commentStart": 866,
+            "end": 872,
+            "start": 866,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -582,11 +542,7 @@ description: Variables in memory after executing mounting-plate.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            567,
-            622,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {

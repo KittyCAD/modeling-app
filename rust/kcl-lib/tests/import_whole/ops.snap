@@ -7,22 +7,14 @@ description: Operations executed import_whole.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          50,
-          54,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      36,
-      55,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,19 +34,11 @@ description: Operations executed import_whole.kcl
             }
           }
         },
-        "sourceRange": [
-          120,
-          122,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      103,
-      123,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -63,11 +47,7 @@ description: Operations executed import_whole.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        103,
-        123,
-        3
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -82,39 +62,27 @@ description: Operations executed import_whole.kcl
             }
           ]
         },
-        "sourceRange": [
-          97,
-          104,
-          0
-        ]
+        "sourceRange": []
       },
       "thickness": {
         "value": {
           "type": "Number",
-          "value": 0.25,
+          "value": 42.0,
           "ty": {
             "type": "Default",
             "len": {
-              "type": "Mm"
+              "type": "Inches"
             },
             "angle": {
               "type": "Degrees"
             }
           }
         },
-        "sourceRange": [
-          118,
-          122,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "shell",
-    "sourceRange": [
-      83,
-      123,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -123,11 +91,7 @@ description: Operations executed import_whole.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        83,
-        123,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

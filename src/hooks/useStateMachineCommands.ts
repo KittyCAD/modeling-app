@@ -1,20 +1,21 @@
+import { useAppState } from '@src/AppState'
 import { useEffect } from 'react'
-import { AnyStateMachine, Actor, StateFrom, EventFrom } from 'xstate'
-import { createMachineCommand } from '../lib/createMachineCommand'
-import { modelingMachine } from 'machines/modelingMachine'
-import { authMachine } from 'machines/authMachine'
-import { settingsMachine } from 'machines/settingsMachine'
-import { projectsMachine } from 'machines/projectsMachine'
-import {
+import type { Actor, AnyStateMachine, EventFrom, StateFrom } from 'xstate'
+
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import { useKclContext } from '@src/lang/KclProvider'
+import type {
   Command,
   StateMachineCommandSetConfig,
   StateMachineCommandSetSchema,
-} from 'lib/commandTypes'
-import { useKclContext } from 'lang/KclProvider'
-import { useNetworkContext } from 'hooks/useNetworkContext'
-import { NetworkHealthState } from 'hooks/useNetworkStatus'
-import { useAppState } from 'AppState'
-import { commandBarActor } from 'machines/commandBarMachine'
+} from '@src/lib/commandTypes'
+import { createMachineCommand } from '@src/lib/createMachineCommand'
+import type { authMachine } from '@src/machines/authMachine'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import type { modelingMachine } from '@src/machines/modelingMachine'
+import type { projectsMachine } from '@src/machines/projectsMachine'
+import type { settingsMachine } from '@src/machines/settingsMachine'
 
 // This might not be necessary, AnyStateMachine from xstate is working
 export type AllMachines =
@@ -25,7 +26,7 @@ export type AllMachines =
 
 interface UseStateMachineCommandsArgs<
   T extends AllMachines,
-  S extends StateMachineCommandSetSchema<T>
+  S extends StateMachineCommandSetSchema<T>,
 > {
   machineId: T['id']
   state: StateFrom<T>
@@ -38,7 +39,7 @@ interface UseStateMachineCommandsArgs<
 
 export default function useStateMachineCommands<
   T extends AnyStateMachine,
-  S extends StateMachineCommandSetSchema<T>
+  S extends StateMachineCommandSetSchema<T>,
 >({
   machineId,
   state,

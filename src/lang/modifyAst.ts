@@ -1,68 +1,46 @@
-import { err, reportRejection, trap } from 'lib/trap'
-import { Selection } from 'lib/selections'
+import type { Models } from '@kittycad/lib'
+
+import type { BodyItem } from '@rust/kcl-lib/bindings/BodyItem'
+import type { Name } from '@rust/kcl-lib/bindings/Name'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
 import {
-  Program,
-  CallExpression,
-  LabeledArg,
-  CallExpressionKw,
-  PipeExpression,
-  VariableDeclaration,
-  VariableDeclarator,
-  Expr,
-  Literal,
-  LiteralValue,
-  PipeSubstitution,
-  Identifier,
-  ArrayExpression,
-  ObjectExpression,
-  UnaryExpression,
-  BinaryExpression,
-  PathToNode,
-  SourceRange,
-  isPathToNodeNumber,
-  parse,
-  formatNumber,
-  ArtifactGraph,
-  VariableMap,
-  KclValue,
-} from './wasm'
+  createArrayExpression,
+  createCallExpression,
+  createCallExpressionStdLib,
+  createCallExpressionStdLibKw,
+  createIdentifier,
+  createLabeledArg,
+  createLiteral,
+  createLocalName,
+  createObjectExpression,
+  createPipeExpression,
+  createPipeSubstitution,
+  createVariableDeclaration,
+  findUniqueName,
+} from '@src/lang/create'
 import {
-  isNodeSafeToReplacePath,
+  deleteEdgeTreatment,
+  locateExtrudeDeclarator,
+} from '@src/lang/modifyAst/addEdgeTreatment'
+import {
   findAllPreviousVariables,
   findAllPreviousVariablesPath,
-  getNodeFromPath,
-  isNodeSafeToReplace,
-  traverse,
   getBodyIndex,
+  getNodeFromPath,
   isCallExprWithName,
+  isNodeSafeToReplace,
+  isNodeSafeToReplacePath,
+  traverse,
+} from '@src/lang/queryAst'
+import {
   ARG_INDEX_FIELD,
   LABELED_ARG_FIELD,
   UNLABELED_ARG,
-} from './queryAst'
+} from '@src/lang/queryAstConstants'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
-  addTagForSketchOnFace,
-  ARG_TAG,
-  getConstraintInfo,
-  getConstraintInfoKw,
-} from './std/sketch'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import {
-  PathToNodeMap,
-  isLiteralArrayOrStatic,
-  removeSingleConstraint,
-  transformAstSketchLines,
-} from './std/sketchcombos'
-import { DefaultPlaneStr } from 'lib/planes'
-import { isArray, isOverlap, roundOff } from 'lib/utils'
-import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
-import { SimplifiedArgDetails } from './std/stdTypes'
-import { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
-import { Models } from '@kittycad/lib'
-import { ExtrudeFacePlane } from 'machines/modelingMachine'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { KclExpressionWithVariable } from 'lib/commandTypes'
-import {
-  Artifact,
   expandCap,
   expandPlane,
   expandWall,
@@ -70,10 +48,43 @@ import {
   getArtifactsOfTypes,
   getFaceCodeRef,
   getPathsFromArtifact,
-} from './std/artifactGraph'
-import { BodyItem } from '@rust/kcl-lib/bindings/BodyItem'
-import { findKwArg } from './util'
-import { deleteEdgeTreatment } from './modifyAst/addEdgeTreatment'
+} from '@src/lang/std/artifactGraph'
+import {
+  addTagForSketchOnFace,
+  getConstraintInfo,
+  getConstraintInfoKw,
+} from '@src/lang/std/sketch'
+import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
+import {
+  isLiteralArrayOrStatic,
+  removeSingleConstraint,
+  transformAstSketchLines,
+} from '@src/lang/std/sketchcombos'
+import type { SimplifiedArgDetails } from '@src/lang/std/stdTypes'
+import type {
+  ArrayExpression,
+  ArtifactGraph,
+  CallExpression,
+  CallExpressionKw,
+  Expr,
+  KclValue,
+  Literal,
+  PathToNode,
+  PipeExpression,
+  Program,
+  SourceRange,
+  VariableDeclaration,
+  VariableDeclarator,
+  VariableMap,
+} from '@src/lang/wasm'
+import { isPathToNodeNumber, parse } from '@src/lang/wasm'
+import type { KclExpressionWithVariable } from '@src/lib/commandTypes'
+import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import type { DefaultPlaneStr } from '@src/lib/planes'
+import type { Selection } from '@src/lib/selections'
+import { err, reportRejection, trap } from '@src/lib/trap'
+import { isArray, isOverlap, roundOff } from '@src/lib/utils'
+import type { ExtrudeFacePlane } from '@src/machines/modelingMachine'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -135,7 +146,7 @@ export function insertNewStartProfileAt(
         createLiteral(roundOff(at[0])),
         createLiteral(roundOff(at[1])),
       ]),
-      createIdentifier(varDec.node.id.name),
+      createLocalName(varDec.node.id.name),
     ])
   )
   const insertIndex = getInsertIndex(sketchNodePaths, planeNodePath, insertType)
@@ -203,41 +214,6 @@ export function addSketchTo(
     id: _name,
     pathToNode,
   }
-}
-
-export function findUniqueName(
-  ast: Program | string,
-  name: string,
-  pad = 3,
-  index = 1
-): string {
-  let searchStr: string = typeof ast === 'string' ? ast : JSON.stringify(ast)
-  const indexStr = String(index).padStart(pad, '0')
-
-  const endingDigitsMatcher = /\d+$/
-  const nameEndsInDigits = name.match(endingDigitsMatcher)
-  let nameIsInString = searchStr.includes(`:"${name}"`)
-
-  if (nameEndsInDigits !== null) {
-    // base case: name is unique and ends in digits
-    if (!nameIsInString) return name
-
-    // recursive case: name is not unique and ends in digits
-    const newPad = nameEndsInDigits[0].length
-    const newIndex = parseInt(nameEndsInDigits[0]) + 1
-    const nameWithoutDigits = name.replace(endingDigitsMatcher, '')
-
-    return findUniqueName(searchStr, nameWithoutDigits, newPad, newIndex)
-  }
-
-  const newName = `${name}${indexStr}`
-  nameIsInString = searchStr.includes(`:"${newName}"`)
-
-  // base case: name is unique and does not end in digits
-  if (!nameIsInString) return newName
-
-  // recursive case: name is not unique and does not end in digits
-  return findUniqueName(searchStr, name, pad, index + 1)
 }
 
 /**
@@ -334,6 +310,8 @@ export function mutateObjExpProp(
         end: 0,
         moduleId: 0,
         outerAttrs: [],
+        preComments: [],
+        commentStart: 0,
       })
     }
   }
@@ -390,7 +368,7 @@ export function extrudeSketch({
 
   const extrudeCall = createCallExpressionStdLibKw(
     'extrude',
-    createIdentifier(variableDeclarator.id.name),
+    createLocalName(variableDeclarator.id.name),
     [createLabeledArg('length', distance)]
   )
   // index of the 'length' arg above. If you reorder the labeled args above,
@@ -434,7 +412,7 @@ export function loftSketches(
 } {
   const modifiedAst = structuredClone(node)
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.LOFT)
-  const elements = declarators.map((d) => createIdentifier(d.id.name))
+  const elements = declarators.map((d) => createLocalName(d.id.name))
   const loft = createCallExpressionStdLib('loft', [
     createArrayExpression(elements),
   ])
@@ -475,7 +453,7 @@ export function addShell({
     variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SHELL)
   const shell = createCallExpressionStdLibKw(
     'shell',
-    createIdentifier(sweepName),
+    createLocalName(sweepName),
     [
       createLabeledArg('faces', createArrayExpression(faces)),
       createLabeledArg('thickness', thickness),
@@ -487,8 +465,8 @@ export function addShell({
     insertIndex !== undefined
       ? insertIndex
       : modifiedAst.body.length
-      ? modifiedAst.body.length
-      : 0
+        ? modifiedAst.body.length
+        : 0
 
   if (modifiedAst.body.length) {
     modifiedAst.body.splice(insertAt, 0, variable)
@@ -513,30 +491,54 @@ export function addShell({
   }
 }
 
-export function addSweep(
-  node: Node<Program>,
-  profileDeclarator: VariableDeclarator,
-  pathDeclarator: VariableDeclarator
-): {
+export function addSweep({
+  node,
+  targetDeclarator,
+  trajectoryDeclarator,
+  sectional,
+  variableName,
+  insertIndex,
+}: {
+  node: Node<Program>
+  targetDeclarator: VariableDeclarator
+  trajectoryDeclarator: VariableDeclarator
+  sectional: boolean
+  variableName?: string
+  insertIndex?: number
+}): {
   modifiedAst: Node<Program>
   pathToNode: PathToNode
 } {
   const modifiedAst = structuredClone(node)
-  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP)
-  const sweep = createCallExpressionStdLibKw(
+  const name =
+    variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP)
+  const call = createCallExpressionStdLibKw(
     'sweep',
-    createIdentifier(profileDeclarator.id.name),
-    [createLabeledArg('path', createIdentifier(pathDeclarator.id.name))]
+    createLocalName(targetDeclarator.id.name),
+    [
+      createLabeledArg('path', createLocalName(trajectoryDeclarator.id.name)),
+      createLabeledArg('sectional', createLiteral(sectional)),
+    ]
   )
-  const declaration = createVariableDeclaration(name, sweep)
-  modifiedAst.body.push(declaration)
+  const variable = createVariableDeclaration(name, call)
+  const insertAt =
+    insertIndex !== undefined
+      ? insertIndex
+      : modifiedAst.body.length
+        ? modifiedAst.body.length
+        : 0
+
+  modifiedAst.body.length
+    ? modifiedAst.body.splice(insertAt, 0, variable)
+    : modifiedAst.body.push(variable)
+  const argIndex = 0
   const pathToNode: PathToNode = [
     ['body', ''],
-    [modifiedAst.body.length - 1, 'index'],
+    [insertAt, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpressionKw'],
-    [0, ARG_INDEX_FIELD],
+    [argIndex, ARG_INDEX_FIELD],
     ['arg', LABELED_ARG_FIELD],
   ]
 
@@ -586,9 +588,9 @@ export function revolveSketch(
     createObjectExpression({
       angle: angle,
       // TODO: hard coded 'X' axis for revolve MVP, should be changed.
-      axis: createLiteral('X'),
+      axis: createLocalName('X'),
     }),
-    createIdentifier(variableDeclarator.id.name),
+    createLocalName(variableDeclarator.id.name),
   ])
 
   if (shouldPipe) {
@@ -646,7 +648,7 @@ export function sketchOnExtrudedFace(
   sketchPathToNode: PathToNode,
   extrudePathToNode: PathToNode,
   info: ExtrudeFacePlane['faceInfo'] = { type: 'wall' }
-): { modifiedAst: Program; pathToNode: PathToNode } | Error {
+): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
   let _node = { ...node }
   const newSketchName = findUniqueName(
     node,
@@ -686,12 +688,12 @@ export function sketchOnExtrudedFace(
         pathToNode: sketchPathToNode,
         node: _node,
       },
-      expression.callee.name,
+      expression.callee.name.name,
       info.type === 'edgeCut' ? info : null
     )
     if (err(__tag)) return __tag
     const { modifiedAst, tag } = __tag
-    _tag = createIdentifier(tag)
+    _tag = createLocalName(tag)
     _node = modifiedAst
   } else {
     _tag = createLiteral(info.subType.toUpperCase())
@@ -699,7 +701,7 @@ export function sketchOnExtrudedFace(
   const newSketch = createVariableDeclaration(
     newSketchName,
     createCallExpressionStdLib('startSketchOn', [
-      createIdentifier(extrudeName ? extrudeName : oldSketchName),
+      createLocalName(extrudeName ? extrudeName : oldSketchName),
       _tag,
     ]),
     undefined,
@@ -757,8 +759,8 @@ export function addOffsetPlane({
     insertIndex !== undefined
       ? insertIndex
       : modifiedAst.body.length
-      ? modifiedAst.body.length
-      : 0
+        ? modifiedAst.body.length
+        : 0
 
   modifiedAst.body.length
     ? modifiedAst.body.splice(insertAt, 0, newPlane)
@@ -781,40 +783,53 @@ export function addOffsetPlane({
  */
 export function addHelix({
   node,
+  axis,
+  cylinder,
   revolutions,
   angleStart,
-  counterClockWise,
   radius,
-  axis,
   length,
+  ccw,
   insertIndex,
   variableName,
 }: {
   node: Node<Program>
+  axis?: Node<Literal> | Node<Name | CallExpression | CallExpressionKw>
+  cylinder?: VariableDeclarator
   revolutions: Expr
   angleStart: Expr
-  counterClockWise: boolean
-  radius: Expr
-  axis: string
-  length: Expr
+  radius?: Expr
+  length?: Expr
+  ccw: boolean
   insertIndex?: number
   variableName?: string
 }): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   const modifiedAst = structuredClone(node)
   const name =
     variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.HELIX)
+  const modeArgs: CallExpressionKw['arguments'] = []
+  if (axis && radius) {
+    modeArgs.push(createLabeledArg('axis', axis))
+    modeArgs.push(createLabeledArg('radius', radius))
+    if (length) {
+      modeArgs.push(createLabeledArg('length', length))
+    }
+  } else if (cylinder) {
+    modeArgs.push(
+      createLabeledArg('cylinder', createLocalName(cylinder.id.name))
+    )
+  }
+
   const variable = createVariableDeclaration(
     name,
     createCallExpressionStdLibKw(
       'helix',
       null, // Not in a pipeline
       [
+        ...modeArgs,
         createLabeledArg('revolutions', revolutions),
         createLabeledArg('angleStart', angleStart),
-        createLabeledArg('counterClockWise', createLiteral(counterClockWise)),
-        createLabeledArg('radius', radius),
-        createLabeledArg('axis', createLiteral(axis)),
-        createLabeledArg('length', length),
+        createLabeledArg('ccw', createLiteral(ccw)),
       ]
     )
   )
@@ -823,8 +838,8 @@ export function addHelix({
     insertIndex !== undefined
       ? insertIndex
       : modifiedAst.body.length
-      ? modifiedAst.body.length
-      : 0
+        ? modifiedAst.body.length
+        : 0
 
   modifiedAst.body.length
     ? modifiedAst.body.splice(insertAt, 0, variable)
@@ -895,7 +910,7 @@ export function sketchOnOffsetPlane(
   const newSketch = createVariableDeclaration(
     newSketchName,
     createCallExpressionStdLib('startSketchOn', [
-      createIdentifier(offsetPlaneName),
+      createLocalName(offsetPlaneName),
     ]),
     undefined,
     'const'
@@ -968,334 +983,6 @@ export function splitPathAtPipeExpression(pathToNode: PathToNode): {
 }
 
 /**
- * Note: This depends on WASM, but it's not async.  Callers are responsible for
- * awaiting init of the WASM module.
- */
-export function createLiteral(value: LiteralValue | number): Node<Literal> {
-  if (typeof value === 'number') {
-    value = { value, suffix: 'None' }
-  }
-  let raw: string
-  if (typeof value === 'string') {
-    // TODO: Should we handle escape sequences?
-    raw = `${value}`
-  } else if (typeof value === 'boolean') {
-    raw = `${value}`
-  } else if (typeof value.value === 'number' && value.suffix === 'None') {
-    // Fast path for numbers when there are no units.
-    raw = `${value.value}`
-  } else {
-    raw = formatNumber(value.value, value.suffix)
-  }
-  return {
-    type: 'Literal',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    value,
-    raw,
-    outerAttrs: [],
-  }
-}
-
-export function createTagDeclarator(value: string): Node<TagDeclarator> {
-  return {
-    type: 'TagDeclarator',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-
-    value,
-  }
-}
-
-export function createIdentifier(name: string): Node<Identifier> {
-  return {
-    type: 'Identifier',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-
-    name,
-  }
-}
-
-export function createPipeSubstitution(): Node<PipeSubstitution> {
-  return {
-    type: 'PipeSubstitution',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-  }
-}
-
-export function createCallExpressionStdLib(
-  name: string,
-  args: CallExpression['arguments']
-): Node<CallExpression> {
-  return {
-    type: 'CallExpression',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-    callee: {
-      type: 'Identifier',
-      start: 0,
-      end: 0,
-      moduleId: 0,
-      outerAttrs: [],
-
-      name,
-    },
-    arguments: args,
-  }
-}
-
-export function createCallExpressionStdLibKw(
-  name: string,
-  unlabeled: CallExpressionKw['unlabeled'],
-  args: CallExpressionKw['arguments']
-): Node<CallExpressionKw> {
-  return {
-    type: 'CallExpressionKw',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-    nonCodeMeta: nonCodeMetaEmpty(),
-    callee: {
-      type: 'Identifier',
-      start: 0,
-      end: 0,
-      moduleId: 0,
-      outerAttrs: [],
-
-      name,
-    },
-    unlabeled,
-    arguments: args,
-  }
-}
-
-export function createCallExpression(
-  name: string,
-  args: CallExpression['arguments']
-): Node<CallExpression> {
-  return {
-    type: 'CallExpression',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-    callee: {
-      type: 'Identifier',
-      start: 0,
-      end: 0,
-      moduleId: 0,
-      outerAttrs: [],
-
-      name,
-    },
-    arguments: args,
-  }
-}
-
-export function createArrayExpression(
-  elements: ArrayExpression['elements']
-): Node<ArrayExpression> {
-  return {
-    type: 'ArrayExpression',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-
-    nonCodeMeta: nonCodeMetaEmpty(),
-    elements,
-  }
-}
-
-export function createPipeExpression(
-  body: PipeExpression['body']
-): Node<PipeExpression> {
-  return {
-    type: 'PipeExpression',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-
-    body,
-    nonCodeMeta: nonCodeMetaEmpty(),
-  }
-}
-
-export function createVariableDeclaration(
-  varName: string,
-  init: VariableDeclarator['init'],
-  visibility: VariableDeclaration['visibility'] = 'default',
-  kind: VariableDeclaration['kind'] = 'const'
-): Node<VariableDeclaration> {
-  return {
-    type: 'VariableDeclaration',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-
-    declaration: {
-      type: 'VariableDeclarator',
-      start: 0,
-      end: 0,
-      moduleId: 0,
-      outerAttrs: [],
-
-      id: createIdentifier(varName),
-      init,
-    },
-    visibility,
-    kind,
-  }
-}
-
-export function createObjectExpression(properties: {
-  [key: string]: Expr
-}): Node<ObjectExpression> {
-  return {
-    type: 'ObjectExpression',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-
-    nonCodeMeta: nonCodeMetaEmpty(),
-    properties: Object.entries(properties).map(([key, value]) => ({
-      type: 'ObjectProperty',
-      start: 0,
-      end: 0,
-      moduleId: 0,
-      outerAttrs: [],
-      key: createIdentifier(key),
-
-      value,
-    })),
-  }
-}
-
-export function createUnaryExpression(
-  argument: UnaryExpression['argument'],
-  operator: UnaryExpression['operator'] = '-'
-): Node<UnaryExpression> {
-  return {
-    type: 'UnaryExpression',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-
-    operator,
-    argument,
-  }
-}
-
-export function createBinaryExpression([left, operator, right]: [
-  BinaryExpression['left'],
-  BinaryExpression['operator'],
-  BinaryExpression['right']
-]): Node<BinaryExpression> {
-  return {
-    type: 'BinaryExpression',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-
-    operator,
-    left,
-    right,
-  }
-}
-
-export function createBinaryExpressionWithUnary([left, right]: [
-  BinaryExpression['left'],
-  BinaryExpression['right']
-]): Node<BinaryExpression> {
-  if (right.type === 'UnaryExpression' && right.operator === '-')
-    return createBinaryExpression([left, '-', right.argument])
-  return createBinaryExpression([left, '+', right])
-}
-
-export function giveSketchFnCallTag(
-  ast: Node<Program>,
-  range: SourceRange,
-  tag?: string
-):
-  | {
-      modifiedAst: Node<Program>
-      tag: string
-      isTagExisting: boolean
-      pathToNode: PathToNode
-    }
-  | Error {
-  const path = getNodePathFromSourceRange(ast, range)
-  const maybeTag = (() => {
-    const callNode = getNodeFromPath<CallExpression | CallExpressionKw>(
-      ast,
-      path,
-      ['CallExpression', 'CallExpressionKw']
-    )
-    if (!err(callNode) && callNode.node.type === 'CallExpressionKw') {
-      const { node: primaryCallExp } = callNode
-      const existingTag = findKwArg(ARG_TAG, primaryCallExp)
-      const tagDeclarator =
-        existingTag || createTagDeclarator(tag || findUniqueName(ast, 'seg', 2))
-      const isTagExisting = !!existingTag
-      if (!isTagExisting) {
-        callNode.node.arguments.push(createLabeledArg(ARG_TAG, tagDeclarator))
-      }
-      return { tagDeclarator, isTagExisting }
-    }
-
-    // We've handled CallExpressionKw above, so this has to be positional.
-    const _node1 = getNodeFromPath<CallExpression>(ast, path, 'CallExpression')
-    if (err(_node1)) return _node1
-    const { node: primaryCallExp } = _node1
-
-    // Tag is always 3rd expression now, using arg index feels brittle
-    // but we can come up with a better way to identify tag later.
-    const thirdArg = primaryCallExp.arguments?.[2]
-    const tagDeclarator =
-      thirdArg ||
-      (createTagDeclarator(
-        tag || findUniqueName(ast, 'seg', 2)
-      ) as TagDeclarator)
-    const isTagExisting = !!thirdArg
-    if (!isTagExisting) {
-      primaryCallExp.arguments[2] = tagDeclarator
-    }
-    return { tagDeclarator, isTagExisting }
-  })()
-
-  if (err(maybeTag)) return maybeTag
-  const { tagDeclarator, isTagExisting } = maybeTag
-  if ('value' in tagDeclarator) {
-    // Now TypeScript knows tagDeclarator has a value property
-    return {
-      modifiedAst: ast,
-      tag: String(tagDeclarator.value),
-      isTagExisting,
-      pathToNode: path,
-    }
-  } else {
-    return new Error('Unable to assign tag without value')
-  }
-}
-
-/**
  * Replace a
  */
 export function replaceValueAtNodePath({
@@ -1313,7 +1000,7 @@ export function replaceValueAtNodePath({
   }
   const { isSafe, value, replacer } = replaceCheckResult
 
-  if (!isSafe || value.type === 'Identifier') {
+  if (!isSafe || value.type === 'Name') {
     return new Error('Not safe to replace')
   }
 
@@ -1326,14 +1013,14 @@ export function moveValueIntoNewVariablePath(
   pathToNode: PathToNode,
   variableName: string
 ): {
-  modifiedAst: Program
+  modifiedAst: Node<Program>
   pathToReplacedNode?: PathToNode
 } {
   const meta = isNodeSafeToReplacePath(ast, pathToNode)
   if (trap(meta)) return { modifiedAst: ast }
   const { isSafe, value, replacer } = meta
 
-  if (!isSafe || value.type === 'Identifier') return { modifiedAst: ast }
+  if (!isSafe || value.type === 'Name') return { modifiedAst: ast }
 
   const { insertIndex } = findAllPreviousVariablesPath(ast, memVars, pathToNode)
   let _node = structuredClone(ast)
@@ -1361,7 +1048,7 @@ export function moveValueIntoNewVariable(
   const meta = isNodeSafeToReplace(ast, sourceRange)
   if (trap(meta)) return { modifiedAst: ast }
   const { isSafe, value, replacer } = meta
-  if (!isSafe || value.type === 'Identifier') return { modifiedAst: ast }
+  if (!isSafe || value.type === 'Name') return { modifiedAst: ast }
 
   const { insertIndex } = findAllPreviousVariables(ast, memVars, sourceRange)
   let _node = structuredClone(ast)
@@ -1476,7 +1163,7 @@ export async function deleteFromSelection(
   variables: VariableMap,
   artifactGraph: ArtifactGraph,
   getFaceDetails: (id: string) => Promise<Models['FaceIsPlanar_type']> = () =>
-    ({} as any)
+    ({}) as any
 ): Promise<Node<Program> | Error> {
   const astClone = structuredClone(ast)
   let deletionArtifact = selection.artifact
@@ -1510,8 +1197,8 @@ export async function deleteFromSelection(
       deletionArtifact.type === 'plane'
         ? expandPlane(deletionArtifact, artifactGraph)
         : deletionArtifact.type === 'wall'
-        ? expandWall(deletionArtifact, artifactGraph)
-        : expandCap(deletionArtifact, artifactGraph)
+          ? expandWall(deletionArtifact, artifactGraph)
+          : expandCap(deletionArtifact, artifactGraph)
     for (const path of plane.paths.sort(
       (a, b) => b.codeRef.range?.[0] - a.codeRef.range?.[0]
     )) {
@@ -1586,25 +1273,25 @@ export async function deleteFromSelection(
             const dec = node.declaration
             if (
               (dec.init.type === 'CallExpression' &&
-                (dec.init.callee.name === 'extrude' ||
-                  dec.init.callee.name === 'revolve') &&
-                dec.init.arguments?.[1].type === 'Identifier' &&
-                dec.init.arguments?.[1].name === varDecName) ||
+                (dec.init.callee.name.name === 'extrude' ||
+                  dec.init.callee.name.name === 'revolve') &&
+                dec.init.arguments?.[1].type === 'Name' &&
+                dec.init.arguments?.[1].name.name === varDecName) ||
               (dec.init.type === 'CallExpressionKw' &&
-                (dec.init.callee.name === 'extrude' ||
-                  dec.init.callee.name === 'revolve') &&
-                dec.init.unlabeled?.type === 'Identifier' &&
-                dec.init.unlabeled?.name === varDecName)
+                (dec.init.callee.name.name === 'extrude' ||
+                  dec.init.callee.name.name === 'revolve') &&
+                dec.init.unlabeled?.type === 'Name' &&
+                dec.init.unlabeled?.name.name === varDecName)
             ) {
               pathToNode = path
               extrudeNameToDelete = dec.id.name
             }
             if (
               dec.init.type === 'CallExpression' &&
-              dec.init.callee.name === 'loft' &&
+              dec.init.callee.name.name === 'loft' &&
               dec.init.arguments?.[0].type === 'ArrayExpression' &&
               dec.init.arguments?.[0].elements.some(
-                (a) => a.type === 'Identifier' && a.name === varDecName
+                (a) => a.type === 'Name' && a.name.name === varDecName
               )
             ) {
               pathToNode = path
@@ -1623,7 +1310,7 @@ export async function deleteFromSelection(
           'CallExpression'
         )
         if (err(callExp)) return callExp
-        extrudeNameToDelete = callExp.node.callee.name
+        extrudeNameToDelete = callExp.node.callee.name.name
       } else {
         extrudeNameToDelete = varDec.node.id.name
       }
@@ -1651,12 +1338,12 @@ export async function deleteFromSelection(
             selection.artifact?.type === 'wall'
               ? selection.artifact
               : selection.artifact?.type === 'segment' &&
-                selection.artifact.surfaceId
-              ? getArtifactOfTypes(
-                  { key: selection.artifact.surfaceId, types: ['wall'] },
-                  artifactGraph
-                )
-              : null
+                  selection.artifact.surfaceId
+                ? getArtifactOfTypes(
+                    { key: selection.artifact.surfaceId, types: ['wall'] },
+                    artifactGraph
+                  )
+                : null
           if (err(wallArtifact)) return
           if (wallArtifact) {
             const sweep = getArtifactOfTypes(
@@ -1721,15 +1408,15 @@ export async function deleteFromSelection(
               variable.type === 'Sketch'
                 ? variable.value.artifactId
                 : variable.type === 'Face'
-                ? variable.value.artifactId
-                : ''
+                  ? variable.value.artifactId
+                  : ''
             if (!artifactId) return new Error('Sketch not on anything')
             const onId =
               variable.type === 'Sketch'
                 ? variable.value.on.id
                 : variable.type === 'Face'
-                ? variable.value.id
-                : ''
+                  ? variable.value.id
+                  : ''
             if (!onId) return new Error('Sketch not on anything')
             // Can't kick off multiple requests at once as getFaceDetails
             // is three engine calls in one and they conflict
@@ -1819,8 +1506,8 @@ export async function deleteFromSelection(
     if (
       pipeBody[0].type === 'CallExpression' &&
       doNotDeleteProfileIfItHasBeenExtruded &&
-      (pipeBody[0].callee.name === 'startSketchOn' ||
-        pipeBody[0].callee.name === 'startProfileAt')
+      (pipeBody[0].callee.name.name === 'startSketchOn' ||
+        pipeBody[0].callee.name.name === 'startProfileAt')
     ) {
       // remove varDec
       const varDecIndex = varDec.shallowPath[1][0] as number
@@ -1831,7 +1518,7 @@ export async function deleteFromSelection(
     // single expression profiles
     (varDec.node.init.type === 'CallExpressionKw' ||
       varDec.node.init.type === 'CallExpression') &&
-    ['circleThreePoint', 'circle'].includes(varDec.node.init.callee.name)
+    ['circleThreePoint', 'circle'].includes(varDec.node.init.callee.name.name)
   ) {
     const varDecIndex = varDec.shallowPath[1][0] as number
     astClone.body.splice(varDecIndex, 1)
@@ -1841,8 +1528,25 @@ export async function deleteFromSelection(
   return new Error('Selection not recognised, could not delete')
 }
 
-export const nonCodeMetaEmpty = () => {
-  return { nonCodeNodes: {}, startNodes: [], start: 0, end: 0 }
+export function deleteNodeInExtrudePipe(
+  node: PathToNode,
+  ast: Node<Program>
+): Error | void {
+  const pipeIndex = node.findIndex(([_, type]) => type === 'PipeExpression') + 1
+  if (!(node[pipeIndex][0] && typeof node[pipeIndex][0] === 'number')) {
+    return new Error("Couldn't find node to delete in ast")
+  }
+
+  const lookup = locateExtrudeDeclarator(ast, node)
+  if (err(lookup)) {
+    return lookup
+  }
+
+  if (lookup.extrudeDeclarator.init.type !== 'PipeExpression') {
+    return new Error("Couldn't find node to delete in looked up extrusion")
+  }
+
+  lookup.extrudeDeclarator.init.body.splice(node[pipeIndex][0], 1)
 }
 
 export function getInsertIndex(
@@ -1861,8 +1565,8 @@ export function getInsertIndex(
   const insertIndex = !sketchNodePaths.length
     ? Number(planeNodePath[1][0]) + 1
     : insertType === 'start'
-    ? minIndex
-    : maxIndex + 1
+      ? minIndex
+      : maxIndex + 1
   return insertIndex
 }
 
@@ -1905,7 +1609,7 @@ export function updateSketchNodePathsWithInsertIndex({
  * 
  * Split the following pipe expression into 
  * ```ts
- * part001 = startSketchOn('XZ')
+ * part001 = startSketchOn(XZ)
   |> startProfileAt([1, 2], %)
   |> line([3, 4], %)
   |> line([5, 6], %)
@@ -1914,7 +1618,7 @@ extrude001 = extrude(5, part001)
 ```
 into
 ```ts
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
 part001 = startProfileAt([1, 2], sketch001)
   |> line([3, 4], %)
   |> line([5, 6], %)
@@ -1926,11 +1630,11 @@ making it safe for later code that uses part001 (the extrude in this example)
  * 
  */
 export function splitPipedProfile(
-  ast: Program,
+  ast: Node<Program>,
   pathToPipe: PathToNode
 ):
   | {
-      modifiedAst: Program
+      modifiedAst: Node<Program>
       pathToProfile: PathToNode
       pathToPlane: PathToNode
     }
@@ -1959,7 +1663,7 @@ export function splitPipedProfile(
   const varName = varDec.node.declaration.id.name
   const newVarName = findUniqueName(_ast, 'sketch')
   const secondCallArgs = structuredClone(secondCall.arguments)
-  secondCallArgs[1] = createIdentifier(newVarName)
+  secondCallArgs[1] = createLocalName(newVarName)
   const firstCallOfNewPipe = createCallExpression(
     'startProfileAt',
     secondCallArgs
@@ -2004,8 +1708,4 @@ export function createNodeFromExprSnippet(
   const node = program.program?.body[0]
   if (!node) return new Error('No node found')
   return node
-}
-
-export const createLabeledArg = (label: string, arg: Expr): LabeledArg => {
-  return { label: createIdentifier(label), arg, type: 'LabeledArg' }
 }

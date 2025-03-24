@@ -1,24 +1,28 @@
-import { toolTips } from 'lang/langHelpers'
-import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
-import { Selections } from 'lib/selections'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import { removeDoubleNegatives } from '@src/components/AvailableVarsHelpers'
+import {
+  GetInfoModal,
+  createInfoModal,
+} from '@src/components/SetHorVertDistanceModal'
+import { createVariableDeclaration } from '@src/lang/create'
+import { toolTips } from '@src/lang/langHelpers'
 import {
   getNodeFromPath,
   isLinesParallelAndConstrained,
-} from '../../lang/queryAst'
-import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
+} from '@src/lang/queryAst'
+import { isSketchVariablesLinked } from '@src/lang/std/sketchConstraints'
+import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
 import {
-  transformSecondarySketchLinesTagFirst,
   getTransformInfos,
-  PathToNodeMap,
   isExprBinaryPart,
-} from '../../lang/std/sketchcombos'
-import { TransformInfo } from 'lang/std/stdTypes'
-import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
-import { createVariableDeclaration } from '../../lang/modifyAst'
-import { removeDoubleNegatives } from '../AvailableVarsHelpers'
-import { engineCommandManager, kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
-import { Node } from '@rust/kcl-lib/bindings/Node'
+  transformSecondarySketchLinesTagFirst,
+} from '@src/lang/std/sketchcombos'
+import type { TransformInfo } from '@src/lang/std/stdTypes'
+import type { Expr, Program, VariableDeclarator } from '@src/lang/wasm'
+import type { Selections } from '@src/lib/selections'
+import { kclManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 
@@ -45,7 +49,7 @@ export function intersectInfo({
     selectionRanges.graphSelections.length > 1 &&
     isLinesParallelAndConstrained(
       kclManager.ast,
-      engineCommandManager.artifactGraph,
+      kclManager.artifactGraph,
       kclManager.variables,
       selectionRanges.graphSelections[0],
       selectionRanges.graphSelections[1]
@@ -99,7 +103,7 @@ export function intersectInfo({
   const isAllTooltips = nodes.every(
     (node) =>
       (node?.type === 'CallExpression' || node?.type === 'CallExpressionKw') &&
-      [...toolTips].includes(node.callee.name as any)
+      [...toolTips].includes(node.callee.name.name as any)
   )
 
   const theTransforms = getTransformInfos(

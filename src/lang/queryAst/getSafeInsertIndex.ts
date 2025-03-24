@@ -1,7 +1,8 @@
-import { getIdentifiersInProgram } from './getIndentifiersInProgram'
-import { Program, Expr } from 'lang/wasm'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { getTagDeclaratorsInProgram } from './getTagDeclaratorsInProgram'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import { getIdentifiersInProgram } from '@src/lang/queryAst/getIndentifiersInProgram'
+import { getTagDeclaratorsInProgram } from '@src/lang/queryAst/getTagDeclaratorsInProgram'
+import type { Expr, Program } from '@src/lang/wasm'
 
 /**
  * Given a target expression, return the body index of the last-used variable
@@ -15,19 +16,15 @@ export function getSafeInsertIndex(
   const safeIdentifierIndex = identifiers.reduce((acc, curr) => {
     const bodyIndex = program.body.findIndex(
       (a) =>
-        a.type === 'VariableDeclaration' && a.declaration.id?.name === curr.name
+        a.type === 'VariableDeclaration' &&
+        a.declaration.id?.name === curr.name.name
     )
     return Math.max(acc, bodyIndex + 1)
   }, 0)
 
   const tagDeclarators = getTagDeclaratorsInProgram(program)
-  console.log('FRANK tagDeclarators', {
-    identifiers,
-    tagDeclarators,
-    targetExpr,
-  })
   const safeTagIndex = tagDeclarators.reduce((acc, curr) => {
-    return identifiers.findIndex((a) => a.name === curr.tag.value) === -1
+    return identifiers.findIndex((a) => a.name.name === curr.tag.value) === -1
       ? acc
       : Math.max(acc, curr.bodyIndex + 1)
   }, 0)

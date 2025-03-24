@@ -1,17 +1,19 @@
-import { Settings } from '@rust/kcl-lib/bindings/Settings'
-import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
-import { Themes } from 'lib/theme'
-import { DeepPartial } from 'lib/types'
-import { onboardingPaths } from 'routes/Onboarding/paths'
+import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
+import { Themes } from '@src/lib/theme'
+import type { DeepPartial } from '@src/lib/types'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
+import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
 export const IS_PLAYWRIGHT_KEY = 'playwright'
 
 export const TEST_SETTINGS_KEY = '/settings.toml'
 export const TEST_SETTINGS: DeepPartial<Settings> = {
   app: {
-    theme: Themes.Dark,
+    appearance: {
+      theme: Themes.Dark,
+    },
     onboarding_status: 'dismissed',
-    project_directory: '',
     show_debug_panel: true,
   },
   modeling: {
@@ -21,7 +23,8 @@ export const TEST_SETTINGS: DeepPartial<Settings> = {
     camera_projection: 'perspective',
   },
   project: {
-    default_project_name: 'project-$nnn',
+    default_project_name: 'untitled',
+    directory: '',
   },
   text_editor: {
     text_wrapping: true,
@@ -54,7 +57,7 @@ export const TEST_SETTINGS_ONBOARDING_START: DeepPartial<Settings> = {
 
 export const TEST_SETTINGS_DEFAULT_THEME: DeepPartial<Settings> = {
   ...TEST_SETTINGS,
-  app: { ...TEST_SETTINGS.app, theme: Themes.System },
+  app: { ...TEST_SETTINGS.app, appearance: { theme: Themes.System } },
 }
 
 export const TEST_SETTINGS_CORRUPTED = {
@@ -77,7 +80,7 @@ export const TEST_SETTINGS_CORRUPTED = {
   },
 } satisfies Partial<SaveSettingsPayload>
 
-export const TEST_CODE_GIZMO = `part001 = startSketchOn('XZ')
+export const TEST_CODE_GIZMO = `part001 = startSketchOn(XZ)
 |> startProfileAt([20, 0], %)
 |> line(end = [7.13, 4 + 0])
 |> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
@@ -128,7 +131,7 @@ keychain2 = startSketchOn("XY")
   |> close()
   |> extrude(length = thickness)
 
-box = startSketchOn('XY')
+box = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(end = [0, 10])
   |> line(end = [10, 0])
@@ -147,7 +150,7 @@ sketch001 = startSketchOn(box, revolveAxis)
   angle = 90
   )
 
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([0.0, 0.0], %)
   |> xLine(length = 0.0)
   |> close()

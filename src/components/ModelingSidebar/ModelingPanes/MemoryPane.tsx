@@ -1,18 +1,18 @@
+import { useMemo } from 'react'
 import toast from 'react-hot-toast'
 import ReactJson from 'react-json-view'
-import { useMemo } from 'react'
-import {
-  Path,
-  ExtrudeSurface,
-  sketchFromKclValueOptional,
-  VariableMap,
-} from 'lang/wasm'
-import { useKclContext } from 'lang/KclProvider'
-import { useResolvedTheme } from 'hooks/useResolvedTheme'
-import { ActionButton } from 'components/ActionButton'
-import { Reason, trap } from 'lib/trap'
-import Tooltip from 'components/Tooltip'
-import { useModelingContext } from 'hooks/useModelingContext'
+
+import type { ExtrudeSurface } from '@rust/kcl-lib/bindings/ExtrudeSurface'
+import type { Path } from '@rust/kcl-lib/bindings/Path'
+
+import { ActionButton } from '@src/components/ActionButton'
+import Tooltip from '@src/components/Tooltip'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
+import { useKclContext } from '@src/lang/KclProvider'
+import type { VariableMap } from '@src/lang/wasm'
+import { sketchFromKclValueOptional } from '@src/lang/wasm'
+import { Reason, trap } from '@src/lib/trap'
 
 export const MemoryPaneMenu = () => {
   const { variables } = useKclContext()
@@ -40,9 +40,7 @@ export const MemoryPaneMenu = () => {
         className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
         onClick={copyProgramMemoryToClipboard}
       >
-        <Tooltip position="bottom-right" delay={750}>
-          Copy to clipboard
-        </Tooltip>
+        <Tooltip position="bottom-right">Copy to clipboard</Tooltip>
       </ActionButton>
     </>
   )

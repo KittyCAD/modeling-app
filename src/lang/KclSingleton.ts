@@ -1,58 +1,74 @@
-import { executeAst, executeAstMock, lintAst } from 'lang/langHelpers'
-import { handleSelectionBatch, Selections } from 'lib/selections'
-import {
-  KCLError,
-  complilationErrorsToDiagnostics,
-  kclErrorsToDiagnostics,
-} from './errors'
-import { uuidv4 } from 'lib/utils'
-import { EngineCommandManager } from './std/engineConnection'
-import { err } from 'lib/trap'
-import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
-
-import {
-  emptyExecState,
-  ExecState,
-  getKclVersion,
-  initPromise,
-  jsAppSettings,
-  KclValue,
-  parse,
-  PathToNode,
-  Program,
-  recast,
-  SourceRange,
-  topLevelRange,
-  VariableMap,
-} from 'lang/wasm'
-import { getNodeFromPath, getSettingsAnnotation } from './queryAst'
-import {
-  codeManager,
-  editorManager,
-  sceneInfra,
-  rustContext,
-} from 'lib/singletons'
-import { Diagnostic } from '@codemirror/lint'
-import { markOnce } from 'lib/performance'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import {
+import type { Diagnostic } from '@codemirror/lint'
+import type {
   EntityType_type,
   ModelingCmdReq_type,
 } from '@kittycad/lib/dist/types/src/models'
-import { Operation } from '@rust/kcl-lib/bindings/Operation'
-import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
+
+import type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+
+import type { KCLError } from '@src/lang/errors'
+import {
+  compilationErrorsToDiagnostics,
+  kclErrorsToDiagnostics,
+} from '@src/lang/errors'
+import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
+import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
+import type { EngineCommandManager } from '@src/lang/std/engineConnection'
+import { topLevelRange } from '@src/lang/util'
+import type {
+  ArtifactGraph,
+  ExecState,
+  PathToNode,
+  Program,
+  SourceRange,
+  VariableMap,
+} from '@src/lang/wasm'
+import {
+  emptyExecState,
+  getKclVersion,
+  initPromise,
+  parse,
+  recast,
+} from '@src/lang/wasm'
+import type { ArtifactIndex } from '@src/lib/artifactIndex'
+import { buildArtifactIndex } from '@src/lib/artifactIndex'
+import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
+} from '@src/lib/constants'
+import { markOnce } from '@src/lib/performance'
+import type { Selections } from '@src/lib/selections'
+import { handleSelectionBatch } from '@src/lib/selections'
+import type {
+  BaseUnit,
+  KclSettingsAnnotation,
+} from '@src/lib/settings/settingsTypes'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import {
+  codeManager,
+  editorManager,
+  rustContext,
+  sceneInfra,
+} from '@src/lib/singletons'
+import { err, reportRejection } from '@src/lib/trap'
+import { deferExecution, isOverlap, uuidv4 } from '@src/lib/utils'
 
 interface ExecuteArgs {
   ast?: Node<Program>
-  zoomToFit?: boolean
   executionId?: number
-  zoomOnRangeAndType?: {
-    range: SourceRange
-    type: string
-  }
 }
 
 export class KclManager {
+  /**
+   * The artifactGraph is a client-side representation of the commands that have been sent
+   * see: src/lang/std/artifactGraph-README.md for a full explanation.
+   */
+  artifactGraph: ArtifactGraph = new Map()
+  artifactIndex: ArtifactIndex = []
+  defaultPlanesShown: boolean = false
+
   private _ast: Node<Program> = {
     body: [],
     shebang: null,
@@ -65,6 +81,8 @@ export class KclManager {
     },
     innerAttrs: [],
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
   }
   private _execState: ExecState = emptyExecState()
   private _variables: VariableMap = {}
@@ -76,7 +94,7 @@ export class KclManager {
   private _isExecuting = false
   private _executeIsStale: ExecuteArgs | null = null
   private _wasmInitFailed = true
-  private _hasErrors = false
+  private _astParseFailed = false
   private _switchedFiles = false
   private _fileSettings: KclSettingsAnnotation = {}
   private _kclVersion: string | undefined = undefined
@@ -93,6 +111,7 @@ export class KclManager {
   private _diagnosticsCallback: (errors: Diagnostic[]) => void = () => {}
   private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
   private _executeCallback: () => void = () => {}
+  sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
 
   get ast() {
     return this._ast
@@ -165,7 +184,7 @@ export class KclManager {
   }
 
   hasErrors(): boolean {
-    return this._hasErrors
+    return this._astParseFailed || this._errors.length > 0
   }
 
   setDiagnosticsForCurrentErrors() {
@@ -261,6 +280,8 @@ export class KclManager {
       },
       innerAttrs: [],
       outerAttrs: [],
+      preComments: [],
+      commentStart: 0,
     }
   }
 
@@ -274,7 +295,7 @@ export class KclManager {
   private async checkIfSwitchedFilesShouldClear() {
     // If we were switching files and we hit an error on parse we need to bust
     // the cache and clear the scene.
-    if (this._hasErrors && this._switchedFiles) {
+    if (this._astParseFailed && this._switchedFiles) {
       await rustContext.clearSceneAndBustCache(
         { settings: await jsAppSettings() },
         codeManager.currentFilePath || undefined
@@ -285,15 +306,56 @@ export class KclManager {
     }
   }
 
+  private async updateArtifactGraph(
+    execStateArtifactGraph: ExecState['artifactGraph']
+  ) {
+    this.artifactGraph = execStateArtifactGraph
+    this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
+    if (this.artifactGraph.size) {
+      // TODO: we wanna remove this logic from xstate, it is racey
+      // This defer is bullshit but playwright wants it
+      // It was like this in engineConnection.ts already
+      deferExecution((a?: null) => {
+        this.engineCommandManager.modelingSend({
+          type: 'Artifact graph emptied',
+        })
+      }, 200)(null)
+    } else {
+      deferExecution((a?: null) => {
+        this.engineCommandManager.modelingSend({
+          type: 'Artifact graph populated',
+        })
+      }, 200)(null)
+    }
+  }
+
+  // Some "objects" have the same source range, such as sketch_mode_start and start_path.
+  // So when passing a range, we need to also specify the command type
+  private mapRangeToObjectId(
+    range: SourceRange,
+    commandTypeToTarget: string
+  ): string | undefined {
+    for (const [artifactId, artifact] of this.artifactGraph) {
+      if (
+        'codeRef' in artifact &&
+        artifact.codeRef &&
+        isOverlap(range, artifact.codeRef.range)
+      ) {
+        if (commandTypeToTarget === artifact.type) return artifactId
+      }
+    }
+    return undefined
+  }
+
   async safeParse(code: string): Promise<Node<Program> | null> {
     const result = parse(code)
     this.diagnostics = []
-    this._hasErrors = false
+    this._astParseFailed = false
 
     if (err(result)) {
-      const kclerror: KCLError = result as KCLError
-      this.diagnostics = kclErrorsToDiagnostics([kclerror])
-      this._hasErrors = true
+      const kclError: KCLError = result as KCLError
+      this.diagnostics = kclErrorsToDiagnostics([kclError])
+      this._astParseFailed = true
 
       await this.checkIfSwitchedFilesShouldClear()
       return null
@@ -306,10 +368,10 @@ export class KclManager {
     this._kclErrorsCallBack([])
     this._logsCallBack([])
 
-    this.addDiagnostics(complilationErrorsToDiagnostics(result.errors))
-    this.addDiagnostics(complilationErrorsToDiagnostics(result.warnings))
+    this.addDiagnostics(compilationErrorsToDiagnostics(result.errors))
+    this.addDiagnostics(compilationErrorsToDiagnostics(result.warnings))
     if (result.errors.length > 0) {
-      this._hasErrors = true
+      this._astParseFailed = true
 
       await this.checkIfSwitchedFilesShouldClear()
       return null
@@ -326,6 +388,7 @@ export class KclManager {
       }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
+      console.error(e)
       this.wasmInitFailed = true
     }
   }
@@ -333,8 +396,8 @@ export class KclManager {
   private _cancelTokens: Map<number, boolean> = new Map()
 
   // This NEVER updates the code, if you want to update the code DO NOT add to
-  // this function, too many other things that don't want it exist.
-  // just call to codeManager from wherever you want in other files.
+  // this function, too many other things that don't want it exist. For that,
+  // use updateModelingState().
   async executeAst(args: ExecuteArgs = {}): Promise<void> {
     if (this.isExecuting) {
       this.executeIsStale = args
@@ -366,28 +429,7 @@ export class KclManager {
     // Do not send send scene commands if the program was interrupted, go to clean up
     if (!isInterrupted) {
       this.addDiagnostics(await lintAst({ ast: ast }))
-      setSelectionFilterToDefault(this.engineCommandManager)
-
-      if (args.zoomToFit) {
-        let zoomObjectId: string | undefined = ''
-        if (args.zoomOnRangeAndType) {
-          zoomObjectId = this.engineCommandManager?.mapRangeToObjectId(
-            args.zoomOnRangeAndType.range,
-            args.zoomOnRangeAndType.type
-          )
-        }
-
-        await this.engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'zoom_to_fit',
-            object_ids: zoomObjectId ? [zoomObjectId] : [], // leave empty to zoom to all objects
-            padding: 0.1, // padding around the objects
-            animated: false, // don't animate the zoom for now
-          },
-        })
-      }
+      await setSelectionFilterToDefault(this.engineCommandManager)
     }
 
     this.isExecuting = false
@@ -416,7 +458,7 @@ export class KclManager {
     this.addDiagnostics(isInterrupted ? [] : kclErrorsToDiagnostics(errors))
     // Add warnings and non-fatal errors
     this.addDiagnostics(
-      isInterrupted ? [] : complilationErrorsToDiagnostics(execState.errors)
+      isInterrupted ? [] : compilationErrorsToDiagnostics(execState.errors)
     )
     this.execState = execState
     if (!errors.length) {
@@ -425,7 +467,7 @@ export class KclManager {
     }
     this.ast = { ...ast }
     // updateArtifactGraph relies on updated executeState/variables
-    this.engineCommandManager.updateArtifactGraph(execState.artifactGraph)
+    await this.updateArtifactGraph(execState.artifactGraph)
     this._executeCallback()
     if (!isInterrupted) {
       sceneInfra.modelingSend({ type: 'code edit during sketch' })
@@ -456,7 +498,6 @@ export class KclManager {
     markOnce('code/endExecuteAst')
   }
 
-  // NOTE: this always updates the code state and editor.
   // DO NOT CALL THIS from codemirror ever.
   async executeAstMock(ast: Program) {
     await this.ensureWasmInit()
@@ -468,7 +509,7 @@ export class KclManager {
     }
     const newAst = await this.safeParse(newCode)
     if (!newAst) {
-      // By clearning the AST we indicate to our callers that there was an issue with execution and
+      // By clearing the AST we indicate to our callers that there was an issue with execution and
       // the pre-execution state should be restored.
       this.clearAst()
       return
@@ -493,46 +534,20 @@ export class KclManager {
       this._cancelTokens.set(key, true)
     })
   }
-  async executeCode(zoomToFit?: boolean): Promise<void> {
+  async executeCode(): Promise<void> {
     const ast = await this.safeParse(codeManager.code)
 
     if (!ast) {
-      // By clearning the AST we indicate to our callers that there was an issue with execution and
+      // By clearing the AST we indicate to our callers that there was an issue with execution and
       // the pre-execution state should be restored.
       this.clearAst()
       return
     }
 
-    zoomToFit = this.tryToZoomToFitOnCodeUpdate(ast, zoomToFit)
-
     this.ast = { ...ast }
-    return this.executeAst({ zoomToFit })
+    return this.executeAst()
   }
-  /**
-   * This will override the zoom to fit to zoom into the model if the previous AST was empty.
-   * Workflows this improves,
-   *  When someone comments the entire file then uncomments the entire file it zooms to the model
-   *  When someone CRTL+A and deletes the code then adds the code back it zooms to the model
-   *  When someone CRTL+A and copies new code into the editor it zooms to the model
-   */
-  tryToZoomToFitOnCodeUpdate(
-    ast: Node<Program>,
-    zoomToFit: boolean | undefined
-  ) {
-    const isAstEmpty = this._isAstEmpty(this._ast)
-    const isRequestedAstEmpty = this._isAstEmpty(ast)
 
-    // If the AST went from empty to not empty or
-    // If the user has all of the content selected and they copy new code in
-    if (
-      (isAstEmpty && !isRequestedAstEmpty) ||
-      editorManager.isAllTextSelected
-    ) {
-      return true
-    }
-
-    return zoomToFit
-  }
   async format() {
     const originalCode = codeManager.code
     const ast = await this.safeParse(originalCode)
@@ -551,22 +566,21 @@ export class KclManager {
     codeManager.updateCodeStateEditor(code)
 
     // Write back to the file system.
-    void codeManager.writeToFile().then(() => this.executeCode())
+    void codeManager
+      .writeToFile()
+      .then(() => this.executeCode())
+      .catch(reportRejection)
   }
+
   // There's overlapping responsibility between updateAst and executeAst.
   // updateAst was added as it was used a lot before xState migration so makes the port easier.
   // but should probably have think about which of the function to keep
-  // This always updates the code state and editor and writes to the file system.
+  // This never updates the code state or editor and doesn't write to the file system.
   async updateAst(
     ast: Node<Program>,
     execute: boolean,
     optionalParams?: {
       focusPath?: Array<PathToNode>
-      zoomToFit?: boolean
-      zoomOnRangeAndType?: {
-        range: SourceRange
-        type: string
-      }
     }
   ): Promise<{
     newAst: Node<Program>
@@ -616,14 +630,11 @@ export class KclManager {
     if (execute) {
       await this.executeAst({
         ast: astWithUpdatedSource,
-        zoomToFit: optionalParams?.zoomToFit,
-        zoomOnRangeAndType: optionalParams?.zoomOnRangeAndType,
       })
     } else {
       // When we don't re-execute, we still want to update the program
       // memory with the new ast. So we will hit the mock executor
       // instead..
-      // Execute ast mock will update the code state and editor.
       await this.executeAstMock(astWithUpdatedSource)
     }
 
@@ -717,6 +728,9 @@ export class KclManager {
 
   set fileSettings(settings: KclSettingsAnnotation) {
     this._fileSettings = settings
+    this.sceneInfraBaseUnitMultiplierSetter(
+      settings?.defaultLengthUnit || DEFAULT_DEFAULT_LENGTH_UNIT
+    )
   }
 }
 

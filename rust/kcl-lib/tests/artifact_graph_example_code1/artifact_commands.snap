@@ -5,11 +5,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,23 +13,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +22,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +31,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      12,
-      31,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -84,11 +56,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      37,
-      64,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -104,22 +72,14 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      37,
-      64,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      37,
-      64,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -132,22 +92,14 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      37,
-      64,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      70,
-      89,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -164,11 +116,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      95,
-      131,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -185,11 +133,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      137,
-      171,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -206,11 +150,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      177,
-      233,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -227,11 +167,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      239,
-      246,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -239,11 +175,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      260,
-      292,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -259,11 +191,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      260,
-      292,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -273,22 +201,14 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      260,
-      292,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      260,
-      292,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -296,11 +216,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      260,
-      292,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -309,11 +225,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      260,
-      292,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -323,11 +235,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      260,
-      292,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -337,11 +245,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      260,
-      292,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -351,11 +255,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      260,
-      292,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -365,11 +265,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      260,
-      292,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -379,11 +275,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      260,
-      292,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -393,11 +285,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      260,
-      292,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -407,11 +295,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      260,
-      292,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -421,11 +305,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      298,
-      332,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -437,11 +317,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      383,
-      410,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -453,22 +329,14 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      383,
-      410,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      383,
-      410,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -481,22 +349,14 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      383,
-      410,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      416,
-      434,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -513,11 +373,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      440,
-      459,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -534,11 +390,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      465,
-      521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -555,11 +407,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      527,
-      534,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -567,11 +415,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      548,
-      578,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -583,11 +427,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      548,
-      578,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -597,22 +437,14 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      548,
-      578,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      548,
-      578,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -620,11 +452,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      548,
-      578,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -633,11 +461,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      548,
-      578,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -647,11 +471,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      548,
-      578,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -661,11 +481,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      548,
-      578,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -675,11 +491,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      548,
-      578,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -689,11 +501,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      548,
-      578,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -703,11 +511,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      548,
-      578,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",

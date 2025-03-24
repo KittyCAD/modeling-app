@@ -1,25 +1,26 @@
-import {
+import { DEV } from '@src/env'
+import type {
+  Actor,
   AnyStateMachine,
   ContextFrom,
   EventFrom,
-  Actor,
   StateFrom,
 } from 'xstate'
-import { isDesktop } from './isDesktop'
-import {
+
+import type {
   Command,
   CommandArgument,
   CommandArgumentConfig,
   CommandConfig,
   StateMachineCommandSetConfig,
   StateMachineCommandSetSchema,
-} from './commandTypes'
-import { DEV } from 'env'
-import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
+} from '@src/lib/commandTypes'
+import { isDesktop } from '@src/lib/isDesktop'
+import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 
 interface CreateMachineCommandProps<
   T extends AnyStateMachine,
-  S extends StateMachineCommandSetSchema<T>
+  S extends StateMachineCommandSetSchema<T>,
 > {
   type: EventFrom<T>['type']
   groupId: T['id']
@@ -34,7 +35,7 @@ interface CreateMachineCommandProps<
 // from a more terse Command Bar Meta definition.
 export function createMachineCommand<
   T extends AnyStateMachine,
-  S extends StateMachineCommandSetSchema<T>
+  S extends StateMachineCommandSetSchema<T>,
 >({
   groupId,
   type,
@@ -132,7 +133,7 @@ export function createMachineCommand<
 function buildCommandArguments<
   T extends AnyStateMachine,
   S extends StateMachineCommandSetSchema<T>,
-  CommandName extends EventFrom<T>['type'] = EventFrom<T>['type']
+  CommandName extends EventFrom<T>['type'] = EventFrom<T>['type'],
 >(
   state: StateFrom<T>,
   args: CommandConfig<T, CommandName, S>['args'],
@@ -151,7 +152,7 @@ function buildCommandArguments<
 
 export function buildCommandArgument<
   T extends AnyStateMachine,
-  O extends StateMachineCommandSetSchema<T> = StateMachineCommandSetSchema<T>
+  O extends StateMachineCommandSetSchema<T> = StateMachineCommandSetSchema<T>,
 >(
   arg: CommandArgumentConfig<O, T>,
   context: ContextFrom<T>,
@@ -160,6 +161,7 @@ export function buildCommandArgument<
   // GOTCHA: modelingCommandConfig is not a 1:1 mapping to this baseCommandArgument
   // You need to manually add key/value pairs here.
   const baseCommandArgument = {
+    displayName: arg.displayName,
     description: arg.description,
     required: arg.required,
     hidden: arg.hidden,
@@ -187,6 +189,8 @@ export function buildCommandArgument<
       multiple: arg.multiple,
       selectionTypes: arg.selectionTypes,
       validation: arg.validation,
+      clearSelectionFirst: arg.clearSelectionFirst,
+      selectionFilter: arg.selectionFilter,
     } satisfies CommandArgument<O, T> & { inputType: 'selection' }
   } else if (arg.inputType === 'selectionMixed') {
     return {
@@ -197,6 +201,7 @@ export function buildCommandArgument<
       validation: arg.validation,
       allowNoSelection: arg.allowNoSelection,
       selectionSource: arg.selectionSource,
+      selectionFilter: arg.selectionFilter,
     } satisfies CommandArgument<O, T> & { inputType: 'selectionMixed' }
   } else if (arg.inputType === 'kcl') {
     return {

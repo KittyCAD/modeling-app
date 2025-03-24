@@ -10,6 +10,7 @@ use convert_case::Casing;
 use handlebars::Renderable;
 use indexmap::IndexMap;
 use itertools::Itertools;
+use schemars::schema::SingleOrVec;
 use serde_json::json;
 use tokio::task::JoinSet;
 
@@ -23,7 +24,10 @@ use crate::{
 const TYPES_DIR: &str = "../../docs/kcl/types";
 const LANG_TOPICS: [&str; 5] = ["Types", "Modules", "Settings", "Known Issues", "Constants"];
 // These types are declared in std.
-const DECLARED_TYPES: [&str; 7] = ["number", "string", "tag", "bool", "Sketch", "Solid", "Plane"];
+const DECLARED_TYPES: [&str; 14] = [
+    "number", "string", "tag", "bool", "Sketch", "Solid", "Plane", "Helix", "Face", "Edge", "Point2d", "Point3d",
+    "Axis2d", "Axis3d",
+];
 
 fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     let mut hbs = handlebars::Handlebars::new();
@@ -337,9 +341,9 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
         }
 
         functions.entry(d.mod_name()).or_default().push(match d {
-            DocData::Fn(f) => (f.name.clone(), d.file_name()),
-            DocData::Const(c) => (c.name.clone(), d.file_name()),
-            DocData::Ty(t) => (t.name.clone(), d.file_name()),
+            DocData::Fn(f) => (f.preferred_name.clone(), d.file_name()),
+            DocData::Const(c) => (c.preferred_name.clone(), d.file_name()),
+            DocData::Ty(t) => (t.preferred_name.clone(), d.file_name()),
         });
 
         if let DocData::Const(c) = d {
@@ -457,6 +461,7 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String) 
 
     let data = json!({
         "name": ty.qual_name(),
+        "definition": ty.alias.as_ref().map(|t| format!("type {} = {t}", ty.name)),
         "summary": ty.summary,
         "description": ty.description,
         "deprecated": ty.properties.deprecated,
@@ -464,6 +469,10 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String) 
     });
 
     let output = hbs.render("kclType", &data)?;
+    let output = cleanup_type_links(
+        &output,
+        ty.referenced_types.iter().filter(|t| !DECLARED_TYPES.contains(&&***t)),
+    );
     expectorate::assert_contents(format!("../../docs/kcl/{}.md", file_name), &output);
 
     Ok(())
@@ -511,6 +520,13 @@ fn generate_function_from_kcl(function: &FnData, file_name: String) -> Result<()
     });
 
     let output = hbs.render("function", &data)?;
+    let output = cleanup_type_links(
+        &output,
+        function
+            .referenced_types
+            .iter()
+            .filter(|t| !DECLARED_TYPES.contains(&&***t)),
+    );
     expectorate::assert_contents(format!("../../docs/kcl/{}.md", file_name), &output);
 
     Ok(())
@@ -659,6 +675,7 @@ fn cleanup_type_links<'a>(output: &str, types: impl Iterator<Item = &'a String>)
     // TODO: This is a hack for the handlebars template being too complex.
     cleaned_output = cleaned_output.replace("`[, `number`, `number`]`", "`[number, number]`");
     cleaned_output = cleaned_output.replace("`[, `number`, `number`, `number`]`", "`[number, number, number]`");
+    cleaned_output = cleaned_output.replace("`[, `integer`, `integer`, `integer`]`", "`[integer, integer, integer]`");
 
     // Fix the links to the types.
     for type_name in types.map(|s| &**s).chain(DECLARED_TYPES) {
@@ -673,6 +690,12 @@ fn cleanup_type_links<'a>(output: &str, types: impl Iterator<Item = &'a String>)
                 cleaned_output.replace(&format!("`[{}]`", type_name), &format!("[`[{}]`]{}", type_name, link));
         }
     }
+
+    // TODO handle union types generically rather than special casing them.
+    cleaned_output = cleaned_output.replace(
+        "`Sketch | Plane | Face`",
+        "[`Sketch`](/docs/kcl/types/Sketch) OR [`Plane`](/docs/kcl/types/Plane) OR [`Face`](/docs/kcl/types/Face)",
+    );
 
     cleanup_static_links(&cleaned_output)
 }
@@ -700,6 +723,11 @@ fn add_to_types(
         ));
     };
 
+    if name == "SourceRange" {
+        types.insert(name.to_string(), schema.clone());
+        return Ok(());
+    }
+
     // If we have an array we want to generate the type markdown files for each item in the
     // array.
     if let Some(array) = &o.array {
@@ -707,7 +735,7 @@ fn add_to_types(
         if let Some(items) = &array.items {
             match items {
                 schemars::schema::SingleOrVec::Single(item) => {
-                    if is_primitive(item)?.is_some() && name != "SourceRange" {
+                    if is_primitive(item)?.is_some() {
                         return Ok(());
                     }
                     return add_to_types(name.trim_start_matches('[').trim_end_matches(']'), item, types);
@@ -796,9 +824,8 @@ fn generate_type(
     }
 
     let cleaned_schema = recurse_and_create_references(name, schema, types)?;
-    let new_schema = super::cleanup_number_tuples(&cleaned_schema);
 
-    let schemars::schema::Schema::Object(o) = new_schema else {
+    let schemars::schema::Schema::Object(o) = cleaned_schema else {
         return Err(anyhow::anyhow!(
             "Failed to get object schema, should have not been a primitive"
         ));
@@ -930,6 +957,13 @@ fn recurse_and_create_references(
                 "Failed to get object schema, should have not been a primitive"
             ));
         };
+
+        // If this is a primitive just use the primitive.
+        if to.subschemas.is_none() && to.object.is_none() && to.reference.is_none() {
+            return Ok(t.clone());
+        }
+
+        // Otherwise append the metadata to our reference.
         if let Some(metadata) = obj.metadata.as_mut() {
             if metadata.description.is_none() {
                 metadata.description = to.metadata.as_ref().and_then(|m| m.description.clone());
@@ -1030,6 +1064,13 @@ fn recurse_and_create_references(
             for item in one_of {
                 let new_item = recurse_and_create_references(name, item, types)?;
                 *item = new_item;
+            }
+        }
+
+        if subschema.one_of.is_none() && subschema.all_of.is_none() && subschema.any_of.is_none() && obj.array.is_none()
+        {
+            if let Some(SingleOrVec::Single(_)) = &o.instance_type {
+                return Ok(schema.clone());
             }
         }
     }
@@ -1152,7 +1193,7 @@ fn find_examples(text: &str, filename: &str) -> Vec<(String, String)> {
 
 async fn run_example(text: &str) -> Result<()> {
     let program = crate::Program::parse_no_errs(text)?;
-    let ctx = ExecutorContext::new_with_default_client(crate::UnitLength::Mm).await?;
+    let ctx = ExecutorContext::new_with_default_client().await?;
     let mut exec_state = crate::execution::ExecState::new(&ctx);
     ctx.run(&program, &mut exec_state).await?;
     Ok(())

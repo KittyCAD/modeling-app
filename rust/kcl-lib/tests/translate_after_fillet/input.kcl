@@ -52,6 +52,6 @@ export fn bolt() {
 }
 
 bolt()
-  |> translate(translate = [10, 0, 0])
+  |> translate(x = 10, y = 0, z = 0)
 
 // https://www.mcmaster.com/91251a404/

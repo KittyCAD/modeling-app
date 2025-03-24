@@ -1,88 +1,86 @@
+import { perpendicularDistance } from 'sketch-helpers'
+
+import type { Name } from '@rust/kcl-lib/bindings/Name'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
+
 import {
-  Path,
-  Sketch,
-  SourceRange,
-  PathToNode,
-  Program,
-  PipeExpression,
-  CallExpression,
-  CallExpressionKw,
-  VariableDeclarator,
-  Expr,
-  VariableDeclaration,
-  Identifier,
-  sketchFromKclValue,
-  topLevelRange,
-  VariableMap,
-} from 'lang/wasm'
+  ARG_CIRCLE_CENTER,
+  ARG_CIRCLE_RADIUS,
+  ARG_END,
+  ARG_END_ABSOLUTE,
+  ARG_LENGTH,
+  ARG_TAG,
+  DETERMINING_ARGS,
+} from '@src/lang/constants'
 import {
-  ARG_INDEX_FIELD,
-  getNodeFromPath,
-  getNodeFromPathCurry,
-  LABELED_ARG_FIELD,
-} from 'lang/queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+  createArrayExpression,
+  createCallExpression,
+  createCallExpressionStdLibKw,
+  createLabeledArg,
+  createLiteral,
+  createObjectExpression,
+  createPipeExpression,
+  createPipeSubstitution,
+  createTagDeclarator,
+  findUniqueName,
+  nonCodeMetaEmpty,
+} from '@src/lang/create'
+import type { ToolTip } from '@src/lang/langHelpers'
+import { toolTips } from '@src/lang/langHelpers'
+import {
+  mutateArrExp,
+  mutateKwArg,
+  mutateObjExpProp,
+  removeKwArgs,
+  splitPathAtPipeExpression,
+} from '@src/lang/modifyAst'
+import { getNodeFromPath, getNodeFromPathCurry } from '@src/lang/queryAst'
+import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   isLiteralArrayOrStatic,
   isNotLiteralArrayOrStatic,
-} from 'lang/std/sketchcombos'
-import { toolTips, ToolTip } from 'lang/langHelpers'
-import {
-  createPipeExpression,
-  mutateKwArg,
-  nonCodeMetaEmpty,
-  removeKwArgs,
-  splitPathAtPipeExpression,
-} from '../modifyAst'
-
-import {
-  SketchLineHelper,
-  ConstrainInfo,
-  ArrayItemInput,
-  ObjectPropertyInput,
-  SingleValueInput,
+} from '@src/lang/std/sketchcombos'
+import type {
   AddTagInfo,
+  ArrayItemInput,
+  ConstrainInfo,
+  CreatedSketchExprResult,
+  InputArgKeys,
+  ObjectPropertyInput,
+  RawArgs,
   SegmentInputs,
   SimplifiedArgDetails,
-  RawArgs,
-  CreatedSketchExprResult,
+  SingleValueInput,
+  SketchLineHelper,
   SketchLineHelperKw,
-  InputArgKeys,
-} from 'lang/std/stdTypes'
-
-import {
-  createLiteral,
-  createTagDeclarator,
-  createCallExpression,
-  createCallExpressionStdLibKw,
-  createArrayExpression,
-  createLabeledArg,
-  createPipeSubstitution,
-  createObjectExpression,
-  mutateArrExp,
-  mutateObjExpProp,
-  findUniqueName,
-} from 'lang/modifyAst'
-import { roundOff, getLength, getAngle, isArray } from 'lib/utils'
-import { err } from 'lib/trap'
-import { perpendicularDistance } from 'sketch-helpers'
-import { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
-import { EdgeCutInfo } from 'machines/modelingMachine'
-import { Node } from '@rust/kcl-lib/bindings/Node'
+} from '@src/lang/std/stdTypes'
 import {
   findKwArg,
-  findKwArgWithIndex,
   findKwArgAny,
   findKwArgAnyIndex,
-} from 'lang/util'
-
-export const ARG_TAG = 'tag'
-export const ARG_END = 'end'
-export const ARG_LENGTH = 'length'
-export const ARG_END_ABSOLUTE = 'endAbsolute'
-export const ARG_CIRCLE_CENTER = 'center'
-export const ARG_CIRCLE_RADIUS = 'radius'
-export const DETERMINING_ARGS = [ARG_LENGTH, ARG_END, ARG_END_ABSOLUTE]
+  findKwArgWithIndex,
+  topLevelRange,
+} from '@src/lang/util'
+import type {
+  CallExpression,
+  CallExpressionKw,
+  Expr,
+  Path,
+  PathToNode,
+  PipeExpression,
+  Program,
+  Sketch,
+  SourceRange,
+  VariableDeclaration,
+  VariableDeclarator,
+  VariableMap,
+} from '@src/lang/wasm'
+import { sketchFromKclValue } from '@src/lang/wasm'
+import { err } from '@src/lib/trap'
+import { getAngle, getLength, isArray, roundOff } from '@src/lib/utils'
+import type { EdgeCutInfo } from '@src/machines/modelingMachine'
 
 const STRAIGHT_SEGMENT_ERR = new Error(
   'Invalid input, expected "straight-segment"'
@@ -158,10 +156,10 @@ const constrainInfo = (
     g === 'singleValue'
       ? { type: 'singleValue' }
       : typeof g === 'number'
-      ? { type: 'arrayItem', index: g }
-      : typeof g === 'string'
-      ? { type: 'objectProperty', key: g }
-      : undefined,
+        ? { type: 'arrayItem', index: g }
+        : typeof g === 'string'
+          ? { type: 'objectProperty', key: g }
+          : undefined,
   pathToNode: e,
   stdLibFnName: f,
 })
@@ -178,7 +176,7 @@ const commonConstraintInfoHelper = (
     {
       arrayInput?: 0 | 1
       objInput?: ObjectPropertyInput<any>['key']
-    }
+    },
   ],
   code: string,
   pathToNode: PathToNode,
@@ -327,7 +325,7 @@ const horzVertConstraintInfoHelper = (
     constrainInfo(
       inputConstrainTypes[0],
       true,
-      callee.name,
+      callee.name.name,
       stdLibFnName,
       undefined,
       topLevelRange(callee.start, callee.end),
@@ -1042,7 +1040,7 @@ export const tangentialArcTo: SketchLineHelper = {
       constrainInfo(
         'tangentialWithPrevious',
         true,
-        callee.name,
+        callee.name.name,
         'tangentialArcTo',
         undefined,
         topLevelRange(callee.start, callee.end),
@@ -2755,7 +2753,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
             ?.value || createLiteral('')
         : createLiteral('')
     const intersectTagName =
-      intersectTag.type === 'Identifier' ? intersectTag.name : ''
+      intersectTag.type === 'Name' ? intersectTag.name.name : ''
     const nodeMeta2 = getNodeFromPath<VariableDeclaration>(
       _node,
       pathToNode,
@@ -2848,7 +2846,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
       )
     }
     if (intersectTag !== -1) {
-      const tag = firstArg.properties[intersectTag]?.value as Node<Identifier>
+      const tag = firstArg.properties[intersectTag]?.value as Node<Name>
       const pathToTagProp: PathToNode = [
         ...pathToObjectExp,
         [intersectTag, 'index'],
@@ -2898,6 +2896,8 @@ export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
         },
         innerAttrs: [],
         outerAttrs: [],
+        preComments: [],
+        commentStart: 0,
       },
       pathToNode,
     }
@@ -2968,9 +2968,9 @@ export function changeSketchArguments(
 
   const { node: callExpression, shallowPath } = nodeMeta
 
-  const fnName = callExpression?.callee?.name
+  const fnName = callExpression?.callee?.name.name
   if (fnName in sketchLineHelperMap) {
-    const { updateArgs } = sketchLineHelperMap[callExpression.callee.name]
+    const { updateArgs } = sketchLineHelperMap[callExpression.callee.name.name]
     if (!updateArgs) {
       return new Error('not a sketch line helper')
     }
@@ -3066,7 +3066,7 @@ export function getConstraintInfo(
   pathToNode: PathToNode,
   filterValue?: string
 ): ConstrainInfo[] {
-  const fnName = callExpression?.callee?.name || ''
+  const fnName = callExpression?.callee?.name.name || ''
   if (!(fnName in sketchLineHelperMap)) return []
   return sketchLineHelperMap[fnName].getConstraintInfo(
     callExpression,
@@ -3082,7 +3082,7 @@ export function getConstraintInfoKw(
   pathToNode: PathToNode,
   filterValue?: string
 ): ConstrainInfo[] {
-  const fnName = callExpression?.callee?.name || ''
+  const fnName = callExpression?.callee?.name.name || ''
   const isAbsolute = isAbsoluteLine(callExpression)
   if (err(isAbsolute)) {
     console.error(
@@ -3347,8 +3347,8 @@ function addTagToChamfer(
     //                       ^^^^^^^^^^^^^
     const elementMatchesBaseTagType =
       edgeCutMeta?.subType === 'base' &&
-      tag.type === 'Identifier' &&
-      tag.name === edgeCutMeta.tagName
+      tag.type === 'Name' &&
+      tag.name.name === edgeCutMeta.tagName
     if (elementMatchesBaseTagType) return true
 
     // e.g. chamfer(tags: [getOppositeEdge(tagOfInterest), tag2])
@@ -3356,9 +3356,9 @@ function addTagToChamfer(
     const tagMatchesOppositeTagType =
       edgeCutMeta?.subType === 'opposite' &&
       tag.type === 'CallExpression' &&
-      tag.callee.name === 'getOppositeEdge' &&
-      tag.arguments[0].type === 'Identifier' &&
-      tag.arguments[0].name === edgeCutMeta.tagName
+      tag.callee.name.name === 'getOppositeEdge' &&
+      tag.arguments[0].type === 'Name' &&
+      tag.arguments[0].name.name === edgeCutMeta.tagName
     if (tagMatchesOppositeTagType) return true
 
     // e.g. chamfer(tags: [getNextAdjacentEdge(tagOfInterest), tag2])
@@ -3366,10 +3366,10 @@ function addTagToChamfer(
     const tagMatchesAdjacentTagType =
       edgeCutMeta?.subType === 'adjacent' &&
       tag.type === 'CallExpression' &&
-      (tag.callee.name === 'getNextAdjacentEdge' ||
-        tag.callee.name === 'getPrevAdjacentEdge') &&
-      tag.arguments[0].type === 'Identifier' &&
-      tag.arguments[0].name === edgeCutMeta.tagName
+      (tag.callee.name.name === 'getNextAdjacentEdge' ||
+        tag.callee.name.name === 'getPrevAdjacentEdge') &&
+      tag.arguments[0].type === 'Name' &&
+      tag.arguments[0].name.name === edgeCutMeta.tagName
     if (tagMatchesAdjacentTagType) return true
     return false
   })
@@ -3445,22 +3445,23 @@ export function addTagForSketchOnFace(
 export function getTagFromCallExpression(
   callExp: CallExpression
 ): string | Error {
-  if (callExp.callee.name === 'close') return getTag(1)(callExp)
-  if (callExp.callee.name in sketchLineHelperMap) {
-    const { getTag } = sketchLineHelperMap[callExp.callee.name]
+  if (callExp.callee.name.name === 'close') return getTag(1)(callExp)
+  if (callExp.callee.name.name in sketchLineHelperMap) {
+    const { getTag } = sketchLineHelperMap[callExp.callee.name.name]
     return getTag(callExp)
   }
-  return new Error(`"${callExp.callee.name}" is not a sketch line helper`)
+  return new Error(`"${callExp.callee.name.name}" is not a sketch line helper`)
 }
 
 function isAngleLiteral(lineArugement: Expr): boolean {
   return lineArugement?.type === 'ArrayExpression'
     ? isLiteralArrayOrStatic(lineArugement.elements[0])
     : lineArugement?.type === 'ObjectExpression'
-    ? isLiteralArrayOrStatic(
-        lineArugement.properties.find(({ key }) => key.name === 'angle')?.value
-      )
-    : false
+      ? isLiteralArrayOrStatic(
+          lineArugement.properties.find(({ key }) => key.name === 'angle')
+            ?.value
+        )
+      : false
 }
 
 type addTagFn = (
@@ -3541,12 +3542,13 @@ function addTagKw(): addTagFn {
     // If we changed the node, we must replace the old node with the new node in the AST.
     const mustReplaceNode = primaryCallExp.type !== callExpr.node.type
     if (mustReplaceNode) {
-      getNodeFromPath(_node, pathToNode, ['CallExpression'], false, {
+      getNodeFromPath(_node, pathToNode, ['CallExpression'], false, false, {
         ...primaryCallExp,
         start: callExpr.node.start,
         end: callExpr.node.end,
         moduleId: callExpr.node.moduleId,
         outerAttrs: callExpr.node.outerAttrs,
+        commentStart: callExpr.node.start,
       })
     }
 
@@ -3628,7 +3630,7 @@ function getFirstArgValuesForAngleFns(callExpression: CallExpression):
     const tag = firstArg.properties.find((p) => p.key.name === 'tag')?.value
     const angle = firstArg.properties.find((p) => p.key.name === 'angle')?.value
     const secondArgName = ['angledLineToX', 'angledLineToY'].includes(
-      callExpression?.callee?.name as ToolTip
+      callExpression?.callee?.name.name as ToolTip
     )
       ? 'to'
       : 'length'
@@ -3654,7 +3656,7 @@ function getFirstArgValuesForXYLineFns(callExpression: CallExpression): {
   const tag = firstArg.properties.find((p) => p.key.name === 'tag')?.value
   const secondArgName = ['xLineTo', 'yLineTo'].includes(
     // const secondArgName = ['xLineTo', 'yLineTo', 'angledLineToX', 'angledLineToY'].includes(
-    callExpression?.callee?.name
+    callExpression?.callee?.name.name
   )
     ? 'to'
     : 'length'
@@ -3727,7 +3729,7 @@ const getAngledLineThatIntersects = (
 Given a line call, return whether it's using absolute or relative end.
 */
 export function isAbsoluteLine(lineCall: CallExpressionKw): boolean | Error {
-  const name = lineCall?.callee?.name
+  const name = lineCall?.callee?.name.name
   switch (name) {
     case 'line':
       if (findKwArg(ARG_END, lineCall) !== undefined) {
@@ -3750,6 +3752,7 @@ export function isAbsoluteLine(lineCall: CallExpressionKw): boolean | Error {
       return new Error(
         `${name} call has neither ${ARG_END} nor ${ARG_END_ABSOLUTE} params`
       )
+    case 'circle':
     case 'circleThreePoint':
       return false
   }
@@ -3766,7 +3769,7 @@ export function getArgForEnd(lineCall: CallExpressionKw):
       tag?: Expr
     }
   | Error {
-  const name = lineCall?.callee?.name
+  const name = lineCall?.callee?.name.name
 
   switch (name) {
     case 'circle':
@@ -3798,7 +3801,7 @@ export function getFirstArg(callExp: CallExpression):
       tag?: Expr
     }
   | Error {
-  const name = callExp?.callee?.name
+  const name = callExp?.callee?.name.name
   if (
     [
       'angledLine',

@@ -1,28 +1,29 @@
-import { useRef, useMemo, memo, useCallback, useState } from 'react'
-import { isCursorInSketchCommandRange } from 'lang/util'
-import { engineCommandManager, kclManager } from 'lib/singletons'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { useNetworkContext } from 'hooks/useNetworkContext'
-import { NetworkHealthState } from 'hooks/useNetworkStatus'
-import { ActionButton } from 'components/ActionButton'
-import { useKclContext } from 'lang/KclProvider'
-import { ActionButtonDropdown } from 'components/ActionButtonDropdown'
+import { memo, useCallback, useMemo, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import Tooltip from 'components/Tooltip'
-import { useAppState } from 'AppState'
-import { CustomIcon } from 'components/CustomIcon'
-import {
-  toolbarConfig,
+
+import { useAppState } from '@src/AppState'
+import { ActionButton } from '@src/components/ActionButton'
+import { ActionButtonDropdown } from '@src/components/ActionButtonDropdown'
+import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import { useKclContext } from '@src/lang/KclProvider'
+import { isCursorInFunctionDefinition } from '@src/lang/queryAst'
+import { isCursorInSketchCommandRange } from '@src/lang/util'
+import { isDesktop } from '@src/lib/isDesktop'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { editorManager, kclManager } from '@src/lib/singletons'
+import type {
   ToolbarItem,
   ToolbarItemCallbackProps,
   ToolbarItemResolved,
   ToolbarModeName,
-} from 'lib/toolbar'
-import { isDesktop } from 'lib/isDesktop'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import { isCursorInFunctionDefinition } from 'lang/queryAst'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { isArray } from 'lib/utils'
+} from '@src/lib/toolbar'
+import { toolbarConfig } from '@src/lib/toolbar'
+import { isArray } from '@src/lib/utils'
+import { commandBarActor } from '@src/machines/commandBarMachine'
 
 export function Toolbar({
   className = '',
@@ -45,10 +46,10 @@ export function Toolbar({
     )
       return false
     return isCursorInSketchCommandRange(
-      engineCommandManager.artifactGraph,
+      kclManager.artifactGraph,
       context.selectionRanges
     )
-  }, [engineCommandManager.artifactGraph, context.selectionRanges])
+  }, [kclManager.artifactGraph, context.selectionRanges])
 
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
   const { overallState } = useNetworkContext()
@@ -77,8 +78,15 @@ export function Toolbar({
       modelingState: state,
       modelingSend: send,
       sketchPathId,
+      editorHasFocus: editorManager.editorView?.hasFocus,
     }),
-    [state, send, commandBarActor.send, sketchPathId]
+    [
+      state,
+      send,
+      commandBarActor.send,
+      sketchPathId,
+      editorManager.editorView?.hasFocus,
+    ]
   )
 
   const tooltipContentClassName = !showRichContent
@@ -199,9 +207,12 @@ export function Toolbar({
                 id={maybeIconConfig[0].id + '-dropdown'}
                 name={maybeIconConfig[0].title}
                 className={
+                  (maybeIconConfig[0].alwaysDark
+                    ? 'dark bg-chalkboard-90 '
+                    : '!bg-transparent ') +
                   'group/wrapper ' +
                   buttonBorderClassName +
-                  ' !bg-transparent relative group !gap-0'
+                  ' relative group !gap-0'
                 }
                 splitMenuItems={maybeIconConfig.map((itemConfig) => ({
                   id: itemConfig.id,
@@ -227,6 +238,7 @@ export function Toolbar({
                     data-testid={maybeIconConfig[0].id}
                     iconStart={{
                       icon: maybeIconConfig[0].icon,
+                      iconColor: maybeIconConfig[0].iconColor,
                       className: iconClassName,
                       bgClassName: bgClassName,
                     }}
@@ -294,6 +306,7 @@ export function Toolbar({
                 data-testid={itemConfig.id}
                 iconStart={{
                   icon: itemConfig.icon,
+                  iconColor: itemConfig.iconColor,
                   className: iconClassName,
                   bgClassName: bgClassName,
                 }}
@@ -385,14 +398,14 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
       inert={false}
       wrapperStyle={
         isDesktop()
-          ? ({ '-webkit-app-region': 'no-drag' } as React.CSSProperties)
+          ? // Without this, the tooltip disappears before being able to click on anything in it
+            ({ WebkitAppRegion: 'no-drag' } as React.CSSProperties)
           : {}
       }
       hoverOnly
       position="bottom"
       wrapperClassName={'!p-4 !pointer-events-auto ' + wrapperClassName}
       contentClassName={contentClassName}
-      delay={0}
     >
       {children}
     </Tooltip>
@@ -430,7 +443,11 @@ const ToolbarItemTooltipRichContent = ({
     <>
       <div className="rounded-top flex items-center gap-2 pt-3 pb-2 px-2 bg-chalkboard-20/50 dark:bg-chalkboard-80/50">
         {itemConfig.icon && (
-          <CustomIcon className="w-5 h-5" name={itemConfig.icon} />
+          <CustomIcon
+            className="w-5 h-5"
+            style={{ color: itemConfig.iconColor }}
+            name={itemConfig.icon}
+          />
         )}
         <span
           className={`text-sm flex-1 ${

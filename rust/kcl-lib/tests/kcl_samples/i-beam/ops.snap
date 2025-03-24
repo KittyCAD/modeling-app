@@ -7,22 +7,14 @@ description: Operations executed i-beam.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "-XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          393,
-          398,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      379,
-      399,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -31,30 +23,16 @@ description: Operations executed i-beam.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 24.0,
+          "value": 72.00000000000001,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Unknown"
           }
         },
-        "sourceRange": [
-          669,
-          679,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      652,
-      680,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -63,11 +41,7 @@ description: Operations executed i-beam.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        652,
-        680,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

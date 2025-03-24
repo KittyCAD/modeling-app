@@ -7,22 +7,14 @@ description: Operations executed gear-rack.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          575,
-          579,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      561,
-      580,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,19 +34,11 @@ description: Operations executed gear-rack.kcl
             }
           }
         },
-        "sourceRange": [
-          748,
-          753,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      731,
-      754,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -63,49 +47,33 @@ description: Operations executed gear-rack.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        731,
-        754,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
     "type": "UserDefinedFunctionCall",
     "name": "tooth",
     "functionSourceRange": [
-      814,
-      1325,
+      812,
+      1321,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1396,
-      1403,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          849,
-          853,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      835,
-      854,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -125,19 +93,11 @@ description: Operations executed gear-rack.kcl
             }
           }
         },
-        "sourceRange": [
-          1296,
-          1301,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1279,
-      1302,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -146,11 +106,7 @@ description: Operations executed gear-rack.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1279,
-        1302,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -203,11 +159,7 @@ description: Operations executed gear-rack.kcl
             }
           ]
         },
-        "sourceRange": [
-          1440,
-          1450,
-          0
-        ]
+        "sourceRange": []
       },
       "distance": {
         "value": {
@@ -223,11 +175,7 @@ description: Operations executed gear-rack.kcl
             }
           }
         },
-        "sourceRange": [
-          1470,
-          1478,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -243,19 +191,11 @@ description: Operations executed gear-rack.kcl
             }
           }
         },
-        "sourceRange": [
-          1499,
-          1501,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternLinear3d",
-    "sourceRange": [
-      1409,
-      1508,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -264,33 +204,21 @@ description: Operations executed gear-rack.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1409,
-        1508,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          1603,
-          1607,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1589,
-      1608,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -310,19 +238,11 @@ description: Operations executed gear-rack.kcl
             }
           }
         },
-        "sourceRange": [
-          1837,
-          1842,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1820,
-      1843,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -331,33 +251,21 @@ description: Operations executed gear-rack.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1820,
-        1843,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          1940,
-          1944,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1926,
-      1945,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -377,19 +285,11 @@ description: Operations executed gear-rack.kcl
             }
           }
         },
-        "sourceRange": [
-          2174,
-          2179,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2157,
-      2180,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -398,11 +298,7 @@ description: Operations executed gear-rack.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        2157,
-        2180,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

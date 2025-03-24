@@ -11,11 +11,10 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::execution::kcl_value::RuntimeType;
-use crate::execution::PrimitiveType;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
+        types::{PrimitiveType, RuntimeType},
         Artifact, ArtifactId, BasePath, CodeRef, ExecState, Face, GeoMeta, KclValue, Path, Plane, Point2d, Point3d,
         Sketch, SketchSurface, Solid, StartSketchOnFace, StartSketchOnPlane, TagEngineInfo, TagIdentifier,
     },
@@ -1022,7 +1021,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 ///   |> line(end = [-2, 0])
 ///   |> close()
 ///
-/// example = revolve(exampleSketch, axis = 'y', angle = 180)
+/// example = revolve(exampleSketch, axis = Y, angle = 180)
 ///
 /// exampleSketch002 = startSketchOn(example, 'end')
 ///   |> startProfileAt([4.5, -5], %)
@@ -1048,7 +1047,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 ///   |> line(end = [-2, 0])
 ///   |> close()
 ///
-/// example = revolve(exampleSketch, axis = 'y', angle = 180, tagEnd = $end01)
+/// example = revolve(exampleSketch, axis = Y, angle = 180, tagEnd = $end01)
 ///
 /// exampleSketch002 = startSketchOn(example, end01)
 ///   |> startProfileAt([4.5, -5], %)

@@ -1,5 +1,5 @@
-import { test, expect } from './zoo-test'
-import { getUtils } from './test-utils'
+import { getUtils } from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Copilot ghost text', () => {
   // eslint-disable-next-line jest/valid-title
@@ -20,7 +20,7 @@ test.describe('Copilot ghost text', () => {
     await page.keyboard.press('Enter')
     await expect(page.locator('.cm-ghostText').first()).toBeVisible()
     await expect(page.locator('.cm-content')).toHaveText(
-      `fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
+      `fn cube = (pos, scale) => {  sg = startSketchOn(XY)    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
     )
     await expect(page.locator('.cm-ghostText').first()).toHaveText(
       `fn cube = (pos, scale) => {`
@@ -29,7 +29,7 @@ test.describe('Copilot ghost text', () => {
     // We should be able to hit Tab to accept the completion.
     await page.keyboard.press('Tab')
     await expect(page.locator('.cm-content')).toHaveText(
-      `fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
+      `fn cube = (pos, scale) => {  sg = startSketchOn(XY)    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
     )
 
     // Hit enter a few times.
@@ -37,7 +37,7 @@ test.describe('Copilot ghost text', () => {
     await page.keyboard.press('Enter')
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)    `
+      `fn cube = (pos, scale) => {  sg = startSketchOn(XY)    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)    `
     )
 
     await expect(page.locator('.cm-ghostText')).not.toBeVisible()
@@ -80,7 +80,7 @@ test.describe('Copilot ghost text', () => {
     await page.keyboard.press('Enter')
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
+      `fn cube = (pos, scale) => {  sg = startSketchOn(XY)    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
     )
     await expect(page.locator('.cm-ghostText').first()).toHaveText(
       `fn cube = (pos, scale) => {`
@@ -89,7 +89,7 @@ test.describe('Copilot ghost text', () => {
     // We should be able to hit Tab to accept the completion.
     await page.keyboard.press('Tab')
     await expect(page.locator('.cm-content')).toContainText(
-      `fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
+      `fn cube = (pos, scale) => {  sg = startSketchOn(XY)    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
     )
   })
 
@@ -123,7 +123,7 @@ test.describe('Copilot ghost text', () => {
     await page.waitForTimeout(500)
     await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn('XZ')`
+      `sketch001 = startSketchOn(XZ)`
     )
 
     // Escape to exit the tool.
@@ -139,7 +139,7 @@ test.describe('Copilot ghost text', () => {
     await page.waitForTimeout(500)
     await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn('XZ')`
+      `sketch001 = startSketchOn(XZ)`
     )
 
     // Escape again to exit sketch mode.
@@ -156,7 +156,7 @@ test.describe('Copilot ghost text', () => {
     await page.keyboard.press('Enter')
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn('XZ')fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
+      `sketch001 = startSketchOn(XZ)fn cube = (pos, scale) => {  sg = startSketchOn(XY)    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
     )
     await expect(page.locator('.cm-ghostText').first()).toHaveText(
       `fn cube = (pos, scale) => {`
@@ -165,7 +165,7 @@ test.describe('Copilot ghost text', () => {
     // We should be able to hit Tab to accept the completion.
     await page.keyboard.press('Tab')
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn('XZ')fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
+      `sketch001 = startSketchOn(XZ)fn cube = (pos, scale) => {  sg = startSketchOn(XY)    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
     )
 
     // Hit enter a few times.
@@ -173,7 +173,7 @@ test.describe('Copilot ghost text', () => {
     await page.keyboard.press('Enter')
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn('XZ')fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)    `
+      `sketch001 = startSketchOn(XZ)fn cube = (pos, scale) => {  sg = startSketchOn(XY)    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)    `
     )
 
     await expect(page.locator('.cm-ghostText')).not.toBeVisible()
@@ -194,7 +194,7 @@ test.describe('Copilot ghost text', () => {
     await page.keyboard.press('Enter')
     await expect(page.locator('.cm-ghostText').first()).toBeVisible()
     await expect(page.locator('.cm-content')).toHaveText(
-      `fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
+      `fn cube = (pos, scale) => {  sg = startSketchOn(XY)    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
     )
     await expect(page.locator('.cm-ghostText').first()).toHaveText(
       `fn cube = (pos, scale) => {`
@@ -225,7 +225,7 @@ test.describe('Copilot ghost text', () => {
     await page.keyboard.press('Enter')
     await expect(page.locator('.cm-ghostText').first()).toBeVisible()
     await expect(page.locator('.cm-content')).toHaveText(
-      `fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
+      `fn cube = (pos, scale) => {  sg = startSketchOn(XY)    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
     )
     await expect(page.locator('.cm-ghostText').first()).toHaveText(
       `fn cube = (pos, scale) => {`
@@ -256,7 +256,7 @@ test.describe('Copilot ghost text', () => {
     await page.keyboard.press('Enter')
     await expect(page.locator('.cm-ghostText').first()).toBeVisible()
     await expect(page.locator('.cm-content')).toHaveText(
-      `fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
+      `fn cube = (pos, scale) => {  sg = startSketchOn(XY)    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
     )
     await expect(page.locator('.cm-ghostText').first()).toHaveText(
       `fn cube = (pos, scale) => {`
@@ -287,7 +287,7 @@ test.describe('Copilot ghost text', () => {
     await page.keyboard.press('Enter')
     await expect(page.locator('.cm-ghostText').first()).toBeVisible()
     await expect(page.locator('.cm-content')).toHaveText(
-      `fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
+      `fn cube = (pos, scale) => {  sg = startSketchOn(XY)    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
     )
     await expect(page.locator('.cm-ghostText').first()).toHaveText(
       `fn cube = (pos, scale) => {`
@@ -315,7 +315,7 @@ test.describe('Copilot ghost text', () => {
     await page.keyboard.press('Enter')
     await expect(page.locator('.cm-ghostText').first()).toBeVisible()
     await expect(page.locator('.cm-content')).toHaveText(
-      `fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
+      `fn cube = (pos, scale) => {  sg = startSketchOn(XY)    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
     )
     await expect(page.locator('.cm-ghostText').first()).toHaveText(
       `fn cube = (pos, scale) => {`
@@ -326,7 +326,7 @@ test.describe('Copilot ghost text', () => {
     await expect(page.locator('.cm-ghostText').first()).toBeVisible()
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
+      `fn cube = (pos, scale) => {  sg = startSketchOn(XY)    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
     )
   })
 
@@ -348,7 +348,7 @@ test.describe('Copilot ghost text', () => {
     await page.keyboard.press('Enter')
     await expect(page.locator('.cm-ghostText').first()).toBeVisible()
     await expect(page.locator('.cm-content')).toHaveText(
-      `fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
+      `fn cube = (pos, scale) => {  sg = startSketchOn(XY)    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
     )
     await expect(page.locator('.cm-ghostText').first()).toHaveText(
       `fn cube = (pos, scale) => {`
@@ -409,7 +409,7 @@ test.describe('Copilot ghost text', () => {
     await page.keyboard.press('Enter')
     await expect(page.locator('.cm-ghostText').first()).toBeVisible()
     await expect(page.locator('.cm-content')).toHaveText(
-      `{thing: "blah"}fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
+      `{thing: "blah"}fn cube = (pos, scale) => {  sg = startSketchOn(XY)    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
     )
     await expect(page.locator('.cm-ghostText').first()).toHaveText(
       `fn cube = (pos, scale) => {`
@@ -450,7 +450,7 @@ test.describe('Copilot ghost text', () => {
       await page.keyboard.press('Enter')
       await expect(page.locator('.cm-ghostText').first()).toBeVisible()
       await expect(page.locator('.cm-content')).toHaveText(
-        `fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
+        `fn cube = (pos, scale) => {  sg = startSketchOn(XY)    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
       )
       await expect(page.locator('.cm-ghostText').first()).toHaveText(
         `fn cube = (pos, scale) => {`
@@ -483,7 +483,7 @@ test.describe('Copilot ghost text', () => {
       await page.keyboard.press('Enter')
       await expect(page.locator('.cm-ghostText').first()).toBeVisible()
       await expect(page.locator('.cm-content')).toHaveText(
-        `fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
+        `fn cube = (pos, scale) => {  sg = startSketchOn(XY)    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
       )
       await expect(page.locator('.cm-ghostText').first()).toHaveText(
         `fn cube = (pos, scale) => {`
@@ -514,7 +514,7 @@ test.describe('Copilot ghost text', () => {
       await page.keyboard.press('Enter')
       await expect(page.locator('.cm-ghostText').first()).toBeVisible()
       await expect(page.locator('.cm-content')).toHaveText(
-        `fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
+        `fn cube = (pos, scale) => {  sg = startSketchOn(XY)    |> startProfileAt(pos, %)    |> line(end = [0, scale], %)    |> line(end = [scale, 0])    |> line(end = [0, -scale])  return sg}part001 = cube([0,0], 20)    |> close()    |> extrude(length = 20)`
       )
       await expect(page.locator('.cm-ghostText').first()).toHaveText(
         `fn cube = (pos, scale) => {`

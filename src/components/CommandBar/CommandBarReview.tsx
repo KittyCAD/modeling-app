@@ -1,6 +1,10 @@
-import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
-import CommandBarHeader from './CommandBarHeader'
 import { useHotkeys } from 'react-hotkeys-hook'
+
+import CommandBarHeader from '@src/components/CommandBar/CommandBarHeader'
+import {
+  commandBarActor,
+  useCommandBarState,
+} from '@src/machines/commandBarMachine'
 
 function CommandBarReview({ stepBack }: { stepBack: () => void }) {
   const commandBarState = useCommandBarState()
@@ -58,7 +62,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
 
   return (
     <CommandBarHeader>
-      <p className="px-4">
+      <p className="px-4 pb-2">
         {selectedCommand?.reviewMessage ? (
           selectedCommand.reviewMessage instanceof Function ? (
             selectedCommand.reviewMessage(commandBarState.context)
@@ -66,7 +70,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
             selectedCommand.reviewMessage
           )
         ) : (
-          <>Confirm {selectedCommand?.name}</>
+          <>Confirm {selectedCommand?.displayName || selectedCommand?.name}</>
         )}
       </p>
       <form

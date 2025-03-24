@@ -12,10 +12,9 @@ use crate::{
     execution::{
         annotations,
         id_generator::IdGenerator,
-        kcl_value,
         memory::{ProgramMemory, Stack},
-        Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue,
-        Operation, UnitAngle, UnitLen,
+        types, Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, EnvironmentRef, ExecOutcome, ExecutorSettings,
+        KclValue, Operation, UnitAngle, UnitLen,
     },
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::Annotation,
@@ -31,6 +30,8 @@ pub struct ExecState {
     pub(super) exec_context: Option<super::ExecutorContext>,
 }
 
+pub type ModuleInfoMap = IndexMap<ModuleId, ModuleInfo>;
+
 #[derive(Debug, Clone)]
 pub(super) struct GlobalState {
     /// Map from source file absolute path to module ID.
@@ -38,7 +39,7 @@ pub(super) struct GlobalState {
     /// Map from module ID to source file.
     pub id_to_source: IndexMap<ModuleId, ModuleSource>,
     /// Map from module ID to module info.
-    pub module_infos: IndexMap<ModuleId, ModuleInfo>,
+    pub module_infos: ModuleInfoMap,
     /// Output map of UUIDs to artifacts.
     pub artifacts: IndexMap<ArtifactId, Artifact>,
     /// Output commands to allow building the artifact graph by the caller.
@@ -73,13 +74,15 @@ pub(super) struct ModuleState {
     pub module_exports: Vec<String>,
     /// Settings specified from annotations.
     pub settings: MetaSettings,
+    pub(super) explicit_length_units: bool,
+    pub(super) std_path: Option<String>,
 }
 
 impl ExecState {
     pub fn new(exec_context: &super::ExecutorContext) -> Self {
         ExecState {
             global: GlobalState::new(&exec_context.settings),
-            mod_local: ModuleState::new(&exec_context.settings, None, ProgramMemory::new(), Default::default()),
+            mod_local: ModuleState::new(None, ProgramMemory::new(), Default::default()),
             exec_context: Some(exec_context.clone()),
         }
     }
@@ -89,7 +92,7 @@ impl ExecState {
 
         *self = ExecState {
             global,
-            mod_local: ModuleState::new(&exec_context.settings, None, ProgramMemory::new(), Default::default()),
+            mod_local: ModuleState::new(None, ProgramMemory::new(), Default::default()),
             exec_context: Some(exec_context.clone()),
         };
     }
@@ -286,52 +289,49 @@ impl GlobalState {
 }
 
 impl ModuleState {
-    pub(super) fn new(
-        exec_settings: &ExecutorSettings,
-        std_path: Option<String>,
-        memory: Arc<ProgramMemory>,
-        module_id: Option<ModuleId>,
-    ) -> Self {
+    pub(super) fn new(std_path: Option<String>, memory: Arc<ProgramMemory>, module_id: Option<ModuleId>) -> Self {
         ModuleState {
             id_generator: IdGenerator::new(module_id),
             stack: memory.new_stack(),
             pipe_value: Default::default(),
             module_exports: Default::default(),
+            explicit_length_units: false,
+            std_path,
             settings: MetaSettings {
-                default_length_units: exec_settings.units.into(),
+                default_length_units: Default::default(),
                 default_angle_units: Default::default(),
-                std_path,
             },
         }
     }
 }
 
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct MetaSettings {
-    pub default_length_units: kcl_value::UnitLen,
-    pub default_angle_units: kcl_value::UnitAngle,
-    pub std_path: Option<String>,
+    pub default_length_units: types::UnitLen,
+    pub default_angle_units: types::UnitAngle,
 }
 
 impl MetaSettings {
     pub(crate) fn update_from_annotation(
         &mut self,
         annotation: &crate::parsing::ast::types::Node<Annotation>,
-    ) -> Result<(), KclError> {
+    ) -> Result<bool, KclError> {
         let properties = annotations::expect_properties(annotations::SETTINGS, annotation)?;
 
+        let mut updated_len = false;
         for p in properties {
             match &*p.inner.key.name {
                 annotations::SETTINGS_UNIT_LENGTH => {
                     let value = annotations::expect_ident(&p.inner.value)?;
-                    let value = kcl_value::UnitLen::from_str(value, annotation.as_source_range())?;
+                    let value = types::UnitLen::from_str(value, annotation.as_source_range())?;
                     self.default_length_units = value;
+                    updated_len = true;
                 }
                 annotations::SETTINGS_UNIT_ANGLE => {
                     let value = annotations::expect_ident(&p.inner.value)?;
-                    let value = kcl_value::UnitAngle::from_str(value, annotation.as_source_range())?;
+                    let value = types::UnitAngle::from_str(value, annotation.as_source_range())?;
                     self.default_angle_units = value;
                 }
                 name => {
@@ -347,6 +347,6 @@ impl MetaSettings {
             }
         }
 
-        Ok(())
+        Ok(updated_len)
     }
 }

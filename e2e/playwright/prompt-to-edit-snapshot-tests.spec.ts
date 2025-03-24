@@ -1,4 +1,5 @@
-import { test, expect } from './zoo-test'
+import { expect, test } from '@e2e/playwright/zoo-test'
+
 /* eslint-disable jest/no-conditional-expect */
 
 /**
@@ -21,7 +22,7 @@ import { test, expect } from './zoo-test'
  *
  */
 
-const file = `sketch001 = startSketchOn('XZ')
+const file = `sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([57.81, 250.51], sketch001)
   |> line(end = [121.13, 56.63], tag = $seg02)
   |> line(end = [83.37, -34.61], tag = $seg01)
@@ -30,7 +31,7 @@ profile001 = startProfileAt([57.81, 250.51], sketch001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(profile001, length = 200)
-sketch002 = startSketchOn('XZ')
+sketch002 = startSketchOn(XZ)
   |> startProfileAt([-73.64, -42.89], %)
   |> xLine(length = 173.71)
   |> line(end = [-22.12, -94.4])
@@ -38,7 +39,7 @@ sketch002 = startSketchOn('XZ')
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude002 = extrude(sketch002, length = 50)
-sketch003 = startSketchOn('XY')
+sketch003 = startSketchOn(XY)
   |> startProfileAt([52.92, 157.81], %)
   |> angledLine([0, 176.4], %, $rectangleSegmentA001)
   |> angledLine([

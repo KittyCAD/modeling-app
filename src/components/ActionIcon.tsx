@@ -1,10 +1,9 @@
-import {
-  IconDefinition as SolidIconDefinition,
-  faCircleExclamation,
-} from '@fortawesome/free-solid-svg-icons'
-import { IconDefinition as BrandIconDefinition } from '@fortawesome/free-brands-svg-icons'
+import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
+import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { CustomIcon, CustomIconName } from './CustomIcon'
+
+import type { CustomIconName } from '@src/components/CustomIcon'
+import { CustomIcon } from '@src/components/CustomIcon'
 
 const iconSizes = {
   xs: 12,
@@ -14,7 +13,8 @@ const iconSizes = {
 }
 
 export interface ActionIconProps extends React.PropsWithChildren {
-  icon?: SolidIconDefinition | BrandIconDefinition | CustomIconName
+  icon?: IconDefinition | CustomIconName
+  iconColor?: string
   className?: string
   bgClassName?: string
   iconClassName?: string
@@ -25,6 +25,7 @@ export interface ActionIconProps extends React.PropsWithChildren {
 export const ActionIcon = (props: ActionIconProps) => {
   const {
     icon = faCircleExclamation,
+    iconColor,
     className,
     bgClassName,
     iconClassName,
@@ -36,30 +37,32 @@ export const ActionIcon = (props: ActionIconProps) => {
   const computedBgClassName = `bg-chalkboard-20 dark:bg-chalkboard-80 group-disabled:bg-chalkboard-30 dark:group-disabled:bg-chalkboard-80 ${bgClassName}`
 
   return (
-    <div
-      data-testid={props['data-testid']}
-      className={
-        `w-fit self-stretch inline-grid place-content-center ${className} ` +
-        computedBgClassName
-      }
-    >
-      {children ? (
-        children
-      ) : typeof icon === 'string' ? (
-        <CustomIcon
-          name={icon}
-          width={iconSizes[size]}
-          height={iconSizes[size]}
-          className={computedIconClassName}
-        />
-      ) : (
-        <FontAwesomeIcon
-          icon={icon}
-          width={iconSizes[size]}
-          height={iconSizes[size]}
-          className={computedIconClassName}
-        />
-      )}
-    </div>
+    <span style={{ color: iconColor }}>
+      <div
+        data-testid={props['data-testid']}
+        className={
+          `w-fit self-stretch inline-grid place-content-center ${className} ` +
+          computedBgClassName
+        }
+      >
+        {children ? (
+          children
+        ) : typeof icon === 'string' ? (
+          <CustomIcon
+            name={icon}
+            width={iconSizes[size]}
+            height={iconSizes[size]}
+            className={computedIconClassName}
+          />
+        ) : (
+          <FontAwesomeIcon
+            icon={icon}
+            width={iconSizes[size]}
+            height={iconSizes[size]}
+            className={computedIconClassName}
+          />
+        )}
+      </div>
+    </span>
   )
 }

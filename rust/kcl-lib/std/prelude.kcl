@@ -1,8 +1,11 @@
 @no_std
+@settings(defaultLengthUnit = mm)
 
 // Note that everything in the prelude is treated as exported.
 
 export import * from "std::math"
+export import * from "std::sketch"
+export import "std::turns"
 
 /// A number
 ///
@@ -223,10 +226,29 @@ export type Sketch
 @(impl = std_rust)
 export type Solid
 
-export ZERO = 0
-export QUARTER_TURN = 90deg
-export HALF_TURN = 180deg
-export THREE_QUARTER_TURN = 270deg
+/// A face.
+@(impl = std_rust)
+export type Face
+
+/// A helix.
+@(impl = std_rust)
+export type Helix
+
+/// The edge of a solid.
+@(impl = std_rust)
+export type Edge
+
+/// A point in two dimensional space.
+///
+/// `Point2d` is an alias for a two-element array of [number](/docs/kcl/types/number)s. To write a value
+/// with type `Point2d`, use an array, e.g., `[0, 0]` or `[5.0, 3.14]`.
+export type Point2d = [number; 2]
+
+/// A point in three dimensional space.
+///
+/// `Point3d` is an alias for a three-element array of [number](/docs/kcl/types/number)s. To write a value
+/// with type `Point3d`, use an array, e.g., `[0, 0, 0]` or `[5.0, 3.14, 6.8]`.
+export type Point3d = [number; 3]
 
 export XY = {
   origin = { x = 0, y = 0, z = 0 },
@@ -248,3 +270,330 @@ export YZ = {
   yAxis = { x = 0, y = 0, z = 1 },
   zAxis = { x = 1, y = 0, z = 0 },
 }: Plane
+
+/// An infinite line in 2d space.
+@(impl = std_rust)
+export type Axis2d
+
+/// An infinite line in 3d space.
+@(impl = std_rust)
+export type Axis3d
+
+export X = {
+  origin = [0, 0, 0],
+  direction = [1, 0, 0],
+}: Axis3d
+
+export Y = {
+  origin = [0, 0, 0],
+  direction = [0, 1, 0],
+}: Axis3d
+
+export Z = {
+  origin = [0, 0, 0],
+  direction = [0, 0, 1],
+}: Axis3d
+
+/// Create a helix.
+///
+/// ```
+/// // Create a helix around the Z axis.
+/// helixPath = helix(
+///     angleStart = 0,
+///     ccw = true,
+///     revolutions = 5,
+///     length = 10,
+///     radius = 5,
+///     axis = Z,
+///  )
+///
+/// // Create a spring by sweeping around the helix path.
+/// springSketch = startSketchOn(YZ)
+///     |> circle( center = [0, 0], radius = 0.5)
+///     |> sweep(path = helixPath)
+/// ```
+///
+/// ```
+/// // Create a helix around an edge.
+/// helper001 = startSketchOn(XZ)
+///  |> startProfileAt([0, 0], %)
+///  |> line(end = [0, 10], tag = $edge001)
+///
+/// helixPath = helix(
+///     angleStart = 0,
+///     ccw = true,
+///     revolutions = 5,
+///     length = 10,
+///     radius = 5,
+///     axis = edge001,
+///  )
+///
+/// // Create a spring by sweeping around the helix path.
+/// springSketch = startSketchOn(XY)
+///     |> circle( center = [0, 0], radius = 0.5 )
+///     |> sweep(path = helixPath)
+/// ```
+///
+/// ```
+/// // Create a helix around a custom axis.
+/// helixPath = helix(
+///     angleStart = 0,
+///     ccw = true,
+///     revolutions = 5,
+///     length = 10,
+///     radius = 5,
+///     axis = {
+///         direction = [0, 0, 1.0],
+///         origin = [0, 0.25, 0]
+///     }
+///  )
+///
+/// // Create a spring by sweeping around the helix path.
+/// springSketch = startSketchOn(XY)
+///     |> circle( center = [0, 0], radius = 1 )
+///     |> sweep(path = helixPath)
+/// ```
+///
+/// ```
+/// // Create a helix on a cylinder.
+///
+/// part001 = startSketchOn(XY)
+///   |> circle( center= [5, 5], radius= 10 )
+///   |> extrude(length = 10)
+///
+/// helix(
+///     angleStart = 0,
+///     ccw = true,
+///     revolutions = 16,
+///     cylinder = part001,
+///  )
+/// ```
+@(impl = std_rust)
+export fn helix(
+  /// Number of revolutions.
+  revolutions: number(_),
+  /// Start angle (in degrees).
+  angleStart: number(deg),
+  /// Is the helix rotation counter clockwise? The default is `false`.
+  ccw?: bool,
+  /// Radius of the helix.
+  @(include_in_snippet = true)
+  radius?: number(mm),
+  /// Axis to use for the helix.
+  @(include_in_snippet = true)
+  axis?: Axis3d | Edge,
+  /// Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used.
+  @(include_in_snippet = true)
+  length?: number(mm),
+  /// Cylinder to create the helix on.
+  cylinder?: Solid,
+): Helix {}
+
+/// Rotate a sketch around some provided axis, creating a solid from its extent.
+///
+/// This, like extrude, is able to create a 3-dimensional solid from a
+/// 2-dimensional sketch. However, unlike extrude, this creates a solid
+/// by using the extent of the sketch as its revolved around an axis rather
+/// than using the extent of the sketch linearly translated through a third
+/// dimension.
+///
+/// Revolve occurs around a local sketch axis rather than a global axis.
+///
+/// You can provide more than one sketch to revolve, and they will all be
+/// revolved around the same axis.
+///
+/// ```
+/// part001 = startSketchOn(XY)
+///     |> startProfileAt([4, 12], %)
+///     |> line(end = [2, 0])
+///     |> line(end = [0, -6])
+///     |> line(end = [4, -6])
+///     |> line(end = [0, -6])
+///     |> line(end = [-3.75, -4.5])
+///     |> line(end = [0, -5.5])
+///     |> line(end = [-2, 0])
+///     |> close()
+///     |> revolve(axis = Y) // default angle is 360
+/// ```
+///
+/// ```
+/// // A donut shape.
+/// sketch001 = startSketchOn(XY)
+///     |> circle( center = [15, 0], radius = 5 )
+///     |> revolve(
+///         angle = 360,
+///         axis = Y,
+///     )
+/// ```
+///
+/// ```
+/// part001 = startSketchOn(XY)
+///     |> startProfileAt([4, 12], %)
+///     |> line(end = [2, 0])
+///     |> line(end = [0, -6])
+///     |> line(end = [4, -6])
+///     |> line(end = [0, -6])
+///     |> line(end = [-3.75, -4.5])
+///     |> line(end = [0, -5.5])
+///     |> line(end = [-2, 0])
+///     |> close()
+///     |> revolve(axis = Y, angle = 180)
+/// ```
+///
+/// ```
+/// part001 = startSketchOn(XY)
+///     |> startProfileAt([4, 12], %)
+///     |> line(end = [2, 0])
+///     |> line(end = [0, -6])
+///     |> line(end = [4, -6])
+///     |> line(end = [0, -6])
+///     |> line(end = [-3.75, -4.5])
+///     |> line(end = [0, -5.5])
+///     |> line(end = [-2, 0])
+///     |> close()
+///     |> revolve(axis = Y, angle = 180)
+///
+/// part002 = startSketchOn(part001, 'end')
+///     |> startProfileAt([4.5, -5], %)
+///     |> line(end = [0, 5])
+///     |> line(end = [5, 0])
+///     |> line(end = [0, -5])
+///     |> close()
+///     |> extrude(length = 5)
+/// ```
+///
+/// ```
+/// box = startSketchOn(XY)
+///     |> startProfileAt([0, 0], %)
+///     |> line(end = [0, 20])
+///     |> line(end = [20, 0])
+///     |> line(end = [0, -20])
+///     |> close()
+///     |> extrude(length = 20)
+///
+/// sketch001 = startSketchOn(box, "END")
+///     |> circle( center = [10,10], radius = 4 )
+///     |> revolve(
+///         angle = -90,
+///         axis = Y
+///     )
+/// ```
+///
+/// ```
+/// box = startSketchOn(XY)
+///     |> startProfileAt([0, 0], %)
+///     |> line(end = [0, 20])
+///     |> line(end = [20, 0])
+///     |> line(end = [0, -20], tag = $revolveAxis)
+///     |> close()
+///     |> extrude(length = 20)
+///
+/// sketch001 = startSketchOn(box, "END")
+///     |> circle( center = [10,10], radius = 4 )
+///     |> revolve(
+///         angle = 90,
+///         axis = getOppositeEdge(revolveAxis)
+///     )
+/// ```
+///
+/// ```
+/// box = startSketchOn(XY)
+///     |> startProfileAt([0, 0], %)
+///     |> line(end = [0, 20])
+///     |> line(end = [20, 0])
+///     |> line(end = [0, -20], tag = $revolveAxis)
+///     |> close()
+///     |> extrude(length = 20)
+///
+/// sketch001 = startSketchOn(box, "END")
+///     |> circle( center = [10,10], radius = 4 )
+///     |> revolve(
+///         angle = 90,
+///         axis = getOppositeEdge(revolveAxis),
+///         tolerance = 0.0001
+///     )
+/// ```
+///
+/// ```
+/// sketch001 = startSketchOn(XY)
+///   |> startProfileAt([10, 0], %)
+///   |> line(end = [5, -5])
+///   |> line(end = [5, 5])
+///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///   |> close()
+///
+/// part001 = revolve(
+///    sketch001,
+///    axis = {
+///      direction = [0.0, 1.0],
+///      origin: [0.0, 0.0]
+///   }
+/// )
+/// ```
+///
+/// ```
+/// // Revolve two sketches around the same axis.
+///
+/// sketch001 = startSketchOn(XY)
+/// profile001 = startProfileAt([4, 8], sketch001)
+///     |> xLine(length = 3)
+///     |> yLine(length = -3)
+///     |> xLine(length = -3)
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+///
+/// profile002 = startProfileAt([-5, 8], sketch001)
+///     |> xLine(length = 3)
+///     |> yLine(length = -3)
+///     |> xLine(length = -3)
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+///
+/// revolve(
+///     [profile001, profile002],
+///     axis = X,
+/// )
+/// ```
+///
+/// ```
+/// // Revolve around a path that has not been extruded.
+///
+/// profile001 = startSketchOn(XY)
+///     |> startProfileAt([0, 0], %)
+///     |> line(end = [0, 20], tag = $revolveAxis)
+///     |> line(end = [20, 0])
+///     |> line(end = [0, -20])
+///     |> close(%)
+///
+/// sketch001 = startSketchOn(XY)
+///     |> circle(center = [-10, 10], radius = 4)
+///     |> revolve(angle = 90, axis = revolveAxis)
+/// ```
+///
+/// ```
+/// // Revolve around a path that has not been extruded or closed.
+///
+/// profile001 = startSketchOn(XY)
+///     |> startProfileAt([0, 0], %)
+///     |> line(end = [0, 20], tag = $revolveAxis)
+///     |> line(end = [20, 0])
+///
+/// sketch001 = startSketchOn(XY)
+///     |> circle(center = [-10, 10], radius = 4)
+///     |> revolve(angle = 90, axis = revolveAxis)
+/// ```
+@(impl = std_rust)
+export fn revolve(
+  /// The sketch or set of sketches that should be revolved
+  @sketches: [Sketch; 1+],
+  /// Axis of revolution.
+  axis: Axis2d | Edge,
+  /// Angle to revolve (in degrees). Default is 360.
+  angle?: number(deg),
+  /// Tolerance for the revolve operation.
+  tolerance?: number(mm),
+  /// A named tag for the face at the start of the revolve, i.e. the original sketch.
+  tagStart?: tag,
+  /// A named tag for the face at the end of the revolve.
+  tagEnd?: tag,
+): Solid {}

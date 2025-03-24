@@ -44,7 +44,7 @@ fn slot(sketch1, start, end, width) {
 }
 
 // create a sketch on the "XY" plane
-sketch000 = startSketchOn('XY')
+sketch000 = startSketchOn(XY)
 
 // create a profile of the flipper
 flipperProfile = startProfileAt([-flipperLength, -32.0], sketch000)
@@ -83,11 +83,11 @@ fillet(
   tags = [
     getNextAdjacentEdge(backEdge),
     getPreviousAdjacentEdge(backEdge)
-  ]
+  ],
 )
 
 // create a sketch on the "XZ" plane offset by half the thickness
-sketch001 = startSketchOn(offsetPlane("XZ", offset = -handleWidth / 2))
+sketch001 = startSketchOn(offsetPlane(XZ, offset = -handleWidth / 2))
 
 // create a profile of the spatula handle
 handleProfile = startProfileAt([0.0, flipperThickness], sketch001)
@@ -109,7 +109,7 @@ fillet(
   tags = [
     getNextAdjacentEdge(handleBottomEdge),
     getNextAdjacentEdge(handleTopEdge)
-  ]
+  ],
 )
 
 // define a plane which is at the end of the handle
@@ -163,4 +163,4 @@ sketch003 = startSketchOn(grip, gripEdgeTop)
 gripHoleProfile = slot(sketch003, [0, 200], [0, 210], gripSlotWidth)
 
 // cut a hole in the grip
-extrude(gripHoleProfile, length = -gripWidth-20)
+extrude(gripHoleProfile, length = -gripWidth - 20)

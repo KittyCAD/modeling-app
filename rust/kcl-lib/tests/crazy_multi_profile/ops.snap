@@ -10,19 +10,11 @@ description: Operations executed crazy_multi_profile.kcl
           "type": "String",
           "value": "XZ"
         },
-        "sourceRange": [
-          26,
-          30,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      12,
-      31,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,19 +34,11 @@ description: Operations executed crazy_multi_profile.kcl
             }
           }
         },
-        "sourceRange": [
-          292,
-          294,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      263,
-      295,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -63,11 +47,7 @@ description: Operations executed crazy_multi_profile.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        271,
-        281,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -79,11 +59,7 @@ description: Operations executed crazy_multi_profile.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          322,
-          332,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
@@ -91,23 +67,31 @@ description: Operations executed crazy_multi_profile.kcl
           "value": "seg01",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          334,
-          339,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      308,
-      340,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
   {
+    "type": "KclStdLibCall",
+    "name": "revolve",
+    "unlabeledArg": {
+      "value": {
+        "type": "Array",
+        "value": [
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "angle": {
         "value": {
@@ -123,44 +107,17 @@ description: Operations executed crazy_multi_profile.kcl
             }
           }
         },
-        "sourceRange": [
-          1308,
-          1310,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
           "type": "Uuid",
           "value": "[uuid]"
         },
-        "sourceRange": [
-          1319,
-          1345,
-          0
-        ]
+        "sourceRange": []
       }
     },
-    "name": "revolve",
-    "sourceRange": [
-      1280,
-      1346,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": [
-        1288,
-        1298,
-        0
-      ]
-    }
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -178,19 +135,11 @@ description: Operations executed crazy_multi_profile.kcl
             }
           }
         },
-        "sourceRange": [
-          1389,
-          1390,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1360,
-      1391,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -199,11 +148,7 @@ description: Operations executed crazy_multi_profile.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1368,
-        1378,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -213,19 +158,11 @@ description: Operations executed crazy_multi_profile.kcl
           "type": "String",
           "value": "-XZ"
         },
-        "sourceRange": [
-          1418,
-          1423,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1404,
-      1424,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -245,19 +182,11 @@ description: Operations executed crazy_multi_profile.kcl
             }
           }
         },
-        "sourceRange": [
-          2395,
-          2398,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2366,
-      2399,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -266,14 +195,26 @@ description: Operations executed crazy_multi_profile.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        2374,
-        2384,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
+    "type": "KclStdLibCall",
+    "name": "revolve",
+    "unlabeledArg": {
+      "value": {
+        "type": "Array",
+        "value": [
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "angle": {
         "value": {
@@ -289,11 +230,7 @@ description: Operations executed crazy_multi_profile.kcl
             }
           }
         },
-        "sourceRange": [
-          2441,
-          2443,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
@@ -301,32 +238,9 @@ description: Operations executed crazy_multi_profile.kcl
           "value": "seg02",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          2452,
-          2457,
-          0
-        ]
+        "sourceRange": []
       }
     },
-    "name": "revolve",
-    "sourceRange": [
-      2413,
-      2458,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": [
-        2421,
-        2431,
-        0
-      ]
-    }
+    "sourceRange": []
   }
 ]

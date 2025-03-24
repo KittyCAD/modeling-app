@@ -6,10 +6,13 @@ description: Result of parsing xz_plane.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 173,
+          "commentStart": 0,
+          "end": 0,
           "id": {
-            "end": 7,
+            "commentStart": 0,
+            "end": 0,
             "name": "part001",
             "start": 0,
             "type": "Identifier"
@@ -19,33 +22,46 @@ description: Result of parsing xz_plane.kcl
               {
                 "arguments": [
                   {
-                    "end": 28,
+                    "commentStart": 24,
+                    "end": 0,
                     "raw": "'XZ'",
-                    "start": 24,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XZ"
                   }
                 ],
                 "callee": {
-                  "end": 23,
-                  "name": "startSketchOn",
-                  "start": 10,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 10,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 10,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 29,
-                "start": 10,
+                "commentStart": 10,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
+                    "commentStart": 50,
                     "elements": [
                       {
-                        "end": 52,
+                        "commentStart": 51,
+                        "end": 0,
                         "raw": "0",
-                        "start": 51,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -54,9 +70,10 @@ description: Result of parsing xz_plane.kcl
                         }
                       },
                       {
-                        "end": 55,
+                        "commentStart": 54,
+                        "end": 0,
                         "raw": "0",
-                        "start": 54,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -65,26 +82,37 @@ description: Result of parsing xz_plane.kcl
                         }
                       }
                     ],
-                    "end": 56,
-                    "start": 50,
+                    "end": 0,
+                    "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 59,
-                    "start": 58,
+                    "commentStart": 58,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 49,
-                  "name": "startProfileAt",
-                  "start": 35,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 35,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 35,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 60,
-                "start": 35,
+                "commentStart": 35,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -93,17 +121,20 @@ description: Result of parsing xz_plane.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 82,
+                      "commentStart": 71,
+                      "end": 0,
                       "name": "endAbsolute",
-                      "start": 71,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 85,
                       "elements": [
                         {
-                          "end": 89,
+                          "commentStart": 86,
+                          "end": 0,
                           "raw": "100",
-                          "start": 86,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -112,9 +143,10 @@ description: Result of parsing xz_plane.kcl
                           }
                         },
                         {
-                          "end": 94,
+                          "commentStart": 91,
+                          "end": 0,
                           "raw": "100",
-                          "start": 91,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -123,21 +155,31 @@ description: Result of parsing xz_plane.kcl
                           }
                         }
                       ],
-                      "end": 95,
-                      "start": 85,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 70,
-                  "name": "line",
-                  "start": 66,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 66,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 66,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 96,
-                "start": 66,
+                "commentStart": 66,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -147,17 +189,20 @@ description: Result of parsing xz_plane.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 118,
+                      "commentStart": 107,
+                      "end": 0,
                       "name": "endAbsolute",
-                      "start": 107,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 121,
                       "elements": [
                         {
-                          "end": 125,
+                          "commentStart": 122,
+                          "end": 0,
                           "raw": "100",
-                          "start": 122,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -166,9 +211,10 @@ description: Result of parsing xz_plane.kcl
                           }
                         },
                         {
-                          "end": 128,
+                          "commentStart": 127,
+                          "end": 0,
                           "raw": "0",
-                          "start": 127,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -177,21 +223,31 @@ description: Result of parsing xz_plane.kcl
                           }
                         }
                       ],
-                      "end": 129,
-                      "start": 121,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 106,
-                  "name": "line",
-                  "start": 102,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 102,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 102,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 130,
-                "start": 102,
+                "commentStart": 102,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -199,20 +255,31 @@ description: Result of parsing xz_plane.kcl
               {
                 "arguments": [
                   {
-                    "end": 143,
-                    "start": 142,
+                    "commentStart": 142,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 141,
-                  "name": "close",
-                  "start": 136,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 136,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 136,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 144,
-                "start": 136,
+                "commentStart": 136,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -221,17 +288,20 @@ description: Result of parsing xz_plane.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 164,
+                      "commentStart": 158,
+                      "end": 0,
                       "name": "length",
-                      "start": 158,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 172,
+                      "commentStart": 167,
+                      "end": 0,
                       "left": {
-                        "end": 168,
+                        "commentStart": 167,
+                        "end": 0,
                         "raw": "5",
-                        "start": 167,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -241,9 +311,10 @@ description: Result of parsing xz_plane.kcl
                       },
                       "operator": "+",
                       "right": {
-                        "end": 172,
+                        "commentStart": 171,
+                        "end": 0,
                         "raw": "7",
-                        "start": 171,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -251,41 +322,53 @@ description: Result of parsing xz_plane.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 167,
+                      "start": 0,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 157,
-                  "name": "extrude",
-                  "start": 150,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 150,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 150,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 173,
-                "start": 150,
+                "commentStart": 150,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 173,
-            "start": 10,
+            "commentStart": 10,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 173,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 174,
+    "commentStart": 0,
+    "end": 0,
     "start": 0
   }
 }

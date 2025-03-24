@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed tan_arc_x_line.kcl
 ---
 [
@@ -10,19 +10,11 @@ description: Operations executed tan_arc_x_line.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          78,
-          82,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      64,
-      83,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   }

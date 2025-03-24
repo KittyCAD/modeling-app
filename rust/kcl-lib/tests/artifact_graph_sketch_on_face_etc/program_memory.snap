@@ -13,23 +13,16 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            68,
-            86,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            92,
-            125,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 118,
             "end": 124,
             "start": 118,
             "type": "TagDeclarator",
@@ -40,11 +33,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            131,
-            187,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -56,11 +45,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                68,
-                86,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -79,17 +64,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                92,
-                125,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.0,
               8.0
             ],
             "tag": {
+              "commentStart": 118,
               "end": 124,
               "start": 118,
               "type": "TagDeclarator",
@@ -107,11 +89,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                131,
-                187,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               9.0,
@@ -130,11 +108,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                193,
-                200,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -195,11 +169,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              37,
-              62,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
@@ -232,33 +202,21 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            331,
-            349,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            355,
-            374,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            380,
-            436,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -270,11 +228,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                331,
-                349,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -0.5,
@@ -293,11 +247,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                355,
-                374,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.5,
@@ -316,11 +266,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                380,
-                436,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.5,
@@ -339,11 +285,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                442,
-                449,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -0.5,
@@ -388,23 +330,16 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  68,
-                  86,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  92,
-                  125,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 118,
                   "end": 124,
                   "start": 118,
                   "type": "TagDeclarator",
@@ -415,11 +350,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  131,
-                  187,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               }
@@ -431,11 +362,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      68,
-                      86,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -454,17 +381,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      92,
-                      125,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     4.0,
                     8.0
                   ],
                   "tag": {
+                    "commentStart": 118,
                     "end": 124,
                     "start": 118,
                     "type": "TagDeclarator",
@@ -482,11 +406,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      131,
-                      187,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     9.0,
@@ -505,11 +425,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      193,
-                      200,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -570,11 +486,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    37,
-                    62,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "tags": {
@@ -615,11 +527,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              295,
-              325,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -646,12 +554,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            577,
-            611,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 604,
             "end": 610,
             "start": 604,
             "type": "TagDeclarator",
@@ -662,22 +567,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            617,
-            636,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            642,
-            698,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -689,17 +586,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                577,
-                611,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.0,
               1.5
             ],
             "tag": {
+              "commentStart": 604,
               "end": 610,
               "start": 604,
               "type": "TagDeclarator",
@@ -717,11 +611,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                617,
-                636,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.5,
@@ -740,11 +630,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                642,
-                698,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.5,
@@ -763,11 +649,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                704,
-                711,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.0,
@@ -812,33 +694,21 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  331,
-                  349,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  355,
-                  374,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  380,
-                  436,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               }
@@ -850,11 +720,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      331,
-                      349,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -0.5,
@@ -873,11 +739,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      355,
-                      374,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     1.5,
@@ -896,11 +758,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      380,
-                      436,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     3.5,
@@ -919,11 +777,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      442,
-                      449,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -0.5,
@@ -968,23 +822,16 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        68,
-                        86,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     },
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        92,
-                        125,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": {
+                        "commentStart": 118,
                         "end": 124,
                         "start": 118,
                         "type": "TagDeclarator",
@@ -995,11 +842,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        131,
-                        187,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     }
@@ -1011,11 +854,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            68,
-                            86,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           0.0,
@@ -1034,17 +873,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            92,
-                            125,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           4.0,
                           8.0
                         ],
                         "tag": {
+                          "commentStart": 118,
                           "end": 124,
                           "start": 118,
                           "type": "TagDeclarator",
@@ -1062,11 +898,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            131,
-                            187,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           9.0,
@@ -1085,11 +917,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            193,
-                            200,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           0.0,
@@ -1150,11 +978,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       "tag": null,
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          37,
-                          62,
-                          0
-                        ]
+                        "sourceRange": []
                       }
                     },
                     "tags": {
@@ -1195,11 +1019,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    295,
-                    325,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "artifactId": "[uuid]",
@@ -1234,11 +1054,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              544,
-              571,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
@@ -1271,33 +1087,21 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            839,
-            859,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            865,
-            886,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            892,
-            948,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -1309,11 +1113,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                839,
-                859,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -3.0,
@@ -1332,11 +1132,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                865,
-                886,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -2.5,
@@ -1355,11 +1151,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                892,
-                948,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -2.0,
@@ -1378,11 +1170,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                954,
-                961,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -3.0,
@@ -1427,12 +1215,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  577,
-                  611,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 604,
                   "end": 610,
                   "start": 604,
                   "type": "TagDeclarator",
@@ -1443,22 +1228,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  617,
-                  636,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  642,
-                  698,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               }
@@ -1470,17 +1247,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      577,
-                      611,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     1.0,
                     1.5
                   ],
                   "tag": {
+                    "commentStart": 604,
                     "end": 610,
                     "start": 604,
                     "type": "TagDeclarator",
@@ -1498,11 +1272,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      617,
-                      636,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     1.5,
@@ -1521,11 +1291,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      642,
-                      698,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     2.5,
@@ -1544,11 +1310,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      704,
-                      711,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     1.0,
@@ -1593,33 +1355,21 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        331,
-                        349,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     },
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        355,
-                        374,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     },
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        380,
-                        436,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     }
@@ -1631,11 +1381,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            331,
-                            349,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           -0.5,
@@ -1654,11 +1400,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            355,
-                            374,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           1.5,
@@ -1677,11 +1419,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            380,
-                            436,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           3.5,
@@ -1700,11 +1438,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            442,
-                            449,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           -0.5,
@@ -1749,23 +1483,16 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           {
                             "faceId": "[uuid]",
                             "id": "[uuid]",
-                            "sourceRange": [
-                              68,
-                              86,
-                              0
-                            ],
+                            "sourceRange": [],
                             "tag": null,
                             "type": "extrudePlane"
                           },
                           {
                             "faceId": "[uuid]",
                             "id": "[uuid]",
-                            "sourceRange": [
-                              92,
-                              125,
-                              0
-                            ],
+                            "sourceRange": [],
                             "tag": {
+                              "commentStart": 118,
                               "end": 124,
                               "start": 118,
                               "type": "TagDeclarator",
@@ -1776,11 +1503,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           {
                             "faceId": "[uuid]",
                             "id": "[uuid]",
-                            "sourceRange": [
-                              131,
-                              187,
-                              0
-                            ],
+                            "sourceRange": [],
                             "tag": null,
                             "type": "extrudePlane"
                           }
@@ -1792,11 +1515,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                             {
                               "__geoMeta": {
                                 "id": "[uuid]",
-                                "sourceRange": [
-                                  68,
-                                  86,
-                                  0
-                                ]
+                                "sourceRange": []
                               },
                               "from": [
                                 0.0,
@@ -1815,17 +1534,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                             {
                               "__geoMeta": {
                                 "id": "[uuid]",
-                                "sourceRange": [
-                                  92,
-                                  125,
-                                  0
-                                ]
+                                "sourceRange": []
                               },
                               "from": [
                                 4.0,
                                 8.0
                               ],
                               "tag": {
+                                "commentStart": 118,
                                 "end": 124,
                                 "start": 118,
                                 "type": "TagDeclarator",
@@ -1843,11 +1559,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                             {
                               "__geoMeta": {
                                 "id": "[uuid]",
-                                "sourceRange": [
-                                  131,
-                                  187,
-                                  0
-                                ]
+                                "sourceRange": []
                               },
                               "from": [
                                 9.0,
@@ -1866,11 +1578,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                             {
                               "__geoMeta": {
                                 "id": "[uuid]",
-                                "sourceRange": [
-                                  193,
-                                  200,
-                                  0
-                                ]
+                                "sourceRange": []
                               },
                               "from": [
                                 0.0,
@@ -1931,11 +1639,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                             "tag": null,
                             "__geoMeta": {
                               "id": "[uuid]",
-                              "sourceRange": [
-                                37,
-                                62,
-                                0
-                              ]
+                              "sourceRange": []
                             }
                           },
                           "tags": {
@@ -1976,11 +1680,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       "tag": null,
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          295,
-                          325,
-                          0
-                        ]
+                        "sourceRange": []
                       }
                     },
                     "artifactId": "[uuid]",
@@ -2015,11 +1715,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    544,
-                    571,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "tags": {
@@ -2060,11 +1756,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              806,
-              833,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -2100,11 +1792,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              68,
-              86,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -2123,17 +1811,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              92,
-              125,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             4.0,
             8.0
           ],
           "tag": {
+            "commentStart": 118,
             "end": 124,
             "start": 118,
             "type": "TagDeclarator",
@@ -2151,11 +1836,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              131,
-              187,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             9.0,
@@ -2174,11 +1855,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              193,
-              200,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -2239,11 +1916,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            37,
-            62,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
@@ -2268,11 +1941,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              331,
-              349,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -0.5,
@@ -2291,11 +1960,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              355,
-              374,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             1.5,
@@ -2314,11 +1979,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              380,
-              436,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             3.5,
@@ -2337,11 +1998,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              442,
-              449,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -0.5,
@@ -2386,23 +2043,16 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                68,
-                86,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                92,
-                125,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 118,
                 "end": 124,
                 "start": 118,
                 "type": "TagDeclarator",
@@ -2413,11 +2063,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                131,
-                187,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -2429,11 +2075,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    68,
-                    86,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -2452,17 +2094,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    92,
-                    125,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   4.0,
                   8.0
                 ],
                 "tag": {
+                  "commentStart": 118,
                   "end": 124,
                   "start": 118,
                   "type": "TagDeclarator",
@@ -2480,11 +2119,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    131,
-                    187,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   9.0,
@@ -2503,11 +2138,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    193,
-                    200,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -2568,11 +2199,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  37,
-                  62,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
@@ -2613,11 +2240,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            295,
-            325,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",
@@ -2636,17 +2259,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              577,
-              611,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             1.0,
             1.5
           ],
           "tag": {
+            "commentStart": 604,
             "end": 610,
             "start": 604,
             "type": "TagDeclarator",
@@ -2664,11 +2284,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              617,
-              636,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             1.5,
@@ -2687,11 +2303,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              642,
-              698,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             2.5,
@@ -2710,11 +2322,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              704,
-              711,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             1.0,
@@ -2759,33 +2367,21 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                331,
-                349,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                355,
-                374,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                380,
-                436,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -2797,11 +2393,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    331,
-                    349,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -0.5,
@@ -2820,11 +2412,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    355,
-                    374,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   1.5,
@@ -2843,11 +2431,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    380,
-                    436,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.5,
@@ -2866,11 +2450,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    442,
-                    449,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -0.5,
@@ -2915,23 +2495,16 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      68,
-                      86,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      92,
-                      125,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
+                      "commentStart": 118,
                       "end": 124,
                       "start": 118,
                       "type": "TagDeclarator",
@@ -2942,11 +2515,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      131,
-                      187,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   }
@@ -2958,11 +2527,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          68,
-                          86,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
@@ -2981,17 +2546,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          92,
-                          125,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.0,
                         8.0
                       ],
                       "tag": {
+                        "commentStart": 118,
                         "end": 124,
                         "start": 118,
                         "type": "TagDeclarator",
@@ -3009,11 +2571,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          131,
-                          187,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         9.0,
@@ -3032,11 +2590,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          193,
-                          200,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
@@ -3097,11 +2651,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": [
-                        37,
-                        62,
-                        0
-                      ]
+                      "sourceRange": []
                     }
                   },
                   "tags": {
@@ -3142,11 +2692,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  295,
-                  325,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -3181,11 +2727,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            544,
-            571,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
@@ -3210,11 +2752,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              839,
-              859,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -3.0,
@@ -3233,11 +2771,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              865,
-              886,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -2.5,
@@ -3256,11 +2790,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              892,
-              948,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -2.0,
@@ -3279,11 +2809,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              954,
-              961,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -3.0,
@@ -3328,12 +2854,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                577,
-                611,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 604,
                 "end": 610,
                 "start": 604,
                 "type": "TagDeclarator",
@@ -3344,22 +2867,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                617,
-                636,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                642,
-                698,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -3371,17 +2886,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    577,
-                    611,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   1.0,
                   1.5
                 ],
                 "tag": {
+                  "commentStart": 604,
                   "end": 610,
                   "start": 604,
                   "type": "TagDeclarator",
@@ -3399,11 +2911,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    617,
-                    636,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   1.5,
@@ -3422,11 +2930,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    642,
-                    698,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   2.5,
@@ -3445,11 +2949,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    704,
-                    711,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   1.0,
@@ -3494,33 +2994,21 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      331,
-                      349,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      355,
-                      374,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   },
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      380,
-                      436,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": null,
                     "type": "extrudePlane"
                   }
@@ -3532,11 +3020,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          331,
-                          349,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.5,
@@ -3555,11 +3039,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          355,
-                          374,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         1.5,
@@ -3578,11 +3058,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          380,
-                          436,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         3.5,
@@ -3601,11 +3077,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          442,
-                          449,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.5,
@@ -3650,23 +3122,16 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         {
                           "faceId": "[uuid]",
                           "id": "[uuid]",
-                          "sourceRange": [
-                            68,
-                            86,
-                            0
-                          ],
+                          "sourceRange": [],
                           "tag": null,
                           "type": "extrudePlane"
                         },
                         {
                           "faceId": "[uuid]",
                           "id": "[uuid]",
-                          "sourceRange": [
-                            92,
-                            125,
-                            0
-                          ],
+                          "sourceRange": [],
                           "tag": {
+                            "commentStart": 118,
                             "end": 124,
                             "start": 118,
                             "type": "TagDeclarator",
@@ -3677,11 +3142,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         {
                           "faceId": "[uuid]",
                           "id": "[uuid]",
-                          "sourceRange": [
-                            131,
-                            187,
-                            0
-                          ],
+                          "sourceRange": [],
                           "tag": null,
                           "type": "extrudePlane"
                         }
@@ -3693,11 +3154,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           {
                             "__geoMeta": {
                               "id": "[uuid]",
-                              "sourceRange": [
-                                68,
-                                86,
-                                0
-                              ]
+                              "sourceRange": []
                             },
                             "from": [
                               0.0,
@@ -3716,17 +3173,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           {
                             "__geoMeta": {
                               "id": "[uuid]",
-                              "sourceRange": [
-                                92,
-                                125,
-                                0
-                              ]
+                              "sourceRange": []
                             },
                             "from": [
                               4.0,
                               8.0
                             ],
                             "tag": {
+                              "commentStart": 118,
                               "end": 124,
                               "start": 118,
                               "type": "TagDeclarator",
@@ -3744,11 +3198,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           {
                             "__geoMeta": {
                               "id": "[uuid]",
-                              "sourceRange": [
-                                131,
-                                187,
-                                0
-                              ]
+                              "sourceRange": []
                             },
                             "from": [
                               9.0,
@@ -3767,11 +3217,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           {
                             "__geoMeta": {
                               "id": "[uuid]",
-                              "sourceRange": [
-                                193,
-                                200,
-                                0
-                              ]
+                              "sourceRange": []
                             },
                             "from": [
                               0.0,
@@ -3832,11 +3278,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           "tag": null,
                           "__geoMeta": {
                             "id": "[uuid]",
-                            "sourceRange": [
-                              37,
-                              62,
-                              0
-                            ]
+                            "sourceRange": []
                           }
                         },
                         "tags": {
@@ -3877,11 +3319,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": [
-                        295,
-                        325,
-                        0
-                      ]
+                      "sourceRange": []
                     }
                   },
                   "artifactId": "[uuid]",
@@ -3916,11 +3354,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  544,
-                  571,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
@@ -3961,11 +3395,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            806,
-            833,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",

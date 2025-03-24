@@ -1,5 +1,4 @@
 pub(crate) mod digest;
-pub mod modify;
 pub mod types;
 
 use crate::{
@@ -23,7 +22,7 @@ impl Expr {
     pub fn module_id(&self) -> ModuleId {
         match self {
             Expr::Literal(literal) => literal.module_id,
-            Expr::Identifier(identifier) => identifier.module_id,
+            Expr::Name(identifier) => identifier.module_id,
             Expr::TagDeclarator(tag) => tag.module_id,
             Expr::BinaryExpression(binary_expression) => binary_expression.module_id,
             Expr::FunctionExpression(function_expression) => function_expression.module_id,
@@ -48,7 +47,7 @@ impl BinaryPart {
     pub fn module_id(&self) -> ModuleId {
         match self {
             BinaryPart::Literal(literal) => literal.module_id,
-            BinaryPart::Identifier(identifier) => identifier.module_id,
+            BinaryPart::Name(identifier) => identifier.module_id,
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.module_id,
             BinaryPart::CallExpression(call_expression) => call_expression.module_id,
             BinaryPart::CallExpressionKw(call_expression) => call_expression.module_id,

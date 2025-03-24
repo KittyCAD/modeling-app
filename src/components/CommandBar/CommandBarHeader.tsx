@@ -1,14 +1,22 @@
-import { CustomIcon } from '../CustomIcon'
 import React, { useMemo, useState } from 'react'
-import { ActionButton } from '../ActionButton'
-import { Selections, getSelectionTypeDisplayText } from 'lib/selections'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { KclCommandValue, KclExpressionWithVariable } from 'lib/commandTypes'
-import Tooltip from 'components/Tooltip'
-import { roundOff } from 'lib/utils'
-import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
 
-function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
+import { ActionButton } from '@src/components/ActionButton'
+import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
+import type {
+  KclCommandValue,
+  KclExpressionWithVariable,
+} from '@src/lib/commandTypes'
+import type { Selections } from '@src/lib/selections'
+import { getSelectionTypeDisplayText } from '@src/lib/selections'
+import { roundOff } from '@src/lib/utils'
+import {
+  commandBarActor,
+  useCommandBarState,
+} from '@src/machines/commandBarMachine'
+
+function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
   const commandBarState = useCommandBarState()
   const {
     context: { selectedCommand, currentArgument, argumentsToSubmit },
@@ -98,9 +106,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
               .map(([argName, arg], i) => {
                 const argValue =
                   (typeof argumentsToSubmit[argName] === 'function'
-                    ? (argumentsToSubmit[argName] as Function)(
-                        commandBarState.context
-                      )
+                    ? argumentsToSubmit[argName](commandBarState.context)
                     : argumentsToSubmit[argName]) || ''
 
                 return (
@@ -130,7 +136,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                       data-test-name="arg-name"
                       className="capitalize"
                     >
-                      {argName}
+                      {arg.displayName || argName}
                     </span>
                     <span className="sr-only">:&nbsp;</span>
                     <span data-testid="header-arg-value">

@@ -1,9 +1,8 @@
 // Overrides the test options from the modeling-app config.
-
-import viteTsconfigPaths from 'vite-tsconfig-paths'
-import { defineConfig, configDefaults } from 'vitest/config'
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
+import viteTsconfigPaths from 'vite-tsconfig-paths'
+import { defineConfig } from 'vitest/config'
 
 const config = defineConfig({
   test: {
@@ -18,7 +17,9 @@ const config = defineConfig({
     environment: 'node',
     reporters: process.env.GITHUB_ACTIONS
       ? ['dot', 'github-actions']
-      : ['verbose', 'hanging-process'],
+      : // Gotcha: 'hanging-process' is very noisey, turn off by default on localhost
+        // : ['verbose', 'hanging-process'],
+        ['verbose'],
     testTimeout: 1000,
     hookTimeout: 1000,
     teardownTimeout: 1000,

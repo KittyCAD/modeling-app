@@ -1,10 +1,10 @@
-import { BinaryPart } from '../lang/wasm'
 import {
-  createIdentifier,
   createLiteral,
+  createLocalName,
   createUnaryExpression,
-} from '../lang/modifyAst'
-import { PrevVariable } from '../lang/queryAst'
+} from '@src/lang/create'
+import type { PrevVariable } from '@src/lang/queryAst'
+import type { BinaryPart } from '@src/lang/wasm'
 
 export const AvailableVars = ({
   onVarClick,
@@ -151,7 +151,7 @@ export function removeDoubleNegatives(
   variableName?: string
 ): BinaryPart {
   let finValue: BinaryPart = variableName
-    ? createIdentifier(variableName)
+    ? createLocalName(variableName)
     : valueNode
   if (sign === -1) finValue = createUnaryExpression(finValue)
   if (

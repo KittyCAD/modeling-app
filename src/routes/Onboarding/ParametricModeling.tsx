@@ -1,9 +1,10 @@
-import { OnboardingButtons, useDemoCode } from '.'
-import { onboardingPaths } from 'routes/Onboarding/paths'
-import { Themes, getSystemTheme } from 'lib/theme'
-import { bracketThicknessCalculationLine } from 'lib/exampleKcl'
-import { isDesktop } from 'lib/isDesktop'
-import { useSettings } from 'machines/appMachine'
+import { bracketThicknessCalculationLine } from '@src/lib/exampleKcl'
+import { isDesktop } from '@src/lib/isDesktop'
+import { Themes, getSystemTheme } from '@src/lib/theme'
+import { useSettings } from '@src/machines/appMachine'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
+import { OnboardingButtons, useDemoCode } from '@src/routes/Onboarding/utils'
 
 export default function OnboardingParametricModeling() {
   useDemoCode()

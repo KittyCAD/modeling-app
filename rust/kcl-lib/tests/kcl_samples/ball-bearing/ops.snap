@@ -13,30 +13,18 @@ description: Operations executed ball-bearing.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          704,
-          725,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "offsetPlane",
-    "sourceRange": [
-      677,
-      726,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "XY"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
-      "sourceRange": [
-        689,
-        693,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -46,19 +34,11 @@ description: Operations executed ball-bearing.kcl
           "type": "Plane",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          677,
-          726,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      663,
-      727,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -71,11 +51,7 @@ description: Operations executed ball-bearing.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          827,
-          894,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -84,19 +60,11 @@ description: Operations executed ball-bearing.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          896,
-          897,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      822,
-      898,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -116,19 +84,11 @@ description: Operations executed ball-bearing.kcl
             }
           }
         },
-        "sourceRange": [
-          984,
-          1000,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      949,
-      1001,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -137,70 +97,114 @@ description: Operations executed ball-bearing.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        957,
-        973,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          1072,
-          1076,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1058,
-      1077,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
   {
+    "type": "KclStdLibCall",
+    "name": "revolve",
+    "unlabeledArg": {
+      "value": {
+        "type": "Array",
+        "value": [
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "axis": {
         "value": {
-          "type": "String",
-          "value": "X"
+          "type": "Object",
+          "value": {
+            "direction": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 1.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                }
+              ]
+            },
+            "origin": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                }
+              ]
+            }
+          }
         },
-        "sourceRange": [
-          1360,
-          1363,
-          0
-        ]
+        "sourceRange": []
       }
     },
-    "name": "revolve",
-    "sourceRange": [
-      1332,
-      1364,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": [
-        1340,
-        1351,
-        0
-      ]
-    }
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -218,11 +222,7 @@ description: Operations executed ball-bearing.kcl
             }
           }
         },
-        "sourceRange": [
-          1409,
-          1412,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
@@ -269,11 +269,7 @@ description: Operations executed ball-bearing.kcl
             }
           ]
         },
-        "sourceRange": [
-          1428,
-          1437,
-          0
-        ]
+        "sourceRange": []
       },
       "center": {
         "value": {
@@ -320,11 +316,7 @@ description: Operations executed ball-bearing.kcl
             }
           ]
         },
-        "sourceRange": [
-          1455,
-          1464,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -340,30 +332,18 @@ description: Operations executed ball-bearing.kcl
             }
           }
         },
-        "sourceRange": [
-          1485,
-          1491,
-          0
-        ]
+        "sourceRange": []
       },
       "rotateDuplicates": {
         "value": {
           "type": "Bool",
           "value": true
         },
-        "sourceRange": [
-          1519,
-          1523,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternCircular3d",
-    "sourceRange": [
-      1370,
-      1530,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -372,33 +352,21 @@ description: Operations executed ball-bearing.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1370,
-        1530,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          1612,
-          1616,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1598,
-      1617,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -412,49 +380,101 @@ description: Operations executed ball-bearing.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1727,
-      1745,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
   },
   {
+    "type": "KclStdLibCall",
+    "name": "revolve",
+    "unlabeledArg": {
+      "value": {
+        "type": "Array",
+        "value": [
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "axis": {
         "value": {
-          "type": "String",
-          "value": "X"
+          "type": "Object",
+          "value": {
+            "direction": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 1.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                }
+              ]
+            },
+            "origin": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                }
+              ]
+            }
+          }
         },
-        "sourceRange": [
-          2009,
-          2012,
-          0
-        ]
+        "sourceRange": []
       }
     },
-    "name": "revolve",
-    "sourceRange": [
-      1981,
-      2013,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": [
-        1989,
-        2000,
-        0
-      ]
-    }
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -472,11 +492,7 @@ description: Operations executed ball-bearing.kcl
             }
           }
         },
-        "sourceRange": [
-          2058,
-          2061,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
@@ -523,11 +539,7 @@ description: Operations executed ball-bearing.kcl
             }
           ]
         },
-        "sourceRange": [
-          2077,
-          2086,
-          0
-        ]
+        "sourceRange": []
       },
       "center": {
         "value": {
@@ -574,11 +586,7 @@ description: Operations executed ball-bearing.kcl
             }
           ]
         },
-        "sourceRange": [
-          2104,
-          2113,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -594,30 +602,18 @@ description: Operations executed ball-bearing.kcl
             }
           }
         },
-        "sourceRange": [
-          2134,
-          2140,
-          0
-        ]
+        "sourceRange": []
       },
       "rotateDuplicates": {
         "value": {
           "type": "Bool",
           "value": true
         },
-        "sourceRange": [
-          2168,
-          2172,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternCircular3d",
-    "sourceRange": [
-      2019,
-      2179,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -626,37 +622,41 @@ description: Operations executed ball-bearing.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        2019,
-        2179,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          2265,
-          2269,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      2251,
-      2270,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
   {
+    "type": "KclStdLibCall",
+    "name": "revolve",
+    "unlabeledArg": {
+      "value": {
+        "type": "Array",
+        "value": [
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "angle": {
         "value": {
@@ -666,44 +666,80 @@ description: Operations executed ball-bearing.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          2500,
-          2512,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
-          "type": "String",
-          "value": "Y"
+          "type": "Object",
+          "value": {
+            "direction": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 1.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                }
+              ]
+            },
+            "origin": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                }
+              ]
+            }
+          }
         },
-        "sourceRange": [
-          2487,
-          2490,
-          0
-        ]
+        "sourceRange": []
       }
     },
-    "name": "revolve",
-    "sourceRange": [
-      2460,
-      2513,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": [
-        2468,
-        2478,
-        0
-      ]
-    }
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -721,11 +757,7 @@ description: Operations executed ball-bearing.kcl
             }
           }
         },
-        "sourceRange": [
-          2558,
-          2561,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
@@ -772,11 +804,7 @@ description: Operations executed ball-bearing.kcl
             }
           ]
         },
-        "sourceRange": [
-          2577,
-          2586,
-          0
-        ]
+        "sourceRange": []
       },
       "center": {
         "value": {
@@ -823,11 +851,7 @@ description: Operations executed ball-bearing.kcl
             }
           ]
         },
-        "sourceRange": [
-          2604,
-          2613,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -843,30 +867,18 @@ description: Operations executed ball-bearing.kcl
             }
           }
         },
-        "sourceRange": [
-          2634,
-          2640,
-          0
-        ]
+        "sourceRange": []
       },
       "rotateDuplicates": {
         "value": {
           "type": "Bool",
           "value": true
         },
-        "sourceRange": [
-          2668,
-          2672,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternCircular3d",
-    "sourceRange": [
-      2519,
-      2679,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -875,11 +887,7 @@ description: Operations executed ball-bearing.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        2519,
-        2679,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -892,30 +900,18 @@ description: Operations executed ball-bearing.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          2785,
-          2806,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "offsetPlane",
-    "sourceRange": [
-      2758,
-      2807,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "XY"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
-      "sourceRange": [
-        2770,
-        2774,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -925,19 +921,11 @@ description: Operations executed ball-bearing.kcl
           "type": "Plane",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          2758,
-          2807,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      2744,
-      2808,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -950,11 +938,7 @@ description: Operations executed ball-bearing.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2899,
-          2994,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -963,19 +947,11 @@ description: Operations executed ball-bearing.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2996,
-          2997,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      2894,
-      2998,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -995,19 +971,11 @@ description: Operations executed ball-bearing.kcl
             }
           }
         },
-        "sourceRange": [
-          3050,
-          3066,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      3014,
-      3067,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1016,11 +984,7 @@ description: Operations executed ball-bearing.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        3022,
-        3039,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

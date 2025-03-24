@@ -1,13 +1,18 @@
-import { CustomIconName } from 'components/CustomIcon'
-import { AllMachines } from 'hooks/useStateMachineCommands'
-import { Actor, AnyStateMachine, ContextFrom, EventFrom } from 'xstate'
-import { Identifier, Expr, VariableDeclaration } from 'lang/wasm'
-import { commandBarMachine } from 'machines/commandBarMachine'
-import { ReactNode } from 'react'
-import { MachineManager } from 'components/MachineManagerProvider'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { Artifact } from 'lang/std/artifactGraph'
-import { CommandBarContext } from 'machines/commandBarMachine'
+import type { EntityType_type } from '@kittycad/lib/dist/types/src/models'
+import type { ReactNode } from 'react'
+import type { Actor, AnyStateMachine, ContextFrom, EventFrom } from 'xstate'
+
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import type { CustomIconName } from '@src/components/CustomIcon'
+import type { MachineManager } from '@src/components/MachineManagerProvider'
+import type { AllMachines } from '@src/hooks/useStateMachineCommands'
+import type { Artifact } from '@src/lang/std/artifactGraph'
+import type { Expr, Name, VariableDeclaration } from '@src/lang/wasm'
+import type {
+  CommandBarContext,
+  commandBarMachine,
+} from '@src/machines/commandBarMachine'
 
 type Icon = CustomIconName
 const _PLATFORMS = ['both', 'web', 'desktop'] as const
@@ -30,7 +35,7 @@ export interface KclExpression {
 export interface KclExpressionWithVariable extends KclExpression {
   variableName: string
   variableDeclarationAst: Node<VariableDeclaration>
-  variableIdentifierAst: Node<Identifier>
+  variableIdentifierAst: Node<Name>
   insertIndex: number
 }
 export type KclCommandValue = KclExpression | KclExpressionWithVariable
@@ -42,7 +47,7 @@ export type StateMachineCommandSetSchema<T extends AnyStateMachine> = Partial<{
 
 export type StateMachineCommandSet<
   T extends AllMachines,
-  Schema extends StateMachineCommandSetSchema<T>
+  Schema extends StateMachineCommandSetSchema<T>,
 > = Partial<{
   [EventType in EventFrom<T>['type']]: Command<
     T,
@@ -59,7 +64,7 @@ export type StateMachineCommandSet<
  */
 export type StateMachineCommandSetConfig<
   T extends AllMachines,
-  Schema extends StateMachineCommandSetSchema<T>
+  Schema extends StateMachineCommandSetSchema<T>,
 > = Partial<{
   [EventType in EventFrom<T>['type']]:
     | CommandConfig<T, EventFrom<T>['type'], Schema[EventType]>
@@ -69,7 +74,8 @@ export type StateMachineCommandSetConfig<
 export type Command<
   T extends AnyStateMachine = AnyStateMachine,
   CommandName extends EventFrom<T>['type'] = EventFrom<T>['type'],
-  CommandSchema extends StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName]
+  CommandSchema extends
+    StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName],
 > = {
   name: CommandName
   groupId: T['id']
@@ -95,7 +101,8 @@ export type Command<
 export type CommandConfig<
   T extends AnyStateMachine = AnyStateMachine,
   CommandName extends EventFrom<T>['type'] = EventFrom<T>['type'],
-  CommandSchema extends StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName]
+  CommandSchema extends
+    StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName],
 > = Omit<
   Command<T, CommandName, CommandSchema>,
   'name' | 'groupId' | 'onSubmit' | 'onCancel' | 'args' | 'needsReview'
@@ -112,8 +119,9 @@ export type CommandConfig<
 
 export type CommandArgumentConfig<
   OutputType,
-  C = ContextFrom<AnyStateMachine>
+  C = ContextFrom<AnyStateMachine>,
 > = {
+  displayName?: string
   description?: string
   required:
     | boolean
@@ -158,6 +166,8 @@ export type CommandArgumentConfig<
   | {
       inputType: 'selection'
       selectionTypes: Artifact['type'][]
+      clearSelectionFirst?: boolean
+      selectionFilter?: EntityType_type[]
       multiple: boolean
       validation?: ({
         data,
@@ -170,6 +180,7 @@ export type CommandArgumentConfig<
   | {
       inputType: 'selectionMixed'
       selectionTypes: Artifact['type'][]
+      selectionFilter?: EntityType_type[]
       multiple: boolean
       allowNoSelection?: boolean
       validation?: ({
@@ -234,8 +245,9 @@ export type CommandArgumentConfig<
 
 export type CommandArgument<
   OutputType,
-  T extends AnyStateMachine = AnyStateMachine
+  T extends AnyStateMachine = AnyStateMachine,
 > = {
+  displayName?: string
   description?: string
   required:
     | boolean
@@ -278,6 +290,8 @@ export type CommandArgument<
   | {
       inputType: 'selection'
       selectionTypes: Artifact['type'][]
+      clearSelectionFirst?: boolean
+      selectionFilter?: EntityType_type[]
       multiple: boolean
       validation?: ({
         data,
@@ -290,6 +304,7 @@ export type CommandArgument<
   | {
       inputType: 'selectionMixed'
       selectionTypes: Artifact['type'][]
+      selectionFilter?: EntityType_type[]
       multiple: boolean
       allowNoSelection?: boolean
       validation?: ({
@@ -351,7 +366,7 @@ export type CommandArgument<
 
 export type CommandArgumentWithName<
   OutputType,
-  T extends AnyStateMachine = AnyStateMachine
+  T extends AnyStateMachine = AnyStateMachine,
 > = CommandArgument<OutputType, T> & {
   name: string
 }

@@ -1,54 +1,48 @@
-import { useRef, useEffect, useState, useMemo, Fragment } from 'react'
-import { useModelingContext } from 'hooks/useModelingContext'
+import { Popover } from '@headlessui/react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
 
-import { cameraMouseDragGuards } from 'lib/cameraControls'
-import { ARROWHEAD, DEBUG_SHOW_BOTH_SCENES } from './sceneInfra'
-import { ReactCameraProperties } from './CameraControls'
-import { throttle, toSync } from 'lib/utils'
-import {
-  sceneInfra,
-  kclManager,
-  codeManager,
-  editorManager,
-  sceneEntitiesManager,
-  engineCommandManager,
-  rustContext,
-} from 'lib/singletons'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import type { ReactCameraProperties } from '@src/clientSideScene/CameraControls'
 import {
   EXTRA_SEGMENT_HANDLE,
   PROFILE_START,
   getParentGroup,
-} from './sceneEntities'
-import { SegmentOverlay, SketchDetails } from 'machines/modelingMachine'
-import { findUsesOfTagInPipe, getNodeFromPath } from 'lang/queryAst'
+} from '@src/clientSideScene/sceneConstants'
 import {
+  ARROWHEAD,
+  DEBUG_SHOW_BOTH_SCENES,
+} from '@src/clientSideScene/sceneUtils'
+import type { CustomIconName } from '@src/components/CustomIcon'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
+import { findUsesOfTagInPipe, getNodeFromPath } from '@src/lang/queryAst'
+import { getConstraintInfo, getConstraintInfoKw } from '@src/lang/std/sketch'
+import type { ConstrainInfo } from '@src/lang/std/stdTypes'
+import { topLevelRange } from '@src/lang/util'
+import type {
   CallExpression,
   CallExpressionKw,
-  PathToNode,
-  Program,
   Expr,
-  parse,
-  recast,
-  defaultSourceRange,
-  resultIsOk,
-  topLevelRange,
-} from 'lang/wasm'
-import { CustomIcon, CustomIconName } from 'components/CustomIcon'
-import { ConstrainInfo } from 'lang/std/stdTypes'
-import { getConstraintInfo, getConstraintInfoKw } from 'lang/std/sketch'
-import { Dialog, Popover, Transition } from '@headlessui/react'
-import toast from 'react-hot-toast'
-import { InstanceProps, create } from 'react-modal-promise'
-import { executeAstMock } from 'lang/langHelpers'
+  PathToNode,
+} from '@src/lang/wasm'
+import { defaultSourceRange, parse, recast, resultIsOk } from '@src/lang/wasm'
+import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import {
-  deleteSegmentFromPipeExpression,
-  removeSingleConstraintInfo,
-} from 'lang/modifyAst'
-import { ActionButton } from 'components/ActionButton'
-import { err, reportRejection, trap } from 'lib/trap'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { useSettings } from 'machines/appMachine'
+  codeManager,
+  editorManager,
+  engineCommandManager,
+  kclManager,
+  sceneEntitiesManager,
+  sceneInfra,
+} from '@src/lib/singletons'
+import { err, reportRejection, trap } from '@src/lib/trap'
+import { throttle, toSync } from '@src/lib/utils'
+import type { useSettings } from '@src/machines/appMachine'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import type { SegmentOverlay } from '@src/machines/modelingMachine'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -319,8 +313,8 @@ const Overlay = ({
           this will likely change soon when we implement multi-profile so we'll leave it for now
           issue: https://github.com/KittyCAD/modeling-app/issues/3910
           */}
-          {callExpression?.callee?.name !== 'circle' &&
-            callExpression?.callee?.name !== 'circleThreePoint' && (
+          {callExpression?.callee?.name.name !== 'circle' &&
+            callExpression?.callee?.name.name !== 'circleThreePoint' && (
               <SegmentMenu
                 verticalPosition={
                   overlay.windowCoords[1] > window.innerHeight / 2
@@ -335,130 +329,6 @@ const Overlay = ({
       )}
     </div>
   )
-}
-
-type ConfirmModalProps = InstanceProps<boolean, boolean> & { text: string }
-
-export const ConfirmModal = ({
-  isOpen,
-  onResolve,
-  onReject,
-  text,
-}: ConfirmModalProps) => {
-  return (
-    <Transition appear show={isOpen} as={Fragment}>
-      <Dialog
-        as="div"
-        className="relative z-10"
-        onClose={() => onResolve(false)}
-      >
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="fixed inset-0 bg-black bg-opacity-25" />
-        </Transition.Child>
-
-        <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-            >
-              <Dialog.Panel className="rounded relative mx-auto px-4 py-8 bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 max-w-xl w-full shadow-lg">
-                <div>{text}</div>
-                <div className="mt-8 flex justify-between">
-                  <ActionButton
-                    Element="button"
-                    onClick={() => onResolve(true)}
-                  >
-                    Continue and unconstrain
-                  </ActionButton>
-                  <ActionButton
-                    Element="button"
-                    onClick={() => onReject(false)}
-                  >
-                    Cancel
-                  </ActionButton>
-                </div>
-              </Dialog.Panel>
-            </Transition.Child>
-          </div>
-        </div>
-      </Dialog>
-    </Transition>
-  )
-}
-
-export const confirmModal = create<ConfirmModalProps, boolean, boolean>(
-  ConfirmModal
-)
-
-export async function deleteSegment({
-  pathToNode,
-  sketchDetails,
-}: {
-  pathToNode: PathToNode
-  sketchDetails: SketchDetails | null
-}) {
-  let modifiedAst: Node<Program> | Error = kclManager.ast
-  const dependentRanges = findUsesOfTagInPipe(modifiedAst, pathToNode)
-
-  const shouldContinueSegDelete = dependentRanges.length
-    ? await confirmModal({
-        text: `At least ${dependentRanges.length} segment rely on the segment you're deleting.\nDo you want to continue and unconstrain these segments?`,
-        isOpen: true,
-      })
-    : true
-
-  if (!shouldContinueSegDelete) return
-
-  modifiedAst = deleteSegmentFromPipeExpression(
-    dependentRanges,
-    modifiedAst,
-    kclManager.variables,
-    codeManager.code,
-    pathToNode
-  )
-  if (err(modifiedAst)) return Promise.reject(modifiedAst)
-
-  const newCode = recast(modifiedAst)
-  const pResult = parse(newCode)
-  if (err(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
-  modifiedAst = pResult.program
-
-  const testExecute = await executeAstMock({
-    ast: modifiedAst,
-    usePrevMemory: false,
-    rustContext: rustContext,
-  })
-  if (testExecute.errors.length) {
-    toast.error('Segment tag used outside of current Sketch. Could not delete.')
-    return
-  }
-
-  if (!sketchDetails) return
-  await sceneEntitiesManager.updateAstAndRejigSketch(
-    pathToNode,
-    sketchDetails.sketchNodePaths,
-    sketchDetails.planeNodePath,
-    modifiedAst,
-    sketchDetails.zAxis,
-    sketchDetails.yAxis,
-    sketchDetails.origin
-  )
-
-  // Now 'Set sketchDetails' is called with the modified pathToNode
 }
 
 const SegmentMenu = ({
@@ -635,8 +505,8 @@ const ConstraintSymbol = ({
           implicitDesc
             ? 'bg-chalkboard-10 dark:bg-chalkboard-100 border-transparent border-0 rounded'
             : isConstrained
-            ? 'bg-chalkboard-10 dark:bg-chalkboard-90 dark:hover:bg-chalkboard-80 border-chalkboard-40 dark:border-chalkboard-70 rounded-sm'
-            : 'bg-primary/30 dark:bg-primary text-primary dark:text-chalkboard-10 dark:border-transparent group-hover:bg-primary/40 group-hover:border-primary/50 group-hover:brightness-125'
+              ? 'bg-chalkboard-10 dark:bg-chalkboard-90 dark:hover:bg-chalkboard-80 border-chalkboard-40 dark:border-chalkboard-70 rounded-sm'
+              : 'bg-primary/30 dark:bg-primary text-primary dark:text-chalkboard-10 dark:border-transparent group-hover:bg-primary/40 group-hover:border-primary/50 group-hover:brightness-125'
         } h-[26px] w-[26px] rounded-sm relative m-0 p-0`}
         onMouseEnter={() => {
           editorManager.setHighlightRange([range])
@@ -669,7 +539,7 @@ const ConstraintSymbol = ({
                 return Promise.reject(pResult)
 
               const _node1 = getNodeFromPath<CallExpression | CallExpressionKw>(
-                pResult.program!,
+                pResult.program,
                 pathToNode,
                 ['CallExpression', 'CallExpressionKw'],
                 true

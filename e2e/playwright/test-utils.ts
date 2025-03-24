@@ -1,41 +1,41 @@
-import {
-  expect,
-  BrowserContext,
-  TestInfo,
-  Locator,
-  Page,
-} from '@playwright/test'
-import { test } from './zoo-test'
-import { EngineCommand } from 'lang/std/artifactGraph'
+import * as TOML from '@iarna/toml'
+import type { Models } from '@kittycad/lib'
+import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
+import { expect } from '@playwright/test'
+import type { EngineCommand } from '@src/lang/std/artifactGraph'
+import type { Configuration } from '@src/lang/wasm'
+import { COOKIE_NAME } from '@src/lib/constants'
+import { reportRejection } from '@src/lib/trap'
+import type { DeepPartial } from '@src/lib/types'
+import { isArray } from '@src/lib/utils'
 import fsp from 'fs/promises'
 import path from 'path'
 import pixelMatch from 'pixelmatch'
+import type { Protocol } from 'playwright-core/types/protocol'
 import { PNG } from 'pngjs'
-import { Protocol } from 'playwright-core/types/protocol'
-import type { Models } from '@kittycad/lib'
-import { COOKIE_NAME } from 'lib/constants'
-import { secrets } from './secrets'
+
+import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+
+import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
+import { secrets } from '@e2e/playwright/secrets'
 import {
-  TEST_SETTINGS_KEY,
-  TEST_SETTINGS,
   IS_PLAYWRIGHT_KEY,
-} from './storageStates'
-import * as TOML from '@iarna/toml'
-import { isErrorWhitelisted } from './lib/console-error-whitelist'
-import { isArray } from 'lib/utils'
-import { reportRejection } from 'lib/trap'
-import { DeepPartial } from 'lib/types'
-import { Configuration } from 'lang/wasm'
+  TEST_SETTINGS,
+  TEST_SETTINGS_KEY,
+} from '@e2e/playwright/storageStates'
+import { test } from '@e2e/playwright/zoo-test'
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
 }
 
-type TestColor = [number, number, number]
-export const TEST_COLORS = {
-  WHITE: [249, 249, 249] as TestColor,
-  YELLOW: [255, 255, 0] as TestColor,
-  BLUE: [0, 0, 255] as TestColor,
+export type TestColor = [number, number, number]
+export const TEST_COLORS: { [key: string]: TestColor } = {
+  WHITE: [249, 249, 249],
+  YELLOW: [255, 255, 0],
+  BLUE: [0, 0, 255],
+  DARK_MODE_BKGD: [27, 27, 27],
+  DARK_MODE_PLANE_XZ: [50, 50, 99],
 } as const
 
 export const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
@@ -50,16 +50,25 @@ export const commonPoints = {
   num3: -2.44,
 } as const
 
-/** A semi-reliable color to check the default XZ plane on
- * in dark mode in the default camera position
- */
-export const darkModePlaneColorXZ: [number, number, number] = [50, 50, 99]
-
-/** A semi-reliable color to check the default dark mode bg color against */
-export const darkModeBgColor: [number, number, number] = [27, 27, 27]
-
 export const editorSelector = '[role="textbox"][data-language="kcl"]'
 type PaneId = 'variables' | 'code' | 'files' | 'logs'
+
+export function runningOnLinux() {
+  return process.platform === 'linux'
+}
+
+export function runningOnMac() {
+  return process.platform === 'darwin'
+}
+
+export function runningOnWindows() {
+  return process.platform === 'win32'
+}
+
+export function orRunWhenFullSuiteEnabled() {
+  const branch = process.env.GITHUB_REF?.replace('refs/heads/', '')
+  return branch !== 'all-e2e'
+}
 
 async function waitForPageLoadWithRetry(page: Page) {
   await expect(async () => {
@@ -671,8 +680,8 @@ const _makeTemplate = (
           isArray(currentOptions)
             ? currentOptions[i]
             : typeof currentOptions === 'number'
-            ? currentOptions
-            : ''
+              ? currentOptions
+              : ''
         )
       )
     })
@@ -750,7 +759,7 @@ export interface Paths {
 }
 
 export const doExport = async (
-  output: Models['OutputFormat_type'],
+  output: Models['OutputFormat3d_type'],
   rootDir: string,
   page: Page,
   exportFrom: 'dropdown' | 'sidebarButton' | 'commandBar' = 'dropdown'
@@ -891,15 +900,21 @@ export async function setup(
         settings: {
           ...TEST_SETTINGS,
           app: {
+            appearance: {
+              ...TEST_SETTINGS.app?.appearance,
+              theme: 'dark',
+            },
             ...TEST_SETTINGS.project,
-            project_directory: TEST_SETTINGS.app?.project_directory,
             onboarding_status: 'dismissed',
-            theme: 'dark',
+          },
+          project: {
+            ...TEST_SETTINGS.project,
+            directory: TEST_SETTINGS.project?.directory,
           },
         },
       }),
       IS_PLAYWRIGHT_KEY,
-      PLAYWRIGHT_TEST_DIR: TEST_SETTINGS.app?.project_directory || '',
+      PLAYWRIGHT_TEST_DIR: TEST_SETTINGS.project?.directory || '',
       PERSIST_MODELING_CONTEXT,
     }
   )
@@ -923,47 +938,39 @@ export async function setup(
 }
 
 function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {
-  // enabled for chrome for now
-  if (page.context().browser()?.browserType().name() === 'chromium') {
-    // No idea wtf exception is
-    page.on('pageerror', (exception: any) => {
-      if (isErrorWhitelisted(exception)) {
-        return
-      }
+  page.on('pageerror', (exception: any) => {
+    if (isErrorWhitelisted(exception)) {
+      return
+    }
+    // Only disable this environment variable if you want to collect console errors
+    if (process.env.FAIL_ON_CONSOLE_ERRORS !== 'false') {
+      // Use expect to prevent page from closing and not cleaning up
+      expect(`An error was detected in the console: \r\n message:${exception.message} \r\n name:${exception.name} \r\n stack:${exception.stack}
 
-      // only set this env var to false if you want to collect console errors
-      // This can be configured in the GH workflow.  This should be set to true by default (we want tests to fail when
-      // unwhitelisted console errors are detected).
-      if (process.env.FAIL_ON_CONSOLE_ERRORS === 'true') {
-        // Fail when running on CI and FAIL_ON_CONSOLE_ERRORS is set
-        // use expect to prevent page from closing and not cleaning up
-        expect(`An error was detected in the console: \r\n message:${exception.message} \r\n name:${exception.name} \r\n stack:${exception.stack}
-          
-          *Either fix the console error or add it to the whitelist defined in ./lib/console-error-whitelist.ts (if the error can be safely ignored)       
-          `).toEqual('Console error detected')
-      } else {
-        // the (test-results/exceptions.txt) file will be uploaded as part of an upload artifact in GH
-        fsp
-          .appendFile(
-            './test-results/exceptions.txt',
-            [
-              '~~~',
-              `triggered_by_test:${
-                testInfo?.file + ' ' + (testInfo?.title || ' ')
-              }`,
-              `name:${exception.name}`,
-              `message:${exception.message}`,
-              `stack:${exception.stack}`,
-              `project:${testInfo?.project.name}`,
-              '~~~',
-            ].join('\n')
-          )
-          .catch((err) => {
-            console.error(err)
-          })
-      }
-    })
-  }
+        *Either fix the console error or add it to the whitelist defined in ./lib/console-error-whitelist.ts (if the error can be safely ignored)
+        `).toEqual('Console error detected')
+    } else {
+      // Add errors to `test-results/exceptions.txt` as a test artifact
+      fsp
+        .appendFile(
+          './test-results/exceptions.txt',
+          [
+            '~~~',
+            `triggered_by_test:${
+              testInfo?.file + ' ' + (testInfo?.title || ' ')
+            }`,
+            `name:${exception.name}`,
+            `message:${exception.message}`,
+            `stack:${exception.stack}`,
+            `project:${testInfo?.project.name}`,
+            '~~~',
+          ].join('\n')
+        )
+        .catch((err) => {
+          console.error(err)
+        })
+    }
+  })
 }
 export async function isOutOfViewInScrollContainer(
   element: Locator,
@@ -1108,9 +1115,25 @@ export async function pollEditorLinesSelectedLength(page: Page, lines: number) {
 }
 
 export function settingsToToml(settings: DeepPartial<Configuration>) {
+  // eslint-disable-next-line no-restricted-syntax
   return TOML.stringify(settings as any)
 }
 
 export function tomlToSettings(toml: string): DeepPartial<Configuration> {
+  // eslint-disable-next-line no-restricted-syntax
   return TOML.parse(toml)
+}
+
+export function tomlToPerProjectSettings(
+  toml: string
+): DeepPartial<ProjectConfiguration> {
+  // eslint-disable-next-line no-restricted-syntax
+  return TOML.parse(toml)
+}
+
+export function perProjectsettingsToToml(
+  settings: DeepPartial<ProjectConfiguration>
+) {
+  // eslint-disable-next-line no-restricted-syntax
+  return TOML.stringify(settings as any)
 }
