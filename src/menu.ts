@@ -1,4 +1,4 @@
-import { app, Menu, BrowserWindow, MenuItemConstructorOptions } from 'electron'
+import { app, Menu, BrowserWindow } from 'electron'
 import { projectFileRole } from 'menu/fileRole'
 import { projectEditRole } from 'menu/editRole'
 import { helpRole } from 'menu/helpRole'
@@ -114,7 +114,7 @@ export function buildAndSetMenuForFallback(mainWindow: BrowserWindow) {
       label: 'Window',
       submenu: [{ role: 'minimize' }, { role: 'zoom' }, { role: 'close' }],
     },
-    helpRole(mainWindow)
+    helpRole(mainWindow),
   ]
 
   if (isMac) {

@@ -80,7 +80,7 @@ export const helpRole = (
       },
       { type: 'separator' },
       {
-        id:'Help.Reset onboarding',
+        id: 'Help.Reset onboarding',
         label: 'Reset onboarding',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
