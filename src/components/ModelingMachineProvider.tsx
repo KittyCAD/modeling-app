@@ -148,7 +148,6 @@ export const ModelingMachineProvider = ({
       enableSSAO,
     },
   } = useSettings()
-  const previousAllowOrbitInSketchMode = useRef(allowOrbitInSketchMode.current)
   const navigate = useNavigate()
   const { context, send: fileMachineSend } = useFileContext()
   const { file } = useLoaderData() as IndexLoaderData
@@ -1841,14 +1840,6 @@ export const ModelingMachineProvider = ({
   }, [engineCommandManager.engineConnection, modelingSend])
 
   useEffect(() => {
-    // Only trigger this if the state actually changes, if it stays the same do not reload the camera
-    if (
-      previousAllowOrbitInSketchMode.current === allowOrbitInSketchMode.current
-    ) {
-      //no op
-      previousAllowOrbitInSketchMode.current = allowOrbitInSketchMode.current
-      return
-    }
     const inSketchMode = modelingState.matches('Sketch')
 
     // If you are in sketch mode and you disable the orbit, return back to the normal view to the target
@@ -1871,9 +1862,7 @@ export const ModelingMachineProvider = ({
     if (inSketchMode) {
       sceneInfra.camControls.enableRotate = allowOrbitInSketchMode.current
     }
-
-    previousAllowOrbitInSketchMode.current = allowOrbitInSketchMode.current
-  }, [allowOrbitInSketchMode])
+  }, [allowOrbitInSketchMode.current])
 
   // Allow using the delete key to delete solids. Backspace only on macOS as Windows and Linux have dedicated Delete
   // `navigator.platform` is deprecated, but the alternative `navigator.userAgentData.platform` is not reliable
