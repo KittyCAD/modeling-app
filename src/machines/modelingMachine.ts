@@ -41,7 +41,10 @@ import {
   applyConstraintEqualLength,
   setEqualLengthInfo,
 } from 'components/Toolbar/EqualLength'
-import { revolveSketch } from 'lang/modifyAst/addRevolve'
+import {
+  getAxisExpressionAndIndex,
+  revolveSketch,
+} from 'lang/modifyAst/addRevolve'
 import {
   addHelix,
   addOffsetPlane,
@@ -1904,11 +1907,13 @@ export const modelingMachine = setup({
         // Extract inputs
         const ast = kclManager.ast
         const {
+          axisOrEdge,
+          axis,
+          edge,
           revolutions,
           angleStart,
           ccw,
           radius,
-          axis,
           length,
           nodeToEdit,
         } = input
@@ -1936,6 +1941,25 @@ export const modelingMachine = setup({
           opInsertIndex = nodeToEdit[1][0]
         }
 
+        const getAxisResult = getAxisExpressionAndIndex(
+          axisOrEdge,
+          axis,
+          edge,
+          ast
+        )
+        if (err(getAxisResult)) return getAxisResult
+        const { generatedAxis } = getAxisResult
+        if (!generatedAxis) {
+          return new Error('Generated axis selection is missing.')
+        }
+
+        // TODO: figure out if we want to smart insert after the sketch as below
+        // *or* after the sweep that consumes the sketch, in which case the below code doesn't work
+        // If an axis was selected in KCL, find the max index to insert the revolve command
+        // if (axisIndexIfAxis) {
+        // opInsertIndex = axisIndexIfAxis + 1
+        // }
+
         for (const variable of [revolutions, angleStart, radius, length]) {
           // Insert the variable if it exists
           if (
@@ -1958,33 +1982,28 @@ export const modelingMachine = setup({
             ? variable.variableIdentifierAst
             : variable.valueAst
 
-        const result = addHelix({
+        const { modifiedAst, pathToNode } = addHelix({
           node: ast,
           revolutions: valueOrVariable(revolutions),
           angleStart: valueOrVariable(angleStart),
           ccw,
           radius: valueOrVariable(radius),
-          axis,
+          axis: generatedAxis,
           length: valueOrVariable(length),
           insertIndex: opInsertIndex,
           variableName: opVariableName,
         })
-
-        const updateAstResult = await kclManager.updateAst(
-          result.modifiedAst,
-          true,
+        await updateModelingState(
+          modifiedAst,
           {
-            focusPath: [result.pathToNode],
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [pathToNode],
           }
         )
-
-        await codeManager.updateEditorWithAstAndWriteToFile(
-          updateAstResult.newAst
-        )
-
-        if (updateAstResult?.selections) {
-          editorManager.selectRange(updateAstResult?.selections)
-        }
       }
     ),
     sweepAstMod: fromPromise(
