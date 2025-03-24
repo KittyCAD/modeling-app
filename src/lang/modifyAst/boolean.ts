@@ -1,6 +1,4 @@
 import { Node } from '@rust/kcl-lib/bindings/Node'
-import EditorManager from 'editor/manager'
-import { get } from 'http'
 import CodeManager from 'lang/codeManager'
 import { KclManager } from 'lang/KclSingleton'
 import {
