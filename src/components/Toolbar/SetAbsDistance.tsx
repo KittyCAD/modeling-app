@@ -14,7 +14,7 @@ import {
   createSetAngleLengthModal,
 } from '../SetAngleLengthModal'
 import {
-  createIdentifier,
+  createLocalName,
   createVariableDeclaration,
 } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
@@ -59,7 +59,7 @@ export function absDistanceInfo({
   const isAllTooltips = nodes.every(
     (node) =>
       (node?.type === 'CallExpression' || node?.type === 'CallExpressionKw') &&
-      toolTips.includes(node.callee.name as any)
+      toolTips.includes(node.callee.name.name as any)
   )
 
   const transforms = getTransformInfos(selectionRanges, kclManager.ast, disType)
@@ -169,7 +169,7 @@ export function applyConstraintAxisAlign({
   if (err(info)) return info
   const transformInfos = info.transforms
 
-  let finalValue = createIdentifier('ZERO')
+  let finalValue = createLocalName('ZERO')
 
   return transformAstSketchLines({
     ast: structuredClone(kclManager.ast),

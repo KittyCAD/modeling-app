@@ -293,10 +293,13 @@ impl Expr {
             }
             Expr::CallExpression(call_exp) => call_exp.recast(options, indentation_level, ctxt),
             Expr::CallExpressionKw(call_exp) => call_exp.recast(options, indentation_level, ctxt),
-            Expr::Identifier(ident) => match deprecation(&ident.name, DeprecationKind::Const) {
-                Some(suggestion) => suggestion.to_owned(),
-                None => ident.name.to_owned(),
-            },
+            Expr::Name(name) => {
+                let result = name.to_string();
+                match deprecation(&result, DeprecationKind::Const) {
+                    Some(suggestion) => suggestion.to_owned(),
+                    None => result,
+                }
+            }
             Expr::TagDeclarator(tag) => tag.recast(),
             Expr::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
             Expr::UnaryExpression(unary_exp) => unary_exp.recast(options),
@@ -325,10 +328,13 @@ impl BinaryPart {
     fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         match &self {
             BinaryPart::Literal(literal) => literal.recast(),
-            BinaryPart::Identifier(ident) => match deprecation(&ident.name, DeprecationKind::Const) {
-                Some(suggestion) => suggestion.to_owned(),
-                None => ident.name.to_owned(),
-            },
+            BinaryPart::Name(name) => {
+                let result = name.to_string();
+                match deprecation(&result, DeprecationKind::Const) {
+                    Some(suggestion) => suggestion.to_owned(),
+                    None => result,
+                }
+            }
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.recast(options),
             BinaryPart::CallExpression(call_expression) => {
                 call_expression.recast(options, indentation_level, ExprContext::Other)
@@ -352,7 +358,7 @@ impl CallExpression {
             } else {
                 options.get_indentation(indentation_level)
             },
-            self.callee.name,
+            self.callee,
             self.arguments
                 .iter()
                 .map(|arg| arg.recast(options, indentation_level, ctxt))
@@ -382,9 +388,9 @@ impl CallExpressionKw {
         } else {
             options.get_indentation(indentation_level)
         };
-        let name = &self.callee.name;
+        let name = self.callee.to_string();
 
-        if let Some(suggestion) = deprecation(name, DeprecationKind::Function) {
+        if let Some(suggestion) = deprecation(&name, DeprecationKind::Function) {
             return format!("{indent}{suggestion}");
         }
 
@@ -583,7 +589,7 @@ impl ArrayExpression {
 fn expr_is_trivial(expr: &Expr) -> bool {
     matches!(
         expr,
-        Expr::Literal(_) | Expr::Identifier(_) | Expr::TagDeclarator(_) | Expr::PipeSubstitution(_) | Expr::None(_)
+        Expr::Literal(_) | Expr::Name(_) | Expr::TagDeclarator(_) | Expr::PipeSubstitution(_) | Expr::None(_)
     )
 }
 
@@ -733,7 +739,7 @@ impl UnaryExpression {
     fn recast(&self, options: &FormatOptions) -> String {
         match self.argument {
             BinaryPart::Literal(_)
-            | BinaryPart::Identifier(_)
+            | BinaryPart::Name(_)
             | BinaryPart::MemberExpression(_)
             | BinaryPart::IfExpression(_)
             | BinaryPart::CallExpressionKw(_)

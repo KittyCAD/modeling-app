@@ -25,21 +25,37 @@ description: Result of parsing kw_fn_with_defaults.kcl
                     "commentStart": 37,
                     "end": 0,
                     "left": {
+                      "abs_path": false,
                       "commentStart": 37,
                       "end": 0,
-                      "name": "x",
+                      "name": {
+                        "commentStart": 37,
+                        "end": 0,
+                        "name": "x",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "+",
                     "right": {
+                      "abs_path": false,
                       "commentStart": 41,
                       "end": 0,
-                      "name": "by",
+                      "name": {
+                        "commentStart": 41,
+                        "end": 0,
+                        "name": "by",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "BinaryExpression",
@@ -134,11 +150,19 @@ description: Result of parsing kw_fn_with_defaults.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 53,
               "end": 0,
-              "name": "increment",
+              "name": {
+                "commentStart": 53,
+                "end": 0,
+                "name": "increment",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 53,
             "end": 0,
@@ -193,11 +217,19 @@ description: Result of parsing kw_fn_with_defaults.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 78,
               "end": 0,
-              "name": "increment",
+              "name": {
+                "commentStart": 78,
+                "end": 0,
+                "name": "increment",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 78,
             "end": 0,

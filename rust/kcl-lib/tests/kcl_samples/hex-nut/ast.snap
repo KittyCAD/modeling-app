@@ -149,11 +149,19 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 545,
                             "end": 0,
-                            "name": "startSketchOn",
+                            "name": {
+                              "commentStart": 545,
+                              "end": 0,
+                              "name": "startSketchOn",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 545,
                           "end": 0,
@@ -199,12 +207,20 @@ description: Result of parsing hex-nut.kcl
                                   },
                                   "operator": "+",
                                   "right": {
+                                    "abs_path": false,
                                     "commentStart": 600,
                                     "end": 0,
-                                    "name": "innerDia",
+                                    "name": {
+                                      "commentStart": 600,
+                                      "end": 0,
+                                      "name": "innerDia",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "start": 0,
                                   "type": "BinaryExpression",
@@ -253,11 +269,19 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 573,
                             "end": 0,
-                            "name": "startProfileAt",
+                            "name": {
+                              "commentStart": 573,
+                              "end": 0,
+                              "name": "startProfileAt",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 573,
                           "end": 0,
@@ -309,12 +333,20 @@ description: Result of parsing hex-nut.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "commentStart": 666,
                                     "end": 0,
-                                    "name": "innerDia",
+                                    "name": {
+                                      "commentStart": 666,
+                                      "end": 0,
+                                      "name": "innerDia",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -331,11 +363,19 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 631,
                             "end": 0,
-                            "name": "angledLine",
+                            "name": {
+                              "commentStart": 631,
+                              "end": 0,
+                              "name": "angledLine",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 631,
                           "end": 0,
@@ -387,12 +427,20 @@ description: Result of parsing hex-nut.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "commentStart": 723,
                                     "end": 0,
-                                    "name": "innerDia",
+                                    "name": {
+                                      "commentStart": 723,
+                                      "end": 0,
+                                      "name": "innerDia",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -409,11 +457,19 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 688,
                             "end": 0,
-                            "name": "angledLine",
+                            "name": {
+                              "commentStart": 688,
+                              "end": 0,
+                              "name": "angledLine",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 688,
                           "end": 0,
@@ -465,12 +521,20 @@ description: Result of parsing hex-nut.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "commentStart": 780,
                                     "end": 0,
-                                    "name": "innerDia",
+                                    "name": {
+                                      "commentStart": 780,
+                                      "end": 0,
+                                      "name": "innerDia",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -487,11 +551,19 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 745,
                             "end": 0,
-                            "name": "angledLine",
+                            "name": {
+                              "commentStart": 745,
+                              "end": 0,
+                              "name": "angledLine",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 745,
                           "end": 0,
@@ -543,12 +615,20 @@ description: Result of parsing hex-nut.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "commentStart": 836,
                                     "end": 0,
-                                    "name": "innerDia",
+                                    "name": {
+                                      "commentStart": 836,
+                                      "end": 0,
+                                      "name": "innerDia",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -565,11 +645,19 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 802,
                             "end": 0,
-                            "name": "angledLine",
+                            "name": {
+                              "commentStart": 802,
+                              "end": 0,
+                              "name": "angledLine",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 802,
                           "end": 0,
@@ -624,12 +712,20 @@ description: Result of parsing hex-nut.kcl
                                     "commentStart": 891,
                                     "end": 0,
                                     "left": {
+                                      "abs_path": false,
                                       "commentStart": 891,
                                       "end": 0,
-                                      "name": "innerDia",
+                                      "name": {
+                                        "commentStart": 891,
+                                        "end": 0,
+                                        "name": "innerDia",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "*",
                                     "right": {
@@ -663,11 +759,19 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 858,
                             "end": 0,
-                            "name": "angledLine",
+                            "name": {
+                              "commentStart": 858,
+                              "end": 0,
+                              "name": "angledLine",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 858,
                           "end": 0,
@@ -678,11 +782,19 @@ description: Result of parsing hex-nut.kcl
                         {
                           "arguments": [],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 919,
                             "end": 0,
-                            "name": "close",
+                            "name": {
+                              "commentStart": 919,
+                              "end": 0,
+                              "name": "close",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 919,
                           "end": 0,
@@ -782,12 +894,20 @@ description: Result of parsing hex-nut.kcl
                                     "commentStart": 1005,
                                     "end": 0,
                                     "left": {
+                                      "abs_path": false,
                                       "commentStart": 1005,
                                       "end": 0,
-                                      "name": "innerDia",
+                                      "name": {
+                                        "commentStart": 1005,
+                                        "end": 0,
+                                        "name": "innerDia",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "/",
                                     "right": {
@@ -809,11 +929,19 @@ description: Result of parsing hex-nut.kcl
                                 }
                               ],
                               "callee": {
+                                "abs_path": false,
                                 "commentStart": 939,
                                 "end": 0,
-                                "name": "circle",
+                                "name": {
+                                  "commentStart": 939,
+                                  "end": 0,
+                                  "name": "circle",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier"
+                                "type": "Name"
                               },
                               "commentStart": 939,
                               "end": 0,
@@ -831,11 +959,19 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 934,
                             "end": 0,
-                            "name": "hole",
+                            "name": {
+                              "commentStart": 934,
+                              "end": 0,
+                              "name": "hole",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 934,
                           "end": 0,
@@ -855,21 +991,37 @@ description: Result of parsing hex-nut.kcl
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "abs_path": false,
                                 "commentStart": 1055,
                                 "end": 0,
-                                "name": "thk",
+                                "name": {
+                                  "commentStart": 1055,
+                                  "end": 0,
+                                  "name": "thk",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               }
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 1038,
                             "end": 0,
-                            "name": "extrude",
+                            "name": {
+                              "commentStart": 1038,
+                              "end": 0,
+                              "name": "extrude",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 1038,
                           "end": 0,
@@ -896,12 +1048,20 @@ description: Result of parsing hex-nut.kcl
                 },
                 {
                   "argument": {
+                    "abs_path": false,
                     "commentStart": 1069,
                     "end": 0,
-                    "name": "hexNutSketch",
+                    "name": {
+                      "commentStart": 1069,
+                      "end": 0,
+                      "name": "hexNutSketch",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "commentStart": 1062,
                   "end": 0,
@@ -1005,28 +1165,52 @@ description: Result of parsing hex-nut.kcl
               "type": "ArrayExpression"
             },
             {
+              "abs_path": false,
               "commentStart": 1120,
               "end": 0,
-              "name": "thickness",
+              "name": {
+                "commentStart": 1120,
+                "end": 0,
+                "name": "thickness",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
+              "abs_path": false,
               "commentStart": 1131,
               "end": 0,
-              "name": "diameter",
+              "name": {
+                "commentStart": 1131,
+                "end": 0,
+                "name": "diameter",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 1105,
             "end": 0,
-            "name": "hexNut",
+            "name": {
+              "commentStart": 1105,
+              "end": 0,
+              "name": "hexNut",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 1105,
           "end": 0,
@@ -1078,12 +1262,20 @@ description: Result of parsing hex-nut.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "commentStart": 347,
               "end": 0,
-              "name": "in",
+              "name": {
+                "commentStart": 347,
+                "end": 0,
+                "name": "in",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],
