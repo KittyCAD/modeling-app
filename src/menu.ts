@@ -1,8 +1,9 @@
 import { app, Menu, BrowserWindow } from 'electron'
 import { projectFileRole, modelingFileRole } from 'menu/fileRole'
-import { projectEditRole } from 'menu/editRole'
+import { projectEditRole, modelingEditRole } from 'menu/editRole'
 import { helpRole } from 'menu/helpRole'
-import { projectViewRole } from 'menu/viewRole'
+import { projectViewRole, modelingViewRole } from 'menu/viewRole'
+import { modelingDesignRole} from 'menu/designRole'
 
 import os from 'node:os'
 import { ZooMenuItemConstructorOptions } from 'menu/roles'
@@ -130,8 +131,9 @@ export function buildAndSetMenuForFallback(mainWindow: BrowserWindow) {
 export function buildAndSetMenuForModelingPage(mainWindow: BrowserWindow) {
   const template = [
     modelingFileRole(mainWindow),
-    projectEditRole(mainWindow),
-    projectViewRole(mainWindow),
+    modelingEditRole(mainWindow),
+    modelingViewRole(mainWindow),
+    modelingDesignRole(mainWindow),
     // Help role is the same for all pages
     helpRole(mainWindow),
   ]

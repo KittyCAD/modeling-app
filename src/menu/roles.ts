@@ -26,12 +26,15 @@ type FileRoleLabel =
   | 'Create new folder'
   | 'Share current part (via Zoo link)'
   | 'Project settings'
+  | 'Load a sample model'
 
 type EditRoleLabel =
   | 'Rename project'
   | 'Delete project'
   | 'Change project directory'
   | 'Speech'
+  | 'Edit parameter'
+  | 'Modify with Zoo Text-To-CAD'
 
 type HelpRoleLabel =
   | 'Report a bug'
@@ -46,7 +49,23 @@ type HelpRoleLabel =
   | 'Get started with Text-to-CAD'
   | 'Show all commands'
 
-type ViewRoleLabel = 'Command Palette...' | 'Appearance'
+type ViewRoleLabel =
+  | 'Command Palette...'
+  | 'Appearance'
+  | 'Panes'
+  | 'Feature tree'
+  | 'KCL code'
+  | 'Project files'
+  | 'Variables'
+  | 'Logs'
+  | 'Debug'
+  | 'Standard views'
+
+type DesignRoleLabel =
+  | 'Design'
+  | 'Create a parameter'
+  | 'Create with Zoo Text-To-CAD'
+  | 'Start sketch'
 
 // Only export the union of all the internal types since they are all labels
 // The internal types are only for readability within the file
@@ -56,6 +75,7 @@ export type ZooLabel =
   | EditRoleLabel
   | HelpRoleLabel
   | ViewRoleLabel
+  | DesignRoleLabel
 
 // Extend the interface with additional custom properties
 export interface ZooMenuItemConstructorOptions

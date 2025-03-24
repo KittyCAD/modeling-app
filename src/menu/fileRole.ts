@@ -145,6 +145,14 @@ export const modelingFileRole = (
           })
         },
       },
+      {
+        label: 'Load a sample model',
+        click: () => {
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'File.Load a sample model',
+          })
+        },
+      },
       { type: 'separator' },
       {
         label: 'Export current part',
