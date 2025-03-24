@@ -101,8 +101,9 @@ const SignIn = () => {
               version-controlled, and accurate parts ready for manufacturing.
             </p>
             <p className="my-4 text-lg xl:text-xl">
-              As alpha software, Zoo Design Studio is still in heavy development.
-              We encourage feedback and feature requests that align with{' '}
+              As alpha software, Zoo Design Studio is still in heavy
+              development. We encourage feedback and feature requests that align
+              with{' '}
               <a
                 href="https://github.com/KittyCAD/modeling-app/issues/729"
                 target="_blank"

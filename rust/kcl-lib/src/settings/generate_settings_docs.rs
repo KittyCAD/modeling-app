@@ -148,10 +148,10 @@ pub fn generate_settings_docs() {
         if let Some(metadata) = &obj.metadata {
             metadata.description.clone().unwrap_or_default()
         } else {
-            "Project specific settings for the KittyCAD modeling app.".to_string()
+            "Project specific settings for the KittyCAD Design Studio.".to_string()
         }
     } else {
-        "Project specific settings for the KittyCAD modeling app.".to_string()
+        "Project specific settings for the KittyCAD Design Studio.".to_string()
     };
 
     // Convert the schema to our template format
@@ -183,10 +183,10 @@ pub fn generate_settings_docs() {
         if let Some(metadata) = &obj.metadata {
             metadata.description.clone().unwrap_or_default()
         } else {
-            "User-specific configuration options for the KittyCAD modeling app.".to_string()
+            "User-specific configuration options for the KittyCAD Design Studio.".to_string()
         }
     } else {
-        "User-specific configuration options for the KittyCAD modeling app.".to_string()
+        "User-specific configuration options for the KittyCAD Design Studio.".to_string()
     };
 
     // Trim any trailing periods to avoid double periods

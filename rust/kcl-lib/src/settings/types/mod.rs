@@ -20,7 +20,7 @@ const DEFAULT_PROJECT_NAME_TEMPLATE: &str = "project-$nnn";
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct Configuration {
-    /// The settings for the modeling app.
+    /// The settings for the Design Studio.
     #[serde(default, skip_serializing_if = "is_default")]
     #[validate(nested)]
     pub settings: Settings,
@@ -75,7 +75,7 @@ impl Configuration {
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct Settings {
-    /// The settings for the modeling app.
+    /// The settings for the Design Studio.
     #[serde(default, skip_serializing_if = "is_default")]
     #[validate(nested)]
     pub app: AppSettings,

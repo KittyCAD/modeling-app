@@ -245,7 +245,7 @@ export const AllSettingsFields = forwardRef(
             </div>
           </SettingsSection>
           <h2 id="settings-about" className="text-2xl mt-6 font-bold">
-            About Modeling App
+            About Design Studio
           </h2>
           <div className="text-sm mb-12">
             <p>
