@@ -1906,7 +1906,7 @@ export const modelingMachine = setup({
         const {
           revolutions,
           angleStart,
-          counterClockWise,
+          ccw,
           radius,
           axis,
           length,
@@ -1962,7 +1962,7 @@ export const modelingMachine = setup({
           node: ast,
           revolutions: valueOrVariable(revolutions),
           angleStart: valueOrVariable(angleStart),
-          counterClockWise,
+          ccw,
           radius: valueOrVariable(radius),
           axis,
           length: valueOrVariable(length),

@@ -18,7 +18,7 @@ myPart = startSketchOn('XY')
     |> extrude(length = 6)
 ```
 
-The `myPart` variable will be an executed `Solid` object. Executed being past
+The `myPart` variable will be an executed [`Solid`](/docs/kcl/types/Solid) object. Executed being past
 tense, because the engine has already executed the commands to create the solid.
 
 The previous solid commands will never be executed again, in this case.

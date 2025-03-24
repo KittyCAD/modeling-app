@@ -72,7 +72,6 @@ lazy_static! {
         Box::new(crate::std::segment::TangentToEnd),
         Box::new(crate::std::segment::AngleToMatchLengthX),
         Box::new(crate::std::segment::AngleToMatchLengthY),
-        Box::new(crate::std::shapes::Circle),
         Box::new(crate::std::shapes::CircleThreePoint),
         Box::new(crate::std::shapes::Polygon),
         Box::new(crate::std::sketch::Line),
@@ -202,6 +201,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("math", "tan") => (
             |e, a| Box::pin(crate::std::math::tan(e, a)),
             StdFnProps::default("std::math::tan"),
+        ),
+        ("sketch", "circle") => (
+            |e, a| Box::pin(crate::std::shapes::circle(e, a)),
+            StdFnProps::default("std::sketch::circle"),
         ),
         _ => unreachable!(),
     }
