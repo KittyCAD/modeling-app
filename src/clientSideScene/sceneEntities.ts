@@ -1264,7 +1264,7 @@ export class SceneEntities {
         const { snappedPoint, isSnapped } = this.getSnappedDragPoint({
           intersection2d: intersectionPoint.twoD,
           intersects: args.intersects,
-          event: args.mouseEvent,
+          mouseEvent: args.mouseEvent,
         })
         if (isSnapped) {
           this.positionDraftPoint({
@@ -2027,7 +2027,7 @@ export class SceneEntities {
         const maybeSnapToAxis = this.getSnappedDragPoint({
           intersection2d: args.intersectionPoint.twoD,
           intersects: args.intersects,
-          event: args.mouseEvent,
+          mouseEvent: args.mouseEvent,
         }).snappedPoint
 
         const maybeSnapToProfileStart = doNotSnapAsThreePointArcIsTheOnlySegment
@@ -2130,7 +2130,7 @@ export class SceneEntities {
               p3: this.getSnappedDragPoint({
                 intersection2d: args.intersectionPoint.twoD,
                 intersects: args.intersects,
-                event: args.mouseEvent,
+                mouseEvent: args.mouseEvent,
               }).snappedPoint,
             }
           )
@@ -2617,7 +2617,6 @@ export class SceneEntities {
       const forceSnapping = mouseEvent.shiftKey
       const tolerance_in_screenspace = 10 * window.devicePixelRatio
       const orthoFactor = orthoScale(sceneInfra.camControls.camera)
-      console.log('zoom', orthoFactor, getLength(closestPoint, snappedPoint))
 
       if (
         forceSnapping ||
