@@ -77,12 +77,20 @@ description: Result of parsing argument_error.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "commentStart": 28,
               "end": 0,
-              "name": "f",
+              "name": {
+                "commentStart": 28,
+                "end": 0,
+                "name": "f",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "commentStart": 31,
@@ -119,11 +127,19 @@ description: Result of parsing argument_error.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 24,
             "end": 0,
-            "name": "map",
+            "name": {
+              "commentStart": 24,
+              "end": 0,
+              "name": "map",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 24,
           "end": 0,

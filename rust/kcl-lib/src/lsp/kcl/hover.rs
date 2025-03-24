@@ -105,16 +105,19 @@ impl Expr {
             // TODO: LSP hover information for values/types. https://github.com/KittyCAD/modeling-app/issues/1126
             Expr::None(_) => None,
             Expr::Literal(_) => None,
-            Expr::Identifier(id) => {
-                if id.contains(pos) {
-                    let name = id.name.clone();
-                    Some(Hover::Variable {
-                        ty: opts
-                            .vars
+            Expr::Name(name) => {
+                if name.contains(pos) {
+                    let ty = if let Some(name) = name.local_ident() {
+                        opts.vars
                             .as_ref()
-                            .and_then(|vars| vars.get(&name).and_then(Clone::clone)),
-                        name,
-                        range: id.as_source_range().to_lsp_range(code),
+                            .and_then(|vars| vars.get(&**name).and_then(Clone::clone))
+                    } else {
+                        None
+                    };
+                    Some(Hover::Variable {
+                        ty,
+                        name: name.to_string(),
+                        range: name.as_source_range().to_lsp_range(code),
                     })
                 } else {
                     None
@@ -137,7 +140,7 @@ impl BinaryPart {
     fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
         match self {
             BinaryPart::Literal(_literal) => None,
-            BinaryPart::Identifier(_identifier) => None,
+            BinaryPart::Name(_identifier) => None,
             BinaryPart::BinaryExpression(binary_expression) => {
                 binary_expression.get_hover_value_for_position(pos, code, opts)
             }
@@ -163,7 +166,7 @@ impl CallExpression {
         let callee_source_range: SourceRange = self.callee.clone().into();
         if callee_source_range.contains(pos) {
             return Some(Hover::Function {
-                name: self.callee.name.clone(),
+                name: self.callee.to_string(),
                 range: callee_source_range.to_lsp_range(code),
             });
         }
@@ -173,7 +176,7 @@ impl CallExpression {
             if source_range.contains(pos) {
                 return if opts.prefer_sig {
                     Some(Hover::Signature {
-                        name: self.callee.name.clone(),
+                        name: self.callee.to_string(),
                         parameter_index: index as u32,
                         range: source_range.to_lsp_range(code),
                     })
@@ -192,7 +195,7 @@ impl CallExpressionKw {
         let callee_source_range: SourceRange = self.callee.clone().into();
         if callee_source_range.contains(pos) {
             return Some(Hover::Function {
-                name: self.callee.name.clone(),
+                name: self.callee.to_string(),
                 range: callee_source_range.to_lsp_range(code),
             });
         }
@@ -202,7 +205,7 @@ impl CallExpressionKw {
             if source_range.contains(pos) {
                 return if opts.prefer_sig {
                     Some(Hover::Signature {
-                        name: self.callee.name.clone(),
+                        name: self.callee.to_string(),
                         parameter_index: index as u32,
                         range: source_range.to_lsp_range(code),
                     })
@@ -215,7 +218,7 @@ impl CallExpressionKw {
                 if id.as_source_range().contains(pos) {
                     return Some(Hover::KwArg {
                         name: id.name.clone(),
-                        callee_name: self.callee.name.clone(),
+                        callee_name: self.callee.to_string(),
                         range: id.as_source_range().to_lsp_range(code),
                     });
                 }

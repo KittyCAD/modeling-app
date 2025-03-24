@@ -1,6 +1,7 @@
-use std::{any::type_name, collections::HashMap, num::NonZeroU32};
+use std::num::NonZeroU32;
 
 use anyhow::Result;
+use indexmap::IndexMap;
 use kcmc::{
     websocket::{ModelingCmdReq, OkWebSocketResponseData},
     ModelingCmd,
@@ -57,7 +58,7 @@ pub struct KwArgs {
     /// Unlabeled keyword args. Currently only the first arg can be unlabeled.
     pub unlabeled: Option<Arg>,
     /// Labeled args.
-    pub labeled: HashMap<String, Arg>,
+    pub labeled: IndexMap<String, Arg>,
 }
 
 impl KwArgs {
@@ -146,7 +147,7 @@ impl Args {
                 source_ranges: vec![self.source_range],
                 message: format!(
                     "The arg {label} was given, but it was the wrong type. It should be type {} but it was {}",
-                    type_name::<T>(),
+                    tynm::type_name::<T>(),
                     arg.value.human_friendly_type(),
                 ),
             })
@@ -229,7 +230,7 @@ impl Args {
                 source_ranges: vec![arg.source_range],
                 message: format!(
                     "Expected an array of {} but found {}",
-                    type_name::<T>(),
+                    tynm::type_name::<T>(),
                     arg.value.human_friendly_type()
                 ),
             });
@@ -244,7 +245,7 @@ impl Args {
                         source_ranges: arg.source_ranges(),
                         message: format!(
                             "Expected a {} but found {}",
-                            type_name::<T>(),
+                            tynm::type_name::<T>(),
                             arg.value.human_friendly_type()
                         ),
                     })
@@ -924,7 +925,7 @@ where
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
                     "Argument at index {i} was supposed to be type {} but found {}",
-                    type_name::<T>(),
+                    tynm::type_name::<T>(),
                     arg.value.human_friendly_type(),
                 ),
                 source_ranges: arg.source_ranges(),
@@ -947,7 +948,7 @@ where
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
                     "Argument at index {i} was supposed to be type Option<{}> but found {}",
-                    type_name::<T>(),
+                    tynm::type_name::<T>(),
                     arg.value.human_friendly_type()
                 ),
                 source_ranges: arg.source_ranges(),
@@ -1000,48 +1001,54 @@ where
 
 impl<'a> FromKclValue<'a> for [f64; 2] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::MixedArray { value, meta: _ } = arg else {
-            return None;
-        };
-        if value.len() != 2 {
-            return None;
+        match arg {
+            KclValue::MixedArray { value, meta: _ } | KclValue::HomArray { value, .. } => {
+                if value.len() != 2 {
+                    return None;
+                }
+                let v0 = value.first()?;
+                let v1 = value.get(1)?;
+                let array = [v0.as_f64()?, v1.as_f64()?];
+                Some(array)
+            }
+            _ => None,
         }
-        let v0 = value.first()?;
-        let v1 = value.get(1)?;
-        let array = [v0.as_f64()?, v1.as_f64()?];
-        Some(array)
     }
 }
 
 impl<'a> FromKclValue<'a> for [usize; 3] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::MixedArray { value, meta: _ } = arg else {
-            return None;
-        };
-        if value.len() != 3 {
-            return None;
+        match arg {
+            KclValue::MixedArray { value, meta: _ } | KclValue::HomArray { value, .. } => {
+                if value.len() != 3 {
+                    return None;
+                }
+                let v0 = value.first()?;
+                let v1 = value.get(1)?;
+                let v2 = value.get(2)?;
+                let array = [v0.as_usize()?, v1.as_usize()?, v2.as_usize()?];
+                Some(array)
+            }
+            _ => None,
         }
-        let v0 = value.first()?;
-        let v1 = value.get(1)?;
-        let v2 = value.get(2)?;
-        let array = [v0.as_usize()?, v1.as_usize()?, v2.as_usize()?];
-        Some(array)
     }
 }
 
 impl<'a> FromKclValue<'a> for [f64; 3] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::MixedArray { value, meta: _ } = arg else {
-            return None;
-        };
-        if value.len() != 3 {
-            return None;
+        match arg {
+            KclValue::MixedArray { value, meta: _ } | KclValue::HomArray { value, .. } => {
+                if value.len() != 3 {
+                    return None;
+                }
+                let v0 = value.first()?;
+                let v1 = value.get(1)?;
+                let v2 = value.get(2)?;
+                let array = [v0.as_f64()?, v1.as_f64()?, v2.as_f64()?];
+                Some(array)
+            }
+            _ => None,
         }
-        let v0 = value.first()?;
-        let v1 = value.get(1)?;
-        let v2 = value.get(2)?;
-        let array = [v0.as_f64()?, v1.as_f64()?, v2.as_f64()?];
-        Some(array)
     }
 }
 
