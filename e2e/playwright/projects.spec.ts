@@ -161,7 +161,7 @@ test(
       // gray at this pixel means the stream has loaded in the most
       // user way we can verify it (pixel color)
       await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [125, 125, 125]), {
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
           timeout: 10_000,
         })
         .toBeLessThan(20)
@@ -2135,7 +2135,7 @@ test(
       // gray at this pixel means the stream has loaded in the most
       // user way we can verify it (pixel color)
       await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [125, 125, 125]), {
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
           timeout: 10_000,
         })
         .toBeLessThan(15)
