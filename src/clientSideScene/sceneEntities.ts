@@ -70,6 +70,7 @@ import { executeAstMock, ToolTip } from 'lang/langHelpers'
 import {
   createProfileStartHandle,
   dashedStraight,
+  getTanPreviousPoint,
   SegmentUtils,
   segmentUtils,
 } from './segments'
@@ -2571,63 +2572,46 @@ export class SceneEntities {
     ]
 
     const segments = Object.values(this.activeSegments)
-    const prev = segments[segments.length - 2]
-
-    const disableSnap = mouseEvent.ctrlKey || mouseEvent.altKey
-    if (!disableSnap && prev.userData.type === TANGENTIAL_ARC_TO_SEGMENT) {
-      const prevSegment = prev.userData.prevSegment
-
-      let previousPoint = prevSegment.from
-      if (prevSegment?.type === 'TangentialArcTo') {
-        previousPoint = getTangentPointFromPreviousArc(
-          prevSegment.center,
-          prevSegment.ccw,
-          prevSegment.to
-        )
-      } else if (prevSegment?.type === 'ArcThreePoint') {
-        const arcDetails = calculate_circle_from_3_points(
-          prevSegment.p1[0],
-          prevSegment.p1[1],
-          prevSegment.p2[0],
-          prevSegment.p2[1],
-          prevSegment.p3[0],
-          prevSegment.p3[1]
-        )
-        previousPoint = getTangentPointFromPreviousArc(
-          [arcDetails.center_x, arcDetails.center_y],
-          !isClockwise([prevSegment.p1, prevSegment.p2, prevSegment.p3]),
-          prevSegment.p3
-        )
-      }
-
-      const arcInfo = getTangentialArcToInfo({
-        arcStartPoint: prev.userData.from,
-        arcEndPoint: prev.userData.to,
-        tanPreviousPoint: previousPoint,
-        obtuse: true,
-      })
-      const tangentAngle =
-        arcInfo.endAngle + (Math.PI / 2) * (arcInfo.ccw ? 1 : -1)
-      const tangentDirection: Coords2d = [
-        Math.cos(tangentAngle),
-        Math.sin(tangentAngle),
+    const current = segments[segments.length - 1]
+    if (current.userData.type === STRAIGHT_SEGMENT) {
+      const prev = segments[segments.length - 2]
+      const disableSnap = mouseEvent.ctrlKey || mouseEvent.altKey
+      const arcTypes = [
+        TANGENTIAL_ARC_TO_SEGMENT,
+        THREE_POINT_ARC_SEGMENT,
+        //ARC_SEGMENT,
       ]
-      const closestPoint = closestPointOnRay(
-        prev.userData.to,
-        tangentDirection,
-        snappedPoint
-      )
+      if (!disableSnap && arcTypes.includes(prev.userData.type)) {
+        const prevSegment = prev.userData.prevSegment
+        const arcInfo = getTangentialArcToInfo({
+          arcStartPoint: prev.userData.from,
+          arcEndPoint: prev.userData.to,
+          tanPreviousPoint: getTanPreviousPoint(prevSegment),
+          obtuse: true,
+        })
+        const tangentAngle =
+          arcInfo.endAngle + (Math.PI / 2) * (arcInfo.ccw ? 1 : -1)
+        const tangentDirection: Coords2d = [
+          Math.cos(tangentAngle),
+          Math.sin(tangentAngle),
+        ]
+        const closestPoint = closestPointOnRay(
+          prev.userData.to,
+          tangentDirection,
+          snappedPoint
+        )
 
-      const forceSnapping = mouseEvent.shiftKey
-      const tolerance_in_screenspace = 10 * window.devicePixelRatio
-      const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+        const forceSnapping = mouseEvent.shiftKey
+        const tolerance_in_screenspace = 10 * window.devicePixelRatio
+        const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
-      if (
-        forceSnapping ||
-        getLength(closestPoint, snappedPoint) / orthoFactor <
-          tolerance_in_screenspace
-      ) {
-        snappedPoint = closestPoint
+        if (
+          forceSnapping ||
+          getLength(closestPoint, snappedPoint) / orthoFactor <
+            tolerance_in_screenspace
+        ) {
+          snappedPoint = closestPoint
+        }
       }
     }
 

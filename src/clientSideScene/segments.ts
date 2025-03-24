@@ -426,33 +426,10 @@ class TangentialArcToSegment implements SegmentUtils {
     const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
     const extraSegmentGroup = group.getObjectByName(EXTRA_SEGMENT_HANDLE)
 
-    let previousPoint = prevSegment.from
-    if (prevSegment?.type === 'TangentialArcTo') {
-      previousPoint = getTangentPointFromPreviousArc(
-        prevSegment.center,
-        prevSegment.ccw,
-        prevSegment.to
-      )
-    } else if (prevSegment?.type === 'ArcThreePoint') {
-      const arcDetails = calculate_circle_from_3_points(
-        prevSegment.p1[0],
-        prevSegment.p1[1],
-        prevSegment.p2[0],
-        prevSegment.p2[1],
-        prevSegment.p3[0],
-        prevSegment.p3[1]
-      )
-      previousPoint = getTangentPointFromPreviousArc(
-        [arcDetails.center_x, arcDetails.center_y],
-        !isClockwise([prevSegment.p1, prevSegment.p2, prevSegment.p3]),
-        prevSegment.p3
-      )
-    }
-
     const arcInfo = getTangentialArcToInfo({
       arcStartPoint: from,
       arcEndPoint: to,
-      tanPreviousPoint: previousPoint,
+      tanPreviousPoint: getTanPreviousPoint(prevSegment),
       obtuse: true,
     })
 
@@ -532,6 +509,32 @@ class TangentialArcToSegment implements SegmentUtils {
         hasThreeDotMenu: true,
       })
   }
+}
+
+export function getTanPreviousPoint(prevSegment: Sketch['paths'][number]) {
+  let previousPoint = prevSegment.from
+  if (prevSegment.type === 'TangentialArcTo') {
+    previousPoint = getTangentPointFromPreviousArc(
+      prevSegment.center,
+      prevSegment.ccw,
+      prevSegment.to
+    )
+  } else if (prevSegment.type === 'ArcThreePoint') {
+    const arcDetails = calculate_circle_from_3_points(
+      prevSegment.p1[0],
+      prevSegment.p1[1],
+      prevSegment.p2[0],
+      prevSegment.p2[1],
+      prevSegment.p3[0],
+      prevSegment.p3[1]
+    )
+    previousPoint = getTangentPointFromPreviousArc(
+      [arcDetails.center_x, arcDetails.center_y],
+      !isClockwise([prevSegment.p1, prevSegment.p2, prevSegment.p3]),
+      prevSegment.p3
+    )
+  }
+  return previousPoint
 }
 
 class CircleSegment implements SegmentUtils {
