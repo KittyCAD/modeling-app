@@ -119,6 +119,8 @@ import { EXPORT_TOAST_MESSAGES, MAKE_TOAST_MESSAGES } from 'lib/constants'
 import { exportMake } from 'lib/exportMake'
 import { exportSave } from 'lib/exportSave'
 import { Plane } from '@rust/kcl-lib/bindings/Plane'
+import { updateModelingState } from 'lang/modelingWorkflows'
+import { EXECUTION_TYPE_MOCK } from 'lib/constants'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -1661,7 +1663,7 @@ export const ModelingMachineProvider = ({
               sketchDetails.sketchEntryNodePath
             )
             if (err(doesNeedSplitting)) return reject(doesNeedSplitting)
-            let moddedAst: Program = structuredClone(kclManager.ast)
+            let moddedAst: Node<Program> = structuredClone(kclManager.ast)
             let pathToProfile = sketchDetails.sketchEntryNodePath
             let updatedSketchNodePaths = sketchDetails.sketchNodePaths
             if (doesNeedSplitting) {
@@ -1723,8 +1725,11 @@ export const ModelingMachineProvider = ({
               indexToDelete >= 0 ||
               isLastInPipeThreePointArc
             ) {
-              await kclManager.executeAstMock(moddedAst)
-              await codeManager.updateEditorWithAstAndWriteToFile(moddedAst)
+              await updateModelingState(moddedAst, EXECUTION_TYPE_MOCK, {
+                kclManager,
+                editorManager,
+                codeManager,
+              })
             }
             return {
               updatedEntryNodePath: pathToProfile,

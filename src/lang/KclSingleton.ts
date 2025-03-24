@@ -7,7 +7,7 @@ import {
 } from './errors'
 import { uuidv4 } from 'lib/utils'
 import { EngineCommandManager } from './std/engineConnection'
-import { err } from 'lib/trap'
+import { err, reportRejection } from 'lib/trap'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
 
 import {
@@ -337,8 +337,8 @@ export class KclManager {
   private _cancelTokens: Map<number, boolean> = new Map()
 
   // This NEVER updates the code, if you want to update the code DO NOT add to
-  // this function, too many other things that don't want it exist.
-  // just call to codeManager from wherever you want in other files.
+  // this function, too many other things that don't want it exist. For that,
+  // use updateModelingState().
   async executeAst(args: ExecuteArgs = {}): Promise<void> {
     if (this.isExecuting) {
       this.executeIsStale = args
@@ -460,7 +460,6 @@ export class KclManager {
     markOnce('code/endExecuteAst')
   }
 
-  // NOTE: this always updates the code state and editor.
   // DO NOT CALL THIS from codemirror ever.
   async executeAstMock(ast: Program) {
     await this.ensureWasmInit()
@@ -555,12 +554,16 @@ export class KclManager {
     codeManager.updateCodeStateEditor(code)
 
     // Write back to the file system.
-    void codeManager.writeToFile().then(() => this.executeCode())
+    void codeManager
+      .writeToFile()
+      .then(() => this.executeCode())
+      .catch(reportRejection)
   }
+
   // There's overlapping responsibility between updateAst and executeAst.
   // updateAst was added as it was used a lot before xState migration so makes the port easier.
   // but should probably have think about which of the function to keep
-  // This always updates the code state and editor and writes to the file system.
+  // This never updates the code state or editor and doesn't write to the file system.
   async updateAst(
     ast: Node<Program>,
     execute: boolean,
@@ -627,7 +630,6 @@ export class KclManager {
       // When we don't re-execute, we still want to update the program
       // memory with the new ast. So we will hit the mock executor
       // instead..
-      // Execute ast mock will update the code state and editor.
       await this.executeAstMock(astWithUpdatedSource)
     }
 
