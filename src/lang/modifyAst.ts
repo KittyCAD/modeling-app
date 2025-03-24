@@ -835,13 +835,13 @@ export function addHelix({
   const modifiedAst = structuredClone(node)
   const name =
     variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.HELIX)
-  const extraArgs: CallExpressionKw['arguments'] = []
+  const modeArgs: CallExpressionKw['arguments'] = []
   if (axis && length && radius) {
-    extraArgs.push(createLabeledArg('axis', axis))
-    extraArgs.push(createLabeledArg('length', length))
-    extraArgs.push(createLabeledArg('radius', radius))
+    modeArgs.push(createLabeledArg('axis', axis))
+    modeArgs.push(createLabeledArg('radius', radius))
+    modeArgs.push(createLabeledArg('length', length))
   } else if (cylinder) {
-    extraArgs.push(
+    modeArgs.push(
       createLabeledArg('cylinder', createLocalName(cylinder.id.name))
     )
   }
@@ -851,10 +851,10 @@ export function addHelix({
       'helix',
       null, // Not in a pipeline
       [
+        ...modeArgs,
         createLabeledArg('revolutions', revolutions),
         createLabeledArg('angleStart', angleStart),
         createLabeledArg('ccw', createLiteral(ccw)),
-        ...extraArgs,
       ]
     )
   )

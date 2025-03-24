@@ -99,10 +99,7 @@ import {
   deleteSelectionPromise,
   deletionErrorMessage,
 } from 'lang/modifyAst/deleteSelection'
-import {
-  getArtifactOfTypes,
-  getPathsFromPlaneArtifact,
-} from 'lang/std/artifactGraph'
+import { getPathsFromPlaneArtifact } from 'lang/std/artifactGraph'
 import { createProfileStartHandle } from 'clientSideScene/segments'
 import { DRAFT_POINT } from 'clientSideScene/sceneInfra'
 import { setAppearance } from 'lang/modifyAst/setAppearance'
@@ -1957,15 +1954,15 @@ export const modelingMachine = setup({
         let cylinderDeclarator: VariableDeclarator | undefined
         if (mode !== 'Cylinder') {
           const getAxisResult = getAxisExpressionAndIndex(mode, axis, edge, ast)
-          if (err(getAxisResult)) return getAxisResult
-          generatedAxis = getAxisResult.generatedAxis
+          if (!err(getAxisResult)) {
+            generatedAxis = getAxisResult.generatedAxis
+          }
         } else {
           if (
             cylinder &&
             cylinder.graphSelections[0] &&
             cylinder.graphSelections[0].artifact?.type === 'wall'
           ) {
-            console.log('in if')
             const clonedAstForGetExtrude = structuredClone(ast)
             const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
               clonedAstForGetExtrude,
@@ -1986,9 +1983,6 @@ export const modelingMachine = setup({
         }
 
         if (!generatedAxis && !cylinderDeclarator) {
-          console.error(
-            'Generated axis or cylinder declarator selection is missing.'
-          )
           return new Error(
             'Generated axis or cylinder declarator selection is missing.'
           )
@@ -2000,21 +1994,22 @@ export const modelingMachine = setup({
         // opInsertIndex = axisIndexIfAxis + 1
         // }
 
-        for (const variable of [revolutions, angleStart, radius, length]) {
-          // Insert the variable if it exists
-          if (
-            variable &&
-            'variableName' in variable &&
-            variable.variableName &&
-            variable.insertIndex !== undefined
-          ) {
-            const newBody = [...ast.body]
-            newBody.splice(
-              variable.insertIndex,
-              0,
-              variable.variableDeclarationAst
-            )
-            ast.body = newBody
+        if (axis && radius && length) {
+          for (const variable of [revolutions, angleStart, radius, length]) {
+            // Insert the variable if it exists
+            if (
+              'variableName' in variable &&
+              variable.variableName &&
+              variable.insertIndex !== undefined
+            ) {
+              const newBody = [...ast.body]
+              newBody.splice(
+                variable.insertIndex,
+                0,
+                variable.variableDeclarationAst
+              )
+              ast.body = newBody
+            }
           }
         }
 
@@ -2028,10 +2023,10 @@ export const modelingMachine = setup({
           revolutions: valueOrVariable(revolutions),
           angleStart: valueOrVariable(angleStart),
           ccw,
-          radius: valueOrVariable(radius),
+          radius: radius ? valueOrVariable(radius) : radius,
           axis: generatedAxis,
           cylinder: cylinderDeclarator,
-          length: valueOrVariable(length),
+          length: length ? valueOrVariable(length) : length,
           insertIndex: opInsertIndex,
           variableName: opVariableName,
         })

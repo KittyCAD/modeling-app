@@ -1082,8 +1082,8 @@ openSketch = startSketchOn(XY)
   }) => {
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 620, y: 257 }
-    const expectedOutput = `helix001 = helix(  revolutions = 1,  angleStart = 360,  ccw = false,  radius = 5,  axis = 'X',  length = 5,)`
-    const expectedLine = `revolutions=1,`
+    const expectedOutput = `helix001 = helix(  axis = 'X',  radius = 5,  length = 5,  revolutions = 1,  angleStart = 360,  ccw = false,)`
+    const expectedLine = `axis='X',`
 
     await homePage.goToModelingScene()
 
@@ -1181,14 +1181,14 @@ openSketch = startSketchOn(XY)
     {
       selectionType: 'segment',
       testPoint: { x: 513, y: 221 },
-      expectedOutput: `helix001 = helix(  revolutions = 20,  angleStart = 0,  ccw = true,  radius = 1,  axis = seg01,  length = 100,)`,
-      expectedEditedOutput: `helix001 = helix(  revolutions = 20,  angleStart = 0,  ccw = true,  radius = 1,  axis = seg01,  length = 50,)`,
+      expectedOutput: `helix001 = helix(  axis = seg01,  radius = 1,  length = 100,  revolutions = 20,  angleStart = 0, ccw = true,)`,
+      expectedEditedOutput: `helix001 = helix( . axis = seg01,  radius = 1,  length = 50,  revolutions = 20,  angleStart = 0,  ccw = true,)`,
     },
     {
       selectionType: 'sweepEdge',
       testPoint: { x: 564, y: 364 },
-      expectedOutput: `helix001 = helix(  revolutions = 20,  angleStart = 0,  ccw = true,  radius = 1,  axis =   getOppositeEdge(seg01),  length = 100,)`,
-      expectedEditedOutput: `helix001 = helix(  revolutions = 20,  angleStart = 0,  ccw = true,  radius = 1,  axis =   getOppositeEdge(seg01),  length = 50,)`,
+      expectedOutput: `helix001 = helix(  axis = getOppositeEdge(seg01), radius = 1, length = 100, revolutions = 20, angleStart = 0, ccw = true,)`,
+      expectedEditedOutput: `helix001 = helix(  axis = getOppositeEdge(seg01),  radius = 1,  length = 50,  revolutions = 20,  angleStart = 0,  ccw = true,)`,
     },
   ]
   helixCases.map(

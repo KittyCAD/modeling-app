@@ -611,6 +611,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
     mode,
     axis,
     edge,
+    cylinder: undefined, // TODO: add support here
     revolutions,
     angleStart,
     ccw,
