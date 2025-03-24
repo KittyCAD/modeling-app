@@ -6,7 +6,7 @@
 /// ```
 /// circumference = 70
 ///
-/// exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn(XZ)
 ///  |> circle(center = [0, 0], radius = circumference/ (2 * PI))
 ///
 /// example = extrude(exampleSketch, length = 5)
@@ -16,7 +16,7 @@ export PI = 3.14159265358979323846264338327950288_
 /// The value of Euler’s number `e`.
 ///
 /// ```
-/// exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 30,
@@ -32,7 +32,7 @@ export E = 2.71828182845904523536028747135266250_
 /// The value of `tau`, the full circle constant (τ). Equal to 2π.
 ///
 /// ```
-/// exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 50,
@@ -48,7 +48,7 @@ export TAU = 6.28318530717958647692528676655900577_
 /// Compute the cosine of a number (in radians).
 ///
 /// ```
-/// exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 30,
@@ -60,12 +60,12 @@ export TAU = 6.28318530717958647692528676655900577_
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust)
-export fn cos(num: number(rad)): number(_) {}
+export fn cos(@num: number(rad)): number(_) {}
 
 /// Compute the sine of a number (in radians).
 ///
 /// ```
-/// exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 50,
@@ -77,12 +77,12 @@ export fn cos(num: number(rad)): number(_) {}
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust)
-export fn sin(num: number(rad)): number(_) {}
+export fn sin(@num: number(rad)): number(_) {}
 
 /// Compute the tangent of a number (in radians).
 ///
 /// ```
-/// exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 50,
@@ -94,4 +94,4 @@ export fn sin(num: number(rad)): number(_) {}
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust)
-export fn tan(num: number(rad)): number(_) {}
+export fn tan(@num: number(rad)): number(_) {}

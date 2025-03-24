@@ -756,10 +756,7 @@ export const ModelingMachineProvider = ({
               let isIdentifierUsed = false
               traverse(newAst, {
                 enter: (node) => {
-                  if (
-                    node.type === 'Identifier' &&
-                    node.name === variableName
-                  ) {
+                  if (node.type === 'Name' && node.name.name === variableName) {
                     isIdentifierUsed = true
                   }
                 },
@@ -1698,8 +1695,8 @@ export const ModelingMachineProvider = ({
                   lastInPipe &&
                   Number(pathToProfile[1][0]) === indexToDelete &&
                   lastInPipe.type === 'CallExpression' &&
-                  lastInPipe.callee.type === 'Identifier' &&
-                  lastInPipe.callee.name === 'arcTo'
+                  lastInPipe.callee.type === 'Name' &&
+                  lastInPipe.callee.name.name === 'arcTo'
                 ) {
                   isLastInPipeThreePointArc = true
                   pipe.node.body = pipe.node.body.slice(0, -1)

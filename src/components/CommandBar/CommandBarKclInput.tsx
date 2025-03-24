@@ -15,7 +15,7 @@ import { varMentions } from 'lib/varCompletionExtension'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import styles from './CommandBarKclInput.module.css'
-import { createIdentifier, createVariableDeclaration } from 'lang/modifyAst'
+import { createLocalName, createVariableDeclaration } from 'lang/modifyAst'
 import { useCodeMirror } from 'components/ModelingSidebar/ModelingPanes/CodeEditor'
 import { useSelector } from '@xstate/react'
 import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
@@ -221,7 +221,7 @@ function CommandBarKclInput({
             valueCalculated: calcResult,
             variableName: newVariableName,
             insertIndex: newVariableInsertIndex,
-            variableIdentifierAst: createIdentifier(newVariableName),
+            variableIdentifierAst: createLocalName(newVariableName),
             variableDeclarationAst: createVariableDeclaration(
               newVariableName,
               valueNode

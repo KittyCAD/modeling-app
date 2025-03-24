@@ -255,12 +255,20 @@ description: Result of parsing ball-bearing.kcl
             "commentStart": 534,
             "end": 0,
             "left": {
+              "abs_path": false,
               "commentStart": 534,
               "end": 0,
-              "name": "sphereDia",
+              "name": {
+                "commentStart": 534,
+                "end": 0,
+                "name": "sphereDia",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "/",
             "right": {
@@ -304,12 +312,20 @@ description: Result of parsing ball-bearing.kcl
             "commentStart": 565,
             "end": 0,
             "left": {
+              "abs_path": false,
               "commentStart": 565,
               "end": 0,
-              "name": "sphereDia",
+              "name": {
+                "commentStart": 565,
+                "end": 0,
+                "name": "sphereDia",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "/",
             "right": {
@@ -353,12 +369,20 @@ description: Result of parsing ball-bearing.kcl
             "commentStart": 594,
             "end": 0,
             "left": {
+              "abs_path": false,
               "commentStart": 594,
               "end": 0,
-              "name": "sphereDia",
+              "name": {
+                "commentStart": 594,
+                "end": 0,
+                "name": "sphereDia",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "/",
             "right": {
@@ -418,12 +442,20 @@ description: Result of parsing ball-bearing.kcl
                           "end": 0,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "commentStart": 705,
                               "end": 0,
-                              "name": "overallThickness",
+                              "name": {
+                                "commentStart": 705,
+                                "end": 0,
+                                "name": "overallThickness",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "commentStart": 704,
                             "end": 0,
@@ -452,11 +484,19 @@ description: Result of parsing ball-bearing.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "commentStart": 677,
                       "end": 0,
-                      "name": "offsetPlane",
+                      "name": {
+                        "commentStart": 677,
+                        "end": 0,
+                        "name": "offsetPlane",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "commentStart": 677,
                     "end": 0,
@@ -475,11 +515,19 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 663,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 663,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 663,
                 "end": 0,
@@ -548,12 +596,20 @@ description: Result of parsing ball-bearing.kcl
                         "commentStart": 781,
                         "end": 0,
                         "left": {
+                          "abs_path": false,
                           "commentStart": 781,
                           "end": 0,
-                          "name": "shaftDia",
+                          "name": {
+                            "commentStart": 781,
+                            "end": 0,
+                            "name": "shaftDia",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "/",
                         "right": {
@@ -574,12 +630,20 @@ description: Result of parsing ball-bearing.kcl
                       },
                       "operator": "+",
                       "right": {
+                        "abs_path": false,
                         "commentStart": 796,
                         "end": 0,
-                        "name": "wallThickness",
+                        "name": {
+                          "commentStart": 796,
+                          "end": 0,
+                          "name": "wallThickness",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
                       "type": "BinaryExpression",
@@ -588,11 +652,19 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 733,
                   "end": 0,
-                  "name": "circle",
+                  "name": {
+                    "commentStart": 733,
+                    "end": 0,
+                    "name": "circle",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 733,
                 "end": 0,
@@ -661,12 +733,20 @@ description: Result of parsing ball-bearing.kcl
                           "commentStart": 875,
                           "end": 0,
                           "left": {
+                            "abs_path": false,
                             "commentStart": 875,
                             "end": 0,
-                            "name": "shaftDia",
+                            "name": {
+                              "commentStart": 875,
+                              "end": 0,
+                              "name": "shaftDia",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -688,11 +768,19 @@ description: Result of parsing ball-bearing.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "commentStart": 827,
                       "end": 0,
-                      "name": "circle",
+                      "name": {
+                        "commentStart": 827,
+                        "end": 0,
+                        "name": "circle",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "commentStart": 827,
                     "end": 0,
@@ -710,11 +798,19 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 822,
                   "end": 0,
-                  "name": "hole",
+                  "name": {
+                    "commentStart": 822,
+                    "end": 0,
+                    "name": "hole",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 822,
                 "end": 0,
@@ -785,21 +881,37 @@ description: Result of parsing ball-bearing.kcl
                   "type": "Identifier"
                 },
                 "arg": {
+                  "abs_path": false,
                   "commentStart": 984,
                   "end": 0,
-                  "name": "overallThickness",
+                  "name": {
+                    "commentStart": 984,
+                    "end": 0,
+                    "name": "overallThickness",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 949,
               "end": 0,
-              "name": "extrude",
+              "name": {
+                "commentStart": 949,
+                "end": 0,
+                "name": "extrude",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 949,
             "end": 0,
@@ -807,12 +919,20 @@ description: Result of parsing ball-bearing.kcl
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "commentStart": 957,
               "end": 0,
-              "name": "insideWallSketch",
+              "name": {
+                "commentStart": 957,
+                "end": 0,
+                "name": "insideWallSketch",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 0,
@@ -851,11 +971,19 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1058,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 1058,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1058,
                 "end": 0,
@@ -875,12 +1003,20 @@ description: Result of parsing ball-bearing.kcl
                           "commentStart": 1099,
                           "end": 0,
                           "left": {
+                            "abs_path": false,
                             "commentStart": 1099,
                             "end": 0,
-                            "name": "shaftDia",
+                            "name": {
+                              "commentStart": 1099,
+                              "end": 0,
+                              "name": "shaftDia",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -901,12 +1037,20 @@ description: Result of parsing ball-bearing.kcl
                         },
                         "operator": "+",
                         "right": {
+                          "abs_path": false,
                           "commentStart": 1114,
                           "end": 0,
-                          "name": "wallThickness",
+                          "name": {
+                            "commentStart": 1114,
+                            "end": 0,
+                            "name": "wallThickness",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 0,
                         "type": "BinaryExpression",
@@ -939,11 +1083,19 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1083,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 1083,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1083,
                 "end": 0,
@@ -1023,12 +1175,20 @@ description: Result of parsing ball-bearing.kcl
                           "commentStart": 1213,
                           "end": 0,
                           "left": {
+                            "abs_path": false,
                             "commentStart": 1213,
                             "end": 0,
-                            "name": "sphereDia",
+                            "name": {
+                              "commentStart": 1213,
+                              "end": 0,
+                              "name": "sphereDia",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -1062,11 +1222,19 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1145,
                   "end": 0,
-                  "name": "arc",
+                  "name": {
+                    "commentStart": 1145,
+                    "end": 0,
+                    "name": "arc",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1145,
                 "end": 0,
@@ -1077,11 +1245,19 @@ description: Result of parsing ball-bearing.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1243,
                   "end": 0,
-                  "name": "close",
+                  "name": {
+                    "commentStart": 1243,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1243,
                 "end": 0,
@@ -1165,11 +1341,19 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1332,
                   "end": 0,
-                  "name": "revolve",
+                  "name": {
+                    "commentStart": 1332,
+                    "end": 0,
+                    "name": "revolve",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1332,
                 "end": 0,
@@ -1177,12 +1361,20 @@ description: Result of parsing ball-bearing.kcl
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
+                  "abs_path": false,
                   "commentStart": 1340,
                   "end": 0,
-                  "name": "ballsSketch",
+                  "name": {
+                    "commentStart": 1340,
+                    "end": 0,
+                    "name": "ballsSketch",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               },
               {
@@ -1329,12 +1521,20 @@ description: Result of parsing ball-bearing.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "commentStart": 1485,
                       "end": 0,
-                      "name": "nBalls",
+                      "name": {
+                        "commentStart": 1485,
+                        "end": 0,
+                        "name": "nBalls",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -1358,11 +1558,19 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1370,
                   "end": 0,
-                  "name": "patternCircular3d",
+                  "name": {
+                    "commentStart": 1370,
+                    "end": 0,
+                    "name": "patternCircular3d",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1370,
                 "end": 0,
@@ -1432,11 +1640,19 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1598,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 1598,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1598,
                 "end": 0,
@@ -1462,12 +1678,20 @@ description: Result of parsing ball-bearing.kcl
                               "commentStart": 1647,
                               "end": 0,
                               "left": {
+                                "abs_path": false,
                                 "commentStart": 1647,
                                 "end": 0,
-                                "name": "shaftDia",
+                                "name": {
+                                  "commentStart": 1647,
+                                  "end": 0,
+                                  "name": "shaftDia",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "/",
                               "right": {
@@ -1488,12 +1712,20 @@ description: Result of parsing ball-bearing.kcl
                             },
                             "operator": "+",
                             "right": {
+                              "abs_path": false,
                               "commentStart": 1662,
                               "end": 0,
-                              "name": "wallThickness",
+                              "name": {
+                                "commentStart": 1662,
+                                "end": 0,
+                                "name": "wallThickness",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 0,
                             "type": "BinaryExpression",
@@ -1504,12 +1736,20 @@ description: Result of parsing ball-bearing.kcl
                             "commentStart": 1678,
                             "end": 0,
                             "left": {
+                              "abs_path": false,
                               "commentStart": 1678,
                               "end": 0,
-                              "name": "sphereDia",
+                              "name": {
+                                "commentStart": 1678,
+                                "end": 0,
+                                "name": "sphereDia",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
@@ -1537,12 +1777,20 @@ description: Result of parsing ball-bearing.kcl
                           "commentStart": 1695,
                           "end": 0,
                           "left": {
+                            "abs_path": false,
                             "commentStart": 1695,
                             "end": 0,
-                            "name": "chainWidth",
+                            "name": {
+                              "commentStart": 1695,
+                              "end": 0,
+                              "name": "chainWidth",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -1599,11 +1847,19 @@ description: Result of parsing ball-bearing.kcl
                                 }
                               ],
                               "callee": {
+                                "abs_path": false,
                                 "commentStart": 1731,
                                 "end": 0,
-                                "name": "toRadians",
+                                "name": {
+                                  "commentStart": 1731,
+                                  "end": 0,
+                                  "name": "toRadians",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier"
+                                "type": "Name"
                               },
                               "commentStart": 1731,
                               "end": 0,
@@ -1613,11 +1869,19 @@ description: Result of parsing ball-bearing.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 1727,
                             "end": 0,
-                            "name": "sin",
+                            "name": {
+                              "commentStart": 1727,
+                              "end": 0,
+                              "name": "sin",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 1727,
                           "end": 0,
@@ -1644,11 +1908,19 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1623,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 1623,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1623,
                 "end": 0,
@@ -1728,12 +2000,20 @@ description: Result of parsing ball-bearing.kcl
                           "commentStart": 1831,
                           "end": 0,
                           "left": {
+                            "abs_path": false,
                             "commentStart": 1831,
                             "end": 0,
-                            "name": "sphereDia",
+                            "name": {
+                              "commentStart": 1831,
+                              "end": 0,
+                              "name": "sphereDia",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -1767,11 +2047,19 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1762,
                   "end": 0,
-                  "name": "arc",
+                  "name": {
+                    "commentStart": 1762,
+                    "end": 0,
+                    "name": "arc",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1762,
                 "end": 0,
@@ -1806,12 +2094,20 @@ description: Result of parsing ball-bearing.kcl
                           }
                         },
                         {
+                          "abs_path": false,
                           "commentStart": 1876,
                           "end": 0,
-                          "name": "chainThickness",
+                          "name": {
+                            "commentStart": 1876,
+                            "end": 0,
+                            "name": "chainThickness",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 0,
@@ -1822,11 +2118,19 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1861,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 1861,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1861,
                 "end": 0,
@@ -1851,12 +2155,20 @@ description: Result of parsing ball-bearing.kcl
                       "elements": [
                         {
                           "argument": {
+                            "abs_path": false,
                             "commentStart": 1911,
                             "end": 0,
-                            "name": "chainWidth",
+                            "name": {
+                              "commentStart": 1911,
+                              "end": 0,
+                              "name": "chainWidth",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "commentStart": 1910,
                           "end": 0,
@@ -1886,11 +2198,19 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1898,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 1898,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1898,
                 "end": 0,
@@ -1902,11 +2222,19 @@ description: Result of parsing ball-bearing.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1932,
                   "end": 0,
-                  "name": "close",
+                  "name": {
+                    "commentStart": 1932,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1932,
                 "end": 0,
@@ -1985,11 +2313,19 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1981,
                   "end": 0,
-                  "name": "revolve",
+                  "name": {
+                    "commentStart": 1981,
+                    "end": 0,
+                    "name": "revolve",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1981,
                 "end": 0,
@@ -1997,12 +2333,20 @@ description: Result of parsing ball-bearing.kcl
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
+                  "abs_path": false,
                   "commentStart": 1989,
                   "end": 0,
-                  "name": "chainSketch",
+                  "name": {
+                    "commentStart": 1989,
+                    "end": 0,
+                    "name": "chainSketch",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               },
               {
@@ -2149,12 +2493,20 @@ description: Result of parsing ball-bearing.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "commentStart": 2134,
                       "end": 0,
-                      "name": "nBalls",
+                      "name": {
+                        "commentStart": 2134,
+                        "end": 0,
+                        "name": "nBalls",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -2178,11 +2530,19 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 2019,
                   "end": 0,
-                  "name": "patternCircular3d",
+                  "name": {
+                    "commentStart": 2019,
+                    "end": 0,
+                    "name": "patternCircular3d",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 2019,
                 "end": 0,
@@ -2252,11 +2612,19 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 2251,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 2251,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 2251,
                 "end": 0,
@@ -2288,12 +2656,20 @@ description: Result of parsing ball-bearing.kcl
                               "commentStart": 2311,
                               "end": 0,
                               "left": {
+                                "abs_path": false,
                                 "commentStart": 2311,
                                 "end": 0,
-                                "name": "shaftDia",
+                                "name": {
+                                  "commentStart": 2311,
+                                  "end": 0,
+                                  "name": "shaftDia",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "/",
                               "right": {
@@ -2314,12 +2690,20 @@ description: Result of parsing ball-bearing.kcl
                             },
                             "operator": "+",
                             "right": {
+                              "abs_path": false,
                               "commentStart": 2326,
                               "end": 0,
-                              "name": "wallThickness",
+                              "name": {
+                                "commentStart": 2326,
+                                "end": 0,
+                                "name": "wallThickness",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 0,
                             "type": "BinaryExpression",
@@ -2330,12 +2714,20 @@ description: Result of parsing ball-bearing.kcl
                             "commentStart": 2342,
                             "end": 0,
                             "left": {
+                              "abs_path": false,
                               "commentStart": 2342,
                               "end": 0,
-                              "name": "sphereDia",
+                              "name": {
+                                "commentStart": 2342,
+                                "end": 0,
+                                "name": "sphereDia",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
@@ -2390,12 +2782,20 @@ description: Result of parsing ball-bearing.kcl
                       "commentStart": 2394,
                       "end": 0,
                       "left": {
+                        "abs_path": false,
                         "commentStart": 2394,
                         "end": 0,
-                        "name": "linkDiameter",
+                        "name": {
+                          "commentStart": 2394,
+                          "end": 0,
+                          "name": "linkDiameter",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -2417,11 +2817,19 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 2276,
                   "end": 0,
-                  "name": "circle",
+                  "name": {
+                    "commentStart": 2276,
+                    "end": 0,
+                    "name": "circle",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 2276,
                 "end": 0,
@@ -2525,12 +2933,20 @@ description: Result of parsing ball-bearing.kcl
                       },
                       "operator": "/",
                       "right": {
+                        "abs_path": false,
                         "commentStart": 2506,
                         "end": 0,
-                        "name": "nBalls",
+                        "name": {
+                          "commentStart": 2506,
+                          "end": 0,
+                          "name": "nBalls",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
                       "type": "BinaryExpression",
@@ -2539,11 +2955,19 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 2460,
                   "end": 0,
-                  "name": "revolve",
+                  "name": {
+                    "commentStart": 2460,
+                    "end": 0,
+                    "name": "revolve",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 2460,
                 "end": 0,
@@ -2551,12 +2975,20 @@ description: Result of parsing ball-bearing.kcl
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
+                  "abs_path": false,
                   "commentStart": 2468,
                   "end": 0,
-                  "name": "linkSketch",
+                  "name": {
+                    "commentStart": 2468,
+                    "end": 0,
+                    "name": "linkSketch",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               },
               {
@@ -2703,12 +3135,20 @@ description: Result of parsing ball-bearing.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "commentStart": 2634,
                       "end": 0,
-                      "name": "nBalls",
+                      "name": {
+                        "commentStart": 2634,
+                        "end": 0,
+                        "name": "nBalls",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -2732,11 +3172,19 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 2519,
                   "end": 0,
-                  "name": "patternCircular3d",
+                  "name": {
+                    "commentStart": 2519,
+                    "end": 0,
+                    "name": "patternCircular3d",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 2519,
                 "end": 0,
@@ -2811,12 +3259,20 @@ description: Result of parsing ball-bearing.kcl
                           "end": 0,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "commentStart": 2786,
                               "end": 0,
-                              "name": "overallThickness",
+                              "name": {
+                                "commentStart": 2786,
+                                "end": 0,
+                                "name": "overallThickness",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "commentStart": 2785,
                             "end": 0,
@@ -2845,11 +3301,19 @@ description: Result of parsing ball-bearing.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "commentStart": 2758,
                       "end": 0,
-                      "name": "offsetPlane",
+                      "name": {
+                        "commentStart": 2758,
+                        "end": 0,
+                        "name": "offsetPlane",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "commentStart": 2758,
                     "end": 0,
@@ -2868,11 +3332,19 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 2744,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 2744,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 2744,
                 "end": 0,
@@ -2938,12 +3410,20 @@ description: Result of parsing ball-bearing.kcl
                       "commentStart": 2862,
                       "end": 0,
                       "left": {
+                        "abs_path": false,
                         "commentStart": 2862,
                         "end": 0,
-                        "name": "outsideDiameter",
+                        "name": {
+                          "commentStart": 2862,
+                          "end": 0,
+                          "name": "outsideDiameter",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -2965,11 +3445,19 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 2814,
                   "end": 0,
-                  "name": "circle",
+                  "name": {
+                    "commentStart": 2814,
+                    "end": 0,
+                    "name": "circle",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 2814,
                 "end": 0,
@@ -3044,12 +3532,20 @@ description: Result of parsing ball-bearing.kcl
                               "commentStart": 2947,
                               "end": 0,
                               "left": {
+                                "abs_path": false,
                                 "commentStart": 2947,
                                 "end": 0,
-                                "name": "shaftDia",
+                                "name": {
+                                  "commentStart": 2947,
+                                  "end": 0,
+                                  "name": "shaftDia",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "/",
                               "right": {
@@ -3070,12 +3566,20 @@ description: Result of parsing ball-bearing.kcl
                             },
                             "operator": "+",
                             "right": {
+                              "abs_path": false,
                               "commentStart": 2962,
                               "end": 0,
-                              "name": "wallThickness",
+                              "name": {
+                                "commentStart": 2962,
+                                "end": 0,
+                                "name": "wallThickness",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 0,
                             "type": "BinaryExpression",
@@ -3083,12 +3587,20 @@ description: Result of parsing ball-bearing.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "commentStart": 2978,
                             "end": 0,
-                            "name": "sphereDia",
+                            "name": {
+                              "commentStart": 2978,
+                              "end": 0,
+                              "name": "sphereDia",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 0,
                           "type": "BinaryExpression",
@@ -3097,11 +3609,19 @@ description: Result of parsing ball-bearing.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "commentStart": 2899,
                       "end": 0,
-                      "name": "circle",
+                      "name": {
+                        "commentStart": 2899,
+                        "end": 0,
+                        "name": "circle",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "commentStart": 2899,
                     "end": 0,
@@ -3119,11 +3639,19 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 2894,
                   "end": 0,
-                  "name": "hole",
+                  "name": {
+                    "commentStart": 2894,
+                    "end": 0,
+                    "name": "hole",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 2894,
                 "end": 0,
@@ -3171,21 +3699,37 @@ description: Result of parsing ball-bearing.kcl
                   "type": "Identifier"
                 },
                 "arg": {
+                  "abs_path": false,
                   "commentStart": 3050,
                   "end": 0,
-                  "name": "overallThickness",
+                  "name": {
+                    "commentStart": 3050,
+                    "end": 0,
+                    "name": "overallThickness",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 3014,
               "end": 0,
-              "name": "extrude",
+              "name": {
+                "commentStart": 3014,
+                "end": 0,
+                "name": "extrude",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 3014,
             "end": 0,
@@ -3193,12 +3737,20 @@ description: Result of parsing ball-bearing.kcl
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "commentStart": 3022,
               "end": 0,
-              "name": "outsideWallSketch",
+              "name": {
+                "commentStart": 3022,
+                "end": 0,
+                "name": "outsideWallSketch",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 0,
@@ -3245,12 +3797,20 @@ description: Result of parsing ball-bearing.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "commentStart": 292,
               "end": 0,
-              "name": "in",
+              "name": {
+                "commentStart": 292,
+                "end": 0,
+                "name": "in",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

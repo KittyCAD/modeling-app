@@ -32,11 +32,19 @@ description: Result of parsing angled_line.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 10,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 10,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 10,
                 "end": 0,
@@ -88,11 +96,19 @@ description: Result of parsing angled_line.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 35,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 35,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 35,
                 "end": 0,
@@ -147,11 +163,19 @@ description: Result of parsing angled_line.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 73,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 73,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 73,
                 "end": 0,
@@ -233,11 +257,19 @@ description: Result of parsing angled_line.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 103,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 103,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 103,
                 "end": 0,
@@ -309,11 +341,19 @@ description: Result of parsing angled_line.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 148,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 148,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 148,
                 "end": 0,
@@ -330,20 +370,36 @@ description: Result of parsing angled_line.kcl
                       {
                         "arguments": [
                           {
+                            "abs_path": false,
                             "commentStart": 199,
                             "end": 0,
-                            "name": "seg01",
+                            "name": {
+                              "commentStart": 199,
+                              "end": 0,
+                              "name": "seg01",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "commentStart": 192,
                           "end": 0,
-                          "name": "segAng",
+                          "name": {
+                            "commentStart": 192,
+                            "end": 0,
+                            "name": "segAng",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "commentStart": 192,
                         "end": 0,
@@ -378,11 +434,19 @@ description: Result of parsing angled_line.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 180,
                   "end": 0,
-                  "name": "angledLine",
+                  "name": {
+                    "commentStart": 180,
+                    "end": 0,
+                    "name": "angledLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 180,
                 "end": 0,
@@ -445,11 +509,19 @@ description: Result of parsing angled_line.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 223,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 223,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 223,
                 "end": 0,
@@ -469,11 +541,19 @@ description: Result of parsing angled_line.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 256,
                   "end": 0,
-                  "name": "close",
+                  "name": {
+                    "commentStart": 256,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 256,
                 "end": 0,
@@ -507,11 +587,19 @@ description: Result of parsing angled_line.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 270,
                   "end": 0,
-                  "name": "extrude",
+                  "name": {
+                    "commentStart": 270,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 270,
                 "end": 0,

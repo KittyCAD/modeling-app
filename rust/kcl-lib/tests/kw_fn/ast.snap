@@ -25,12 +25,20 @@ description: Result of parsing kw_fn.kcl
                     "commentStart": 28,
                     "end": 0,
                     "left": {
+                      "abs_path": false,
                       "commentStart": 28,
                       "end": 0,
-                      "name": "x",
+                      "name": {
+                        "commentStart": 28,
+                        "end": 0,
+                        "name": "x",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "+",
                     "right": {
@@ -108,21 +116,37 @@ description: Result of parsing kw_fn.kcl
                     "commentStart": 66,
                     "end": 0,
                     "left": {
+                      "abs_path": false,
                       "commentStart": 66,
                       "end": 0,
-                      "name": "x",
+                      "name": {
+                        "commentStart": 66,
+                        "end": 0,
+                        "name": "x",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "+",
                     "right": {
+                      "abs_path": false,
                       "commentStart": 70,
                       "end": 0,
-                      "name": "delta",
+                      "name": {
+                        "commentStart": 70,
+                        "end": 0,
+                        "name": "delta",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "BinaryExpression",
@@ -205,11 +229,19 @@ description: Result of parsing kw_fn.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 85,
               "end": 0,
-              "name": "increment",
+              "name": {
+                "commentStart": 85,
+                "end": 0,
+                "name": "increment",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 85,
             "end": 0,
@@ -264,11 +296,19 @@ description: Result of parsing kw_fn.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 106,
               "end": 0,
-              "name": "add",
+              "name": {
+                "commentStart": 106,
+                "end": 0,
+                "name": "add",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 106,
             "end": 0,

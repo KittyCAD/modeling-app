@@ -4,6 +4,7 @@
 // Note that everything in the prelude is treated as exported.
 
 export import * from "std::math"
+export import * from "std::sketch"
 
 /// A number
 ///

@@ -43,12 +43,20 @@ description: Result of parsing assembly_non_default_units.kcl
         "commentStart": 191,
         "end": 0,
         "expression": {
+          "abs_path": false,
           "commentStart": 193,
           "end": 0,
-          "name": "other1",
+          "name": {
+            "commentStart": 193,
+            "end": 0,
+            "name": "other1",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 0,
-          "type": "Identifier",
-          "type": "Identifier"
+          "type": "Name",
+          "type": "Name"
         },
         "start": 0,
         "type": "ExpressionStatement",
@@ -58,12 +66,20 @@ description: Result of parsing assembly_non_default_units.kcl
         "commentStart": 200,
         "end": 0,
         "expression": {
+          "abs_path": false,
           "commentStart": 200,
           "end": 0,
-          "name": "other2",
+          "name": {
+            "commentStart": 200,
+            "end": 0,
+            "name": "other2",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 0,
-          "type": "Identifier",
-          "type": "Identifier"
+          "type": "Name",
+          "type": "Name"
         },
         "start": 0,
         "type": "ExpressionStatement",
@@ -97,12 +113,20 @@ description: Result of parsing assembly_non_default_units.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "commentStart": 30,
               "end": 0,
-              "name": "in",
+              "name": {
+                "commentStart": 30,
+                "end": 0,
+                "name": "in",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

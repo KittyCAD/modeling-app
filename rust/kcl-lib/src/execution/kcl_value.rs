@@ -5,20 +5,16 @@ use schemars::JsonSchema;
 use serde::Serialize;
 
 use crate::{
-    errors::KclErrorDetails,
-    execution::{
+    errors::KclErrorDetails, execution::{
         annotations::{SETTINGS, SETTINGS_UNIT_LENGTH},
-        memory::EnvironmentRef,
-        types::{NumericType, PrimitiveType, RuntimeType, UnitLen},
-        ExecState, ExecutorContext, Face, Helix, ImportedGeometry, MetaSettings, Metadata, Plane, Sketch, Solid,
-        TagIdentifier,
-    },
-    parsing::ast::types::{
+        types::{NumericType, PrimitiveType, RuntimeType},
+        Face, Helix, ImportedGeometry, Metadata, Plane, Sketch, Solid, TagIdentifier,
+    }, parsing::ast::types::{
         DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, TagDeclarator, TagNode,
-    },
-    std::{args::Arg, StdFnProps},
-    CompilationError, KclError, ModuleId, SourceRange,
+    }, std::StdFnProps, CompilationError, KclError, ModuleId, SourceRange
 };
+
+use super::{types::UnitLen, EnvironmentRef, ExecState, MetaSettings};
 
 pub type KclObjectFields = HashMap<String, KclValue>;
 
@@ -115,6 +111,7 @@ pub enum FunctionSource {
     None,
     Std {
         func: crate::std::StdFn,
+        ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,
         props: StdFnProps,
     },
     User {
@@ -568,91 +565,10 @@ impl KclValue {
         Ok(*b)
     }
 
-    /// If this memory item is a function, call it with the given arguments, return its val as Ok.
-    /// If it's not a function, return Err.
-    pub async fn call_fn(
-        &self,
-        args: Vec<Arg>,
-        exec_state: &mut ExecState,
-        ctx: ExecutorContext,
-        source_range: SourceRange,
-    ) -> Result<Option<KclValue>, KclError> {
+    pub fn as_fn(&self) -> Option<&FunctionSource> {
         match self {
-            KclValue::Function {
-                value: FunctionSource::Std { func, props },
-                ..
-            } => {
-                if props.deprecated {
-                    exec_state.warn(CompilationError::err(
-                        source_range,
-                        format!(
-                            "`{}` is deprecated, see the docs for a recommended replacement",
-                            props.name
-                        ),
-                    ));
-                }
-                exec_state.mut_stack().push_new_env_for_rust_call();
-                let args = crate::std::Args::new(
-                    args,
-                    source_range,
-                    ctx.clone(),
-                    exec_state
-                        .mod_local
-                        .pipe_value
-                        .clone()
-                        .map(|v| Arg::new(v, source_range)),
-                );
-                let result = func(exec_state, args).await.map(Some);
-                exec_state.mut_stack().pop_env();
-                result
-            }
-            KclValue::Function {
-                value: FunctionSource::User { ast, memory, .. },
-                ..
-            } => crate::execution::exec_ast::call_user_defined_function(args, *memory, ast, exec_state, &ctx).await,
-            _ => Err(KclError::Semantic(KclErrorDetails {
-                message: "cannot call this because it isn't a function".to_string(),
-                source_ranges: vec![source_range],
-            })),
-        }
-    }
-
-    /// If this is a function, call it by applying keyword arguments.
-    /// If it's not a function, returns an error.
-    pub async fn call_fn_kw(
-        &self,
-        args: crate::std::Args,
-        exec_state: &mut ExecState,
-        ctx: ExecutorContext,
-        callsite: SourceRange,
-    ) -> Result<Option<KclValue>, KclError> {
-        match self {
-            KclValue::Function {
-                value: FunctionSource::Std { func: _, props },
-                ..
-            } => {
-                if props.deprecated {
-                    exec_state.warn(CompilationError::err(
-                        callsite,
-                        format!(
-                            "`{}` is deprecated, see the docs for a recommended replacement",
-                            props.name
-                        ),
-                    ));
-                }
-                todo!("Implement KCL stdlib fns with keyword args");
-            }
-            KclValue::Function {
-                value: FunctionSource::User { ast, memory, .. },
-                ..
-            } => {
-                crate::execution::exec_ast::call_user_defined_function_kw(args.kw_args, *memory, ast, exec_state, &ctx)
-                    .await
-            }
-            _ => Err(KclError::Semantic(KclErrorDetails {
-                message: "cannot call this because it isn't a function".to_string(),
-                source_ranges: vec![callsite],
-            })),
+            KclValue::Function { value, .. } => Some(value),
+            _ => None,
         }
     }
 

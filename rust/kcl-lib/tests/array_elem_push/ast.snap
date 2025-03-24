@@ -86,12 +86,20 @@ description: Result of parsing array_elem_push.kcl
           "init": {
             "arguments": [
               {
+                "abs_path": false,
                 "commentStart": 32,
                 "end": 0,
-                "name": "arr",
+                "name": {
+                  "commentStart": 32,
+                  "end": 0,
+                  "name": "arr",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "commentStart": 37,
@@ -107,11 +115,19 @@ description: Result of parsing array_elem_push.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 27,
               "end": 0,
-              "name": "push",
+              "name": {
+                "commentStart": 27,
+                "end": 0,
+                "name": "push",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 27,
             "end": 0,
@@ -143,12 +159,20 @@ description: Result of parsing array_elem_push.kcl
           "init": {
             "arguments": [
               {
+                "abs_path": false,
                 "commentStart": 56,
                 "end": 0,
-                "name": "new_arr1",
+                "name": {
+                  "commentStart": 56,
+                  "end": 0,
+                  "name": "new_arr1",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "commentStart": 66,
@@ -164,11 +188,19 @@ description: Result of parsing array_elem_push.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 51,
               "end": 0,
-              "name": "push",
+              "name": {
+                "commentStart": 51,
+                "end": 0,
+                "name": "push",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 51,
             "end": 0,
@@ -253,11 +285,19 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 69,
             "end": 0,
-            "name": "assertEqual",
+            "name": {
+              "commentStart": 69,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 69,
           "end": 0,
@@ -337,11 +377,19 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 143,
             "end": 0,
-            "name": "assertEqual",
+            "name": {
+              "commentStart": 143,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 143,
           "end": 0,
@@ -421,11 +469,19 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 217,
             "end": 0,
-            "name": "assertEqual",
+            "name": {
+              "commentStart": 217,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 217,
           "end": 0,
@@ -505,11 +561,19 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 291,
             "end": 0,
-            "name": "assertEqual",
+            "name": {
+              "commentStart": 291,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 291,
           "end": 0,
@@ -589,11 +653,19 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 367,
             "end": 0,
-            "name": "assertEqual",
+            "name": {
+              "commentStart": 367,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 367,
           "end": 0,
@@ -673,11 +745,19 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 441,
             "end": 0,
-            "name": "assertEqual",
+            "name": {
+              "commentStart": 441,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 441,
           "end": 0,
@@ -757,11 +837,19 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 515,
             "end": 0,
-            "name": "assertEqual",
+            "name": {
+              "commentStart": 515,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 515,
           "end": 0,
@@ -841,11 +929,19 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 589,
             "end": 0,
-            "name": "assertEqual",
+            "name": {
+              "commentStart": 589,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 589,
           "end": 0,
@@ -925,11 +1021,19 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 665,
             "end": 0,
-            "name": "assertEqual",
+            "name": {
+              "commentStart": 665,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 665,
           "end": 0,
