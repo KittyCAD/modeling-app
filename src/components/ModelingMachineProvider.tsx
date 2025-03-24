@@ -211,6 +211,22 @@ export const ModelingMachineProvider = ({
               .catch(reportRejection)
           })().catch(reportRejection)
         },
+        execute: ({ context: { store } }) => {
+          // TODO: Remove this async callback.  For some reason eslint wouldn't
+          // let me disable @typescript-eslint/no-misused-promises for the line.
+          ;(async () => {
+            return kclManager
+              .executeCode()
+              .then(() => {
+                if (engineCommandManager.engineConnection?.idleMode) return
+
+                store.videoElement?.play().catch((e) => {
+                  console.warn('Video playing was prevented', e)
+                })
+              })
+              .catch(reportRejection)
+          })().catch(reportRejection)
+        },
         'Set mouse state': assign(({ context, event }) => {
           if (event.type !== 'Set mouse state') return {}
           const nextSegmentHoverMap = () => {

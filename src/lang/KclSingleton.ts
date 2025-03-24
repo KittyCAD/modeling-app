@@ -47,7 +47,7 @@ import {
   sceneInfra,
 } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
-import { deferExecution, isOverlap, uuidv4 } from '@src/lib/utils'
+import { isOverlap, uuidv4 } from '@src/lib/utils'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -310,21 +310,42 @@ export class KclManager {
     this.artifactGraph = execStateArtifactGraph
     this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
     if (this.artifactGraph.size) {
-      // TODO: we wanna remove this logic from xstate, it is racey
-      // This defer is bullshit but playwright wants it
-      // It was like this in engineConnection.ts already
-      deferExecution((a?: null) => {
-        this.engineCommandManager.modelingSend({
-          type: 'Artifact graph emptied',
-        })
-      }, 200)(null)
-    } else {
-      deferExecution((a?: null) => {
-        this.engineCommandManager.modelingSend({
-          type: 'Artifact graph populated',
-        })
-      }, 200)(null)
+      // Hide the planes.
+      await Promise.all([this.hidePlanes(), this.defaultSelectionFilter()])
+    } else if (!this.hasErrors()) {
+      // Only show the planes if there are no errors.
+      // Show the planes and reset.
+      await this.showAndResetPlanes()
     }
+  }
+
+  private async showAndResetPlanes(): Promise<void> {
+    await Promise.all([
+      this.showPlanes(),
+      this.resetCameraPosition(),
+      this.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'set_selection_filter',
+          filter: ['curve'],
+        },
+      }),
+    ])
+  }
+
+  async resetCameraPosition(): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        center: { x: 0, y: 0, z: 0 },
+        vantage: { x: 0, y: -1250, z: 580 },
+        up: { x: 0, y: 0, z: 1 },
+      },
+    })
   }
 
   // Some "objects" have the same source range, such as sketch_mode_start and start_path.
@@ -697,8 +718,9 @@ export class KclManager {
     return rustContext.defaultPlanes
   }
 
-  showPlanes(all = false) {
-    if (!this.defaultPlanes) return Promise.all([])
+  async showPlanes(all = false): Promise<void> {
+    if (!this.defaultPlanes) return
+    this.defaultPlanesShown = true
     const thePromises = [
       this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, false),
       this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, false),
@@ -724,11 +746,12 @@ export class KclManager {
         )
       )
     }
-    return Promise.all(thePromises)
+    await Promise.all(thePromises)
   }
 
-  hidePlanes(all = false) {
-    if (!this.defaultPlanes) return Promise.all([])
+  async hidePlanes(all = false): Promise<void> {
+    if (!this.defaultPlanes) return
+    this.defaultPlanesShown = false
     const thePromises = [
       this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, true),
       this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true),
@@ -745,15 +768,20 @@ export class KclManager {
         this.engineCommandManager.setPlaneHidden(this.defaultPlanes.negXz, true)
       )
     }
-    return Promise.all(thePromises)
+    await Promise.all(thePromises)
   }
-  /** TODO: this function is hiding unawaited asynchronous work */
-  defaultSelectionFilter(selectionsToRestore?: Selections) {
-    setSelectionFilterToDefault(this.engineCommandManager, selectionsToRestore)
+
+  async defaultSelectionFilter(
+    selectionsToRestore?: Selections
+  ): Promise<void> {
+    await setSelectionFilterToDefault(
+      this.engineCommandManager,
+      selectionsToRestore
+    )
   }
-  /** TODO: this function is hiding unawaited asynchronous work */
-  setSelectionFilter(filter: EntityType_type[]) {
-    setSelectionFilter(filter, this.engineCommandManager)
+
+  async setSelectionFilter(filter: EntityType_type[]): Promise<void> {
+    await setSelectionFilter(filter, this.engineCommandManager)
   }
 
   /**
@@ -791,33 +819,29 @@ const defaultSelectionFilter: EntityType_type[] = [
   'object',
 ]
 
-/** TODO: This function is not synchronous but is currently treated as such */
-function setSelectionFilterToDefault(
+async function setSelectionFilterToDefault(
   engineCommandManager: EngineCommandManager,
   selectionsToRestore?: Selections
-) {
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  setSelectionFilter(
+): Promise<void> {
+  await setSelectionFilter(
     defaultSelectionFilter,
     engineCommandManager,
     selectionsToRestore
   )
 }
 
-/** TODO: This function is not synchronous but is currently treated as such */
-function setSelectionFilter(
+async function setSelectionFilter(
   filter: EntityType_type[],
   engineCommandManager: EngineCommandManager,
   selectionsToRestore?: Selections
-) {
+): Promise<void> {
   const { engineEvents } = selectionsToRestore
     ? handleSelectionBatch({
         selections: selectionsToRestore,
       })
     : { engineEvents: undefined }
   if (!selectionsToRestore || !engineEvents) {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    engineCommandManager.sendSceneCommand({
+    await engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: {
@@ -837,7 +861,7 @@ function setSelectionFilter(
     }
   })
   // batch is needed other wise the selection flickers.
-  engineCommandManager
+  await engineCommandManager
     .sendSceneCommand({
       type: 'modeling_cmd_batch_req',
       batch_id: uuidv4(),

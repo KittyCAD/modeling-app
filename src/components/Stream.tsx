@@ -268,13 +268,14 @@ export const Stream = () => {
     if (state.matches('Sketch')) return
     // Only respect default plane selection if we're on a selection command argument
     if (
-      state.matches({ idle: 'showPlanes' }) &&
+      !kclManager.defaultPlanesShown &&
       !(
         commandBarState.matches('Gathering arguments') &&
         commandBarState.context.currentArgument?.inputType === 'selection'
       )
     )
       return
+
     // If we're mousing up from a camera drag, don't send a select event
     if (sceneInfra.camControls.wasDragging === true) return
 
@@ -295,7 +296,7 @@ export const Stream = () => {
       !isNetworkOkay ||
       !videoRef.current ||
       state.matches('Sketch') ||
-      state.matches({ idle: 'showPlanes' }) ||
+      !kclManager.defaultPlanesShown ||
       sceneInfra.camControls.wasDragging === true ||
       !btnName(e.nativeEvent).left
     ) {
