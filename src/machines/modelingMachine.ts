@@ -1,5 +1,9 @@
 import {
+  CallExpression,
+  CallExpressionKw,
   Expr,
+  Literal,
+  Name,
   PathToNode,
   VariableDeclaration,
   VariableDeclarator,
@@ -95,7 +99,10 @@ import {
   deleteSelectionPromise,
   deletionErrorMessage,
 } from 'lang/modifyAst/deleteSelection'
-import { getPathsFromPlaneArtifact } from 'lang/std/artifactGraph'
+import {
+  getArtifactOfTypes,
+  getPathsFromPlaneArtifact,
+} from 'lang/std/artifactGraph'
 import { createProfileStartHandle } from 'clientSideScene/segments'
 import { DRAFT_POINT } from 'clientSideScene/sceneInfra'
 import { setAppearance } from 'lang/modifyAst/setAppearance'
@@ -1905,11 +1912,13 @@ export const modelingMachine = setup({
       }) => {
         if (!input) return new Error('No input provided')
         // Extract inputs
+        console.log('input', input)
         const ast = kclManager.ast
         const {
-          axisOrEdge,
+          mode,
           axis,
           edge,
+          cylinder,
           revolutions,
           angleStart,
           ccw,
@@ -1941,18 +1950,49 @@ export const modelingMachine = setup({
           opInsertIndex = nodeToEdit[1][0]
         }
 
-        const getAxisResult = getAxisExpressionAndIndex(
-          axisOrEdge,
-          axis,
-          edge,
-          ast
-        )
-        if (err(getAxisResult)) return getAxisResult
-        const { generatedAxis } = getAxisResult
-        if (!generatedAxis) {
-          return new Error('Generated axis selection is missing.')
+        let generatedAxis:
+          | Node<CallExpression | CallExpressionKw | Name>
+          | Node<Literal>
+          | undefined
+        let cylinderDeclarator: VariableDeclarator | undefined
+        if (mode !== 'Cylinder') {
+          const getAxisResult = getAxisExpressionAndIndex(mode, axis, edge, ast)
+          if (err(getAxisResult)) return getAxisResult
+          generatedAxis = getAxisResult.generatedAxis
+        } else {
+          if (
+            cylinder &&
+            cylinder.graphSelections[0] &&
+            cylinder.graphSelections[0].artifact?.type === 'wall'
+          ) {
+            console.log('in if')
+            const clonedAstForGetExtrude = structuredClone(ast)
+            const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
+              clonedAstForGetExtrude,
+              cylinder.graphSelections[0],
+              engineCommandManager.artifactGraph
+            )
+            if (!err(extrudeLookupResult)) {
+              const extrudeNode = getNodeFromPath<VariableDeclaration>(
+                ast,
+                extrudeLookupResult.pathToExtrudeNode,
+                'VariableDeclaration'
+              )
+              if (!err(extrudeNode)) {
+                cylinderDeclarator = extrudeNode.node.declaration
+              }
+            }
+          }
         }
 
+        if (!generatedAxis && !cylinderDeclarator) {
+          console.error(
+            'Generated axis or cylinder declarator selection is missing.'
+          )
+          return new Error(
+            'Generated axis or cylinder declarator selection is missing.'
+          )
+        }
         // TODO: figure out if we want to smart insert after the sketch as below
         // *or* after the sweep that consumes the sketch, in which case the below code doesn't work
         // If an axis was selected in KCL, find the max index to insert the revolve command
@@ -1963,6 +2003,7 @@ export const modelingMachine = setup({
         for (const variable of [revolutions, angleStart, radius, length]) {
           // Insert the variable if it exists
           if (
+            variable &&
             'variableName' in variable &&
             variable.variableName &&
             variable.insertIndex !== undefined
@@ -1989,6 +2030,7 @@ export const modelingMachine = setup({
           ccw,
           radius: valueOrVariable(radius),
           axis: generatedAxis,
+          cylinder: cylinderDeclarator,
           length: valueOrVariable(length),
           insertIndex: opInsertIndex,
           variableName: opVariableName,

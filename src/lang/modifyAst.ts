@@ -813,6 +813,7 @@ export function addHelix({
   ccw,
   radius,
   axis,
+  cylinder,
   length,
   insertIndex,
   variableName,
@@ -821,15 +822,29 @@ export function addHelix({
   revolutions: Expr
   angleStart: Expr
   ccw: boolean
-  radius: Expr
-  axis: Node<Literal> | Node<Name | CallExpression | CallExpressionKw>
-  length: Expr
+  radius: Expr | undefined
+  axis:
+    | Node<Literal>
+    | Node<Name | CallExpression | CallExpressionKw>
+    | undefined
+  cylinder: VariableDeclarator | undefined
+  length: Expr | undefined
   insertIndex?: number
   variableName?: string
 }): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   const modifiedAst = structuredClone(node)
   const name =
     variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.HELIX)
+  const extraArgs: CallExpressionKw['arguments'] = []
+  if (axis && length && radius) {
+    extraArgs.push(createLabeledArg('axis', axis))
+    extraArgs.push(createLabeledArg('length', length))
+    extraArgs.push(createLabeledArg('radius', radius))
+  } else if (cylinder) {
+    extraArgs.push(
+      createLabeledArg('cylinder', createLocalName(cylinder.id.name))
+    )
+  }
   const variable = createVariableDeclaration(
     name,
     createCallExpressionStdLibKw(
@@ -839,9 +854,7 @@ export function addHelix({
         createLabeledArg('revolutions', revolutions),
         createLabeledArg('angleStart', angleStart),
         createLabeledArg('ccw', createLiteral(ccw)),
-        createLabeledArg('radius', radius),
-        createLabeledArg('axis', axis),
-        createLabeledArg('length', length),
+        ...extraArgs,
       ]
     )
   )

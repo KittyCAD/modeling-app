@@ -466,16 +466,16 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   }
 
   const axisValue = operation.labeledArgs.axis.value
-  let axisOrEdge: 'Axis' | 'Edge' | undefined
+  let mode: 'Axis' | 'Edge' | undefined
   let axis: string | undefined
   let edge: Selections | undefined
   if (axisValue.type === 'String') {
     // default axis casee
-    axisOrEdge = 'Axis'
+    mode = 'Axis'
     axis = axisValue.value
   } else if (axisValue.type === 'TagIdentifier' && axisValue.artifact_id) {
     // segment case
-    axisOrEdge = 'Edge'
+    mode = 'Edge'
     const artifact = getArtifactOfTypes(
       {
         key: axisValue.artifact_id,
@@ -498,7 +498,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
     }
   } else if (axisValue.type === 'Uuid') {
     // sweepEdge case
-    axisOrEdge = 'Edge'
+    mode = 'Edge'
     const artifact = getArtifactOfTypes(
       {
         key: axisValue.value,
@@ -608,7 +608,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   // with `nodeToEdit` set, which will let the Offset Plane actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Helix'] = {
-    axisOrEdge,
+    mode,
     axis,
     edge,
     revolutions,

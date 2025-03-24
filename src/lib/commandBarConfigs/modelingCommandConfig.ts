@@ -38,6 +38,8 @@ export const EXTRUSION_RESULTS = [
 
 export const COMMAND_APPEARANCE_COLOR_DEFAULT = 'default'
 
+export type HelixModes = 'Axis' | 'Edge' | 'Cylinder'
+
 export type ModelingCommandSchema = {
   'Enter sketch': {}
   Export: {
@@ -97,15 +99,16 @@ export type ModelingCommandSchema = {
     // Enables editing workflow
     nodeToEdit?: PathToNode
     // Flow arg
-    axisOrEdge: 'Axis' | 'Edge'
+    mode: HelixModes
     // KCL stdlib arguments
     axis: string | undefined
     edge: Selections | undefined
+    cylinder: Selections | undefined
     revolutions: KclCommandValue
     angleStart: KclCommandValue
     ccw: boolean
-    radius: KclCommandValue
-    length: KclCommandValue
+    radius: KclCommandValue | undefined
+    length: KclCommandValue | undefined
   }
   'event.parameter.create': {
     value: KclCommandValue
@@ -535,22 +538,21 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
         hidden: true,
       },
-      axisOrEdge: {
+      mode: {
         inputType: 'options',
         required: true,
         defaultValue: 'Axis',
         options: [
           { name: 'Axis', isCurrent: true, value: 'Axis' },
           { name: 'Edge', isCurrent: false, value: 'Edge' },
+          { name: 'Cylinder', isCurrent: false, value: 'Cylinder' },
         ],
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       axis: {
         inputType: 'options',
         required: (commandContext) =>
-          ['Axis'].includes(
-            commandContext.argumentsToSubmit.axisOrEdge as string
-          ),
+          ['Axis'].includes(commandContext.argumentsToSubmit.mode as string),
         options: [
           { name: 'X Axis', value: 'X' },
           { name: 'Y Axis', value: 'Y' },
@@ -559,11 +561,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       edge: {
         required: (commandContext) =>
-          ['Edge'].includes(
-            commandContext.argumentsToSubmit.axisOrEdge as string
-          ),
+          ['Edge'].includes(commandContext.argumentsToSubmit.mode as string),
         inputType: 'selection',
         selectionTypes: ['segment', 'sweepEdge'],
+        multiple: false,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      cylinder: {
+        required: (commandContext) =>
+          ['Cylinder'].includes(
+            commandContext.argumentsToSubmit.mode as string
+          ),
+        inputType: 'selection',
+        selectionTypes: ['wall'],
         multiple: false,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },

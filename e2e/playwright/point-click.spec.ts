@@ -1091,17 +1091,17 @@ openSketch = startSketchOn(XY)
       await toolbar.helixButton.click()
       await cmdBar.expectState({
         stage: 'arguments',
-        currentArgKey: 'axisOrEdge',
+        currentArgKey: 'mode',
         currentArgValue: '',
         headerArguments: {
           AngleStart: '',
-          AxisOrEdge: '',
+          Mode: '',
           CounterClockWise: '',
           Length: '',
           Radius: '',
           Revolutions: '',
         },
-        highlightedHeaderArg: 'axisOrEdge',
+        highlightedHeaderArg: 'mode',
         commandName: 'Helix',
       })
       await cmdBar.progressCmdBar()
@@ -1225,17 +1225,17 @@ openSketch = startSketchOn(XY)
           await toolbar.helixButton.click()
           await cmdBar.expectState({
             stage: 'arguments',
-            currentArgKey: 'axisOrEdge',
+            currentArgKey: 'mode',
             currentArgValue: '',
             headerArguments: {
               AngleStart: '',
-              AxisOrEdge: '',
+              Mode: '',
               CounterClockWise: '',
               Length: '',
               Radius: '',
               Revolutions: '',
             },
-            highlightedHeaderArg: 'axisOrEdge',
+            highlightedHeaderArg: 'mode',
             commandName: 'Helix',
           })
           await cmdBar.selectOption({ name: 'Edge' }).click()
@@ -1255,7 +1255,7 @@ openSketch = startSketchOn(XY)
             stage: 'review',
             headerArguments: {
               AngleStart: '0',
-              AxisOrEdge: 'Edge',
+              Mode: 'Edge',
               Edge: `1 ${selectionType}`,
               CounterClockWise: '',
               Length: '100',
