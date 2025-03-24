@@ -80,7 +80,8 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `yo = 79
+        `@settings(defaultLengthUnit = in)
+  yo = 79
   part001 = startSketchOn(XZ)
     |> startProfileAt([-7.54, -26.74], %)
     |> line(end = [74.36, 130.4], tag = $seg01)
@@ -144,7 +145,8 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+      yo = 5
       part001 = startSketchOn(XZ)
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4], tag = $seg01)
@@ -276,7 +278,8 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+      yo = 5
       part001 = startSketchOn(XZ)
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4])
@@ -386,7 +389,8 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+      yo = 5
       part001 = startSketchOn(XZ)
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4])
@@ -499,7 +503,8 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+      yo = 5
       part001 = startSketchOn(XZ)
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4])
@@ -601,7 +606,8 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+      yo = 5
       part001 = startSketchOn(XZ)
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4])
@@ -687,7 +693,8 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+yo = 5
 part001 = startSketchOn(XZ)
   |> startProfileAt([-7.54, -26.74], %)
   |> line(end = [74.36, 130.4])
@@ -767,7 +774,8 @@ part002 = startSketchOn(XZ)
         await page.addInitScript(async (customCode) => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+      yo = 5
       part001 = startSketchOn(XZ)
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4])
@@ -868,7 +876,8 @@ part002 = startSketchOn(XZ)
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+      yo = 5
       part001 = startSketchOn(XZ)
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4])
@@ -949,7 +958,8 @@ part002 = startSketchOn(XZ)
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+      yo = 5
       part001 = startSketchOn(XZ)
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4])

@@ -873,7 +873,8 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
 
       await u.openDebugPanel()
 
-      const code = `sketch001 = startSketchOn(-XZ)
+      const code = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(-XZ)
 profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
         scale * 34.8
       )}], sketch001)
@@ -903,7 +904,7 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
       await page.mouse.move(700, 200, { steps: 10 })
       await page.mouse.click(700, 200, { delay: 200 })
       await expect(page.locator('.cm-content')).toHaveText(
-        `sketch001 = startSketchOn(-XZ)`
+        `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(-XZ)`
       )
 
       let prevContent = await page.locator('.cm-content').innerText()
@@ -1610,7 +1611,8 @@ profile002 = startProfileAt([117.2, 56.08], sketch001)
       await context.addInitScript(() => {
         localStorage.setItem(
           'persistCode',
-          `sketch001 = startSketchOn(XZ)
+          `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
 profile002 = startProfileAt([40.68, 87.67], sketch001)
   |> xLine(length = 239.17)
 profile003 = startProfileAt([206.63, -56.73], sketch001)
@@ -2178,7 +2180,8 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `sketch001 = startSketchOn(XZ)
+          `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([6.24, 4.54], sketch001)
   |> line(end = [-0.41, 6.99])
   |> line(end = [8.61, 0.74])
@@ -2428,7 +2431,8 @@ profile003 = circle(sketch001, center = [6.92, -4.2], radius = 3.16)
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `sketch001 = startSketchOn(XZ)
+          `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([-63.43, 193.08], sketch001)
   |> line(end = [168.52, 149.87])
   |> line(end = [190.29, -39.18])
@@ -2543,7 +2547,8 @@ extrude001 = extrude(profile003, length = 5)
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `sketch001 = startSketchOn(XZ)
+          `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([85.19, 338.59], sketch001)
   |> line(end = [213.3, -94.52])
   |> line(end = [-230.09, -55.34])
@@ -2585,7 +2590,8 @@ profile002 = startProfileAt([85.81, 52.55], sketch002)
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `thePart = startSketchOn(XZ)
+          `@settings(defaultLengthUnit = in)
+thePart = startSketchOn(XZ)
   |> startProfileAt([7.53, 10.51], %)
   |> line(end = [12.54, 1.83])
   |> line(end = [6.65, -6.91])
@@ -2646,7 +2652,8 @@ extrude001 = extrude(thePart, length = 75)
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `sketch001 = startSketchOn(XZ)
+          `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([6.71, -3.66], sketch001)
   |> line(end = [2.65, 9.02], tag = $seg02)
   |> line(end = [3.73, -9.36], tag = $seg01)
@@ -2819,7 +2826,8 @@ extrude003 = extrude(profile011, length = 2.5)
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `sketch001 = startSketchOn(XZ)
+          `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([34, 42.66], sketch001)
   |> line(end = [102.65, 151.99])
   |> line(end = [76, -138.66])
