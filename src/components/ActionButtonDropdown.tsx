@@ -48,7 +48,6 @@ export function ActionButtonDropdown({
               {props.name ? props.name + ': ' : ''}open menu
             </span>
             <Tooltip
-              delay={0}
               position="bottom"
               hoverOnly
               wrapperClassName="ui-open:!hidden"

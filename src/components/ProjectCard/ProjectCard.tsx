@@ -158,9 +158,7 @@ function ProjectCard({
             }}
             className="!p-0"
           >
-            <Tooltip position="top-right" delay={1000}>
-              Rename project
-            </Tooltip>
+            <Tooltip position="top-right">Rename project</Tooltip>
           </ActionButton>
           <ActionButton
             Element="button"
@@ -176,9 +174,7 @@ function ProjectCard({
               setIsConfirmingDelete(true)
             }}
           >
-            <Tooltip position="top-right" delay={1000}>
-              Delete project
-            </Tooltip>
+            <Tooltip position="top-right">Delete project</Tooltip>
           </ActionButton>
         </div>
       )}

@@ -51,9 +51,7 @@ export const ModelingPaneHeader = ({
         className="!p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 !outline-none"
         onClick={() => onClose()}
       >
-        <Tooltip position="bottom-right" delay={750}>
-          Close
-        </Tooltip>
+        <Tooltip position="bottom-right">Close</Tooltip>
       </ActionButton>
     </div>
   )
