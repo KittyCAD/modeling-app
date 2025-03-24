@@ -3,7 +3,7 @@ import { projectFileRole, modelingFileRole } from 'menu/fileRole'
 import { projectEditRole, modelingEditRole } from 'menu/editRole'
 import { helpRole } from 'menu/helpRole'
 import { projectViewRole, modelingViewRole } from 'menu/viewRole'
-import { modelingDesignRole} from 'menu/designRole'
+import { modelingDesignRole } from 'menu/designRole'
 
 import os from 'node:os'
 import { ZooMenuItemConstructorOptions } from 'menu/roles'

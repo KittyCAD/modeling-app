@@ -64,7 +64,6 @@ export const projectEditRole = (
   }
 }
 
-
 export const modelingEditRole = (
   mainWindow: BrowserWindow
 ): ZooMenuItemConstructorOptions => {
@@ -112,7 +111,7 @@ export const modelingEditRole = (
           })
         },
       },
-      {type:'separator'},
+      { type: 'separator' },
       {
         label: 'Rename project',
         click: () => {

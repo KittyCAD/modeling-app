@@ -68,7 +68,7 @@ export const modelingViewRole = (
           })
         },
       },
-      { type: 'separator'},
+      { type: 'separator' },
       {
         label: 'Orthographic view',
         click: () => {
@@ -85,70 +85,70 @@ export const modelingViewRole = (
           })
         },
       },
-      { type: 'separator'},
+      { type: 'separator' },
       {
         label: 'Standard views',
         submenu: [
           {
             label: 'Right view',
             click: () => {
-            typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Standard views.Right view',
-            })
-            }
+              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+                menuLabel: 'View.Standard views.Right view',
+              })
+            },
           },
           {
             label: 'Back view',
             click: () => {
-            typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Standard views.Back view',
-            })
-            }
+              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+                menuLabel: 'View.Standard views.Back view',
+              })
+            },
           },
 
           {
             label: 'Top view',
             click: () => {
-            typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Standard views.Top view',
-            })
-            }
+              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+                menuLabel: 'View.Standard views.Top view',
+              })
+            },
           },
 
           {
             label: 'Left view',
             click: () => {
-            typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Standard views.Left view',
-            })
-            }
+              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+                menuLabel: 'View.Standard views.Left view',
+              })
+            },
           },
 
           {
             label: 'Front view',
             click: () => {
-            typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Standard views.Front view',
-            })
-            }
+              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+                menuLabel: 'View.Standard views.Front view',
+              })
+            },
           },
 
           {
             label: 'Bottom view',
             click: () => {
-            typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Standard views.Bottom view',
-            })
-            }
+              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+                menuLabel: 'View.Standard views.Bottom view',
+              })
+            },
           },
-          { type: 'separator'},
+          { type: 'separator' },
           {
             label: 'Reset view',
             click: () => {
-            typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Standard views.Reset view',
-            })
-            }
+              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+                menuLabel: 'View.Standard views.Reset view',
+              })
+            },
           },
 
           {
@@ -157,17 +157,17 @@ export const modelingViewRole = (
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Standard views.Center view on selection',
               })
-            }
+            },
           },
           {
             label: 'Refresh',
             click: () => {
-            typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Standard views.Refresh',
-            })
-            }
+              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+                menuLabel: 'View.Standard views.Refresh',
+              })
+            },
           },
-        ]
+        ],
       },
       {
         label: 'Named views',
@@ -178,7 +178,7 @@ export const modelingViewRole = (
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Named views.Create named view',
               })
-            }
+            },
           },
 
           {
@@ -187,7 +187,7 @@ export const modelingViewRole = (
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Named views.List named views',
               })
-            }
+            },
           },
 
           {
@@ -196,61 +196,61 @@ export const modelingViewRole = (
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Named views.Delete named view',
               })
-            }
+            },
           },
-        ]
+        ],
       },
-      {type:'separator'},
+      { type: 'separator' },
       {
-        label:'Panes',
-        submenu : [
+        label: 'Panes',
+        submenu: [
           {
             label: 'Feature tree',
             click: () => {
-            typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Panes.Feature true',
-            })
-            }
+              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+                menuLabel: 'View.Panes.Feature true',
+              })
+            },
           },
           {
             label: 'KCL code',
             click: () => {
-            typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Panes.KCL code',
-            })
-            }
+              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+                menuLabel: 'View.Panes.KCL code',
+              })
+            },
           },
           {
             label: 'Project files',
             click: () => {
-            typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Panes.Project files',
-            })
-            }
+              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+                menuLabel: 'View.Panes.Project files',
+              })
+            },
           },
           {
             label: 'Variables',
             click: () => {
-            typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Panes.Variables',
-            })
-            }
+              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+                menuLabel: 'View.Panes.Variables',
+              })
+            },
           },
           {
             label: 'Logs',
             click: () => {
-            typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Panes.Logs',
-            })
-            }
+              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+                menuLabel: 'View.Panes.Logs',
+              })
+            },
           },
           {
             label: 'Debug',
             click: () => {
-            typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Panes.Debug',
-            })
-            }
+              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+                menuLabel: 'View.Panes.Debug',
+              })
+            },
           },
         ],
       },

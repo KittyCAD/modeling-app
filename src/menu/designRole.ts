@@ -1,4 +1,3 @@
-
 import { BrowserWindow } from 'electron'
 import { typeSafeWebContentsSend } from './channels'
 import { ZooMenuItemConstructorOptions } from './roles'
@@ -17,7 +16,7 @@ export const modelingDesignRole = (
           })
         },
       },
-      {type:'separator'},
+      { type: 'separator' },
       {
         label: 'Create an offset plane',
         click: () => {
@@ -42,7 +41,7 @@ export const modelingDesignRole = (
           })
         },
       },
-      {type: 'separator'},
+      { type: 'separator' },
       {
         label: 'Create an additive feature',
         submenu: [
@@ -78,7 +77,7 @@ export const modelingDesignRole = (
               })
             },
           },
-        ]
+        ],
       },
       {
         label: 'Apply modification feature',
@@ -107,9 +106,9 @@ export const modelingDesignRole = (
               })
             },
           },
-        ]
+        ],
       },
-      {type:'separator'},
+      { type: 'separator' },
       {
         label: 'Create with Zoo Text-To-CAD',
         click: () => {
@@ -126,6 +125,6 @@ export const modelingDesignRole = (
           })
         },
       },
-    ]
+    ],
   }
 }

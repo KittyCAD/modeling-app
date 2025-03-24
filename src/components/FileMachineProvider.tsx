@@ -35,11 +35,13 @@ import { createRouteCommands } from 'lib/commandBarConfigs/routeCommandConfig'
 import { useToken } from 'machines/appMachine'
 import { createNamedViewsCommand } from 'lib/commandBarConfigs/namedViewsConfig'
 import { reportRejection } from 'lib/trap'
+import { useMenuListener } from 'hooks/useMenu'
+import { modelingMenuCallbackMostActions } from 'menu/register'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
-  context: ContextFrom<T>
-  send: Prop<Actor<T>, 'send'>
+    context: ContextFrom<T>
+    send: Prop<Actor<T>, 'send'>
 }
 
 export const FileContext = createContext(
@@ -60,6 +62,9 @@ export const FileMachineProvider = ({
   const [kclSamples, setKclSamples] = React.useState<KclSamplesManifestItem[]>(
     []
   )
+
+  const cb = modelingMenuCallbackMostActions(settings, navigate)
+  useMenuListener(cb)
 
   // Only create the native file menus on desktop
   useEffect(() => {
