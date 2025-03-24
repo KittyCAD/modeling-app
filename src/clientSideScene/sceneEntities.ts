@@ -1126,7 +1126,6 @@ export class SceneEntities {
           intersects: args.intersects,
           sketchNodePaths,
           sketchEntryNodePath,
-          planeNodePath,
           draftInfo: {
             truncatedAst,
             variableDeclarationName,
@@ -2503,7 +2502,6 @@ export class SceneEntities {
             this.onDragSegment({
               sketchNodePaths,
               sketchEntryNodePath: pathToNodeForNewSegment,
-              planeNodePath,
               object: selected,
               intersection2d: intersectionPoint.twoD,
               intersects,
@@ -2516,7 +2514,6 @@ export class SceneEntities {
         this.onDragSegment({
           object: selected,
           intersection2d: intersectionPoint.twoD,
-          planeNodePath,
           intersects,
           sketchNodePaths,
           sketchEntryNodePath,
@@ -2669,7 +2666,6 @@ export class SceneEntities {
     intersection2d: _intersection2d,
     sketchEntryNodePath,
     sketchNodePaths,
-    planeNodePath,
     draftInfo,
     intersects,
     mouseEvent,
@@ -2678,7 +2674,6 @@ export class SceneEntities {
     intersection2d: Vector2
     sketchEntryNodePath: PathToNode
     sketchNodePaths: PathToNode[]
-    planeNodePath: PathToNode
     intersects: Intersection<Object3D<Object3DEventMap>>[]
     draftInfo?: {
       truncatedAst: Node<Program>
