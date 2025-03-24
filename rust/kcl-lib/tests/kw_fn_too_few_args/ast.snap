@@ -25,21 +25,37 @@ description: Result of parsing kw_fn_too_few_args.kcl
                     "commentStart": 24,
                     "end": 0,
                     "left": {
+                      "abs_path": false,
                       "commentStart": 24,
                       "end": 0,
-                      "name": "x",
+                      "name": {
+                        "commentStart": 24,
+                        "end": 0,
+                        "name": "x",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "+",
                     "right": {
+                      "abs_path": false,
                       "commentStart": 28,
                       "end": 0,
-                      "name": "y",
+                      "name": {
+                        "commentStart": 28,
+                        "end": 0,
+                        "name": "y",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "BinaryExpression",
@@ -131,11 +147,19 @@ description: Result of parsing kw_fn_too_few_args.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 41,
               "end": 0,
-              "name": "add",
+              "name": {
+                "commentStart": 41,
+                "end": 0,
+                "name": "add",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 41,
             "end": 0,
