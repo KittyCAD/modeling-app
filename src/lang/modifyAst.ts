@@ -822,7 +822,7 @@ export function addHelix({
   angleStart: Expr
   ccw: boolean
   radius: Expr
-  axis: string
+  axis: Node<Literal> | Node<Name | CallExpression | CallExpressionKw>
   length: Expr
   insertIndex?: number
   variableName?: string
@@ -840,7 +840,7 @@ export function addHelix({
         createLabeledArg('angleStart', angleStart),
         createLabeledArg('ccw', createLiteral(ccw)),
         createLabeledArg('radius', radius),
-        createLabeledArg('axis', createLiteral(axis)),
+        createLabeledArg('axis', axis),
         createLabeledArg('length', length),
       ]
     )
