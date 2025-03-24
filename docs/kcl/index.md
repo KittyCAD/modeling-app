@@ -61,7 +61,6 @@ layout: manual
   * [`bezierCurve`](kcl/bezierCurve)
   * [`ceil`](kcl/ceil)
   * [`chamfer`](kcl/chamfer)
-  * [`circle`](kcl/circle)
   * [`circleThreePoint`](kcl/circleThreePoint)
   * [`close`](kcl/close)
   * [`cm`](kcl/cm)
@@ -145,3 +144,5 @@ layout: manual
   * [`cos`](kcl/std-math-cos)
   * [`sin`](kcl/std-math-sin)
   * [`tan`](kcl/std-math-tan)
+* **std::sketch**
+  * [`circle`](kcl/std-sketch-circle)

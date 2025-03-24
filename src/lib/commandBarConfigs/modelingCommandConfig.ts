@@ -103,7 +103,7 @@ export type ModelingCommandSchema = {
     // KCL stdlib arguments
     revolutions: KclCommandValue
     angleStart: KclCommandValue
-    counterClockWise: boolean
+    ccw: boolean
     radius: KclCommandValue
     axis: string
     length: KclCommandValue
@@ -556,7 +556,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_DEGREE,
         required: true,
       },
-      counterClockWise: {
+      ccw: {
         inputType: 'options',
         required: true,
         defaultValue: false,

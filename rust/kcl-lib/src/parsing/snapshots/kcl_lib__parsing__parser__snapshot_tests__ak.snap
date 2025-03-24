@@ -54,11 +54,19 @@ expression: actual
           }
         ],
         "callee": {
+          "abs_path": false,
           "commentStart": 0,
           "end": 4,
-          "name": "line",
+          "name": {
+            "commentStart": 0,
+            "end": 4,
+            "name": "line",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 0,
-          "type": "Identifier"
+          "type": "Name"
         },
         "commentStart": 0,
         "end": 26,

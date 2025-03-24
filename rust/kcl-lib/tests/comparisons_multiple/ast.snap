@@ -73,11 +73,19 @@ description: Result of parsing comparisons_multiple.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 0,
             "end": 0,
-            "name": "assert",
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "assert",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 0,
           "end": 0,

@@ -5,10 +5,10 @@ description: Variables in memory after executing assembly_mixed_units_cubes.kcl
 {
   "cubeIn": {
     "type": "Module",
-    "value": 3
+    "value": 4
   },
   "cubeMm": {
     "type": "Module",
-    "value": 4
+    "value": 5
   }
 }

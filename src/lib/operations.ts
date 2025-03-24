@@ -488,15 +488,12 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   if (err(angleStart) || 'errors' in angleStart) return baseCommand
 
   // counterClockWise options boolean arg
-  if (
-    !('counterClockWise' in operation.labeledArgs) ||
-    !operation.labeledArgs.counterClockWise
-  )
+  if (!('ccw' in operation.labeledArgs) || !operation.labeledArgs.ccw)
     return baseCommand
-  const counterClockWise =
+  const ccw =
     codeManager.code.slice(
-      operation.labeledArgs.counterClockWise.sourceRange[0],
-      operation.labeledArgs.counterClockWise.sourceRange[1]
+      operation.labeledArgs.ccw.sourceRange[0],
+      operation.labeledArgs.ccw.sourceRange[1]
     ) === 'true'
 
   // radius kcl arg
@@ -537,7 +534,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   const argDefaultValues: ModelingCommandSchema['Helix'] = {
     revolutions,
     angleStart,
-    counterClockWise,
+    ccw,
     radius,
     axis,
     length,
