@@ -822,7 +822,7 @@ export function addHelix({
   angleStart: Expr
   ccw: boolean
   radius: Expr
-  axis: Node<Literal> | Node<Identifier | CallExpression | CallExpressionKw>
+  axis: Node<Literal> | Node<Name | CallExpression | CallExpressionKw>
   length: Expr
   insertIndex?: number
   variableName?: string
