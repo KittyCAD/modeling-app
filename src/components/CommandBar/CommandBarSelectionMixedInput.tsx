@@ -8,6 +8,8 @@ import {
 import { useSelector } from '@xstate/react'
 import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
 import { kclManager } from 'lib/singletons'
+import { reportRejection } from 'lib/trap'
+import { toSync } from 'lib/utils'
 
 const selectionSelector = (snapshot: any) => snapshot?.context.selectionRanges
 
@@ -60,7 +62,9 @@ export default function CommandBarSelectionMixedInput({
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
     arg.selectionFilter && kclManager.setSelectionFilter(arg.selectionFilter)
-    return () => kclManager.defaultSelectionFilter(selection)
+    toSync(() => {
+      return kclManager.defaultSelectionFilter(selection)
+    }, reportRejection)()
   }, [arg.selectionFilter])
 
   function handleChange() {

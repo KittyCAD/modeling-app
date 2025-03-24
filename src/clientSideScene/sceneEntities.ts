@@ -3700,7 +3700,7 @@ function computeSelectionFromSourceRangeAndAST(
   sourceRange: SourceRange,
   ast: Node<Program>
 ): Selections {
-  const artifactGraph = engineCommandManager.artifactGraph
+  const artifactGraph = kclManager.artifactGraph
   const artifact = getArtifactFromRange(sourceRange, artifactGraph) || undefined
   const selection: Selections = {
     graphSelections: [

@@ -39,7 +39,7 @@ export function useEngineConnectionSubscriptions() {
         if (data?.entity_id) {
           const codeRefs = getCodeRefsByArtifactId(
             data.entity_id,
-            engineCommandManager.artifactGraph
+            kclManager.artifactGraph
           )
           if (codeRefs) {
             editorManager.setHighlightRange(codeRefs.map(({ range }) => range))
@@ -140,8 +140,7 @@ export function useEngineConnectionSubscriptions() {
                 })
                 return
               }
-              const artifact =
-                engineCommandManager.artifactGraph.get(planeOrFaceId)
+              const artifact = kclManager.artifactGraph.get(planeOrFaceId)
 
               if (artifact?.type === 'plane') {
                 const planeInfo = await getFaceDetails(planeOrFaceId)
@@ -179,7 +178,7 @@ export function useEngineConnectionSubscriptions() {
               const faceId = planeOrFaceId
               const extrusion = getSweepFromSuspectedSweepSurface(
                 faceId,
-                engineCommandManager.artifactGraph
+                kclManager.artifactGraph
               )
 
               if (
@@ -193,9 +192,9 @@ export function useEngineConnectionSubscriptions() {
 
               const codeRef =
                 artifact.type === 'cap'
-                  ? getCapCodeRef(artifact, engineCommandManager.artifactGraph)
+                  ? getCapCodeRef(artifact, kclManager.artifactGraph)
                   : artifact.type === 'wall'
-                  ? getWallCodeRef(artifact, engineCommandManager.artifactGraph)
+                  ? getWallCodeRef(artifact, kclManager.artifactGraph)
                   : artifact.codeRef
 
               const faceInfo = await getFaceDetails(faceId)
@@ -221,7 +220,7 @@ export function useEngineConnectionSubscriptions() {
                       key: artifact.consumedEdgeId,
                       types: ['segment', 'sweepEdge'],
                     },
-                    engineCommandManager.artifactGraph
+                    kclManager.artifactGraph
                   )
                   if (err(consumedArtifact)) return null
                   if (consumedArtifact.type === 'segment') {
@@ -232,7 +231,7 @@ export function useEngineConnectionSubscriptions() {
                   } else {
                     const segment = getArtifactOfTypes(
                       { key: consumedArtifact.segId, types: ['segment'] },
-                      engineCommandManager.artifactGraph
+                      kclManager.artifactGraph
                     )
                     if (err(segment)) return null
                     chamferInfo = {

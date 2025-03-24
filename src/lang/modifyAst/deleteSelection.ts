@@ -4,7 +4,6 @@ import { deleteFromSelection } from 'lang/modifyAst'
 import {
   codeManager,
   editorManager,
-  engineCommandManager,
   kclManager,
   rustContext,
 } from 'lib/singletons'
@@ -25,7 +24,7 @@ export async function deleteSelectionPromise(
     ast,
     selection,
     kclManager.variables,
-    engineCommandManager.artifactGraph,
+    kclManager.artifactGraph,
     getFaceDetails
   )
   if (err(modifiedAst)) {

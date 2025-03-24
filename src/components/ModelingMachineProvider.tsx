@@ -221,6 +221,22 @@ export const ModelingMachineProvider = ({
               .catch(reportRejection)
           })().catch(reportRejection)
         },
+        execute: ({ context: { store } }) => {
+          // TODO: Remove this async callback.  For some reason eslint wouldn't
+          // let me disable @typescript-eslint/no-misused-promises for the line.
+          ;(async () => {
+            return kclManager
+              .executeCode()
+              .then(() => {
+                if (engineCommandManager.engineConnection?.idleMode) return
+
+                store.videoElement?.play().catch((e) => {
+                  console.warn('Video playing was prevented', e)
+                })
+              })
+              .catch(reportRejection)
+          })().catch(reportRejection)
+        },
         'Set mouse state': assign(({ context, event }) => {
           if (event.type !== 'Set mouse state') return {}
           const nextSegmentHoverMap = () => {
@@ -566,7 +582,7 @@ export const ModelingMachineProvider = ({
             // See if the selection is "close enough" to be coerced to the plane later
             const maybePlane = getPlaneFromArtifact(
               selectionRanges.graphSelections[0].artifact,
-              engineCommandManager.artifactGraph
+              kclManager.artifactGraph
             )
             return !err(maybePlane)
           }
@@ -579,7 +595,7 @@ export const ModelingMachineProvider = ({
             return false
           }
           return !!isCursorInSketchCommandRange(
-            engineCommandManager.artifactGraph,
+            kclManager.artifactGraph,
             selectionRanges
           )
         },
@@ -841,7 +857,7 @@ export const ModelingMachineProvider = ({
             const artifact = selectionRanges.graphSelections[0].artifact
             const plane = getPlaneFromArtifact(
               artifact,
-              engineCommandManager.artifactGraph
+              kclManager.artifactGraph
             )
             if (err(plane)) return Promise.reject(plane)
             // if the user selected a segment, make sure we enter the right sketch as there can be multiple on a plane
@@ -917,14 +933,13 @@ export const ModelingMachineProvider = ({
               info?.sketchDetails?.faceId || ''
             )
 
-            const sketchArtifact =
-              engineCommandManager.artifactGraph.get(mainPath)
+            const sketchArtifact = kclManager.artifactGraph.get(mainPath)
             if (sketchArtifact?.type !== 'path')
               return Promise.reject(new Error('No sketch artifact'))
             const sketchPaths = getPathsFromArtifact({
-              artifact: engineCommandManager.artifactGraph.get(plane.id),
+              artifact: kclManager.artifactGraph.get(plane.id),
               sketchPathToNode: sketchArtifact?.codeRef?.pathToNode,
-              artifactGraph: engineCommandManager.artifactGraph,
+              artifactGraph: kclManager.artifactGraph,
               ast: kclManager.ast,
             })
             if (err(sketchPaths)) return Promise.reject(sketchPaths)
@@ -1743,7 +1758,7 @@ export const ModelingMachineProvider = ({
             prompt: input.prompt,
             selections: input.selection,
             token,
-            artifactGraph: engineCommandManager.artifactGraph,
+            artifactGraph: kclManager.artifactGraph,
             projectName: context.project.name,
           })
         }),
