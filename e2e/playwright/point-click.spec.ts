@@ -1181,14 +1181,14 @@ openSketch = startSketchOn(XY)
     {
       selectionType: 'segment',
       testPoint: { x: 513, y: 221 },
-      expectedOutput: `helix001 = helix(  revolutions = 20,  angleStart = 0,  counterClockWise = true,  radius = 1,  axis = seg01,  length = 100,)`,
-      expectedEditedOutput: `helix001 = helix(  revolutions = 20,  angleStart = 0,  counterClockWise = true,  radius = 1,  axis = seg01,  length = 50,)`,
+      expectedOutput: `helix001 = helix(  revolutions = 20,  angleStart = 0,  ccw = true,  radius = 1,  axis = seg01,  length = 100,)`,
+      expectedEditedOutput: `helix001 = helix(  revolutions = 20,  angleStart = 0,  ccw = true,  radius = 1,  axis = seg01,  length = 50,)`,
     },
     {
       selectionType: 'sweepEdge',
       testPoint: { x: 564, y: 364 },
-      expectedOutput: `helix001 = helix(  revolutions = 20,  angleStart = 0,  counterClockWise = true,  radius = 1,  axis =   getOppositeEdge(seg01),  length = 100,)`,
-      expectedEditedOutput: `helix001 = helix(  revolutions = 20,  angleStart = 0,  counterClockWise = true,  radius = 1,  axis =   getOppositeEdge(seg01),  length = 50,)`,
+      expectedOutput: `helix001 = helix(  revolutions = 20,  angleStart = 0,  ccw = true,  radius = 1,  axis =   getOppositeEdge(seg01),  length = 100,)`,
+      expectedEditedOutput: `helix001 = helix(  revolutions = 20,  angleStart = 0,  ccw = true,  radius = 1,  axis =   getOppositeEdge(seg01),  length = 50,)`,
     },
   ]
   helixCases.map(
@@ -1230,7 +1230,7 @@ openSketch = startSketchOn(XY)
             headerArguments: {
               AngleStart: '',
               AxisOrEdge: '',
-              CounterClockWise: '',
+              Ccw: '',
               Length: '',
               Radius: '',
               Revolutions: '',
@@ -1257,7 +1257,7 @@ openSketch = startSketchOn(XY)
               AngleStart: '0',
               AxisOrEdge: 'Edge',
               Edge: `1 ${selectionType}`,
-              CounterClockWise: '',
+              Ccw: '',
               Length: '100',
               Radius: '1',
               Revolutions: '20',
@@ -1289,7 +1289,7 @@ openSketch = startSketchOn(XY)
             currentArgValue: initialInput,
             headerArguments: {
               AngleStart: '0',
-              CounterClockWise: '',
+              Ccw: '',
               Length: initialInput,
               Radius: '1',
               Revolutions: '20',
@@ -1305,7 +1305,7 @@ openSketch = startSketchOn(XY)
             stage: 'review',
             headerArguments: {
               AngleStart: '0',
-              CounterClockWise: '',
+              Ccw: '',
               Length: newInput,
               Radius: '1',
               Revolutions: '20',
