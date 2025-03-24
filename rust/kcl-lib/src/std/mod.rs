@@ -43,6 +43,7 @@ use crate::{
     docs::StdLibFn,
     errors::KclError,
     execution::{types::PrimitiveType, ExecState, KclValue},
+    parsing::ast::types::Name,
 };
 
 pub type StdFn = fn(
@@ -247,12 +248,14 @@ impl StdLib {
         self.fns.get(name).cloned()
     }
 
-    pub fn get_either(&self, name: &str) -> FunctionKind {
-        if let Some(f) = self.get(name) {
-            FunctionKind::Core(f)
-        } else {
-            FunctionKind::UserDefined
+    pub fn get_either(&self, name: &Name) -> FunctionKind {
+        if let Some(name) = name.local_ident() {
+            if let Some(f) = self.get(name.inner) {
+                return FunctionKind::Core(f);
+            }
         }
+
+        FunctionKind::UserDefined
     }
 
     pub fn contains_key(&self, key: &str) -> bool {

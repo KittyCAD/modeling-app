@@ -21,20 +21,36 @@ expression: actual
             {
               "arguments": [
                 {
+                  "abs_path": false,
                   "commentStart": 31,
                   "end": 33,
-                  "name": "XY",
+                  "name": {
+                    "commentStart": 31,
+                    "end": 33,
+                    "name": "XY",
+                    "start": 31,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 31,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 17,
                 "end": 30,
-                "name": "startSketchOn",
+                "name": {
+                  "commentStart": 17,
+                  "end": 30,
+                  "name": "startSketchOn",
+                  "start": 17,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 17,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 17,
               "end": 34,
@@ -111,11 +127,19 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 42,
                 "end": 48,
-                "name": "circle",
+                "name": {
+                  "commentStart": 42,
+                  "end": 48,
+                  "name": "circle",
+                  "start": 42,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 42,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 42,
               "end": 76,
@@ -150,11 +174,19 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 84,
                 "end": 91,
-                "name": "extrude",
+                "name": {
+                  "commentStart": 84,
+                  "end": 91,
+                  "name": "extrude",
+                  "start": 84,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 84,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 84,
               "end": 104,

@@ -78,13 +78,16 @@ pub(super) fn expect_properties<'a>(
 }
 
 pub(super) fn expect_ident(expr: &Expr) -> Result<&str, KclError> {
-    match expr {
-        Expr::Identifier(id) => Ok(&id.name),
-        e => Err(KclError::Semantic(KclErrorDetails {
-            message: "Unexpected settings value, expected a simple name, e.g., `mm`".to_owned(),
-            source_ranges: vec![e.into()],
-        })),
+    if let Expr::Name(name) = expr {
+        if let Some(name) = name.local_ident() {
+            return Ok(*name);
+        }
     }
+
+    Err(KclError::Semantic(KclErrorDetails {
+        message: "Unexpected settings value, expected a simple name, e.g., `mm`".to_owned(),
+        source_ranges: vec![expr.into()],
+    }))
 }
 
 pub(super) fn get_impl(annotations: &[Node<Annotation>], source_range: SourceRange) -> Result<Option<Impl>, KclError> {

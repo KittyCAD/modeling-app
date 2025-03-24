@@ -18,7 +18,6 @@ use super::{
     DeprecationKind,
 };
 use crate::{
-    docs::StdLibFn,
     errors::{CompilationError, Severity, Tag},
     execution::types::ArrayLen,
     parsing::{
@@ -27,9 +26,9 @@ use crate::{
             BoxNode, CallExpression, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr,
             ExpressionStatement, FunctionExpression, Identifier, IfExpression, ImportItem, ImportSelector,
             ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression,
-            MemberObject, Node, NodeList, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty,
-            Parameter, PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement, Shebang,
-            TagDeclarator, Type, TypeDeclaration, UnaryExpression, UnaryOperator, VariableDeclaration,
+            MemberObject, Name, Node, NodeList, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
+            ObjectProperty, Parameter, PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement,
+            Shebang, TagDeclarator, Type, TypeDeclaration, UnaryExpression, UnaryOperator, VariableDeclaration,
             VariableDeclarator, VariableKind,
         },
         math::BinaryExpressionToken,
@@ -631,7 +630,7 @@ fn operand(i: &mut TokenSlice) -> PResult<BinaryPart> {
                 }
                 Expr::UnaryExpression(x) => BinaryPart::UnaryExpression(x),
                 Expr::Literal(x) => BinaryPart::Literal(x),
-                Expr::Identifier(x) => BinaryPart::Identifier(x),
+                Expr::Name(x) => BinaryPart::Name(x),
                 Expr::BinaryExpression(x) => BinaryPart::BinaryExpression(x),
                 Expr::CallExpression(x) => BinaryPart::CallExpression(x),
                 Expr::CallExpressionKw(x) => BinaryPart::CallExpressionKw(x),
@@ -891,7 +890,7 @@ fn object_property_same_key_and_val(i: &mut TokenSlice) -> PResult<Node<ObjectPr
         key.end,
         key.module_id,
         ObjectProperty {
-            value: Expr::Identifier(Box::new(key.clone())),
+            value: Expr::Name(Box::new(key.clone().into())),
             key,
             digest: None,
         },
@@ -2069,7 +2068,7 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> PResult<Expr> {
         literal.map(Expr::Literal),
         fn_call.map(Box::new).map(Expr::CallExpression),
         fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),
-        nameable_identifier.map(Box::new).map(Expr::Identifier),
+        name.map(Box::new).map(Expr::Name),
         array,
         object.map(Box::new).map(Expr::ObjectExpression),
         pipe_sub.map(Box::new).map(Expr::PipeSubstitution),
@@ -2088,7 +2087,7 @@ fn possible_operands(i: &mut TokenSlice) -> PResult<Expr> {
         member_expression.map(Box::new).map(Expr::MemberExpression),
         literal.map(Expr::Literal),
         fn_call.map(Box::new).map(Expr::CallExpression),
-        nameable_identifier.map(Box::new).map(Expr::Identifier),
+        name.map(Box::new).map(Expr::Name),
         binary_expr_in_parens.map(Box::new).map(Expr::BinaryExpression),
         unnecessarily_bracketed,
     ))
@@ -2358,6 +2357,35 @@ fn nameable_identifier(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
     }
 
     Ok(result)
+}
+
+fn name(i: &mut TokenSlice) -> PResult<Node<Name>> {
+    let abs_path = opt(double_colon).parse_next(i)?;
+    let mut idents: NodeList<Identifier> = separated(1.., nameable_identifier, double_colon)
+        .parse_next(i)
+        .map_err(|e| e.backtrack())?;
+
+    let mut start = idents[0].start;
+    if let Some(abs_path) = &abs_path {
+        start = abs_path.start;
+    }
+    let abs_path = abs_path.is_some();
+
+    let name = idents.pop().unwrap();
+    let end = name.end;
+    let module_id = name.module_id;
+
+    Ok(Node::new(
+        Name {
+            name,
+            path: idents,
+            abs_path,
+            digest: None,
+        },
+        start,
+        end,
+        module_id,
+    ))
 }
 
 impl TryFrom<Token> for Node<TagDeclarator> {
@@ -2671,6 +2699,10 @@ fn plus(i: &mut TokenSlice) -> PResult<Token> {
     one_of((TokenType::Operator, "+")).parse_next(i)
 }
 
+fn double_colon(i: &mut TokenSlice) -> PResult<Token> {
+    TokenType::DoubleColon.parse_from(i)
+}
+
 fn equals(i: &mut TokenSlice) -> PResult<Token> {
     one_of((TokenType::Operator, "="))
         .context(expected("the equals operator, ="))
@@ -2957,76 +2989,6 @@ fn binding_name(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
         .parse_next(i)
 }
 
-/// Typecheck the arguments in a keyword fn call.
-fn typecheck_all_kw(std_fn: Box<dyn StdLibFn>, args: &[&LabeledArg]) -> PResult<()> {
-    for arg in args {
-        let label = &arg.label;
-        let expr = &arg.arg;
-        if let Some(spec_arg) = std_fn.args(false).iter().find(|spec_arg| spec_arg.name == label.name) {
-            typecheck(spec_arg, &expr)?;
-        }
-    }
-    Ok(())
-}
-
-/// Type check the arguments in a positional fn call.
-fn typecheck_all_positional(std_fn: Box<dyn StdLibFn>, args: &[&Expr]) -> PResult<()> {
-    for (i, spec_arg) in std_fn.args(false).iter().enumerate() {
-        let Some(arg) = &args.get(i) else {
-            // The executor checks the number of arguments, so we don't need to check it here.
-            continue;
-        };
-        typecheck(spec_arg, arg)?;
-    }
-    Ok(())
-}
-
-fn typecheck(spec_arg: &crate::docs::StdLibFnArg, arg: &&Expr) -> PResult<()> {
-    match spec_arg.type_.as_ref() {
-        "TagNode" => match &arg {
-            Expr::Identifier(_) => {
-                // These are fine since we want someone to be able to map a variable to a tag declarator.
-            }
-            Expr::TagDeclarator(tag) => {
-                // TODO: Remove this check. It should be redundant.
-                tag.clone()
-                    .into_valid_binding_name()
-                    .map_err(|e| ErrMode::Cut(ContextError::from(e)))?;
-            }
-            e => {
-                return Err(ErrMode::Cut(
-                    CompilationError::fatal(
-                        SourceRange::from(*arg),
-                        format!(
-                            "Expected a tag declarator like `$name`, found {}",
-                            e.human_friendly_type()
-                        ),
-                    )
-                    .into(),
-                ));
-            }
-        },
-        "TagIdentifier" => match &arg {
-            Expr::Identifier(_) => {}
-            Expr::MemberExpression(_) => {}
-            e => {
-                return Err(ErrMode::Cut(
-                    CompilationError::fatal(
-                        SourceRange::from(*arg),
-                        format!(
-                            "Expected a tag identifier like `tagName`, found {}",
-                            e.human_friendly_type()
-                        ),
-                    )
-                    .into(),
-                ));
-            }
-        },
-        _ => {}
-    }
-    Ok(())
-}
-
 /// Either a positional or keyword function call.
 fn fn_call_pos_or_kw(i: &mut TokenSlice) -> PResult<Expr> {
     alt((
@@ -3047,15 +3009,10 @@ fn labelled_fn_call(i: &mut TokenSlice) -> PResult<Expr> {
 }
 
 fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
-    let fn_name = nameable_identifier(i)?;
+    let fn_name = name(i)?;
     opt(whitespace).parse_next(i)?;
     let _ = terminated(open_paren, opt(whitespace)).parse_next(i)?;
     let args = arguments(i)?;
-
-    if let Some(std_fn) = crate::std::get_stdlib_fn(&fn_name.name) {
-        let just_args: Vec<_> = args.iter().collect();
-        typecheck_all_positional(std_fn, &just_args)?;
-    }
     let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
 
     let result = Node::new_node(
@@ -3069,17 +3026,15 @@ fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
         },
     );
 
-    if let Some(suggestion) = super::deprecation(&result.callee.name, DeprecationKind::Function) {
+    let callee_str = result.callee.name.name.to_string();
+    if let Some(suggestion) = super::deprecation(&callee_str, DeprecationKind::Function) {
         ParseContext::warn(
             CompilationError::err(
                 result.as_source_range(),
-                format!(
-                    "Calling `{}` is deprecated, prefer using `{}`.",
-                    result.callee.name, suggestion
-                ),
+                format!("Calling `{}` is deprecated, prefer using `{}`.", callee_str, suggestion),
             )
             .with_suggestion(
-                format!("Replace `{}` with `{}`", result.callee.name, suggestion),
+                format!("Replace `{}` with `{}`", callee_str, suggestion),
                 suggestion,
                 None,
                 Tag::Deprecated,
@@ -3091,7 +3046,7 @@ fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
 }
 
 fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
-    let fn_name = nameable_identifier(i)?;
+    let fn_name = name(i)?;
     opt(whitespace).parse_next(i)?;
     let _ = open_paren.parse_next(i)?;
     ignore_whitespace(i);
@@ -3147,10 +3102,6 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
             Ok((args, non_code_nodes))
         },
     )?;
-    if let Some(std_fn) = crate::std::get_stdlib_fn(&fn_name.name) {
-        let just_args: Vec<_> = args.iter().collect();
-        typecheck_all_kw(std_fn, &just_args)?;
-    }
     ignore_whitespace(i);
     opt(comma_sep).parse_next(i)?;
     let end = close_paren.parse_next(i)?.end;
@@ -3172,17 +3123,15 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
         },
     );
 
-    if let Some(suggestion) = super::deprecation(&result.callee.name, DeprecationKind::Function) {
+    let callee_str = result.callee.name.name.to_string();
+    if let Some(suggestion) = super::deprecation(&callee_str, DeprecationKind::Function) {
         ParseContext::warn(
             CompilationError::err(
                 result.as_source_range(),
-                format!(
-                    "Calling `{}` is deprecated, prefer using `{}`.",
-                    result.callee.name, suggestion
-                ),
+                format!("Calling `{}` is deprecated, prefer using `{}`.", callee_str, suggestion),
             )
             .with_suggestion(
-                format!("Replace `{}` with `{}`", result.callee.name, suggestion),
+                format!("Replace `{}` with `{}`", callee_str, suggestion),
                 suggestion,
                 None,
                 Tag::Deprecated,
@@ -3241,6 +3190,17 @@ mod tests {
                 Err(e) => panic!("Failed test {i}, could not parse function arguments from \"{test}\": {e:?}"),
             };
             assert_eq!(actual.len(), expected_len, "failed test {i}");
+        }
+    }
+
+    #[test]
+    fn parse_names() {
+        for (test, expected_len) in [("someVar", 0), ("::foo", 0), ("foo::bar::baz", 2)] {
+            let tokens = crate::parsing::token::lex(test, ModuleId::default()).unwrap();
+            match name.parse(tokens.as_slice()) {
+                Ok(n) => assert_eq!(n.path.len(), expected_len, "Could not parse name from `{test}`: {n:?}"),
+                Err(e) => panic!("Could not parse name from `{test}`: {e:?}"),
+            }
         }
     }
 

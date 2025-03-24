@@ -85,7 +85,7 @@ type[@isGroup=Type] {
 
 VariableDefinition { identifier }
 
-VariableName { identifier }
+VariableName { identifier ("::" identifier)*}
 
 ArgumentLabel { identifier }
 
@@ -137,7 +137,7 @@ commaSep1NoTrailingComma<term> { term ("," term)* }
   "(" ")"
   "{" "}"
   "[" "]"
-  "," "?" ":" "." ".." ";"
+  "," "?" ":" "." ".." ";" "::"
 }
 
 @external propSource kclHighlight from "./highlight"
