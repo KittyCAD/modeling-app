@@ -65,7 +65,7 @@ export const FileMachineProvider = ({
   )
 
   const filePath = useAbsoluteFilePath()
-  const cb = modelingMenuCallbackMostActions(settings, navigate, filePath)
+  const cb = modelingMenuCallbackMostActions(settings, navigate, filePath, projectData, token)
   useMenuListener(cb)
 
   // Only create the native file menus on desktop

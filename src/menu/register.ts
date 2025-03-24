@@ -2,8 +2,10 @@ import { commandBarActor } from 'machines/commandBarMachine'
 import type { WebContentSendPayload } from '../menu/channels'
 import { PATHS } from 'lib/paths'
 import { authActor } from 'machines/appMachine'
+import { copyFileShareLink } from 'lib/links'
+import { codeManager } from 'lib/singletons'
 
-export function modelingMenuCallbackMostActions (settings, navigate, filePath) {
+export function modelingMenuCallbackMostActions (settings, navigate, filePath, project, token) {
   // Menu listeners
   // TODO: KEVIN do not run if web...
   const cb = (data: WebContentSendPayload) => {
@@ -75,6 +77,12 @@ export function modelingMenuCallbackMostActions (settings, navigate, filePath) {
       })
     } else if (data.menuLabel === 'File.Preferences.Theme color') {
       navigate(filePath + PATHS.SETTINGS_USER + '#themeColor')
+    } else if (data.menuLabel === 'File.Share current part (via Zoo link)') {
+      copyFileShareLink({
+        token: token ?? '',
+        code: codeManager.code,
+        name: project?.name || '',
+      })
     }
   }
   return cb
