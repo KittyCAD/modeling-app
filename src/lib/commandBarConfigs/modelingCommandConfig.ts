@@ -582,6 +582,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       ccw: {
         inputType: 'options',
         required: true,
+        displayName: 'CounterClockWise',
         defaultValue: false,
         options: [
           { name: 'False', value: false },

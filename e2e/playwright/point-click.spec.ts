@@ -1096,7 +1096,7 @@ openSketch = startSketchOn(XY)
         headerArguments: {
           AngleStart: '',
           AxisOrEdge: '',
-          Ccw: '',
+          CounterClockWise: '',
           Length: '',
           Radius: '',
           Revolutions: '',
@@ -1139,7 +1139,7 @@ openSketch = startSketchOn(XY)
         headerArguments: {
           AngleStart: '360',
           Axis: 'X',
-          Ccw: '',
+          CounterClockWise: '',
           Length: initialInput,
           Radius: '5',
           Revolutions: '1',
@@ -1154,7 +1154,7 @@ openSketch = startSketchOn(XY)
         headerArguments: {
           AngleStart: '360',
           Axis: 'X',
-          Ccw: '',
+          CounterClockWise: '',
           Length: newInput,
           Radius: '5',
           Revolutions: '1',
@@ -1230,7 +1230,7 @@ openSketch = startSketchOn(XY)
             headerArguments: {
               AngleStart: '',
               AxisOrEdge: '',
-              Ccw: '',
+              CounterClockWise: '',
               Length: '',
               Radius: '',
               Revolutions: '',
@@ -1257,7 +1257,7 @@ openSketch = startSketchOn(XY)
               AngleStart: '0',
               AxisOrEdge: 'Edge',
               Edge: `1 ${selectionType}`,
-              Ccw: '',
+              CounterClockWise: '',
               Length: '100',
               Radius: '1',
               Revolutions: '20',
@@ -1289,7 +1289,7 @@ openSketch = startSketchOn(XY)
             currentArgValue: initialInput,
             headerArguments: {
               AngleStart: '0',
-              Ccw: '',
+              CounterClockWise: '',
               Length: initialInput,
               Radius: '1',
               Revolutions: '20',
@@ -1305,7 +1305,7 @@ openSketch = startSketchOn(XY)
             stage: 'review',
             headerArguments: {
               AngleStart: '0',
-              Ccw: '',
+              CounterClockWise: '',
               Length: newInput,
               Radius: '1',
               Revolutions: '20',
