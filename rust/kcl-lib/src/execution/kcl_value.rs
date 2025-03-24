@@ -4,17 +4,20 @@ use anyhow::Result;
 use schemars::JsonSchema;
 use serde::Serialize;
 
+use super::{types::UnitLen, EnvironmentRef, ExecState, MetaSettings};
 use crate::{
-    errors::KclErrorDetails, execution::{
+    errors::KclErrorDetails,
+    execution::{
         annotations::{SETTINGS, SETTINGS_UNIT_LENGTH},
         types::{NumericType, PrimitiveType, RuntimeType},
         Face, Helix, ImportedGeometry, Metadata, Plane, Sketch, Solid, TagIdentifier,
-    }, parsing::ast::types::{
+    },
+    parsing::ast::types::{
         DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, TagDeclarator, TagNode,
-    }, std::StdFnProps, CompilationError, KclError, ModuleId, SourceRange
+    },
+    std::StdFnProps,
+    CompilationError, KclError, ModuleId, SourceRange,
 };
-
-use super::{types::UnitLen, EnvironmentRef, ExecState, MetaSettings};
 
 pub type KclObjectFields = HashMap<String, KclValue>;
 

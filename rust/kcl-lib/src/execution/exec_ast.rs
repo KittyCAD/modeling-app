@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
+use super::kcl_value::TypeDef;
 use crate::{
     engine::ExecutionKind,
     errors::{KclError, KclErrorDetails},
@@ -30,8 +31,6 @@ use crate::{
     },
     CompilationError,
 };
-
-use super::kcl_value::TypeDef;
 
 enum StatementKind<'a> {
     Declaration { name: &'a str },
