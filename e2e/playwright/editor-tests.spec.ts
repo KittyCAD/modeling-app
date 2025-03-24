@@ -49,7 +49,7 @@ sketch001 = startSketchOn(XY)
 
     await expect(page.locator('.cm-content')).toHaveText(
       `@settings(defaultLengthUnit = in)
-sketch001 = startSketchOn('XY')
+sketch001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -184,7 +184,7 @@ sketch001 = startSketchOn('XY')
 
     await expect(page.locator('.cm-content')).toHaveText(
       `@settings(defaultLengthUnit = in)
-sketch001 = startSketchOn('XY')
+sketch001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -235,7 +235,7 @@ sketch001 = startSketchOn('XY')
 
     await expect(page.locator('.cm-content')).toHaveText(
       `@settings(defaultLengthUnit = in)
-sketch_001 = startSketchOn('XY')
+sketch_001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -825,7 +825,7 @@ sketch_001 = startSketchOn('XY')
 
       await expect(page.locator('.cm-content')).toHaveText(
         `@settings(defaultLengthUnit = in)
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
         |> startProfileAt([3.14, 12], %)
         |> xLine(%, length = 5) // lin`.replaceAll('\n', '')
       )
@@ -900,7 +900,7 @@ sketch001 = startSketchOn('XZ')
 
       await expect(page.locator('.cm-content')).toHaveText(
         `@settings(defaultLengthUnit = in)
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
         |> startProfileAt([3.14, 12], %)
         |> xLine(%, length = 5) // lin`.replaceAll('\n', '')
       )

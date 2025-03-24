@@ -331,7 +331,7 @@ extrude001 = extrude(sketch001, length = 50)
           localStorage.setItem(
             'persistCode',
             `@settings(defaultLengthUnit = mm)
-sketch002 = startSketchOn('XY')
+sketch002 = startSketchOn(XY)
 profile002 = startProfileAt([72.24, -52.05], sketch002)
   |> angledLine([0, 181.26], %, $rectangleSegmentA001)
   |> angledLine([

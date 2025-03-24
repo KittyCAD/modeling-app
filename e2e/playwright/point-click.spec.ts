@@ -1343,9 +1343,9 @@ loft001 = loft([sketch001, sketch002])
       targetType: 'circle',
       testPoint: { x: 700, y: 250 },
       initialCode: `@settings(defaultLengthUnit = in)
-sketch001 = startSketchOn('YZ')
+sketch001 = startSketchOn(YZ)
 profile001 = circle(sketch001, center = [0, 0], radius = 500)
-sketch002 = startSketchOn('XZ')
+sketch002 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> xLine(length = -500)
   |> tangentialArcTo([-2000, 500], %)`,
@@ -1354,7 +1354,7 @@ sketch002 = startSketchOn('XZ')
       targetType: 'rectangle',
       testPoint: { x: 710, y: 255 },
       initialCode: `@settings(defaultLengthUnit = in)
-sketch001 = startSketchOn('YZ')
+sketch001 = startSketchOn(YZ)
 profile001 = startProfileAt([-400, -400], sketch001)
   |> angledLine([0, 800], %, $rectangleSegmentA001)
   |> angledLine([
@@ -1367,7 +1367,7 @@ profile001 = startProfileAt([-400, -400], sketch001)
      ], %)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-sketch002 = startSketchOn('XZ')
+sketch002 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> xLine(length = -500)
   |> tangentialArcTo([-2000, 500], %)`,
