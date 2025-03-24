@@ -101,7 +101,7 @@ export const modelingViewRole = (
             label: 'Back view',
             click: () => {
             typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Back view',
+              menuLabel: 'View.Standard views.Back view',
             })
             }
           },
@@ -110,7 +110,7 @@ export const modelingViewRole = (
             label: 'Top view',
             click: () => {
             typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Top view',
+              menuLabel: 'View.Standard views.Top view',
             })
             }
           },
@@ -119,7 +119,7 @@ export const modelingViewRole = (
             label: 'Left view',
             click: () => {
             typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Left view',
+              menuLabel: 'View.Standard views.Left view',
             })
             }
           },
@@ -128,7 +128,7 @@ export const modelingViewRole = (
             label: 'Front view',
             click: () => {
             typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Front view',
+              menuLabel: 'View.Standard views.Front view',
             })
             }
           },
@@ -137,7 +137,7 @@ export const modelingViewRole = (
             label: 'Bottom view',
             click: () => {
             typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Bottom view',
+              menuLabel: 'View.Standard views.Bottom view',
             })
             }
           },
@@ -146,7 +146,7 @@ export const modelingViewRole = (
             label: 'Reset view',
             click: () => {
             typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Reset view',
+              menuLabel: 'View.Standard views.Reset view',
             })
             }
           },
@@ -155,7 +155,7 @@ export const modelingViewRole = (
             label: 'Center view on selection',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'View.Center view on selection',
+                menuLabel: 'View.Standard views.Center view on selection',
               })
             }
           },
@@ -163,7 +163,7 @@ export const modelingViewRole = (
             label: 'Refresh',
             click: () => {
             typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Refresh',
+              menuLabel: 'View.Standard views.Refresh',
             })
             }
           },
@@ -176,7 +176,7 @@ export const modelingViewRole = (
             label: 'Create named view',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'View.Create named view',
+                menuLabel: 'View.Named views.Create named view',
               })
             }
           },
@@ -185,7 +185,7 @@ export const modelingViewRole = (
             label: 'List named views',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'View.List named views',
+                menuLabel: 'View.Named views.List named views',
               })
             }
           },
@@ -194,7 +194,7 @@ export const modelingViewRole = (
             label: 'Delete named view',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'View.Delete named view',
+                menuLabel: 'View.Named views.Delete named view',
               })
             }
           },
@@ -208,7 +208,7 @@ export const modelingViewRole = (
             label: 'Feature tree',
             click: () => {
             typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Feature true',
+              menuLabel: 'View.Panes.Feature true',
             })
             }
           },
@@ -216,7 +216,7 @@ export const modelingViewRole = (
             label: 'KCL code',
             click: () => {
             typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.KCL code',
+              menuLabel: 'View.Panes.KCL code',
             })
             }
           },
@@ -224,7 +224,7 @@ export const modelingViewRole = (
             label: 'Project files',
             click: () => {
             typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Project files',
+              menuLabel: 'View.Panes.Project files',
             })
             }
           },
@@ -232,7 +232,7 @@ export const modelingViewRole = (
             label: 'Variables',
             click: () => {
             typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Variables',
+              menuLabel: 'View.Panes.Variables',
             })
             }
           },
@@ -240,7 +240,7 @@ export const modelingViewRole = (
             label: 'Logs',
             click: () => {
             typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Logs',
+              menuLabel: 'View.Panes.Logs',
             })
             }
           },
@@ -248,7 +248,7 @@ export const modelingViewRole = (
             label: 'Debug',
             click: () => {
             typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-              menuLabel: 'View.Debug',
+              menuLabel: 'View.Panes.Debug',
             })
             }
           },
