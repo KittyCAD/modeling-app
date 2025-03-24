@@ -19,8 +19,6 @@ import { LowerRightControls } from 'components/LowerRightControls'
 import { ProjectSearchBar, useProjectSearch } from 'components/ProjectSearchBar'
 import { Project } from 'lib/project'
 import { markOnce } from 'lib/performance'
-import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
-import { useProjectsLoader } from 'hooks/useProjectsLoader'
 import { useProjectsContext } from 'hooks/useProjectsContext'
 import { commandBarActor } from 'machines/commandBarMachine'
 import { useCreateFileLinkQuery } from 'hooks/useCreateFileLinkQueryWatcher'
@@ -31,8 +29,6 @@ import { reportRejection } from 'lib/trap'
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
   const { state, send } = useProjectsContext()
-  const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
-  const { projectsDir } = useProjectsLoader([projectsLoaderTrigger])
   const [readWriteProjectDir, setReadWriteProjectDir] = useState<{
     value: boolean
     error: unknown
