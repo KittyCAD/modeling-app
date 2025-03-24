@@ -83,7 +83,14 @@ import {
   Coords2d,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
-import { getLength, isArray, isClockwise, isOverlap, roundOff } from 'lib/utils'
+import {
+  getAngle,
+  getLength,
+  isArray,
+  isClockwise,
+  isOverlap,
+  roundOff,
+} from 'lib/utils'
 import {
   createArrayExpression,
   createCallExpressionStdLib,
@@ -2576,41 +2583,46 @@ export class SceneEntities {
     if (current.userData.type === STRAIGHT_SEGMENT) {
       const prev = segments[segments.length - 2]
       const disableSnap = mouseEvent.ctrlKey || mouseEvent.altKey
-      const arcTypes = [
-        TANGENTIAL_ARC_TO_SEGMENT,
-        THREE_POINT_ARC_SEGMENT,
-        //ARC_SEGMENT,
-      ]
+      const tanArcTypes = [TANGENTIAL_ARC_TO_SEGMENT, THREE_POINT_ARC_SEGMENT]
+      const arcTypes = [...tanArcTypes, ARC_SEGMENT]
       if (!disableSnap && arcTypes.includes(prev.userData.type)) {
-        const prevSegment = prev.userData.prevSegment
-        const arcInfo = getTangentialArcToInfo({
-          arcStartPoint: prev.userData.from,
-          arcEndPoint: prev.userData.to,
-          tanPreviousPoint: getTanPreviousPoint(prevSegment),
-          obtuse: true,
-        })
-        const tangentAngle =
-          arcInfo.endAngle + (Math.PI / 2) * (arcInfo.ccw ? 1 : -1)
-        const tangentDirection: Coords2d = [
-          Math.cos(tangentAngle),
-          Math.sin(tangentAngle),
-        ]
-        const closestPoint = closestPointOnRay(
-          prev.userData.to,
-          tangentDirection,
-          snappedPoint
-        )
+        let tangentDirection: Coords2d | undefined
+        if (tanArcTypes.includes(prev.userData.type)) {
+          const prevSegment = prev.userData.prevSegment
+          const arcInfo = getTangentialArcToInfo({
+            arcStartPoint: prev.userData.from,
+            arcEndPoint: prev.userData.to,
+            tanPreviousPoint: getTanPreviousPoint(prevSegment),
+            obtuse: true,
+          })
+          const tangentAngle =
+            arcInfo.endAngle + (Math.PI / 2) * (arcInfo.ccw ? 1 : -1)
+          tangentDirection = [Math.cos(tangentAngle), Math.sin(tangentAngle)]
+        } else if (prev.userData.type === ARC_SEGMENT) {
+          const tangentAngle =
+            (getAngle(prev.userData.center, prev.userData.to) * Math.PI) / 180 +
+            (Math.PI / 2) * (prev.userData.ccw ? 1 : -1)
+          tangentDirection = [Math.cos(tangentAngle), Math.sin(tangentAngle)]
+        }
 
-        const forceSnapping = mouseEvent.shiftKey
-        const tolerance_in_screenspace = 10 * window.devicePixelRatio
-        const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+        if (tangentDirection) {
+          const closestPoint = closestPointOnRay(
+            prev.userData.to,
+            tangentDirection,
+            snappedPoint
+          )
 
-        if (
-          forceSnapping ||
-          getLength(closestPoint, snappedPoint) / orthoFactor <
-            tolerance_in_screenspace
-        ) {
-          snappedPoint = closestPoint
+          const forceSnapping = mouseEvent.shiftKey
+          const tolerance_in_screenspace = 10 * window.devicePixelRatio
+          const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+
+          if (
+            forceSnapping ||
+            getLength(closestPoint, snappedPoint) / orthoFactor <
+              tolerance_in_screenspace
+          ) {
+            snappedPoint = closestPoint
+          }
         }
       }
     }
