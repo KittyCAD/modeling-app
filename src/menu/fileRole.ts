@@ -147,20 +147,20 @@ export const modelingFileRole = (
       },
       { type: 'separator' },
       {
-        label : 'Export current part',
+        label: 'Export current part',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'File.Export current part',
           })
-        }
+        },
       },
       {
-        label : 'Share current part (via Zoo link)',
+        label: 'Share current part (via Zoo link)',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'File.Share current part (via Zoo link)',
           })
-        }
+        },
       },
       { type: 'separator' },
       {

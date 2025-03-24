@@ -13,15 +13,7 @@ const typeSafeIpcRendererOn = (
   channel: Channel,
   listener: (event: IpcRendererEvent, ...args: any[]) => Promise<void> | any
 ) => {
-  console.log('[okay] on', channel, listener)
   return ipcRenderer.on(channel, listener)
-}
-
-const typeSafeIpcRendererOff = (
-  channel: Channel,
-  listener: (event: IpcRendererEvent, ...args: any[]) => Promise<void> | any
-) => {
-  return ipcRenderer.removeListener(channel, listener)
 }
 
 const resizeWindow = (width: number, height: number) =>
@@ -186,15 +178,24 @@ const disableMenu = async (menuId: string): Promise<any> => {
   })
 }
 
+/**
+ * Gotcha: Even if the callback function is the same function in JS memory
+ * when passing it over the IPC layer it will not map to the same function.
+ * this means your .on and .off with the same callback function in memory will
+ * not be removed.
+ * To remove the listener call the return value of menuOn. It builds a closure
+ * of the subscription on the electron side and it will let you remove the listener correctly.
+ */
 const menuOn = (callback: (payload: WebContentSendPayload) => void) => {
-  typeSafeIpcRendererOn('menu-action-clicked', (event, data) => {
+  // Build a new subscription function for the closure below
+  const subscription = (event: IpcRendererEvent, data: WebContentSendPayload) =>
     callback(data)
-  })
-}
+  typeSafeIpcRendererOn('menu-action-clicked', subscription)
 
-const menuOff = (listener: any) => {
-  typeSafeIpcRendererOff('menu-action-clicked', listener)
-  console.log('[okay]', ipcRenderer.eventNames())
+  // This is the only way to remove the event listener from the JS side
+  return () => {
+    ipcRenderer.removeListener('menu-action-clicked', subscription)
+  }
 }
 
 contextBridge.exposeInMainWorld('electron', {
@@ -277,5 +278,4 @@ contextBridge.exposeInMainWorld('electron', {
   enableMenu,
   disableMenu,
   menuOn,
-  menuOff,
 })

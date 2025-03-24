@@ -74,7 +74,7 @@ const Home = () => {
         },
       })
     } else if (data.menuLabel === 'File.Open project') {
-      console.log("nice.")
+      console.log('nice.')
       commandBarActor.send({
         type: 'Find and select command',
         data: {
@@ -132,7 +132,6 @@ const Home = () => {
     }
   }
   useMenuListener(cb)
-
 
   // Cancel all KCL executions while on the home page
   useEffect(() => {
