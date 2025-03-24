@@ -468,7 +468,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
       const buffer = await page.screenshot({
         fullPage: true,
       })
-      const screenshot = PNG.sync.read(buffer)
+      const screenshot = await PNG.sync.read(buffer)
       const pixMultiplier: number = await page.evaluate(
         'window.devicePixelRatio'
       )
