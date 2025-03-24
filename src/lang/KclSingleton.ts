@@ -2,7 +2,7 @@ import { executeAst, executeAstMock, lintAst } from 'lang/langHelpers'
 import { handleSelectionBatch, Selections } from 'lib/selections'
 import {
   KCLError,
-  complilationErrorsToDiagnostics,
+  compilationErrorsToDiagnostics,
   kclErrorsToDiagnostics,
 } from './errors'
 import { uuidv4 } from 'lib/utils'
@@ -295,8 +295,8 @@ export class KclManager {
     this._astParseFailed = false
 
     if (err(result)) {
-      const kclerror: KCLError = result as KCLError
-      this.diagnostics = kclErrorsToDiagnostics([kclerror])
+      const kclError: KCLError = result as KCLError
+      this.diagnostics = kclErrorsToDiagnostics([kclError])
       this._astParseFailed = true
 
       await this.checkIfSwitchedFilesShouldClear()
@@ -310,8 +310,8 @@ export class KclManager {
     this._kclErrorsCallBack([])
     this._logsCallBack([])
 
-    this.addDiagnostics(complilationErrorsToDiagnostics(result.errors))
-    this.addDiagnostics(complilationErrorsToDiagnostics(result.warnings))
+    this.addDiagnostics(compilationErrorsToDiagnostics(result.errors))
+    this.addDiagnostics(compilationErrorsToDiagnostics(result.warnings))
     if (result.errors.length > 0) {
       this._astParseFailed = true
 
@@ -420,7 +420,7 @@ export class KclManager {
     this.addDiagnostics(isInterrupted ? [] : kclErrorsToDiagnostics(errors))
     // Add warnings and non-fatal errors
     this.addDiagnostics(
-      isInterrupted ? [] : complilationErrorsToDiagnostics(execState.errors)
+      isInterrupted ? [] : compilationErrorsToDiagnostics(execState.errors)
     )
     this.execState = execState
     if (!errors.length) {
@@ -472,7 +472,7 @@ export class KclManager {
     }
     const newAst = await this.safeParse(newCode)
     if (!newAst) {
-      // By clearning the AST we indicate to our callers that there was an issue with execution and
+      // By clearing the AST we indicate to our callers that there was an issue with execution and
       // the pre-execution state should be restored.
       this.clearAst()
       return
@@ -501,7 +501,7 @@ export class KclManager {
     const ast = await this.safeParse(codeManager.code)
 
     if (!ast) {
-      // By clearning the AST we indicate to our callers that there was an issue with execution and
+      // By clearing the AST we indicate to our callers that there was an issue with execution and
       // the pre-execution state should be restored.
       this.clearAst()
       return
@@ -516,8 +516,8 @@ export class KclManager {
    * This will override the zoom to fit to zoom into the model if the previous AST was empty.
    * Workflows this improves,
    *  When someone comments the entire file then uncomments the entire file it zooms to the model
-   *  When someone CRTL+A and deletes the code then adds the code back it zooms to the model
-   *  When someone CRTL+A and copies new code into the editor it zooms to the model
+   *  When someone CTRL+A and deletes the code then adds the code back it zooms to the model
+   *  When someone CTRL+A and copies new code into the editor it zooms to the model
    */
   tryToZoomToFitOnCodeUpdate(
     ast: Node<Program>,
