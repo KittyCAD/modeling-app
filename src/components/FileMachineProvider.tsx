@@ -37,6 +37,7 @@ import { createNamedViewsCommand } from 'lib/commandBarConfigs/namedViewsConfig'
 import { reportRejection } from 'lib/trap'
 import { useMenuListener } from 'hooks/useMenu'
 import { modelingMenuCallbackMostActions } from 'menu/register'
+import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -63,7 +64,8 @@ export const FileMachineProvider = ({
     []
   )
 
-  const cb = modelingMenuCallbackMostActions(settings, navigate)
+  const filePath = useAbsoluteFilePath()
+  const cb = modelingMenuCallbackMostActions(settings, navigate, filePath)
   useMenuListener(cb)
 
   // Only create the native file menus on desktop

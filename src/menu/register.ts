@@ -3,7 +3,7 @@ import type { WebContentSendPayload } from '../menu/channels'
 import { PATHS } from 'lib/paths'
 import { authActor } from 'machines/appMachine'
 
-export function modelingMenuCallbackMostActions (settings, navigate) {
+export function modelingMenuCallbackMostActions (settings, navigate, filePath) {
   // Menu listeners
   // TODO: KEVIN do not run if web...
   const cb = (data: WebContentSendPayload) => {
@@ -19,7 +19,6 @@ export function modelingMenuCallbackMostActions (settings, navigate) {
         },
       })
     } else if (data.menuLabel === 'File.Open project') {
-      console.log('nice.')
       commandBarActor.send({
         type: 'Find and select command',
         data: {
@@ -52,11 +51,13 @@ export function modelingMenuCallbackMostActions (settings, navigate) {
         },
       })
     } else if (data.menuLabel === 'File.Preferences.User settings') {
-      navigate(PATHS.HOME + PATHS.SETTINGS)
+      navigate(filePath + PATHS.SETTINGS_USER)
     } else if (data.menuLabel === 'File.Preferences.Keybindings') {
-      navigate(PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS)
+      navigate(filePath + PATHS.SETTINGS_KEYBINDINGS)
     } else if (data.menuLabel === 'Edit.Change project directory') {
-      navigate(PATHS.HOME + PATHS.SETTINGS_USER + '#projectDirectory')
+      navigate(filePath + PATHS.SETTINGS_USER + '#projectDirectory')
+    } else if (data.menuLabel === 'File.Preferences.Project settings') {
+      navigate(filePath + PATHS.SETTINGS_PROJECT)
     } else if (data.menuLabel === 'File.Sign out') {
       authActor.send({ type: 'Log out' })
     } else if (
@@ -73,7 +74,7 @@ export function modelingMenuCallbackMostActions (settings, navigate) {
         },
       })
     } else if (data.menuLabel === 'File.Preferences.Theme color') {
-      navigate(PATHS.HOME + PATHS.SETTINGS_USER + '#themeColor')
+      navigate(filePath + PATHS.SETTINGS_USER + '#themeColor')
     }
   }
   return cb
