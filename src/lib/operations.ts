@@ -3,6 +3,7 @@ import {
   Artifact,
   getArtifactOfTypes,
   getCapCodeRef,
+  getSweepEdgeCodeRef,
 } from 'lang/std/artifactGraph'
 import { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { codeManager, engineCommandManager, kclManager } from './singletons'
@@ -458,12 +459,85 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   }
 
   // TODO: find a way to loop over the arguments while keeping it safe
+
+  // axis options string arg
+  if (!('axis' in operation.labeledArgs) || !operation.labeledArgs.axis) {
+    return baseCommand
+  }
+
+  const axisValue = operation.labeledArgs.axis.value
+  let axisOrEdge: 'Axis' | 'Edge' | undefined
+  let axis: string | undefined
+  let edge: Selections | undefined
+  if (axisValue.type === 'String') {
+    // default axis casee
+    axisOrEdge = 'Axis'
+    axis = axisValue.value
+  } else if (axisValue.type === 'TagIdentifier' && axisValue.artifact_id) {
+    // segment case
+    axisOrEdge = 'Edge'
+    const artifact = getArtifactOfTypes(
+      {
+        key: axisValue.artifact_id,
+        types: ['segment'],
+      },
+      engineCommandManager.artifactGraph
+    )
+    if (err(artifact)) {
+      return baseCommand
+    }
+
+    edge = {
+      graphSelections: [
+        {
+          artifact,
+          codeRef: artifact.codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+  } else if (axisValue.type === 'Uuid') {
+    // sweepEdge case
+    axisOrEdge = 'Edge'
+    const artifact = getArtifactOfTypes(
+      {
+        key: axisValue.value,
+        types: ['sweepEdge'],
+      },
+      engineCommandManager.artifactGraph
+    )
+    if (err(artifact)) {
+      return baseCommand
+    }
+
+    const codeRef = getSweepEdgeCodeRef(
+      artifact,
+      engineCommandManager.artifactGraph
+    )
+    if (err(codeRef)) {
+      return baseCommand
+    }
+
+    edge = {
+      graphSelections: [
+        {
+          artifact,
+          codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+  } else {
+    return baseCommand
+  }
+
   // revolutions kcl arg
   if (
     !('revolutions' in operation.labeledArgs) ||
     !operation.labeledArgs.revolutions
-  )
+  ) {
     return baseCommand
+  }
   const revolutions = await stringToKclExpression(
     codeManager.code.slice(
       operation.labeledArgs.revolutions.sourceRange[0],
@@ -476,19 +550,23 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   if (
     !('angleStart' in operation.labeledArgs) ||
     !operation.labeledArgs.angleStart
-  )
+  ) {
     return baseCommand
+  }
   const angleStart = await stringToKclExpression(
     codeManager.code.slice(
       operation.labeledArgs.angleStart.sourceRange[0],
       operation.labeledArgs.angleStart.sourceRange[1]
     )
   )
-  if (err(angleStart) || 'errors' in angleStart) return baseCommand
+  if (err(angleStart) || 'errors' in angleStart) {
+    return baseCommand
+  }
 
   // counterClockWise options boolean arg
-  if (!('ccw' in operation.labeledArgs) || !operation.labeledArgs.ccw)
+  if (!('ccw' in operation.labeledArgs) || !operation.labeledArgs.ccw) {
     return baseCommand
+  }
   const ccw =
     codeManager.code.slice(
       operation.labeledArgs.ccw.sourceRange[0],
@@ -496,46 +574,47 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
     ) === 'true'
 
   // radius kcl arg
-  if (!('radius' in operation.labeledArgs) || !operation.labeledArgs.radius)
+  if (!('radius' in operation.labeledArgs) || !operation.labeledArgs.radius) {
+    console.log(
+      "!('radius' in operation.labeledArgs) || !operation.labeledArgs.radius"
+    )
     return baseCommand
+  }
   const radius = await stringToKclExpression(
     codeManager.code.slice(
       operation.labeledArgs.radius.sourceRange[0],
       operation.labeledArgs.radius.sourceRange[1]
     )
   )
-  if (err(radius) || 'errors' in radius) return baseCommand
-
-  // axis options string arg
-  if (!('axis' in operation.labeledArgs) || !operation.labeledArgs.axis)
+  if (err(radius) || 'errors' in radius) {
     return baseCommand
-  const axis = codeManager.code
-    .slice(
-      operation.labeledArgs.axis.sourceRange[0],
-      operation.labeledArgs.axis.sourceRange[1]
-    )
-    .replaceAll("'", '') // TODO: fix this crap
+  }
 
   // length kcl arg
-  if (!('length' in operation.labeledArgs) || !operation.labeledArgs.length)
+  if (!('length' in operation.labeledArgs) || !operation.labeledArgs.length) {
     return baseCommand
+  }
   const length = await stringToKclExpression(
     codeManager.code.slice(
       operation.labeledArgs.length.sourceRange[0],
       operation.labeledArgs.length.sourceRange[1]
     )
   )
-  if (err(length) || 'errors' in length) return baseCommand
+  if (err(length) || 'errors' in length) {
+    return baseCommand
+  }
 
   // Assemble the default argument values for the Offset Plane command,
   // with `nodeToEdit` set, which will let the Offset Plane actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Helix'] = {
+    axisOrEdge,
+    axis,
+    edge,
     revolutions,
     angleStart,
     ccw,
     radius,
-    axis,
     length,
     nodeToEdit: getNodePathFromSourceRange(
       kclManager.ast,
