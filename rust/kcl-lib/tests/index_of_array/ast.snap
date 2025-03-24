@@ -126,12 +126,20 @@ description: Result of parsing index_of_array.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "commentStart": 118,
               "end": 0,
-              "name": "result0",
+              "name": {
+                "commentStart": 118,
+                "end": 0,
+                "name": "result0",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "commentStart": 127,
@@ -156,11 +164,19 @@ description: Result of parsing index_of_array.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 99,
             "end": 0,
-            "name": "assertLessThanOrEq",
+            "name": {
+              "commentStart": 99,
+              "end": 0,
+              "name": "assertLessThanOrEq",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 99,
           "end": 0,
@@ -178,12 +194,20 @@ description: Result of parsing index_of_array.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "commentStart": 180,
               "end": 0,
-              "name": "result0",
+              "name": {
+                "commentStart": 180,
+                "end": 0,
+                "name": "result0",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "commentStart": 189,
@@ -208,11 +232,19 @@ description: Result of parsing index_of_array.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 158,
             "end": 0,
-            "name": "assertGreaterThanOrEq",
+            "name": {
+              "commentStart": 158,
+              "end": 0,
+              "name": "assertGreaterThanOrEq",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 158,
           "end": 0,
@@ -272,11 +304,19 @@ description: Result of parsing index_of_array.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 252,
               "end": 0,
-              "name": "int",
+              "name": {
+                "commentStart": 252,
+                "end": 0,
+                "name": "int",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 252,
             "end": 0,
@@ -344,12 +384,20 @@ description: Result of parsing index_of_array.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "commentStart": 300,
               "end": 0,
-              "name": "result1",
+              "name": {
+                "commentStart": 300,
+                "end": 0,
+                "name": "result1",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "commentStart": 309,
@@ -374,11 +422,19 @@ description: Result of parsing index_of_array.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 281,
             "end": 0,
-            "name": "assertLessThanOrEq",
+            "name": {
+              "commentStart": 281,
+              "end": 0,
+              "name": "assertLessThanOrEq",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 281,
           "end": 0,
@@ -396,12 +452,20 @@ description: Result of parsing index_of_array.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "commentStart": 363,
               "end": 0,
-              "name": "result1",
+              "name": {
+                "commentStart": 363,
+                "end": 0,
+                "name": "result1",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "commentStart": 372,
@@ -426,11 +490,19 @@ description: Result of parsing index_of_array.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 341,
             "end": 0,
-            "name": "assertGreaterThanOrEq",
+            "name": {
+              "commentStart": 341,
+              "end": 0,
+              "name": "assertGreaterThanOrEq",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 341,
           "end": 0,

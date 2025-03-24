@@ -39,12 +39,20 @@ description: Result of parsing import_foreign.kcl
             "type": "Identifier"
           },
           "init": {
+            "abs_path": false,
             "commentStart": 46,
             "end": 0,
-            "name": "cube",
+            "name": {
+              "commentStart": 46,
+              "end": 0,
+              "name": "cube",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier",
-            "type": "Identifier"
+            "type": "Name",
+            "type": "Name"
           },
           "start": 0,
           "type": "VariableDeclarator"

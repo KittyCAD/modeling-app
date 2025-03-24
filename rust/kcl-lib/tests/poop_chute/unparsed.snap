@@ -13,7 +13,7 @@ front_length = 6
 Fx = 0.5
 Fy = 0.5
 
-sketch001 = startSketchOn('-YZ')
+sketch001 = startSketchOn(-YZ)
   |> startProfileAt([back_walls_width / 2, 0], %)
   |> xLine(length = wall_thickness / 2)
   |> angledLineToX({ angle = 45, to = back_walls_width }, %, $seg01)
@@ -45,7 +45,7 @@ part001 = revolve(
   },
 )
 
-sketch002 = startSketchOn('-YZ')
+sketch002 = startSketchOn(-YZ)
   |> startProfileAt([back_walls_width / 2, 0], %)
   |> xLine(length = wall_thickness / 2)
   |> angledLineToX({ angle = 45, to = back_walls_width }, %, $seg02)

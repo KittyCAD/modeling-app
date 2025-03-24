@@ -2,7 +2,7 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing ssi_pattern.kcl
 ---
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([-4.35, -12.26], %)
   |> yLine(length = 10.2)
   |> line(end = [0.54, -0.03])

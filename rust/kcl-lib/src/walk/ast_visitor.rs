@@ -134,6 +134,10 @@ impl<'tree> Visitable<'tree> for Node<'tree> {
             Node::Ascription(e) => {
                 vec![(&e.expr).into()]
             }
+            Node::Name(n) => Some((&n.name).into())
+                .into_iter()
+                .chain(n.path.iter().map(|n| n.into()))
+                .collect(),
             Node::PipeSubstitution(_)
             | Node::TagDeclarator(_)
             | Node::Identifier(_)

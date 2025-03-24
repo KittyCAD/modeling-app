@@ -27,7 +27,7 @@ segEndY(tag: TagIdentifier): number
 ### Examples
 
 ```js
-exampleSketch = startSketchOn('XZ')
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [20, 0])
   |> line(end = [0, 3], tag = $thing)

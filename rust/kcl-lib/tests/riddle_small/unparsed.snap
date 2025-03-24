@@ -12,7 +12,7 @@ xs = 205804
 ys = 71816
 ox = 35 - (t(xs) % 70)
 oy = 35 - (t(ys) % 70)
-r = startSketchOn('XZ')
+r = startSketchOn(XZ)
   |> startProfileAt([ox, oy], %)
   |> line(end = [1, 0])
   |> line(end = [0, -1])

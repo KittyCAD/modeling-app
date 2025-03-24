@@ -1,7 +1,7 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.2.52"
+version = "0.2.53"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
@@ -120,7 +120,7 @@ approx = "0.5"
 base64 = "0.22.1"
 criterion = { version = "0.5.1", features = ["async_tokio"] }
 expectorate = "1.1.0"
-handlebars = "6.3.0"
+handlebars = "6.3.2"
 image = { version = "0.25.5", default-features = false, features = ["png"] }
 insta = { version = "1.41.1", features = ["json", "filters", "redactions"] }
 kcl-directory-test-macro = { version = "0.1", path = "../kcl-directory-test-macro" }

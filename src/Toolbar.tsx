@@ -206,9 +206,12 @@ export function Toolbar({
                 id={maybeIconConfig[0].id + '-dropdown'}
                 name={maybeIconConfig[0].title}
                 className={
+                  (maybeIconConfig[0].alwaysDark
+                    ? 'dark bg-chalkboard-90 '
+                    : '!bg-transparent ') +
                   'group/wrapper ' +
                   buttonBorderClassName +
-                  ' !bg-transparent relative group !gap-0'
+                  ' relative group !gap-0'
                 }
                 splitMenuItems={maybeIconConfig.map((itemConfig) => ({
                   id: itemConfig.id,
@@ -234,6 +237,7 @@ export function Toolbar({
                     data-testid={maybeIconConfig[0].id}
                     iconStart={{
                       icon: maybeIconConfig[0].icon,
+                      iconColor: maybeIconConfig[0].iconColor,
                       className: iconClassName,
                       bgClassName: bgClassName,
                     }}
@@ -301,6 +305,7 @@ export function Toolbar({
                 data-testid={itemConfig.id}
                 iconStart={{
                   icon: itemConfig.icon,
+                  iconColor: itemConfig.iconColor,
                   className: iconClassName,
                   bgClassName: bgClassName,
                 }}
@@ -392,7 +397,8 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
       inert={false}
       wrapperStyle={
         isDesktop()
-          ? ({ '-webkit-app-region': 'no-drag' } as React.CSSProperties)
+          ? // Without this, the tooltip disappears before being able to click on anything in it
+            ({ WebkitAppRegion: 'no-drag' } as React.CSSProperties)
           : {}
       }
       hoverOnly
@@ -437,7 +443,11 @@ const ToolbarItemTooltipRichContent = ({
     <>
       <div className="rounded-top flex items-center gap-2 pt-3 pb-2 px-2 bg-chalkboard-20/50 dark:bg-chalkboard-80/50">
         {itemConfig.icon && (
-          <CustomIcon className="w-5 h-5" name={itemConfig.icon} />
+          <CustomIcon
+            className="w-5 h-5"
+            style={{ color: itemConfig.iconColor }}
+            name={itemConfig.icon}
+          />
         )}
         <span
           className={`text-sm flex-1 ${

@@ -3,11 +3,20 @@ import { getIdentifiersInProgram } from './getIndentifiersInProgram'
 
 function identifier(name: string, start: number, end: number) {
   return {
-    type: 'Identifier',
-    name,
+    type: 'Name',
     start,
     end,
     commentStart: start,
+
+    abs_path: false,
+    path: [],
+    name: {
+      start,
+      end,
+      commentStart: start,
+      type: 'Identifier',
+      name,
+    },
   }
 }
 

@@ -62,7 +62,7 @@ pub fn lint_call_expressions(exp: Node) -> Result<Vec<Discovered>> {
         return Ok(vec![]);
     };
 
-    match stdlib.get_either(&exp.callee.name) {
+    match stdlib.get_either(&exp.callee) {
         FunctionKind::Core(func) => lint_too_many_args_std_lib_function(func, exp),
         _ => Ok(vec![]),
     }

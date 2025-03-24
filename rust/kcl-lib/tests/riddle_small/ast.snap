@@ -64,21 +64,37 @@ description: Result of parsing riddle_small.kcl
                         "commentStart": 36,
                         "end": 0,
                         "left": {
+                          "abs_path": false,
                           "commentStart": 36,
                           "end": 0,
-                          "name": "ANSWER",
+                          "name": {
+                            "commentStart": 36,
+                            "end": 0,
+                            "name": "ANSWER",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "*",
                         "right": {
+                          "abs_path": false,
                           "commentStart": 45,
                           "end": 0,
-                          "name": "s",
+                          "name": {
+                            "commentStart": 45,
+                            "end": 0,
+                            "name": "s",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 0,
                         "type": "BinaryExpression",
@@ -256,20 +272,36 @@ description: Result of parsing riddle_small.kcl
               "left": {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "commentStart": 104,
                     "end": 0,
-                    "name": "xs",
+                    "name": {
+                      "commentStart": 104,
+                      "end": 0,
+                      "name": "xs",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 102,
                   "end": 0,
-                  "name": "t",
+                  "name": {
+                    "commentStart": 102,
+                    "end": 0,
+                    "name": "t",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 102,
                 "end": 0,
@@ -341,20 +373,36 @@ description: Result of parsing riddle_small.kcl
               "left": {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "commentStart": 127,
                     "end": 0,
-                    "name": "ys",
+                    "name": {
+                      "commentStart": 127,
+                      "end": 0,
+                      "name": "ys",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 125,
                   "end": 0,
-                  "name": "t",
+                  "name": {
+                    "commentStart": 125,
+                    "end": 0,
+                    "name": "t",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 125,
                 "end": 0,
@@ -419,11 +467,19 @@ description: Result of parsing riddle_small.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 141,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 141,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 141,
                 "end": 0,
@@ -437,20 +493,36 @@ description: Result of parsing riddle_small.kcl
                     "commentStart": 181,
                     "elements": [
                       {
+                        "abs_path": false,
                         "commentStart": 182,
                         "end": 0,
-                        "name": "ox",
+                        "name": {
+                          "commentStart": 182,
+                          "end": 0,
+                          "name": "ox",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       {
+                        "abs_path": false,
                         "commentStart": 186,
                         "end": 0,
-                        "name": "oy",
+                        "name": {
+                          "commentStart": 186,
+                          "end": 0,
+                          "name": "oy",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 0,
@@ -467,11 +539,19 @@ description: Result of parsing riddle_small.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 166,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 166,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 166,
                 "end": 0,
@@ -526,11 +606,19 @@ description: Result of parsing riddle_small.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 199,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 199,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 199,
                 "end": 0,
@@ -594,11 +682,19 @@ description: Result of parsing riddle_small.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 223,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 223,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 223,
                 "end": 0,
@@ -662,11 +758,19 @@ description: Result of parsing riddle_small.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 248,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 248,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 248,
                 "end": 0,
@@ -686,11 +790,19 @@ description: Result of parsing riddle_small.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 273,
                   "end": 0,
-                  "name": "close",
+                  "name": {
+                    "commentStart": 273,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 273,
                 "end": 0,
@@ -724,11 +836,19 @@ description: Result of parsing riddle_small.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 287,
                   "end": 0,
-                  "name": "extrude",
+                  "name": {
+                    "commentStart": 287,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 287,
                 "end": 0,

@@ -15,16 +15,22 @@ import { varMentions } from 'lib/varCompletionExtension'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import styles from './CommandBarKclInput.module.css'
-import { createIdentifier, createVariableDeclaration } from 'lang/modifyAst'
+import { createLocalName, createVariableDeclaration } from 'lang/modifyAst'
 import { useCodeMirror } from 'components/ModelingSidebar/ModelingPanes/CodeEditor'
 import { useSelector } from '@xstate/react'
 import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
 import { useSettings } from 'machines/appMachine'
 import toast from 'react-hot-toast'
+import { AnyStateMachine, SnapshotFrom } from 'xstate'
+import { kclManager } from 'lib/singletons'
+import { getNodeFromPath } from 'lang/queryAst'
+import { isPathToNode, SourceRange, VariableDeclarator } from 'lang/wasm'
+import { Node } from '@rust/kcl-lib/bindings/Node'
+import { err } from 'lib/trap'
 
-const machineContextSelector = (snapshot?: {
-  context: Record<string, unknown>
-}) => snapshot?.context
+// TODO: remove the need for this selector once we decouple all actors from React
+const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
+  snapshot?.context
 
 function CommandBarKclInput({
   arg,
@@ -47,6 +53,16 @@ function CommandBarKclInput({
     arg.machineActor,
     machineContextSelector
   )
+  const sourceRangeForPrevVariables = useMemo<SourceRange | undefined>(() => {
+    const nodeToEdit = commandBarState.context.argumentsToSubmit.nodeToEdit
+    const pathToNode = isPathToNode(nodeToEdit) ? nodeToEdit : undefined
+    const node = pathToNode
+      ? getNodeFromPath<Node<VariableDeclarator>>(kclManager.ast, pathToNode)
+      : undefined
+    return !err(node) && node && node.node.type === 'VariableDeclarator'
+      ? [node.node.start, node.node.end, node.node.moduleId]
+      : undefined
+  }, [kclManager.ast, commandBarState.context.argumentsToSubmit.nodeToEdit])
   const defaultValue = useMemo(
     () =>
       arg.defaultValue
@@ -90,21 +106,22 @@ function CommandBarKclInput({
   const editorRef = useRef<HTMLDivElement>(null)
 
   const {
-    prevVariables,
     calcResult,
     newVariableInsertIndex,
     valueNode,
     newVariableName,
     setNewVariableName,
     isNewVariableNameUnique,
+    prevVariables,
   } = useCalculateKclExpression({
     value,
     initialVariableName,
+    sourceRange: sourceRangeForPrevVariables,
   })
 
   const varMentionData: Completion[] = prevVariables.map((v) => ({
     label: v.key,
-    detail: String(roundOff(v.value as number)),
+    detail: String(roundOff(Number(v.value))),
   }))
   const varMentionsExtension = varMentions(varMentionData)
 
@@ -204,7 +221,7 @@ function CommandBarKclInput({
             valueCalculated: calcResult,
             variableName: newVariableName,
             insertIndex: newVariableInsertIndex,
-            variableIdentifierAst: createIdentifier(newVariableName),
+            variableIdentifierAst: createLocalName(newVariableName),
             variableDeclarationAst: createVariableDeclaration(
               newVariableName,
               valueNode
@@ -219,13 +236,18 @@ function CommandBarKclInput({
   }
 
   return (
-    <form id="arg-form" onSubmit={handleSubmit} data-can-submit={canSubmit}>
+    <form
+      id="arg-form"
+      className="mb-2"
+      onSubmit={handleSubmit}
+      data-can-submit={canSubmit}
+    >
       <label className="flex gap-4 items-center mx-4 my-4 border-solid border-b border-chalkboard-50">
         <span
           data-testid="cmd-bar-arg-name"
           className="capitalize text-chalkboard-80 dark:text-chalkboard-20"
         >
-          {arg.name}
+          {arg.displayName || arg.name}
         </span>
         <div
           data-testid="cmd-bar-arg-value"
@@ -249,7 +271,7 @@ function CommandBarKclInput({
         </span>
       </label>
       {createNewVariable ? (
-        <div className="flex mb-2 items-baseline gap-4 mx-4 border-solid border-0 border-b border-chalkboard-50">
+        <div className="flex items-baseline gap-4 mx-4 border-solid border-0 border-b border-chalkboard-50">
           <label
             htmlFor="variable-name"
             className="text-base text-chalkboard-80 dark:text-chalkboard-20"
