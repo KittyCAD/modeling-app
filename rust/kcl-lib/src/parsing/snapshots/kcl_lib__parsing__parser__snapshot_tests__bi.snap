@@ -66,12 +66,20 @@ expression: actual
               "start": 22,
               "type": "ObjectProperty",
               "value": {
+                "abs_path": false,
                 "commentStart": 22,
                 "end": 23,
-                "name": "x",
+                "name": {
+                  "commentStart": 22,
+                  "end": 23,
+                  "name": "x",
+                  "start": 22,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 22,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             },
             {

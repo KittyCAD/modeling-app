@@ -31,7 +31,7 @@ acos(num: number): number
 ### Examples
 
 ```js
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> angledLine({
        angle = toDegrees(acos(0.5)),

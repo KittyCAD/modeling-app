@@ -31,7 +31,7 @@ log10(num: number): number
 ### Examples
 
 ```js
-exampleSketch = startSketchOn("XZ")
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [log10(100), 0])
   |> line(end = [5, 8])

@@ -2,7 +2,7 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing basic_fillet_cube_previous_adjacent.kcl
 ---
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(end = [0, 10], tag = $thing)
   |> line(end = [10, 0], tag = $thing1)

@@ -27,7 +27,7 @@ segLen(tag: TagIdentifier): number
 ### Examples
 
 ```js
-exampleSketch = startSketchOn("XZ")
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> angledLine({ angle = 60, length = 10 }, %, $thing)
   |> tangentialArc({ offset = -120, radius = 5 }, %)

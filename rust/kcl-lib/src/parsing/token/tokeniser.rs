@@ -87,7 +87,8 @@ pub(super) fn token(i: &mut Input<'_>) -> PResult<Token> {
         '?' => question_mark,
         '@' => at,
         '0'..='9' => number,
-        ':' => colon,
+        ';' => semi_colon,
+        ':' => alt((double_colon, colon)),
         '.' => alt((number, double_period, period)),
         '#' => hash,
         '$' => dollar,
@@ -282,6 +283,25 @@ fn colon(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
+fn semi_colon(i: &mut Input<'_>) -> PResult<Token> {
+    let (value, range) = ';'.with_span().parse_next(i)?;
+    Ok(Token::from_range(
+        range,
+        i.state.module_id,
+        TokenType::SemiColon,
+        value.to_string(),
+    ))
+}
+
+fn double_colon(i: &mut Input<'_>) -> PResult<Token> {
+    let (value, range) = "::".with_span().parse_next(i)?;
+    Ok(Token::from_range(
+        range,
+        i.state.module_id,
+        TokenType::DoubleColon,
+        value.to_string(),
+    ))
+}
 fn period(i: &mut Input<'_>) -> PResult<Token> {
     let (value, range) = '.'.with_span().parse_next(i)?;
     Ok(Token::from_range(
@@ -689,7 +709,7 @@ const things = "things"
     #[test]
     fn test_unrecognized_token() {
         let module_id = ModuleId::from_usize(1);
-        let actual = lex("12 ; 8", module_id).unwrap();
+        let actual = lex("12 ~ 8", module_id).unwrap();
 
         use TokenType::*;
         assert_tokens(&[(Number, 0, 2), (Unknown, 3, 4), (Number, 5, 6)], actual.as_slice());

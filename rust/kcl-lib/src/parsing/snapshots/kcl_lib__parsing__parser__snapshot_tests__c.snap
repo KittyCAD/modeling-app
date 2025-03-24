@@ -47,11 +47,19 @@ expression: actual
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 13,
                   "end": 19,
-                  "name": "legLen",
+                  "name": {
+                    "commentStart": 13,
+                    "end": 19,
+                    "name": "legLen",
+                    "start": 13,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 13,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 13,
                 "end": 25,
@@ -80,11 +88,19 @@ expression: actual
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 8,
             "end": 11,
-            "name": "min",
+            "name": {
+              "commentStart": 8,
+              "end": 11,
+              "name": "min",
+              "start": 8,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 8,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 8,
           "end": 29,
