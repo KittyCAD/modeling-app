@@ -7,7 +7,6 @@ use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg
 use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, websocket::ModelingCmdReq, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
-use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
 use kittycad_modeling_cmds::shared::PathSegment;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
@@ -114,6 +113,11 @@ pub async fn involute_circular(exec_state: &mut ExecState, args: Args) -> Result
     })
 }
 
+fn involute_curve(radius: f64, angle: f64) -> (f64, f64)
+{
+    (radius * (angle.cos() + angle * angle.sin()), radius * (angle.sin() - angle * angle.cos()))
+}
+
 /// Extend the current sketch with a new involute circular curve.
 ///
 /// ```no_run
@@ -150,10 +154,11 @@ async fn inner_involute_circular(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let id = exec_state.next_uuid();
+    let angle = Angle::from_degrees(angle);
     let segment = PathSegment::CircularInvolute {
         start_radius: LengthUnit(start_radius),
         end_radius: LengthUnit(end_radius),
-        angle: Angle::from_degrees(angle),
+        angle,
         reverse: reverse.unwrap_or_default(),
     };
 
@@ -167,7 +172,27 @@ async fn inner_involute_circular(
     .await?;
 
     let from = sketch.current_pen_position()?;
-    let end: KPoint3d<LengthUnit> = Default::default(); // ADAM: TODO impl this below.
+    let mut end: KPoint3d<f64> = Default::default(); // ADAM: TODO impl this below.
+    let theta = f64::sqrt(end_radius * end_radius - start_radius * start_radius) / start_radius;
+    let (mut x, y) = involute_curve(start_radius, theta);
+    // end.x = (x * f64::cos(angle) - y * f64::sin(angle)).into();
+    // y += from.y;
+    // end.y = (x * f64::sin(angle) + y * f64::cos(angle)).into();
+
+    end.x = x * angle.to_radians().cos() - y * angle.to_radians().sin();
+    end.y = x * angle.to_radians().sin() + y * angle.to_radians().cos();
+
+    end.x -= start_radius * angle.to_radians().cos();
+    end.y -= start_radius * angle.to_radians().sin();
+
+    if reverse.unwrap_or_default() {
+        end.x = -end.x;
+    }
+
+    end.x += from.x;
+    end.y += from.y;
+
+    
 
     // let path_json = path_to_json();
     // let end = args
@@ -193,8 +218,8 @@ async fn inner_involute_circular(
         base: BasePath {
             from: from.into(),
             to: [
-                end.x.to_millimeters(sketch.units.into()),
-                end.y.to_millimeters(sketch.units.into()),
+                end.x,
+                end.y,
             ],
             tag: tag.clone(),
             units: sketch.units,
