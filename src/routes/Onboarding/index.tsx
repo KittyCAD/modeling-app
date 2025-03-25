@@ -193,7 +193,7 @@ export function OnboardingButtons({
           name="close"
           className="w-5 h-5 rounded-sm bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
         />
-        <Tooltip position="bottom" delay={500}>
+        <Tooltip position="bottom">
           Dismiss <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">esc</kbd>
         </Tooltip>
       </button>

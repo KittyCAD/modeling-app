@@ -403,7 +403,6 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
       position="bottom"
       wrapperClassName={'!p-4 !pointer-events-auto ' + wrapperClassName}
       contentClassName={contentClassName}
-      delay={0}
     >
       {children}
     </Tooltip>

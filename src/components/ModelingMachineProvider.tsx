@@ -119,6 +119,8 @@ import { EXPORT_TOAST_MESSAGES, MAKE_TOAST_MESSAGES } from 'lib/constants'
 import { exportMake } from 'lib/exportMake'
 import { exportSave } from 'lib/exportSave'
 import { Plane } from '@rust/kcl-lib/bindings/Plane'
+import { updateModelingState } from 'lang/modelingWorkflows'
+import { EXECUTION_TYPE_MOCK } from 'lib/constants'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -148,7 +150,6 @@ export const ModelingMachineProvider = ({
       enableSSAO,
     },
   } = useSettings()
-  const previousAllowOrbitInSketchMode = useRef(allowOrbitInSketchMode.current)
   const navigate = useNavigate()
   const { context, send: fileMachineSend } = useFileContext()
   const { file } = useLoaderData() as IndexLoaderData
@@ -1661,7 +1662,7 @@ export const ModelingMachineProvider = ({
               sketchDetails.sketchEntryNodePath
             )
             if (err(doesNeedSplitting)) return reject(doesNeedSplitting)
-            let moddedAst: Program = structuredClone(kclManager.ast)
+            let moddedAst: Node<Program> = structuredClone(kclManager.ast)
             let pathToProfile = sketchDetails.sketchEntryNodePath
             let updatedSketchNodePaths = sketchDetails.sketchNodePaths
             if (doesNeedSplitting) {
@@ -1723,8 +1724,11 @@ export const ModelingMachineProvider = ({
               indexToDelete >= 0 ||
               isLastInPipeThreePointArc
             ) {
-              await kclManager.executeAstMock(moddedAst)
-              await codeManager.updateEditorWithAstAndWriteToFile(moddedAst)
+              await updateModelingState(moddedAst, EXECUTION_TYPE_MOCK, {
+                kclManager,
+                editorManager,
+                codeManager,
+              })
             }
             return {
               updatedEntryNodePath: pathToProfile,
@@ -1841,14 +1845,6 @@ export const ModelingMachineProvider = ({
   }, [engineCommandManager.engineConnection, modelingSend])
 
   useEffect(() => {
-    // Only trigger this if the state actually changes, if it stays the same do not reload the camera
-    if (
-      previousAllowOrbitInSketchMode.current === allowOrbitInSketchMode.current
-    ) {
-      //no op
-      previousAllowOrbitInSketchMode.current = allowOrbitInSketchMode.current
-      return
-    }
     const inSketchMode = modelingState.matches('Sketch')
 
     // If you are in sketch mode and you disable the orbit, return back to the normal view to the target
@@ -1871,9 +1867,7 @@ export const ModelingMachineProvider = ({
     if (inSketchMode) {
       sceneInfra.camControls.enableRotate = allowOrbitInSketchMode.current
     }
-
-    previousAllowOrbitInSketchMode.current = allowOrbitInSketchMode.current
-  }, [allowOrbitInSketchMode])
+  }, [allowOrbitInSketchMode.current])
 
   // Allow using the delete key to delete solids. Backspace only on macOS as Windows and Linux have dedicated Delete
   // `navigator.platform` is deprecated, but the alternative `navigator.userAgentData.platform` is not reliable

@@ -673,7 +673,7 @@ export function sketchOnExtrudedFace(
   sketchPathToNode: PathToNode,
   extrudePathToNode: PathToNode,
   info: ExtrudeFacePlane['faceInfo'] = { type: 'wall' }
-): { modifiedAst: Program; pathToNode: PathToNode } | Error {
+): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
   let _node = { ...node }
   const newSketchName = findUniqueName(
     node,
@@ -822,7 +822,7 @@ export function addHelix({
   angleStart: Expr
   ccw: boolean
   radius: Expr
-  axis: string
+  axis: Node<Literal> | Node<Name | CallExpression | CallExpressionKw>
   length: Expr
   insertIndex?: number
   variableName?: string
@@ -840,7 +840,7 @@ export function addHelix({
         createLabeledArg('angleStart', angleStart),
         createLabeledArg('ccw', createLiteral(ccw)),
         createLabeledArg('radius', radius),
-        createLabeledArg('axis', createLiteral(axis)),
+        createLabeledArg('axis', axis),
         createLabeledArg('length', length),
       ]
     )
@@ -1375,7 +1375,7 @@ export function moveValueIntoNewVariablePath(
   pathToNode: PathToNode,
   variableName: string
 ): {
-  modifiedAst: Program
+  modifiedAst: Node<Program>
   pathToReplacedNode?: PathToNode
 } {
   const meta = isNodeSafeToReplacePath(ast, pathToNode)
@@ -1975,11 +1975,11 @@ making it safe for later code that uses part001 (the extrude in this example)
  * 
  */
 export function splitPipedProfile(
-  ast: Program,
+  ast: Node<Program>,
   pathToPipe: PathToNode
 ):
   | {
-      modifiedAst: Program
+      modifiedAst: Node<Program>
       pathToProfile: PathToNode
       pathToPlane: PathToNode
     }
