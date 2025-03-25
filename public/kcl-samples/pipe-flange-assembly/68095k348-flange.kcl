@@ -1,7 +1,8 @@
+// 68095k348 flange
+// flange used for mating two pipes together in the pipe flange assembly.
+
 // set units
 @settings(defaultLengthUnit = in)
-
-// 68095k348 flange
 
 // import constants
 import pipeDiameter, mountingHoleDiameter, mountingHolePlacementDiameter, flangeDiameter, flangeTotalThickness, flangeBackHeight, flangeFrontHeight, flangeBaseThickness, flangeBackDiameter, flangeFrontDiameter from "globals.kcl"

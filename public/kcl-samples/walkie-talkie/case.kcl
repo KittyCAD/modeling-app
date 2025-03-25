@@ -1,7 +1,8 @@
+// Walkie talkie case
+// the plastic case for the front of the walkie talkie
+
 // set units
 @settings(defaultLengthUnit = in)
-
-// Walkie talkie case
 
 // import constants and Zoo logo
 import width, height, chamferLength, offset, screenWidth, screenHeight, screenYPosition, screenDepth, speakerBoxWidth, speakerBoxHeight, squareHoleSideLength, caseTolerance from "globals.kcl"

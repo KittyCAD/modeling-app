@@ -1,7 +1,8 @@
+// Walkie talkie antenna
+// antenna for the walkie talkie assembly
+
 // Set units
 @settings(defaultLengthUnit = in)
-
-// Antenna
 
 // import constants
 import antennaLength, antennaBaseWidth, antennaBaseHeight, antennaTopWidth, antennaTopHeight from "globals.kcl"

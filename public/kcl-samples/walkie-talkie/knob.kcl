@@ -1,7 +1,8 @@
+// Walkie talkie frequency knob
+// the frequency knob for the walkie talkie assembly
+
 // set units
 @settings(defaultLengthUnit = in)
-
-// Walkie Talkie Frequency Knob
 
 // import constants
 import width, thickness, height, knobDiameter, knobHeight, knobRadius from "globals.kcl"

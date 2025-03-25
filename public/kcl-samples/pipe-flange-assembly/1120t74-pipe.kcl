@@ -1,7 +1,8 @@
+// Pipe
+// piping for the pipe flange assembly
+
 // set units
 @settings(defaultLengthUnit = in)
-
-// 1120t74 Pipe
 
 // import constants
 import pipeInnerDiameter, pipeOuterDiameter, pipeLength from "globals.kcl"

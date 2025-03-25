@@ -1,7 +1,8 @@
+// Walkie talkie body
+// the main body of the walkie talkie assembly
+
 // set units
 @settings(defaultLengthUnit = in)
-
-// Walkie talkie body
 
 // import constants
 import height, width, thickness, chamferLength, offset, screenWidth, screenHeight, screenYPosition, screenDepth, speakerBoxWidth, speakerBoxHeight from "globals.kcl"

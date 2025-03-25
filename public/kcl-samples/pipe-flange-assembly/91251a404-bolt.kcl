@@ -1,7 +1,9 @@
+// 91251A404 Socket Head Cap Screw
+// screw for mating the flanges together in the pipe flange assembly
+
 // set units
 @settings(defaultLengthUnit = in)
 
-// 91251A404 Socket Head Cap Screw
 
 // import constants
 import boltDiameter, boltLength, boltHeadLength, boltHeadDiameter, boltHexDrive, boltHexFlatLength, boltThreadLength from "globals.kcl"

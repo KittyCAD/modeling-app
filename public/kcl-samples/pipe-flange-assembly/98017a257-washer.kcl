@@ -1,7 +1,8 @@
+// 98017A257 Washer
+// washer for the screws in the pipe flange assembly. 
+
 // set units
 @settings(defaultLengthUnit = in)
-
-// 98017A257 Washer
 
 // import constants
 import washerInnerDia, washerOuterDia, washerThickness from "globals.kcl"
