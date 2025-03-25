@@ -55,6 +55,7 @@ export const FileMachineProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  window.dog = commandBarActor
   const navigate = useNavigate()
   const location = useLocation()
   const token = useToken()
@@ -403,7 +404,14 @@ export const FileMachineProvider = ({
     }
   )
 
-  const cb = modelingMenuCallbackMostActions(settings, navigate, filePath, projectData, token, send)
+  const cb = modelingMenuCallbackMostActions(
+    settings,
+    navigate,
+    filePath,
+    projectData,
+    token,
+    send
+  )
   useMenuListener(cb)
 
   const kclCommandMemo = useMemo(

@@ -5,7 +5,14 @@ import { authActor } from 'machines/appMachine'
 import { copyFileShareLink } from 'lib/links'
 import { codeManager } from 'lib/singletons'
 
-export function modelingMenuCallbackMostActions (settings, navigate, filePath, project, token, fileSend) {
+export function modelingMenuCallbackMostActions(
+  settings,
+  navigate,
+  filePath,
+  project,
+  token,
+  fileSend
+) {
   // Menu listeners
   // TODO: KEVIN do not run if web...
   const cb = (data: WebContentSendPayload) => {
@@ -90,19 +97,34 @@ export function modelingMenuCallbackMostActions (settings, navigate, filePath, p
         type: 'Find and select command',
         data: {
           groupId: 'modeling',
-          name: 'Export'
-        }
+          name: 'Export',
+        },
       })
     } else if (data.menuLabel === 'File.Load a sample model') {
       commandBarActor.send({
-                  type: 'Find and select command',
-                  data: {
-                    groupId: 'code',
-                    name: 'open-kcl-example',
-                  },
-                })
+        type: 'Find and select command',
+        data: {
+          groupId: 'code',
+          name: 'open-kcl-example',
+        },
+      })
     } else if (data.menuLabel === 'File.Create new file') {
       // NO OP. A safe command bar create new file is not implemented yet.
+    } else if (data.menuLabel === 'Edit.Modify with Zoo Text-To-CAD') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: { name: 'Prompt-to-edit', groupId: 'modeling' },
+      })
+    } else if (data.menuLabel === 'Edit.Edit parameter') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: { name: 'event.parameter.edit', groupId: 'modeling' },
+      })
+  } else if (data.menuLabel === 'Edit.Format code') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: { name: 'format-code', groupId: 'code' },
+      })
     }
   }
   return cb
