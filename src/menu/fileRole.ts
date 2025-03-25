@@ -22,6 +22,7 @@ export const projectFileRole = (
       },
       {
         label: 'Open project',
+        id: 'File.Open project',
         accelerator: 'CommandOrControl+P',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -37,6 +38,7 @@ export const projectFileRole = (
         submenu: [
           {
             label: 'User settings',
+            id: 'File.Preferences.User settings',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'File.Preferences.User settings',
@@ -45,6 +47,7 @@ export const projectFileRole = (
           },
           {
             label: 'Keybindings',
+            id: 'File.Preferences.Keybindings',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'File.Preferences.Keybindings',
