@@ -7,8 +7,8 @@ description: Operations executed walkie-talkie.kcl
     "type": "UserDefinedFunctionCall",
     "name": "body",
     "functionSourceRange": [
-      312,
-      2739,
+      359,
+      2786,
       5
     ],
     "unlabeledArg": null,
@@ -353,8 +353,8 @@ description: Operations executed walkie-talkie.kcl
     "type": "UserDefinedFunctionCall",
     "name": "body",
     "functionSourceRange": [
-      312,
-      2739,
+      359,
+      2786,
       5
     ],
     "unlabeledArg": null,
@@ -699,8 +699,8 @@ description: Operations executed walkie-talkie.kcl
     "type": "UserDefinedFunctionCall",
     "name": "antenna",
     "functionSourceRange": [
-      210,
-      995,
+      266,
+      1051,
       8
     ],
     "unlabeledArg": null,
@@ -802,8 +802,8 @@ description: Operations executed walkie-talkie.kcl
     "type": "UserDefinedFunctionCall",
     "name": "case",
     "functionSourceRange": [
-      399,
-      3228,
+      454,
+      3283,
       6
     ],
     "unlabeledArg": null,
@@ -2306,8 +2306,8 @@ description: Operations executed walkie-talkie.kcl
     "type": "UserDefinedFunctionCall",
     "name": "knob",
     "functionSourceRange": [
-      245,
-      695,
+      298,
+      748,
       10
     ],
     "unlabeledArg": null,
