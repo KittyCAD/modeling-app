@@ -2603,6 +2603,7 @@ export class SceneEntities {
           if (snapDirection) {
             const SNAP_TOLERANCE_PIXELS = 12 * window.devicePixelRatio
             const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+
             if (intersectsXAxis || intersectsYAxis) {
               // See if snapDirection intersects with any of the axes
               let intersectionPoint: Coords2d | undefined
@@ -2634,7 +2635,8 @@ export class SceneEntities {
                 snappedPoint = intersectionPoint
                 snappedToTangent = true
               }
-            } else {
+            }
+            if (!snappedToTangent) {
               // Otherwise, snap to the tangent direction only
               const closestPoint = closestPointOnRay(
                 prev.userData.to,
