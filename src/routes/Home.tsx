@@ -109,6 +109,8 @@ const Home = () => {
       navigate(PATHS.HOME + PATHS.SETTINGS)
     } else if (data.menuLabel === 'File.Preferences.Keybindings') {
       navigate(PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS)
+    } else if (data.menuLabel === 'File.Preferences.User default units') {
+      navigate(PATHS.HOME + PATHS.SETTINGS_USER + '#defaultUnit')
     } else if (data.menuLabel === 'Edit.Change project directory') {
       navigate(PATHS.HOME + PATHS.SETTINGS_USER + '#projectDirectory')
     } else if (data.menuLabel === 'File.Sign out') {

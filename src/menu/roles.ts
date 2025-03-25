@@ -21,6 +21,7 @@ type FileRoleLabel =
   | 'Sign out'
   | 'Theme'
   | 'Theme color'
+  | 'User default units'
 
 type EditRoleLabel =
   | 'Rename project'

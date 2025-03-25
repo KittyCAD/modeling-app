@@ -61,6 +61,14 @@ export const projectFileRole = (
             },
           },
           {
+            label: 'User default units',
+            click: () => {
+              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+                menuLabel: 'File.Preferences.User default units',
+              })
+            },
+          },
+          {
             label: 'Theme',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
