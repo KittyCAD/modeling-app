@@ -5,6 +5,8 @@ import { authActor } from 'machines/appMachine'
 import { copyFileShareLink } from 'lib/links'
 import { codeManager } from 'lib/singletons'
 import { settingsActor } from 'machines/appMachine'
+import { sceneInfra } from 'lib/singletons'
+import { AxisNames } from 'lib/constants'
 
 export function modelingMenuCallbackMostActions(
   settings,
@@ -15,7 +17,6 @@ export function modelingMenuCallbackMostActions(
   fileSend
 ) {
   // Menu listeners
-  // TODO: KEVIN do not run if web...
   const cb = (data: WebContentSendPayload) => {
     if (data.menuLabel === 'File.New project') {
       commandBarActor.send({
@@ -134,6 +135,26 @@ export function modelingMenuCallbackMostActions(
           value: 'orthographic',
         },
       })
+    } else if (data.menuLabel === 'View.Perspective view') {
+      settingsActor.send({
+        type: 'set.modeling.cameraProjection',
+        data: {
+          level: 'user',
+          value: 'perspective',
+        },
+      })
+    } else if (data.menuLabel === 'View.Standard views.Right view') {
+      sceneInfra.camControls.updateCameraToAxis(AxisNames.X)
+    } else if (data.menuLabel === 'View.Standard views.Back view') {
+      sceneInfra.camControls.updateCameraToAxis(AxisNames.Y)
+    } else if (data.menuLabel === 'View.Standard views.Top view') {
+      sceneInfra.camControls.updateCameraToAxis(AxisNames.Z)
+    } else if (data.menuLabel === 'View.Standard views.Left view') {
+      sceneInfra.camControls.updateCameraToAxis(AxisNames.NEG_X)
+    } else if (data.menuLabel === 'View.Standard views.Front view') {
+      sceneInfra.camControls.updateCameraToAxis(AxisNames.NEG_Y)
+    } else if (data.menuLabel === 'View.Standard views.Bottom view') {
+      sceneInfra.camControls.updateCameraToAxis(AxisNames.NEG_Z)
     }
   }
   return cb
