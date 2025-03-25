@@ -4,8 +4,8 @@ import { KclManager } from 'lang/KclSingleton'
 import {
   createArrayExpression,
   createCallExpressionStdLibKw,
-  createIdentifier,
   createLabeledArg,
+  createLocalName,
   createVariableDeclaration,
   findUniqueName,
 } from 'lang/modifyAst'
@@ -179,7 +179,7 @@ export function booleanSubtractAstMod({
   const newVarName = findUniqueName(newAst, 'solid')
   const createArrExpr = (varDecs: VariableDeclaration[]) =>
     createArrayExpression(
-      varDecs.map((varDec) => createIdentifier(varDec.declaration.id.name))
+      varDecs.map((varDec) => createLocalName(varDec.declaration.id.name))
     )
   const targetsArrayExpression = createArrExpr(targets)
   const toolsArrayExpression = createArrExpr(tools)
