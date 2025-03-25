@@ -78,7 +78,7 @@ function cameraViewStateToNamedView(
     is_ortho: cameraViewState.is_ortho,
     pivot_position,
     pivot_rotation,
-    version: -1,
+    version: 1.0,
   }
 
   return requestedView
