@@ -134,6 +134,8 @@ import toast from 'react-hot-toast'
 import { getArtifactFromRange, codeRefFromRange } from 'lang/std/artifactGraph'
 import { closestPointOnRay } from '../lib/utils2d'
 import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
+import { updateModelingState } from 'lang/modelingWorkflows'
+import { EXECUTION_TYPE_MOCK } from 'lib/constants'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -1088,7 +1090,11 @@ export class SceneEntities {
           return
         }
 
-        await kclManager.executeAstMock(modifiedAst)
+        await updateModelingState(modifiedAst, EXECUTION_TYPE_MOCK, {
+          kclManager,
+          editorManager,
+          codeManager,
+        })
 
         if (intersectsProfileStart) {
           sceneInfra.modelingSend({ type: 'Close sketch' })
@@ -1103,8 +1109,6 @@ export class SceneEntities {
             segmentName
           )
         }
-
-        await codeManager.updateEditorWithAstAndWriteToFile(modifiedAst)
       },
       onMove: (args) => {
         const expressionIndex = Number(sketchEntryNodePath[1][0])
@@ -1317,13 +1321,16 @@ export class SceneEntities {
         _ast = pResult.program
 
         // Update the primary AST and unequip the rectangle tool
-        await kclManager.executeAstMock(_ast)
-        sceneInfra.modelingSend({ type: 'Finish rectangle' })
-
+        //
         // lee: I had this at the bottom of the function, but it's
         // possible sketchFromKclValue "fails" when sketching on a face,
         // and this couldn't wouldn't run.
-        await codeManager.updateEditorWithAstAndWriteToFile(_ast)
+        await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
+          kclManager,
+          editorManager,
+          codeManager,
+        })
+        sceneInfra.modelingSend({ type: 'Finish rectangle' })
       },
     })
     return {
@@ -1507,13 +1514,16 @@ export class SceneEntities {
           _ast = pResult.program
 
           // Update the primary AST and unequip the rectangle tool
-          await kclManager.executeAstMock(_ast)
-          sceneInfra.modelingSend({ type: 'Finish center rectangle' })
-
+          //
           // lee: I had this at the bottom of the function, but it's
           // possible sketchFromKclValue "fails" when sketching on a face,
           // and this couldn't wouldn't run.
-          await codeManager.updateEditorWithAstAndWriteToFile(_ast)
+          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
+            kclManager,
+            editorManager,
+            codeManager,
+          })
+          sceneInfra.modelingSend({ type: 'Finish center rectangle' })
         }
       },
     })
@@ -1692,9 +1702,12 @@ export class SceneEntities {
           _ast = pResult.program
 
           // Update the primary AST and unequip the rectangle tool
-          await kclManager.executeAstMock(_ast)
+          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
+            kclManager,
+            editorManager,
+            codeManager,
+          })
           sceneInfra.modelingSend({ type: 'Finish circle three point' })
-          await codeManager.updateEditorWithAstAndWriteToFile(_ast)
         }
       },
     })
@@ -1926,9 +1939,12 @@ export class SceneEntities {
           _ast = pResult.program
 
           // Update the primary AST and unequip the arc tool
-          await kclManager.executeAstMock(_ast)
+          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
+            kclManager,
+            editorManager,
+            codeManager,
+          })
           sceneInfra.modelingSend({ type: 'Finish arc' })
-          await codeManager.updateEditorWithAstAndWriteToFile(_ast)
         }
       },
     })
@@ -2182,13 +2198,16 @@ export class SceneEntities {
           _ast = pResult.program
 
           // Update the primary AST and unequip the arc tool
-          await kclManager.executeAstMock(_ast)
+          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
+            kclManager,
+            editorManager,
+            codeManager,
+          })
           if (intersectsProfileStart) {
             sceneInfra.modelingSend({ type: 'Close sketch' })
           } else {
             sceneInfra.modelingSend({ type: 'Finish arc' })
           }
-          await codeManager.updateEditorWithAstAndWriteToFile(_ast)
         }
       },
     })
@@ -2380,9 +2399,12 @@ export class SceneEntities {
           _ast = pResult.program
 
           // Update the primary AST and unequip the rectangle tool
-          await kclManager.executeAstMock(_ast)
+          await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
+            kclManager,
+            editorManager,
+            codeManager,
+          })
           sceneInfra.modelingSend({ type: 'Finish circle' })
-          await codeManager.updateEditorWithAstAndWriteToFile(_ast)
         }
       },
     })

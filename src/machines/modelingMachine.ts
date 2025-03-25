@@ -102,6 +102,7 @@ import { setAppearance } from 'lang/modifyAst/setAppearance'
 import { DRAFT_DASHED_LINE } from 'clientSideScene/sceneEntities'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import { updateModelingState } from 'lang/modelingWorkflows'
+import { EXECUTION_TYPE_REAL } from 'lib/constants'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -751,20 +752,23 @@ export const modelingMachine = setup({
         if (trap(revolveSketchRes)) return
         const { modifiedAst, pathToRevolveArg } = revolveSketchRes
 
-        const updatedAst = await kclManager.updateAst(modifiedAst, true, {
-          focusPath: [pathToRevolveArg],
-          zoomToFit: true,
-          zoomOnRangeAndType: {
-            range: selection.graphSelections[0]?.codeRef.range,
-            type: 'path',
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
           },
-        })
-
-        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
-
-        if (updatedAst?.selections) {
-          editorManager.selectRange(updatedAst?.selections)
-        }
+          {
+            focusPath: [pathToRevolveArg],
+            zoomToFit: true,
+            zoomOnRangeAndType: {
+              range: selection.graphSelections[0]?.codeRef.range,
+              type: 'path',
+            },
+          }
+        )
       })().catch(reportRejection)
     },
     'set selection filter to curves only': () => {
@@ -1799,20 +1803,23 @@ export const modelingMachine = setup({
         pathToExtrudeArg[1][0]++
       }
 
-      const updatedAst = await kclManager.updateAst(modifiedAst, true, {
-        focusPath: [pathToExtrudeArg],
-        zoomToFit: true,
-        zoomOnRangeAndType: {
-          range: selection.graphSelections[0]?.codeRef.range,
-          type: 'path',
+      await updateModelingState(
+        modifiedAst,
+        EXECUTION_TYPE_REAL,
+        {
+          kclManager,
+          editorManager,
+          codeManager,
         },
-      })
-
-      await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
-
-      if (updatedAst?.selections) {
-        editorManager.selectRange(updatedAst?.selections)
-      }
+        {
+          focusPath: [pathToExtrudeArg],
+          zoomToFit: true,
+          zoomOnRangeAndType: {
+            range: selection.graphSelections[0]?.codeRef.range,
+            type: 'path',
+          },
+        }
+      )
     }),
     offsetPlaneAstMod: fromPromise(
       async ({
@@ -1882,21 +1889,18 @@ export const modelingMachine = setup({
           offsetPlaneResult.pathToNode[1][0]++
         }
 
-        const updateAstResult = await kclManager.updateAst(
+        await updateModelingState(
           offsetPlaneResult.modifiedAst,
-          true,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
           {
             focusPath: [offsetPlaneResult.pathToNode],
           }
         )
-
-        await codeManager.updateEditorWithAstAndWriteToFile(
-          updateAstResult.newAst
-        )
-
-        if (updateAstResult?.selections) {
-          editorManager.selectRange(updateAstResult?.selections)
-        }
       }
     ),
     helixAstMod: fromPromise(
@@ -1997,6 +2001,7 @@ export const modelingMachine = setup({
         })
         await updateModelingState(
           modifiedAst,
+          EXECUTION_TYPE_REAL,
           {
             kclManager,
             editorManager,
@@ -2090,6 +2095,7 @@ export const modelingMachine = setup({
         })
         await updateModelingState(
           modifiedAst,
+          EXECUTION_TYPE_REAL,
           {
             kclManager,
             editorManager,
@@ -2128,21 +2134,18 @@ export const modelingMachine = setup({
 
         // Perform the loft
         const loftSketchesRes = loftSketches(ast, declarators)
-        const updateAstResult = await kclManager.updateAst(
+        await updateModelingState(
           loftSketchesRes.modifiedAst,
-          true,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
           {
             focusPath: [loftSketchesRes.pathToNode],
           }
         )
-
-        await codeManager.updateEditorWithAstAndWriteToFile(
-          updateAstResult.newAst
-        )
-
-        if (updateAstResult?.selections) {
-          editorManager.selectRange(updateAstResult?.selections)
-        }
       }
     ),
     shellAstMod: fromPromise(
@@ -2308,21 +2311,18 @@ export const modelingMachine = setup({
           addResult.pathToNode[1][0]++
         }
 
-        const updateAstResult = await kclManager.updateAst(
+        await updateModelingState(
           addResult.modifiedAst,
-          true,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
           {
             focusPath: [addResult.pathToNode],
           }
         )
-
-        await codeManager.updateEditorWithAstAndWriteToFile(
-          updateAstResult.newAst
-        )
-
-        if (updateAstResult?.selections) {
-          editorManager.selectRange(updateAstResult?.selections)
-        }
       }
     ),
     filletAstMod: fromPromise(
@@ -2374,15 +2374,11 @@ export const modelingMachine = setup({
           node: kclManager.ast,
           newExpression: value,
         })
-        const updateAstResult = await kclManager.updateAst(newAst, true)
-
-        await codeManager.updateEditorWithAstAndWriteToFile(
-          updateAstResult.newAst
-        )
-
-        if (updateAstResult?.selections) {
-          editorManager.selectRange(updateAstResult?.selections)
-        }
+        await updateModelingState(newAst, EXECUTION_TYPE_REAL, {
+          kclManager,
+          editorManager,
+          codeManager,
+        })
       }
     ),
     'actor.parameter.edit': fromPromise(
@@ -2411,7 +2407,7 @@ export const modelingMachine = setup({
         // Mutate the variable's value
         variableNode.node.init = value.valueAst
 
-        await updateModelingState(newAst, {
+        await updateModelingState(newAst, EXECUTION_TYPE_REAL, {
           codeManager,
           editorManager,
           kclManager,
@@ -2577,21 +2573,18 @@ export const modelingMachine = setup({
           return err(result)
         }
 
-        const updateAstResult = await kclManager.updateAst(
+        await updateModelingState(
           result.modifiedAst,
-          true,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
           {
             focusPath: [result.pathToNode],
           }
         )
-
-        await codeManager.updateEditorWithAstAndWriteToFile(
-          updateAstResult.newAst
-        )
-
-        if (updateAstResult?.selections) {
-          editorManager.selectRange(updateAstResult?.selections)
-        }
       }
     ),
     exportFromEngine: fromPromise(
