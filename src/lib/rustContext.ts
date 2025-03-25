@@ -14,7 +14,7 @@ import type { Program } from '@rust/kcl-lib/bindings/Program'
 import { Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import { DefaultPlaneStr, defaultPlaneStrToKey } from 'lib/planes'
-import { err } from 'lib/trap'
+import { err, reportRejection } from 'lib/trap'
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import ModelingAppFile from './modelingAppFile'
@@ -44,10 +44,11 @@ export default class RustContext {
   constructor(engineCommandManager: EngineCommandManager) {
     this.engineCommandManager = engineCommandManager
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.ensureWasmInit().then(async () => {
-      this.ctxInstance = await this.create()
-    })
+    this.ensureWasmInit()
+      .then(async () => {
+        this.ctxInstance = await this.create()
+      })
+      .catch(reportRejection)
   }
 
   // Create a new context instance
@@ -56,7 +57,7 @@ export default class RustContext {
     // We need this await here, DO NOT REMOVE it even if your editor says it's
     // unnecessary. The constructor of the module is async and it will not
     // resolve if you don't await it.
-    const ctxInstance = await new this.rustInstance.Context(
+    const ctxInstance = new this.rustInstance.Context(
       this.engineCommandManager,
       fileSystemManager
     )
