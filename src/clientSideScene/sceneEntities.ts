@@ -1025,23 +1025,13 @@ export class SceneEntities {
           })
           if (trap(modifiedAst)) return Promise.reject(modifiedAst)
         } else if (intersection2d) {
-          const intersectsYAxis = args.intersects.find(
-            (sceneObject) => sceneObject.object.name === Y_AXIS
-          )
-          const intersectsXAxis = args.intersects.find(
-            (sceneObject) => sceneObject.object.name === X_AXIS
-          )
-
           const lastSegment = sketch.paths.slice(-1)[0] || sketch.start
 
-          let { snappedPoint } = this.snapPoint(
-            [intersection2d.x, intersection2d.y],
+          let { snappedPoint } = this.getSnappedDragPoint(
+            intersection2d,
+            args.intersects,
             args.mouseEvent
           )
-          snappedPoint = [
-            intersectsYAxis ? 0 : snappedPoint[0],
-            intersectsXAxis ? 0 : snappedPoint[1],
-          ]
 
           // Get the angle between the previous segment (or sketch start)'s end and this one's
           const angle = Math.atan2(
@@ -1276,11 +1266,11 @@ export class SceneEntities {
 
         const { intersectionPoint } = args
         if (!intersectionPoint?.twoD) return
-        const { snappedPoint, isSnapped } = this.getSnappedDragPoint({
-          intersection2d: intersectionPoint.twoD,
-          intersects: args.intersects,
-          mouseEvent: args.mouseEvent,
-        })
+        const { snappedPoint, isSnapped } = this.getSnappedDragPoint(
+          intersectionPoint.twoD,
+          args.intersects,
+          args.mouseEvent
+        )
         if (isSnapped) {
           this.positionDraftPoint({
             snappedPoint: new Vector2(...snappedPoint),
@@ -2039,11 +2029,11 @@ export class SceneEntities {
         if (trap(_node)) return
         const sketchInit = _node.node.declaration.init
 
-        const maybeSnapToAxis = this.getSnappedDragPoint({
-          intersection2d: args.intersectionPoint.twoD,
-          intersects: args.intersects,
-          mouseEvent: args.mouseEvent,
-        }).snappedPoint
+        const maybeSnapToAxis = this.getSnappedDragPoint(
+          args.intersectionPoint.twoD,
+          args.intersects,
+          args.mouseEvent
+        ).snappedPoint
 
         const maybeSnapToProfileStart = doNotSnapAsThreePointArcIsTheOnlySegment
           ? new Vector2(...maybeSnapToAxis)
@@ -2142,11 +2132,11 @@ export class SceneEntities {
               type: 'circle-three-point-segment',
               p1,
               p2,
-              p3: this.getSnappedDragPoint({
-                intersection2d: args.intersectionPoint.twoD,
-                intersects: args.intersects,
-                mouseEvent: args.mouseEvent,
-              }).snappedPoint,
+              p3: this.getSnappedDragPoint(
+                args.intersectionPoint.twoD,
+                args.intersects,
+                args.mouseEvent
+              ).snappedPoint,
             }
           )
           if (err(moddedResult)) return
@@ -2562,37 +2552,14 @@ export class SceneEntities {
       kclManager.lastSuccessfulVariables,
       draftSegment
     )
-  getSnappedDragPoint({
-    intersects,
-    intersection2d,
-    mouseEvent,
-  }: {
-    intersects: Intersection<Object3D<Object3DEventMap>>[]
-    intersection2d: Vector2
+  getSnappedDragPoint(
+    snappedPoint_vec: Vector2,
+    intersects: Intersection<Object3D<Object3DEventMap>>[],
     mouseEvent: MouseEvent
-  }): { snappedPoint: [number, number]; isSnapped: boolean } {
-    const intersectsYAxis = intersects.find(
-      (sceneObject) => sceneObject.object.name === Y_AXIS
-    )
-    const intersectsXAxis = intersects.find(
-      (sceneObject) => sceneObject.object.name === X_AXIS
-    )
+  ) {
+    let snappedPoint: Coords2d = [snappedPoint_vec.x, snappedPoint_vec.y]
 
-    let { snappedPoint, snappedToTangent } = this.snapPoint(
-      [intersection2d.x, intersection2d.y],
-      mouseEvent
-    )
-    snappedPoint = [
-      intersectsYAxis ? 0 : snappedPoint[0],
-      intersectsXAxis ? 0 : snappedPoint[1],
-    ]
-
-    return {
-      snappedPoint,
-      isSnapped: !!(intersectsYAxis || intersectsXAxis || snappedToTangent),
-    }
-  }
-  private snapPoint(snappedPoint: Coords2d, mouseEvent: MouseEvent) {
+    // Snap to previous segment's tangent direction when drawing a straight segment
     let snappedToTangent = false
     const disableTangentSnapping = mouseEvent.ctrlKey || mouseEvent.altKey
     if (!disableTangentSnapping) {
@@ -2623,8 +2590,21 @@ export class SceneEntities {
         }
       }
     }
+
+    // Snap to the main axes
+    const intersectsYAxis = intersects.find(
+      (sceneObject) => sceneObject.object.name === Y_AXIS
+    )
+    const intersectsXAxis = intersects.find(
+      (sceneObject) => sceneObject.object.name === X_AXIS
+    )
+    snappedPoint = [
+      intersectsYAxis ? 0 : snappedPoint[0],
+      intersectsXAxis ? 0 : snappedPoint[1],
+    ]
+
     return {
-      snappedToTangent,
+      isSnapped: !!(intersectsYAxis || intersectsXAxis || snappedToTangent),
       snappedPoint,
     }
   }
@@ -2731,11 +2711,11 @@ export class SceneEntities {
       group.userData?.from?.[0],
       group.userData?.from?.[1],
     ]
-    const dragTo = this.getSnappedDragPoint({
-      intersects,
+    const dragTo = this.getSnappedDragPoint(
       intersection2d,
-      mouseEvent: mouseEvent,
-    }).snappedPoint
+      intersects,
+      mouseEvent
+    ).snappedPoint
     let modifiedAst = draftInfo ? draftInfo.truncatedAst : { ...kclManager.ast }
 
     const nodePathWithCorrectedIndexForTruncatedAst =
