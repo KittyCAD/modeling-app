@@ -9,7 +9,7 @@ export const MAX_PADDING = 7
  * This is used as a template for new projects, with $nnn being replaced by an index
  * This is available for users to edit as a setting.
  */
-export const DEFAULT_PROJECT_NAME = 'project-$nnn'
+export const DEFAULT_PROJECT_NAME = 'untitled'
 export const DEFAULT_PROJECT_KCL_FILE = 'main.kcl'
 /** Name given the temporary "project" in the browser version of the app */
 export const BROWSER_PROJECT_NAME = 'browser'
