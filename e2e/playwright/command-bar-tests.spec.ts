@@ -542,7 +542,13 @@ c = 3 + a`
     )
 
     const newValue = `2 * b + a`
+
     await test.step(`Edit the parameter via command bar`, async () => {
+      // TODO: make the command palette command registration more static, and the enabled state more dynamic
+      // so that we can just open the command palette and know all commands will be there.
+      await scene.settled(cmdBar)
+      await page.waitForTimeout(100)
+
       await cmdBar.cmdBarOpenBtn.click()
       await cmdBar.chooseCommand('edit parameter')
       await cmdBar.expectState({
