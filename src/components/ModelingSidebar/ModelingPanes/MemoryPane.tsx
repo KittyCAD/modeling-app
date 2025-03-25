@@ -40,9 +40,7 @@ export const MemoryPaneMenu = () => {
         className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
         onClick={copyProgramMemoryToClipboard}
       >
-        <Tooltip position="bottom-right" delay={750}>
-          Copy to clipboard
-        </Tooltip>
+        <Tooltip position="bottom-right">Copy to clipboard</Tooltip>
       </ActionButton>
     </>
   )

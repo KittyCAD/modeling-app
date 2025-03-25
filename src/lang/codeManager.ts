@@ -165,10 +165,11 @@ export default class CodeManager {
   }
 
   async updateEditorWithAstAndWriteToFile(ast: Program) {
-    // We clear the AST when there it cannot be parsed, so if we are trying to write an empty AST, its
-    // probably because of an earlier error. That's a bad state to be in and it's not going to be
-    // pretty, but at the least, lets not permanently delete the user's code.
-    // If you want to clear the scene, call updateCodeStateEditor directly.
+    // We clear the AST when it cannot be parsed. If we are trying to write an
+    // empty AST, it's probably because of an earlier error. That's a bad state
+    // to be in, and it's not going to be pretty, but at the least, let's not
+    // permanently delete the user's code. If you want to clear the scene, call
+    // updateCodeStateEditor directly.
     if (ast.body.length === 0) return
     const newCode = recast(ast)
     if (err(newCode)) return

@@ -56,6 +56,18 @@ export const commonPoints = {
 export const editorSelector = '[role="textbox"][data-language="kcl"]'
 type PaneId = 'variables' | 'code' | 'files' | 'logs'
 
+export function runningOnLinux() {
+  return process.platform === 'linux'
+}
+
+export function runningOnMac() {
+  return process.platform === 'darwin'
+}
+
+export function runningOnWindows() {
+  return process.platform === 'win32'
+}
+
 export function orRunWhenFullSuiteEnabled() {
   const branch = process.env.GITHUB_REF?.replace('refs/heads/', '')
   return branch !== 'all-e2e'
