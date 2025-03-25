@@ -77,7 +77,7 @@ async function waitForPageLoadWithRetry(page: Page) {
   await expect(async () => {
     await page.goto('/')
     const errorMessage = 'App failed to load - 🔃 Retrying ...'
-    await expect(page.getByTestId('model-state-indicator-playing'), errorMessage).not.toBeAttached({
+    await expect(page.getByTestId('model-state-indicator-playing'), errorMessage).toBeAttached({
       timeout: 20_000,
     })
 
@@ -93,7 +93,7 @@ async function waitForPageLoadWithRetry(page: Page) {
 // lee: This needs to be replaced by scene.settled() eventually.
 async function waitForPageLoad(page: Page) {
   // wait for all spinners to be gone
-  await expect(page.getByTestId('model-state-indicator-playing')).not.toBeAttached({
+  await expect(page.getByTestId('model-state-indicator-playing')).toBeVisible({
     timeout: 20_000,
   })
 

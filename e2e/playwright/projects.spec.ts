@@ -984,6 +984,7 @@ test.describe(`Project management commands`, () => {
     homePage,
     toolbar,
     cmdBar,
+    scene,
   }) => {
     const projectName = 'test-project'
     await test.step(`Setup`, async () => {
@@ -1023,10 +1024,11 @@ test.describe(`Project management commands`, () => {
       })
       await cmdBar.argumentInput.fill(projectName)
       await cmdBar.progressCmdBar()
+      await scene.settled(cmdBar)
+      await toolbar.logoLink.click()
     })
 
     await test.step(`Check the project was created with a non-colliding name`, async () => {
-      await toolbar.logoLink.click()
       await homePage.expectState({
         projectCards: [
           {
@@ -1057,10 +1059,11 @@ test.describe(`Project management commands`, () => {
       })
       await cmdBar.argumentInput.fill(projectName)
       await cmdBar.progressCmdBar()
+      await scene.settled(cmdBar)
+      await toolbar.logoLink.click()
     })
 
     await test.step(`Check the second project was created with a non-colliding name`, async () => {
-      await toolbar.logoLink.click()
       await homePage.expectState({
         projectCards: [
           {
@@ -1670,8 +1673,6 @@ test(
       ])
     })
     await page.setBodyDimensions({ width: 1200, height: 500 })
-
-    page.on('console', console.log)
 
     // we'll grab this from the settings on screen before we switch
     let originalProjectDirName: string
