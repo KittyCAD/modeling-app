@@ -1033,14 +1033,20 @@ export class SceneEntities {
           )
 
           const lastSegment = sketch.paths.slice(-1)[0] || sketch.start
-          const snappedPoint = {
-            x: intersectsYAxis ? 0 : intersection2d.x,
-            y: intersectsXAxis ? 0 : intersection2d.y,
-          }
+
+          let { snappedPoint } = this.snapPoint(
+            [intersection2d.x, intersection2d.y],
+            args.mouseEvent
+          )
+          snappedPoint = [
+            intersectsYAxis ? 0 : snappedPoint[0],
+            intersectsXAxis ? 0 : snappedPoint[1],
+          ]
+
           // Get the angle between the previous segment (or sketch start)'s end and this one's
           const angle = Math.atan2(
-            snappedPoint.y - lastSegment.to[1],
-            snappedPoint.x - lastSegment.to[0]
+            snappedPoint[1] - lastSegment.to[1],
+            snappedPoint[0] - lastSegment.to[0]
           )
 
           const isHorizontal =
@@ -1067,7 +1073,7 @@ export class SceneEntities {
           } else if (isVertical) {
             // If the angle between is 90 or 270 degrees (+/- the snapping angle), make the line a yLine
             resolvedFunctionName = 'yLine'
-          } else if (snappedPoint.x === 0 || snappedPoint.y === 0) {
+          } else if (snappedPoint[0] === 0 || snappedPoint[1] === 0) {
             // We consider a point placed on axes or origin to be absolute
             resolvedFunctionName = 'lineTo'
           }
@@ -1078,7 +1084,7 @@ export class SceneEntities {
             input: {
               type: 'straight-segment',
               from: [lastSegment.to[0], lastSegment.to[1]],
-              to: [snappedPoint.x, snappedPoint.y],
+              to: [snappedPoint[0], snappedPoint[1]],
             },
             fnName: resolvedFunctionName,
             pathToNode: sketchEntryNodePath,
@@ -2572,41 +2578,54 @@ export class SceneEntities {
       (sceneObject) => sceneObject.object.name === X_AXIS
     )
 
-    let snappedPoint: Coords2d = [
-      intersectsYAxis ? 0 : intersection2d.x,
-      intersectsXAxis ? 0 : intersection2d.y,
+    let { snappedPoint, snappedToTangent } = this.snapPoint(
+      [intersection2d.x, intersection2d.y],
+      mouseEvent
+    )
+    snappedPoint = [
+      intersectsYAxis ? 0 : snappedPoint[0],
+      intersectsXAxis ? 0 : snappedPoint[1],
     ]
 
-    const segments = Object.values(this.activeSegments)
-    const current = segments[segments.length - 1]
-    if (current.userData.type === STRAIGHT_SEGMENT) {
-      const prev = segments[segments.length - 2]
-      const disableSnap = mouseEvent.ctrlKey || mouseEvent.altKey
-      if (!disableSnap && ARC_SEGMENT_TYPES.includes(prev.userData.type)) {
-        const snapDirection = findTangentDirection(prev)
-        if (snapDirection) {
-          const closestPoint = closestPointOnRay(
-            prev.userData.to,
-            snapDirection,
-            snappedPoint
-          )
-          const forceSnapping = mouseEvent.shiftKey
-          const tolerance_in_screenspace = 10 * window.devicePixelRatio
-          const orthoFactor = orthoScale(sceneInfra.camControls.camera)
-          if (
-            forceSnapping ||
-            getLength(closestPoint, snappedPoint) / orthoFactor <
-              tolerance_in_screenspace
-          ) {
-            snappedPoint = closestPoint
+    return {
+      snappedPoint,
+      isSnapped: !!(intersectsYAxis || intersectsXAxis || snappedToTangent),
+    }
+  }
+  private snapPoint(snappedPoint: Coords2d, mouseEvent: MouseEvent) {
+    let snappedToTangent = false
+    const disableTangentSnapping = mouseEvent.ctrlKey || mouseEvent.altKey
+    if (!disableTangentSnapping) {
+      const segments = Object.values(this.activeSegments)
+      const current = segments[segments.length - 1]
+      if (current.userData.type === STRAIGHT_SEGMENT) {
+        const prev = segments[segments.length - 2]
+        if (ARC_SEGMENT_TYPES.includes(prev.userData.type)) {
+          const snapDirection = findTangentDirection(prev)
+          if (snapDirection) {
+            const closestPoint = closestPointOnRay(
+              prev.userData.to,
+              snapDirection,
+              snappedPoint
+            )
+            const forceSnapping = mouseEvent.shiftKey
+            const tolerance_in_screenspace = 12 * window.devicePixelRatio
+            const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+            if (
+              forceSnapping ||
+              getLength(closestPoint, snappedPoint) / orthoFactor <
+                tolerance_in_screenspace
+            ) {
+              snappedPoint = closestPoint
+              snappedToTangent = true
+            }
           }
         }
       }
     }
-
     return {
+      snappedToTangent,
       snappedPoint,
-      isSnapped: !!(intersectsYAxis || intersectsXAxis),
     }
   }
   positionDraftPoint({
