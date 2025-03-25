@@ -2593,8 +2593,9 @@ export class SceneEntities {
     let snappedToTangent = false
 
     const disableTangentSnapping = mouseEvent.ctrlKey || mouseEvent.altKey
+    const forceDirectionSnapping = mouseEvent.shiftKey
     if (!disableTangentSnapping) {
-      const segments = Object.values(this.activeSegments)
+      const segments = Object.values(this.activeSegments) // Using the order in the object feels wrong
       const current = segments[segments.length - 1]
       if (current.userData.type === STRAIGHT_SEGMENT) {
         const prev = segments[segments.length - 2]
@@ -2643,9 +2644,8 @@ export class SceneEntities {
                 snapDirection,
                 snappedPoint
               )
-              const forceSnapping = mouseEvent.shiftKey
               if (
-                forceSnapping ||
+                forceDirectionSnapping ||
                 getLength(closestPoint, snappedPoint) / orthoFactor <
                   SNAP_TOLERANCE_PIXELS
               ) {
