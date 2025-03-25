@@ -133,6 +133,7 @@ import { radToDeg } from 'three/src/math/MathUtils'
 import toast from 'react-hot-toast'
 import { getArtifactFromRange, codeRefFromRange } from 'lang/std/artifactGraph'
 import { closestPointOnRay } from '../lib/utils2d'
+import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -2553,14 +2554,22 @@ export class SceneEntities {
       draftSegment
     )
   getSnappedDragPoint(
-    snappedPoint_vec: Vector2,
+    pos: Vector2,
     intersects: Intersection<Object3D<Object3DEventMap>>[],
     mouseEvent: MouseEvent
   ) {
-    let snappedPoint: Coords2d = [snappedPoint_vec.x, snappedPoint_vec.y]
+    let snappedPoint: Coords2d = [pos.x, pos.y]
+
+    const intersectsYAxis = intersects.find(
+      (sceneObject) => sceneObject.object.name === Y_AXIS
+    )
+    const intersectsXAxis = intersects.find(
+      (sceneObject) => sceneObject.object.name === X_AXIS
+    )
 
     // Snap to previous segment's tangent direction when drawing a straight segment
     let snappedToTangent = false
+
     const disableTangentSnapping = mouseEvent.ctrlKey || mouseEvent.altKey
     if (!disableTangentSnapping) {
       const segments = Object.values(this.activeSegments)
@@ -2570,38 +2579,68 @@ export class SceneEntities {
         if (ARC_SEGMENT_TYPES.includes(prev.userData.type)) {
           const snapDirection = findTangentDirection(prev)
           if (snapDirection) {
-            const closestPoint = closestPointOnRay(
-              prev.userData.to,
-              snapDirection,
-              snappedPoint
-            )
-            const forceSnapping = mouseEvent.shiftKey
-            const tolerance_in_screenspace = 12 * window.devicePixelRatio
+            const SNAP_TOLERANCE_PIXELS = 12 * window.devicePixelRatio
             const orthoFactor = orthoScale(sceneInfra.camControls.camera)
-            if (
-              forceSnapping ||
-              getLength(closestPoint, snappedPoint) / orthoFactor <
-                tolerance_in_screenspace
-            ) {
-              snappedPoint = closestPoint
-              snappedToTangent = true
+            if (intersectsXAxis || intersectsYAxis) {
+              // See if snapDirection intersects with any of the axes
+              let intersectionPoint: Coords2d | undefined
+              if (intersectsXAxis && intersectsYAxis) {
+                intersectionPoint = [0, 0]
+              } else {
+                const axisLine: [Coords2d, Coords2d] = intersectsXAxis
+                  ? [
+                      [0, 0],
+                      [1, 0],
+                    ]
+                  : [
+                      [0, 0],
+                      [0, 1],
+                    ]
+                intersectionPoint = calculateIntersectionOfTwoLines({
+                  line1: axisLine,
+                  line2Angle: getAngle([0, 0], snapDirection),
+                  line2Point: current.userData.from,
+                })
+              }
+
+              // If yes, see if that intersection point is within tolerance and snap to it if yes.
+              if (
+                intersectionPoint &&
+                getLength(intersectionPoint, snappedPoint) / orthoFactor <
+                  SNAP_TOLERANCE_PIXELS
+              ) {
+                snappedPoint = intersectionPoint
+                snappedToTangent = true
+              }
+            } else {
+              // Otherwise, snap to the tangent direction only
+              const closestPoint = closestPointOnRay(
+                prev.userData.to,
+                snapDirection,
+                snappedPoint
+              )
+              const forceSnapping = mouseEvent.shiftKey
+              if (
+                forceSnapping ||
+                getLength(closestPoint, snappedPoint) / orthoFactor <
+                  SNAP_TOLERANCE_PIXELS
+              ) {
+                snappedPoint = closestPoint
+                snappedToTangent = true
+              }
             }
           }
         }
       }
     }
 
-    // Snap to the main axes
-    const intersectsYAxis = intersects.find(
-      (sceneObject) => sceneObject.object.name === Y_AXIS
-    )
-    const intersectsXAxis = intersects.find(
-      (sceneObject) => sceneObject.object.name === X_AXIS
-    )
-    snappedPoint = [
-      intersectsYAxis ? 0 : snappedPoint[0],
-      intersectsXAxis ? 0 : snappedPoint[1],
-    ]
+    // Snap to the main axes if there was no snapping to tangent direction
+    if (!snappedToTangent) {
+      snappedPoint = [
+        intersectsYAxis ? 0 : snappedPoint[0],
+        intersectsXAxis ? 0 : snappedPoint[1],
+      ]
+    }
 
     return {
       isSnapped: !!(intersectsYAxis || intersectsXAxis || snappedToTangent),
@@ -3750,23 +3789,26 @@ function isGroupStartProfileForCurrentProfile(sketchEntryNodePath: PathToNode) {
   }
 }
 
-function findTangentDirection(prev: Group) {
+// Return the 2d tangent direction at the end of the segmentGroup if it's an arc.
+function findTangentDirection(segmentGroup: Group) {
   let tangentDirection: Coords2d | undefined
-  if (TAN_ARC_SEGMENT_TYPES.includes(prev.userData.type)) {
-    const prevSegment = prev.userData.prevSegment
+  if (TAN_ARC_SEGMENT_TYPES.includes(segmentGroup.userData.type)) {
+    const prevSegment = segmentGroup.userData.prevSegment
     const arcInfo = getTangentialArcToInfo({
-      arcStartPoint: prev.userData.from,
-      arcEndPoint: prev.userData.to,
+      arcStartPoint: segmentGroup.userData.from,
+      arcEndPoint: segmentGroup.userData.to,
       tanPreviousPoint: getTanPreviousPoint(prevSegment),
       obtuse: true,
     })
     const tangentAngle =
       arcInfo.endAngle + (Math.PI / 2) * (arcInfo.ccw ? 1 : -1)
     tangentDirection = [Math.cos(tangentAngle), Math.sin(tangentAngle)]
-  } else if (prev.userData.type === ARC_SEGMENT) {
+  } else if (segmentGroup.userData.type === ARC_SEGMENT) {
     const tangentAngle =
-      (getAngle(prev.userData.center, prev.userData.to) * Math.PI) / 180 +
-      (Math.PI / 2) * (prev.userData.ccw ? 1 : -1)
+      (getAngle(segmentGroup.userData.center, segmentGroup.userData.to) *
+        Math.PI) /
+        180 +
+      (Math.PI / 2) * (segmentGroup.userData.ccw ? 1 : -1)
     tangentDirection = [Math.cos(tangentAngle), Math.sin(tangentAngle)]
   }
   return tangentDirection
