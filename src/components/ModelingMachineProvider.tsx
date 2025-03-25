@@ -1576,9 +1576,7 @@ export const ModelingMachineProvider = ({
               data
             )
             if (err(result)) return reject(result)
-
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+            await codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
 
             return result
           }
