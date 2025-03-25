@@ -1951,46 +1951,52 @@ export const modelingMachine = setup({
           opInsertIndex = nodeToEdit[1][0]
         }
 
-        let generatedAxis:
+        let cylinderDeclarator: VariableDeclarator | undefined
+        let axisExpression:
           | Node<CallExpression | CallExpressionKw | Name>
           | Node<Literal>
           | undefined
-        let cylinderDeclarator: VariableDeclarator | undefined
-        if (mode !== 'Cylinder') {
-          const getAxisResult = getAxisExpressionAndIndex(mode, axis, edge, ast)
-          if (!err(getAxisResult)) {
-            generatedAxis = getAxisResult.generatedAxis
-          }
-        } else {
-          if (
-            cylinder &&
-            cylinder.graphSelections[0] &&
-            cylinder.graphSelections[0].artifact?.type === 'wall'
-          ) {
-            const clonedAstForGetExtrude = structuredClone(ast)
-            const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
-              clonedAstForGetExtrude,
-              cylinder.graphSelections[0],
-              engineCommandManager.artifactGraph
-            )
-            if (!err(extrudeLookupResult)) {
-              const extrudeNode = getNodeFromPath<VariableDeclaration>(
-                ast,
-                extrudeLookupResult.pathToExtrudeNode,
-                'VariableDeclaration'
-              )
-              if (!err(extrudeNode)) {
-                cylinderDeclarator = extrudeNode.node.declaration
-              }
-            }
-          }
-        }
 
-        if (!generatedAxis && !cylinderDeclarator) {
+        if (mode === 'Cylinder') {
+          if (
+            !(
+              cylinder &&
+              cylinder.graphSelections[0] &&
+              cylinder.graphSelections[0].artifact?.type === 'wall'
+            )
+          ) {
+            return new Error('Cylinder argument not valid')
+          }
+          const clonedAstForGetExtrude = structuredClone(ast)
+          const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
+            clonedAstForGetExtrude,
+            cylinder.graphSelections[0],
+            engineCommandManager.artifactGraph
+          )
+          if (err(extrudeLookupResult)) {
+            return extrudeLookupResult
+          }
+          const extrudeNode = getNodeFromPath<VariableDeclaration>(
+            ast,
+            extrudeLookupResult.pathToExtrudeNode,
+            'VariableDeclaration'
+          )
+          if (err(extrudeNode)) {
+            return extrudeNode
+          }
+          cylinderDeclarator = extrudeNode.node.declaration
+        } else if (mode === 'Axis' || mode === 'Edge') {
+          const getAxisResult = getAxisExpressionAndIndex(mode, axis, edge, ast)
+          if (err(getAxisResult)) {
+            return getAxisResult
+          }
+          axisExpression = getAxisResult.generatedAxis
+        } else {
           return new Error(
             'Generated axis or cylinder declarator selection is missing.'
           )
         }
+
         // TODO: figure out if we want to smart insert after the sketch as below
         // *or* after the sweep that consumes the sketch, in which case the below code doesn't work
         // If an axis was selected in KCL, find the max index to insert the revolve command
@@ -1998,39 +2004,38 @@ export const modelingMachine = setup({
         // opInsertIndex = axisIndexIfAxis + 1
         // }
 
-        if (axis && radius && length) {
-          for (const variable of [revolutions, angleStart, radius, length]) {
-            // Insert the variable if it exists
-            if (
-              'variableName' in variable &&
-              variable.variableName &&
-              variable.insertIndex !== undefined
-            ) {
-              const newBody = [...ast.body]
-              newBody.splice(
-                variable.insertIndex,
-                0,
-                variable.variableDeclarationAst
-              )
-              ast.body = newBody
-            }
+        for (const v of [revolutions, angleStart, radius, length]) {
+          if (v === undefined) {
+            continue
+          }
+          const variable = v as KclCommandValue
+          // Insert the variable if it exists
+          if ('variableName' in variable && variable.variableName) {
+            const newBody = [...ast.body]
+            newBody.splice(
+              variable.insertIndex,
+              0,
+              variable.variableDeclarationAst
+            )
+            ast.body = newBody
           }
         }
 
-        const valueOrVariable = (variable: KclCommandValue) =>
-          'variableName' in variable
+        const valueOrVariable = (variable: KclCommandValue) => {
+          return 'variableName' in variable
             ? variable.variableIdentifierAst
             : variable.valueAst
+        }
 
         const { modifiedAst, pathToNode } = addHelix({
           node: ast,
           revolutions: valueOrVariable(revolutions),
           angleStart: valueOrVariable(angleStart),
           ccw,
-          radius: radius ? valueOrVariable(radius) : radius,
-          axis: generatedAxis,
+          radius: radius ? valueOrVariable(radius) : undefined,
+          axis: axisExpression,
           cylinder: cylinderDeclarator,
-          length: length ? valueOrVariable(length) : length,
+          length: length ? valueOrVariable(length) : undefined,
           insertIndex: opInsertIndex,
           variableName: opVariableName,
         })

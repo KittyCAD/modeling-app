@@ -100,15 +100,16 @@ export type ModelingCommandSchema = {
     nodeToEdit?: PathToNode
     // Flow arg
     mode: HelixModes
+    // Three different arguments depending on mode
+    axis?: string
+    edge?: Selections
+    cylinder?: Selections
     // KCL stdlib arguments
-    axis: string | undefined
-    edge: Selections | undefined
-    cylinder: Selections | undefined
     revolutions: KclCommandValue
     angleStart: KclCommandValue
-    ccw: boolean
-    radius: KclCommandValue | undefined
-    length: KclCommandValue | undefined
+    radius?: KclCommandValue // axis or edge modes only
+    length?: KclCommandValue // axis or edge modes only
+    ccw: boolean // optional boolean argument, default value to false
   }
   'event.parameter.create': {
     value: KclCommandValue
@@ -527,7 +528,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Helix: {
     description: 'Create a helix or spiral in 3D about an axis.',
     icon: 'helix',
-    status: 'development',
     needsReview: true,
     args: {
       nodeToEdit: {
@@ -558,6 +558,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'Y Axis', value: 'Y' },
           { name: 'Z Axis', value: 'Z' },
         ],
+        hidden: false, // for consistency here, we can actually edit here since it's not a selection
       },
       edge: {
         required: (commandContext) =>
@@ -581,33 +582,47 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: '1',
         required: true,
-        warningMessage:
-          'The helix workflow is new and under tested. Please break it and report issues.',
       },
       angleStart: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_DEGREE,
         required: true,
       },
-      ccw: {
-        inputType: 'options',
-        required: true,
-        displayName: 'CounterClockWise',
-        defaultValue: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
-      },
       radius: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
-        required: true,
+        required: (commandContext) =>
+          !['Cylinder'].includes(
+            commandContext.argumentsToSubmit.mode as string
+          ),
       },
       length: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
+        required: (commandContext) =>
+          !['Cylinder'].includes(
+            commandContext.argumentsToSubmit.mode as string
+          ),
+      },
+      ccw: {
+        inputType: 'options',
+        skip: true,
         required: true,
+        defaultValue: false,
+        valueSummary: (value) => String(value),
+        displayName: 'CounterClockWise',
+        options: (commandContext) => [
+          {
+            name: 'False',
+            value: false,
+            isCurrent: !Boolean(commandContext.argumentsToSubmit.ccw),
+          },
+          {
+            name: 'True',
+            value: true,
+            isCurrent: Boolean(commandContext.argumentsToSubmit.ccw),
+          },
+        ],
       },
     },
   },

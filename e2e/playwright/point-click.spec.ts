@@ -1094,12 +1094,12 @@ openSketch = startSketchOn(XY)
         currentArgKey: 'mode',
         currentArgValue: '',
         headerArguments: {
-          AngleStart: '',
           Mode: '',
-          CounterClockWise: '',
+          AngleStart: '',
+          Revolutions: '',
           Length: '',
           Radius: '',
-          Revolutions: '',
+          CounterClockWise: '',
         },
         highlightedHeaderArg: 'mode',
         commandName: 'Helix',
@@ -1110,7 +1110,19 @@ openSketch = startSketchOn(XY)
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
-      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Mode: 'Axis',
+          Axis: 'X',
+          AngleStart: '360',
+          Revolutions: '1',
+          Length: '5',
+          Radius: '5',
+          CounterClockWise: '',
+        },
+        commandName: 'Helix',
+      })
       await cmdBar.progressCmdBar()
     })
 
@@ -1134,30 +1146,31 @@ openSketch = startSketchOn(XY)
       await cmdBar.expectState({
         commandName: 'Helix',
         stage: 'arguments',
-        currentArgKey: 'length',
-        currentArgValue: initialInput,
+        currentArgKey: 'CounterClockWise',
+        currentArgValue: '',
         headerArguments: {
-          AngleStart: '360',
           Axis: 'X',
-          CounterClockWise: '',
-          Length: initialInput,
-          Radius: '5',
+          AngleStart: '360',
           Revolutions: '1',
+          Radius: '5',
+          Length: initialInput,
+          CounterClockWise: '',
         },
-        highlightedHeaderArg: 'length',
+        highlightedHeaderArg: 'CounterClockWise',
       })
+      await page.keyboard.press('Shift+Backspace')
       await expect(cmdBar.currentArgumentInput).toBeVisible()
       await cmdBar.currentArgumentInput.locator('.cm-content').fill(newInput)
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          AngleStart: '360',
           Axis: 'X',
-          CounterClockWise: '',
-          Length: newInput,
-          Radius: '5',
+          AngleStart: '360',
           Revolutions: '1',
+          Radius: '5',
+          Length: newInput,
+          CounterClockWise: '',
         },
         commandName: 'Helix',
       })
@@ -1181,14 +1194,14 @@ openSketch = startSketchOn(XY)
     {
       selectionType: 'segment',
       testPoint: { x: 513, y: 221 },
-      expectedOutput: `helix001 = helix(  axis = seg01,  radius = 1,  length = 100,  revolutions = 20,  angleStart = 0, ccw = true,)`,
-      expectedEditedOutput: `helix001 = helix( . axis = seg01,  radius = 1,  length = 50,  revolutions = 20,  angleStart = 0,  ccw = true,)`,
+      expectedOutput: `helix001 = helix(  axis = seg01,  radius = 1,  length = 100,  revolutions = 20,  angleStart = 0,  ccw = false,)`,
+      expectedEditedOutput: `helix001 = helix(  axis = seg01,  radius = 1,  length = 50,  revolutions = 20,  angleStart = 0,  ccw = false,)`,
     },
     {
       selectionType: 'sweepEdge',
       testPoint: { x: 564, y: 364 },
-      expectedOutput: `helix001 = helix(  axis = getOppositeEdge(seg01), radius = 1, length = 100, revolutions = 20, angleStart = 0, ccw = true,)`,
-      expectedEditedOutput: `helix001 = helix(  axis = getOppositeEdge(seg01),  radius = 1,  length = 50,  revolutions = 20,  angleStart = 0,  ccw = true,)`,
+      expectedOutput: `helix001 = helix(  axis =   getOppositeEdge(seg01),  radius = 1,  length = 100,  revolutions = 20,  angleStart = 0,  ccw = false,)`,
+      expectedEditedOutput: `helix001 = helix(  axis =   getOppositeEdge(seg01),  radius = 1,  length = 50,  revolutions = 20,  angleStart = 0,  ccw = false,)`,
     },
   ]
   helixCases.map(
@@ -1246,7 +1259,6 @@ openSketch = startSketchOn(XY)
           await cmdBar.progressCmdBar()
           await page.keyboard.insertText('0')
           await cmdBar.progressCmdBar()
-          await cmdBar.selectOption({ name: 'True' }).click()
           await page.keyboard.insertText('1')
           await cmdBar.progressCmdBar()
           await page.keyboard.insertText('100')
@@ -1254,13 +1266,13 @@ openSketch = startSketchOn(XY)
           await cmdBar.expectState({
             stage: 'review',
             headerArguments: {
-              AngleStart: '0',
               Mode: 'Edge',
               Edge: `1 ${selectionType}`,
-              CounterClockWise: '',
-              Length: '100',
-              Radius: '1',
+              AngleStart: '0',
               Revolutions: '20',
+              Radius: '1',
+              Length: '100',
+              CounterClockWise: '',
             },
             commandName: 'Helix',
           })
@@ -1285,17 +1297,18 @@ openSketch = startSketchOn(XY)
           await cmdBar.expectState({
             commandName: 'Helix',
             stage: 'arguments',
-            currentArgKey: 'length',
-            currentArgValue: initialInput,
+            currentArgKey: 'CounterClockWise',
+            currentArgValue: '',
             headerArguments: {
               AngleStart: '0',
-              CounterClockWise: '',
-              Length: initialInput,
-              Radius: '1',
               Revolutions: '20',
+              Radius: '1',
+              Length: initialInput,
+              CounterClockWise: '',
             },
-            highlightedHeaderArg: 'length',
+            highlightedHeaderArg: 'CounterClockWise',
           })
+          await page.keyboard.press('Shift+Backspace')
           await expect(cmdBar.currentArgumentInput).toBeVisible()
           await cmdBar.currentArgumentInput
             .locator('.cm-content')
@@ -1305,10 +1318,10 @@ openSketch = startSketchOn(XY)
             stage: 'review',
             headerArguments: {
               AngleStart: '0',
-              CounterClockWise: '',
-              Length: newInput,
-              Radius: '1',
               Revolutions: '20',
+              Radius: '1',
+              Length: newInput,
+              CounterClockWise: '',
             },
             commandName: 'Helix',
           })
