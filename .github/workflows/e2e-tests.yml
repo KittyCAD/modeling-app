@@ -257,7 +257,8 @@ jobs:
             fi
 
       - name: Commit changes, if any
-        if: ${{ needs.conditions.outputs.should-run == 'true' && steps.git-check.outputs.modified == 'true' }}
+        # TODO: find a more reliable way to detect visual changes
+        if: ${{ false && needs.conditions.outputs.should-run == 'true' && steps.git-check.outputs.modified == 'true' }}
         shell: bash
         run: |
           git add e2e/playwright/snapshot-tests.spec.ts-snapshots e2e/playwright/snapshots
