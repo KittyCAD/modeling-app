@@ -242,6 +242,23 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await expect(actual).toBeVisible()
       })
     })
-    test.describe('Help role', () => {})
+    test.describe('Help role', () => {
+      test('Help.Show all commands', async ({ tronApp, cmdBar, page }) => {
+        if (!tronApp) fail()
+        // Run electron snippet to find the Menu!
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) fail()
+          const menu = app.applicationMenu.getMenuItemById(
+            'Help.Show all commands'
+          )
+          if (!menu) fail()
+          menu.click()
+        })
+        // Check the placeholder project name exists
+        const actual = cmdBar.cmdBarElement
+          .getByTestId('cmd-bar-search')
+        await expect(actual).toBeVisible()
+      })
+    })
   })
 })
