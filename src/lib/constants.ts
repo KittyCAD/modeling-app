@@ -180,3 +180,17 @@ export const DEFAULT_DEFAULT_ANGLE_UNIT: UnitAngle = 'degrees'
  * default units.
  */
 export const DEFAULT_DEFAULT_LENGTH_UNIT: UnitLength = 'mm'
+
+/** Real execution. */
+export const EXECUTION_TYPE_REAL = 'real' as const
+/** Mock execution. */
+export const EXECUTION_TYPE_MOCK = 'mock' as const
+/** No execution. */
+export const EXECUTION_TYPE_NONE = 'none' as const
+/**
+ * Enum of engine execution kinds.
+ */
+export type ExecutionType =
+  | typeof EXECUTION_TYPE_REAL
+  | typeof EXECUTION_TYPE_MOCK
+  | typeof EXECUTION_TYPE_NONE
