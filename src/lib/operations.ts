@@ -190,7 +190,8 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
   )
   if (!isPipeExpression) {
     return {
-      reason: 'Only chamfer in pipe expressions are supported for edits',
+      reason:
+        'Only chamfer and fillet in pipe expressions are supported for edits',
     }
   }
 

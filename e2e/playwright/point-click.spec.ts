@@ -2061,7 +2061,7 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
       await operationButton.dblclick({ button: 'left' })
       await expect(
         page.getByText(
-          'Only chamfer in pipe expressions are supported for edit'
+          'Only chamfer and fillet in pipe expressions are supported for edits'
         )
       ).toBeVisible()
       await page.waitForTimeout(1000)
