@@ -19,8 +19,6 @@ import { LowerRightControls } from 'components/LowerRightControls'
 import { ProjectSearchBar, useProjectSearch } from 'components/ProjectSearchBar'
 import { Project } from 'lib/project'
 import { markOnce } from 'lib/performance'
-import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
-import { useProjectsLoader } from 'hooks/useProjectsLoader'
 import { useProjectsContext } from 'hooks/useProjectsContext'
 import { commandBarActor } from 'machines/commandBarMachine'
 import { useCreateFileLinkQuery } from 'hooks/useCreateFileLinkQueryWatcher'
@@ -34,8 +32,13 @@ import { useMenuListener } from 'hooks/useMenu'
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
   const { state, send } = useProjectsContext()
-  const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
-  const { projectsDir } = useProjectsLoader([projectsLoaderTrigger])
+  const [readWriteProjectDir, setReadWriteProjectDir] = useState<{
+    value: boolean
+    error: unknown
+  }>({
+    value: true,
+    error: undefined,
+  })
 
   // Only create the native file menus on desktop
   useEffect(() => {
@@ -151,14 +154,6 @@ const Home = () => {
   )
   const ref = useRef<HTMLDivElement>(null)
 
-  // Re-read projects listing if the projectDir has any updates.
-  useFileSystemWatcher(
-    async () => {
-      setProjectsLoaderTrigger(projectsLoaderTrigger + 1)
-    },
-    projectsDir ? [projectsDir] : []
-  )
-
   const projects = state?.context.projects ?? []
   const [searchParams, setSearchParams] = useSearchParams()
   const { searchResults, query, setQuery } = useProjectSearch(projects)
@@ -176,6 +171,16 @@ const Home = () => {
         defaultDirectory: settings.app.projectDirectory.current,
       },
     })
+
+    // Must be a truthy string, not '' or null or undefined
+    if (settings.app.projectDirectory.current) {
+      window.electron
+        .canReadWriteDirectory(settings.app.projectDirectory.current)
+        .then((res) => {
+          setReadWriteProjectDir(res)
+        })
+        .catch(reportRejection)
+    }
   }, [
     settings.app.projectDirectory.current,
     settings.projects.defaultProjectName.current,
@@ -208,6 +213,18 @@ const Home = () => {
       type: 'Delete project',
       data: { name: project.name || '' },
     })
+  }
+  /** Type narrowing function of unknown error to a string */
+  function errorMessage(error: unknown): string {
+    if (error != undefined && error instanceof Error) {
+      return error.message
+    } else if (error && typeof error === 'object') {
+      return JSON.stringify(error)
+    } else if (typeof error === 'string') {
+      return error
+    } else {
+      return 'Unknown error'
+    }
   }
 
   return (
@@ -304,6 +321,22 @@ const Home = () => {
             </Link>
             .
           </p>
+          {!readWriteProjectDir.value && (
+            <section>
+              <div className="flex items-center select-none">
+                <div className="flex gap-8 items-center justify-between grow bg-destroy-80 text-white py-1 px-4 my-2 rounded-sm grow">
+                  <p className="">{errorMessage(readWriteProjectDir.error)}</p>
+                  <Link
+                    data-testid="project-directory-settings-link"
+                    to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
+                    className="py-1 text-white underline underline-offset-2 text-sm"
+                  >
+                    Change Project Directory
+                  </Link>
+                </div>
+              </div>
+            </section>
+          )}
         </section>
         <section
           data-testid="home-section"
