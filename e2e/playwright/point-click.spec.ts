@@ -2032,6 +2032,43 @@ extrude001 = extrude(sketch001, length = -12)
     })
   })
 
+  test(`Fillet point-and-click edit rejected when not in pipe`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+    toolbar,
+  }) => {
+    const initialCode = `sketch001 = startSketchOn(XY)
+profile001 = circle(
+  sketch001,
+  center = [0, 0],
+  radius = 100,
+  tag = $seg01,
+)
+extrude001 = extrude(profile001, length = 100)
+fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
+`
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
+
+    await test.step('Double-click in feature tree and expect error toast', async () => {
+      await toolbar.openPane('feature-tree')
+      const operationButton = await toolbar.getFeatureTreeOperation('Fillet', 0)
+      await operationButton.dblclick({ button: 'left' })
+      await expect(
+        page.getByText(
+          'Only chamfer in pipe expressions are supported for edit'
+        )
+      ).toBeVisible()
+      await page.waitForTimeout(1000)
+    })
+  })
+
   test(`Fillet point-and-click delete`, async ({
     context,
     page,

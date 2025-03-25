@@ -146,7 +146,7 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
     !operation.labeledArgs ||
     (!isChamfer && !isFillet)
   ) {
-    return baseCommand
+    return { reason: 'Wrong operation type or artifact' }
   }
 
   // Recreate the selection argument (artiface and codeRef) from what we have
@@ -158,14 +158,16 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
     engineCommandManager.artifactGraph
   )
   if (err(edgeArtifact)) {
-    return baseCommand
+    return { reason: "Couldn't find edge artifact" }
   }
 
   let edgeCodeRef = getEdgeCutConsumedCodeRef(
     artifact,
     engineCommandManager.artifactGraph
   )
-  if (err(edgeCodeRef)) return baseCommand
+  if (err(edgeCodeRef)) {
+    return { reason: "Couldn't find edge coderef" }
+  }
   const selection = {
     graphSelections: [
       {
@@ -183,6 +185,15 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
     kclManager.ast,
     sourceRangeFromRust(operation.sourceRange)
   )
+  const isPipeExpression = nodeToEdit.some(
+    ([_, type]) => type === 'PipeExpression'
+  )
+  if (!isPipeExpression) {
+    return {
+      reason: 'Only chamfer in pipe expressions are supported for edits',
+    }
+  }
+
   let argDefaultValues:
     | ModelingCommandSchema['Chamfer']
     | ModelingCommandSchema['Fillet']
@@ -197,7 +208,7 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
       )
     )
     if (err(length) || 'errors' in length) {
-      return baseCommand
+      return { reason: 'Error in length argument retrieval' }
     }
 
     argDefaultValues = {
@@ -213,7 +224,7 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
       )
     )
     if (err(radius) || 'errors' in radius) {
-      return baseCommand
+      return { reason: 'Error in radius argument retrieval' }
     }
 
     argDefaultValues = {
@@ -221,8 +232,6 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
       radius,
       nodeToEdit,
     }
-  } else {
-    return baseCommand
   }
 
   return {
