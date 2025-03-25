@@ -1,5 +1,9 @@
 import { test, expect } from './zoo-test'
 
+/**
+ * Not all menu actions are tested. Some are default electron menu actions.
+ * Test file menu actions that trigger something in the frontend
+ */
 test.describe('Native file menu', { tag: ['@electron'] }, () => {
   test.describe('Home page', () => {
     test.describe('File role', () => {
@@ -168,7 +172,9 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         // Run electron snippet to find the Menu!
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) fail()
-          const menu = app.applicationMenu.getMenuItemById('Edit.Rename project')
+          const menu = app.applicationMenu.getMenuItemById(
+            'Edit.Rename project'
+          )
           if (!menu) fail()
           menu.click()
         })
@@ -184,7 +190,9 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         // Run electron snippet to find the Menu!
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) fail()
-          const menu = app.applicationMenu.getMenuItemById('Edit.Delete project')
+          const menu = app.applicationMenu.getMenuItemById(
+            'Edit.Delete project'
+          )
           if (!menu) fail()
           menu.click()
         })
@@ -195,12 +203,18 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         const expected = 'Delete project'
         expect(actual).toBe(expected)
       })
-      test('Edit.Change project directory', async ({ tronApp, cmdBar, page }) => {
+      test('Edit.Change project directory', async ({
+        tronApp,
+        cmdBar,
+        page,
+      }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) fail()
-          const menu = app.applicationMenu.getMenuItemById('Edit.Change project directory')
+          const menu = app.applicationMenu.getMenuItemById(
+            'Edit.Change project directory'
+          )
           if (!menu) fail()
           menu.click()
         })
@@ -210,7 +224,24 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await expect(projectDirectory).toBeVisible()
       })
     })
-    test.describe('View role', () => {})
+    test.describe('View role', () => {
+      test('View.Command Palette...', async ({ tronApp, cmdBar, page }) => {
+        if (!tronApp) fail()
+        // Run electron snippet to find the Menu!
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) fail()
+          const menu = app.applicationMenu.getMenuItemById(
+            'View.Command Palette...'
+          )
+          if (!menu) fail()
+          menu.click()
+        })
+        // Check the placeholder project name exists
+        const actual = cmdBar.cmdBarElement
+          .getByTestId('cmd-bar-search')
+        await expect(actual).toBeVisible()
+      })
+    })
     test.describe('Help role', () => {})
   })
 })

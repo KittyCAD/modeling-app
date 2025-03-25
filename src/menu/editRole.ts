@@ -29,7 +29,7 @@ export const projectEditRole = (
     submenu: [
       {
         label: 'Rename project',
-        id:'Edit.Rename project',
+        id: 'Edit.Rename project',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'Edit.Rename project',
