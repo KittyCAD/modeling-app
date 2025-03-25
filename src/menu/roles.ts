@@ -29,7 +29,7 @@ type EditRoleLabel =
   | 'Speech'
 
 type HelpRoleLabel =
-  | 'Report a bug'
+  | 'Refresh and report a bug'
   | 'Request a feature'
   | 'Ask the community discord'
   | 'Ask the community discourse'
