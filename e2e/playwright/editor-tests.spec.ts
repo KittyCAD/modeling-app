@@ -83,7 +83,7 @@ sketch001 = startSketchOn(XY)
     ).toHaveCount(1)
     await expect(
       page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(2)
+    ).toHaveCount(1)
 
     // Add whitespace to the end of the code.
     await u.codeLocator.click()

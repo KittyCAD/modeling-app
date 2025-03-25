@@ -179,6 +179,13 @@ export class ElectronZoo {
 
     await this.context.tracing.startChunk()
 
+    // THIS IS ABSOLUTELY NECESSARY TO CHANGE THE PROJECT DIRECTORY BETWEEN
+    // TESTS BECAUSE OF THE ELECTRON INSTANCE REUSE.
+    await this.electron?.evaluate(({ app }, projectDirName) => {
+      // @ts-ignore can't declaration merge see main.ts
+      app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
+    }, this.projectDirName)
+
     await setup(this.context, this.page, this.projectDirName, testInfo)
 
     await this.cleanProjectDir()
@@ -208,14 +215,6 @@ export class ElectronZoo {
     }
 
     await this.page.setBodyDimensions(this.viewPortSize)
-
-    // THIS IS ABSOLUTELY NECESSARY TO CHANGE THE PROJECT DIRECTORY BETWEEN
-    // TESTS BECAUSE OF THE ELECTRON INSTANCE REUSE.
-    await this.electron?.evaluate(({ app }, projectDirName) => {
-      // @ts-ignore can't declaration merge see main.ts
-      app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
-    }, this.projectDirName)
-
 
     this.context.folderSetupFn = async function (fn) {
       return fn(that.projectDirName)
