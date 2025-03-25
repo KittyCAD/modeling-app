@@ -1,88 +1,86 @@
+import { perpendicularDistance } from 'sketch-helpers'
+
+import type { Name } from '@rust/kcl-lib/bindings/Name'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
+
 import {
-  Path,
-  Sketch,
-  SourceRange,
-  PathToNode,
-  Program,
-  PipeExpression,
-  CallExpression,
-  CallExpressionKw,
-  VariableDeclarator,
-  Expr,
-  VariableDeclaration,
-  sketchFromKclValue,
-  topLevelRange,
-  VariableMap,
-} from 'lang/wasm'
+  ARG_CIRCLE_CENTER,
+  ARG_CIRCLE_RADIUS,
+  ARG_END,
+  ARG_END_ABSOLUTE,
+  ARG_LENGTH,
+  ARG_TAG,
+  DETERMINING_ARGS,
+} from '@src/lang/constants'
 import {
-  ARG_INDEX_FIELD,
-  getNodeFromPath,
-  getNodeFromPathCurry,
-  LABELED_ARG_FIELD,
-} from 'lang/queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+  createArrayExpression,
+  createCallExpression,
+  createCallExpressionStdLibKw,
+  createLabeledArg,
+  createLiteral,
+  createObjectExpression,
+  createPipeExpression,
+  createPipeSubstitution,
+  createTagDeclarator,
+  findUniqueName,
+  nonCodeMetaEmpty,
+} from '@src/lang/create'
+import type { ToolTip } from '@src/lang/langHelpers'
+import { toolTips } from '@src/lang/langHelpers'
+import {
+  mutateArrExp,
+  mutateKwArg,
+  mutateObjExpProp,
+  removeKwArgs,
+  splitPathAtPipeExpression,
+} from '@src/lang/modifyAst'
+import { getNodeFromPath, getNodeFromPathCurry } from '@src/lang/queryAst'
+import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   isLiteralArrayOrStatic,
   isNotLiteralArrayOrStatic,
-} from 'lang/std/sketchcombos'
-import { toolTips, ToolTip } from 'lang/langHelpers'
-import {
-  createPipeExpression,
-  mutateKwArg,
-  nonCodeMetaEmpty,
-  removeKwArgs,
-  splitPathAtPipeExpression,
-} from '../modifyAst'
-
-import {
-  SketchLineHelper,
-  ConstrainInfo,
-  ArrayItemInput,
-  ObjectPropertyInput,
-  SingleValueInput,
+} from '@src/lang/std/sketchcombos'
+import type {
   AddTagInfo,
+  ArrayItemInput,
+  ConstrainInfo,
+  CreatedSketchExprResult,
+  InputArgKeys,
+  ObjectPropertyInput,
+  RawArgs,
   SegmentInputs,
   SimplifiedArgDetails,
-  RawArgs,
-  CreatedSketchExprResult,
+  SingleValueInput,
+  SketchLineHelper,
   SketchLineHelperKw,
-  InputArgKeys,
-} from 'lang/std/stdTypes'
-
-import {
-  createLiteral,
-  createTagDeclarator,
-  createCallExpression,
-  createCallExpressionStdLibKw,
-  createArrayExpression,
-  createLabeledArg,
-  createPipeSubstitution,
-  createObjectExpression,
-  mutateArrExp,
-  mutateObjExpProp,
-  findUniqueName,
-} from 'lang/modifyAst'
-import { roundOff, getLength, getAngle, isArray } from 'lib/utils'
-import { err } from 'lib/trap'
-import { perpendicularDistance } from 'sketch-helpers'
-import { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
-import { EdgeCutInfo } from 'machines/modelingMachine'
-import { Node } from '@rust/kcl-lib/bindings/Node'
+} from '@src/lang/std/stdTypes'
 import {
   findKwArg,
-  findKwArgWithIndex,
   findKwArgAny,
   findKwArgAnyIndex,
-} from 'lang/util'
-import { Name } from '@rust/kcl-lib/bindings/Name'
-
-export const ARG_TAG = 'tag'
-export const ARG_END = 'end'
-export const ARG_LENGTH = 'length'
-export const ARG_END_ABSOLUTE = 'endAbsolute'
-export const ARG_CIRCLE_CENTER = 'center'
-export const ARG_CIRCLE_RADIUS = 'radius'
-export const DETERMINING_ARGS = [ARG_LENGTH, ARG_END, ARG_END_ABSOLUTE]
+  findKwArgWithIndex,
+  topLevelRange,
+} from '@src/lang/util'
+import type {
+  CallExpression,
+  CallExpressionKw,
+  Expr,
+  Path,
+  PathToNode,
+  PipeExpression,
+  Program,
+  Sketch,
+  SourceRange,
+  VariableDeclaration,
+  VariableDeclarator,
+  VariableMap,
+} from '@src/lang/wasm'
+import { sketchFromKclValue } from '@src/lang/wasm'
+import { err } from '@src/lib/trap'
+import { getAngle, getLength, isArray, roundOff } from '@src/lib/utils'
+import type { EdgeCutInfo } from '@src/machines/modelingMachine'
 
 const STRAIGHT_SEGMENT_ERR = new Error(
   'Invalid input, expected "straight-segment"'
@@ -158,10 +156,10 @@ const constrainInfo = (
     g === 'singleValue'
       ? { type: 'singleValue' }
       : typeof g === 'number'
-      ? { type: 'arrayItem', index: g }
-      : typeof g === 'string'
-      ? { type: 'objectProperty', key: g }
-      : undefined,
+        ? { type: 'arrayItem', index: g }
+        : typeof g === 'string'
+          ? { type: 'objectProperty', key: g }
+          : undefined,
   pathToNode: e,
   stdLibFnName: f,
 })
@@ -178,7 +176,7 @@ const commonConstraintInfoHelper = (
     {
       arrayInput?: 0 | 1
       objInput?: ObjectPropertyInput<any>['key']
-    }
+    },
   ],
   code: string,
   pathToNode: PathToNode,
@@ -3459,10 +3457,11 @@ function isAngleLiteral(lineArugement: Expr): boolean {
   return lineArugement?.type === 'ArrayExpression'
     ? isLiteralArrayOrStatic(lineArugement.elements[0])
     : lineArugement?.type === 'ObjectExpression'
-    ? isLiteralArrayOrStatic(
-        lineArugement.properties.find(({ key }) => key.name === 'angle')?.value
-      )
-    : false
+      ? isLiteralArrayOrStatic(
+          lineArugement.properties.find(({ key }) => key.name === 'angle')
+            ?.value
+        )
+      : false
 }
 
 type addTagFn = (
@@ -3753,6 +3752,7 @@ export function isAbsoluteLine(lineCall: CallExpressionKw): boolean | Error {
       return new Error(
         `${name} call has neither ${ARG_END} nor ${ARG_END_ABSOLUTE} params`
       )
+    case 'circle':
     case 'circleThreePoint':
       return false
   }

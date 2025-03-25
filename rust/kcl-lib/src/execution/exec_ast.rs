@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
+use super::kcl_value::TypeDef;
 use crate::{
     engine::ExecutionKind,
     errors::{KclError, KclErrorDetails},
@@ -31,8 +32,6 @@ use crate::{
     CompilationError,
 };
 
-use super::kcl_value::TypeDef;
-
 enum StatementKind<'a> {
     Declaration { name: &'a str },
     Expression,
@@ -59,11 +58,17 @@ impl ExecutorContext {
         for annotation in annotations {
             if annotation.name() == Some(annotations::SETTINGS) {
                 if matches!(body_type, BodyType::Root) {
-                    exec_state.mod_local.settings.update_from_annotation(annotation)?;
+                    if exec_state.mod_local.settings.update_from_annotation(annotation)? {
+                        exec_state.mod_local.explicit_length_units = true;
+                    }
                     let new_units = exec_state.length_unit();
                     if !self.engine.execution_kind().await.is_isolated() {
                         self.engine
-                            .set_units(new_units.into(), annotation.as_source_range())
+                            .set_units(
+                                new_units.into(),
+                                annotation.as_source_range(),
+                                exec_state.id_generator(),
+                            )
                             .await?;
                     }
                 } else {
@@ -105,12 +110,7 @@ impl ExecutorContext {
         let old_units = exec_state.length_unit();
         let original_execution = self.engine.replace_execution_kind(exec_kind).await;
 
-        let mut local_state = ModuleState::new(
-            &self.settings,
-            path.std_path(),
-            exec_state.stack().memory.clone(),
-            Some(module_id),
-        );
+        let mut local_state = ModuleState::new(path.std_path(), exec_state.stack().memory.clone(), Some(module_id));
         if !preserve_mem {
             std::mem::swap(&mut exec_state.mod_local, &mut local_state);
         }
@@ -142,7 +142,9 @@ impl ExecutorContext {
         // command and we'd need to flush the batch again.
         // This avoids that.
         if !exec_kind.is_isolated() && new_units != old_units && *path != ModulePath::Main {
-            self.engine.set_units(old_units.into(), Default::default()).await?;
+            self.engine
+                .set_units(old_units.into(), Default::default(), exec_state.id_generator())
+                .await?;
         }
         self.engine.replace_execution_kind(original_execution).await;
 
@@ -299,7 +301,7 @@ impl ExecutorContext {
                     let impl_kind = annotations::get_impl(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
                     match impl_kind {
                         annotations::Impl::Rust => {
-                            let std_path = match &exec_state.mod_local.settings.std_path {
+                            let std_path = match &exec_state.mod_local.std_path {
                                 Some(p) => p,
                                 None => {
                                     return Err(KclError::Semantic(KclErrorDetails {
@@ -585,7 +587,7 @@ impl ExecutorContext {
     ) -> Result<KclValue, KclError> {
         let item = match init {
             Expr::None(none) => KclValue::from(none),
-            Expr::Literal(literal) => KclValue::from_literal((**literal).clone(), &exec_state.mod_local.settings),
+            Expr::Literal(literal) => KclValue::from_literal((**literal).clone(), exec_state),
             Expr::TagDeclarator(tag) => tag.execute(exec_state).await?,
             Expr::Name(name) => {
                 let value = name.get_result(exec_state, self).await?.clone();
@@ -616,7 +618,7 @@ impl ExecutorContext {
                     .unwrap_or(false);
 
                 if rust_impl {
-                    if let Some(std_path) = &exec_state.mod_local.settings.std_path {
+                    if let Some(std_path) = &exec_state.mod_local.std_path {
                         let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
                         KclValue::Function {
                             value: FunctionSource::Std {
@@ -719,10 +721,7 @@ impl BinaryPart {
     #[async_recursion]
     pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         match self {
-            BinaryPart::Literal(literal) => Ok(KclValue::from_literal(
-                (**literal).clone(),
-                &exec_state.mod_local.settings,
-            )),
+            BinaryPart::Literal(literal) => Ok(KclValue::from_literal((**literal).clone(), exec_state)),
             BinaryPart::Name(name) => name.get_result(exec_state, ctx).await.cloned(),
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, ctx).await,
             BinaryPart::CallExpression(call_expression) => call_expression.execute(exec_state, ctx).await,
@@ -1176,7 +1175,7 @@ impl Node<CallExpressionKw> {
                     ));
                 }
 
-                let op = if func.feature_tree_operation() {
+                let op = if func.feature_tree_operation() && !ctx.is_isolated_execution().await {
                     let op_labeled_args = args
                         .kw_args
                         .labeled
@@ -1246,24 +1245,26 @@ impl Node<CallExpressionKw> {
                 // exec_state.
                 let func = fn_name.get_result(exec_state, ctx).await?.clone();
 
-                // Track call operation.
-                let op_labeled_args = args
-                    .kw_args
-                    .labeled
-                    .iter()
-                    .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
-                    .collect();
-                exec_state.global.operations.push(Operation::UserDefinedFunctionCall {
-                    name: Some(fn_name.to_string()),
-                    function_source_range: func.function_def_source_range().unwrap_or_default(),
-                    unlabeled_arg: args
+                if !ctx.is_isolated_execution().await {
+                    // Track call operation.
+                    let op_labeled_args = args
                         .kw_args
-                        .unlabeled
-                        .as_ref()
-                        .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
-                    labeled_args: op_labeled_args,
-                    source_range: callsite,
-                });
+                        .labeled
+                        .iter()
+                        .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
+                        .collect();
+                    exec_state.global.operations.push(Operation::UserDefinedFunctionCall {
+                        name: Some(fn_name.to_string()),
+                        function_source_range: func.function_def_source_range().unwrap_or_default(),
+                        unlabeled_arg: args
+                            .kw_args
+                            .unlabeled
+                            .as_ref()
+                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
+                        labeled_args: op_labeled_args,
+                        source_range: callsite,
+                    });
+                }
 
                 let Some(fn_src) = func.as_fn() else {
                     return Err(KclError::Semantic(KclErrorDetails {
@@ -1290,8 +1291,10 @@ impl Node<CallExpressionKw> {
                     })
                 })?;
 
-                // Track return operation.
-                exec_state.global.operations.push(Operation::UserDefinedFunctionReturn);
+                if !ctx.is_isolated_execution().await {
+                    // Track return operation.
+                    exec_state.global.operations.push(Operation::UserDefinedFunctionReturn);
+                }
 
                 Ok(result)
             }
@@ -1328,7 +1331,7 @@ impl Node<CallExpression> {
                     ));
                 }
 
-                let op = if func.feature_tree_operation() {
+                let op = if func.feature_tree_operation() && !ctx.is_isolated_execution().await {
                     let op_labeled_args = func
                         .args(false)
                         .iter()
@@ -1386,15 +1389,17 @@ impl Node<CallExpression> {
                 // exec_state.
                 let func = fn_name.get_result(exec_state, ctx).await?.clone();
 
-                // Track call operation.
-                exec_state.global.operations.push(Operation::UserDefinedFunctionCall {
-                    name: Some(fn_name.to_string()),
-                    function_source_range: func.function_def_source_range().unwrap_or_default(),
-                    unlabeled_arg: None,
-                    // TODO: Add the arguments for legacy positional parameters.
-                    labeled_args: Default::default(),
-                    source_range: callsite,
-                });
+                if !ctx.is_isolated_execution().await {
+                    // Track call operation.
+                    exec_state.global.operations.push(Operation::UserDefinedFunctionCall {
+                        name: Some(fn_name.to_string()),
+                        function_source_range: func.function_def_source_range().unwrap_or_default(),
+                        unlabeled_arg: None,
+                        // TODO: Add the arguments for legacy positional parameters.
+                        labeled_args: Default::default(),
+                        source_range: callsite,
+                    });
+                }
 
                 let Some(fn_src) = func.as_fn() else {
                     return Err(KclError::Semantic(KclErrorDetails {
@@ -1420,8 +1425,10 @@ impl Node<CallExpression> {
                     })
                 })?;
 
-                // Track return operation.
-                exec_state.global.operations.push(Operation::UserDefinedFunctionReturn);
+                if !ctx.is_isolated_execution().await {
+                    // Track return operation.
+                    exec_state.global.operations.push(Operation::UserDefinedFunctionReturn);
+                }
 
                 Ok(result)
             }
@@ -1854,15 +1861,12 @@ fn assign_args_to_params(
         return Err(err_wrong_number_args);
     }
 
-    let mem = &mut exec_state.mod_local.stack;
-    let settings = &exec_state.mod_local.settings;
-
     // Add the arguments to the memory.  A new call frame should have already
     // been created.
     for (index, param) in function_expression.params.iter().enumerate() {
         if let Some(arg) = args.get(index) {
             // Argument was provided.
-            mem.add(
+            exec_state.mut_stack().add(
                 param.identifier.name.clone(),
                 arg.value.clone(),
                 (&param.identifier).into(),
@@ -1872,11 +1876,10 @@ fn assign_args_to_params(
             if let Some(ref default_val) = param.default_value {
                 // If the corresponding parameter is optional,
                 // then it's fine, the user doesn't need to supply it.
-                mem.add(
-                    param.identifier.name.clone(),
-                    KclValue::from_default_param(default_val.clone(), settings),
-                    (&param.identifier).into(),
-                )?;
+                let value = KclValue::from_default_param(default_val.clone(), exec_state);
+                exec_state
+                    .mut_stack()
+                    .add(param.identifier.name.clone(), value, (&param.identifier).into())?;
             } else {
                 // But if the corresponding parameter was required,
                 // then the user has called with too few arguments.
@@ -1916,8 +1919,6 @@ fn assign_args_to_params_kw(
     // Add the arguments to the memory.  A new call frame should have already
     // been created.
     let source_ranges = vec![function_expression.into()];
-    let mem = &mut exec_state.mod_local.stack;
-    let settings = &exec_state.mod_local.settings;
 
     for param in function_expression.params.iter() {
         if param.labeled {
@@ -1925,7 +1926,7 @@ fn assign_args_to_params_kw(
             let arg_val = match arg {
                 Some(arg) => arg.value.clone(),
                 None => match param.default_value {
-                    Some(ref default_val) => KclValue::from_default_param(default_val.clone(), settings),
+                    Some(ref default_val) => KclValue::from_default_param(default_val.clone(), exec_state),
                     None => {
                         return Err(KclError::Semantic(KclErrorDetails {
                             source_ranges,
@@ -1937,7 +1938,9 @@ fn assign_args_to_params_kw(
                     }
                 },
             };
-            mem.add(param.identifier.name.clone(), arg_val, (&param.identifier).into())?;
+            exec_state
+                .mut_stack()
+                .add(param.identifier.name.clone(), arg_val, (&param.identifier).into())?;
         } else {
             let Some(unlabeled) = args.unlabeled.take() else {
                 let param_name = &param.identifier.name;
@@ -1954,7 +1957,7 @@ fn assign_args_to_params_kw(
                     })
                 });
             };
-            mem.add(
+            exec_state.mut_stack().add(
                 param.identifier.name.clone(),
                 unlabeled.value.clone(),
                 (&param.identifier).into(),

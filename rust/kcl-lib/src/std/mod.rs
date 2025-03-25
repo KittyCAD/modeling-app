@@ -278,6 +278,9 @@ pub enum FunctionKind {
     UserDefined,
 }
 
+/// The default tolerance for modeling commands in [`kittycad_modeling_cmds::length_unit::LengthUnit`].
+const DEFAULT_TOLERANCE: f64 = 0.0000001;
+
 /// Compute the length of the given leg.
 pub async fn leg_length(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (hypotenuse, leg, ty) = args.get_hypotenuse_leg()?;

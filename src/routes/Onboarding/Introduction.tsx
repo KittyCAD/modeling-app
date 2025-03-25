@@ -1,19 +1,22 @@
-import { OnboardingButtons, useDemoCode } from '.'
-import { onboardingPaths } from 'routes/Onboarding/paths'
-import { Themes, getSystemTheme } from 'lib/theme'
-import { bracket } from 'lib/exampleKcl'
-import { createAndOpenNewTutorialProject } from 'lib/desktopFS'
-import { isDesktop } from 'lib/isDesktop'
-import { useNavigate, useRouteLoaderData } from 'react-router-dom'
-import { codeManager, kclManager } from 'lib/singletons'
-import { APP_NAME } from 'lib/constants'
 import { useEffect, useState } from 'react'
-import { IndexLoaderData } from 'lib/types'
-import { PATHS } from 'lib/paths'
-import { useFileContext } from 'hooks/useFileContext'
-import { useLspContext } from 'components/LspProvider'
-import { reportRejection } from 'lib/trap'
-import { useSettings } from 'machines/appMachine'
+import { useNavigate, useRouteLoaderData } from 'react-router-dom'
+
+import { useLspContext } from '@src/components/LspProvider'
+import { useFileContext } from '@src/hooks/useFileContext'
+import { isKclEmptyOrOnlySettings } from '@src/lang/wasm'
+import { APP_NAME } from '@src/lib/constants'
+import { createAndOpenNewTutorialProject } from '@src/lib/desktopFS'
+import { bracket } from '@src/lib/exampleKcl'
+import { isDesktop } from '@src/lib/isDesktop'
+import { PATHS } from '@src/lib/paths'
+import { codeManager, kclManager } from '@src/lib/singletons'
+import { Themes, getSystemTheme } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import type { IndexLoaderData } from '@src/lib/types'
+import { useSettings } from '@src/machines/appMachine'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
+import { OnboardingButtons, useDemoCode } from '@src/routes/Onboarding/utils'
 
 /**
  * Show either a welcome screen or a warning screen
@@ -21,7 +24,7 @@ import { useSettings } from 'machines/appMachine'
  */
 export default function OnboardingIntroduction() {
   const [shouldShowWarning, setShouldShowWarning] = useState(
-    codeManager.code !== '' && codeManager.code !== bracket
+    !isKclEmptyOrOnlySettings(codeManager.code) && codeManager.code !== bracket
   )
 
   return shouldShowWarning ? (

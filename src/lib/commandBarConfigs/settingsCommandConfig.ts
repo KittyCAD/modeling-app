@@ -1,26 +1,27 @@
-import {
+import decamelize from 'decamelize'
+import type { ActorRefFrom, AnyStateMachine } from 'xstate'
+
+import type {
   Command,
   CommandArgument,
   CommandArgumentConfig,
-} from '../commandTypes'
-import {
-  SettingsPaths,
-  SettingsLevel,
-  SettingProps,
-  SetEventTypes,
-} from 'lib/settings/settingsTypes'
-import { settingsMachine } from 'machines/settingsMachine'
-import { PathValue } from 'lib/types'
-import { ActorRefFrom, AnyStateMachine } from 'xstate'
-import { getPropertyByPath } from 'lib/objectPropertyByPath'
-import { buildCommandArgument } from 'lib/createMachineCommand'
-import decamelize from 'decamelize'
-import { isDesktop } from 'lib/isDesktop'
-import {
-  createSettings,
+} from '@src/lib/commandTypes'
+import { buildCommandArgument } from '@src/lib/createMachineCommand'
+import { isDesktop } from '@src/lib/isDesktop'
+import { getPropertyByPath } from '@src/lib/objectPropertyByPath'
+import type {
   Setting,
   SettingsType,
-} from 'lib/settings/initialSettings'
+  createSettings,
+} from '@src/lib/settings/initialSettings'
+import type {
+  SetEventTypes,
+  SettingProps,
+  SettingsLevel,
+  SettingsPaths,
+} from '@src/lib/settings/settingsTypes'
+import type { PathValue } from '@src/lib/types'
+import type { settingsMachine } from '@src/machines/settingsMachine'
 
 // An array of the paths to all of the settings that have commandConfigs
 export const settingsWithCommandConfigs = (s: SettingsType) =>

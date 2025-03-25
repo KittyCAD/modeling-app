@@ -1,14 +1,16 @@
-import { useModelingContext } from 'hooks/useModelingContext'
-import { kclManager } from 'lib/singletons'
-import { useKclContext } from 'lang/KclProvider'
-import { findUniqueName } from 'lang/modifyAst'
-import { PrevVariable, findAllPreviousVariables } from 'lang/queryAst'
-import { Expr, SourceRange } from 'lang/wasm'
-import { useEffect, useRef, useState } from 'react'
-import { getCalculatedKclExpressionValue } from './kclHelpers'
-import { parse, resultIsOk } from 'lang/wasm'
-import { err } from 'lib/trap'
-import { getSafeInsertIndex } from 'lang/queryAst/getSafeInsertIndex'
+import { useEffect, useMemo, useRef, useState } from 'react'
+
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useKclContext } from '@src/lang/KclProvider'
+import { findUniqueName } from '@src/lang/create'
+import type { PrevVariable } from '@src/lang/queryAst'
+import { findAllPreviousVariables } from '@src/lang/queryAst'
+import { getSafeInsertIndex } from '@src/lang/queryAst/getSafeInsertIndex'
+import type { Expr, SourceRange } from '@src/lang/wasm'
+import { parse, resultIsOk } from '@src/lang/wasm'
+import { getCalculatedKclExpressionValue } from '@src/lib/kclHelpers'
+import { kclManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
 
 const isValidVariableName = (name: string) =>
   /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)
@@ -35,7 +37,12 @@ export function useCalculateKclExpression({
   isNewVariableNameUnique: boolean
   newVariableInsertIndex: number
   setNewVariableName: (a: string) => void
+  isExecuting: boolean
 } {
+  // Executing the mini AST to calculate the expression value
+  // is asynchronous. Use this state variable to track if execution
+  // has completed
+  const [isExecuting, setIsExecuting] = useState(false)
   const { variables, code } = useKclContext()
   const { context } = useModelingContext()
   // If there is no selection, use the end of the code
@@ -44,8 +51,11 @@ export function useCalculateKclExpression({
     | (typeof context)['selectionRanges']['graphSelections'][number]['codeRef']['range']
     | undefined = context.selectionRanges.graphSelections[0]?.codeRef?.range
   // If there is no selection, use the end of the code
-  const endingSourceRange = sourceRange ||
-    selectionRange || [code.length, code.length]
+  // If we don't memoize this, we risk an infinite set/read state loop
+  const endingSourceRange = useMemo(
+    () => sourceRange || selectionRange || [code.length, code.length],
+    [code, selectionRange, sourceRange]
+  )
   const inputRef = useRef<HTMLInputElement>(null)
   const [availableVarInfo, setAvailableVarInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>
@@ -107,6 +117,7 @@ export function useCalculateKclExpression({
   useEffect(() => {
     const execAstAndSetResult = async () => {
       const result = await getCalculatedKclExpressionValue(value)
+      setIsExecuting(false)
       if (result instanceof Error || 'errors' in result || !result.astNode) {
         setCalcResult('NAN')
         setValueNode(null)
@@ -118,8 +129,10 @@ export function useCalculateKclExpression({
       result?.astNode && setValueNode(result.astNode)
     }
     if (!value) return
+    setIsExecuting(true)
     execAstAndSetResult().catch(() => {
       setCalcResult('NAN')
+      setIsExecuting(false)
       setValueNode(null)
     })
   }, [value, availableVarInfo, code, kclManager.variables])
@@ -133,5 +146,6 @@ export function useCalculateKclExpression({
     isNewVariableNameUnique,
     setNewVariableName,
     inputRef,
+    isExecuting,
   }
 }

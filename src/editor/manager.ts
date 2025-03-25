@@ -1,19 +1,25 @@
-import { EditorView, ViewUpdate } from '@codemirror/view'
+import { redo, undo } from '@codemirror/commands'
 import { syntaxTree } from '@codemirror/language'
-import { EditorSelection, Annotation, Transaction } from '@codemirror/state'
-import { engineCommandManager, kclManager } from 'lib/singletons'
-import { modelingMachine, ModelingMachineEvent } from 'machines/modelingMachine'
-import { Selections, Selection, processCodeMirrorRanges } from 'lib/selections'
-import { undo, redo } from '@codemirror/commands'
-import { addLineHighlight, addLineHighlightEvent } from './highlightextension'
+import type { Diagnostic } from '@codemirror/lint'
+import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint'
+import { Annotation, EditorSelection, Transaction } from '@codemirror/state'
+import type { ViewUpdate } from '@codemirror/view'
+import { EditorView } from '@codemirror/view'
+import type { StateFrom } from 'xstate'
+
 import {
-  Diagnostic,
-  forEachDiagnostic,
-  setDiagnosticsEffect,
-} from '@codemirror/lint'
-import { StateFrom } from 'xstate'
-import { markOnce } from 'lib/performance'
-import { kclEditorActor } from 'machines/kclEditorMachine'
+  addLineHighlight,
+  addLineHighlightEvent,
+} from '@src/editor/highlightextension'
+import { markOnce } from '@src/lib/performance'
+import type { Selection, Selections } from '@src/lib/selections'
+import { processCodeMirrorRanges } from '@src/lib/selections'
+import { engineCommandManager, kclManager } from '@src/lib/singletons'
+import { kclEditorActor } from '@src/machines/kclEditorMachine'
+import type {
+  ModelingMachineEvent,
+  modelingMachine,
+} from '@src/machines/modelingMachine'
 
 declare global {
   interface Window {
@@ -374,7 +380,7 @@ export default class EditorManager {
       selectionRanges: this._selectionRanges,
       isShiftDown: this._isShiftDown,
       ast: kclManager.ast,
-      artifactGraph: engineCommandManager.artifactGraph,
+      artifactGraph: kclManager.artifactGraph,
     })
 
     if (!eventInfo) {

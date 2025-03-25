@@ -229,10 +229,6 @@ jobs:
           timeout_minutes: 30
           max_attempts: 3
         env:
-          CI: true
-          NODE_ENV: development
-          VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-          VITE_KC_SKIP_AUTH: true
           token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
           snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
 
@@ -257,7 +253,8 @@ jobs:
             fi
 
       - name: Commit changes, if any
-        if: ${{ needs.conditions.outputs.should-run == 'true' && steps.git-check.outputs.modified == 'true' }}
+        # TODO: find a more reliable way to detect visual changes
+        if: ${{ false && needs.conditions.outputs.should-run == 'true' && steps.git-check.outputs.modified == 'true' }}
         shell: bash
         run: |
           git add e2e/playwright/snapshot-tests.spec.ts-snapshots e2e/playwright/snapshots
@@ -343,7 +340,7 @@ jobs:
         run: yarn tronb:vite:dev
 
       - name: Install vector
-        if: contains(matrix.os, 'ubuntu')
+        if: ${{ needs.conditions.outputs.should-run == 'true' && contains(matrix.os, 'ubuntu') }}
         shell: bash
         run: |
           curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh
@@ -376,11 +373,7 @@ jobs:
           timeout_minutes: 45
           max_attempts: 15
         env:
-          CI: true
           FAIL_ON_CONSOLE_ERRORS: true
-          NODE_ENV: development
-          VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-          VITE_KC_SKIP_AUTH: true
           token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
 
       - uses: actions/upload-artifact@v4

@@ -15,14 +15,6 @@ description: Artifact commands i-beam.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
@@ -156,7 +148,7 @@ description: Artifact commands i-beam.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.1465,
+          "x": 0.5535,
           "y": 1.707,
           "z": 0.0
         },
@@ -171,9 +163,25 @@ description: Artifact commands i-beam.kcl
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
+        "type": "tangential_arc",
+        "radius": 0.457,
+        "offset": {
+          "unit": "degrees",
+          "value": 90.0
+        }
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
         "type": "line",
         "end": {
-          "x": 0.1465,
+          "x": 0.0965,
           "y": 0.0,
           "z": 0.0
         },
@@ -243,7 +251,7 @@ description: Artifact commands i-beam.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 24.0,
+      "distance": 72.00000000000001,
       "faces": null
     }
   },

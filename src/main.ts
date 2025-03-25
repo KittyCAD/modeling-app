@@ -1,36 +1,54 @@
 // Some of the following was taken from bits and pieces of the vite-typescript
 // template that ElectronJS provides.
-import dotenv from 'dotenv'
-import {
-  app,
-  BrowserWindow,
-  ipcMain,
-  dialog,
-  shell,
-  nativeTheme,
-  desktopCapturer,
-  systemPreferences,
-  screen,
-} from 'electron'
-import path from 'path'
-import { Issuer } from 'openid-client'
-import { Bonjour, Service } from 'bonjour-service'
 // @ts-ignore: TS1343
 import * as kittycad from '@kittycad/lib/import'
+import * as packageJSON from '@root/package.json'
+import type { Service } from 'bonjour-service'
+import { Bonjour } from 'bonjour-service'
+import dotenv from 'dotenv'
+import {
+  BrowserWindow,
+  Menu,
+  app,
+  desktopCapturer,
+  dialog,
+  ipcMain,
+  nativeTheme,
+  screen,
+  shell,
+  systemPreferences,
+} from 'electron'
 import electronUpdater, { type AppUpdater } from 'electron-updater'
-import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
-import { reportRejection } from 'lib/trap'
-import { ZOO_STUDIO_PROTOCOL } from 'lib/constants'
+import { Issuer } from 'openid-client'
+import path from 'path'
+
 import {
   argvFromYargs,
   getPathOrUrlFromArgs,
   parseCLIArgs,
-} from './commandLineArgs'
-
-import * as packageJSON from '../package.json'
+} from '@src/commandLineArgs'
+import { ZOO_STUDIO_PROTOCOL } from '@src/lib/constants'
+import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
+import { reportRejection } from '@src/lib/trap'
+import {
+  buildAndSetMenuForFallback,
+  buildAndSetMenuForModelingPage,
+  buildAndSetMenuForProjectPage,
+  disableMenu,
+  enableMenu,
+} from '@src/menu'
 
 let mainWindow: BrowserWindow | null = null
+
+// Preemptive code, GC may delete a menu while a user is using it as seen in VSCode
+// as seen on https://github.com/microsoft/vscode/issues/55347
+let oldMenus: Menu[] = []
+const scheduleMenuGC = () => {
+  setTimeout(() => {
+    oldMenus = []
+  }, 10000)
+}
 
 // Check the command line arguments for a project path
 const args = parseCLIArgs(process.argv)
@@ -215,6 +233,8 @@ app.on('ready', (event, data) => {
   if (mainWindow) return
   // Create the mainWindow
   mainWindow = createWindow()
+  // Set menu application to null to avoid default electron menu
+  Menu.setApplicationMenu(null)
 })
 
 // For now there is no good reason to separate these out to another file(s)
@@ -351,10 +371,7 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
 ipcMain.handle('kittycad', (event, data) => {
   return data.access
     .split('.')
-    .reduce(
-      (obj: any, prop: any) => obj[prop],
-      kittycad
-    )(data.args)
+    .reduce((obj: any, prop: any) => obj[prop], kittycad)(data.args)
 })
 
 // Used to find other devices on the local network, e.g. 3D printers, CNC machines, etc.
@@ -384,6 +401,43 @@ ipcMain.handle('find_machine_api', () => {
       }
     )
   })
+})
+
+// Given the route create the new context menu
+// internal menu state will be reset since it creates a new one from
+// the initial state
+ipcMain.handle('create-menu', (event, data) => {
+  const page = data.page
+
+  if (!(page === 'project' || page === 'modeling' || page === 'fallback')) {
+    return
+  }
+
+  // Store old menu in our array to avoid GC to collect the menu and crash
+  const oldMenu = Menu.getApplicationMenu()
+  if (oldMenu) {
+    oldMenus.push(oldMenu)
+  }
+
+  if (page === 'project' && mainWindow) {
+    buildAndSetMenuForProjectPage(mainWindow)
+  } else if (page === 'modeling' && mainWindow) {
+    buildAndSetMenuForModelingPage(mainWindow)
+  } else if (page === 'fallback' && mainWindow) {
+    buildAndSetMenuForFallback(mainWindow)
+  }
+
+  scheduleMenuGC()
+})
+
+ipcMain.handle('enable-menu', (event, data) => {
+  const menuId = data.menuId
+  enableMenu(menuId)
+})
+
+ipcMain.handle('disable-menu', (event, data) => {
+  const menuId = data.menuId
+  disableMenu(menuId)
 })
 
 export function getAutoUpdater(): AppUpdater {

@@ -1,7 +1,6 @@
 // Shelf Bracket
 // This is a bracket that holds a shelf. It is made of aluminum and is designed to hold a force of 300 lbs. The bracket is 6 inches wide and the force is applied at the end of the shelf, 12 inches from the wall. The bracket has a factor of safety of 1.2. The legs of the bracket are 5 inches and 2 inches long. The thickness of the bracket is calculated from the constraints provided.
 
-
 // Define constants
 sigmaAllow = 35000 // psi (6061-T6 aluminum)
 width = 6 // inch
@@ -12,14 +11,16 @@ wallMountL = 2 // inches
 shelfDepth = 12 // Shelf is 12 inches in depth from the wall
 moment = shelfDepth * p // assume the force is applied at the end of the shelf to be conservative (lb-in)
 
+
 // Calculate required thickness of bracket
 thickness = sqrt(moment * factorOfSafety * 6 / (sigmaAllow * width)) // this is the calculation of two brackets holding up the shelf (inches)
+
 
 filletRadius = .25
 extFilletRadius = filletRadius + thickness
 mountingHoleDiameter = 0.5
 
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> xLine(length = shelfMountL - thickness, tag = $seg01)
   |> yLine(length = thickness, tag = $seg02)
@@ -29,48 +30,18 @@ sketch001 = startSketchOn('XZ')
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg06)
   |> close()
   |> extrude(%, length = width)
-  |> fillet(
-       radius = extFilletRadius,
-       tags = [getNextAdjacentEdge(seg03)],
-     )
-  |> fillet(
-       radius = filletRadius,
-       tags = [getNextAdjacentEdge(seg06)],
-     )
-  |> fillet(
-      radius = filletRadius,
-      tags = [seg02, getOppositeEdge(seg02)],
-    )
-  |> fillet(
-      radius = filletRadius,
-      tags = [seg05, getOppositeEdge(seg05)],
-    )
+  |> fillet(radius = extFilletRadius, tags = [getNextAdjacentEdge(seg03)])
+  |> fillet(radius = filletRadius, tags = [getNextAdjacentEdge(seg06)])
+  |> fillet(radius = filletRadius, tags = [seg02, getOppositeEdge(seg02)])
+  |> fillet(radius = filletRadius, tags = [seg05, getOppositeEdge(seg05)])
 
 sketch002 = startSketchOn(sketch001, seg03)
-  |> circle(
-    center = [-1.25, 1],
-    radius = mountingHoleDiameter / 2,
-  )
-  |> patternLinear2d(
-    instances = 2,
-    distance = 2.5,
-    axis = [-1, 0],
-  )
-  |> patternLinear2d(
-    instances = 2,
-    distance = 4,
-    axis = [0, 1],
-  )
-  |> extrude(%, length = -thickness-.01)
+  |> circle(center = [-1.25, 1], radius = mountingHoleDiameter / 2)
+  |> patternLinear2d(instances = 2, distance = 2.5, axis = [-1, 0])
+  |> patternLinear2d(instances = 2, distance = 4, axis = [0, 1])
+  |> extrude(%, length = -thickness - .01)
 
 sketch003 = startSketchOn(sketch001, seg04)
-  |> circle(
-    center = [1, -1],
-    radius = mountingHoleDiameter / 2,
-  )
-  |> patternLinear2d(
-    instances = 2,
-    distance = 4,
-    axis = [1, 0],
-  )
-  |> extrude(%, length = -thickness-0.1)
+  |> circle(center = [1, -1], radius = mountingHoleDiameter / 2)
+  |> patternLinear2d(instances = 2, distance = 4, axis = [1, 0])
+  |> extrude(%, length = -thickness - 0.1)

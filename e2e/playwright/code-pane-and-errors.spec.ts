@@ -1,13 +1,14 @@
-import { test, expect } from './zoo-test'
-import {
-  orRunWhenFullSuiteEnabled,
-  getUtils,
-  executorInputPath,
-} from './test-utils'
-import { join } from 'path'
-import { bracket } from 'lib/exampleKcl'
-import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from './storageStates'
+import { bracket } from '@src/lib/exampleKcl'
 import fsp from 'fs/promises'
+import { join } from 'path'
+
+import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from '@e2e/playwright/storageStates'
+import {
+  executorInputPath,
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
   test('Typing KCL errors induces a badge on the code pane button', async ({
@@ -21,14 +22,15 @@ test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
     await page.addInitScript(() => {
       localStorage.setItem(
         'persistCode',
-        `// Extruded Triangle
-  sketch001 = startSketchOn(XZ)
-    |> startProfileAt([0, 0], %)
-    |> line(end = [10, 0])
-    |> line(end = [-5, 10])
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()
-  extrude001 = extrude(sketch001, length = 5)`
+        `@settings(defaultLengthUnit = in)
+// Extruded Triangle
+sketch001 = startSketchOn(XZ)
+  |> startProfileAt([0, 0], %)
+  |> line(end = [10, 0])
+  |> line(end = [-5, 10])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = 5)`
       )
     })
 
@@ -250,11 +252,11 @@ test(
       ])
       await Promise.all([
         fsp.copyFile(
-          executorInputPath('router-template-slate.kcl'),
+          executorInputPath('cylinder-inches.kcl'),
           join(routerTemplateDir, 'main.kcl')
         ),
         fsp.copyFile(
-          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
           join(bracketDir, 'main.kcl')
         ),
       ])

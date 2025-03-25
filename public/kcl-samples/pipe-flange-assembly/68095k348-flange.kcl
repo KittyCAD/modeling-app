@@ -1,16 +1,16 @@
 // 68095k348 flange
-
-// import constants
-import pipeDiameter, mountingHoleDiameter, mountingHolePlacementDiameter, flangeDiameter, flangeTotalThickness, flangeBackHeight, flangeFrontHeight, flangeBaseThickness, flangeBackDiameter, flangeFrontDiameter from "globals.kcl"
+// flange used for mating two pipes together in the pipe flange assembly.
 
 // set units
 @settings(defaultLengthUnit = in)
 
+// import constants
+import pipeDiameter, mountingHoleDiameter, mountingHolePlacementDiameter, flangeDiameter, flangeTotalThickness, flangeBackHeight, flangeFrontHeight, flangeBaseThickness, flangeBackDiameter, flangeFrontDiameter from "globals.kcl"
+
 // create a function to create the flange
 export fn flange() {
-
   // sketch the mounting hole pattern
-  mountingHoles = startSketchOn("XY")
+  mountingHoles = startSketchOn(XY)
     |> circle(%, center = [0, mountingHolePlacementDiameter / 2], radius = mountingHoleDiameter / 2)
     |> patternCircular2d(
          %,
@@ -21,7 +21,7 @@ export fn flange() {
        )
 
   // create the flange base
-  flangeBase = startSketchOn("XY")
+  flangeBase = startSketchOn(XY)
     |> circle(%, center = [0, 0], radius = flangeDiameter / 2)
     |> hole(mountingHoles, %)
     |> extrude(%, length = flangeBaseThickness)

@@ -1,20 +1,22 @@
-import { SettingsLevel } from 'lib/settings/settingsTypes'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { useHotkeys } from 'react-hotkeys-hook'
-import { PATHS } from 'lib/paths'
-import { useDotDotSlash } from 'hooks/useDotDotSlash'
-import { Fragment, useEffect, useRef } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import { CustomIcon } from 'components/CustomIcon'
-import { SettingsSearchBar } from 'components/Settings/SettingsSearchBar'
-import { SettingsTabs } from 'components/Settings/SettingsTabs'
-import { SettingsSectionsList } from 'components/Settings/SettingsSectionsList'
-import { AllSettingsFields } from 'components/Settings/AllSettingsFields'
-import { AllKeybindingsFields } from 'components/Settings/AllKeybindingsFields'
-import { KeybindingsSectionsList } from 'components/Settings/KeybindingsSectionsList'
-import { isDesktop } from 'lib/isDesktop'
-import { IS_PLAYWRIGHT_KEY } from '../../e2e/playwright/storageStates'
-import { NODE_ENV } from 'env'
+import { NODE_ENV } from '@src/env'
+import { Fragment, useEffect, useRef } from 'react'
+import { useHotkeys } from 'react-hotkeys-hook'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+
+import { IS_PLAYWRIGHT_KEY } from '@e2e/playwright/storageStates'
+
+import { CustomIcon } from '@src/components/CustomIcon'
+import { AllKeybindingsFields } from '@src/components/Settings/AllKeybindingsFields'
+import { AllSettingsFields } from '@src/components/Settings/AllSettingsFields'
+import { KeybindingsSectionsList } from '@src/components/Settings/KeybindingsSectionsList'
+import { SettingsSearchBar } from '@src/components/Settings/SettingsSearchBar'
+import { SettingsSectionsList } from '@src/components/Settings/SettingsSectionsList'
+import { SettingsTabs } from '@src/components/Settings/SettingsTabs'
+import { useDotDotSlash } from '@src/hooks/useDotDotSlash'
+import { isDesktop } from '@src/lib/isDesktop'
+import { PATHS } from '@src/lib/paths'
+import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 
 const isTestEnv = window?.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
 
@@ -22,9 +24,9 @@ export const APP_VERSION =
   isTestEnv && NODE_ENV === 'development'
     ? '11.22.33'
     : isDesktop()
-    ? // @ts-ignore
-      window.electron.packageJson.version
-    : 'main'
+      ? // @ts-ignore
+        window.electron.packageJson.version
+      : 'main'
 
 export const PACKAGE_NAME = isDesktop()
   ? window.electron.packageJson.name
@@ -98,7 +100,10 @@ export const Settings = () => {
           leaveFrom="opacity-100 scale-100"
           leaveTo="opacity-0 scale-95"
         >
-          <Dialog.Panel className="rounded relative mx-auto bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 max-w-3xl w-full max-h-[66vh] shadow-lg flex flex-col gap-8">
+          <Dialog.Panel
+            data-testid="settings-dialog-panel"
+            className="rounded relative mx-auto bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 max-w-3xl w-full max-h-[66vh] shadow-lg flex flex-col gap-8"
+          >
             <div className="p-5 pb-0 flex justify-between items-center">
               <h1 className="text-2xl font-bold">Settings</h1>
               <div className="flex gap-4 items-start">

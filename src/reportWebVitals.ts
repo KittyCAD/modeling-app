@@ -1,5 +1,5 @@
-import { reportRejection } from 'lib/trap'
-import { ReportHandler } from 'web-vitals'
+import { reportRejection } from '@src/lib/trap'
+import type { ReportHandler } from 'web-vitals'
 
 const reportWebVitals = (onPerfEntry?: ReportHandler) => {
   if (onPerfEntry && onPerfEntry instanceof Function) {

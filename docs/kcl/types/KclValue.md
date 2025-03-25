@@ -285,7 +285,7 @@ Data for an imported geometry.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `Module`|  | No |
-| `value` |[`ModuleId`](/docs/kcl/types/ModuleId)| Identifier of a source file.  Uses a u32 to keep the size small. | No |
+| `value` |`integer`| Identifier of a source file.  Uses a u32 to keep the size small. | No |
 
 
 ----

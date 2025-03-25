@@ -1,11 +1,11 @@
-import react from '@vitejs/plugin-react'
-import viteTsconfigPaths from 'vite-tsconfig-paths'
-import eslint from '@nabla/vite-plugin-eslint'
-import { defineConfig, configDefaults } from 'vitest/config'
-import version from 'vite-plugin-package-version'
-import topLevelAwait from 'vite-plugin-top-level-await'
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
+import eslint from '@nabla/vite-plugin-eslint'
+import react from '@vitejs/plugin-react'
+import version from 'vite-plugin-package-version'
+import topLevelAwait from 'vite-plugin-top-level-await'
+import viteTsconfigPaths from 'vite-tsconfig-paths'
+import { configDefaults, defineConfig } from 'vitest/config'
 
 const config = defineConfig({
   server: {
@@ -35,7 +35,7 @@ const config = defineConfig({
     coverage: {
       provider: 'istanbul', // or 'v8'
     },
-    exclude: [...configDefaults.exclude, '**/e2e/**/*', 'rust'],
+    exclude: [...configDefaults.exclude, '**/e2e/**/*.spec.*', 'rust'],
     deps: {
       optimizer: {
         web: {
@@ -63,6 +63,9 @@ const config = defineConfig({
       '@kittycad/codemirror-lsp-client': '/packages/codemirror-lsp-client/src',
       '@kittycad/codemirror-lang-kcl': '/packages/codemirror-lang-kcl/src',
       '@rust': '/rust',
+      '@e2e': '/e2e',
+      '@src': '/src',
+      '@root': '/',
     },
   },
   plugins: [

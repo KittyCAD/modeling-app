@@ -15,14 +15,6 @@ description: Artifact commands bench.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
@@ -1853,8 +1845,8 @@ description: Artifact commands bench.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
+        "y": -0.0,
+        "z": -0.0
       }
     }
   },
@@ -2244,8 +2236,8 @@ description: Artifact commands bench.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
+        "y": -0.0,
+        "z": -0.0
       }
     }
   },
@@ -2694,8 +2686,8 @@ description: Artifact commands bench.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
+        "y": -0.0,
+        "z": -0.0
       }
     }
   },
@@ -3085,8 +3077,8 @@ description: Artifact commands bench.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
+        "y": -0.0,
+        "z": -0.0
       }
     }
   },
@@ -7461,8 +7453,8 @@ description: Artifact commands bench.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
+        "y": -0.0,
+        "z": -0.0
       }
     }
   },
@@ -7546,7 +7538,7 @@ description: Artifact commands bench.kcl
         "z": 0.0
       },
       "x_axis": {
-        "x": -1.0,
+        "x": 1.0,
         "y": 0.0,
         "z": 0.0
       },
@@ -7584,9 +7576,9 @@ description: Artifact commands bench.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.0,
+        "x": -0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": -0.0
       }
     }
   },
@@ -7945,8 +7937,8 @@ description: Artifact commands bench.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
+        "y": -0.0,
+        "z": -0.0
       }
     }
   },
@@ -8030,7 +8022,7 @@ description: Artifact commands bench.kcl
         "z": 0.0
       },
       "x_axis": {
-        "x": -1.0,
+        "x": 1.0,
         "y": 0.0,
         "z": 0.0
       },
@@ -8068,9 +8060,9 @@ description: Artifact commands bench.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.0,
+        "x": -0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": -0.0
       }
     }
   },

@@ -1,13 +1,14 @@
-import { Page } from '@playwright/test'
-import { test, expect } from './zoo-test'
+import type { Page } from '@playwright/test'
+
+import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
 import {
-  getUtils,
+  PERSIST_MODELING_CONTEXT,
   TEST_COLORS,
   commonPoints,
-  PERSIST_MODELING_CONTEXT,
+  getUtils,
   orRunWhenFullSuiteEnabled,
-} from './test-utils'
-import { HomePageFixture } from './fixtures/homePageFixture'
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.setTimeout(120000)
 
@@ -85,7 +86,7 @@ async function doBasicSketch(
   await page.mouse.click(startXPx, 500 - PUR * 20)
   if (openPanes.includes('code')) {
     await expect(u.codeLocator)
-      .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
+      .toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
       commonPoints.startAt
     }, sketch001)
   |> xLine(length = ${commonPoints.num1})
@@ -119,10 +120,7 @@ async function doBasicSketch(
   await page.waitForTimeout(100)
 
   if (openPanes.includes('code')) {
-    await expect(
-      await u.getGreatestPixDiff(line1, TEST_COLORS.BLUE)
-    ).toBeLessThan(3)
-    await expect(await u.getGreatestPixDiff(line1, [0, 0, 255])).toBeLessThan(3)
+    expect(await u.getGreatestPixDiff(line1, TEST_COLORS.BLUE)).toBeLessThan(3)
   }
 
   // hold down shift
@@ -145,7 +143,7 @@ async function doBasicSketch(
   // Open the code pane.
   await u.openKclCodePanel()
   await expect(u.codeLocator)
-    .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
+    .toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
     commonPoints.startAt
   }, sketch001)
   |> xLine(length = ${commonPoints.num1}, tag = $seg01)

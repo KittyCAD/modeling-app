@@ -1,21 +1,25 @@
-import { test, expect } from './zoo-test'
-import * as fsp from 'fs/promises'
+import { FILE_EXT } from '@src/lib/constants'
 import * as fs from 'fs'
+import * as fsp from 'fs/promises'
+import { join } from 'path'
+
 import {
   createProject,
   executorInputPath,
   getUtils,
   orRunWhenFullSuiteEnabled,
-} from './test-utils'
-import { join } from 'path'
-import { FILE_EXT } from 'lib/constants'
+  runningOnWindows,
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('integrations tests', () => {
   test(
     'Creating a new file or switching file while in sketchMode should exit sketchMode',
     { tag: '@electron' },
     async ({ page, context, homePage, scene, editor, toolbar, cmdBar }) => {
-      test.fixme(orRunWhenFullSuiteEnabled())
+      if (runningOnWindows()) {
+        test.fixme(orRunWhenFullSuiteEnabled())
+      }
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'test-sample')
         await fsp.mkdir(bracketDir, { recursive: true })

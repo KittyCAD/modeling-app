@@ -1,13 +1,15 @@
-import { useModelingContext } from 'hooks/useModelingContext'
-import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
-import { getNodeFromPath } from 'lang/queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { useEffect, useRef, useState } from 'react'
-import { trap } from 'lib/trap'
-import { codeToIdSelections } from 'lib/selections'
-import { codeRefFromRange } from 'lang/std/artifactGraph'
-import { defaultSourceRange, topLevelRange } from 'lang/wasm'
-import { isArray } from 'lib/utils'
+
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import { topLevelRange } from '@src/lang/util'
+import { defaultSourceRange } from '@src/lang/wasm'
+import { codeToIdSelections } from '@src/lib/selections'
+import { editorManager, kclManager } from '@src/lib/singletons'
+import { trap } from '@src/lib/trap'
+import { isArray } from '@src/lib/utils'
 
 export function AstExplorer() {
   const { context } = useModelingContext()
@@ -135,12 +137,10 @@ function DisplayObj({
         const range = topLevelRange(obj?.start || 0, obj.end || 0)
         const idInfo = codeToIdSelections(
           [{ codeRef: codeRefFromRange(range, kclManager.ast) }],
-          engineCommandManager.artifactGraph,
-          engineCommandManager.artifactIndex
+          kclManager.artifactGraph,
+          kclManager.artifactIndex
         )[0]
-        const artifact = engineCommandManager.artifactGraph.get(
-          idInfo?.id || ''
-        )
+        const artifact = kclManager.artifactGraph.get(idInfo?.id || '')
         if (!artifact) return
         send({
           type: 'Set selection',

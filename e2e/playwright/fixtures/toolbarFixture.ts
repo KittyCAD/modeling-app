@@ -1,14 +1,15 @@
-import { type Page, type Locator, test } from '@playwright/test'
-import { expect } from '../zoo-test'
+import { type Locator, type Page, test } from '@playwright/test'
+import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
+import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
+import type { ToolbarModeName } from '@src/lib/toolbar'
+
 import {
   checkIfPaneIsOpen,
   closePane,
   doAndWaitForImageDiff,
   openPane,
-} from '../test-utils'
-import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
-import { SIDEBAR_BUTTON_SUFFIX } from 'lib/constants'
-import { ToolbarModeName } from 'lib/toolbar'
+} from '@e2e/playwright/test-utils'
+import { expect } from '@e2e/playwright/zoo-test'
 
 export class ToolbarFixture {
   public page: Page
@@ -180,6 +181,14 @@ export class ToolbarFixture {
       this.page.getByTestId('dropdown-center-rectangle')
     ).toBeVisible()
     await this.page.getByTestId('dropdown-center-rectangle').click()
+  }
+  selectBoolean = async (operation: 'union' | 'subtract' | 'intersect') => {
+    await this.page
+      .getByRole('button', { name: 'caret down Union: open menu' })
+      .click()
+    const operationTestId = `dropdown-boolean-${operation}`
+    await expect(this.page.getByTestId(operationTestId)).toBeVisible()
+    await this.page.getByTestId(operationTestId).click()
   }
 
   selectCircleThreePoint = async () => {

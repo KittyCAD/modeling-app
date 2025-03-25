@@ -7,9 +7,9 @@ description: Operations executed walkie-talkie.kcl
     "type": "UserDefinedFunctionCall",
     "name": "body",
     "functionSourceRange": [
-      313,
-      2759,
-      5
+      359,
+      2786,
+      6
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -19,354 +19,8 @@ description: Operations executed walkie-talkie.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XZ"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 1.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 0.325,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
-      "tags": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Uuid",
-              "value": "[uuid]"
-            },
-            {
-              "type": "Uuid",
-              "value": "[uuid]"
-            },
-            {
-              "type": "Uuid",
-              "value": "[uuid]"
-            },
-            {
-              "type": "Uuid",
-              "value": "[uuid]"
-            }
-          ]
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "chamfer",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
-        "value": {
-          "type": "String",
-          "value": "END"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "cos",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "cos",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "cos",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "cos",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": -0.0625,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
-        "value": {
-          "type": "String",
-          "value": "start"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": -0.0625,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
-        "value": {
-          "type": "String",
-          "value": "start"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": -0.5,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "body",
-    "functionSourceRange": [
-      313,
-      2759,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
-    "sourceRange": []
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "String",
-          "value": "XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -699,9 +353,9 @@ description: Operations executed walkie-talkie.kcl
     "type": "UserDefinedFunctionCall",
     "name": "antenna",
     "functionSourceRange": [
-      212,
-      1011,
-      8
+      266,
+      1051,
+      9
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -711,8 +365,8 @@ description: Operations executed walkie-talkie.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -746,8 +400,8 @@ description: Operations executed walkie-talkie.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "XY"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
       "sourceRange": []
     }
@@ -802,9 +456,9 @@ description: Operations executed walkie-talkie.kcl
     "type": "UserDefinedFunctionCall",
     "name": "case",
     "functionSourceRange": [
-      401,
-      3254,
-      6
+      454,
+      3283,
+      7
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -814,8 +468,8 @@ description: Operations executed walkie-talkie.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -844,8 +498,8 @@ description: Operations executed walkie-talkie.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -874,8 +528,8 @@ description: Operations executed walkie-talkie.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -1873,8 +1527,8 @@ description: Operations executed walkie-talkie.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -1890,7 +1544,7 @@ description: Operations executed walkie-talkie.kcl
     "functionSourceRange": [
       69,
       1088,
-      7
+      8
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -1929,8 +1583,8 @@ description: Operations executed walkie-talkie.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -1946,7 +1600,7 @@ description: Operations executed walkie-talkie.kcl
     "functionSourceRange": [
       1146,
       1656,
-      7
+      8
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -1985,8 +1639,8 @@ description: Operations executed walkie-talkie.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -2002,7 +1656,7 @@ description: Operations executed walkie-talkie.kcl
     "functionSourceRange": [
       1674,
       2184,
-      7
+      8
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -2041,8 +1695,8 @@ description: Operations executed walkie-talkie.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -2058,7 +1712,7 @@ description: Operations executed walkie-talkie.kcl
     "functionSourceRange": [
       1146,
       1656,
-      7
+      8
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -2097,8 +1751,8 @@ description: Operations executed walkie-talkie.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -2114,7 +1768,7 @@ description: Operations executed walkie-talkie.kcl
     "functionSourceRange": [
       1674,
       2184,
-      7
+      8
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -2188,9 +1842,9 @@ description: Operations executed walkie-talkie.kcl
     "type": "UserDefinedFunctionCall",
     "name": "talkButton",
     "functionSourceRange": [
-      203,
-      1002,
-      9
+      202,
+      1023,
+      10
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -2200,8 +1854,8 @@ description: Operations executed walkie-talkie.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "YZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -2306,9 +1960,9 @@ description: Operations executed walkie-talkie.kcl
     "type": "UserDefinedFunctionCall",
     "name": "knob",
     "functionSourceRange": [
-      246,
-      681,
-      10
+      298,
+      748,
+      11
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -2318,8 +1972,8 @@ description: Operations executed walkie-talkie.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -2360,8 +2014,8 @@ description: Operations executed walkie-talkie.kcl
     "name": "button",
     "functionSourceRange": [
       221,
-      905,
-      11
+      827,
+      12
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -2371,8 +2025,8 @@ description: Operations executed walkie-talkie.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -2470,8 +2124,8 @@ description: Operations executed walkie-talkie.kcl
     "name": "button",
     "functionSourceRange": [
       221,
-      905,
-      11
+      827,
+      12
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -2481,8 +2135,8 @@ description: Operations executed walkie-talkie.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -2580,8 +2234,8 @@ description: Operations executed walkie-talkie.kcl
     "name": "button",
     "functionSourceRange": [
       221,
-      905,
-      11
+      827,
+      12
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -2591,8 +2245,8 @@ description: Operations executed walkie-talkie.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -2690,8 +2344,8 @@ description: Operations executed walkie-talkie.kcl
     "name": "button",
     "functionSourceRange": [
       221,
-      905,
-      11
+      827,
+      12
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -2701,8 +2355,8 @@ description: Operations executed walkie-talkie.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }

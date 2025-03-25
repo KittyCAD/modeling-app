@@ -1,16 +1,16 @@
-// 1120t74 Pipe
-
-// import constants
-import pipeInnerDiameter, pipeOuterDiameter, pipeLength from "globals.kcl"
+// Pipe
+// piping for the pipe flange assembly
 
 // set units
 @settings(defaultLengthUnit = in)
 
+// import constants
+import pipeInnerDiameter, pipeOuterDiameter, pipeLength from "globals.kcl"
+
 // create a function to make the pipe
 export fn pipe() {
-
   // create the pipe base
-  pipeBase = startSketchOn('XZ')
+  pipeBase = startSketchOn(XZ)
     |> circle(%, center = [0, 0], radius = pipeOuterDiameter / 2)
     |> extrude(%, length = pipeLength)
 

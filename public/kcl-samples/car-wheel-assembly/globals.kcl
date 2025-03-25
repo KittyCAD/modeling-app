@@ -20,7 +20,7 @@ export lugDiameter = 24 * mm()
 export lugHeadLength = lugDiameter * .5
 export lugThreadDiameter = lugDiameter / 2 * .85
 export lugLength = 30 * mm()
-export lugThreadDepth = lugLength - 12.7 * mm()
+export lugThreadDepth = lugLength - (12.7 * mm())
 
 // Car Rotor
 export rotorDiameter = 12

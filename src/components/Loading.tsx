@@ -1,17 +1,15 @@
 import { useEffect, useState } from 'react'
 
+import { Spinner } from '@src/components/Spinner'
 import {
-  EngineConnectionStateType,
+  CONNECTION_ERROR_TEXT,
+  ConnectionError,
   DisconnectingType,
   EngineCommandManagerEvents,
   EngineConnectionEvents,
-  ConnectionError,
-  CONNECTION_ERROR_TEXT,
-} from '../lang/std/engineConnection'
-
-import { engineCommandManager } from '../lib/singletons'
-
-import { Spinner } from './Spinner'
+  EngineConnectionStateType,
+} from '@src/lang/std/engineConnection'
+import { engineCommandManager } from '@src/lib/singletons'
 
 interface LoadingProps extends React.PropsWithChildren {
   className?: string

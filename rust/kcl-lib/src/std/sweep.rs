@@ -7,11 +7,12 @@ use kittycad_modeling_cmds::{self as kcmc};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+use super::DEFAULT_TOLERANCE;
 use crate::{
     errors::KclError,
     execution::{types::RuntimeType, ExecState, Helix, KclValue, Sketch, Solid},
     parsing::ast::types::TagNode,
-    std::{extrude::do_post_extrude, fillet::default_tolerance, Args},
+    std::{extrude::do_post_extrude, Args},
 };
 
 /// A path to sweep along.
@@ -151,7 +152,6 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// sweep(circleSketch, path = sweepPath, sectional = true)
 /// ```
-///
 
 #[stdlib {
     name = "sweep",
@@ -192,7 +192,7 @@ async fn inner_sweep(
                 target: sketch.id.into(),
                 trajectory,
                 sectional: sectional.unwrap_or(false),
-                tolerance: LengthUnit(tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
+                tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
             }),
         )
         .await?;

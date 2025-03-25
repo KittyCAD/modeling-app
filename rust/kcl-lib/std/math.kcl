@@ -1,4 +1,5 @@
 @no_std
+@settings(defaultLengthUnit = mm)
 
 /// The value of `pi`, Archimedes’ constant (π).
 ///

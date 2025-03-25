@@ -1,16 +1,14 @@
 // Brake Caliper
 // Brake calipers are used to squeeze the brake pads against the rotor, causing larger and larger amounts of friction depending on how hard the brakes are pressed.
 
-
 // Set units
 @settings(defaultLengthUnit = in)
-
 
 // Import Constants
 import caliperTolerance, caliperPadLength, caliperThickness, caliperOuterEdgeRadius, caliperInnerEdgeRadius, rotorDiameter, rotorTotalThickness, yAxisOffset from "globals.kcl"
 
 // Sketch the brake caliper profile
-brakeCaliperSketch = startSketchOn('XY')
+brakeCaliperSketch = startSketchOn(XY)
   |> startProfileAt([
        rotorDiameter / 2 + caliperTolerance,
        0

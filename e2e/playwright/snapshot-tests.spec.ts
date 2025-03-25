@@ -1,21 +1,22 @@
-import { test, expect } from './zoo-test'
-import { secrets } from './secrets'
-import {
-  Paths,
-  doExport,
-  getUtils,
-  settingsToToml,
-  orRunWhenFullSuiteEnabled,
-} from './test-utils'
-import { Models } from '@kittycad/lib'
-import fsp from 'fs/promises'
+import type { Models } from '@kittycad/lib'
+import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
 import { spawn } from 'child_process'
-import { KCL_DEFAULT_LENGTH } from 'lib/constants'
+import fsp from 'fs/promises'
 import JSZip from 'jszip'
 import path from 'path'
-import { TEST_SETTINGS, TEST_SETTINGS_KEY } from './storageStates'
-import { SceneFixture } from './fixtures/sceneFixture'
-import { CmdBarFixture } from './fixtures/cmdBarFixture'
+
+import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
+import { secrets } from '@e2e/playwright/secrets'
+import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
+import type { Paths } from '@e2e/playwright/test-utils'
+import {
+  doExport,
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+  settingsToToml,
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.beforeEach(async ({ page, context }) => {
   // Make the user avatar image always 404
@@ -76,11 +77,11 @@ part001 = startSketchOn(-XZ)
   |> xLine(endAbsolute = totalLen, tag = $seg03)
   |> yLine(length = -armThick, tag = $seg01)
   |> angledLineThatIntersects({
-        angle = HALF_TURN,
+        angle = turns::HALF_TURN,
         offset = -armThick,
         intersectTag = seg04
       }, %)
-  |> angledLineToY([segAng(seg04, %) + 180, ZERO], %)
+  |> angledLineToY([segAng(seg04, %) + 180, turns::ZERO], %)
   |> angledLineToY({
         angle = -bottomAng,
         to = -totalHeightHalf - armThick,
@@ -88,12 +89,12 @@ part001 = startSketchOn(-XZ)
   |> xLine(length = endAbsolute = segEndX(seg03) + 0)
   |> yLine(length = -segLen(seg01, %))
   |> angledLineThatIntersects({
-        angle = HALF_TURN,
+        angle = turns::HALF_TURN,
         offset = -armThick,
         intersectTag = seg02
       }, %)
   |> angledLineToY([segAng(seg02, %) + 180, -baseHeight], %)
-  |> xLine(endAbsolute = ZERO)
+  |> xLine(endAbsolute = turns::ZERO)
   |> close()
   |> extrude(length = 4)`
       )
@@ -345,7 +346,9 @@ const extrudeDefaultPlane = async (
           app: {
             onboarding_status: 'dismissed',
             show_debug_panel: true,
-            theme: 'dark',
+            appearance: {
+              theme: 'dark',
+            },
           },
           project: {
             default_project_name: 'project-$nnn',

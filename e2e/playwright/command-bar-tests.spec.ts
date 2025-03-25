@@ -1,12 +1,13 @@
-import { test, expect } from './zoo-test'
+import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
 import * as fsp from 'fs/promises'
+import path, { join } from 'path'
+
 import {
   executorInputPath,
   getUtils,
   orRunWhenFullSuiteEnabled,
-} from './test-utils'
-import { KCL_DEFAULT_LENGTH } from 'lib/constants'
-import path, { join } from 'path'
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
   test('Extrude from command bar selects extrude line after', async ({
@@ -513,7 +514,8 @@ c = 3 + a`
     await homePage.openProject(projectName)
     // TODO: you probably shouldn't need an engine connection to add a parameter,
     // but you do because all modeling commands have that requirement
-    await scene.settled(cmdBar)
+    // Don't use scene.settled here
+    await expect(scene.startEditSketchBtn).toBeEnabled({ timeout: 15_000 })
 
     await test.step(`Create a parameter via command bar`, async () => {
       await cmdBar.cmdBarOpenBtn.click()
@@ -542,7 +544,12 @@ c = 3 + a`
     )
 
     const newValue = `2 * b + a`
+
     await test.step(`Edit the parameter via command bar`, async () => {
+      // TODO: make the command palette command registration more static, and the enabled state more dynamic
+      // so that we can just open the command palette and know all commands will be there.
+      await expect(scene.startEditSketchBtn).toBeEnabled()
+
       await cmdBar.cmdBarOpenBtn.click()
       await cmdBar.chooseCommand('edit parameter')
       await cmdBar.expectState({

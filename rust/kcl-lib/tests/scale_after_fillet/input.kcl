@@ -52,6 +52,6 @@ export fn bolt() {
 }
 
 bolt()
-  |> scale(scale = [3.14, 3.14, 3.14])
+  |> scale(x = 3.14, y = 3.14, z = 3.14)
 
 // https://www.mcmaster.com/91251a404/

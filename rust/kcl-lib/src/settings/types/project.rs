@@ -94,9 +94,11 @@ pub struct ProjectAppSettings {
     pub onboarding_status: OnboardingStatus,
     /// The hue of the primary theme color for the app.
     #[serde(default, skip_serializing_if = "Option::is_none", alias = "themeColor")]
+    #[ts(skip)]
     pub theme_color: Option<FloatOrInt>,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     #[serde(default, alias = "enableSSAO", skip_serializing_if = "Option::is_none")]
+    #[ts(skip)]
     pub enable_ssao: Option<bool>,
     /// Permanently dismiss the banner warning to download the desktop app.
     /// This setting only applies to the web app. And is temporary until we have Linux support.
@@ -143,6 +145,7 @@ pub struct ProjectModelingSettings {
     /// of the app to aid in development.
     /// Remove this when we remove backwards compatibility with the old settings file.
     #[serde(default, alias = "showDebugPanel", skip_serializing_if = "is_default")]
+    #[ts(skip)]
     pub show_debug_panel: bool,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     #[serde(default, skip_serializing_if = "is_default")]
@@ -158,13 +161,13 @@ fn named_view_point_version_one() -> f64 {
 #[ts(export)]
 pub struct NamedView {
     /// User defined name to identify the named view. A label.
-    #[serde(default, alias = "name", skip_serializing_if = "is_default")]
+    #[serde(default, alias = "name")]
     pub name: String,
     /// Engine camera eye off set
-    #[serde(default, alias = "eyeOffset", skip_serializing_if = "is_default")]
+    #[serde(default, alias = "eyeOffset")]
     pub eye_offset: f64,
     /// Engine camera vertical FOV
-    #[serde(default, alias = "fovY", skip_serializing_if = "is_default")]
+    #[serde(default, alias = "fovY")]
     pub fov_y: f64,
     // Engine camera is orthographic or perspective projection
     #[serde(default, alias = "isOrtho")]
@@ -173,16 +176,16 @@ pub struct NamedView {
     #[serde(default, alias = "orthoScaleEnabled")]
     pub ortho_scale_enabled: bool,
     /// Engine camera orthographic scaling factor
-    #[serde(default, alias = "orthoScaleFactor", skip_serializing_if = "is_default")]
+    #[serde(default, alias = "orthoScaleFactor")]
     pub ortho_scale_factor: f64,
     /// Engine camera position that the camera pivots around
-    #[serde(default, alias = "pivotPosition", skip_serializing_if = "is_default")]
+    #[serde(default, alias = "pivotPosition")]
     pub pivot_position: [f64; 3],
     /// Engine camera orientation in relation to the pivot position
-    #[serde(default, alias = "pivotRotation", skip_serializing_if = "is_default")]
+    #[serde(default, alias = "pivotRotation")]
     pub pivot_rotation: [f64; 4],
     /// Engine camera world coordinate system orientation
-    #[serde(default, alias = "worldCoordSystem", skip_serializing_if = "is_default")]
+    #[serde(default, alias = "worldCoordSystem")]
     pub world_coord_system: String,
     /// Version number of the view point if the engine camera API changes
     #[serde(default = "named_view_point_version_one")]
