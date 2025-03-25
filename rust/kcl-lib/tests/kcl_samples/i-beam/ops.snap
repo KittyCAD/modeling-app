@@ -7,8 +7,8 @@ description: Operations executed i-beam.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "-XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }

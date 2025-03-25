@@ -3695,7 +3695,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
               "nonCodeNodes": {
                 "2": [
                   {
-                    "commentStart": 2129,
+                    "commentStart": 2130,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -3723,26 +3723,26 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 2155,
+        "commentStart": 2156,
         "declaration": {
-          "commentStart": 2155,
+          "commentStart": 2156,
           "end": 0,
           "id": {
-            "commentStart": 2155,
+            "commentStart": 2156,
             "end": 0,
             "name": "tabPlane",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 2166,
+            "commentStart": 2167,
             "end": 0,
             "properties": [
               {
-                "commentStart": 2170,
+                "commentStart": 2171,
                 "end": 0,
                 "key": {
-                  "commentStart": 2170,
+                  "commentStart": 2171,
                   "end": 0,
                   "name": "plane",
                   "start": 0,
@@ -3751,14 +3751,14 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 "start": 0,
                 "type": "ObjectProperty",
                 "value": {
-                  "commentStart": 2178,
+                  "commentStart": 2179,
                   "end": 0,
                   "properties": [
                     {
-                      "commentStart": 2184,
+                      "commentStart": 2185,
                       "end": 0,
                       "key": {
-                        "commentStart": 2184,
+                        "commentStart": 2185,
                         "end": 0,
                         "name": "origin",
                         "start": 0,
@@ -3767,14 +3767,14 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
-                        "commentStart": 2193,
+                        "commentStart": 2194,
                         "end": 0,
                         "properties": [
                           {
-                            "commentStart": 2195,
+                            "commentStart": 2196,
                             "end": 0,
                             "key": {
-                              "commentStart": 2195,
+                              "commentStart": 2196,
                               "end": 0,
                               "name": "x",
                               "start": 0,
@@ -3783,7 +3783,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
-                              "commentStart": 2199,
+                              "commentStart": 2200,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -3796,10 +3796,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             }
                           },
                           {
-                            "commentStart": 2202,
+                            "commentStart": 2203,
                             "end": 0,
                             "key": {
-                              "commentStart": 2202,
+                              "commentStart": 2203,
                               "end": 0,
                               "name": "y",
                               "start": 0,
@@ -3808,7 +3808,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
-                              "commentStart": 2206,
+                              "commentStart": 2207,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -3821,10 +3821,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             }
                           },
                           {
-                            "commentStart": 2209,
+                            "commentStart": 2210,
                             "end": 0,
                             "key": {
-                              "commentStart": 2209,
+                              "commentStart": 2210,
                               "end": 0,
                               "name": "z",
                               "start": 0,
@@ -3833,14 +3833,14 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
-                              "commentStart": 2213,
+                              "commentStart": 2214,
                               "end": 0,
                               "left": {
                                 "abs_path": false,
-                                "commentStart": 2213,
+                                "commentStart": 2214,
                                 "end": 0,
                                 "name": {
-                                  "commentStart": 2213,
+                                  "commentStart": 2214,
                                   "end": 0,
                                   "name": "depth",
                                   "start": 0,
@@ -3854,10 +3854,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                               "operator": "+",
                               "right": {
                                 "abs_path": false,
-                                "commentStart": 2221,
+                                "commentStart": 2222,
                                 "end": 0,
                                 "name": {
-                                  "commentStart": 2221,
+                                  "commentStart": 2222,
                                   "end": 0,
                                   "name": "thk",
                                   "start": 0,
@@ -3880,10 +3880,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       }
                     },
                     {
-                      "commentStart": 2232,
+                      "commentStart": 2233,
                       "end": 0,
                       "key": {
-                        "commentStart": 2232,
+                        "commentStart": 2233,
                         "end": 0,
                         "name": "xAxis",
                         "start": 0,
@@ -3892,14 +3892,14 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
-                        "commentStart": 2240,
+                        "commentStart": 2241,
                         "end": 0,
                         "properties": [
                           {
-                            "commentStart": 2242,
+                            "commentStart": 2243,
                             "end": 0,
                             "key": {
-                              "commentStart": 2242,
+                              "commentStart": 2243,
                               "end": 0,
                               "name": "x",
                               "start": 0,
@@ -3908,7 +3908,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
-                              "commentStart": 2246,
+                              "commentStart": 2247,
                               "end": 0,
                               "raw": "1",
                               "start": 0,
@@ -3921,10 +3921,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             }
                           },
                           {
-                            "commentStart": 2249,
+                            "commentStart": 2250,
                             "end": 0,
                             "key": {
-                              "commentStart": 2249,
+                              "commentStart": 2250,
                               "end": 0,
                               "name": "y",
                               "start": 0,
@@ -3933,7 +3933,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
-                              "commentStart": 2253,
+                              "commentStart": 2254,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -3946,10 +3946,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             }
                           },
                           {
-                            "commentStart": 2256,
+                            "commentStart": 2257,
                             "end": 0,
                             "key": {
-                              "commentStart": 2256,
+                              "commentStart": 2257,
                               "end": 0,
                               "name": "z",
                               "start": 0,
@@ -3958,7 +3958,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
-                              "commentStart": 2260,
+                              "commentStart": 2261,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -3977,10 +3977,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       }
                     },
                     {
-                      "commentStart": 2269,
+                      "commentStart": 2270,
                       "end": 0,
                       "key": {
-                        "commentStart": 2269,
+                        "commentStart": 2270,
                         "end": 0,
                         "name": "yAxis",
                         "start": 0,
@@ -3989,14 +3989,14 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
-                        "commentStart": 2277,
+                        "commentStart": 2278,
                         "end": 0,
                         "properties": [
                           {
-                            "commentStart": 2279,
+                            "commentStart": 2280,
                             "end": 0,
                             "key": {
-                              "commentStart": 2279,
+                              "commentStart": 2280,
                               "end": 0,
                               "name": "x",
                               "start": 0,
@@ -4005,7 +4005,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
-                              "commentStart": 2283,
+                              "commentStart": 2284,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -4018,10 +4018,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             }
                           },
                           {
-                            "commentStart": 2286,
+                            "commentStart": 2287,
                             "end": 0,
                             "key": {
-                              "commentStart": 2286,
+                              "commentStart": 2287,
                               "end": 0,
                               "name": "y",
                               "start": 0,
@@ -4030,7 +4030,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
-                              "commentStart": 2290,
+                              "commentStart": 2291,
                               "end": 0,
                               "raw": "1",
                               "start": 0,
@@ -4043,10 +4043,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             }
                           },
                           {
-                            "commentStart": 2293,
+                            "commentStart": 2294,
                             "end": 0,
                             "key": {
-                              "commentStart": 2293,
+                              "commentStart": 2294,
                               "end": 0,
                               "name": "z",
                               "start": 0,
@@ -4055,7 +4055,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
-                              "commentStart": 2297,
+                              "commentStart": 2298,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -4074,10 +4074,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       }
                     },
                     {
-                      "commentStart": 2306,
+                      "commentStart": 2307,
                       "end": 0,
                       "key": {
-                        "commentStart": 2306,
+                        "commentStart": 2307,
                         "end": 0,
                         "name": "zAxis",
                         "start": 0,
@@ -4086,14 +4086,14 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
-                        "commentStart": 2314,
+                        "commentStart": 2315,
                         "end": 0,
                         "properties": [
                           {
-                            "commentStart": 2316,
+                            "commentStart": 2317,
                             "end": 0,
                             "key": {
-                              "commentStart": 2316,
+                              "commentStart": 2317,
                               "end": 0,
                               "name": "x",
                               "start": 0,
@@ -4102,7 +4102,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
-                              "commentStart": 2320,
+                              "commentStart": 2321,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -4115,10 +4115,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             }
                           },
                           {
-                            "commentStart": 2323,
+                            "commentStart": 2324,
                             "end": 0,
                             "key": {
-                              "commentStart": 2323,
+                              "commentStart": 2324,
                               "end": 0,
                               "name": "y",
                               "start": 0,
@@ -4127,7 +4127,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
-                              "commentStart": 2327,
+                              "commentStart": 2328,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -4140,10 +4140,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             }
                           },
                           {
-                            "commentStart": 2330,
+                            "commentStart": 2331,
                             "end": 0,
                             "key": {
-                              "commentStart": 2330,
+                              "commentStart": 2331,
                               "end": 0,
                               "name": "z",
                               "start": 0,
@@ -4152,7 +4152,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
-                              "commentStart": 2334,
+                              "commentStart": 2335,
                               "end": 0,
                               "raw": "1",
                               "start": 0,
@@ -4191,12 +4191,12 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 2343,
+        "commentStart": 2344,
         "declaration": {
-          "commentStart": 2400,
+          "commentStart": 2401,
           "end": 0,
           "id": {
-            "commentStart": 2400,
+            "commentStart": 2401,
             "end": 0,
             "name": "tabsR",
             "start": 0,
@@ -4208,10 +4208,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 "arguments": [
                   {
                     "abs_path": false,
-                    "commentStart": 2422,
+                    "commentStart": 2423,
                     "end": 0,
                     "name": {
-                      "commentStart": 2422,
+                      "commentStart": 2423,
                       "end": 0,
                       "name": "tabPlane",
                       "start": 0,
@@ -4225,10 +4225,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2408,
+                  "commentStart": 2409,
                   "end": 0,
                   "name": {
-                    "commentStart": 2408,
+                    "commentStart": 2409,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -4238,7 +4238,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2408,
+                "commentStart": 2409,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -4247,20 +4247,20 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2452,
+                    "commentStart": 2453,
                     "elements": [
                       {
-                        "commentStart": 2453,
+                        "commentStart": 2454,
                         "end": 0,
                         "left": {
-                          "commentStart": 2453,
+                          "commentStart": 2454,
                           "end": 0,
                           "left": {
                             "abs_path": false,
-                            "commentStart": 2453,
+                            "commentStart": 2454,
                             "end": 0,
                             "name": {
-                              "commentStart": 2453,
+                              "commentStart": 2454,
                               "end": 0,
                               "name": "width",
                               "start": 0,
@@ -4273,7 +4273,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           },
                           "operator": "/",
                           "right": {
-                            "commentStart": 2461,
+                            "commentStart": 2462,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -4291,10 +4291,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                         "operator": "+",
                         "right": {
                           "abs_path": false,
-                          "commentStart": 2465,
+                          "commentStart": 2466,
                           "end": 0,
                           "name": {
-                            "commentStart": 2465,
+                            "commentStart": 2466,
                             "end": 0,
                             "name": "thk",
                             "start": 0,
@@ -4310,17 +4310,17 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                         "type": "BinaryExpression"
                       },
                       {
-                        "commentStart": 2470,
+                        "commentStart": 2471,
                         "end": 0,
                         "left": {
-                          "commentStart": 2470,
+                          "commentStart": 2471,
                           "end": 0,
                           "left": {
                             "abs_path": false,
-                            "commentStart": 2470,
+                            "commentStart": 2471,
                             "end": 0,
                             "name": {
-                              "commentStart": 2470,
+                              "commentStart": 2471,
                               "end": 0,
                               "name": "length",
                               "start": 0,
@@ -4333,7 +4333,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           },
                           "operator": "/",
                           "right": {
-                            "commentStart": 2479,
+                            "commentStart": 2480,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -4351,10 +4351,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                         "operator": "+",
                         "right": {
                           "abs_path": false,
-                          "commentStart": 2483,
+                          "commentStart": 2484,
                           "end": 0,
                           "name": {
-                            "commentStart": 2483,
+                            "commentStart": 2484,
                             "end": 0,
                             "name": "thk",
                             "start": 0,
@@ -4376,7 +4376,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 2489,
+                    "commentStart": 2490,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -4385,10 +4385,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2437,
+                  "commentStart": 2438,
                   "end": 0,
                   "name": {
-                    "commentStart": 2437,
+                    "commentStart": 2438,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -4398,7 +4398,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2437,
+                "commentStart": 2438,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -4409,21 +4409,21 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2502,
+                      "commentStart": 2503,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2508,
+                      "commentStart": 2509,
                       "elements": [
                         {
                           "abs_path": false,
-                          "commentStart": 2509,
+                          "commentStart": 2510,
                           "end": 0,
                           "name": {
-                            "commentStart": 2509,
+                            "commentStart": 2510,
                             "end": 0,
                             "name": "tabWidth",
                             "start": 0,
@@ -4435,15 +4435,15 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           "type": "Name"
                         },
                         {
-                          "commentStart": 2519,
+                          "commentStart": 2520,
                           "end": 0,
                           "left": {
                             "argument": {
                               "abs_path": false,
-                              "commentStart": 2520,
+                              "commentStart": 2521,
                               "end": 0,
                               "name": {
-                                "commentStart": 2520,
+                                "commentStart": 2521,
                                 "end": 0,
                                 "name": "tabLength",
                                 "start": 0,
@@ -4454,7 +4454,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                               "type": "Name",
                               "type": "Name"
                             },
-                            "commentStart": 2519,
+                            "commentStart": 2520,
                             "end": 0,
                             "operator": "-",
                             "start": 0,
@@ -4463,7 +4463,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           },
                           "operator": "/",
                           "right": {
-                            "commentStart": 2532,
+                            "commentStart": 2533,
                             "end": 0,
                             "raw": "3",
                             "start": 0,
@@ -4488,14 +4488,14 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2536,
+                      "commentStart": 2537,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2542,
+                      "commentStart": 2543,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -4506,10 +4506,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2497,
+                  "commentStart": 2498,
                   "end": 0,
                   "name": {
-                    "commentStart": 2497,
+                    "commentStart": 2498,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -4519,7 +4519,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2497,
+                "commentStart": 2498,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4531,17 +4531,17 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2561,
+                      "commentStart": 2562,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2567,
+                      "commentStart": 2568,
                       "elements": [
                         {
-                          "commentStart": 2568,
+                          "commentStart": 2569,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -4553,18 +4553,18 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           }
                         },
                         {
-                          "commentStart": 2571,
+                          "commentStart": 2572,
                           "end": 0,
                           "left": {
-                            "commentStart": 2571,
+                            "commentStart": 2572,
                             "end": 0,
                             "left": {
                               "argument": {
                                 "abs_path": false,
-                                "commentStart": 2572,
+                                "commentStart": 2573,
                                 "end": 0,
                                 "name": {
-                                  "commentStart": 2572,
+                                  "commentStart": 2573,
                                   "end": 0,
                                   "name": "tabLength",
                                   "start": 0,
@@ -4575,7 +4575,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                 "type": "Name",
                                 "type": "Name"
                               },
-                              "commentStart": 2571,
+                              "commentStart": 2572,
                               "end": 0,
                               "operator": "-",
                               "start": 0,
@@ -4584,7 +4584,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             },
                             "operator": "/",
                             "right": {
-                              "commentStart": 2584,
+                              "commentStart": 2585,
                               "end": 0,
                               "raw": "3",
                               "start": 0,
@@ -4601,7 +4601,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           },
                           "operator": "*",
                           "right": {
-                            "commentStart": 2588,
+                            "commentStart": 2589,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -4626,14 +4626,14 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2592,
+                      "commentStart": 2593,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2598,
+                      "commentStart": 2599,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -4644,10 +4644,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2556,
+                  "commentStart": 2557,
                   "end": 0,
                   "name": {
-                    "commentStart": 2556,
+                    "commentStart": 2557,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -4657,7 +4657,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2556,
+                "commentStart": 2557,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4669,22 +4669,22 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2617,
+                      "commentStart": 2618,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2623,
+                      "commentStart": 2624,
                       "elements": [
                         {
                           "argument": {
                             "abs_path": false,
-                            "commentStart": 2625,
+                            "commentStart": 2626,
                             "end": 0,
                             "name": {
-                              "commentStart": 2625,
+                              "commentStart": 2626,
                               "end": 0,
                               "name": "tabWidth",
                               "start": 0,
@@ -4695,7 +4695,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "type": "Name",
                             "type": "Name"
                           },
-                          "commentStart": 2624,
+                          "commentStart": 2625,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -4703,15 +4703,15 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           "type": "UnaryExpression"
                         },
                         {
-                          "commentStart": 2635,
+                          "commentStart": 2636,
                           "end": 0,
                           "left": {
                             "argument": {
                               "abs_path": false,
-                              "commentStart": 2636,
+                              "commentStart": 2637,
                               "end": 0,
                               "name": {
-                                "commentStart": 2636,
+                                "commentStart": 2637,
                                 "end": 0,
                                 "name": "tabLength",
                                 "start": 0,
@@ -4722,7 +4722,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                               "type": "Name",
                               "type": "Name"
                             },
-                            "commentStart": 2635,
+                            "commentStart": 2636,
                             "end": 0,
                             "operator": "-",
                             "start": 0,
@@ -4731,7 +4731,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           },
                           "operator": "/",
                           "right": {
-                            "commentStart": 2648,
+                            "commentStart": 2649,
                             "end": 0,
                             "raw": "3",
                             "start": 0,
@@ -4756,14 +4756,14 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2652,
+                      "commentStart": 2653,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2658,
+                      "commentStart": 2659,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -4774,10 +4774,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2612,
+                  "commentStart": 2613,
                   "end": 0,
                   "name": {
-                    "commentStart": 2612,
+                    "commentStart": 2613,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -4787,7 +4787,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2612,
+                "commentStart": 2613,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4799,14 +4799,14 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2678,
+                      "commentStart": 2679,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2684,
+                      "commentStart": 2685,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -4817,10 +4817,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2672,
+                  "commentStart": 2673,
                   "end": 0,
                   "name": {
-                    "commentStart": 2672,
+                    "commentStart": 2673,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -4830,7 +4830,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2672,
+                "commentStart": 2673,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4844,30 +4844,30 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "commentStart": 2718,
+                          "commentStart": 2719,
                           "end": 0,
                           "name": "center",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "commentStart": 2727,
+                          "commentStart": 2728,
                           "elements": [
                             {
-                              "commentStart": 2738,
+                              "commentStart": 2739,
                               "end": 0,
                               "left": {
-                                "commentStart": 2738,
+                                "commentStart": 2739,
                                 "end": 0,
                                 "left": {
-                                  "commentStart": 2738,
+                                  "commentStart": 2739,
                                   "end": 0,
                                   "left": {
                                     "abs_path": false,
-                                    "commentStart": 2738,
+                                    "commentStart": 2739,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 2738,
+                                      "commentStart": 2739,
                                       "end": 0,
                                       "name": "width",
                                       "start": 0,
@@ -4880,7 +4880,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                   },
                                   "operator": "/",
                                   "right": {
-                                    "commentStart": 2746,
+                                    "commentStart": 2747,
                                     "end": 0,
                                     "raw": "2",
                                     "start": 0,
@@ -4898,10 +4898,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                 "operator": "+",
                                 "right": {
                                   "abs_path": false,
-                                  "commentStart": 2750,
+                                  "commentStart": 2751,
                                   "end": 0,
                                   "name": {
-                                    "commentStart": 2750,
+                                    "commentStart": 2751,
                                     "end": 0,
                                     "name": "thk",
                                     "start": 0,
@@ -4918,14 +4918,14 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                               },
                               "operator": "+",
                               "right": {
-                                "commentStart": 2756,
+                                "commentStart": 2757,
                                 "end": 0,
                                 "left": {
                                   "abs_path": false,
-                                  "commentStart": 2756,
+                                  "commentStart": 2757,
                                   "end": 0,
                                   "name": {
-                                    "commentStart": 2756,
+                                    "commentStart": 2757,
                                     "end": 0,
                                     "name": "tabWidth",
                                     "start": 0,
@@ -4938,7 +4938,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "commentStart": 2767,
+                                  "commentStart": 2768,
                                   "end": 0,
                                   "raw": "2",
                                   "start": 0,
@@ -4958,20 +4958,20 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                               "type": "BinaryExpression"
                             },
                             {
-                              "commentStart": 2779,
+                              "commentStart": 2780,
                               "end": 0,
                               "left": {
-                                "commentStart": 2779,
+                                "commentStart": 2780,
                                 "end": 0,
                                 "left": {
-                                  "commentStart": 2779,
+                                  "commentStart": 2780,
                                   "end": 0,
                                   "left": {
                                     "abs_path": false,
-                                    "commentStart": 2779,
+                                    "commentStart": 2780,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 2779,
+                                      "commentStart": 2780,
                                       "end": 0,
                                       "name": "length",
                                       "start": 0,
@@ -4984,7 +4984,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                   },
                                   "operator": "/",
                                   "right": {
-                                    "commentStart": 2788,
+                                    "commentStart": 2789,
                                     "end": 0,
                                     "raw": "2",
                                     "start": 0,
@@ -5002,10 +5002,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                 "operator": "+",
                                 "right": {
                                   "abs_path": false,
-                                  "commentStart": 2792,
+                                  "commentStart": 2793,
                                   "end": 0,
                                   "name": {
-                                    "commentStart": 2792,
+                                    "commentStart": 2793,
                                     "end": 0,
                                     "name": "thk",
                                     "start": 0,
@@ -5022,14 +5022,14 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                               },
                               "operator": "-",
                               "right": {
-                                "commentStart": 2799,
+                                "commentStart": 2800,
                                 "end": 0,
                                 "left": {
                                   "abs_path": false,
-                                  "commentStart": 2799,
+                                  "commentStart": 2800,
                                   "end": 0,
                                   "name": {
-                                    "commentStart": 2799,
+                                    "commentStart": 2800,
                                     "end": 0,
                                     "name": "tabLength",
                                     "start": 0,
@@ -5042,10 +5042,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "commentStart": 2812,
+                                  "commentStart": 2813,
                                   "end": 0,
                                   "left": {
-                                    "commentStart": 2812,
+                                    "commentStart": 2813,
                                     "end": 0,
                                     "raw": "3",
                                     "start": 0,
@@ -5058,7 +5058,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                   },
                                   "operator": "/",
                                   "right": {
-                                    "commentStart": 2816,
+                                    "commentStart": 2817,
                                     "end": 0,
                                     "raw": "2",
                                     "start": 0,
@@ -5091,21 +5091,21 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "commentStart": 2837,
+                          "commentStart": 2838,
                           "end": 0,
                           "name": "radius",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "commentStart": 2846,
+                          "commentStart": 2847,
                           "end": 0,
                           "left": {
                             "abs_path": false,
-                            "commentStart": 2846,
+                            "commentStart": 2847,
                             "end": 0,
                             "name": {
-                              "commentStart": 2846,
+                              "commentStart": 2847,
                               "end": 0,
                               "name": "holeDiam",
                               "start": 0,
@@ -5118,7 +5118,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           },
                           "operator": "/",
                           "right": {
-                            "commentStart": 2857,
+                            "commentStart": 2858,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -5137,10 +5137,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                     ],
                     "callee": {
                       "abs_path": false,
-                      "commentStart": 2703,
+                      "commentStart": 2704,
                       "end": 0,
                       "name": {
-                        "commentStart": 2703,
+                        "commentStart": 2704,
                         "end": 0,
                         "name": "circle",
                         "start": 0,
@@ -5150,7 +5150,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       "start": 0,
                       "type": "Name"
                     },
-                    "commentStart": 2703,
+                    "commentStart": 2704,
                     "end": 0,
                     "start": 0,
                     "type": "CallExpressionKw",
@@ -5158,7 +5158,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                     "unlabeled": null
                   },
                   {
-                    "commentStart": 2867,
+                    "commentStart": 2869,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -5167,10 +5167,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2698,
+                  "commentStart": 2699,
                   "end": 0,
                   "name": {
-                    "commentStart": 2698,
+                    "commentStart": 2699,
                     "end": 0,
                     "name": "hole",
                     "start": 0,
@@ -5180,7 +5180,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2698,
+                "commentStart": 2699,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -5191,7 +5191,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2883,
+                      "commentStart": 2885,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -5200,10 +5200,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                     "arg": {
                       "argument": {
                         "abs_path": false,
-                        "commentStart": 2893,
+                        "commentStart": 2895,
                         "end": 0,
                         "name": {
-                          "commentStart": 2893,
+                          "commentStart": 2895,
                           "end": 0,
                           "name": "tabThk",
                           "start": 0,
@@ -5214,7 +5214,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "commentStart": 2892,
+                      "commentStart": 2894,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -5225,10 +5225,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2875,
+                  "commentStart": 2877,
                   "end": 0,
                   "name": {
-                    "commentStart": 2875,
+                    "commentStart": 2877,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -5238,7 +5238,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2875,
+                "commentStart": 2877,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -5250,21 +5250,21 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2921,
+                      "commentStart": 2923,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2930,
+                      "commentStart": 2932,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 2930,
+                        "commentStart": 2932,
                         "end": 0,
                         "name": {
-                          "commentStart": 2930,
+                          "commentStart": 2932,
                           "end": 0,
                           "name": "holeDiam",
                           "start": 0,
@@ -5277,7 +5277,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       },
                       "operator": "/",
                       "right": {
-                        "commentStart": 2941,
+                        "commentStart": 2943,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -5296,23 +5296,23 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2951,
+                      "commentStart": 2953,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2958,
+                      "commentStart": 2960,
                       "elements": [
                         {
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 2989,
+                              "commentStart": 2991,
                               "end": 0,
                               "name": {
-                                "commentStart": 2989,
+                                "commentStart": 2991,
                                 "end": 0,
                                 "name": "edge11",
                                 "start": 0,
@@ -5326,10 +5326,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 2969,
+                            "commentStart": 2971,
                             "end": 0,
                             "name": {
-                              "commentStart": 2969,
+                              "commentStart": 2971,
                               "end": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
@@ -5339,7 +5339,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 2969,
+                          "commentStart": 2971,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -5349,10 +5349,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 3027,
+                              "commentStart": 3029,
                               "end": 0,
                               "name": {
-                                "commentStart": 3027,
+                                "commentStart": 3029,
                                 "end": 0,
                                 "name": "edge12",
                                 "start": 0,
@@ -5366,10 +5366,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 3007,
+                            "commentStart": 3009,
                             "end": 0,
                             "name": {
-                              "commentStart": 3007,
+                              "commentStart": 3009,
                               "end": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
@@ -5379,7 +5379,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 3007,
+                          "commentStart": 3009,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -5395,10 +5395,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2906,
+                  "commentStart": 2908,
                   "end": 0,
                   "name": {
-                    "commentStart": 2906,
+                    "commentStart": 2908,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -5408,7 +5408,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2906,
+                "commentStart": 2908,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -5420,17 +5420,17 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 3080,
+                      "commentStart": 3075,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 3087,
+                      "commentStart": 3082,
                       "elements": [
                         {
-                          "commentStart": 3088,
+                          "commentStart": 3083,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -5443,7 +5443,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                         },
                         {
                           "argument": {
-                            "commentStart": 3092,
+                            "commentStart": 3087,
                             "end": 0,
                             "raw": "1",
                             "start": 0,
@@ -5454,7 +5454,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                               "suffix": "None"
                             }
                           },
-                          "commentStart": 3091,
+                          "commentStart": 3086,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -5462,7 +5462,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           "type": "UnaryExpression"
                         },
                         {
-                          "commentStart": 3095,
+                          "commentStart": 3090,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -5483,14 +5483,14 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 3106,
+                      "commentStart": 3094,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 3118,
+                      "commentStart": 3106,
                       "end": 0,
                       "raw": "2",
                       "start": 0,
@@ -5505,24 +5505,24 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 3128,
+                      "commentStart": 3109,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 3139,
+                      "commentStart": 3120,
                       "end": 0,
                       "left": {
-                        "commentStart": 3139,
+                        "commentStart": 3120,
                         "end": 0,
                         "left": {
                           "abs_path": false,
-                          "commentStart": 3139,
+                          "commentStart": 3120,
                           "end": 0,
                           "name": {
-                            "commentStart": 3139,
+                            "commentStart": 3120,
                             "end": 0,
                             "name": "length",
                             "start": 0,
@@ -5535,10 +5535,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                         },
                         "operator": "+",
                         "right": {
-                          "commentStart": 3148,
+                          "commentStart": 3129,
                           "end": 0,
                           "left": {
-                            "commentStart": 3148,
+                            "commentStart": 3129,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -5552,10 +5552,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           "operator": "*",
                           "right": {
                             "abs_path": false,
-                            "commentStart": 3152,
+                            "commentStart": 3133,
                             "end": 0,
                             "name": {
-                              "commentStart": 3152,
+                              "commentStart": 3133,
                               "end": 0,
                               "name": "thk",
                               "start": 0,
@@ -5576,17 +5576,17 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       },
                       "operator": "-",
                       "right": {
-                        "commentStart": 3159,
+                        "commentStart": 3140,
                         "end": 0,
                         "left": {
-                          "commentStart": 3159,
+                          "commentStart": 3140,
                           "end": 0,
                           "left": {
                             "abs_path": false,
-                            "commentStart": 3159,
+                            "commentStart": 3140,
                             "end": 0,
                             "name": {
-                              "commentStart": 3159,
+                              "commentStart": 3140,
                               "end": 0,
                               "name": "tabLength",
                               "start": 0,
@@ -5599,7 +5599,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           },
                           "operator": "*",
                           "right": {
-                            "commentStart": 3171,
+                            "commentStart": 3152,
                             "end": 0,
                             "raw": "4",
                             "start": 0,
@@ -5616,7 +5616,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                         },
                         "operator": "/",
                         "right": {
-                          "commentStart": 3175,
+                          "commentStart": 3156,
                           "end": 0,
                           "raw": "3",
                           "start": 0,
@@ -5639,10 +5639,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 3056,
+                  "commentStart": 3059,
                   "end": 0,
                   "name": {
-                    "commentStart": 3056,
+                    "commentStart": 3059,
                     "end": 0,
                     "name": "patternLinear3d",
                     "start": 0,
@@ -5652,7 +5652,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 3056,
+                "commentStart": 3059,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -5660,13 +5660,13 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 2408,
+            "commentStart": 2409,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "9": [
                   {
-                    "commentStart": 3184,
+                    "commentStart": 3159,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -5699,12 +5699,12 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 3240,
+        "commentStart": 3215,
         "declaration": {
-          "commentStart": 3240,
+          "commentStart": 3215,
           "end": 0,
           "id": {
-            "commentStart": 3240,
+            "commentStart": 3215,
             "end": 0,
             "name": "tabsL",
             "start": 0,
@@ -5716,10 +5716,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 "arguments": [
                   {
                     "abs_path": false,
-                    "commentStart": 3262,
+                    "commentStart": 3237,
                     "end": 0,
                     "name": {
-                      "commentStart": 3262,
+                      "commentStart": 3237,
                       "end": 0,
                       "name": "tabPlane",
                       "start": 0,
@@ -5733,10 +5733,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 3248,
+                  "commentStart": 3223,
                   "end": 0,
                   "name": {
-                    "commentStart": 3248,
+                    "commentStart": 3223,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -5746,7 +5746,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 3248,
+                "commentStart": 3223,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -5755,21 +5755,21 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 3292,
+                    "commentStart": 3267,
                     "elements": [
                       {
-                        "commentStart": 3293,
+                        "commentStart": 3268,
                         "end": 0,
                         "left": {
-                          "commentStart": 3293,
+                          "commentStart": 3268,
                           "end": 0,
                           "left": {
                             "argument": {
                               "abs_path": false,
-                              "commentStart": 3294,
+                              "commentStart": 3269,
                               "end": 0,
                               "name": {
-                                "commentStart": 3294,
+                                "commentStart": 3269,
                                 "end": 0,
                                 "name": "width",
                                 "start": 0,
@@ -5780,7 +5780,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                               "type": "Name",
                               "type": "Name"
                             },
-                            "commentStart": 3293,
+                            "commentStart": 3268,
                             "end": 0,
                             "operator": "-",
                             "start": 0,
@@ -5789,7 +5789,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           },
                           "operator": "/",
                           "right": {
-                            "commentStart": 3302,
+                            "commentStart": 3277,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -5807,10 +5807,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                         "operator": "-",
                         "right": {
                           "abs_path": false,
-                          "commentStart": 3306,
+                          "commentStart": 3281,
                           "end": 0,
                           "name": {
-                            "commentStart": 3306,
+                            "commentStart": 3281,
                             "end": 0,
                             "name": "thk",
                             "start": 0,
@@ -5826,17 +5826,17 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                         "type": "BinaryExpression"
                       },
                       {
-                        "commentStart": 3311,
+                        "commentStart": 3286,
                         "end": 0,
                         "left": {
-                          "commentStart": 3311,
+                          "commentStart": 3286,
                           "end": 0,
                           "left": {
                             "abs_path": false,
-                            "commentStart": 3311,
+                            "commentStart": 3286,
                             "end": 0,
                             "name": {
-                              "commentStart": 3311,
+                              "commentStart": 3286,
                               "end": 0,
                               "name": "length",
                               "start": 0,
@@ -5849,7 +5849,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           },
                           "operator": "/",
                           "right": {
-                            "commentStart": 3320,
+                            "commentStart": 3295,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -5867,10 +5867,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                         "operator": "+",
                         "right": {
                           "abs_path": false,
-                          "commentStart": 3324,
+                          "commentStart": 3299,
                           "end": 0,
                           "name": {
-                            "commentStart": 3324,
+                            "commentStart": 3299,
                             "end": 0,
                             "name": "thk",
                             "start": 0,
@@ -5892,7 +5892,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 3330,
+                    "commentStart": 3305,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -5901,10 +5901,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 3277,
+                  "commentStart": 3252,
                   "end": 0,
                   "name": {
-                    "commentStart": 3277,
+                    "commentStart": 3252,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -5914,7 +5914,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 3277,
+                "commentStart": 3252,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -5925,22 +5925,22 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 3343,
+                      "commentStart": 3318,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 3349,
+                      "commentStart": 3324,
                       "elements": [
                         {
                           "argument": {
                             "abs_path": false,
-                            "commentStart": 3351,
+                            "commentStart": 3326,
                             "end": 0,
                             "name": {
-                              "commentStart": 3351,
+                              "commentStart": 3326,
                               "end": 0,
                               "name": "tabWidth",
                               "start": 0,
@@ -5951,7 +5951,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "type": "Name",
                             "type": "Name"
                           },
-                          "commentStart": 3350,
+                          "commentStart": 3325,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -5959,15 +5959,15 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           "type": "UnaryExpression"
                         },
                         {
-                          "commentStart": 3361,
+                          "commentStart": 3336,
                           "end": 0,
                           "left": {
                             "argument": {
                               "abs_path": false,
-                              "commentStart": 3362,
+                              "commentStart": 3337,
                               "end": 0,
                               "name": {
-                                "commentStart": 3362,
+                                "commentStart": 3337,
                                 "end": 0,
                                 "name": "tabLength",
                                 "start": 0,
@@ -5978,7 +5978,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                               "type": "Name",
                               "type": "Name"
                             },
-                            "commentStart": 3361,
+                            "commentStart": 3336,
                             "end": 0,
                             "operator": "-",
                             "start": 0,
@@ -5987,7 +5987,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           },
                           "operator": "/",
                           "right": {
-                            "commentStart": 3374,
+                            "commentStart": 3349,
                             "end": 0,
                             "raw": "3",
                             "start": 0,
@@ -6012,14 +6012,14 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 3378,
+                      "commentStart": 3353,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 3384,
+                      "commentStart": 3359,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -6030,10 +6030,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 3338,
+                  "commentStart": 3313,
                   "end": 0,
                   "name": {
-                    "commentStart": 3338,
+                    "commentStart": 3313,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -6043,7 +6043,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 3338,
+                "commentStart": 3313,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -6055,17 +6055,17 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 3403,
+                      "commentStart": 3378,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 3409,
+                      "commentStart": 3384,
                       "elements": [
                         {
-                          "commentStart": 3410,
+                          "commentStart": 3385,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -6077,18 +6077,18 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           }
                         },
                         {
-                          "commentStart": 3413,
+                          "commentStart": 3388,
                           "end": 0,
                           "left": {
-                            "commentStart": 3413,
+                            "commentStart": 3388,
                             "end": 0,
                             "left": {
                               "argument": {
                                 "abs_path": false,
-                                "commentStart": 3414,
+                                "commentStart": 3389,
                                 "end": 0,
                                 "name": {
-                                  "commentStart": 3414,
+                                  "commentStart": 3389,
                                   "end": 0,
                                   "name": "tabLength",
                                   "start": 0,
@@ -6099,7 +6099,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                 "type": "Name",
                                 "type": "Name"
                               },
-                              "commentStart": 3413,
+                              "commentStart": 3388,
                               "end": 0,
                               "operator": "-",
                               "start": 0,
@@ -6108,7 +6108,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             },
                             "operator": "/",
                             "right": {
-                              "commentStart": 3426,
+                              "commentStart": 3401,
                               "end": 0,
                               "raw": "3",
                               "start": 0,
@@ -6125,7 +6125,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           },
                           "operator": "*",
                           "right": {
-                            "commentStart": 3430,
+                            "commentStart": 3405,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -6150,14 +6150,14 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 3434,
+                      "commentStart": 3409,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 3440,
+                      "commentStart": 3415,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -6168,10 +6168,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 3398,
+                  "commentStart": 3373,
                   "end": 0,
                   "name": {
-                    "commentStart": 3398,
+                    "commentStart": 3373,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -6181,7 +6181,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 3398,
+                "commentStart": 3373,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -6193,21 +6193,21 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 3459,
+                      "commentStart": 3434,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 3465,
+                      "commentStart": 3440,
                       "elements": [
                         {
                           "abs_path": false,
-                          "commentStart": 3466,
+                          "commentStart": 3441,
                           "end": 0,
                           "name": {
-                            "commentStart": 3466,
+                            "commentStart": 3441,
                             "end": 0,
                             "name": "tabWidth",
                             "start": 0,
@@ -6219,15 +6219,15 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           "type": "Name"
                         },
                         {
-                          "commentStart": 3476,
+                          "commentStart": 3451,
                           "end": 0,
                           "left": {
                             "argument": {
                               "abs_path": false,
-                              "commentStart": 3477,
+                              "commentStart": 3452,
                               "end": 0,
                               "name": {
-                                "commentStart": 3477,
+                                "commentStart": 3452,
                                 "end": 0,
                                 "name": "tabLength",
                                 "start": 0,
@@ -6238,7 +6238,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                               "type": "Name",
                               "type": "Name"
                             },
-                            "commentStart": 3476,
+                            "commentStart": 3451,
                             "end": 0,
                             "operator": "-",
                             "start": 0,
@@ -6247,7 +6247,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           },
                           "operator": "/",
                           "right": {
-                            "commentStart": 3489,
+                            "commentStart": 3464,
                             "end": 0,
                             "raw": "3",
                             "start": 0,
@@ -6272,14 +6272,14 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 3493,
+                      "commentStart": 3468,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 3499,
+                      "commentStart": 3474,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -6290,10 +6290,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 3454,
+                  "commentStart": 3429,
                   "end": 0,
                   "name": {
-                    "commentStart": 3454,
+                    "commentStart": 3429,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -6303,7 +6303,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 3454,
+                "commentStart": 3429,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -6315,14 +6315,14 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 3519,
+                      "commentStart": 3494,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 3525,
+                      "commentStart": 3500,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -6333,10 +6333,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 3513,
+                  "commentStart": 3488,
                   "end": 0,
                   "name": {
-                    "commentStart": 3513,
+                    "commentStart": 3488,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -6346,7 +6346,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 3513,
+                "commentStart": 3488,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -6360,31 +6360,31 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "commentStart": 3559,
+                          "commentStart": 3534,
                           "end": 0,
                           "name": "center",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "commentStart": 3568,
+                          "commentStart": 3543,
                           "elements": [
                             {
-                              "commentStart": 3579,
+                              "commentStart": 3554,
                               "end": 0,
                               "left": {
-                                "commentStart": 3579,
+                                "commentStart": 3554,
                                 "end": 0,
                                 "left": {
-                                  "commentStart": 3579,
+                                  "commentStart": 3554,
                                   "end": 0,
                                   "left": {
                                     "argument": {
                                       "abs_path": false,
-                                      "commentStart": 3580,
+                                      "commentStart": 3555,
                                       "end": 0,
                                       "name": {
-                                        "commentStart": 3580,
+                                        "commentStart": 3555,
                                         "end": 0,
                                         "name": "width",
                                         "start": 0,
@@ -6395,7 +6395,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                       "type": "Name",
                                       "type": "Name"
                                     },
-                                    "commentStart": 3579,
+                                    "commentStart": 3554,
                                     "end": 0,
                                     "operator": "-",
                                     "start": 0,
@@ -6404,7 +6404,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                   },
                                   "operator": "/",
                                   "right": {
-                                    "commentStart": 3588,
+                                    "commentStart": 3563,
                                     "end": 0,
                                     "raw": "2",
                                     "start": 0,
@@ -6422,10 +6422,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                 "operator": "-",
                                 "right": {
                                   "abs_path": false,
-                                  "commentStart": 3592,
+                                  "commentStart": 3567,
                                   "end": 0,
                                   "name": {
-                                    "commentStart": 3592,
+                                    "commentStart": 3567,
                                     "end": 0,
                                     "name": "thk",
                                     "start": 0,
@@ -6442,14 +6442,14 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                               },
                               "operator": "-",
                               "right": {
-                                "commentStart": 3599,
+                                "commentStart": 3574,
                                 "end": 0,
                                 "left": {
                                   "abs_path": false,
-                                  "commentStart": 3599,
+                                  "commentStart": 3574,
                                   "end": 0,
                                   "name": {
-                                    "commentStart": 3599,
+                                    "commentStart": 3574,
                                     "end": 0,
                                     "name": "tabWidth",
                                     "start": 0,
@@ -6462,7 +6462,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "commentStart": 3610,
+                                  "commentStart": 3585,
                                   "end": 0,
                                   "raw": "2",
                                   "start": 0,
@@ -6482,20 +6482,20 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                               "type": "BinaryExpression"
                             },
                             {
-                              "commentStart": 3623,
+                              "commentStart": 3598,
                               "end": 0,
                               "left": {
-                                "commentStart": 3623,
+                                "commentStart": 3598,
                                 "end": 0,
                                 "left": {
-                                  "commentStart": 3623,
+                                  "commentStart": 3598,
                                   "end": 0,
                                   "left": {
                                     "abs_path": false,
-                                    "commentStart": 3623,
+                                    "commentStart": 3598,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 3623,
+                                      "commentStart": 3598,
                                       "end": 0,
                                       "name": "length",
                                       "start": 0,
@@ -6508,7 +6508,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                   },
                                   "operator": "/",
                                   "right": {
-                                    "commentStart": 3632,
+                                    "commentStart": 3607,
                                     "end": 0,
                                     "raw": "2",
                                     "start": 0,
@@ -6526,10 +6526,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                 "operator": "+",
                                 "right": {
                                   "abs_path": false,
-                                  "commentStart": 3636,
+                                  "commentStart": 3611,
                                   "end": 0,
                                   "name": {
-                                    "commentStart": 3636,
+                                    "commentStart": 3611,
                                     "end": 0,
                                     "name": "thk",
                                     "start": 0,
@@ -6546,14 +6546,14 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                               },
                               "operator": "-",
                               "right": {
-                                "commentStart": 3643,
+                                "commentStart": 3618,
                                 "end": 0,
                                 "left": {
                                   "abs_path": false,
-                                  "commentStart": 3643,
+                                  "commentStart": 3618,
                                   "end": 0,
                                   "name": {
-                                    "commentStart": 3643,
+                                    "commentStart": 3618,
                                     "end": 0,
                                     "name": "tabLength",
                                     "start": 0,
@@ -6566,10 +6566,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "commentStart": 3656,
+                                  "commentStart": 3631,
                                   "end": 0,
                                   "left": {
-                                    "commentStart": 3656,
+                                    "commentStart": 3631,
                                     "end": 0,
                                     "raw": "3",
                                     "start": 0,
@@ -6582,7 +6582,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                   },
                                   "operator": "/",
                                   "right": {
-                                    "commentStart": 3660,
+                                    "commentStart": 3635,
                                     "end": 0,
                                     "raw": "2",
                                     "start": 0,
@@ -6615,21 +6615,21 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "commentStart": 3681,
+                          "commentStart": 3656,
                           "end": 0,
                           "name": "radius",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "commentStart": 3690,
+                          "commentStart": 3665,
                           "end": 0,
                           "left": {
                             "abs_path": false,
-                            "commentStart": 3690,
+                            "commentStart": 3665,
                             "end": 0,
                             "name": {
-                              "commentStart": 3690,
+                              "commentStart": 3665,
                               "end": 0,
                               "name": "holeDiam",
                               "start": 0,
@@ -6642,7 +6642,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           },
                           "operator": "/",
                           "right": {
-                            "commentStart": 3701,
+                            "commentStart": 3676,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -6661,10 +6661,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                     ],
                     "callee": {
                       "abs_path": false,
-                      "commentStart": 3544,
+                      "commentStart": 3519,
                       "end": 0,
                       "name": {
-                        "commentStart": 3544,
+                        "commentStart": 3519,
                         "end": 0,
                         "name": "circle",
                         "start": 0,
@@ -6674,7 +6674,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       "start": 0,
                       "type": "Name"
                     },
-                    "commentStart": 3544,
+                    "commentStart": 3519,
                     "end": 0,
                     "start": 0,
                     "type": "CallExpressionKw",
@@ -6682,7 +6682,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                     "unlabeled": null
                   },
                   {
-                    "commentStart": 3711,
+                    "commentStart": 3687,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -6691,10 +6691,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 3539,
+                  "commentStart": 3514,
                   "end": 0,
                   "name": {
-                    "commentStart": 3539,
+                    "commentStart": 3514,
                     "end": 0,
                     "name": "hole",
                     "start": 0,
@@ -6704,7 +6704,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 3539,
+                "commentStart": 3514,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -6715,7 +6715,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 3727,
+                      "commentStart": 3703,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -6724,10 +6724,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                     "arg": {
                       "argument": {
                         "abs_path": false,
-                        "commentStart": 3737,
+                        "commentStart": 3713,
                         "end": 0,
                         "name": {
-                          "commentStart": 3737,
+                          "commentStart": 3713,
                           "end": 0,
                           "name": "tabThk",
                           "start": 0,
@@ -6738,7 +6738,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "commentStart": 3736,
+                      "commentStart": 3712,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -6749,10 +6749,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 3719,
+                  "commentStart": 3695,
                   "end": 0,
                   "name": {
-                    "commentStart": 3719,
+                    "commentStart": 3695,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -6762,7 +6762,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 3719,
+                "commentStart": 3695,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -6774,21 +6774,21 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 3765,
+                      "commentStart": 3741,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 3774,
+                      "commentStart": 3750,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 3774,
+                        "commentStart": 3750,
                         "end": 0,
                         "name": {
-                          "commentStart": 3774,
+                          "commentStart": 3750,
                           "end": 0,
                           "name": "holeDiam",
                           "start": 0,
@@ -6801,7 +6801,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       },
                       "operator": "/",
                       "right": {
-                        "commentStart": 3785,
+                        "commentStart": 3761,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -6820,23 +6820,23 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 3795,
+                      "commentStart": 3771,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 3802,
+                      "commentStart": 3778,
                       "elements": [
                         {
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 3833,
+                              "commentStart": 3809,
                               "end": 0,
                               "name": {
-                                "commentStart": 3833,
+                                "commentStart": 3809,
                                 "end": 0,
                                 "name": "edge21",
                                 "start": 0,
@@ -6850,10 +6850,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 3813,
+                            "commentStart": 3789,
                             "end": 0,
                             "name": {
-                              "commentStart": 3813,
+                              "commentStart": 3789,
                               "end": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
@@ -6863,7 +6863,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 3813,
+                          "commentStart": 3789,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -6873,10 +6873,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 3871,
+                              "commentStart": 3847,
                               "end": 0,
                               "name": {
-                                "commentStart": 3871,
+                                "commentStart": 3847,
                                 "end": 0,
                                 "name": "edge22",
                                 "start": 0,
@@ -6890,10 +6890,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 3851,
+                            "commentStart": 3827,
                             "end": 0,
                             "name": {
-                              "commentStart": 3851,
+                              "commentStart": 3827,
                               "end": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
@@ -6903,7 +6903,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 3851,
+                          "commentStart": 3827,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -6919,10 +6919,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 3750,
+                  "commentStart": 3726,
                   "end": 0,
                   "name": {
-                    "commentStart": 3750,
+                    "commentStart": 3726,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -6932,7 +6932,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 3750,
+                "commentStart": 3726,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -6944,17 +6944,17 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 3924,
+                      "commentStart": 3893,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 3931,
+                      "commentStart": 3900,
                       "elements": [
                         {
-                          "commentStart": 3932,
+                          "commentStart": 3901,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -6967,7 +6967,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                         },
                         {
                           "argument": {
-                            "commentStart": 3936,
+                            "commentStart": 3905,
                             "end": 0,
                             "raw": "1",
                             "start": 0,
@@ -6978,7 +6978,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                               "suffix": "None"
                             }
                           },
-                          "commentStart": 3935,
+                          "commentStart": 3904,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -6986,7 +6986,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           "type": "UnaryExpression"
                         },
                         {
-                          "commentStart": 3939,
+                          "commentStart": 3908,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -7007,14 +7007,14 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 3950,
+                      "commentStart": 3912,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 3962,
+                      "commentStart": 3924,
                       "end": 0,
                       "raw": "2",
                       "start": 0,
@@ -7029,24 +7029,24 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 3972,
+                      "commentStart": 3927,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 3983,
+                      "commentStart": 3938,
                       "end": 0,
                       "left": {
-                        "commentStart": 3983,
+                        "commentStart": 3938,
                         "end": 0,
                         "left": {
                           "abs_path": false,
-                          "commentStart": 3983,
+                          "commentStart": 3938,
                           "end": 0,
                           "name": {
-                            "commentStart": 3983,
+                            "commentStart": 3938,
                             "end": 0,
                             "name": "length",
                             "start": 0,
@@ -7059,10 +7059,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                         },
                         "operator": "+",
                         "right": {
-                          "commentStart": 3992,
+                          "commentStart": 3947,
                           "end": 0,
                           "left": {
-                            "commentStart": 3992,
+                            "commentStart": 3947,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -7076,10 +7076,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           "operator": "*",
                           "right": {
                             "abs_path": false,
-                            "commentStart": 3996,
+                            "commentStart": 3951,
                             "end": 0,
                             "name": {
-                              "commentStart": 3996,
+                              "commentStart": 3951,
                               "end": 0,
                               "name": "thk",
                               "start": 0,
@@ -7100,17 +7100,17 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       },
                       "operator": "-",
                       "right": {
-                        "commentStart": 4003,
+                        "commentStart": 3958,
                         "end": 0,
                         "left": {
-                          "commentStart": 4003,
+                          "commentStart": 3958,
                           "end": 0,
                           "left": {
                             "abs_path": false,
-                            "commentStart": 4003,
+                            "commentStart": 3958,
                             "end": 0,
                             "name": {
-                              "commentStart": 4003,
+                              "commentStart": 3958,
                               "end": 0,
                               "name": "tabLength",
                               "start": 0,
@@ -7123,7 +7123,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           },
                           "operator": "*",
                           "right": {
-                            "commentStart": 4015,
+                            "commentStart": 3970,
                             "end": 0,
                             "raw": "4",
                             "start": 0,
@@ -7140,7 +7140,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                         },
                         "operator": "/",
                         "right": {
-                          "commentStart": 4019,
+                          "commentStart": 3974,
                           "end": 0,
                           "raw": "3",
                           "start": 0,
@@ -7163,10 +7163,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 3900,
+                  "commentStart": 3877,
                   "end": 0,
                   "name": {
-                    "commentStart": 3900,
+                    "commentStart": 3877,
                     "end": 0,
                     "name": "patternLinear3d",
                     "start": 0,
@@ -7176,7 +7176,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 3900,
+                "commentStart": 3877,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -7184,13 +7184,13 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 3248,
+            "commentStart": 3223,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "9": [
                   {
-                    "commentStart": 4028,
+                    "commentStart": 3977,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -7218,26 +7218,26 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 4068,
+        "commentStart": 4017,
         "declaration": {
-          "commentStart": 4068,
+          "commentStart": 4017,
           "end": 0,
           "id": {
-            "commentStart": 4068,
+            "commentStart": 4017,
             "end": 0,
             "name": "retPlane",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 4079,
+            "commentStart": 4028,
             "end": 0,
             "properties": [
               {
-                "commentStart": 4083,
+                "commentStart": 4032,
                 "end": 0,
                 "key": {
-                  "commentStart": 4083,
+                  "commentStart": 4032,
                   "end": 0,
                   "name": "plane",
                   "start": 0,
@@ -7246,16 +7246,165 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 "start": 0,
                 "type": "ObjectProperty",
                 "value": {
-                  "commentStart": 4091,
+                  "commentStart": 4040,
                   "end": 0,
                   "properties": [
                     {
-                      "commentStart": 4097,
+                      "commentStart": 4046,
                       "end": 0,
                       "key": {
-                        "commentStart": 4097,
+                        "commentStart": 4046,
                         "end": 0,
                         "name": "origin",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 4055,
+                        "end": 0,
+                        "properties": [
+                          {
+                            "commentStart": 4057,
+                            "end": 0,
+                            "key": {
+                              "commentStart": 4057,
+                              "end": 0,
+                              "name": "x",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "start": 0,
+                            "type": "ObjectProperty",
+                            "value": {
+                              "commentStart": 4061,
+                              "end": 0,
+                              "left": {
+                                "commentStart": 4061,
+                                "end": 0,
+                                "left": {
+                                  "argument": {
+                                    "abs_path": false,
+                                    "commentStart": 4062,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 4062,
+                                      "end": 0,
+                                      "name": "width",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "commentStart": 4061,
+                                  "end": 0,
+                                  "operator": "-",
+                                  "start": 0,
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
+                                },
+                                "operator": "/",
+                                "right": {
+                                  "commentStart": 4070,
+                                  "end": 0,
+                                  "raw": "2",
+                                  "start": 0,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 0,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "operator": "+",
+                              "right": {
+                                "commentStart": 4074,
+                                "end": 0,
+                                "raw": "20",
+                                "start": 0,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 20.0,
+                                  "suffix": "None"
+                                }
+                              },
+                              "start": 0,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            }
+                          },
+                          {
+                            "commentStart": 4078,
+                            "end": 0,
+                            "key": {
+                              "commentStart": 4078,
+                              "end": 0,
+                              "name": "y",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "start": 0,
+                            "type": "ObjectProperty",
+                            "value": {
+                              "commentStart": 4082,
+                              "end": 0,
+                              "raw": "0",
+                              "start": 0,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 0.0,
+                                "suffix": "None"
+                              }
+                            }
+                          },
+                          {
+                            "commentStart": 4085,
+                            "end": 0,
+                            "key": {
+                              "commentStart": 4085,
+                              "end": 0,
+                              "name": "z",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "start": 0,
+                            "type": "ObjectProperty",
+                            "value": {
+                              "commentStart": 4089,
+                              "end": 0,
+                              "raw": "0",
+                              "start": 0,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 0.0,
+                                "suffix": "None"
+                              }
+                            }
+                          }
+                        ],
+                        "start": 0,
+                        "type": "ObjectExpression",
+                        "type": "ObjectExpression"
+                      }
+                    },
+                    {
+                      "commentStart": 4098,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 4098,
+                        "end": 0,
+                        "name": "xAxis",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -7280,73 +7429,21 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "value": {
                               "commentStart": 4112,
                               "end": 0,
-                              "left": {
-                                "commentStart": 4112,
-                                "end": 0,
-                                "left": {
-                                  "argument": {
-                                    "abs_path": false,
-                                    "commentStart": 4113,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 4113,
-                                      "end": 0,
-                                      "name": "width",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  "commentStart": 4112,
-                                  "end": 0,
-                                  "operator": "-",
-                                  "start": 0,
-                                  "type": "UnaryExpression",
-                                  "type": "UnaryExpression"
-                                },
-                                "operator": "/",
-                                "right": {
-                                  "commentStart": 4121,
-                                  "end": 0,
-                                  "raw": "2",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 2.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              },
-                              "operator": "+",
-                              "right": {
-                                "commentStart": 4125,
-                                "end": 0,
-                                "raw": "20",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 20.0,
-                                  "suffix": "None"
-                                }
-                              },
+                              "raw": "0",
                               "start": 0,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 0.0,
+                                "suffix": "None"
+                              }
                             }
                           },
                           {
-                            "commentStart": 4129,
+                            "commentStart": 4115,
                             "end": 0,
                             "key": {
-                              "commentStart": 4129,
+                              "commentStart": 4115,
                               "end": 0,
                               "name": "y",
                               "start": 0,
@@ -7355,104 +7452,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
-                              "commentStart": 4133,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "commentStart": 4136,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 4136,
-                              "end": 0,
-                              "name": "z",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 4140,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          }
-                        ],
-                        "start": 0,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
-                      }
-                    },
-                    {
-                      "commentStart": 4149,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 4149,
-                        "end": 0,
-                        "name": "xAxis",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 4157,
-                        "end": 0,
-                        "properties": [
-                          {
-                            "commentStart": 4159,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 4159,
-                              "end": 0,
-                              "name": "x",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 4163,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "commentStart": 4166,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 4166,
-                              "end": 0,
-                              "name": "y",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 4170,
+                              "commentStart": 4119,
                               "end": 0,
                               "raw": "1",
                               "start": 0,
@@ -7465,10 +7465,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             }
                           },
                           {
-                            "commentStart": 4173,
+                            "commentStart": 4122,
                             "end": 0,
                             "key": {
-                              "commentStart": 4173,
+                              "commentStart": 4122,
                               "end": 0,
                               "name": "z",
                               "start": 0,
@@ -7477,7 +7477,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
-                              "commentStart": 4177,
+                              "commentStart": 4126,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -7496,10 +7496,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       }
                     },
                     {
-                      "commentStart": 4186,
+                      "commentStart": 4135,
                       "end": 0,
                       "key": {
-                        "commentStart": 4186,
+                        "commentStart": 4135,
                         "end": 0,
                         "name": "yAxis",
                         "start": 0,
@@ -7508,14 +7508,14 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
-                        "commentStart": 4194,
+                        "commentStart": 4143,
                         "end": 0,
                         "properties": [
                           {
-                            "commentStart": 4196,
+                            "commentStart": 4145,
                             "end": 0,
                             "key": {
-                              "commentStart": 4196,
+                              "commentStart": 4145,
                               "end": 0,
                               "name": "x",
                               "start": 0,
@@ -7524,7 +7524,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
-                              "commentStart": 4200,
+                              "commentStart": 4149,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -7537,10 +7537,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             }
                           },
                           {
-                            "commentStart": 4203,
+                            "commentStart": 4152,
                             "end": 0,
                             "key": {
-                              "commentStart": 4203,
+                              "commentStart": 4152,
                               "end": 0,
                               "name": "y",
                               "start": 0,
@@ -7549,7 +7549,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
-                              "commentStart": 4207,
+                              "commentStart": 4156,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -7562,10 +7562,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             }
                           },
                           {
-                            "commentStart": 4210,
+                            "commentStart": 4159,
                             "end": 0,
                             "key": {
-                              "commentStart": 4210,
+                              "commentStart": 4159,
                               "end": 0,
                               "name": "z",
                               "start": 0,
@@ -7574,7 +7574,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
-                              "commentStart": 4214,
+                              "commentStart": 4163,
                               "end": 0,
                               "raw": "1",
                               "start": 0,
@@ -7593,10 +7593,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       }
                     },
                     {
-                      "commentStart": 4223,
+                      "commentStart": 4172,
                       "end": 0,
                       "key": {
-                        "commentStart": 4223,
+                        "commentStart": 4172,
                         "end": 0,
                         "name": "zAxis",
                         "start": 0,
@@ -7605,14 +7605,14 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
-                        "commentStart": 4231,
+                        "commentStart": 4180,
                         "end": 0,
                         "properties": [
                           {
-                            "commentStart": 4233,
+                            "commentStart": 4182,
                             "end": 0,
                             "key": {
-                              "commentStart": 4233,
+                              "commentStart": 4182,
                               "end": 0,
                               "name": "x",
                               "start": 0,
@@ -7621,7 +7621,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
-                              "commentStart": 4237,
+                              "commentStart": 4186,
                               "end": 0,
                               "raw": "1",
                               "start": 0,
@@ -7634,10 +7634,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             }
                           },
                           {
-                            "commentStart": 4240,
+                            "commentStart": 4189,
                             "end": 0,
                             "key": {
-                              "commentStart": 4240,
+                              "commentStart": 4189,
                               "end": 0,
                               "name": "y",
                               "start": 0,
@@ -7646,7 +7646,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
-                              "commentStart": 4244,
+                              "commentStart": 4193,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -7659,10 +7659,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             }
                           },
                           {
-                            "commentStart": 4247,
+                            "commentStart": 4196,
                             "end": 0,
                             "key": {
-                              "commentStart": 4247,
+                              "commentStart": 4196,
                               "end": 0,
                               "name": "z",
                               "start": 0,
@@ -7671,7 +7671,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
-                              "commentStart": 4251,
+                              "commentStart": 4200,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -7710,12 +7710,12 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 4260,
+        "commentStart": 4209,
         "declaration": {
-          "commentStart": 4303,
+          "commentStart": 4252,
           "end": 0,
           "id": {
-            "commentStart": 4303,
+            "commentStart": 4252,
             "end": 0,
             "name": "retFront",
             "start": 0,
@@ -7727,10 +7727,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 "arguments": [
                   {
                     "abs_path": false,
-                    "commentStart": 4328,
+                    "commentStart": 4277,
                     "end": 0,
                     "name": {
-                      "commentStart": 4328,
+                      "commentStart": 4277,
                       "end": 0,
                       "name": "retPlane",
                       "start": 0,
@@ -7744,10 +7744,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 4314,
+                  "commentStart": 4263,
                   "end": 0,
                   "name": {
-                    "commentStart": 4314,
+                    "commentStart": 4263,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -7757,7 +7757,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 4314,
+                "commentStart": 4263,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -7766,21 +7766,21 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 4358,
+                    "commentStart": 4307,
                     "elements": [
                       {
-                        "commentStart": 4359,
+                        "commentStart": 4308,
                         "end": 0,
                         "left": {
-                          "commentStart": 4359,
+                          "commentStart": 4308,
                           "end": 0,
                           "left": {
                             "argument": {
                               "abs_path": false,
-                              "commentStart": 4360,
+                              "commentStart": 4309,
                               "end": 0,
                               "name": {
-                                "commentStart": 4360,
+                                "commentStart": 4309,
                                 "end": 0,
                                 "name": "length",
                                 "start": 0,
@@ -7791,7 +7791,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                               "type": "Name",
                               "type": "Name"
                             },
-                            "commentStart": 4359,
+                            "commentStart": 4308,
                             "end": 0,
                             "operator": "-",
                             "start": 0,
@@ -7800,7 +7800,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           },
                           "operator": "/",
                           "right": {
-                            "commentStart": 4369,
+                            "commentStart": 4318,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -7818,10 +7818,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                         "operator": "-",
                         "right": {
                           "abs_path": false,
-                          "commentStart": 4373,
+                          "commentStart": 4322,
                           "end": 0,
                           "name": {
-                            "commentStart": 4373,
+                            "commentStart": 4322,
                             "end": 0,
                             "name": "thk",
                             "start": 0,
@@ -7837,7 +7837,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                         "type": "BinaryExpression"
                       },
                       {
-                        "commentStart": 4378,
+                        "commentStart": 4327,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -7855,7 +7855,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 4382,
+                    "commentStart": 4331,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -7864,10 +7864,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 4343,
+                  "commentStart": 4292,
                   "end": 0,
                   "name": {
-                    "commentStart": 4343,
+                    "commentStart": 4292,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -7877,7 +7877,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 4343,
+                "commentStart": 4292,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -7888,17 +7888,17 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 4395,
+                      "commentStart": 4344,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 4401,
+                      "commentStart": 4350,
                       "elements": [
                         {
-                          "commentStart": 4402,
+                          "commentStart": 4351,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -7911,10 +7911,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                         },
                         {
                           "abs_path": false,
-                          "commentStart": 4405,
+                          "commentStart": 4354,
                           "end": 0,
                           "name": {
-                            "commentStart": 4405,
+                            "commentStart": 4354,
                             "end": 0,
                             "name": "thk",
                             "start": 0,
@@ -7935,10 +7935,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 4390,
+                  "commentStart": 4339,
                   "end": 0,
                   "name": {
-                    "commentStart": 4390,
+                    "commentStart": 4339,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -7948,7 +7948,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 4390,
+                "commentStart": 4339,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -7960,21 +7960,21 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 4421,
+                      "commentStart": 4370,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 4427,
+                      "commentStart": 4376,
                       "elements": [
                         {
                           "abs_path": false,
-                          "commentStart": 4428,
+                          "commentStart": 4377,
                           "end": 0,
                           "name": {
-                            "commentStart": 4428,
+                            "commentStart": 4377,
                             "end": 0,
                             "name": "thk",
                             "start": 0,
@@ -7988,10 +7988,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                         {
                           "argument": {
                             "abs_path": false,
-                            "commentStart": 4434,
+                            "commentStart": 4383,
                             "end": 0,
                             "name": {
-                              "commentStart": 4434,
+                              "commentStart": 4383,
                               "end": 0,
                               "name": "thk",
                               "start": 0,
@@ -8002,7 +8002,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "type": "Name",
                             "type": "Name"
                           },
-                          "commentStart": 4433,
+                          "commentStart": 4382,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -8019,10 +8019,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 4416,
+                  "commentStart": 4365,
                   "end": 0,
                   "name": {
-                    "commentStart": 4416,
+                    "commentStart": 4365,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -8032,7 +8032,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 4416,
+                "commentStart": 4365,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -8043,10 +8043,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 "arguments": [],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 4445,
+                  "commentStart": 4394,
                   "end": 0,
                   "name": {
-                    "commentStart": 4445,
+                    "commentStart": 4394,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -8056,7 +8056,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 4445,
+                "commentStart": 4394,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -8067,21 +8067,21 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 4466,
+                      "commentStart": 4415,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 4475,
+                      "commentStart": 4424,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 4475,
+                        "commentStart": 4424,
                         "end": 0,
                         "name": {
-                          "commentStart": 4475,
+                          "commentStart": 4424,
                           "end": 0,
                           "name": "width",
                           "start": 0,
@@ -8094,7 +8094,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       },
                       "operator": "-",
                       "right": {
-                        "commentStart": 4483,
+                        "commentStart": 4432,
                         "end": 0,
                         "raw": "40",
                         "start": 0,
@@ -8113,10 +8113,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 4458,
+                  "commentStart": 4407,
                   "end": 0,
                   "name": {
-                    "commentStart": 4458,
+                    "commentStart": 4407,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -8126,7 +8126,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 4458,
+                "commentStart": 4407,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -8134,13 +8134,13 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 4314,
+            "commentStart": 4263,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "5": [
                   {
-                    "commentStart": 4486,
+                    "commentStart": 4435,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -8173,12 +8173,12 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 4528,
+        "commentStart": 4477,
         "declaration": {
-          "commentStart": 4528,
+          "commentStart": 4477,
           "end": 0,
           "id": {
-            "commentStart": 4528,
+            "commentStart": 4477,
             "end": 0,
             "name": "retBack",
             "start": 0,
@@ -8190,10 +8190,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 "arguments": [
                   {
                     "abs_path": false,
-                    "commentStart": 4552,
+                    "commentStart": 4501,
                     "end": 0,
                     "name": {
-                      "commentStart": 4552,
+                      "commentStart": 4501,
                       "end": 0,
                       "name": "retPlane",
                       "start": 0,
@@ -8207,10 +8207,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 4538,
+                  "commentStart": 4487,
                   "end": 0,
                   "name": {
-                    "commentStart": 4538,
+                    "commentStart": 4487,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -8220,7 +8220,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 4538,
+                "commentStart": 4487,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -8229,20 +8229,20 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 4582,
+                    "commentStart": 4531,
                     "elements": [
                       {
-                        "commentStart": 4583,
+                        "commentStart": 4532,
                         "end": 0,
                         "left": {
-                          "commentStart": 4583,
+                          "commentStart": 4532,
                           "end": 0,
                           "left": {
                             "abs_path": false,
-                            "commentStart": 4583,
+                            "commentStart": 4532,
                             "end": 0,
                             "name": {
-                              "commentStart": 4583,
+                              "commentStart": 4532,
                               "end": 0,
                               "name": "length",
                               "start": 0,
@@ -8255,7 +8255,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           },
                           "operator": "/",
                           "right": {
-                            "commentStart": 4592,
+                            "commentStart": 4541,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -8273,10 +8273,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                         "operator": "+",
                         "right": {
                           "abs_path": false,
-                          "commentStart": 4596,
+                          "commentStart": 4545,
                           "end": 0,
                           "name": {
-                            "commentStart": 4596,
+                            "commentStart": 4545,
                             "end": 0,
                             "name": "thk",
                             "start": 0,
@@ -8292,7 +8292,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                         "type": "BinaryExpression"
                       },
                       {
-                        "commentStart": 4601,
+                        "commentStart": 4550,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -8310,7 +8310,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 4605,
+                    "commentStart": 4554,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -8319,10 +8319,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 4567,
+                  "commentStart": 4516,
                   "end": 0,
                   "name": {
-                    "commentStart": 4567,
+                    "commentStart": 4516,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -8332,7 +8332,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 4567,
+                "commentStart": 4516,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -8343,17 +8343,17 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 4618,
+                      "commentStart": 4567,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 4624,
+                      "commentStart": 4573,
                       "elements": [
                         {
-                          "commentStart": 4625,
+                          "commentStart": 4574,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -8366,10 +8366,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                         },
                         {
                           "abs_path": false,
-                          "commentStart": 4628,
+                          "commentStart": 4577,
                           "end": 0,
                           "name": {
-                            "commentStart": 4628,
+                            "commentStart": 4577,
                             "end": 0,
                             "name": "thk",
                             "start": 0,
@@ -8390,10 +8390,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 4613,
+                  "commentStart": 4562,
                   "end": 0,
                   "name": {
-                    "commentStart": 4613,
+                    "commentStart": 4562,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -8403,7 +8403,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 4613,
+                "commentStart": 4562,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -8415,22 +8415,22 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 4644,
+                      "commentStart": 4593,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 4650,
+                      "commentStart": 4599,
                       "elements": [
                         {
                           "argument": {
                             "abs_path": false,
-                            "commentStart": 4652,
+                            "commentStart": 4601,
                             "end": 0,
                             "name": {
-                              "commentStart": 4652,
+                              "commentStart": 4601,
                               "end": 0,
                               "name": "thk",
                               "start": 0,
@@ -8441,7 +8441,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "type": "Name",
                             "type": "Name"
                           },
-                          "commentStart": 4651,
+                          "commentStart": 4600,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -8449,7 +8449,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                           "type": "UnaryExpression"
                         },
                         {
-                          "commentStart": 4657,
+                          "commentStart": 4606,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -8470,10 +8470,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 4639,
+                  "commentStart": 4588,
                   "end": 0,
                   "name": {
-                    "commentStart": 4639,
+                    "commentStart": 4588,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -8483,7 +8483,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 4639,
+                "commentStart": 4588,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -8495,17 +8495,17 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 4671,
+                      "commentStart": 4620,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 4677,
+                      "commentStart": 4626,
                       "elements": [
                         {
-                          "commentStart": 4678,
+                          "commentStart": 4627,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -8519,10 +8519,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                         {
                           "argument": {
                             "abs_path": false,
-                            "commentStart": 4682,
+                            "commentStart": 4631,
                             "end": 0,
                             "name": {
-                              "commentStart": 4682,
+                              "commentStart": 4631,
                               "end": 0,
                               "name": "thk",
                               "start": 0,
@@ -8533,7 +8533,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             "type": "Name",
                             "type": "Name"
                           },
-                          "commentStart": 4681,
+                          "commentStart": 4630,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -8550,10 +8550,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 4666,
+                  "commentStart": 4615,
                   "end": 0,
                   "name": {
-                    "commentStart": 4666,
+                    "commentStart": 4615,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -8563,7 +8563,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 4666,
+                "commentStart": 4615,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -8574,10 +8574,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 "arguments": [],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 4693,
+                  "commentStart": 4642,
                   "end": 0,
                   "name": {
-                    "commentStart": 4693,
+                    "commentStart": 4642,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -8587,7 +8587,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 4693,
+                "commentStart": 4642,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -8598,21 +8598,21 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 4714,
+                      "commentStart": 4663,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 4723,
+                      "commentStart": 4672,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 4723,
+                        "commentStart": 4672,
                         "end": 0,
                         "name": {
-                          "commentStart": 4723,
+                          "commentStart": 4672,
                           "end": 0,
                           "name": "width",
                           "start": 0,
@@ -8625,7 +8625,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       },
                       "operator": "-",
                       "right": {
-                        "commentStart": 4731,
+                        "commentStart": 4680,
                         "end": 0,
                         "raw": "40",
                         "start": 0,
@@ -8644,10 +8644,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 4706,
+                  "commentStart": 4655,
                   "end": 0,
                   "name": {
-                    "commentStart": 4706,
+                    "commentStart": 4655,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -8657,7 +8657,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 4706,
+                "commentStart": 4655,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -8665,7 +8665,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 4538,
+            "commentStart": 4487,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",

@@ -110,7 +110,7 @@ description: Variables in memory after executing color-cube.kcl
         "z": 0.0
       },
       "xAxis": {
-        "x": -1.0,
+        "x": 1.0,
         "y": 0.0,
         "z": 0.0
       },
@@ -120,9 +120,9 @@ description: Variables in memory after executing color-cube.kcl
         "z": 1.0
       },
       "zAxis": {
-        "x": 0.0,
+        "x": -0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": -0.0
       },
       "units": {
         "type": "Mm"
