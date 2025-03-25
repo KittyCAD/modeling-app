@@ -13,7 +13,7 @@ templateThickness = 10
 radius = 10
 depth = 30
 distanceToInsideEdge = slateWidthHalf + templateThickness + templateGap
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([ZERO, depth + templateGap], %)
   |> xLine(length = slateWidthHalf - radius, tag = $seg01)
   |> arc({

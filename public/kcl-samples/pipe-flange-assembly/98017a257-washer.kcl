@@ -1,16 +1,15 @@
+// set units
+@settings(defaultLengthUnit = in)
+
 // 98017A257 Washer
 
 // import constants
 import washerInnerDia, washerOuterDia, washerThickness from "globals.kcl"
 
-// set units
-@settings(defaultLengthUnit = in)
-
 // create a function to make the washer
 export fn washer() {
-
   // create the base of the washer
-  washerBase = startSketchOn('XY')
+  washerBase = startSketchOn(XY)
     |> circle(center = [0, 0], radius = washerOuterDia / 2)
     |> extrude(length = washerThickness)
 

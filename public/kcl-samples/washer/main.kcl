@@ -14,17 +14,11 @@ thicknessMin = 0.024
 fn washer(plane, innerDia, outerDia, thk) {
   // Define the sketch of the washer
   washerSketch = startSketchOn(plane)
-    |> circle(
-         center = [0, 0],
-         radius = outerDia / 2
-       )
-    |> hole(circle(
-         center = [0, 0],
-         radius = innerDia / 2
-       ), %)
+    |> circle(center = [0, 0], radius = outerDia / 2)
+    |> hole(circle(center = [0, 0], radius = innerDia / 2), %)
 
   washer = extrude(washerSketch, length = thk)
   return washer
 }
 
-washer('XY', innerDiameter, outerDiameter, thicknessMax)
+washer(XY, innerDiameter, outerDiameter, thicknessMax)

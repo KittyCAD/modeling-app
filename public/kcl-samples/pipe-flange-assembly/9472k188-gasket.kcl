@@ -1,16 +1,15 @@
+// set units
+@settings(defaultLengthUnit = in)
+
 // 9472K188 Gasket
 
 // import constants
 import gasketOutsideDiameter, gasketInnerDiameter, gasketThickness from "globals.kcl"
 
-// set units
-@settings(defaultLengthUnit = in)
-
 // create a function to make the gasket
 export fn gasket() {
-
   // create the base of the gasket
-  gasketBase = startSketchOn("XY")
+  gasketBase = startSketchOn(XY)
     |> circle(%, center = [0, 0], radius = gasketOutsideDiameter / 2)
     |> extrude(%, length = gasketThickness)
 

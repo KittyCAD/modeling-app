@@ -1,16 +1,15 @@
+// set units
+@settings(defaultLengthUnit = in)
+
 // 95479A127 Hex Nut
 
 // import constants
 import hexNutDiameter, hexNutFlatToFlat, hexNutThickness, hexNutFlatLength from "globals.kcl"
 
-// set units
-@settings(defaultLengthUnit = in)
-
 // create a function to make the hex nut
 export fn hexNut() {
-
   // create the base of the hex nut
-  hexNutBase = startSketchOn('XY')
+  hexNutBase = startSketchOn(XY)
     |> startProfileAt([
          hexNutFlatToFlat / 2,
          hexNutFlatLength / 2
