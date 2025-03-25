@@ -128,7 +128,6 @@ export class ElectronZoo {
     const that = this
 
     const options = {
-      timeout: 120000,
       args: ['.', '--no-sandbox'],
       env: {
         ...process.env,
@@ -155,26 +154,7 @@ export class ElectronZoo {
     if (!this.electron) {
       this.electron = await electron.launch(options)
 
-      // Mac takes quite a long time to create the first window in CI.
-      // Turns out we can't trust firstWindow() either. So loop.
-      let timeoutId: ReturnType<typeof setTimeout>
-      const tryToGetWindowPage = () =>
-        new Promise((resolve) => {
-          const fn = () => {
-            this.page = this.electron.windows()[0]
-            timeoutId = setTimeout(() => {
-              if (this.page) {
-                clearTimeout(timeoutId)
-                return resolve(undefined)
-              }
-              fn()
-            }, 0)
-          }
-          fn()
-        })
-
-      await tryToGetWindowPage()
-
+      this.page = await this.electron.firstWindow()
       this.context = this.electron.context()
       await this.context.tracing.start({ screenshots: true, snapshots: true })
 
@@ -200,7 +180,7 @@ export class ElectronZoo {
 
     await this.context.tracing.startChunk()
 
-    await setup(this.context, this.page, testInfo)
+    await setup(this.context, this.page, this.projectDirName, testInfo)
 
     await this.cleanProjectDir()
 
@@ -250,10 +230,11 @@ export class ElectronZoo {
     //   return app.reuseWindowForTest();
     // });
 
-    await this.electron?.evaluate(({ app }, projectDirName) => {
-      // @ts-ignore can't declaration merge see main.ts
-      app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
-    }, this.projectDirName)
+    // This should not be necessary because we set this in the env when launching
+    // await this.electron?.evaluate(({ app }, projectDirName) => {
+    //   // @ts-ignore can't declaration merge see main.ts
+    //   app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
+    // }, this.projectDirName)
 
     // Always start at the root view
     await this.page.goto(this.firstUrl)

@@ -1175,6 +1175,8 @@ class EngineConnection extends EventTarget {
   // Do not change this back to an object or any, we should only be sending the
   // WebSocketRequest type!
   unreliableSend(message: Models['WebSocketRequest_type']) {
+    if (this.unreliableDataChannel.readyState !== 'open' ) return
+
     // TODO(paultag): Add in logic to determine the connection state and
     // take actions if needed?
     this.unreliableDataChannel?.send(
@@ -1185,7 +1187,7 @@ class EngineConnection extends EventTarget {
   // WebSocketRequest type!
   send(message: Models['WebSocketRequest_type']) {
     // Not connected, don't send anything
-    if (this.websocket?.readyState === 3) return
+    if (this.websocket?.readyState !== 1) return
 
     // TODO(paultag): Add in logic to determine the connection state and
     // take actions if needed?

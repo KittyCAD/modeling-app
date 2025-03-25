@@ -74,7 +74,7 @@ async function waitForPageLoadWithRetry(page: Page) {
   await expect(async () => {
     await page.goto('/')
     const errorMessage = 'App failed to load - 🔃 Retrying ...'
-    await expect(page.getByTestId('loading'), errorMessage).not.toBeAttached({
+    await expect(page.getByTestId('model-state-indicator-playing'), errorMessage).not.toBeAttached({
       timeout: 20_000,
     })
 
@@ -87,9 +87,10 @@ async function waitForPageLoadWithRetry(page: Page) {
   }).toPass({ timeout: 70_000, intervals: [1_000] })
 }
 
+// lee: This needs to be replaced by scene.settled() eventually.
 async function waitForPageLoad(page: Page) {
   // wait for all spinners to be gone
-  await expect(page.getByTestId('loading')).not.toBeAttached({
+  await expect(page.getByTestId('model-state-indicator-playing')).not.toBeAttached({
     timeout: 20_000,
   })
 
@@ -871,9 +872,10 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
 export async function setup(
   context: BrowserContext,
   page: Page,
-  testInfo?: TestInfo
+  testDir: string,
+  testInfo?: TestInfo,
 ) {
-  await context.addInitScript(
+  await page.addInitScript(
     async ({
       token,
       settingsKey,
@@ -905,6 +907,7 @@ export async function setup(
               theme: 'dark',
             },
             ...TEST_SETTINGS.project,
+            project_directory: testDir,
             onboarding_status: 'dismissed',
           },
           project: {
@@ -914,7 +917,7 @@ export async function setup(
         },
       }),
       IS_PLAYWRIGHT_KEY,
-      PLAYWRIGHT_TEST_DIR: TEST_SETTINGS.project?.directory || '',
+      PLAYWRIGHT_TEST_DIR: testDir,
       PERSIST_MODELING_CONTEXT,
     }
   )
@@ -931,7 +934,7 @@ export async function setup(
 
   failOnConsoleErrors(page, testInfo)
   // kill animations, speeds up tests and reduced flakiness
-  await page.emulateMedia({ reducedMotion: 'reduce' })
+  // await page.emulateMedia({ reducedMotion: 'reduce' })
 
   // Trigger a navigation, since loading file:// doesn't.
   // await page.reload()
