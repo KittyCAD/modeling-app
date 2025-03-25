@@ -83,14 +83,7 @@ import {
   Coords2d,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
-import {
-  getAngle,
-  getLength,
-  isArray,
-  isClockwise,
-  isOverlap,
-  roundOff,
-} from 'lib/utils'
+import { getAngle, getLength, isArray, isOverlap, roundOff } from 'lib/utils'
 import {
   createArrayExpression,
   createCallExpressionStdLib,
