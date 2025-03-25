@@ -145,6 +145,12 @@ export type ModelingCommandSchema = {
     target: Selections
     operator: Selections
   }
+  'Boolean Union': {
+    solids: Selections
+  }
+  'Boolean Intersect': {
+    solids: Selections
+  }
 }
 
 export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
@@ -521,6 +527,38 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: false,
         required: true,
         skip: false,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+    },
+  },
+  'Boolean Union': {
+    description: 'Union multiple solids into a single solid.',
+    icon: 'booleanUnion',
+    needsReview: true,
+    args: {
+      solids: {
+        inputType: 'selectionMixed',
+        selectionTypes: ['path'],
+        selectionFilter: ['object'],
+        multiple: false,
+        required: true,
+        skip: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+    },
+  },
+  'Boolean Intersect': {
+    description: 'Subtract one solid from another.',
+    icon: 'booleanIntersect',
+    needsReview: true,
+    args: {
+      solids: {
+        inputType: 'selectionMixed',
+        selectionTypes: ['path'],
+        selectionFilter: ['object'],
+        multiple: false,
+        required: true,
+        skip: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
     },

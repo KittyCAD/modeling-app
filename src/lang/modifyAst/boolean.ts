@@ -19,7 +19,7 @@ import {
   Program,
   VariableDeclaration,
 } from 'lang/wasm'
-import { Selection } from 'lib/selections'
+import { Selection, Selections } from 'lib/selections'
 import { err } from 'lib/trap'
 import { isArray } from 'lib/utils'
 
@@ -55,6 +55,111 @@ export async function applySubtractFromTargetOperatorSelections(
     ast,
     targets: [targetLastVar?.variableDeclaration?.node],
     tools: [lastVar?.variableDeclaration.node],
+  })
+  const updateAstResult = await dependencies.kclManager.updateAst(
+    modifiedAst,
+    false
+  )
+  await dependencies.codeManager.updateEditorWithAstAndWriteToFile(
+    updateAstResult.newAst
+  )
+  await dependencies.kclManager.updateAst(modifiedAst, true)
+}
+
+export async function applyUnionFromTargetOperatorSelections(
+  solids: Selections,
+  dependencies: {
+    kclManager: KclManager
+    engineCommandManager: EngineCommandManager
+    codeManager: CodeManager
+  }
+): Promise<Error | void> {
+  const ast = dependencies.kclManager.ast
+
+  const artifacts: Artifact[] = []
+  for (const selection of solids.graphSelections) {
+    if (selection.artifact) {
+      artifacts.push(selection.artifact)
+    }
+  }
+
+  if (artifacts.length < 2) {
+    return new Error('Not enough artifacts selected')
+  }
+
+  const orderedArtifactChildrenForEachSelection = artifacts.map((artifact) =>
+    findAllLeafArtifacts(
+      artifact,
+      dependencies.engineCommandManager.artifactGraph
+    )
+  )
+
+  const lastVars: VariableDeclaration[] = []
+  for (const orderedArtifactLeafs of orderedArtifactChildrenForEachSelection) {
+    const lastVar = getLastVariable(orderedArtifactLeafs, ast)
+    if (!lastVar) continue
+    lastVars.push(lastVar.variableDeclaration.node)
+  }
+
+  if (lastVars.length < 2) {
+    return new Error('Not enough variables found')
+  }
+
+  const modifiedAst = booleanUnionAstMod({
+    ast,
+    solids: lastVars,
+  })
+  const updateAstResult = await dependencies.kclManager.updateAst(
+    modifiedAst,
+    false
+  )
+  await dependencies.codeManager.updateEditorWithAstAndWriteToFile(
+    updateAstResult.newAst
+  )
+  await dependencies.kclManager.updateAst(modifiedAst, true)
+}
+export async function applyIntersectFromTargetOperatorSelections(
+  solids: Selections,
+  dependencies: {
+    kclManager: KclManager
+    engineCommandManager: EngineCommandManager
+    codeManager: CodeManager
+  }
+): Promise<Error | void> {
+  const ast = dependencies.kclManager.ast
+
+  const artifacts: Artifact[] = []
+  for (const selection of solids.graphSelections) {
+    if (selection.artifact) {
+      artifacts.push(selection.artifact)
+    }
+  }
+
+  if (artifacts.length < 2) {
+    return new Error('Not enough artifacts selected')
+  }
+
+  const orderedArtifactChildrenForEachSelection = artifacts.map((artifact) =>
+    findAllLeafArtifacts(
+      artifact,
+      dependencies.engineCommandManager.artifactGraph
+    )
+  )
+
+  const lastVars: VariableDeclaration[] = []
+  for (const orderedArtifactLeafs of orderedArtifactChildrenForEachSelection) {
+    const lastVar = getLastVariable(orderedArtifactLeafs, ast)
+    if (!lastVar) continue
+    lastVars.push(lastVar.variableDeclaration.node)
+  }
+
+  if (lastVars.length < 2) {
+    return new Error('Not enough variables found')
+  }
+
+  const modifiedAst = booleanIntersectAstMod({
+    ast,
+    solids: lastVars,
   })
   const updateAstResult = await dependencies.kclManager.updateAst(
     modifiedAst,
@@ -189,6 +294,51 @@ export function booleanSubtractAstMod({
     createCallExpressionStdLibKw('subtract', targetsArrayExpression, [
       createLabeledArg('tools', toolsArrayExpression),
     ])
+  )
+  newAst.body.push(newVarDec)
+  return newAst
+}
+export function booleanUnionAstMod({
+  ast,
+  solids,
+}: {
+  ast: Node<Program>
+  solids: VariableDeclaration[]
+}): Node<Program> {
+  const newAst = structuredClone(ast)
+  const newVarName = findUniqueName(newAst, 'solid')
+  const createArrExpr = (varDecs: VariableDeclaration[]) =>
+    createArrayExpression(
+      varDecs.map((varDec) => createLocalName(varDec.declaration.id.name))
+    )
+  const solidsArrayExpression = createArrExpr(solids)
+
+  const newVarDec = createVariableDeclaration(
+    newVarName,
+    createCallExpressionStdLibKw('union', solidsArrayExpression, [])
+  )
+  newAst.body.push(newVarDec)
+  return newAst
+}
+
+export function booleanIntersectAstMod({
+  ast,
+  solids,
+}: {
+  ast: Node<Program>
+  solids: VariableDeclaration[]
+}): Node<Program> {
+  const newAst = structuredClone(ast)
+  const newVarName = findUniqueName(newAst, 'solid')
+  const createArrExpr = (varDecs: VariableDeclaration[]) =>
+    createArrayExpression(
+      varDecs.map((varDec) => createLocalName(varDec.declaration.id.name))
+    )
+  const solidsArrayExpression = createArrExpr(solids)
+
+  const newVarDec = createVariableDeclaration(
+    newVarName,
+    createCallExpressionStdLibKw('intersect', solidsArrayExpression, [])
   )
   newAst.body.push(newVarDec)
   return newAst

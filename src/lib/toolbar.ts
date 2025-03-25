@@ -209,9 +209,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'boolean-union',
-          onClick: () => console.error('Boolean union not yet implemented'),
+          onClick: () =>
+            commandBarActor.send({
+              type: 'Find and select command',
+              data: { name: 'Boolean Union', groupId: 'modeling' },
+            }),
           icon: 'booleanUnion',
-          status: 'unavailable',
+          status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'unavailable',
           title: 'Union',
           hotkey: 'Shift + B U',
           description: 'Combine two or more solids into a single solid.',
@@ -224,9 +228,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         },
         {
           id: 'boolean-subtract',
-          onClick: () => console.error('Boolean subtract not yet implemented'),
+          onClick: () =>
+            commandBarActor.send({
+              type: 'Find and select command',
+              data: { name: 'Boolean Subtract', groupId: 'modeling' },
+            }),
           icon: 'booleanSubtract',
-          status: 'available',
+          status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'unavailable',
           title: 'Subtract',
           hotkey: 'Shift + B S',
           description: 'Subtract one solid from another.',
@@ -239,9 +247,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         },
         {
           id: 'boolean-intersect',
-          onClick: () => console.error('Boolean intersect not yet implemented'),
+          onClick: () =>
+            commandBarActor.send({
+              type: 'Find and select command',
+              data: { name: 'Boolean Intersect', groupId: 'modeling' },
+            }),
           icon: 'booleanIntersect',
-          status: 'unavailable',
+          status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'unavailable',
           title: 'Intersect',
           hotkey: 'Shift + B I',
           description: 'Create a solid from the intersection of two solids.',

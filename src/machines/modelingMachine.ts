@@ -103,7 +103,11 @@ import { DRAFT_DASHED_LINE } from 'clientSideScene/sceneEntities'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import { updateModelingState } from 'lang/modelingWorkflows'
 import { EXECUTION_TYPE_REAL } from 'lib/constants'
-import { applySubtractFromTargetOperatorSelections } from 'lang/modifyAst/boolean'
+import {
+  applyIntersectFromTargetOperatorSelections,
+  applySubtractFromTargetOperatorSelections,
+  applyUnionFromTargetOperatorSelections,
+} from 'lang/modifyAst/boolean'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -326,6 +330,14 @@ export type ModelingMachineEvent =
   | {
       type: 'Boolean Subtract'
       data: ModelingCommandSchema['Boolean Subtract']
+    }
+  | {
+      type: 'Boolean Union'
+      data: ModelingCommandSchema['Boolean Union']
+    }
+  | {
+      type: 'Boolean Intersect'
+      data: ModelingCommandSchema['Boolean Intersect']
     }
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
@@ -2631,6 +2643,46 @@ export const modelingMachine = setup({
         )
       }
     ),
+    boolUnionAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Boolean Union'] | undefined
+      }) => {
+        if (!input) {
+          return new Error('No input provided')
+        }
+        const { solids } = input
+        if (!solids.graphSelections[0].artifact) {
+          return new Error('No artifact in selections found')
+        }
+        await applyUnionFromTargetOperatorSelections(solids, {
+          kclManager,
+          codeManager,
+          engineCommandManager,
+        })
+      }
+    ),
+    boolIntersectAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Boolean Union'] | undefined
+      }) => {
+        if (!input) {
+          return new Error('No input provided')
+        }
+        const { solids } = input
+        if (!solids.graphSelections[0].artifact) {
+          return new Error('No artifact in selections found')
+        }
+        await applyIntersectFromTargetOperatorSelections(solids, {
+          kclManager,
+          codeManager,
+          engineCommandManager,
+        })
+      }
+    ),
   },
   // end actors
 }).createMachine({
@@ -2736,6 +2788,8 @@ export const modelingMachine = setup({
         },
 
         'Boolean Subtract': 'Boolean subtracting',
+        'Boolean Union': 'Boolean uniting',
+        'Boolean Intersect': 'Boolean intersecting',
       },
 
       entry: 'reset client scene mouse handlers',
@@ -4122,12 +4176,28 @@ export const modelingMachine = setup({
       invoke: {
         src: 'boolSubtractAstMod',
         id: 'boolSubtractAstMod',
-
-        input: ({ event }) => {
-          if (event.type !== 'Boolean Subtract') return undefined
-          return event.data
-        },
-
+        input: ({ event }) =>
+          event.type !== 'Boolean Subtract' ? undefined : event.data,
+        onDone: 'idle',
+        onError: 'idle',
+      },
+    },
+    'Boolean uniting': {
+      invoke: {
+        src: 'boolUnionAstMod',
+        id: 'boolUnionAstMod',
+        input: ({ event }) =>
+          event.type !== 'Boolean Union' ? undefined : event.data,
+        onDone: 'idle',
+        onError: 'idle',
+      },
+    },
+    'Boolean intersecting': {
+      invoke: {
+        src: 'boolIntersectAstMod',
+        id: 'boolIntersectAstMod',
+        input: ({ event }) =>
+          event.type !== 'Boolean Intersect' ? undefined : event.data,
         onDone: 'idle',
         onError: 'idle',
       },

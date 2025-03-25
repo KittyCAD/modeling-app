@@ -1,7 +1,7 @@
 import { CustomIconName } from 'components/CustomIcon'
 import { AllMachines } from 'hooks/useStateMachineCommands'
 import { Actor, AnyStateMachine, ContextFrom, EventFrom } from 'xstate'
-import { Expr, VariableDeclaration } from 'lang/wasm'
+import { Expr, Name, VariableDeclaration } from 'lang/wasm'
 import { commandBarMachine } from 'machines/commandBarMachine'
 import { ReactNode } from 'react'
 import { MachineManager } from 'components/MachineManagerProvider'
@@ -174,6 +174,7 @@ export type CommandArgumentConfig<
   | {
       inputType: 'selectionMixed'
       selectionTypes: Artifact['type'][]
+      selectionFilter?: EntityType_type[]
       multiple: boolean
       allowNoSelection?: boolean
       validation?: ({
@@ -297,6 +298,7 @@ export type CommandArgument<
   | {
       inputType: 'selectionMixed'
       selectionTypes: Artifact['type'][]
+      selectionFilter?: EntityType_type[]
       multiple: boolean
       allowNoSelection?: boolean
       validation?: ({
