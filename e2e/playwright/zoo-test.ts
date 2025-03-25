@@ -18,7 +18,6 @@ declare module '@playwright/test' {
   }
   interface Page {
     dir: string
-    TEST_SETTINGS_FILE_KEY?: string
     setBodyDimensions: (dims: {
       width: number
       height: number
