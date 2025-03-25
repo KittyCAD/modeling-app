@@ -1730,7 +1730,7 @@ sketch002 = startSketchOn(XZ)
     })
   })
 
-  test(`Fillet point-and-click add`, async ({
+  test(`Fillet point-and-click`, async ({
     context,
     page,
     homePage,
@@ -1977,12 +1977,11 @@ extrude001 = extrude(sketch001, length = -12)
 
     await test.step(`Confirm code is added to the editor`, async () => {
       await editor.expectEditor.toContain(secondFilletDeclaration)
-      // TODO: understand why this broke with edit flows
-      // await editor.expectState({
-      //   diagnostics: [],
-      //   activeLines: ['|>fillet(radius=5,tags=[getOppositeEdge(seg01)])'],
-      //   highlightedCode: '',
-      // })
+      await editor.expectState({
+        diagnostics: [],
+        activeLines: ['|>fillet(radius=5,tags=[getOppositeEdge(seg01)])'],
+        highlightedCode: '',
+      })
     })
 
     await test.step(`Confirm scene has changed`, async () => {
@@ -2324,7 +2323,7 @@ extrude001 = extrude(profile001, length = 5)
     })
   })
 
-  test(`Chamfer point-and-click add`, async ({
+  test(`Chamfer point-and-click`, async ({
     context,
     page,
     homePage,
