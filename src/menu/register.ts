@@ -5,7 +5,7 @@ import { authActor } from 'machines/appMachine'
 import { copyFileShareLink } from 'lib/links'
 import { codeManager } from 'lib/singletons'
 
-export function modelingMenuCallbackMostActions (settings, navigate, filePath, project, token, createFile, createFolder) {
+export function modelingMenuCallbackMostActions (settings, navigate, filePath, project, token, fileSend) {
   // Menu listeners
   // TODO: KEVIN do not run if web...
   const cb = (data: WebContentSendPayload) => {
@@ -102,7 +102,7 @@ export function modelingMenuCallbackMostActions (settings, navigate, filePath, p
                   },
                 })
     } else if (data.menuLabel === 'File.Create new file') {
-      createFile({dryRun: false})
+      // NO OP. A safe command bar create new file is not implemented yet.
     }
   }
   return cb

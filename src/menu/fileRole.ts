@@ -98,22 +98,23 @@ export const modelingFileRole = (
   return {
     label: 'File',
     submenu: [
-      {
-        label: 'Create new file',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Create new file',
-          })
-        },
-      },
-      {
-        label: 'Create new folder',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Create new folder',
-          })
-        },
-      },
+      // TODO: Once a safe command bar create new file and folder is implemented we can turn these on
+      // {
+      //   label: 'Create new file',
+      //   click: () => {
+      //     typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+      //       menuLabel: 'File.Create new file',
+      //     })
+      //   },
+      // },
+      // {
+      //   label: 'Create new folder',
+      //   click: () => {
+      //     typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+      //       menuLabel: 'File.Create new folder',
+      //     })
+      //   },
+      // },
       {
         label: 'New project',
         id: 'File.New project',

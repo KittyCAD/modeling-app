@@ -38,9 +38,7 @@ import { reportRejection } from 'lib/trap'
 import { useMenuListener } from 'hooks/useMenu'
 import { modelingMenuCallbackMostActions } from 'menu/register'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
-import {
-  useFileTreeOperations,
-} from 'components/FileTree'
+import { useFileContext } from 'hooks/useFileContext'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -66,14 +64,7 @@ export const FileMachineProvider = ({
   const [kclSamples, setKclSamples] = React.useState<KclSamplesManifestItem[]>(
     []
   )
-
-  const { createFile, createFolder} =
-      useFileTreeOperations()
-
   const filePath = useAbsoluteFilePath()
-  const cb = modelingMenuCallbackMostActions(settings, navigate, filePath, projectData, token, createFile, createFolder)
-  useMenuListener(cb)
-
   // Only create the native file menus on desktop
   useEffect(() => {
     if (isDesktop()) {
@@ -411,6 +402,9 @@ export const FileMachineProvider = ({
       },
     }
   )
+
+  const cb = modelingMenuCallbackMostActions(settings, navigate, filePath, projectData, token, send)
+  useMenuListener(cb)
 
   const kclCommandMemo = useMemo(
     () =>
