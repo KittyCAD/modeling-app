@@ -107,13 +107,39 @@ const rename = (prev: string, next: string) => fs.rename(prev, next)
 const writeFile = (path: string, data: string | Uint8Array) =>
   fs.writeFile(path, data, 'utf-8')
 const readdir = (path: string) => fs.readdir(path, 'utf-8')
-const stat = (path: string) =>
-  fs.stat(path).catch((e) => Promise.reject(e.code))
+const stat = (path: string) => {
+  return fs.stat(path).catch((e) => Promise.reject(e.code))
+}
+
 // Electron has behavior where it doesn't clone the prototype chain over.
 // So we need to call stat.isDirectory on this side.
 const statIsDirectory = (path: string) =>
   stat(path).then((res) => res.isDirectory())
 const getPath = async (name: string) => ipcRenderer.invoke('app.getPath', name)
+
+const canReadWriteDirectory = async (
+  path: string
+): Promise<{ value: boolean; error: unknown } | Error> => {
+  const isDirectory = await statIsDirectory(path)
+  if (!isDirectory) {
+    return new Error('path is not a directory. Do not send a file path.')
+  }
+
+  // bitwise OR to check read and write permissions
+  try {
+    const canReadWrite = await fs.access(
+      path,
+      fs.constants.R_OK | fs.constants.W_OK
+    )
+    // This function returns undefined. If it cannot access the path it will throw an error
+    return canReadWrite === undefined
+      ? { value: true, error: undefined }
+      : { value: false, error: undefined }
+  } catch (e) {
+    console.error(e)
+    return { value: false, error: e }
+  }
+}
 
 const exposeProcessEnvs = (varNames: Array<string>) => {
   const envs: Record<string, string> = {}
@@ -278,4 +304,5 @@ contextBridge.exposeInMainWorld('electron', {
   enableMenu,
   disableMenu,
   menuOn,
+  canReadWriteDirectory,
 })

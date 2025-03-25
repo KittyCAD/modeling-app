@@ -27,6 +27,7 @@ type FileRoleLabel =
   | 'Share current part (via Zoo link)'
   | 'Project settings'
   | 'Load a sample model'
+  | 'User default units'
 
 type EditRoleLabel =
   | 'Rename project'
@@ -38,7 +39,7 @@ type EditRoleLabel =
   | 'Format code'
 
 type HelpRoleLabel =
-  | 'Report a bug'
+  | 'Refresh and report a bug'
   | 'Request a feature'
   | 'Ask the community discord'
   | 'Ask the community discourse'

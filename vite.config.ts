@@ -48,7 +48,9 @@ const config = defineConfig({
     mockReset: true,
     reporters: process.env.GITHUB_ACTIONS
       ? ['dot', 'github-actions']
-      : ['verbose', 'hanging-process'],
+      : // Gotcha: 'hanging-process' is very noisey, turn off by default on localhost
+        // : ['verbose', 'hanging-process'],
+        ['verbose'],
     testTimeout: 1000,
     hookTimeout: 1000,
     teardownTimeout: 1000,

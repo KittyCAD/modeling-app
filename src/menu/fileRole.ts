@@ -33,15 +33,6 @@ export const projectFileRole = (
       // Appears to be only Windows and Mac OS specific. Linux does not have support
       { type: 'separator' },
       {
-        label: 'Import file from URL',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Import file from URL',
-          })
-        },
-      },
-      { type: 'separator' },
-      {
         label: 'Preferences',
         submenu: [
           {
@@ -57,6 +48,14 @@ export const projectFileRole = (
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'File.Preferences.Keybindings',
+              })
+            },
+          },
+          {
+            label: 'User default units',
+            click: () => {
+              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+                menuLabel: 'File.Preferences.User default units',
               })
             },
           },
