@@ -63,7 +63,6 @@ import {
   EdgeTreatmentType,
   FilletParameters,
   getPathToExtrudeForSegmentSelection,
-  locateExtrudeDeclarator,
   mutateAstWithTagForSketchSegment,
 } from 'lang/modifyAst/addEdgeTreatment'
 import { getNodeFromPath } from '../lang/queryAst'
