@@ -29,6 +29,7 @@ export const projectEditRole = (
     submenu: [
       {
         label: 'Rename project',
+        id:'Edit.Rename project',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'Edit.Rename project',
@@ -37,6 +38,7 @@ export const projectEditRole = (
       },
       {
         label: 'Delete project',
+        id: 'Edit.Delete project',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'Edit.Delete project',
@@ -46,6 +48,7 @@ export const projectEditRole = (
       { type: 'separator' },
       {
         label: 'Change project directory',
+        id: 'Edit.Change project directory',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'Edit.Change project directory',

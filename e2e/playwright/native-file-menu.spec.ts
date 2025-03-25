@@ -162,7 +162,54 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       })
     })
 
-    test.describe('Edit role', () => {})
+    test.describe('Edit role', () => {
+      test('Edit.Rename project', async ({ tronApp, cmdBar, page }) => {
+        if (!tronApp) fail()
+        // Run electron snippet to find the Menu!
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) fail()
+          const menu = app.applicationMenu.getMenuItemById('Edit.Rename project')
+          if (!menu) fail()
+          menu.click()
+        })
+        // Check the placeholder project name exists
+        const actual = await cmdBar.cmdBarElement
+          .getByTestId('command-name')
+          .textContent()
+        const expected = 'Rename project'
+        expect(actual).toBe(expected)
+      })
+      test('Edit.Delete project', async ({ tronApp, cmdBar, page }) => {
+        if (!tronApp) fail()
+        // Run electron snippet to find the Menu!
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) fail()
+          const menu = app.applicationMenu.getMenuItemById('Edit.Delete project')
+          if (!menu) fail()
+          menu.click()
+        })
+        // Check the placeholder project name exists
+        const actual = await cmdBar.cmdBarElement
+          .getByTestId('command-name')
+          .textContent()
+        const expected = 'Delete project'
+        expect(actual).toBe(expected)
+      })
+      test('Edit.Change project directory', async ({ tronApp, cmdBar, page }) => {
+        if (!tronApp) fail()
+        // Run electron snippet to find the Menu!
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) fail()
+          const menu = app.applicationMenu.getMenuItemById('Edit.Change project directory')
+          if (!menu) fail()
+          menu.click()
+        })
+        const settings = page.getByTestId('settings-dialog-panel')
+        await expect(settings).toBeVisible()
+        const projectDirectory = settings.locator('#projectDirectory')
+        await expect(projectDirectory).toBeVisible()
+      })
+    })
     test.describe('View role', () => {})
     test.describe('Help role', () => {})
   })
