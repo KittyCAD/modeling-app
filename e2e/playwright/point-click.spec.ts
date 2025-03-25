@@ -3280,26 +3280,22 @@ sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
       toolbar,
       cmdBar,
     }) => {
-      const initialCode = `
-    sketch002 = startSketchOn(XY)
-      |> startProfileAt([-2.02, 1.79], %)
-      |> xLine(length = 2.6)
-    sketch001 = startSketchOn('-XY')
-      |> startProfileAt([-0.48, 1.25], %)
-      |> angledLine([0, 2.38], %, $rectangleSegmentA001)
-      |> angledLine([segAng(rectangleSegmentA001) - 90, 2.4], %, $rectangleSegmentB001)
-      |> angledLine([
-        segAng(rectangleSegmentA001),
-          -segLen(rectangleSegmentA001)
-      ], %, $rectangleSegmentC001)
-      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-      |> close()
-    extrude001 = extrude(sketch001, length = 5)
-    sketch003 = startSketchOn(extrude001, 'START')
-      |> circle(
-        center = [-0.69, 0.56],
-        radius = 0.28
-      )
+      const initialCode = `sketch002 = startSketchOn(XY)
+  |> startProfileAt([-2.02, 1.79], %)
+  |> xLine(length = 2.6)
+sketch001 = startSketchOn(-XY)
+  |> startProfileAt([-0.48, 1.25], %)
+  |> angledLine([0, 2.38], %, $rectangleSegmentA001)
+  |> angledLine([segAng(rectangleSegmentA001) - 90, 2.4], %, $rectangleSegmentB001)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %, $rectangleSegmentC001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = 5)
+sketch003 = startSketchOn(extrude001, 'START')
+  |> circle(center = [-0.69, 0.56], radius = 0.28)
 `
 
       await context.addInitScript((initialCode) => {

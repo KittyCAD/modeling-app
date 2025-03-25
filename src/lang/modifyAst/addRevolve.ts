@@ -113,7 +113,12 @@ export function revolveSketch(
   if (err(sketchVariableDeclaratorNode)) return sketchVariableDeclaratorNode
   const { node: sketchVariableDeclarator } = sketchVariableDeclaratorNode
 
-  const getAxisResult = getAxisExpressionAndIndex(axisOrEdge, axis, edge, ast)
+  const getAxisResult = getAxisExpressionAndIndex(
+    axisOrEdge,
+    axis,
+    edge,
+    clonedAst
+  )
   if (err(getAxisResult)) return getAxisResult
   const { generatedAxis, axisIndexIfAxis } = getAxisResult
   if (!generatedAxis) return new Error('Generated axis selection is missing.')
