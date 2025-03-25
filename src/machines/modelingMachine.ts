@@ -2320,15 +2320,17 @@ export const modelingMachine = setup({
         const { nodeToEdit, selection, radius } = input
 
         // If this is an edit flow, first we're going to remove the old one
-        const pipeIndex = 5
-        if (
-          nodeToEdit &&
-          nodeToEdit[pipeIndex][0] &&
-          typeof nodeToEdit[pipeIndex][0] === 'number'
-        ) {
-          const r = locateExtrudeDeclarator(ast, nodeToEdit)
-          if (!err(r) && r.extrudeDeclarator.init.type === 'PipeExpression') {
-            r.extrudeDeclarator.init.body.splice(nodeToEdit[pipeIndex][0], 1)
+        if (nodeToEdit) {
+          const pipeIndex =
+            nodeToEdit.findIndex(([_, type]) => type === 'PipeExpression') + 1
+          if (
+            nodeToEdit[pipeIndex][0] &&
+            typeof nodeToEdit[pipeIndex][0] === 'number'
+          ) {
+            const r = locateExtrudeDeclarator(ast, nodeToEdit)
+            if (!err(r) && r.extrudeDeclarator.init.type === 'PipeExpression') {
+              r.extrudeDeclarator.init.body.splice(nodeToEdit[pipeIndex][0], 1)
+            }
           }
         }
 
@@ -2493,15 +2495,17 @@ export const modelingMachine = setup({
         const { nodeToEdit, selection, length } = input
 
         // If this is an edit flow, first we're going to remove the old node
-        const pipeIndex = 5
-        if (
-          nodeToEdit &&
-          nodeToEdit[pipeIndex][0] &&
-          typeof nodeToEdit[pipeIndex][0] === 'number'
-        ) {
-          const r = locateExtrudeDeclarator(ast, nodeToEdit)
-          if (!err(r) && r.extrudeDeclarator.init.type === 'PipeExpression') {
-            r.extrudeDeclarator.init.body.splice(nodeToEdit[pipeIndex][0], 1)
+        if (nodeToEdit) {
+          const pipeIndex =
+            nodeToEdit.findIndex(([_, type]) => type === 'PipeExpression') + 1
+          if (
+            nodeToEdit[pipeIndex][0] &&
+            typeof nodeToEdit[pipeIndex][0] === 'number'
+          ) {
+            const r = locateExtrudeDeclarator(ast, nodeToEdit)
+            if (!err(r) && r.extrudeDeclarator.init.type === 'PipeExpression') {
+              r.extrudeDeclarator.init.body.splice(nodeToEdit[pipeIndex][0], 1)
+            }
           }
         }
 
