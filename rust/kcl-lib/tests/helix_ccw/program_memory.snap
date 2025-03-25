@@ -4,106 +4,14 @@ description: Variables in memory after executing helix_ccw.kcl
 ---
 {
   "part001": {
-    "type": "Solid",
+    "type": "Helix",
     "value": {
-      "type": "Solid",
-      "id": "[uuid]",
+      "value": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudeArc"
-        }
-      ],
-      "sketch": {
-        "type": "Sketch",
-        "id": "[uuid]",
-        "paths": [
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              5.0,
-              5.0
-            ],
-            "from": [
-              15.0,
-              5.0
-            ],
-            "radius": 10.0,
-            "tag": null,
-            "to": [
-              15.0,
-              5.0
-            ],
-            "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
-          }
-        ],
-        "on": {
-          "type": "plane",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": "XY",
-          "origin": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "start": {
-          "from": [
-            15.0,
-            5.0
-          ],
-          "to": [
-            15.0,
-            5.0
-          ],
-          "units": {
-            "type": "Mm"
-          },
-          "tag": null,
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          }
-        },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "height": 10.0,
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "revolutions": 16.0,
+      "angleStart": 0.0,
+      "ccw": true,
+      "cylinderId": "[uuid]",
       "units": {
         "type": "Mm"
       }

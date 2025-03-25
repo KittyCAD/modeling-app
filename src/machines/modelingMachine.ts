@@ -41,14 +41,17 @@ import {
   applyConstraintEqualLength,
   setEqualLengthInfo,
 } from 'components/Toolbar/EqualLength'
-import { revolveSketch } from 'lang/modifyAst/addRevolve'
+import {
+  getAxisExpressionAndIndex,
+  revolveSketch,
+} from 'lang/modifyAst/addRevolve'
 import {
   addHelix,
   addOffsetPlane,
   addShell,
   addSweep,
-  createIdentifier,
   createLiteral,
+  createLocalName,
   extrudeSketch,
   insertNamedConstant,
   loftSketches,
@@ -100,6 +103,7 @@ import { setAppearance } from 'lang/modifyAst/setAppearance'
 import { DRAFT_DASHED_LINE } from 'clientSideScene/sceneEntities'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import { updateModelingState } from 'lang/modelingWorkflows'
+import { EXECUTION_TYPE_REAL } from 'lib/constants'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -749,20 +753,23 @@ export const modelingMachine = setup({
         if (trap(revolveSketchRes)) return
         const { modifiedAst, pathToRevolveArg } = revolveSketchRes
 
-        const updatedAst = await kclManager.updateAst(modifiedAst, true, {
-          focusPath: [pathToRevolveArg],
-          zoomToFit: true,
-          zoomOnRangeAndType: {
-            range: selection.graphSelections[0]?.codeRef.range,
-            type: 'path',
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
           },
-        })
-
-        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
-
-        if (updatedAst?.selections) {
-          editorManager.selectRange(updatedAst?.selections)
-        }
+          {
+            focusPath: [pathToRevolveArg],
+            zoomToFit: true,
+            zoomOnRangeAndType: {
+              range: selection.graphSelections[0]?.codeRef.range,
+              type: 'path',
+            },
+          }
+        )
       })().catch(reportRejection)
     },
     'set selection filter to curves only': () => {
@@ -1795,20 +1802,23 @@ export const modelingMachine = setup({
         pathToExtrudeArg[1][0]++
       }
 
-      const updatedAst = await kclManager.updateAst(modifiedAst, true, {
-        focusPath: [pathToExtrudeArg],
-        zoomToFit: true,
-        zoomOnRangeAndType: {
-          range: selection.graphSelections[0]?.codeRef.range,
-          type: 'path',
+      await updateModelingState(
+        modifiedAst,
+        EXECUTION_TYPE_REAL,
+        {
+          kclManager,
+          editorManager,
+          codeManager,
         },
-      })
-
-      await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
-
-      if (updatedAst?.selections) {
-        editorManager.selectRange(updatedAst?.selections)
-      }
+        {
+          focusPath: [pathToExtrudeArg],
+          zoomToFit: true,
+          zoomOnRangeAndType: {
+            range: selection.graphSelections[0]?.codeRef.range,
+            type: 'path',
+          },
+        }
+      )
     }),
     offsetPlaneAstMod: fromPromise(
       async ({
@@ -1878,21 +1888,18 @@ export const modelingMachine = setup({
           offsetPlaneResult.pathToNode[1][0]++
         }
 
-        const updateAstResult = await kclManager.updateAst(
+        await updateModelingState(
           offsetPlaneResult.modifiedAst,
-          true,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
           {
             focusPath: [offsetPlaneResult.pathToNode],
           }
         )
-
-        await codeManager.updateEditorWithAstAndWriteToFile(
-          updateAstResult.newAst
-        )
-
-        if (updateAstResult?.selections) {
-          editorManager.selectRange(updateAstResult?.selections)
-        }
       }
     ),
     helixAstMod: fromPromise(
@@ -1905,11 +1912,13 @@ export const modelingMachine = setup({
         // Extract inputs
         const ast = kclManager.ast
         const {
+          axisOrEdge,
+          axis,
+          edge,
           revolutions,
           angleStart,
-          counterClockWise,
+          ccw,
           radius,
-          axis,
           length,
           nodeToEdit,
         } = input
@@ -1937,6 +1946,25 @@ export const modelingMachine = setup({
           opInsertIndex = nodeToEdit[1][0]
         }
 
+        const getAxisResult = getAxisExpressionAndIndex(
+          axisOrEdge,
+          axis,
+          edge,
+          ast
+        )
+        if (err(getAxisResult)) return getAxisResult
+        const { generatedAxis } = getAxisResult
+        if (!generatedAxis) {
+          return new Error('Generated axis selection is missing.')
+        }
+
+        // TODO: figure out if we want to smart insert after the sketch as below
+        // *or* after the sweep that consumes the sketch, in which case the below code doesn't work
+        // If an axis was selected in KCL, find the max index to insert the revolve command
+        // if (axisIndexIfAxis) {
+        // opInsertIndex = axisIndexIfAxis + 1
+        // }
+
         for (const variable of [revolutions, angleStart, radius, length]) {
           // Insert the variable if it exists
           if (
@@ -1959,33 +1987,29 @@ export const modelingMachine = setup({
             ? variable.variableIdentifierAst
             : variable.valueAst
 
-        const result = addHelix({
+        const { modifiedAst, pathToNode } = addHelix({
           node: ast,
           revolutions: valueOrVariable(revolutions),
           angleStart: valueOrVariable(angleStart),
-          counterClockWise,
+          ccw,
           radius: valueOrVariable(radius),
-          axis,
+          axis: generatedAxis,
           length: valueOrVariable(length),
           insertIndex: opInsertIndex,
           variableName: opVariableName,
         })
-
-        const updateAstResult = await kclManager.updateAst(
-          result.modifiedAst,
-          true,
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
           {
-            focusPath: [result.pathToNode],
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [pathToNode],
           }
         )
-
-        await codeManager.updateEditorWithAstAndWriteToFile(
-          updateAstResult.newAst
-        )
-
-        if (updateAstResult?.selections) {
-          editorManager.selectRange(updateAstResult?.selections)
-        }
       }
     ),
     sweepAstMod: fromPromise(
@@ -2070,6 +2094,7 @@ export const modelingMachine = setup({
         })
         await updateModelingState(
           modifiedAst,
+          EXECUTION_TYPE_REAL,
           {
             kclManager,
             editorManager,
@@ -2108,21 +2133,18 @@ export const modelingMachine = setup({
 
         // Perform the loft
         const loftSketchesRes = loftSketches(ast, declarators)
-        const updateAstResult = await kclManager.updateAst(
+        await updateModelingState(
           loftSketchesRes.modifiedAst,
-          true,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
           {
             focusPath: [loftSketchesRes.pathToNode],
           }
         )
-
-        await codeManager.updateEditorWithAstAndWriteToFile(
-          updateAstResult.newAst
-        )
-
-        if (updateAstResult?.selections) {
-          editorManager.selectRange(updateAstResult?.selections)
-        }
       }
     ),
     shellAstMod: fromPromise(
@@ -2236,7 +2258,7 @@ export const modelingMachine = setup({
             }
 
             const { tag } = tagResult
-            expr = createIdentifier(tag)
+            expr = createLocalName(tag)
           } else {
             return new Error('Artifact is neither a cap nor a wall')
           }
@@ -2288,21 +2310,18 @@ export const modelingMachine = setup({
           addResult.pathToNode[1][0]++
         }
 
-        const updateAstResult = await kclManager.updateAst(
+        await updateModelingState(
           addResult.modifiedAst,
-          true,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
           {
             focusPath: [addResult.pathToNode],
           }
         )
-
-        await codeManager.updateEditorWithAstAndWriteToFile(
-          updateAstResult.newAst
-        )
-
-        if (updateAstResult?.selections) {
-          editorManager.selectRange(updateAstResult?.selections)
-        }
       }
     ),
     filletAstMod: fromPromise(
@@ -2370,15 +2389,11 @@ export const modelingMachine = setup({
           node: kclManager.ast,
           newExpression: value,
         })
-        const updateAstResult = await kclManager.updateAst(newAst, true)
-
-        await codeManager.updateEditorWithAstAndWriteToFile(
-          updateAstResult.newAst
-        )
-
-        if (updateAstResult?.selections) {
-          editorManager.selectRange(updateAstResult?.selections)
-        }
+        await updateModelingState(newAst, EXECUTION_TYPE_REAL, {
+          kclManager,
+          editorManager,
+          codeManager,
+        })
       }
     ),
     'actor.parameter.edit': fromPromise(
@@ -2407,7 +2422,7 @@ export const modelingMachine = setup({
         // Mutate the variable's value
         variableNode.node.init = value.valueAst
 
-        await updateModelingState(newAst, {
+        await updateModelingState(newAst, EXECUTION_TYPE_REAL, {
           codeManager,
           editorManager,
           kclManager,
@@ -2589,21 +2604,18 @@ export const modelingMachine = setup({
           return err(result)
         }
 
-        const updateAstResult = await kclManager.updateAst(
+        await updateModelingState(
           result.modifiedAst,
-          true,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
           {
             focusPath: [result.pathToNode],
           }
         )
-
-        await codeManager.updateEditorWithAstAndWriteToFile(
-          updateAstResult.newAst
-        )
-
-        if (updateAstResult?.selections) {
-          editorManager.selectRange(updateAstResult?.selections)
-        }
       }
     ),
     exportFromEngine: fromPromise(
@@ -4166,25 +4178,26 @@ export function isEditingExistingSketch({
   if (
     (maybePipeExpression.type === 'CallExpression' ||
       maybePipeExpression.type === 'CallExpressionKw') &&
-    (maybePipeExpression.callee.name === 'startProfileAt' ||
-      maybePipeExpression.callee.name === 'circle' ||
-      maybePipeExpression.callee.name === 'circleThreePoint')
+    (maybePipeExpression.callee.name.name === 'startProfileAt' ||
+      maybePipeExpression.callee.name.name === 'circle' ||
+      maybePipeExpression.callee.name.name === 'circleThreePoint')
   )
     return true
   if (maybePipeExpression.type !== 'PipeExpression') return false
   const hasStartProfileAt = maybePipeExpression.body.some(
     (item) =>
-      item.type === 'CallExpression' && item.callee.name === 'startProfileAt'
+      item.type === 'CallExpression' &&
+      item.callee.name.name === 'startProfileAt'
   )
   const hasCircle =
     maybePipeExpression.body.some(
       (item) =>
-        item.type === 'CallExpressionKw' && item.callee.name === 'circle'
+        item.type === 'CallExpressionKw' && item.callee.name.name === 'circle'
     ) ||
     maybePipeExpression.body.some(
       (item) =>
         item.type === 'CallExpressionKw' &&
-        item.callee.name === 'circleThreePoint'
+        item.callee.name.name === 'circleThreePoint'
     )
   return (hasStartProfileAt && maybePipeExpression.body.length > 1) || hasCircle
 }
@@ -4204,7 +4217,8 @@ export function pipeHasCircle({
   const pipeExpression = variableDeclaration.node.init
   if (pipeExpression.type !== 'PipeExpression') return false
   const hasCircle = pipeExpression.body.some(
-    (item) => item.type === 'CallExpressionKw' && item.callee.name === 'circle'
+    (item) =>
+      item.type === 'CallExpressionKw' && item.callee.name.name === 'circle'
   )
   return hasCircle
 }
@@ -4243,6 +4257,6 @@ export function isClosedSketch({
   return node.node.declaration.init.body.some(
     (node) =>
       (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
-      (node.callee.name === 'close' || node.callee.name === 'circle')
+      (node.callee.name.name === 'close' || node.callee.name.name === 'circle')
   )
 }

@@ -4,7 +4,7 @@ use crate::parsing::ast::types::{
     Annotation, ArrayExpression, ArrayRangeExpression, Ascription, BinaryExpression, BinaryPart, BodyItem,
     CallExpression, CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression,
     Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone, LabelledExpression,
-    Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, ObjectExpression, ObjectProperty,
+    Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, ObjectExpression, ObjectProperty,
     Parameter, PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement, TagDeclarator, Type,
     TypeDeclaration, UnaryExpression, VariableDeclaration, VariableDeclarator, VariableKind,
 };
@@ -128,7 +128,7 @@ impl Expr {
     pub fn compute_digest(&mut self) -> Digest {
         match self {
             Expr::Literal(lit) => lit.compute_digest(),
-            Expr::Identifier(id) => id.compute_digest(),
+            Expr::Name(id) => id.compute_digest(),
             Expr::TagDeclarator(tag) => tag.compute_digest(),
             Expr::BinaryExpression(be) => be.compute_digest(),
             Expr::FunctionExpression(fe) => fe.compute_digest(),
@@ -157,7 +157,7 @@ impl BinaryPart {
     pub fn compute_digest(&mut self) -> Digest {
         match self {
             BinaryPart::Literal(lit) => lit.compute_digest(),
-            BinaryPart::Identifier(id) => id.compute_digest(),
+            BinaryPart::Name(id) => id.compute_digest(),
             BinaryPart::BinaryExpression(be) => be.compute_digest(),
             BinaryPart::CallExpression(ce) => ce.compute_digest(),
             BinaryPart::CallExpressionKw(ce) => ce.compute_digest(),
@@ -377,6 +377,17 @@ impl Identifier {
     });
 }
 
+impl Name {
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.name.compute_digest());
+        for p in &mut slf.path {
+            hasher.update(p.compute_digest());
+        }
+        if slf.abs_path {
+            hasher.update([1]);
+        }
+    });
+}
 impl TagDeclarator {
     compute_digest!(|slf, hasher| {
         let name = slf.name.as_bytes();
