@@ -137,14 +137,6 @@ export const modelingFileRole = (
       // Appears to be only Windows and Mac OS specific. Linux does not have support
       { type: 'separator' },
       {
-        label: 'Import file from URL',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Import file from URL',
-          })
-        },
-      },
-      {
         label: 'Load a sample model',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -194,6 +186,14 @@ export const modelingFileRole = (
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'File.Preferences.Keybindings',
+              })
+            },
+          },
+          {
+            label: 'User default units',
+            click: () => {
+              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+                menuLabel: 'File.Preferences.User default units',
               })
             },
           },

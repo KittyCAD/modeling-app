@@ -83,6 +83,8 @@ export function modelingMenuCallbackMostActions (settings, navigate, filePath, p
         code: codeManager.code,
         name: project?.name || '',
       })
+    } else if (data.menuLabel === 'File.Preferences.User default units') {
+      navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
     }
   }
   return cb
