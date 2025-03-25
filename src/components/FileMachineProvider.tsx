@@ -31,7 +31,7 @@ import {
 } from 'lib/getKclSamplesManifest'
 import { markOnce } from 'lib/performance'
 import { commandBarActor } from 'machines/commandBarMachine'
-import { settingsActor, useSettings } from 'machines/appMachine'
+import { useSettings } from 'machines/appMachine'
 import { createRouteCommands } from 'lib/commandBarConfigs/routeCommandConfig'
 import { useToken } from 'machines/appMachine'
 import { createNamedViewsCommand } from 'lib/commandBarConfigs/namedViewsConfig'
