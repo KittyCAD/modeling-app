@@ -131,7 +131,6 @@ export class ElectronZoo {
       args: ['.', '--no-sandbox'],
       env: {
         ...process.env,
-        TEST_SETTINGS_FILE_KEY: this.projectDirName,
         IS_PLAYWRIGHT: 'true',
       },
       ...(process.env.ELECTRON_OVERRIDE_DIST_PATH
@@ -210,6 +209,14 @@ export class ElectronZoo {
 
     await this.page.setBodyDimensions(this.viewPortSize)
 
+    // THIS IS ABSOLUTELY NECESSARY TO CHANGE THE PROJECT DIRECTORY BETWEEN
+    // TESTS BECAUSE OF THE ELECTRON INSTANCE REUSE.
+    await this.electron?.evaluate(({ app }, projectDirName) => {
+      // @ts-ignore can't declaration merge see main.ts
+      app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
+    }, this.projectDirName)
+
+
     this.context.folderSetupFn = async function (fn) {
       return fn(that.projectDirName)
         .then(() => that.page.reload())
@@ -229,12 +236,6 @@ export class ElectronZoo {
     // await tronApp.electronApp.evaluate(({ app }) => {
     //   return app.reuseWindowForTest();
     // });
-
-    // This should not be necessary because we set this in the env when launching
-    // await this.electron?.evaluate(({ app }, projectDirName) => {
-    //   // @ts-ignore can't declaration merge see main.ts
-    //   app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
-    // }, this.projectDirName)
 
     // Always start at the root view
     await this.page.goto(this.firstUrl)
@@ -259,8 +260,9 @@ export class ElectronZoo {
       // Not a problem if it already exists.
     }
 
-    const tempSettingsFilePath = path.join(
+    const tempSettingsFilePath = path.resolve(
       this.projectDirName,
+      '..',
       SETTINGS_FILE_NAME
     )
 

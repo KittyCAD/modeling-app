@@ -280,7 +280,6 @@ contextBridge.exposeInMainWorld('electron', {
         'VITE_KC_DEV_TOKEN',
 
         'IS_PLAYWRIGHT',
-        'TEST_SETTINGS_FILE_KEY',
 
         // Really we shouldn't use these and our code should use NODE_ENV
         'DEV',
