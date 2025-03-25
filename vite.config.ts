@@ -35,7 +35,7 @@ const config = defineConfig({
     coverage: {
       provider: 'istanbul', // or 'v8'
     },
-    exclude: [...configDefaults.exclude, '**/e2e/**/*', 'rust'],
+    exclude: [...configDefaults.exclude, '**/e2e/**/*.spec.*', 'rust'],
     deps: {
       optimizer: {
         web: {

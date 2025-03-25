@@ -12,6 +12,7 @@ import { defineConfig, devices } from '@playwright/test'
 export default defineConfig({
   timeout: 120_000, // override the default 30s timeout
   testDir: './e2e/playwright',
+  testIgnore: '*.test.ts', // ignore unit tests
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */

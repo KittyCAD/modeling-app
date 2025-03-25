@@ -20,8 +20,12 @@ $(WASM_PACK):
 ###############################################################################
 # BUILD
 
-RUST_SOURCES := $(wildcard rust/*) $(wildcard rust/**/*)
-TYPESCRIPT_SOURCES := $(wildcard src/**/*.tsx) $(wildcard src/**/*.ts)
+CARGO_SOURCES := rust/.cargo/config.toml $(wildcard rust/Cargo.*) $(wildcard rust/**/Cargo.*)
+RUST_SOURCES := $(wildcard rust/**/*.rs)
+
+REACT_SOURCES := $(wildcard src/*.tsx) $(wildcard src/**/*.tsx)
+TYPESCRIPT_SOURCES := tsconfig.* $(wildcard src/*.ts) $(wildcard src/**/*.ts)
+VITE_SOURCES := $(wildcard vite.*) $(wildcard vite/**/*.tsx)
 
 .PHONY: build
 build: build-web build-desktop
@@ -32,13 +36,13 @@ build-web: public/kcl_wasm_lib_bg.wasm build/index.html
 .PHONY: build-desktop
 build-desktop: public/kcl_wasm_lib_bg.wasm .vite/build/main.js
 
-public/kcl_wasm_lib_bg.wasm: $(RUST_SOURCES)
+public/kcl_wasm_lib_bg.wasm: $(CARGO_SOURCES)$(RUST_SOURCES)
 	yarn build:wasm
 
-build/index.html: $(TYPESCRIPT_SOURCES)
+build/index.html: $(REACT_SOURCES) $(TYPESCRIPT_SOURCES) $(VITE_SOURCES)
 	yarn build:local
 
-.vite/build/main.js: $(TYPESCRIPT_SOURCES)
+.vite/build/main.js: $(REACT_SOURCES) $(TYPESCRIPT_SOURCES) $(VITE_SOURCES)
 	yarn tronb:vite:dev
 
 ###############################################################################
@@ -73,19 +77,29 @@ run-desktop: install build-desktop ## Start the desktop app
 ###############################################################################
 # TEST
 
-GREP ?= ""
+E2E_WORKERS ?= 1
+E2E_FAILURES ?= 1
+E2E_GREP ?= ""
 
 .PHONY: test
 test: test-unit test-e2e
 
 .PHONY: test-unit
 test-unit: install ## Run the unit tests
-	@ nc -z localhost 3000 || ( echo "Error: localhost:3000 not available, 'make run-web' first" && exit 1 )
+	@ curl -fs localhost:3000 >/dev/null || ( echo "Error: localhost:3000 not available, 'make run-web' first" && exit 1 )
 	yarn test:unit
 
 .PHONY: test-e2e
-test-e2e: install build-desktop ## Run the e2e tests
-	yarn test:playwright:electron --workers=1 --grep=$(GREP)
+test-e2e: test-e2e-desktop
+
+.PHONY: test-e2e-web
+test-e2e-web: install build-web ## Run the web e2e tests
+	@ curl -fs localhost:3000 >/dev/null || ( echo "Error: localhost:3000 not available, 'make run-web' first" && exit 1 )
+	yarn chrome:test --headed --workers=$(E2E_WORKERS) --max-failures=$(E2E_FAILURES) --grep=$(E2E_GREP)
+
+.PHONY: test-e2e-desktop
+test-e2e-desktop: install build-desktop ## Run the desktop e2e tests
+	yarn test:playwright:electron --workers=$(E2E_WORKERS) --max-failures=$(E2E_FAILURES) --grep=$(E2E_GREP)
 
 ###############################################################################
 # CLEAN

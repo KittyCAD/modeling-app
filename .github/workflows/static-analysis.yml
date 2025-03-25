@@ -141,13 +141,13 @@ jobs:
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
         run: yarn playwright install chromium --with-deps
 
-      - name: run unit tests
+      - name: Run unit tests
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
         run: xvfb-run -a yarn test:unit
         env:
           VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
 
-      - name: check for changes
+      - name: Check for changes
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
         id: git-check
         run: |

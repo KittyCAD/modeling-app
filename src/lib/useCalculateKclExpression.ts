@@ -4,7 +4,7 @@ import { useKclContext } from 'lang/KclProvider'
 import { findUniqueName } from 'lang/modifyAst'
 import { PrevVariable, findAllPreviousVariables } from 'lang/queryAst'
 import { Expr, SourceRange } from 'lang/wasm'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { getCalculatedKclExpressionValue } from './kclHelpers'
 import { parse, resultIsOk } from 'lang/wasm'
 import { err } from 'lib/trap'
@@ -44,8 +44,11 @@ export function useCalculateKclExpression({
     | (typeof context)['selectionRanges']['graphSelections'][number]['codeRef']['range']
     | undefined = context.selectionRanges.graphSelections[0]?.codeRef?.range
   // If there is no selection, use the end of the code
-  const endingSourceRange = sourceRange ||
-    selectionRange || [code.length, code.length]
+  // If we don't memoize this, we risk an infinite set/read state loop
+  const endingSourceRange = useMemo(
+    () => sourceRange || selectionRange || [code.length, code.length],
+    [code, selectionRange, sourceRange]
+  )
   const inputRef = useRef<HTMLInputElement>(null)
   const [availableVarInfo, setAvailableVarInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>
