@@ -3,15 +3,19 @@ import {
   Artifact,
   getArtifactOfTypes,
   getCapCodeRef,
+  getEdgeCutConsumedCodeRef,
 } from 'lang/std/artifactGraph'
 import { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { codeManager, engineCommandManager, kclManager } from './singletons'
 import { err } from './trap'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { CodeRef, sourceRangeFromRust } from 'lang/wasm'
+import { sourceRangeFromRust } from 'lang/wasm'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { stringToKclExpression } from './kclHelpers'
-import { ModelingCommandSchema } from './commandBarConfigs/modelingCommandConfig'
+import {
+  EDGE_TREATMENT_TYPES,
+  ModelingCommandSchema,
+} from './commandBarConfigs/modelingCommandConfig'
 import { isDefaultPlaneStr } from './planes'
 import { Selection, Selections } from './selections'
 import { rustContext } from './singletons'
@@ -148,7 +152,7 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
   const edgeArtifact = getArtifactOfTypes(
     {
       key: artifact.consumedEdgeId,
-      types: ['segment', 'sweepEdge'],
+      types: EDGE_TREATMENT_TYPES,
     },
     engineCommandManager.artifactGraph
   )
@@ -156,24 +160,11 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
     return baseCommand
   }
 
-  let edgeCodeRef: CodeRef | undefined
-  if (edgeArtifact.type === 'segment') {
-    edgeCodeRef = edgeArtifact.codeRef
-  } else if (edgeArtifact.type === 'sweepEdge') {
-    // Little round about to the sketch to get the coderef
-    const correspondingSegmentArtifact = getArtifactOfTypes(
-      {
-        key: edgeArtifact.segId,
-        types: ['segment'],
-      },
-      engineCommandManager.artifactGraph
-    )
-    if (err(correspondingSegmentArtifact)) return baseCommand
-    edgeCodeRef = correspondingSegmentArtifact.codeRef
-  } else {
-    return baseCommand
-  }
-
+  let edgeCodeRef = getEdgeCutConsumedCodeRef(
+    artifact,
+    engineCommandManager.artifactGraph
+  )
+  if (err(edgeCodeRef)) return baseCommand
   const selection = {
     graphSelections: [
       {

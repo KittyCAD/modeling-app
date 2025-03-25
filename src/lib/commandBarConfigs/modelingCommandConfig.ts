@@ -2,6 +2,7 @@ import { Models } from '@kittycad/lib'
 import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
 import { transformAstSketchLines } from 'lang/std/sketchcombos'
 import {
+  Artifact,
   isPathToNode,
   PathToNode,
   SourceRange,
@@ -37,6 +38,11 @@ export const EXTRUSION_RESULTS = [
 ] as const
 
 export const COMMAND_APPEARANCE_COLOR_DEFAULT = 'default'
+
+export const EDGE_TREATMENT_TYPES: ('segment' | 'sweepEdge')[] = [
+  'segment',
+  'sweepEdge',
+]
 
 export type ModelingCommandSchema = {
   'Enter sketch': {}
@@ -596,7 +602,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       selection: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
+        selectionTypes: EDGE_TREATMENT_TYPES,
         multiple: true,
         required: true,
         warningMessage:
@@ -625,7 +631,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       selection: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
+        selectionTypes: EDGE_TREATMENT_TYPES,
         multiple: true,
         required: true,
         skip: false,
