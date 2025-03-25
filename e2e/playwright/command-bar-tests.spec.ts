@@ -513,7 +513,8 @@ c = 3 + a`
     await homePage.openProject(projectName)
     // TODO: you probably shouldn't need an engine connection to add a parameter,
     // but you do because all modeling commands have that requirement
-    await scene.settled(cmdBar)
+    // Don't use scene.settled here
+    await expect(scene.startEditSketchBtn).toBeEnabled({ timeout: 15_000 })
 
     await test.step(`Create a parameter via command bar`, async () => {
       await cmdBar.cmdBarOpenBtn.click()
