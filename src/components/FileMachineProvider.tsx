@@ -38,11 +38,14 @@ import { reportRejection } from 'lib/trap'
 import { useMenuListener } from 'hooks/useMenu'
 import { modelingMenuCallbackMostActions } from 'menu/register'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
+import {
+  useFileTreeOperations,
+} from 'components/FileTree'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
-    context: ContextFrom<T>
-    send: Prop<Actor<T>, 'send'>
+  context: ContextFrom<T>
+  send: Prop<Actor<T>, 'send'>
 }
 
 export const FileContext = createContext(
@@ -64,8 +67,11 @@ export const FileMachineProvider = ({
     []
   )
 
+  const { createFile, createFolder} =
+      useFileTreeOperations()
+
   const filePath = useAbsoluteFilePath()
-  const cb = modelingMenuCallbackMostActions(settings, navigate, filePath, projectData, token)
+  const cb = modelingMenuCallbackMostActions(settings, navigate, filePath, projectData, token, createFile, createFolder)
   useMenuListener(cb)
 
   // Only create the native file menus on desktop

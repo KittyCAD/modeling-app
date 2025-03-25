@@ -5,7 +5,7 @@ import { authActor } from 'machines/appMachine'
 import { copyFileShareLink } from 'lib/links'
 import { codeManager } from 'lib/singletons'
 
-export function modelingMenuCallbackMostActions (settings, navigate, filePath, project, token) {
+export function modelingMenuCallbackMostActions (settings, navigate, filePath, project, token, createFile, createFolder) {
   // Menu listeners
   // TODO: KEVIN do not run if web...
   const cb = (data: WebContentSendPayload) => {
@@ -85,6 +85,24 @@ export function modelingMenuCallbackMostActions (settings, navigate, filePath, p
       })
     } else if (data.menuLabel === 'File.Preferences.User default units') {
       navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
+    } else if (data.menuLabel === 'File.Export current part') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: {
+          groupId: 'modeling',
+          name: 'Export'
+        }
+      })
+    } else if (data.menuLabel === 'File.Load a sample model') {
+      commandBarActor.send({
+                  type: 'Find and select command',
+                  data: {
+                    groupId: 'code',
+                    name: 'open-kcl-example',
+                  },
+                })
+    } else if (data.menuLabel === 'File.Create new file') {
+      createFile({dryRun: false})
     }
   }
   return cb
