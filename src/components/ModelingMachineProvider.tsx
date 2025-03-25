@@ -455,10 +455,15 @@ export const ModelingMachineProvider = ({
                   },
                 })
               }
+
+              // If there are engine commands that need sent off, send them
+              // TODO: This should be handled outside of an action as its own
+              // actor, so that the system state is more controlled.
               engineEvents &&
                 engineEvents.forEach((event) => {
-                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                  engineCommandManager.sendSceneCommand(event)
+                  engineCommandManager
+                    .sendSceneCommand(event)
+                    .catch(reportRejection)
                 })
               updateSceneObjectColors()
 
