@@ -4,6 +4,7 @@ import { PATHS } from 'lib/paths'
 import { authActor } from 'machines/appMachine'
 import { copyFileShareLink } from 'lib/links'
 import { codeManager } from 'lib/singletons'
+import { settingsActor } from 'machines/appMachine'
 
 export function modelingMenuCallbackMostActions(
   settings,
@@ -120,10 +121,18 @@ export function modelingMenuCallbackMostActions(
         type: 'Find and select command',
         data: { name: 'event.parameter.edit', groupId: 'modeling' },
       })
-  } else if (data.menuLabel === 'Edit.Format code') {
+    } else if (data.menuLabel === 'Edit.Format code') {
       commandBarActor.send({
         type: 'Find and select command',
         data: { name: 'format-code', groupId: 'code' },
+      })
+    } else if (data.menuLabel === 'View.Orthographic view') {
+      settingsActor.send({
+        type: 'set.modeling.cameraProjection',
+        data: {
+          level: 'user',
+          value: 'orthographic',
+        },
       })
     }
   }
