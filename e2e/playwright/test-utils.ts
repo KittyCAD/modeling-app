@@ -934,10 +934,10 @@ export async function setup(
 
   failOnConsoleErrors(page, testInfo)
   // kill animations, speeds up tests and reduced flakiness
-  // await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.emulateMedia({ reducedMotion: 'reduce' })
 
   // Trigger a navigation, since loading file:// doesn't.
-  // await page.reload()
+  await page.reload()
 }
 
 function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {

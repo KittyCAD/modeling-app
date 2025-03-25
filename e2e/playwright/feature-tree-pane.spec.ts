@@ -86,7 +86,7 @@ test.describe('Feature Tree pane', () => {
           sortBy: 'last-modified-desc',
         })
         await homePage.openProject('test-sample')
-        await scene.settled(cmdBar)
+        // await scene.connectionEstablished()
         await editor.closePane()
         await toolbar.openFeatureTreePane()
       })

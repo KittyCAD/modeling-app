@@ -15,6 +15,7 @@ test.describe(
       page: Page,
       homePage: HomePageFixture,
       scene: SceneFixture,
+      toolbar: ToolbarFixture,
       plane: string,
       clickCoords: { x: number; y: number }
     ) => {
@@ -59,8 +60,11 @@ test.describe(
       await u.sendCustomCmd(updateCamCommand)
 
       await u.closeDebugPanel()
+
       await page.mouse.click(clickCoords.x, clickCoords.y)
       await page.waitForTimeout(600) // wait for animation
+
+      await toolbar.waitUntilSketchingReady()
 
       await expect(
         page.getByRole('button', { name: 'line Line', exact: true })
@@ -117,11 +121,12 @@ test.describe(
     ]
 
     for (const config of planeConfigs) {
-      test(config.plane, async ({ page, homePage, scene }) => {
+      test(config.plane, async ({ page, homePage, scene, toolbar }) => {
         await sketchOnPlaneAndBackSideTest(
           page,
           homePage,
           scene,
+          toolbar,
           config.plane,
           config.coords
         )
