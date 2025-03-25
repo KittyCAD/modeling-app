@@ -642,11 +642,11 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     operation.type !== 'StdLibCall' ||
     !operation.labeledArgs
   ) {
-    return baseCommand
+    return { reason: 'Wrong operation type or artifact' }
   }
 
   // We have to go a little roundabout to get from the original artifact
-  // to the solid2DId that we need to pass to the Extrude command.
+  // to the solid2DId that we need to pass to the command.
   const pathArtifact = getArtifactOfTypes(
     {
       key: artifact.pathId,
@@ -658,8 +658,10 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     err(pathArtifact) ||
     pathArtifact.type !== 'path' ||
     !pathArtifact.solid2dId
-  )
-    return baseCommand
+  ) {
+    return { reason: "Couldn't find related path artifact" }
+  }
+
   const solid2DArtifact = getArtifactOfTypes(
     {
       key: pathArtifact.solid2dId,
@@ -668,7 +670,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     engineCommandManager.artifactGraph
   )
   if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2d') {
-    return baseCommand
+    return { reason: "Couldn't find related solid2d artifact" }
   }
 
   const selection = {
@@ -683,7 +685,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
 
   // axis options string arg
   if (!('axis' in operation.labeledArgs) || !operation.labeledArgs.axis) {
-    return baseCommand
+    return { reason: "Couldn't find axis argument" }
   }
 
   const axisValue = operation.labeledArgs.axis.value
@@ -705,7 +707,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
       engineCommandManager.artifactGraph
     )
     if (err(artifact)) {
-      return baseCommand
+      return { reason: "Couldn't find related edge artifact" }
     }
 
     edge = {
@@ -728,7 +730,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
       engineCommandManager.artifactGraph
     )
     if (err(artifact)) {
-      return baseCommand
+      return { reason: "Couldn't find related edge artifact" }
     }
 
     const codeRef = getSweepEdgeCodeRef(
@@ -736,7 +738,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
       engineCommandManager.artifactGraph
     )
     if (err(codeRef)) {
-      return baseCommand
+      return { reason: "Couldn't find related edge code ref" }
     }
 
     edge = {
@@ -749,12 +751,12 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
       otherSelections: [],
     }
   } else {
-    return baseCommand
+    return { reason: 'The type of the axis argument is unsupported' }
   }
 
   // angle kcl arg
   if (!('angle' in operation.labeledArgs) || !operation.labeledArgs.angle) {
-    return baseCommand
+    return { reason: "Couldn't find angle argument" }
   }
   const angle = await stringToKclExpression(
     codeManager.code.slice(
@@ -763,7 +765,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     )
   )
   if (err(angle) || 'errors' in angle) {
-    return baseCommand
+    return { reason: 'Error in angle argument retrieval' }
   }
 
   // Assemble the default argument values for the Offset Plane command,
@@ -780,8 +782,6 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
       sourceRangeFromRust(operation.sourceRange)
     ),
   }
-  console.log(argDefaultValues)
-
   return {
     ...baseCommand,
     argDefaultValues,

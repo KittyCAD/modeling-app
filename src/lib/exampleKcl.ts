@@ -28,52 +28,25 @@ sketch001 = startSketchOn(XZ)
   |> xLine(length = thickness, tag = $seg05)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg06)
   |> close()
-  |> extrude(%, length = width)
-  |> fillet(
-       radius = extFilletRadius,
-       tags = [getNextAdjacentEdge(seg03)],
-     )
-  |> fillet(
-       radius = filletRadius,
-       tags = [getNextAdjacentEdge(seg06)],
-     )
-  |> fillet(
-      radius = filletRadius,
-      tags = [seg02, getOppositeEdge(seg02)],
-    )
-  |> fillet(
-      radius = filletRadius,
-      tags = [seg05, getOppositeEdge(seg05)],
-    )
 
-sketch002 = startSketchOn(sketch001, seg03)
-  |> circle(
-    center = [-1.25, 1],
-    radius = mountingHoleDiameter / 2,
-  )
-  |> patternLinear2d(
-    instances = 2,
-    distance = 2.5,
-    axis = [-1, 0],
-  )
-  |> patternLinear2d(
-    instances = 2,
-    distance = 4,
-    axis = [0, 1],
-  )
-  |> extrude(%, length = -thickness-.01)
+extrude001 = extrude(sketch001, length = width)
+  |> fillet(radius = extFilletRadius, tags = [getNextAdjacentEdge(seg03)])
+  |> fillet(radius = filletRadius, tags = [getNextAdjacentEdge(seg06)])
+  |> fillet(radius = filletRadius, tags = [seg02, getOppositeEdge(seg02)])
+  |> fillet(radius = filletRadius, tags = [seg05, getOppositeEdge(seg05)])
 
-sketch003 = startSketchOn(sketch001, seg04)
-  |> circle(
-    center = [1, -1],
-    radius = mountingHoleDiameter / 2,
-  )
-  |> patternLinear2d(
-    instances = 2,
-    distance = 4,
-    axis = [1, 0],
-  )
-  |> extrude(%, length = -thickness-0.1)
+sketch002 = startSketchOn(extrude001, seg03)
+  |> circle(center = [-1.25, 1], radius = mountingHoleDiameter / 2)
+  |> patternLinear2d(instances = 2, distance = 2.5, axis = [-1, 0])
+  |> patternLinear2d(instances = 2, distance = 4, axis = [0, 1])
+  
+extrude002 = extrude(sketch002, length = -thickness - .01)
+
+sketch003 = startSketchOn(extrude002, seg04)
+  |> circle(center = [1, -1], radius = mountingHoleDiameter / 2)
+  |> patternLinear2d(instances = 2, distance = 4, axis = [1, 0])
+
+extrude003 = extrude(sketch003, length = -thickness - 0.1)
 `
 
 /**

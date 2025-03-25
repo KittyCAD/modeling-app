@@ -39,6 +39,7 @@ import { Artifact, getSweepArtifactFromSelection } from 'lang/std/artifactGraph'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import { findKwArg } from 'lang/util'
 import { KclManager } from 'lang/KclSingleton'
+import { EXECUTION_TYPE_REAL } from 'lib/constants'
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import EditorManager from 'editor/manager'
 import CodeManager from 'lang/codeManager'
@@ -86,6 +87,7 @@ export async function applyEdgeTreatmentToSelection(
   // 2. update ast
   await updateModelingState(
     modifiedAst,
+    EXECUTION_TYPE_REAL,
     {
       kclManager: dependencies.kclManager,
       editorManager: dependencies.editorManager,
