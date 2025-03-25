@@ -52,6 +52,7 @@ import {
   addSweep,
   createLiteral,
   createLocalName,
+  deleteNodeInExtrudePipe,
   extrudeSketch,
   insertNamedConstant,
   loftSketches,
@@ -2338,19 +2339,10 @@ export const modelingMachine = setup({
         const ast = kclManager.ast
         const { nodeToEdit, selection, radius } = input
 
-        // If this is an edit flow, first we're going to remove the old one
+        // If this is an edit flow, first we're going to remove the old node
         if (nodeToEdit) {
-          const pipeIndex =
-            nodeToEdit.findIndex(([_, type]) => type === 'PipeExpression') + 1
-          if (
-            nodeToEdit[pipeIndex][0] &&
-            typeof nodeToEdit[pipeIndex][0] === 'number'
-          ) {
-            const r = locateExtrudeDeclarator(ast, nodeToEdit)
-            if (!err(r) && r.extrudeDeclarator.init.type === 'PipeExpression') {
-              r.extrudeDeclarator.init.body.splice(nodeToEdit[pipeIndex][0], 1)
-            }
-          }
+          const oldNodeDeletion = deleteNodeInExtrudePipe(nodeToEdit, ast)
+          if (err(oldNodeDeletion)) return oldNodeDeletion
         }
 
         const parameters: FilletParameters = {
@@ -2511,17 +2503,8 @@ export const modelingMachine = setup({
 
         // If this is an edit flow, first we're going to remove the old node
         if (nodeToEdit) {
-          const pipeIndex =
-            nodeToEdit.findIndex(([_, type]) => type === 'PipeExpression') + 1
-          if (
-            nodeToEdit[pipeIndex][0] &&
-            typeof nodeToEdit[pipeIndex][0] === 'number'
-          ) {
-            const r = locateExtrudeDeclarator(ast, nodeToEdit)
-            if (!err(r) && r.extrudeDeclarator.init.type === 'PipeExpression') {
-              r.extrudeDeclarator.init.body.splice(nodeToEdit[pipeIndex][0], 1)
-            }
-          }
+          const oldNodeDeletion = deleteNodeInExtrudePipe(nodeToEdit, ast)
+          if (err(oldNodeDeletion)) return oldNodeDeletion
         }
 
         const parameters: ChamferParameters = {
