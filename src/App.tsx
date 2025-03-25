@@ -136,7 +136,6 @@ export function App() {
     // When leaving the modeling scene, cut the engine stream.
     return () => {
       engineStreamActor.send({ type: EngineStreamTransition.Pause })
-      console.log('engineStreamActor cleanup')
     }
   }, [])
 

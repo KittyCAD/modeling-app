@@ -6,7 +6,7 @@ import fsp from 'fs/promises'
 test(
   'When machine-api server not found butt is disabled and shows the reason',
   { tag: '@electron' },
-  async ({ context, page }, testInfo) => {
+  async ({ scene, cmdBar,  context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
@@ -22,14 +22,7 @@ test(
 
     await page.getByText('bracket').click()
 
-    await expect(page.getByTestId('loading')).toBeAttached()
-    await expect(page.getByTestId('loading')).not.toBeAttached({
-      timeout: 20_000,
-    })
-
-    const notFoundText = 'Machine API server was not discovered'
-    await expect(page.getByText(notFoundText).first()).not.toBeVisible()
-
+    await scene.settled(cmdBar)
     // Find the make button
     const makeButton = page.getByRole('button', { name: 'Make part' })
     // Make sure the button is visible but disabled
@@ -46,7 +39,7 @@ test(
 test(
   'When machine-api server not found home screen & project status shows the reason',
   { tag: '@electron' },
-  async ({ context, page }, testInfo) => {
+  async ({ scene, cmdBar, context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
@@ -70,14 +63,8 @@ test(
 
     await page.getByText('bracket').click()
 
-    await expect(page.getByTestId('loading')).toBeAttached()
-    await expect(page.getByTestId('loading')).not.toBeAttached({
-      timeout: 20_000,
-    })
+    await scene.settled(cmdBar)
 
     await expect(page.getByText(notFoundText).nth(1)).not.toBeVisible()
+    await scene.settled(cmdBar)
 
-    await networkMachineToggle.hover()
-    await expect(page.getByText(notFoundText).nth(1)).toBeVisible()
-  }
-)

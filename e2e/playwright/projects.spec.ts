@@ -82,7 +82,7 @@ test(
 test(
   'click help/keybindings from project page',
   { tag: '@electron' },
-  async ({ context, page }, testInfo) => {
+  async ({ scene, cmdBar, context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
@@ -94,17 +94,11 @@ test(
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    page.on('console', console.log)
-
     // expect to see the text bracket
     await expect(page.getByText('bracket')).toBeVisible()
-
     await page.getByText('bracket').click()
 
-    await expect(page.getByTestId('loading')).toBeAttached()
-    await expect(page.getByTestId('loading')).not.toBeAttached({
-      timeout: 20_000,
-    })
+    await scene.settled(cmdBar)
 
     // click ? button
     await page.getByTestId('help-button').click()
@@ -119,7 +113,7 @@ test(
 test(
   'open a file in a project works and renders, open another file in different project with errors, it should clear the scene',
   { tag: '@electron' },
-  async ({ context, page, editor }, testInfo) => {
+  async ({ scene, cmdBar, context, page, editor }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
@@ -148,24 +142,7 @@ test(
 
       await page.getByText('bracket').click()
 
-      await expect(page.getByTestId('loading')).toBeAttached()
-      await expect(page.getByTestId('loading')).not.toBeAttached({
-        timeout: 20_000,
-      })
-
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).toBeEnabled({
-        timeout: 20_000,
-      })
-
-      // gray at this pixel means the stream has loaded in the most
-      // user way we can verify it (pixel color)
-      await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
-          timeout: 10_000,
-        })
-        .toBeLessThan(20)
+      await scene.settled(cmdBar)
     })
 
     await test.step('Clicking the logo takes us back to the projects page / home', async () => {
@@ -208,7 +185,7 @@ test(
 test(
   'open a file in a project works and renders, open another file in different project that is empty, it should clear the scene',
   { tag: '@electron' },
-  async ({ context, page }, testInfo) => {
+  async ({ scene, cmdBar, context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
@@ -234,24 +211,7 @@ test(
 
       await page.getByText('bracket').click()
 
-      await expect(page.getByTestId('loading')).toBeAttached()
-      await expect(page.getByTestId('loading')).not.toBeAttached({
-        timeout: 20_000,
-      })
-
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).toBeEnabled({
-        timeout: 20_000,
-      })
-
-      // gray at this pixel means the stream has loaded in the most
-      // user way we can verify it (pixel color)
-      await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
-          timeout: 10_000,
-        })
-        .toBeLessThan(15)
+      await scene.settled(cmdBar)
     })
 
     await test.step('Clicking the logo takes us back to the projects page / home', async () => {
@@ -351,7 +311,7 @@ test(
 test(
   'open a file in a project works and renders, open another file in the same project with errors, it should clear the scene',
   { tag: '@electron' },
-  async ({ context, page }, testInfo) => {
+  async ({ scene, cmdBar, context, page }, testInfo) => {
     if (runningOnWindows()) {
       test.fixme(orRunWhenFullSuiteEnabled())
     }
@@ -379,10 +339,7 @@ test(
 
       await page.getByText('bracket').click()
 
-      await expect(page.getByTestId('loading')).toBeAttached()
-      await expect(page.getByTestId('loading')).not.toBeAttached({
-        timeout: 20_000,
-      })
+      await scene.settled(cmdBar)
 
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
@@ -443,10 +400,7 @@ test(
     await page.getByText('broken-code').click()
 
     // Gotcha: You can not use scene.settled() since the KCL code is going to fail
-    await expect(page.getByTestId('loading')).toBeAttached()
-    await expect(page.getByTestId('loading')).not.toBeAttached({
-      timeout: 20_000,
-    })
+    await expect(page.getByTestId('model-state-indicator-playing')).toBeAttached()
 
     // Gotcha: Scroll to the text content in code mirror because CodeMirror lazy loads DOM content
     await editor.scrollToText(
@@ -469,7 +423,7 @@ test.describe('Can export from electron app', () => {
     test(
       `Can export using ${method}`,
       { tag: ['@electron', '@skipLocalEngine'] },
-      async ({ context, page, tronApp }, testInfo) => {
+      async ({ scene, cmdBar, context, page, tronApp }, testInfo) => {
         if (!tronApp) {
           fail()
         }
@@ -499,10 +453,7 @@ test.describe('Can export from electron app', () => {
 
           await page.getByText('bracket').click()
 
-          await expect(page.getByTestId('loading')).toBeAttached()
-          await expect(page.getByTestId('loading')).not.toBeAttached({
-            timeout: 20_000,
-          })
+          await scene.settled(cmdBar)
 
           await expect(
             page.getByRole('button', { name: 'Start Sketch' })
@@ -812,7 +763,7 @@ test.describe(`Project management commands`, () => {
   test(
     `Rename from project page`,
     { tag: '@electron' },
-    async ({ context, page }, testInfo) => {
+    async ({ context, page, scene, cmdBar }, testInfo) => {
       const projectName = `my_project_to_rename`
       await context.folderSetupFn(async (dir) => {
         await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
@@ -843,7 +794,7 @@ test.describe(`Project management commands`, () => {
         page.on('console', console.log)
 
         await projectHomeLink.click()
-        await u.waitForPageLoad()
+        await scene.settled(cmdBar)
       })
 
       await test.step(`Run rename command via command palette`, async () => {
@@ -900,9 +851,9 @@ test.describe(`Project management commands`, () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
         page.on('console', console.log)
 
+        await page.waitForTimeout(3000)
+
         await projectHomeLink.click()
-        await u.waitForPageLoad()
-        await scene.connectionEstablished()
         await scene.settled(cmdBar)
       })
 
@@ -926,7 +877,7 @@ test.describe(`Project management commands`, () => {
   test(
     `Rename from home page`,
     { tag: '@electron' },
-    async ({ context, page, homePage }, testInfo) => {
+    async ({ context, page, homePage, scene, cmdBar }, testInfo) => {
       const projectName = `my_project_to_rename`
       await context.folderSetupFn(async (dir) => {
         await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
@@ -982,7 +933,7 @@ test.describe(`Project management commands`, () => {
   test(
     `Delete from home page`,
     { tag: '@electron' },
-    async ({ context, page }, testInfo) => {
+    async ({ context, page, scene, cmdBar }, testInfo) => {
       const projectName = `my_project_to_delete`
       await context.folderSetupFn(async (dir) => {
         await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
@@ -1195,7 +1146,7 @@ test(
 test(
   'Nested directories in project without main.kcl do not create main.kcl',
   { tag: '@electron' },
-  async ({ context, page }, testInfo) => {
+  async ({ scene, cmdBar, context, page }, testInfo) => {
     let testDir: string | undefined
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(path.join(dir, 'router-template-slate', 'nested'), {
@@ -1218,10 +1169,7 @@ test(
 
     await test.step('Open the project', async () => {
       await page.getByText('router-template-slate').click()
-      await expect(page.getByTestId('loading')).toBeAttached()
-      await expect(page.getByTestId('loading')).not.toBeAttached({
-        timeout: 20_000,
-      })
+      await scene.settled(cmdBar)
 
       // It actually loads.
       await expect(u.codeLocator).toContainText('mounting bracket')
@@ -1334,7 +1282,7 @@ test(
 test(
   'Can load a file with CRLF line endings',
   { tag: '@electron' },
-  async ({ context, page }, testInfo) => {
+  async ({ context, page, scene, cmdBar }, testInfo) => {
     if (runningOnWindows()) {
       test.fixme(orRunWhenFullSuiteEnabled())
     }
@@ -1357,13 +1305,8 @@ test(
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    page.on('console', console.log)
-
     await page.getByText('router-template-slate').click()
-    await expect(page.getByTestId('loading')).toBeAttached()
-    await expect(page.getByTestId('loading')).not.toBeAttached({
-      timeout: 20_000,
-    })
+    await scene.settled(cmdBar)
 
     await expect(u.codeLocator).toContainText('routerDiameter')
     await expect(u.codeLocator).toContainText('templateGap')
@@ -1870,7 +1813,7 @@ test(
 test(
   'file pane is scrollable when there are many files',
   { tag: '@electron' },
-  async ({ context, page }, testInfo) => {
+  async ({ scene, cmdBar, context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const testDir = path.join(dir, 'testProject')
       await fsp.mkdir(testDir, { recursive: true })
@@ -1949,10 +1892,8 @@ test(
 
     await test.step('setup, open file pane', async () => {
       await page.getByText('testProject').click()
-      await expect(page.getByTestId('loading')).toBeAttached()
-      await expect(page.getByTestId('loading')).not.toBeAttached({
-        timeout: 20_000,
-      })
+
+      await scene.settled(cmdBar)
 
       await page.getByTestId('files-pane-button').click()
     })

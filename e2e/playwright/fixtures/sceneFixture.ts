@@ -41,7 +41,6 @@ type DragFromHandler = (
 export class SceneFixture {
   public page: Page
   public streamWrapper!: Locator
-  public loadingIndicator!: Locator
   public networkToggleConnected!: Locator
   public startEditSketchBtn!: Locator
 
@@ -49,7 +48,6 @@ export class SceneFixture {
     this.page = page
     this.streamWrapper = page.getByTestId('stream')
     this.networkToggleConnected = page.getByTestId('network-toggle-ok')
-    this.loadingIndicator = this.streamWrapper.getByTestId('loading')
     this.startEditSketchBtn = page
       .getByRole('button', { name: 'Start Sketch' })
       .or(page.getByRole('button', { name: 'Edit Sketch' }))

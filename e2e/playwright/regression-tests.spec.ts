@@ -679,6 +679,7 @@ extrude002 = extrude(profile002, length = 150)
     scene,
     toolbar,
     viewport,
+    cmdBar,
   }) => {
     await context.folderSetupFn(async (dir) => {
       const legoDir = path.join(dir, 'lego')
@@ -693,8 +694,8 @@ extrude002 = extrude(profile002, length = 150)
       await homePage.openProject('lego')
       await toolbar.closePane('code')
     })
-    await test.step(`Waiting for the loading spinner to disappear`, async () => {
-      await scene.loadingIndicator.waitFor({ state: 'detached' })
+    await test.step(`Waiting for scene to settle`, async () => {
+      await scene.settled(cmdBar)
     })
     await test.step(`The part should start loading quickly, not waiting until execution is complete`, async () => {
       await scene.expectPixelColor(
