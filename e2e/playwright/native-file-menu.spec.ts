@@ -237,8 +237,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           menu.click()
         })
         // Check the placeholder project name exists
-        const actual = cmdBar.cmdBarElement
-          .getByTestId('cmd-bar-search')
+        const actual = cmdBar.cmdBarElement.getByTestId('cmd-bar-search')
         await expect(actual).toBeVisible()
       })
     })
@@ -255,8 +254,57 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           menu.click()
         })
         // Check the placeholder project name exists
-        const actual = cmdBar.cmdBarElement
-          .getByTestId('cmd-bar-search')
+        const actual = cmdBar.cmdBarElement.getByTestId('cmd-bar-search')
+        await expect(actual).toBeVisible()
+      })
+      test('Help.KCL code samples', async ({ tronApp, cmdBar, page }) => {
+        if (!tronApp) fail()
+        // Run electron snippet to find the Menu!
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) fail()
+          const menu = app.applicationMenu.getMenuItemById(
+            'Help.KCL code samples'
+          )
+          if (!menu) fail()
+        })
+      })
+      test('Help.Refresh and report a bug', async ({
+        tronApp,
+        cmdBar,
+        page,
+      }) => {
+        if (!tronApp) fail()
+        // Run electron snippet to find the Menu!
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) fail()
+          const menu = app.applicationMenu.getMenuItemById(
+            'Help.Refresh and report a bug'
+          )
+          if (!menu) fail()
+          menu.click()
+        })
+        // Core dump and refresh magic number timeout
+        await page.waitForTimeout(7000)
+        const actual = page.getByText(
+          'No Projects found, ready to make your first one?'
+        )
+        await expect(actual).toBeVisible()
+      })
+      test('Help.Reset onboarding', async ({ tronApp, cmdBar, page }) => {
+        if (!tronApp) fail()
+        // Run electron snippet to find the Menu!
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) fail()
+          const menu = app.applicationMenu.getMenuItemById(
+            'Help.Reset onboarding'
+          )
+          if (!menu) fail()
+          menu.click()
+        })
+
+        const actual = page.getByText(
+          `This is a hardware design tool that lets you edit visually, with code, or both. It's powered by the KittyCAD Design API, the first API created for anyone to build hardware design tools.`
+        )
         await expect(actual).toBeVisible()
       })
     })
