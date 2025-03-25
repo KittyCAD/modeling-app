@@ -56,6 +56,7 @@ export const projectFileRole = (
           },
           {
             label: 'User default units',
+            id: 'File.Preferences.User default units',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'File.Preferences.User default units',
@@ -64,6 +65,7 @@ export const projectFileRole = (
           },
           {
             label: 'Theme',
+            id: 'File.Preferences.Theme',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'File.Preferences.Theme',
@@ -72,6 +74,7 @@ export const projectFileRole = (
           },
           {
             label: 'Theme color',
+            id: 'File.Preferences.Theme color',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'File.Preferences.Theme color',
@@ -84,6 +87,7 @@ export const projectFileRole = (
       // Last in list
       {
         label: 'Sign out',
+        id: 'File.Sign out',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'File.Sign out',
