@@ -78,6 +78,8 @@ function cameraViewStateToNamedView(
     is_ortho: cameraViewState.is_ortho,
     pivot_position,
     pivot_rotation,
+    // TS side knows about the version for the time being the version is not used for anything for now.
+    // Can be detected and cleaned up later if we have new version.
     version: 1.0,
   }
 
