@@ -28,37 +28,37 @@ export axisJ3CArmThickness = 2.5
 
 // Planes
 export plane001 = {
-    plane = {
-      origin = [0.0, 0.0, baseHeight - 1.5 + 0.1],
-      xAxis = [1.0, 0.0, 0.0],
-      yAxis = [0.0, 1.0, 0.0],
-      zAxis = [0.0, 0.0, 1.0]
-    }
+  plane = {
+    origin = [0.0, 0.0, baseHeight - 1.5 + 0.1],
+    xAxis = [1.0, 0.0, 0.0],
+    yAxis = [0.0, 1.0, 0.0],
+    zAxis = [0.0, 0.0, 1.0]
   }
+}
 
 export plane002 = {
-    plane = {
-      origin = [0.0, 0.0, 0.0],
-      xAxis = [
-        sin(toRadians(axisJ1)),
-        cos(toRadians(axisJ1)),
-        0.0
-      ],
-      yAxis = [0.0, 0.0, 1.0],
-      zAxis = [1.0, 0.0, 0.0]
-    }
+  plane = {
+    origin = [0.0, 0.0, 0.0],
+    xAxis = [
+      sin(toRadians(axisJ1)),
+      cos(toRadians(axisJ1)),
+      0.0
+    ],
+    yAxis = [0.0, 0.0, 1.0],
+    zAxis = [1.0, 0.0, 0.0]
   }
+}
 
 // Define Plane to Move J2 Axis Robot Arm
 export plane003 = {
-    plane = {
-      origin = [-0.1, 0.0, 0.0],
-      xAxis = [
-        sin(toRadians(axisJ1)),
-        cos(toRadians(axisJ1)),
-        0.0
-      ],
-      yAxis = [0.0, 0.0, 1.0],
-      zAxis = [1.0, 0.0, 0.0]
-    }
+  plane = {
+    origin = [-0.1, 0.0, 0.0],
+    xAxis = [
+      sin(toRadians(axisJ1)),
+      cos(toRadians(axisJ1)),
+      0.0
+    ],
+    yAxis = [0.0, 0.0, 1.0],
+    zAxis = [1.0, 0.0, 0.0]
   }
+}

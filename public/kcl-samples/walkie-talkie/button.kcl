@@ -4,26 +4,16 @@
 @settings(defaultLengthUnit = in)
 
 // import constants
-import buttonWidth, buttonHeight, buttonThickness from 'globals.kcl'
+import buttonWidth, buttonHeight, buttonThickness from "globals.kcl"
 
 // create a function to define the button
 export fn button() {
-
   // sketch the button profile and extrude
-  buttonSketch = startSketchOn('XZ')
+  buttonSketch = startSketchOn(XZ)
     |> startProfileAt([0, 0], %)
-    |> angledLine({
-         angle = 180,
-         length = buttonWidth
-       }, %, $tag1)
-    |> angledLine({
-         angle = 270,
-         length = buttonHeight
-       }, %, $tag2)
-    |> angledLine({
-         angle = 0,
-         length = buttonWidth
-       }, %)
+    |> angledLine({ angle = 180, length = buttonWidth }, %, $tag1)
+    |> angledLine({ angle = 270, length = buttonHeight }, %, $tag2)
+    |> angledLine({ angle = 0, length = buttonWidth }, %)
     |> close()
   buttonExtrude = extrude(buttonSketch, length = buttonThickness)
     |> chamfer(
@@ -31,9 +21,9 @@ export fn button() {
          tags = [
            getNextAdjacentEdge(tag1),
            getNextAdjacentEdge(tag2)
-         ]
+         ],
        )
-     |> appearance(color = "#ff0000")
+    |> appearance(color = "#ff0000")
 
   return buttonExtrude
 }

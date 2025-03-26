@@ -10,7 +10,7 @@ carafeHeight = 7.32
 handleThickness = 0.65
 
 // Upper ring of the metal structure
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([carafeDiameter / 2, 5.7], %)
   |> angledLine([0, 0.1], %, $rectangleSegmentA001)
   |> angledLine([
@@ -91,15 +91,12 @@ sketch002 = startSketchOn(plane001)
        center = [0, 0, 0],
        instances = 4,
        arcDegrees = 360,
-       rotateDuplicates = true
+       rotateDuplicates = true,
      )
 
 // Cross plate
-sketch003 = startSketchOn(offsetPlane('XY', offset = 1))
-  |> circle(
-       center = [0, 0],
-       radius = carafeDiameter / 2 - 0.15
-     )
+sketch003 = startSketchOn(offsetPlane(XY, offset = 1))
+  |> circle(center = [0, 0], radius = carafeDiameter / 2 - 0.15)
 
 extrude001 = extrude(sketch003, length = 0.050)
 
@@ -117,13 +114,13 @@ sketch004 = startSketchOn(extrude001, 'END')
        center = [0, 0],
        instances = 3,
        arcDegrees = 360,
-       rotateDuplicates = true
+       rotateDuplicates = true,
      )
 
 extrude002 = extrude(sketch004, length = -0.050)
 
 // Filter screen
-sketch005 = startSketchOn('XZ')
+sketch005 = startSketchOn(XZ)
   |> startProfileAt([0.15, 1.11], %)
   |> xLine(endAbsolute = carafeDiameter / 2 - 0.2)
   |> angledLineToX({
@@ -138,7 +135,7 @@ sketch005 = startSketchOn('XZ')
   |> revolve(axis = 'y')
 
 // Plunger and stem
-sketch006 = startSketchOn('XZ')
+sketch006 = startSketchOn(XZ)
   |> startProfileAt([0.1, 1], %)
   |> line(end = [0.1, 0])
   |> angledLineToX({ angle = 10, to = 0.05 }, %)
@@ -151,11 +148,8 @@ sketch006 = startSketchOn('XZ')
   |> revolve(axis = 'y')
 
 // Spiral plate
-sketch007 = startSketchOn(offsetPlane('XY', offset = 1.12))
-  |> circle(
-       center = [0, 0],
-       radius = carafeDiameter / 2 - 0.24
-     )
+sketch007 = startSketchOn(offsetPlane(XY, offset = 1.12))
+  |> circle(center = [0, 0], radius = carafeDiameter / 2 - 0.24)
   |> hole(circle(center = [0, 0], radius = .15), %)
 
 extrude003 = extrude(sketch007, length = 0.050)
@@ -167,7 +161,7 @@ sketch008 = startSketchOn(extrude003, 'END')
        center = [0, 0],
        instances = 8,
        arcDegrees = 360,
-       rotateDuplicates = true
+       rotateDuplicates = true,
      )
 
 extrude004 = extrude(sketch008, length = -0.050)
@@ -179,24 +173,21 @@ sketch009 = startSketchOn(extrude003, 'END')
        center = [0, 0],
        instances = 4,
        arcDegrees = 360,
-       rotateDuplicates = true
+       rotateDuplicates = true,
      )
 
 extrude005 = extrude(sketch009, length = -0.050)
 
 // Extrude a glass carafe body
-sketch010 = startSketchOn("XY")
-  |> circle(
-       center = [0, 0],
-       radius = carafeDiameter / 2
-     )
+sketch010 = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = carafeDiameter / 2)
 
 // Perform a shell operation to hollow the carafe body with the top face removed
 extrude006 = extrude(sketch010, length = carafeHeight)
   |> shell(faces = ["end"], thickness = .07)
 
 // Draw and revolve the lid
-sketch011 = startSketchOn('XZ')
+sketch011 = startSketchOn(XZ)
   |> startProfileAt([0.2, carafeHeight - 0.7], %)
   |> xLine(length = carafeDiameter / 2 - 0.3)
   |> yLine(length = 0.7)
@@ -213,7 +204,7 @@ sketch011 = startSketchOn('XZ')
   |> revolve(axis = 'y')
 
 // Draw and extrude handle
-sketch012 = startSketchOn(offsetPlane('XZ', offset = handleThickness / 2))
+sketch012 = startSketchOn(offsetPlane(XZ, offset = handleThickness / 2))
   |> startProfileAt([2.3, 6.4], %)
   |> line(end = [0.56, 0])
   |> tangentialArcTo([4.1, 5.26], %)

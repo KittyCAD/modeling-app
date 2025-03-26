@@ -7,8 +7,8 @@ description: Operations executed poopy-shoe.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "-YZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -129,8 +129,8 @@ description: Operations executed poopy-shoe.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "-YZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }

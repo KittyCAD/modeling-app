@@ -1,9 +1,7 @@
 // J3 Robot Arm
 
-
 // Set Units
 @settings(defaultLengthUnit = in)
-
 
 import plane002, axisJ2, axisJ3C, axisJ4, axisJ2ArmLength, axisJ3CArmLength, axisJ3CArmWidth, axisJ3CArmThickness from "globals.kcl"
 
@@ -38,13 +36,11 @@ sketch018 = startSketchOn(extrude017, 'END')
          8 + axisJ2ArmLength * sin(toRadians(axisJ2))
        ],
        radius = 3.7 / 2,
-     tag = $referenceEdge6)
+       tag = $referenceEdge6,
+     )
 
 extrude018 = extrude(sketch018, length = 0.15)
-  |> fillet(
-       radius = 0.1,
-       tags = [getOppositeEdge(referenceEdge6)]
-     )
+  |> fillet(radius = 0.1, tags = [getOppositeEdge(referenceEdge6)])
 
 // Draw Bolt Pattern on J3 Robot Arm
 sketch019 = startSketchOn(extrude018, 'END')
@@ -53,7 +49,7 @@ sketch019 = startSketchOn(extrude018, 'END')
          1.75 + (axisJ2ArmLength - 1) * cos(toRadians(axisJ2)),
          8 + (axisJ2ArmLength - 1.5) * sin(toRadians(axisJ2))
        ],
-       radius = 0.2
+       radius = 0.2,
      )
   |> patternCircular2d(
        center = [
@@ -62,7 +58,7 @@ sketch019 = startSketchOn(extrude018, 'END')
        ],
        instances = 8,
        arcDegrees = 360,
-       rotateDuplicates = true
+       rotateDuplicates = true,
      )
 
 extrude019 = extrude(sketch019, length = 0.15)
@@ -74,7 +70,7 @@ sketch020 = startSketchOn(extrude017, 'START')
          -1.75 - (axisJ2ArmLength * cos(toRadians(axisJ2))) - (axisJ3CArmLength * cos(toRadians(axisJ3C))),
          8 + axisJ2ArmLength * sin(toRadians(axisJ2)) + axisJ3CArmLength * sin(toRadians(axisJ3C))
        ],
-       radius = axisJ3CArmWidth / 2
+       radius = axisJ3CArmWidth / 2,
      )
 extrude020 = extrude(sketch020, length = -0.5)
 
@@ -84,7 +80,7 @@ sketch021 = startSketchOn(extrude017, 'END')
          1.75 + axisJ2ArmLength * cos(toRadians(axisJ2)) + axisJ3CArmLength * cos(toRadians(axisJ3C)),
          8 + axisJ2ArmLength * sin(toRadians(axisJ2)) + axisJ3CArmLength * sin(toRadians(axisJ3C))
        ],
-       radius = axisJ3CArmWidth / 2.01
+       radius = axisJ3CArmWidth / 2.01,
      )
 
 extrude021 = extrude(sketch021, length = -0.5)
