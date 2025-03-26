@@ -5,14 +5,14 @@
 @settings(defaultLengthUnit = in)
 
 // import constants
-import * from 'globals.kcl'
+import * from "globals.kcl"
 
 // import parts and constants
-import body from 'body.kcl'
-import case from 'case.kcl'
-import antenna from 'antenna.kcl'
-import talkButton from 'talk-button.kcl'
-import knob from 'knob.kcl'
+import body from "body.kcl"
+import case from "case.kcl"
+import antenna from "antenna.kcl"
+import talkButton from "talk-button.kcl"
+import knob from "knob.kcl"
 import button from "button.kcl"
 
 // import the body
@@ -20,7 +20,7 @@ body()
 
 // import the antenna
 antenna()
-  |> translate(translate = [-width / 2 + .45, -0.10, height/2])
+  |> translate(translate = [-width / 2 + .45, -0.10, height / 2])
 
 // import the case
 case()
@@ -32,16 +32,52 @@ talkButton()
 
 // import the frequency knob
 knob()
-  |> translate(translate = [width / 2 - 0.70, -thickness / 2, height / 2])
+  |> translate(translate = [
+       width / 2 - 0.70,
+       -thickness / 2,
+       height / 2
+     ])
 
 // import the buttons
 button()
-  |> translate(translate = [-(screenWidth / 2 + tolerance), -1, screenYPosition])
+  |> translate(translate = [
+       -(screenWidth / 2 + tolerance),
+       -1,
+       screenYPosition
+     ])
 button()
-  |> translate(translate = [-(screenWidth / 2 + tolerance), -1, screenYPosition - buttonHeight - tolerance*2])
+  |> translate(translate = [
+       -(screenWidth / 2 + tolerance),
+       -1,
+       screenYPosition - buttonHeight - (tolerance * 2)
+     ])
 button()
-  |> rotate(%, roll = 0, pitch = 180, yaw = 0)
-  |> translate(translate = [screenWidth / 2 + tolerance, -1, screenYPosition - buttonHeight], global = true)
+  |> rotate(
+       %,
+       roll = 0,
+       pitch = 180,
+       yaw = 0,
+     )
+  |> translate(
+       translate = [
+         screenWidth / 2 + tolerance,
+         -1,
+         screenYPosition - buttonHeight
+       ],
+       global = true,
+     )
 button()
-  |> rotate(%, roll = 0, pitch = 180, yaw = 0)
-  |> translate(translate = [screenWidth / 2 + tolerance, -1, screenYPosition - buttonHeight*2 - tolerance * 2], global = true)
+  |> rotate(
+       %,
+       roll = 0,
+       pitch = 180,
+       yaw = 0,
+     )
+  |> translate(
+       translate = [
+         screenWidth / 2 + tolerance,
+         -1,
+         screenYPosition - (buttonHeight * 2) - (tolerance * 2)
+       ],
+       global = true,
+     )

@@ -4,10 +4,11 @@ use anyhow::Result;
 use schemars::JsonSchema;
 use serde::Serialize;
 
-use super::{memory::EnvironmentRef, MetaSettings};
+use super::{types::UnitLen, EnvironmentRef, ExecState, MetaSettings};
 use crate::{
     errors::KclErrorDetails,
     execution::{
+        annotations::{SETTINGS, SETTINGS_UNIT_LENGTH},
         types::{NumericType, PrimitiveType, RuntimeType},
         Face, Helix, ImportedGeometry, Metadata, Plane, Sketch, Solid, TagIdentifier,
     },
@@ -15,7 +16,7 @@ use crate::{
         DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, TagDeclarator, TagNode,
     },
     std::StdFnProps,
-    KclError, ModuleId, SourceRange,
+    CompilationError, KclError, ModuleId, SourceRange,
 };
 
 pub type KclObjectFields = HashMap<String, KclValue>;
@@ -308,22 +309,38 @@ impl KclValue {
         }
     }
 
-    pub(crate) fn from_literal(literal: Node<Literal>, settings: &MetaSettings) -> Self {
+    pub(crate) fn from_literal(literal: Node<Literal>, exec_state: &mut ExecState) -> Self {
         let meta = vec![literal.metadata()];
         match literal.inner.value {
-            LiteralValue::Number { value, suffix } => KclValue::Number {
-                value,
-                meta,
-                ty: NumericType::from_parsed(suffix, settings),
-            },
+            LiteralValue::Number { value, suffix } => {
+                let ty = NumericType::from_parsed(suffix, &exec_state.mod_local.settings);
+                if let NumericType::Default { len, .. } = &ty {
+                    if !exec_state.mod_local.explicit_length_units && *len != UnitLen::Mm {
+                        exec_state.warn(
+                            CompilationError::err(
+                                literal.as_source_range(),
+                                "Project-wide units are deprecated. Prefer to use per-file default units.",
+                            )
+                            .with_suggestion(
+                                "Fix by adding per-file settings",
+                                format!("@{SETTINGS}({SETTINGS_UNIT_LENGTH} = {len})\n"),
+                                // Insert at the start of the file.
+                                Some(SourceRange::new(0, 0, literal.module_id)),
+                                crate::errors::Tag::Deprecated,
+                            ),
+                        );
+                    }
+                }
+                KclValue::Number { value, meta, ty }
+            }
             LiteralValue::String(value) => KclValue::String { value, meta },
             LiteralValue::Bool(value) => KclValue::Bool { value, meta },
         }
     }
 
-    pub(crate) fn from_default_param(param: DefaultParamVal, settings: &MetaSettings) -> Self {
+    pub(crate) fn from_default_param(param: DefaultParamVal, exec_state: &mut ExecState) -> Self {
         match param {
-            DefaultParamVal::Literal(lit) => Self::from_literal(lit, settings),
+            DefaultParamVal::Literal(lit) => Self::from_literal(lit, exec_state),
             DefaultParamVal::KclNone(none) => KclValue::KclNone {
                 value: none,
                 meta: Default::default(),

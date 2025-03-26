@@ -7,8 +7,8 @@ description: Operations executed i-beam.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "-XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -23,15 +23,9 @@ description: Operations executed i-beam.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 24.0,
+          "value": 72.00000000000001,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Unknown"
           }
         },
         "sourceRange": []

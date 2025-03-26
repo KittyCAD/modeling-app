@@ -4,24 +4,24 @@
 // Set units
 @settings(defaultLengthUnit = in)
 
-import 'car-wheel.kcl' as carWheel
-import 'car-rotor.kcl' as carRotor
+import "car-wheel.kcl" as carWheel
+import "car-rotor.kcl" as carRotor
 import "brake-caliper.kcl" as brakeCaliper
-import 'lug-nut.kcl' as lugNut
-import 'car-tire.kcl' as carTire
-import lugCount from 'globals.kcl'
+import "lug-nut.kcl" as lugNut
+import "car-tire.kcl" as carTire
+import lugCount from "globals.kcl"
 
 carRotor
   |> translate(translate = [0, 0.5, 0])
 carWheel
 lugNut
   |> patternCircular3d(
-     arcDegrees = 360,
-     axis = [0, 1, 0],
-     center = [0, 0, 0],
-     instances = lugCount,
-     rotateDuplicates = false
-   )
+       arcDegrees = 360,
+       axis = [0, 1, 0],
+       center = [0, 0, 0],
+       instances = lugCount,
+       rotateDuplicates = false,
+     )
 brakeCaliper
   |> translate(translate = [0, 0.5, 0])
 carTire

@@ -4,7 +4,6 @@ import { type IndexLoaderData } from 'lib/types'
 import { BROWSER_PATH, PATHS } from 'lib/paths'
 import React, { createContext, useEffect, useMemo } from 'react'
 import { toast } from 'react-hot-toast'
-import { DEV } from 'env'
 import {
   Actor,
   AnyStateMachine,
@@ -61,34 +60,31 @@ export const FileMachineProvider = ({
   )
 
   useEffect(() => {
-    // TODO: Engine feature is not deployed
-    if (DEV) {
-      const {
-        createNamedViewCommand,
-        deleteNamedViewCommand,
-        loadNamedViewCommand,
-      } = createNamedViewsCommand()
+    const {
+      createNamedViewCommand,
+      deleteNamedViewCommand,
+      loadNamedViewCommand,
+    } = createNamedViewsCommand()
 
-      const commands = [
-        createNamedViewCommand,
-        deleteNamedViewCommand,
-        loadNamedViewCommand,
-      ]
+    const commands = [
+      createNamedViewCommand,
+      deleteNamedViewCommand,
+      loadNamedViewCommand,
+    ]
+    commandBarActor.send({
+      type: 'Add commands',
+      data: {
+        commands,
+      },
+    })
+    return () => {
+      // Remove commands if you go to the home page
       commandBarActor.send({
-        type: 'Add commands',
+        type: 'Remove commands',
         data: {
           commands,
         },
       })
-      return () => {
-        // Remove commands if you go to the home page
-        commandBarActor.send({
-          type: 'Remove commands',
-          data: {
-            commands,
-          },
-        })
-      }
     }
   }, [])
 
