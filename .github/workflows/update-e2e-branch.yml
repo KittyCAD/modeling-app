@@ -34,6 +34,8 @@ jobs:
           git fetch origin
           # reset to main
           git reset --hard origin/main
+          # get a new SHA to prevent overwriting the commit status on main
+          git commit --amend --message="[all-e2e] $(git log --max-count=1 --pretty=%B)"
           # force push it
           git remote set-url origin https://x-access-token:${{ steps.app-token.outputs.token }}@github.com/${{ github.repository }}.git
           git push --force origin all-e2e
