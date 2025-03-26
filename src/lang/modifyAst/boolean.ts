@@ -36,25 +36,25 @@ export async function applySubtractFromTargetOperatorSelections(
   if (!target.artifact || !tool.artifact) {
     return new Error('No artifact found')
   }
-  const orderedArtifactLeafsTarget = findAllLeafArtifacts(
+  const orderedChildrenTarget = findAllChildrenAndOrderByPlaceInCode(
     target.artifact,
     dependencies.engineCommandManager.artifactGraph
   )
-  const operatorArtifactLeafs = findAllLeafArtifacts(
+  const orderedChildrenTool = findAllChildrenAndOrderByPlaceInCode(
     tool.artifact,
     dependencies.engineCommandManager.artifactGraph
   )
 
-  const targetLastVar = getLastVariable(orderedArtifactLeafsTarget, ast)
-  const lastVar = getLastVariable(operatorArtifactLeafs, ast)
+  const lastVarTarget = getLastVariable(orderedChildrenTarget, ast)
+  const lastVarTool = getLastVariable(orderedChildrenTool, ast)
 
-  if (!targetLastVar || !lastVar) {
+  if (!lastVarTarget || !lastVarTool) {
     return new Error('No variable found')
   }
   const modifiedAst = booleanSubtractAstMod({
     ast,
-    targets: [targetLastVar?.variableDeclaration?.node],
-    tools: [lastVar?.variableDeclaration.node],
+    targets: [lastVarTarget?.variableDeclaration?.node],
+    tools: [lastVarTool?.variableDeclaration.node],
   })
   const updateAstResult = await dependencies.kclManager.updateAst(
     modifiedAst,
@@ -87,15 +87,15 @@ export async function applyUnionFromTargetOperatorSelections(
     return new Error('Not enough artifacts selected')
   }
 
-  const orderedArtifactChildrenForEachSelection = artifacts.map((artifact) =>
-    findAllLeafArtifacts(
+  const orderedChildrenEach = artifacts.map((artifact) =>
+    findAllChildrenAndOrderByPlaceInCode(
       artifact,
       dependencies.engineCommandManager.artifactGraph
     )
   )
 
   const lastVars: VariableDeclaration[] = []
-  for (const orderedArtifactLeafs of orderedArtifactChildrenForEachSelection) {
+  for (const orderedArtifactLeafs of orderedChildrenEach) {
     const lastVar = getLastVariable(orderedArtifactLeafs, ast)
     if (!lastVar) continue
     lastVars.push(lastVar.variableDeclaration.node)
@@ -139,15 +139,15 @@ export async function applyIntersectFromTargetOperatorSelections(
     return new Error('Not enough artifacts selected')
   }
 
-  const orderedArtifactChildrenForEachSelection = artifacts.map((artifact) =>
-    findAllLeafArtifacts(
+  const orderedChildrenEach = artifacts.map((artifact) =>
+    findAllChildrenAndOrderByPlaceInCode(
       artifact,
       dependencies.engineCommandManager.artifactGraph
     )
   )
 
   const lastVars: VariableDeclaration[] = []
-  for (const orderedArtifactLeafs of orderedArtifactChildrenForEachSelection) {
+  for (const orderedArtifactLeafs of orderedChildrenEach) {
     const lastVar = getLastVariable(orderedArtifactLeafs, ast)
     if (!lastVar) continue
     lastVars.push(lastVar.variableDeclaration.node)
@@ -171,7 +171,7 @@ export async function applyIntersectFromTargetOperatorSelections(
   await dependencies.kclManager.updateAst(modifiedAst, true)
 }
 
-export function findAllLeafArtifacts(
+export function findAllChildrenAndOrderByPlaceInCode(
   artifact: Artifact,
   artifactGraph: ArtifactGraph
 ): Artifact[] {
@@ -246,6 +246,7 @@ export function findAllLeafArtifacts(
   return orderedByCodeRefDest
 }
 
+/** Returns the last declared in code, relevant child */
 export function getLastVariable(
   orderedDescArtifacts: Artifact[],
   ast: Node<Program>
