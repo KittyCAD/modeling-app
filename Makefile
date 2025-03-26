@@ -81,6 +81,8 @@ E2E_WORKERS ?= 1
 E2E_FAILURES ?= 1
 E2E_GREP ?= ""
 
+SNAPSHOTS := $(wildcard e2e/playwright/**/*.png)
+
 .PHONY: test
 test: test-unit test-e2e
 
@@ -100,6 +102,14 @@ test-e2e-web: install build-web ## Run the web e2e tests
 .PHONY: test-e2e-desktop
 test-e2e-desktop: install build-desktop ## Run the desktop e2e tests
 	yarn test:playwright:electron --workers=$(E2E_WORKERS) --max-failures=$(E2E_FAILURES) --grep=$(E2E_GREP)
+
+.PHONY: test-snapshots
+test-snapshots: install build-web $(SNAPSHOTS) ## Capture updated image snapshots
+$(SNAPSHOTS): $(REACT_SOURCES) $(TYPESCRIPT_SOURCES)
+	yarn test:snapshots
+ifdef CI
+	git diff --exit-code
+endif
 
 ###############################################################################
 # CLEAN
