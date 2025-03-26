@@ -927,9 +927,8 @@ fn get_autocomplete_string_from_schema(schema: &schemars::schema::Schema) -> Res
 mod tests {
     use pretty_assertions::assert_eq;
 
-    use crate::docs::kcl_doc::{self, DocData};
-
     use super::StdLibFn;
+    use crate::docs::kcl_doc::{self, DocData};
 
     #[test]
     fn test_serialize_function() {
