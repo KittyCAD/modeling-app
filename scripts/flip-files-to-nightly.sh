@@ -8,7 +8,7 @@ echo "$PACKAGE" > package.json
 
 # electron-builder.yml
 yq -i '.publish[0].url = "https://dl.zoo.dev/releases/modeling-app/nightly"' electron-builder.yml
-yq -i '.appId = "dev.zoo.design-studio-nightly"' electron-builder.yml
+yq -i '.appId = "dev.zoo.modeling-app-nightly"' electron-builder.yml
 yq -i '.nsis.include = "./scripts/installer-nightly.nsh"' electron-builder.yml
 
 # Release notes

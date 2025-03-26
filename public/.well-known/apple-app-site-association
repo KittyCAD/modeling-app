@@ -2,7 +2,7 @@
   "applinks": {
     "details": [
       {
-        "appIDs": ["92H8YB3B95.dev.zoo.design-studio"],
+        "appIDs": ["92H8YB3B95.dev.zoo.modeling-app"],
         "components": [
           {
             "/": "/file/*",
