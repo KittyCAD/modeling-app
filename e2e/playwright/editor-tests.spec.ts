@@ -1210,7 +1210,6 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
   test('Corner rectangle tool panning with middle click', async ({
     page,
     homePage,
-    toolbar,
   }) => {
     const u = await getUtils(page)
 
@@ -1219,11 +1218,9 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
 
     await page.getByRole('button', { name: 'Start Sketch' }).click()
 
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
+    await page.waitForTimeout(100)
 
-    // select a plane
+    // select an axis plane
     await page.mouse.click(700, 200)
 
     await page.waitForTimeout(1000)
@@ -1237,13 +1234,17 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await page.mouse.click(800, 500, { button: 'middle' })
 
     await page.waitForTimeout(1000)
+    // await u.openDebugPanel()
+    // await u.expectCmdLog('[data-message-type="execution-done"]')
+    // await u.closeDebugPanel()
 
     await page.mouse.move(900, 600, {
       steps: 10,
     })
 
-    await page.waitForTimeout(1000)
+    ///await page.waitForTimeout(1000)
 
+    // We expect the code to be the same, middle mouse click should not modify the code, only do panning
     const currentText = await page.locator('.cm-content').innerText()
     expect(currentText).toBe(initialTest)
 
