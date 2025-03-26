@@ -151,7 +151,6 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// sweep(circleSketch, path = sweepPath, sectional = true)
 /// ```
-///
 
 #[stdlib {
     name = "sweep",

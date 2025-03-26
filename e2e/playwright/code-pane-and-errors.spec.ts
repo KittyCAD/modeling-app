@@ -21,14 +21,15 @@ test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
     await page.addInitScript(() => {
       localStorage.setItem(
         'persistCode',
-        `// Extruded Triangle
-  sketch001 = startSketchOn(XZ)
-    |> startProfileAt([0, 0], %)
-    |> line(end = [10, 0])
-    |> line(end = [-5, 10])
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()
-  extrude001 = extrude(sketch001, length = 5)`
+        `@settings(defaultLengthUnit = in)
+// Extruded Triangle
+sketch001 = startSketchOn(XZ)
+  |> startProfileAt([0, 0], %)
+  |> line(end = [10, 0])
+  |> line(end = [-5, 10])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = 5)`
       )
     })
 
