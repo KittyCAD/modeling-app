@@ -1814,6 +1814,11 @@ export const ModelingMachineProvider = ({
           openPanes: alwaysAddLogs
         },
       })
+    } else if (data.menuLabel === 'Design.Start sketch') {
+        modelingSend({
+          type: 'Enter sketch',
+          data: { forceNewSketch: true },
+        })
     }
   }
   useMenuListener(cb)
