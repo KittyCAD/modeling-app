@@ -54,7 +54,6 @@ export function UnitsMenu() {
                         defaultAngleUnits: unitAngleToUnitAng(
                           DEFAULT_DEFAULT_ANGLE_UNIT
                         ),
-                        stdPath: null,
                       })
                       if (err(newCode)) {
                         toast.error(

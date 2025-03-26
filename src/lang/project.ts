@@ -29,6 +29,5 @@ export function newKclFile(
   return changeKclSettings('', {
     defaultLengthUnits: unitLengthToUnitLen(defaultLengthUnit),
     defaultAngleUnits: unitAngleToUnitAng(DEFAULT_DEFAULT_ANGLE_UNIT),
-    stdPath: null,
   })
 }

@@ -34,7 +34,7 @@ import { useSettings } from 'machines/appMachine'
 import { createRouteCommands } from 'lib/commandBarConfigs/routeCommandConfig'
 import { useToken } from 'machines/appMachine'
 import { createNamedViewsCommand } from 'lib/commandBarConfigs/namedViewsConfig'
-import { err } from 'lib/trap'
+import { err, reportRejection } from 'lib/trap'
 import { newKclFile } from 'lang/project'
 
 type MachineContext<T extends AnyStateMachine> = {
