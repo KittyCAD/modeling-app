@@ -209,7 +209,7 @@ export const modelingViewRole = (
             label: 'Feature tree',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'View.Panes.Feature true',
+                menuLabel: 'View.Panes.Feature tree',
               })
             },
           },
@@ -244,15 +244,7 @@ export const modelingViewRole = (
                 menuLabel: 'View.Panes.Logs',
               })
             },
-          },
-          {
-            label: 'Debug',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'View.Panes.Debug',
-              })
-            },
-          },
+          }
         ],
       },
       {

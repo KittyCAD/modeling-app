@@ -121,6 +121,9 @@ import { exportSave } from 'lib/exportSave'
 import { Plane } from '@rust/kcl-lib/bindings/Plane'
 import { updateModelingState } from 'lang/modelingWorkflows'
 import { EXECUTION_TYPE_MOCK } from 'lib/constants'
+import { useMenuListener } from "hooks/useMenu"
+import type { WebContentSendPayload } from '../menu/channels'
+import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -1762,6 +1765,58 @@ export const ModelingMachineProvider = ({
       // devTools: true,
     }
   )
+
+  // Register file menu actions based off modeling send
+  const cb = (data: WebContentSendPayload) => {
+    const openPanes = modelingActor.getSnapshot().context.store.openPanes
+    if (data.menuLabel === 'View.Panes.Feature tree') {
+      const featureTree : SidebarType = 'feature-tree'
+      const alwaysAddFeatureTree : SidebarType[] = [...new Set([...openPanes, featureTree])]
+      modelingSend({
+        type: 'Set context',
+        data: {
+          openPanes: alwaysAddFeatureTree
+        },
+      })
+    } else if (data.menuLabel === 'View.Panes.KCL code') {
+      const code : SidebarType = 'code'
+      const alwaysAddCode : SidebarType[] = [...new Set([...openPanes, code])]
+      modelingSend({
+        type: 'Set context',
+        data: {
+          openPanes: alwaysAddCode
+        },
+      })
+    } else if (data.menuLabel === 'View.Panes.Project files') {
+      const projectFiles : SidebarType = 'files'
+      const alwaysAddProjectFiles : SidebarType[] = [...new Set([...openPanes, projectFiles])]
+      modelingSend({
+        type: 'Set context',
+        data: {
+          openPanes: alwaysAddProjectFiles
+        },
+      })
+    } else if (data.menuLabel === 'View.Panes.Variables') {
+      const variables : SidebarType = 'variables'
+      const alwaysAddVariables : SidebarType[] = [...new Set([...openPanes, variables])]
+      modelingSend({
+        type: 'Set context',
+        data: {
+          openPanes: alwaysAddVariables
+        },
+      })
+    } else if (data.menuLabel === 'View.Panes.Logs') {
+      const logs : SidebarType = 'logs'
+      const alwaysAddLogs : SidebarType[] = [...new Set([...openPanes, logs])]
+      modelingSend({
+        type: 'Set context',
+        data: {
+          openPanes: alwaysAddLogs
+        },
+      })
+    }
+  }
+  useMenuListener(cb)
 
   // Add debug function to window object
   useEffect(() => {

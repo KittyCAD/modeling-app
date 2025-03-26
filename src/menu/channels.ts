@@ -66,7 +66,7 @@ export type MenuLabels =
   | 'View.Named views.Create named view'
   | 'View.Named views.Load named view'
   | 'View.Named views.Delete named view'
-  | 'View.Panes.Feature true'
+  | 'View.Panes.Feature tree'
   | 'View.Panes.KCL code'
   | 'View.Panes.Project files'
   | 'View.Panes.Variables'
