@@ -17,35 +17,32 @@ gearHeight = 3
 
 // Interpolate points along the involute curve
 cmo = 101
-rs = map([0..cmo], fn (i) {
+rs = map([0..cmo], fn(i) {
   return baseDiameter / 2 + i / cmo * (tipDiameter - baseDiameter) / 2
 })
 
 // Calculate operating pressure angle
-angles = map(rs, fn (r) {
+angles = map(rs, fn(r) {
   return toDegrees(  acos(baseDiameter / 2 / r))
 })
 
 // Calculate the involute function
-invas = map(angles, fn (a) {
+invas = map(angles, fn(a) {
   return tan(toRadians(a)) - toRadians(a)
 })
 
 // Map the involute curve
-xs = map([0..cmo], fn (i) {
+xs = map([0..cmo], fn(i) {
   return rs[i] * cos(invas[i])
 })
 
-ys = map([0..cmo], fn (i) {
+ys = map([0..cmo], fn(i) {
   return rs[i] * sin(invas[i])
 })
 
 // Extrude the gear body
-body = startSketchOn('XY')
-  |> circle(
-       center = [0, 0],
-       radius = baseDiameter / 2
-     )
+body = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = baseDiameter / 2)
   |> extrude(length = gearHeight)
 
 toothAngle = 360 / nTeeth / 1.5
@@ -63,7 +60,7 @@ fn rightInvolute(i, sg) {
 }
 
 // Draw gear teeth
-start = startSketchOn('XY')
+start = startSketchOn(XY)
   |> startProfileAt([xs[101], ys[101]], %)
 teeth = reduce([0..100], start, leftInvolute)
   |> arc({
@@ -79,7 +76,7 @@ teeth = reduce([0..100], start, leftInvolute)
        center = [0, 0, 0],
        instances = nTeeth,
        arcDegrees = 360,
-       rotateDuplicates = true
+       rotateDuplicates = true,
      )
 
 // Define the constants of the keyway and the bore hole

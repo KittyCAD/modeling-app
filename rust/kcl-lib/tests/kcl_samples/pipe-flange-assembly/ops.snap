@@ -37,8 +37,8 @@ description: Operations executed pipe-flange-assembly.kcl
     "type": "UserDefinedFunctionCall",
     "name": "flange",
     "functionSourceRange": [
-      377,
-      1601,
+      451,
+      1670,
       5
     ],
     "unlabeledArg": null,
@@ -49,8 +49,8 @@ description: Operations executed pipe-flange-assembly.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -124,8 +124,8 @@ description: Operations executed pipe-flange-assembly.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -655,8 +655,8 @@ description: Operations executed pipe-flange-assembly.kcl
     "type": "UserDefinedFunctionCall",
     "name": "flange",
     "functionSourceRange": [
-      377,
-      1601,
+      451,
+      1670,
       5
     ],
     "unlabeledArg": null,
@@ -667,8 +667,8 @@ description: Operations executed pipe-flange-assembly.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -742,8 +742,8 @@ description: Operations executed pipe-flange-assembly.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -1273,8 +1273,8 @@ description: Operations executed pipe-flange-assembly.kcl
     "type": "UserDefinedFunctionCall",
     "name": "gasket",
     "functionSourceRange": [
-      231,
-      690,
+      414,
+      870,
       6
     ],
     "unlabeledArg": null,
@@ -1285,8 +1285,8 @@ description: Operations executed pipe-flange-assembly.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -1523,8 +1523,8 @@ description: Operations executed pipe-flange-assembly.kcl
     "type": "UserDefinedFunctionCall",
     "name": "washer",
     "functionSourceRange": [
-      220,
-      644,
+      275,
+      696,
       7
     ],
     "unlabeledArg": null,
@@ -1535,8 +1535,8 @@ description: Operations executed pipe-flange-assembly.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -2022,8 +2022,8 @@ description: Operations executed pipe-flange-assembly.kcl
     "type": "UserDefinedFunctionCall",
     "name": "bolt",
     "functionSourceRange": [
-      295,
-      1597,
+      365,
+      1664,
       8
     ],
     "unlabeledArg": null,
@@ -2034,8 +2034,8 @@ description: Operations executed pipe-flange-assembly.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -2522,8 +2522,8 @@ description: Operations executed pipe-flange-assembly.kcl
     "type": "UserDefinedFunctionCall",
     "name": "hexNut",
     "functionSourceRange": [
-      242,
-      1179,
+      297,
+      1231,
       9
     ],
     "unlabeledArg": null,
@@ -2534,8 +2534,8 @@ description: Operations executed pipe-flange-assembly.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -2837,8 +2837,8 @@ description: Operations executed pipe-flange-assembly.kcl
     "type": "UserDefinedFunctionCall",
     "name": "pipe",
     "functionSourceRange": [
-      213,
-      630,
+      244,
+      658,
       10
     ],
     "unlabeledArg": null,
@@ -2849,8 +2849,8 @@ description: Operations executed pipe-flange-assembly.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -3081,8 +3081,8 @@ description: Operations executed pipe-flange-assembly.kcl
     "type": "UserDefinedFunctionCall",
     "name": "pipe",
     "functionSourceRange": [
-      213,
-      630,
+      244,
+      658,
       10
     ],
     "unlabeledArg": null,
@@ -3093,8 +3093,8 @@ description: Operations executed pipe-flange-assembly.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }

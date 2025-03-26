@@ -19,7 +19,7 @@ row5 = row4 + keyHeight + spacing
 row6 = row5 + keyHeight + spacing
 
 // Sketch the side profile of the keyboard base and extrude to total width
-sketch001 = startSketchOn('YZ')
+sketch001 = startSketchOn(YZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [-0.14, 0.68], tag = $seg01)
   |> angledLine([7, row6 + 3 * spacing + keyHeight], %, $seg02)
@@ -89,7 +89,7 @@ fn keyFn(originStart, keyWidth, keyHeight, repeats, color) {
     |> close()
     |> extrude(length = keyDepth)
     |> appearance(color = color)
-// Repeat key when desired. This will default to zero
+    // Repeat key when desired. This will default to zero
     |> patternLinear3d(
          %,
          instances = repeats + 1,

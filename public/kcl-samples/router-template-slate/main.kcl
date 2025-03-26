@@ -17,7 +17,7 @@ length001 = slateWidthHalf - radius
 length002 = depth + minClampingDistance
 
 // Create the first sketch
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, depth - templateGap], %)
   |> xLine(length = length001, tag = $seg01)
   |> arc({
