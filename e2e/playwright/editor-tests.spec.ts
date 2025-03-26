@@ -1206,4 +1206,47 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
       })
     }
   )
+
+  test('Corner rectangle tool panning with middle click', async ({
+    page,
+    homePage,
+    toolbar,
+  }) => {
+    const u = await getUtils(page)
+
+    await page.setBodyDimensions({ width: 1200, height: 900 })
+    await homePage.goToModelingScene()
+
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    // select a plane
+    await page.mouse.click(700, 200)
+
+    await page.waitForTimeout(1000)
+
+    const initialTest = await page.locator('.cm-content').innerText()
+
+    await page.getByTestId('corner-rectangle').click()
+
+    await page.waitForTimeout(1000)
+
+    await page.mouse.click(800, 500, { button: 'middle' })
+
+    await page.waitForTimeout(1000)
+
+    await page.mouse.move(900, 600, {
+      steps: 10,
+    })
+
+    await page.waitForTimeout(1000)
+
+    const currentText = await page.locator('.cm-content').innerText()
+    expect(currentText).toBe(initialTest)
+
+    //await page.waitForTimeout(10000)
+  })
 })
