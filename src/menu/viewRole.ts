@@ -21,6 +21,7 @@ export const projectViewRole = (
     submenu: [
       {
         label: 'Command Palette...',
+        id: 'View.Command Palette...',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'View.Command Palette...',

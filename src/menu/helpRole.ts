@@ -20,6 +20,7 @@ export const helpRole = (
       },
       {
         label: 'KCL code samples',
+        id: 'Help.KCL code samples',
         click: () => {
           shell
             .openExternal('https://zoo.dev/docs/kcl-samples')
@@ -60,6 +61,7 @@ export const helpRole = (
       { type: 'separator' },
       {
         label: 'Refresh and report a bug',
+        id: 'Help.Refresh and report a bug',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'Help.Refresh and report a bug',

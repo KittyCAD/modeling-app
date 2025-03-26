@@ -22,6 +22,7 @@ export const projectFileRole = (
       },
       {
         label: 'Open project',
+        id: 'File.Open project',
         accelerator: 'CommandOrControl+P',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -37,6 +38,7 @@ export const projectFileRole = (
         submenu: [
           {
             label: 'User settings',
+            id: 'File.Preferences.User settings',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'File.Preferences.User settings',
@@ -45,6 +47,7 @@ export const projectFileRole = (
           },
           {
             label: 'Keybindings',
+            id: 'File.Preferences.Keybindings',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'File.Preferences.Keybindings',
@@ -53,6 +56,7 @@ export const projectFileRole = (
           },
           {
             label: 'User default units',
+            id: 'File.Preferences.User default units',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'File.Preferences.User default units',
@@ -61,6 +65,7 @@ export const projectFileRole = (
           },
           {
             label: 'Theme',
+            id: 'File.Preferences.Theme',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'File.Preferences.Theme',
@@ -69,6 +74,7 @@ export const projectFileRole = (
           },
           {
             label: 'Theme color',
+            id: 'File.Preferences.Theme color',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'File.Preferences.Theme color',
@@ -81,6 +87,7 @@ export const projectFileRole = (
       // Last in list
       {
         label: 'Sign out',
+        id: 'File.Sign out',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'File.Sign out',
