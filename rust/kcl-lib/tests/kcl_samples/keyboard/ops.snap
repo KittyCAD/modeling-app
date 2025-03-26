@@ -7,8 +7,8 @@ description: Operations executed keyboard.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "YZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -134,6 +134,294 @@ description: Operations executed keyboard.kcl
     "unlabeledArg": null
   },
   {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": {
+      "value": {
+        "type": "Face",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.75,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.75,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.4,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": {
+      "value": {
+        "type": "Face",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 4.4,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.75,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.4,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": {
+      "value": {
+        "type": "Face",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.73,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 12.85,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.4,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": {
+      "value": {
+        "type": "Face",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 4.4,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 12.85,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.4,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
     "labeledArgs": {
       "length": {
         "value": {
@@ -207,8 +495,8 @@ description: Operations executed keyboard.kcl
     "type": "UserDefinedFunctionCall",
     "name": "keyFn",
     "functionSourceRange": [
-      1887,
-      3035,
+      1885,
+      3037,
       0
     ],
     "unlabeledArg": null,
@@ -541,8 +829,8 @@ description: Operations executed keyboard.kcl
     "type": "UserDefinedFunctionCall",
     "name": "keyFn",
     "functionSourceRange": [
-      1887,
-      3035,
+      1885,
+      3037,
       0
     ],
     "unlabeledArg": null,
@@ -875,8 +1163,8 @@ description: Operations executed keyboard.kcl
     "type": "UserDefinedFunctionCall",
     "name": "keyFn",
     "functionSourceRange": [
-      1887,
-      3035,
+      1885,
+      3037,
       0
     ],
     "unlabeledArg": null,
@@ -1209,8 +1497,8 @@ description: Operations executed keyboard.kcl
     "type": "UserDefinedFunctionCall",
     "name": "keyFn",
     "functionSourceRange": [
-      1887,
-      3035,
+      1885,
+      3037,
       0
     ],
     "unlabeledArg": null,
@@ -1543,8 +1831,8 @@ description: Operations executed keyboard.kcl
     "type": "UserDefinedFunctionCall",
     "name": "keyFn",
     "functionSourceRange": [
-      1887,
-      3035,
+      1885,
+      3037,
       0
     ],
     "unlabeledArg": null,
@@ -1877,8 +2165,8 @@ description: Operations executed keyboard.kcl
     "type": "UserDefinedFunctionCall",
     "name": "keyFn",
     "functionSourceRange": [
-      1887,
-      3035,
+      1885,
+      3037,
       0
     ],
     "unlabeledArg": null,
@@ -2211,8 +2499,8 @@ description: Operations executed keyboard.kcl
     "type": "UserDefinedFunctionCall",
     "name": "keyFn",
     "functionSourceRange": [
-      1887,
-      3035,
+      1885,
+      3037,
       0
     ],
     "unlabeledArg": null,
@@ -2545,8 +2833,8 @@ description: Operations executed keyboard.kcl
     "type": "UserDefinedFunctionCall",
     "name": "keyFn",
     "functionSourceRange": [
-      1887,
-      3035,
+      1885,
+      3037,
       0
     ],
     "unlabeledArg": null,
@@ -2879,8 +3167,8 @@ description: Operations executed keyboard.kcl
     "type": "UserDefinedFunctionCall",
     "name": "keyFn",
     "functionSourceRange": [
-      1887,
-      3035,
+      1885,
+      3037,
       0
     ],
     "unlabeledArg": null,
@@ -3213,8 +3501,8 @@ description: Operations executed keyboard.kcl
     "type": "UserDefinedFunctionCall",
     "name": "keyFn",
     "functionSourceRange": [
-      1887,
-      3035,
+      1885,
+      3037,
       0
     ],
     "unlabeledArg": null,
@@ -3547,8 +3835,8 @@ description: Operations executed keyboard.kcl
     "type": "UserDefinedFunctionCall",
     "name": "keyFn",
     "functionSourceRange": [
-      1887,
-      3035,
+      1885,
+      3037,
       0
     ],
     "unlabeledArg": null,
@@ -3881,8 +4169,8 @@ description: Operations executed keyboard.kcl
     "type": "UserDefinedFunctionCall",
     "name": "keyFn",
     "functionSourceRange": [
-      1887,
-      3035,
+      1885,
+      3037,
       0
     ],
     "unlabeledArg": null,
@@ -4215,8 +4503,8 @@ description: Operations executed keyboard.kcl
     "type": "UserDefinedFunctionCall",
     "name": "keyFn",
     "functionSourceRange": [
-      1887,
-      3035,
+      1885,
+      3037,
       0
     ],
     "unlabeledArg": null,
@@ -4549,8 +4837,8 @@ description: Operations executed keyboard.kcl
     "type": "UserDefinedFunctionCall",
     "name": "keyFn",
     "functionSourceRange": [
-      1887,
-      3035,
+      1885,
+      3037,
       0
     ],
     "unlabeledArg": null,
@@ -4883,8 +5171,8 @@ description: Operations executed keyboard.kcl
     "type": "UserDefinedFunctionCall",
     "name": "keyFn",
     "functionSourceRange": [
-      1887,
-      3035,
+      1885,
+      3037,
       0
     ],
     "unlabeledArg": null,
@@ -5217,8 +5505,8 @@ description: Operations executed keyboard.kcl
     "type": "UserDefinedFunctionCall",
     "name": "keyFn",
     "functionSourceRange": [
-      1887,
-      3035,
+      1885,
+      3037,
       0
     ],
     "unlabeledArg": null,
@@ -5551,8 +5839,8 @@ description: Operations executed keyboard.kcl
     "type": "UserDefinedFunctionCall",
     "name": "keyFn",
     "functionSourceRange": [
-      1887,
-      3035,
+      1885,
+      3037,
       0
     ],
     "unlabeledArg": null,
@@ -5885,8 +6173,8 @@ description: Operations executed keyboard.kcl
     "type": "UserDefinedFunctionCall",
     "name": "keyFn",
     "functionSourceRange": [
-      1887,
-      3035,
+      1885,
+      3037,
       0
     ],
     "unlabeledArg": null,
@@ -6219,8 +6507,8 @@ description: Operations executed keyboard.kcl
     "type": "UserDefinedFunctionCall",
     "name": "keyFn",
     "functionSourceRange": [
-      1887,
-      3035,
+      1885,
+      3037,
       0
     ],
     "unlabeledArg": null,
@@ -6553,8 +6841,8 @@ description: Operations executed keyboard.kcl
     "type": "UserDefinedFunctionCall",
     "name": "keyFn",
     "functionSourceRange": [
-      1887,
-      3035,
+      1885,
+      3037,
       0
     ],
     "unlabeledArg": null,
@@ -6887,8 +7175,8 @@ description: Operations executed keyboard.kcl
     "type": "UserDefinedFunctionCall",
     "name": "keyFn",
     "functionSourceRange": [
-      1887,
-      3035,
+      1885,
+      3037,
       0
     ],
     "unlabeledArg": null,
@@ -7236,8 +7524,8 @@ description: Operations executed keyboard.kcl
     "type": "UserDefinedFunctionCall",
     "name": "z",
     "functionSourceRange": [
-      4937,
-      6027,
+      4939,
+      6029,
       0
     ],
     "unlabeledArg": null,
@@ -7475,8 +7763,8 @@ description: Operations executed keyboard.kcl
     "type": "UserDefinedFunctionCall",
     "name": "o",
     "functionSourceRange": [
-      6074,
-      7197,
+      6076,
+      7199,
       0
     ],
     "unlabeledArg": null,
@@ -7938,8 +8226,8 @@ description: Operations executed keyboard.kcl
     "type": "UserDefinedFunctionCall",
     "name": "o",
     "functionSourceRange": [
-      6074,
-      7197,
+      6076,
+      7199,
       0
     ],
     "unlabeledArg": null,

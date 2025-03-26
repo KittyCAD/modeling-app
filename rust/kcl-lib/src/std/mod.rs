@@ -43,6 +43,7 @@ use crate::{
     docs::StdLibFn,
     errors::KclError,
     execution::{types::PrimitiveType, ExecState, KclValue},
+    parsing::ast::types::Name,
 };
 
 pub type StdFn = fn(
@@ -71,7 +72,6 @@ lazy_static! {
         Box::new(crate::std::segment::TangentToEnd),
         Box::new(crate::std::segment::AngleToMatchLengthX),
         Box::new(crate::std::segment::AngleToMatchLengthY),
-        Box::new(crate::std::shapes::Circle),
         Box::new(crate::std::shapes::CircleThreePoint),
         Box::new(crate::std::shapes::Polygon),
         Box::new(crate::std::sketch::Line),
@@ -114,7 +114,6 @@ lazy_static! {
         Box::new(crate::std::edge::GetPreviousAdjacentEdge),
         Box::new(crate::std::edge::GetCommonEdge),
         Box::new(crate::std::helix::Helix),
-        Box::new(crate::std::helix::HelixRevolutions),
         Box::new(crate::std::shell::Shell),
         Box::new(crate::std::shell::Hollow),
         Box::new(crate::std::revolve::Revolve),
@@ -203,6 +202,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::math::tan(e, a)),
             StdFnProps::default("std::math::tan"),
         ),
+        ("sketch", "circle") => (
+            |e, a| Box::pin(crate::std::shapes::circle(e, a)),
+            StdFnProps::default("std::sketch::circle"),
+        ),
         _ => unreachable!(),
     }
 }
@@ -248,12 +251,14 @@ impl StdLib {
         self.fns.get(name).cloned()
     }
 
-    pub fn get_either(&self, name: &str) -> FunctionKind {
-        if let Some(f) = self.get(name) {
-            FunctionKind::Core(f)
-        } else {
-            FunctionKind::UserDefined
+    pub fn get_either(&self, name: &Name) -> FunctionKind {
+        if let Some(name) = name.local_ident() {
+            if let Some(f) = self.get(name.inner) {
+                return FunctionKind::Core(f);
+            }
         }
+
+        FunctionKind::UserDefined
     }
 
     pub fn contains_key(&self, key: &str) -> bool {

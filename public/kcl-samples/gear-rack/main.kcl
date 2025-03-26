@@ -12,7 +12,7 @@ height = 12
 minHeight = 10.875
 
 // Create the body of the rack
-rackBody = startSketchOn('XY')
+rackBody = startSketchOn(XY)
   |> startProfileAt([-length / 2, 0], %)
   |> line(end = [length, 0])
   |> line(end = [0, minHeight])
@@ -22,7 +22,7 @@ rackBody = startSketchOn('XY')
 
 // Create a function for sketch of a single tooth
 fn tooth() {
-  toothSketch = startSketchOn('XY')
+  toothSketch = startSketchOn(XY)
     |> startProfileAt([-length / 2 + 0.567672, minHeight], %)
     |> tangentialArcToRelative([0.157636, 0.110378], %)
     |> line(end = [0.329118, 0.904244])
@@ -38,14 +38,10 @@ fn tooth() {
 
 // Pattern the single tooth over the length of the rack body
 teeth = tooth()
-  |> patternLinear3d(
-       axis = [10, 0, 0],
-       distance = 1.570796,
-       instances = 63
-     )
+  |> patternLinear3d(axis = [10, 0, 0], distance = 1.570796, instances = 63)
 
 // Sketch and extrude the first end cap. This is a partial tooth
-endCapTooth = startSketchOn('XY')
+endCapTooth = startSketchOn(XY)
   |> startProfileAt([-length / 2, 11.849525], %)
   |> line(end = [0.314524, -0.864147])
   |> tangentialArcToRelative([0.157636, -0.110378], %)
@@ -54,7 +50,7 @@ endCapTooth = startSketchOn('XY')
   |> extrude(length = width)
 
 // Sketch and extrude the second end cap. This is a partial tooth
-endCapTooth2 = startSketchOn('XY')
+endCapTooth2 = startSketchOn(XY)
   |> startProfileAt([length / 2, 11.849525], %)
   |> line(end = [-0.314524, -0.864147])
   |> tangentialArcToRelative([-0.157636, -0.110378], %)

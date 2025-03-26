@@ -1,24 +1,23 @@
-// Antenna
-
-
-// import constants
-import antennaLength, antennaBaseWidth, antennaBaseHeight, antennaTopWidth, antennaTopHeight from "globals.kcl"
+// Walkie talkie antenna
+// antenna for the walkie talkie assembly
 
 // Set units
 @settings(defaultLengthUnit = in)
 
-export fn antenna () {
+// import constants
+import antennaLength, antennaBaseWidth, antennaBaseHeight, antennaTopWidth, antennaTopHeight from "globals.kcl"
+
+export fn antenna() {
   // Create the antenna base sketch
-  sketch001 = startSketchOn('XY')
+  sketch001 = startSketchOn(XY)
     |> startProfileAt([0, 0], %)
     |> line(end = [antennaBaseWidth, 0])
     |> line(end = [0, -antennaBaseHeight])
     |> line(end = [-antennaBaseWidth, 0])
     |> close()
-  
+
   // Create the antenna top sketch
-  loftPlane = offsetPlane('XY', offset = antennaLength)
-  
+  loftPlane = offsetPlane(XY, offset = antennaLength)
   sketch002 = startSketchOn(loftPlane)
     |> startProfileAt([
          (antennaBaseWidth - antennaTopWidth) / 2,
@@ -28,10 +27,9 @@ export fn antenna () {
     |> yLine(length = -antennaTopHeight)
     |> xLine(length = -antennaTopWidth)
     |> close()
-  
+
   // Create the antenna using a loft
   antenna = loft([sketch001, sketch002])
     |> appearance(color = "#000000")
   return antenna
-  
 }

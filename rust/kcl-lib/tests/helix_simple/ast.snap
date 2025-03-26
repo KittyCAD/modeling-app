@@ -32,11 +32,19 @@ description: Result of parsing helix_simple.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 46,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 46,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 46,
                 "end": 0,
@@ -88,11 +96,19 @@ description: Result of parsing helix_simple.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 71,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 71,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 71,
                 "end": 0,
@@ -165,11 +181,19 @@ description: Result of parsing helix_simple.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 102,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 102,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 102,
                 "end": 0,
@@ -328,21 +352,37 @@ description: Result of parsing helix_simple.kcl
                   "type": "Identifier"
                 },
                 "arg": {
+                  "abs_path": false,
                   "commentStart": 247,
                   "end": 0,
-                  "name": "edge001",
+                  "name": {
+                    "commentStart": 247,
+                    "end": 0,
+                    "name": "edge001",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 151,
               "end": 0,
-              "name": "helix",
+              "name": {
+                "commentStart": 151,
+                "end": 0,
+                "name": "helix",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 151,
             "end": 0,

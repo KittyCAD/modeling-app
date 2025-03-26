@@ -32,12 +32,20 @@ description: Result of parsing import_transform.kcl
         "expression": {
           "body": [
             {
+              "abs_path": false,
               "commentStart": 45,
               "end": 0,
-              "name": "screw",
+              "name": {
+                "commentStart": 45,
+                "end": 0,
+                "name": "screw",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "arguments": [
@@ -109,11 +117,19 @@ description: Result of parsing import_transform.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 56,
                 "end": 0,
-                "name": "rotate",
+                "name": {
+                  "commentStart": 56,
+                  "end": 0,
+                  "name": "rotate",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 56,
               "end": 0,
@@ -187,11 +203,19 @@ description: Result of parsing import_transform.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 146,
                 "end": 0,
-                "name": "translate",
+                "name": {
+                  "commentStart": 146,
+                  "end": 0,
+                  "name": "translate",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 146,
               "end": 0,
@@ -265,11 +289,19 @@ description: Result of parsing import_transform.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 196,
                 "end": 0,
-                "name": "scale",
+                "name": {
+                  "commentStart": 196,
+                  "end": 0,
+                  "name": "scale",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 196,
               "end": 0,

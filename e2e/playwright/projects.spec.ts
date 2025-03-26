@@ -8,6 +8,7 @@ import {
   createProject,
   getPlaywrightDownloadDir,
   orRunWhenFullSuiteEnabled,
+  runningOnWindows,
 } from './test-utils'
 import fsp from 'fs/promises'
 import fs from 'fs'
@@ -191,7 +192,7 @@ test(
 
       // error text on hover
       await page.hover('.cm-lint-marker-error')
-      const crypticErrorText = `Expected a tag declarator`
+      const crypticErrorText = `The arg tag was given, but it was the wrong type`
       await expect(page.getByText(crypticErrorText).first()).toBeVisible()
 
       // black pixel means the scene has been cleared.
@@ -351,6 +352,9 @@ test(
   'open a file in a project works and renders, open another file in the same project with errors, it should clear the scene',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
+    if (runningOnWindows()) {
+      test.fixme(orRunWhenFullSuiteEnabled())
+    }
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
@@ -409,7 +413,7 @@ test(
 
       // error text on hover
       await page.hover('.cm-lint-marker-error')
-      const crypticErrorText = `Expected a tag declarator`
+      const crypticErrorText = `The arg tag was given, but it was the wrong type`
       await expect(page.getByText(crypticErrorText).first()).toBeVisible()
 
       // black pixel means the scene has been cleared.
@@ -453,7 +457,7 @@ test(
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
-    const crypticErrorText = `Expected a tag declarator`
+    const crypticErrorText = `The arg tag was given, but it was the wrong type`
     await expect(page.getByText(crypticErrorText).first()).toBeVisible()
   }
 )
@@ -1328,6 +1332,9 @@ test(
   'Can load a file with CRLF line endings',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
+    if (runningOnWindows()) {
+      test.fixme(orRunWhenFullSuiteEnabled())
+    }
     await context.folderSetupFn(async (dir) => {
       const routerTemplateDir = path.join(dir, 'router-template-slate')
       await fsp.mkdir(routerTemplateDir, { recursive: true })

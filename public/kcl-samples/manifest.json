@@ -158,7 +158,7 @@
     "pathFromProjectDirectoryToFirstFile": "i-beam/main.kcl",
     "multipleFiles": false,
     "title": "I-beam",
-    "description": "A structural metal beam with an I shaped cross section. Often used in construction"
+    "description": "A structural metal beam with an I shaped cross section. Often used in construction and architecture"
   },
   {
     "file": "main.kcl",

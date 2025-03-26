@@ -190,21 +190,36 @@ description: Result of parsing gear-rack.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "commentStart": 575,
                     "end": 0,
-                    "raw": "'XY'",
+                    "name": {
+                      "commentStart": 575,
+                      "end": 0,
+                      "name": "XY",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "XY"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 561,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 561,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 561,
                 "end": 0,
@@ -215,21 +230,29 @@ description: Result of parsing gear-rack.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 601,
+                    "commentStart": 599,
                     "elements": [
                       {
-                        "commentStart": 602,
+                        "commentStart": 600,
                         "end": 0,
                         "left": {
                           "argument": {
-                            "commentStart": 603,
+                            "abs_path": false,
+                            "commentStart": 601,
                             "end": 0,
-                            "name": "length",
+                            "name": {
+                              "commentStart": 601,
+                              "end": 0,
+                              "name": "length",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
-                          "commentStart": 602,
+                          "commentStart": 600,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -238,7 +261,7 @@ description: Result of parsing gear-rack.kcl
                         },
                         "operator": "/",
                         "right": {
-                          "commentStart": 612,
+                          "commentStart": 610,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -254,7 +277,7 @@ description: Result of parsing gear-rack.kcl
                         "type": "BinaryExpression"
                       },
                       {
-                        "commentStart": 615,
+                        "commentStart": 613,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -272,7 +295,7 @@ description: Result of parsing gear-rack.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 619,
+                    "commentStart": 617,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -280,13 +303,21 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 586,
+                  "abs_path": false,
+                  "commentStart": 584,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 584,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 586,
+                "commentStart": 584,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -297,137 +328,177 @@ description: Result of parsing gear-rack.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 632,
+                      "commentStart": 630,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 638,
+                      "commentStart": 636,
                       "elements": [
                         {
-                          "commentStart": 639,
+                          "abs_path": false,
+                          "commentStart": 637,
                           "end": 0,
-                          "name": "length",
-                          "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
-                        },
-                        {
-                          "commentStart": 647,
-                          "end": 0,
-                          "raw": "0",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
-                        }
-                      ],
-                      "end": 0,
-                      "start": 0,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    }
-                  }
-                ],
-                "callee": {
-                  "commentStart": 627,
-                  "end": 0,
-                  "name": "line",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "commentStart": 627,
-                "end": 0,
-                "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": null
-              },
-              {
-                "arguments": [
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 661,
-                      "end": 0,
-                      "name": "end",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "commentStart": 667,
-                      "elements": [
-                        {
-                          "commentStart": 668,
-                          "end": 0,
-                          "raw": "0",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
-                        },
-                        {
-                          "commentStart": 671,
-                          "end": 0,
-                          "name": "minHeight",
-                          "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
-                        }
-                      ],
-                      "end": 0,
-                      "start": 0,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    }
-                  }
-                ],
-                "callee": {
-                  "commentStart": 656,
-                  "end": 0,
-                  "name": "line",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "commentStart": 656,
-                "end": 0,
-                "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": null
-              },
-              {
-                "arguments": [
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 693,
-                      "end": 0,
-                      "name": "end",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "commentStart": 699,
-                      "elements": [
-                        {
-                          "argument": {
-                            "commentStart": 701,
+                          "name": {
+                            "commentStart": 637,
                             "end": 0,
                             "name": "length",
                             "start": 0,
-                            "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "commentStart": 700,
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        },
+                        {
+                          "commentStart": 645,
+                          "end": 0,
+                          "raw": "0",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 625,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 625,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 625,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 659,
+                      "end": 0,
+                      "name": "end",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 665,
+                      "elements": [
+                        {
+                          "commentStart": 666,
+                          "end": 0,
+                          "raw": "0",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "abs_path": false,
+                          "commentStart": 669,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 669,
+                            "end": 0,
+                            "name": "minHeight",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        }
+                      ],
+                      "end": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 654,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 654,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 654,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 691,
+                      "end": 0,
+                      "name": "end",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 697,
+                      "elements": [
+                        {
+                          "argument": {
+                            "abs_path": false,
+                            "commentStart": 699,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 699,
+                              "end": 0,
+                              "name": "length",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "commentStart": 698,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -435,7 +506,7 @@ description: Result of parsing gear-rack.kcl
                           "type": "UnaryExpression"
                         },
                         {
-                          "commentStart": 709,
+                          "commentStart": 707,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -455,13 +526,21 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 688,
+                  "abs_path": false,
+                  "commentStart": 686,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 686,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 688,
+                "commentStart": 686,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -471,13 +550,21 @@ description: Result of parsing gear-rack.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "commentStart": 718,
+                  "abs_path": false,
+                  "commentStart": 716,
                   "end": 0,
-                  "name": "close",
+                  "name": {
+                    "commentStart": 716,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 718,
+                "commentStart": 716,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -488,30 +575,46 @@ description: Result of parsing gear-rack.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 739,
+                      "commentStart": 737,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 748,
+                      "abs_path": false,
+                      "commentStart": 746,
                       "end": 0,
-                      "name": "width",
+                      "name": {
+                        "commentStart": 746,
+                        "end": 0,
+                        "name": "width",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
-                  "commentStart": 731,
+                  "abs_path": false,
+                  "commentStart": 729,
                   "end": 0,
-                  "name": "extrude",
+                  "name": {
+                    "commentStart": 729,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 731,
+                "commentStart": 729,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -525,7 +628,7 @@ description: Result of parsing gear-rack.kcl
               "nonCodeNodes": {
                 "6": [
                   {
-                    "commentStart": 754,
+                    "commentStart": 752,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -558,12 +661,12 @@ description: Result of parsing gear-rack.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 806,
+        "commentStart": 804,
         "declaration": {
-          "commentStart": 809,
+          "commentStart": 807,
           "end": 0,
           "id": {
-            "commentStart": 809,
+            "commentStart": 807,
             "end": 0,
             "name": "tooth",
             "start": 0,
@@ -573,12 +676,12 @@ description: Result of parsing gear-rack.kcl
             "body": {
               "body": [
                 {
-                  "commentStart": 821,
+                  "commentStart": 819,
                   "declaration": {
-                    "commentStart": 821,
+                    "commentStart": 819,
                     "end": 0,
                     "id": {
-                      "commentStart": 821,
+                      "commentStart": 819,
                       "end": 0,
                       "name": "toothSketch",
                       "start": 0,
@@ -589,23 +692,38 @@ description: Result of parsing gear-rack.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 849,
+                              "abs_path": false,
+                              "commentStart": 847,
                               "end": 0,
-                              "raw": "'XY'",
+                              "name": {
+                                "commentStart": 847,
+                                "end": 0,
+                                "name": "XY",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": "XY"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
-                            "commentStart": 835,
+                            "abs_path": false,
+                            "commentStart": 833,
                             "end": 0,
-                            "name": "startSketchOn",
+                            "name": {
+                              "commentStart": 833,
+                              "end": 0,
+                              "name": "startSketchOn",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 835,
+                          "commentStart": 833,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -614,24 +732,32 @@ description: Result of parsing gear-rack.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 877,
+                              "commentStart": 873,
                               "elements": [
                                 {
-                                  "commentStart": 878,
+                                  "commentStart": 874,
                                   "end": 0,
                                   "left": {
-                                    "commentStart": 878,
+                                    "commentStart": 874,
                                     "end": 0,
                                     "left": {
                                       "argument": {
-                                        "commentStart": 879,
+                                        "abs_path": false,
+                                        "commentStart": 875,
                                         "end": 0,
-                                        "name": "length",
+                                        "name": {
+                                          "commentStart": 875,
+                                          "end": 0,
+                                          "name": "length",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 0,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "type": "Name",
+                                        "type": "Name"
                                       },
-                                      "commentStart": 878,
+                                      "commentStart": 874,
                                       "end": 0,
                                       "operator": "-",
                                       "start": 0,
@@ -640,7 +766,7 @@ description: Result of parsing gear-rack.kcl
                                     },
                                     "operator": "/",
                                     "right": {
-                                      "commentStart": 888,
+                                      "commentStart": 884,
                                       "end": 0,
                                       "raw": "2",
                                       "start": 0,
@@ -657,7 +783,7 @@ description: Result of parsing gear-rack.kcl
                                   },
                                   "operator": "+",
                                   "right": {
-                                    "commentStart": 892,
+                                    "commentStart": 888,
                                     "end": 0,
                                     "raw": "0.567672",
                                     "start": 0,
@@ -673,12 +799,20 @@ description: Result of parsing gear-rack.kcl
                                   "type": "BinaryExpression"
                                 },
                                 {
-                                  "commentStart": 902,
+                                  "abs_path": false,
+                                  "commentStart": 898,
                                   "end": 0,
-                                  "name": "minHeight",
+                                  "name": {
+                                    "commentStart": 898,
+                                    "end": 0,
+                                    "name": "minHeight",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 0,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 }
                               ],
                               "end": 0,
@@ -687,7 +821,7 @@ description: Result of parsing gear-rack.kcl
                               "type": "ArrayExpression"
                             },
                             {
-                              "commentStart": 914,
+                              "commentStart": 910,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -695,13 +829,21 @@ description: Result of parsing gear-rack.kcl
                             }
                           ],
                           "callee": {
-                            "commentStart": 862,
+                            "abs_path": false,
+                            "commentStart": 858,
                             "end": 0,
-                            "name": "startProfileAt",
+                            "name": {
+                              "commentStart": 858,
+                              "end": 0,
+                              "name": "startProfileAt",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 862,
+                          "commentStart": 858,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -710,10 +852,10 @@ description: Result of parsing gear-rack.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 948,
+                              "commentStart": 944,
                               "elements": [
                                 {
-                                  "commentStart": 949,
+                                  "commentStart": 945,
                                   "end": 0,
                                   "raw": "0.157636",
                                   "start": 0,
@@ -725,7 +867,7 @@ description: Result of parsing gear-rack.kcl
                                   }
                                 },
                                 {
-                                  "commentStart": 959,
+                                  "commentStart": 955,
                                   "end": 0,
                                   "raw": "0.110378",
                                   "start": 0,
@@ -743,7 +885,7 @@ description: Result of parsing gear-rack.kcl
                               "type": "ArrayExpression"
                             },
                             {
-                              "commentStart": 970,
+                              "commentStart": 966,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -751,13 +893,21 @@ description: Result of parsing gear-rack.kcl
                             }
                           ],
                           "callee": {
-                            "commentStart": 924,
+                            "abs_path": false,
+                            "commentStart": 920,
                             "end": 0,
-                            "name": "tangentialArcToRelative",
+                            "name": {
+                              "commentStart": 920,
+                              "end": 0,
+                              "name": "tangentialArcToRelative",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 924,
+                          "commentStart": 920,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -768,17 +918,17 @@ description: Result of parsing gear-rack.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 985,
+                                "commentStart": 981,
                                 "end": 0,
                                 "name": "end",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 991,
+                                "commentStart": 987,
                                 "elements": [
                                   {
-                                    "commentStart": 992,
+                                    "commentStart": 988,
                                     "end": 0,
                                     "raw": "0.329118",
                                     "start": 0,
@@ -790,7 +940,7 @@ description: Result of parsing gear-rack.kcl
                                     }
                                   },
                                   {
-                                    "commentStart": 1002,
+                                    "commentStart": 998,
                                     "end": 0,
                                     "raw": "0.904244",
                                     "start": 0,
@@ -810,13 +960,21 @@ description: Result of parsing gear-rack.kcl
                             }
                           ],
                           "callee": {
-                            "commentStart": 980,
+                            "abs_path": false,
+                            "commentStart": 976,
                             "end": 0,
-                            "name": "line",
+                            "name": {
+                              "commentStart": 976,
+                              "end": 0,
+                              "name": "line",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 980,
+                          "commentStart": 976,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -826,10 +984,10 @@ description: Result of parsing gear-rack.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 1044,
+                              "commentStart": 1040,
                               "elements": [
                                 {
-                                  "commentStart": 1045,
+                                  "commentStart": 1041,
                                   "end": 0,
                                   "raw": "0.157636",
                                   "start": 0,
@@ -841,7 +999,7 @@ description: Result of parsing gear-rack.kcl
                                   }
                                 },
                                 {
-                                  "commentStart": 1055,
+                                  "commentStart": 1051,
                                   "end": 0,
                                   "raw": "0.110378",
                                   "start": 0,
@@ -859,7 +1017,7 @@ description: Result of parsing gear-rack.kcl
                               "type": "ArrayExpression"
                             },
                             {
-                              "commentStart": 1066,
+                              "commentStart": 1062,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -867,13 +1025,21 @@ description: Result of parsing gear-rack.kcl
                             }
                           ],
                           "callee": {
-                            "commentStart": 1020,
+                            "abs_path": false,
+                            "commentStart": 1016,
                             "end": 0,
-                            "name": "tangentialArcToRelative",
+                            "name": {
+                              "commentStart": 1016,
+                              "end": 0,
+                              "name": "tangentialArcToRelative",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 1020,
+                          "commentStart": 1016,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -884,17 +1050,17 @@ description: Result of parsing gear-rack.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1081,
+                                "commentStart": 1077,
                                 "end": 0,
                                 "name": "end",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1087,
+                                "commentStart": 1083,
                                 "elements": [
                                   {
-                                    "commentStart": 1088,
+                                    "commentStart": 1084,
                                     "end": 0,
                                     "raw": "0.186505",
                                     "start": 0,
@@ -906,7 +1072,7 @@ description: Result of parsing gear-rack.kcl
                                     }
                                   },
                                   {
-                                    "commentStart": 1098,
+                                    "commentStart": 1094,
                                     "end": 0,
                                     "raw": "0",
                                     "start": 0,
@@ -926,13 +1092,21 @@ description: Result of parsing gear-rack.kcl
                             }
                           ],
                           "callee": {
-                            "commentStart": 1076,
+                            "abs_path": false,
+                            "commentStart": 1072,
                             "end": 0,
-                            "name": "line",
+                            "name": {
+                              "commentStart": 1072,
+                              "end": 0,
+                              "name": "line",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 1076,
+                          "commentStart": 1072,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -942,10 +1116,10 @@ description: Result of parsing gear-rack.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 1133,
+                              "commentStart": 1129,
                               "elements": [
                                 {
-                                  "commentStart": 1134,
+                                  "commentStart": 1130,
                                   "end": 0,
                                   "raw": "0.157636",
                                   "start": 0,
@@ -958,7 +1132,7 @@ description: Result of parsing gear-rack.kcl
                                 },
                                 {
                                   "argument": {
-                                    "commentStart": 1145,
+                                    "commentStart": 1141,
                                     "end": 0,
                                     "raw": "0.110378",
                                     "start": 0,
@@ -969,7 +1143,7 @@ description: Result of parsing gear-rack.kcl
                                       "suffix": "None"
                                     }
                                   },
-                                  "commentStart": 1144,
+                                  "commentStart": 1140,
                                   "end": 0,
                                   "operator": "-",
                                   "start": 0,
@@ -983,7 +1157,7 @@ description: Result of parsing gear-rack.kcl
                               "type": "ArrayExpression"
                             },
                             {
-                              "commentStart": 1156,
+                              "commentStart": 1152,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -991,13 +1165,21 @@ description: Result of parsing gear-rack.kcl
                             }
                           ],
                           "callee": {
-                            "commentStart": 1109,
+                            "abs_path": false,
+                            "commentStart": 1105,
                             "end": 0,
-                            "name": "tangentialArcToRelative",
+                            "name": {
+                              "commentStart": 1105,
+                              "end": 0,
+                              "name": "tangentialArcToRelative",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 1109,
+                          "commentStart": 1105,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1008,17 +1190,17 @@ description: Result of parsing gear-rack.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1171,
+                                "commentStart": 1167,
                                 "end": 0,
                                 "name": "end",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1177,
+                                "commentStart": 1173,
                                 "elements": [
                                   {
-                                    "commentStart": 1178,
+                                    "commentStart": 1174,
                                     "end": 0,
                                     "raw": "0.329118",
                                     "start": 0,
@@ -1031,7 +1213,7 @@ description: Result of parsing gear-rack.kcl
                                   },
                                   {
                                     "argument": {
-                                      "commentStart": 1189,
+                                      "commentStart": 1185,
                                       "end": 0,
                                       "raw": "0.904244",
                                       "start": 0,
@@ -1042,7 +1224,7 @@ description: Result of parsing gear-rack.kcl
                                         "suffix": "None"
                                       }
                                     },
-                                    "commentStart": 1188,
+                                    "commentStart": 1184,
                                     "end": 0,
                                     "operator": "-",
                                     "start": 0,
@@ -1058,13 +1240,21 @@ description: Result of parsing gear-rack.kcl
                             }
                           ],
                           "callee": {
-                            "commentStart": 1166,
+                            "abs_path": false,
+                            "commentStart": 1162,
                             "end": 0,
-                            "name": "line",
+                            "name": {
+                              "commentStart": 1162,
+                              "end": 0,
+                              "name": "line",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 1166,
+                          "commentStart": 1162,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -1074,10 +1264,10 @@ description: Result of parsing gear-rack.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 1231,
+                              "commentStart": 1227,
                               "elements": [
                                 {
-                                  "commentStart": 1232,
+                                  "commentStart": 1228,
                                   "end": 0,
                                   "raw": "0.157636",
                                   "start": 0,
@@ -1090,7 +1280,7 @@ description: Result of parsing gear-rack.kcl
                                 },
                                 {
                                   "argument": {
-                                    "commentStart": 1243,
+                                    "commentStart": 1239,
                                     "end": 0,
                                     "raw": "0.110378",
                                     "start": 0,
@@ -1101,7 +1291,7 @@ description: Result of parsing gear-rack.kcl
                                       "suffix": "None"
                                     }
                                   },
-                                  "commentStart": 1242,
+                                  "commentStart": 1238,
                                   "end": 0,
                                   "operator": "-",
                                   "start": 0,
@@ -1115,7 +1305,7 @@ description: Result of parsing gear-rack.kcl
                               "type": "ArrayExpression"
                             },
                             {
-                              "commentStart": 1254,
+                              "commentStart": 1250,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -1123,13 +1313,21 @@ description: Result of parsing gear-rack.kcl
                             }
                           ],
                           "callee": {
-                            "commentStart": 1207,
+                            "abs_path": false,
+                            "commentStart": 1203,
                             "end": 0,
-                            "name": "tangentialArcToRelative",
+                            "name": {
+                              "commentStart": 1203,
+                              "end": 0,
+                              "name": "tangentialArcToRelative",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 1207,
+                          "commentStart": 1203,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1138,13 +1336,21 @@ description: Result of parsing gear-rack.kcl
                         {
                           "arguments": [],
                           "callee": {
-                            "commentStart": 1264,
+                            "abs_path": false,
+                            "commentStart": 1260,
                             "end": 0,
-                            "name": "close",
+                            "name": {
+                              "commentStart": 1260,
+                              "end": 0,
+                              "name": "close",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 1264,
+                          "commentStart": 1260,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1155,30 +1361,46 @@ description: Result of parsing gear-rack.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1287,
+                                "commentStart": 1283,
                                 "end": 0,
                                 "name": "length",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1296,
+                                "abs_path": false,
+                                "commentStart": 1292,
                                 "end": 0,
-                                "name": "width",
+                                "name": {
+                                  "commentStart": 1292,
+                                  "end": 0,
+                                  "name": "width",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               }
                             }
                           ],
                           "callee": {
-                            "commentStart": 1279,
+                            "abs_path": false,
+                            "commentStart": 1275,
                             "end": 0,
-                            "name": "extrude",
+                            "name": {
+                              "commentStart": 1275,
+                              "end": 0,
+                              "name": "extrude",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 1279,
+                          "commentStart": 1275,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -1186,7 +1408,7 @@ description: Result of parsing gear-rack.kcl
                           "unlabeled": null
                         }
                       ],
-                      "commentStart": 835,
+                      "commentStart": 833,
                       "end": 0,
                       "start": 0,
                       "type": "PipeExpression",
@@ -1203,25 +1425,33 @@ description: Result of parsing gear-rack.kcl
                 },
                 {
                   "argument": {
-                    "commentStart": 1312,
+                    "abs_path": false,
+                    "commentStart": 1308,
                     "end": 0,
-                    "name": "toothSketch",
+                    "name": {
+                      "commentStart": 1308,
+                      "end": 0,
+                      "name": "toothSketch",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "commentStart": 1305,
+                  "commentStart": 1301,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "commentStart": 817,
+              "commentStart": 815,
               "end": 0,
               "start": 0
             },
-            "commentStart": 814,
+            "commentStart": 812,
             "end": 0,
             "params": [],
             "start": 0,
@@ -1238,12 +1468,12 @@ description: Result of parsing gear-rack.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1325,
+        "commentStart": 1321,
         "declaration": {
-          "commentStart": 1388,
+          "commentStart": 1384,
           "end": 0,
           "id": {
-            "commentStart": 1388,
+            "commentStart": 1384,
             "end": 0,
             "name": "teeth",
             "start": 0,
@@ -1254,13 +1484,21 @@ description: Result of parsing gear-rack.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "commentStart": 1396,
+                  "abs_path": false,
+                  "commentStart": 1392,
                   "end": 0,
-                  "name": "tooth",
+                  "name": {
+                    "commentStart": 1392,
+                    "end": 0,
+                    "name": "tooth",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1396,
+                "commentStart": 1392,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1271,17 +1509,17 @@ description: Result of parsing gear-rack.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1433,
+                      "commentStart": 1421,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1440,
+                      "commentStart": 1428,
                       "elements": [
                         {
-                          "commentStart": 1441,
+                          "commentStart": 1429,
                           "end": 0,
                           "raw": "10",
                           "start": 0,
@@ -1293,7 +1531,7 @@ description: Result of parsing gear-rack.kcl
                           }
                         },
                         {
-                          "commentStart": 1445,
+                          "commentStart": 1433,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -1305,7 +1543,7 @@ description: Result of parsing gear-rack.kcl
                           }
                         },
                         {
-                          "commentStart": 1448,
+                          "commentStart": 1436,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -1326,14 +1564,14 @@ description: Result of parsing gear-rack.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1459,
+                      "commentStart": 1440,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1470,
+                      "commentStart": 1451,
                       "end": 0,
                       "raw": "1.570796",
                       "start": 0,
@@ -1348,14 +1586,14 @@ description: Result of parsing gear-rack.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1487,
+                      "commentStart": 1461,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1499,
+                      "commentStart": 1473,
                       "end": 0,
                       "raw": "63",
                       "start": 0,
@@ -1369,13 +1607,21 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1409,
+                  "abs_path": false,
+                  "commentStart": 1405,
                   "end": 0,
-                  "name": "patternLinear3d",
+                  "name": {
+                    "commentStart": 1405,
+                    "end": 0,
+                    "name": "patternLinear3d",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1409,
+                "commentStart": 1405,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1383,13 +1629,13 @@ description: Result of parsing gear-rack.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 1396,
+            "commentStart": 1392,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
-                    "commentStart": 1508,
+                    "commentStart": 1476,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -1422,12 +1668,12 @@ description: Result of parsing gear-rack.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1575,
+        "commentStart": 1543,
         "declaration": {
-          "commentStart": 1575,
+          "commentStart": 1543,
           "end": 0,
           "id": {
-            "commentStart": 1575,
+            "commentStart": 1543,
             "end": 0,
             "name": "endCapTooth",
             "start": 0,
@@ -1438,23 +1684,38 @@ description: Result of parsing gear-rack.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1603,
+                    "abs_path": false,
+                    "commentStart": 1571,
                     "end": 0,
-                    "raw": "'XY'",
+                    "name": {
+                      "commentStart": 1571,
+                      "end": 0,
+                      "name": "XY",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "XY"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
-                  "commentStart": 1589,
+                  "abs_path": false,
+                  "commentStart": 1557,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 1557,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1589,
+                "commentStart": 1557,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1463,21 +1724,29 @@ description: Result of parsing gear-rack.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1629,
+                    "commentStart": 1595,
                     "elements": [
                       {
-                        "commentStart": 1630,
+                        "commentStart": 1596,
                         "end": 0,
                         "left": {
                           "argument": {
-                            "commentStart": 1631,
+                            "abs_path": false,
+                            "commentStart": 1597,
                             "end": 0,
-                            "name": "length",
+                            "name": {
+                              "commentStart": 1597,
+                              "end": 0,
+                              "name": "length",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
-                          "commentStart": 1630,
+                          "commentStart": 1596,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -1486,7 +1755,7 @@ description: Result of parsing gear-rack.kcl
                         },
                         "operator": "/",
                         "right": {
-                          "commentStart": 1640,
+                          "commentStart": 1606,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -1502,7 +1771,7 @@ description: Result of parsing gear-rack.kcl
                         "type": "BinaryExpression"
                       },
                       {
-                        "commentStart": 1643,
+                        "commentStart": 1609,
                         "end": 0,
                         "raw": "11.849525",
                         "start": 0,
@@ -1520,7 +1789,7 @@ description: Result of parsing gear-rack.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 1655,
+                    "commentStart": 1621,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1528,13 +1797,21 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1614,
+                  "abs_path": false,
+                  "commentStart": 1580,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 1580,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1614,
+                "commentStart": 1580,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1545,17 +1822,17 @@ description: Result of parsing gear-rack.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1668,
+                      "commentStart": 1634,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1674,
+                      "commentStart": 1640,
                       "elements": [
                         {
-                          "commentStart": 1675,
+                          "commentStart": 1641,
                           "end": 0,
                           "raw": "0.314524",
                           "start": 0,
@@ -1568,7 +1845,7 @@ description: Result of parsing gear-rack.kcl
                         },
                         {
                           "argument": {
-                            "commentStart": 1686,
+                            "commentStart": 1652,
                             "end": 0,
                             "raw": "0.864147",
                             "start": 0,
@@ -1579,7 +1856,7 @@ description: Result of parsing gear-rack.kcl
                               "suffix": "None"
                             }
                           },
-                          "commentStart": 1685,
+                          "commentStart": 1651,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -1595,13 +1872,21 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1663,
+                  "abs_path": false,
+                  "commentStart": 1629,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 1629,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1663,
+                "commentStart": 1629,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1611,10 +1896,10 @@ description: Result of parsing gear-rack.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1726,
+                    "commentStart": 1692,
                     "elements": [
                       {
-                        "commentStart": 1727,
+                        "commentStart": 1693,
                         "end": 0,
                         "raw": "0.157636",
                         "start": 0,
@@ -1627,7 +1912,7 @@ description: Result of parsing gear-rack.kcl
                       },
                       {
                         "argument": {
-                          "commentStart": 1738,
+                          "commentStart": 1704,
                           "end": 0,
                           "raw": "0.110378",
                           "start": 0,
@@ -1638,7 +1923,7 @@ description: Result of parsing gear-rack.kcl
                             "suffix": "None"
                           }
                         },
-                        "commentStart": 1737,
+                        "commentStart": 1703,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -1652,7 +1937,7 @@ description: Result of parsing gear-rack.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 1749,
+                    "commentStart": 1715,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1660,13 +1945,21 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1702,
+                  "abs_path": false,
+                  "commentStart": 1668,
                   "end": 0,
-                  "name": "tangentialArcToRelative",
+                  "name": {
+                    "commentStart": 1668,
+                    "end": 0,
+                    "name": "tangentialArcToRelative",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1702,
+                "commentStart": 1668,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1677,28 +1970,36 @@ description: Result of parsing gear-rack.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1762,
+                      "commentStart": 1728,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1776,
+                      "commentStart": 1742,
                       "elements": [
                         {
-                          "commentStart": 1777,
+                          "commentStart": 1743,
                           "end": 0,
                           "left": {
                             "argument": {
-                              "commentStart": 1778,
+                              "abs_path": false,
+                              "commentStart": 1744,
                               "end": 0,
-                              "name": "length",
+                              "name": {
+                                "commentStart": 1744,
+                                "end": 0,
+                                "name": "length",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
-                            "commentStart": 1777,
+                            "commentStart": 1743,
                             "end": 0,
                             "operator": "-",
                             "start": 0,
@@ -1707,7 +2008,7 @@ description: Result of parsing gear-rack.kcl
                           },
                           "operator": "/",
                           "right": {
-                            "commentStart": 1787,
+                            "commentStart": 1753,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -1723,12 +2024,20 @@ description: Result of parsing gear-rack.kcl
                           "type": "BinaryExpression"
                         },
                         {
-                          "commentStart": 1790,
+                          "abs_path": false,
+                          "commentStart": 1756,
                           "end": 0,
-                          "name": "minHeight",
+                          "name": {
+                            "commentStart": 1756,
+                            "end": 0,
+                            "name": "minHeight",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 0,
@@ -1739,13 +2048,21 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1757,
+                  "abs_path": false,
+                  "commentStart": 1723,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 1723,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1757,
+                "commentStart": 1723,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1755,13 +2072,21 @@ description: Result of parsing gear-rack.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "commentStart": 1807,
+                  "abs_path": false,
+                  "commentStart": 1773,
                   "end": 0,
-                  "name": "close",
+                  "name": {
+                    "commentStart": 1773,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1807,
+                "commentStart": 1773,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1772,30 +2097,46 @@ description: Result of parsing gear-rack.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1828,
+                      "commentStart": 1794,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1837,
+                      "abs_path": false,
+                      "commentStart": 1803,
                       "end": 0,
-                      "name": "width",
+                      "name": {
+                        "commentStart": 1803,
+                        "end": 0,
+                        "name": "width",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
-                  "commentStart": 1820,
+                  "abs_path": false,
+                  "commentStart": 1786,
                   "end": 0,
-                  "name": "extrude",
+                  "name": {
+                    "commentStart": 1786,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1820,
+                "commentStart": 1786,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1803,13 +2144,13 @@ description: Result of parsing gear-rack.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 1589,
+            "commentStart": 1557,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "6": [
                   {
-                    "commentStart": 1843,
+                    "commentStart": 1809,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -1837,12 +2178,12 @@ description: Result of parsing gear-rack.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1911,
+        "commentStart": 1877,
         "declaration": {
-          "commentStart": 1911,
+          "commentStart": 1877,
           "end": 0,
           "id": {
-            "commentStart": 1911,
+            "commentStart": 1877,
             "end": 0,
             "name": "endCapTooth2",
             "start": 0,
@@ -1853,23 +2194,38 @@ description: Result of parsing gear-rack.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1940,
+                    "abs_path": false,
+                    "commentStart": 1906,
                     "end": 0,
-                    "raw": "'XY'",
+                    "name": {
+                      "commentStart": 1906,
+                      "end": 0,
+                      "name": "XY",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "XY"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
-                  "commentStart": 1926,
+                  "abs_path": false,
+                  "commentStart": 1892,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 1892,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1926,
+                "commentStart": 1892,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1878,22 +2234,30 @@ description: Result of parsing gear-rack.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1966,
+                    "commentStart": 1930,
                     "elements": [
                       {
-                        "commentStart": 1967,
+                        "commentStart": 1931,
                         "end": 0,
                         "left": {
-                          "commentStart": 1967,
+                          "abs_path": false,
+                          "commentStart": 1931,
                           "end": 0,
-                          "name": "length",
+                          "name": {
+                            "commentStart": 1931,
+                            "end": 0,
+                            "name": "length",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "/",
                         "right": {
-                          "commentStart": 1976,
+                          "commentStart": 1940,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -1909,7 +2273,7 @@ description: Result of parsing gear-rack.kcl
                         "type": "BinaryExpression"
                       },
                       {
-                        "commentStart": 1979,
+                        "commentStart": 1943,
                         "end": 0,
                         "raw": "11.849525",
                         "start": 0,
@@ -1927,7 +2291,7 @@ description: Result of parsing gear-rack.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 1991,
+                    "commentStart": 1955,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1935,13 +2299,21 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1951,
+                  "abs_path": false,
+                  "commentStart": 1915,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 1915,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1951,
+                "commentStart": 1915,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1952,18 +2324,18 @@ description: Result of parsing gear-rack.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2004,
+                      "commentStart": 1968,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2010,
+                      "commentStart": 1974,
                       "elements": [
                         {
                           "argument": {
-                            "commentStart": 2012,
+                            "commentStart": 1976,
                             "end": 0,
                             "raw": "0.314524",
                             "start": 0,
@@ -1974,7 +2346,7 @@ description: Result of parsing gear-rack.kcl
                               "suffix": "None"
                             }
                           },
-                          "commentStart": 2011,
+                          "commentStart": 1975,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -1983,7 +2355,7 @@ description: Result of parsing gear-rack.kcl
                         },
                         {
                           "argument": {
-                            "commentStart": 2023,
+                            "commentStart": 1987,
                             "end": 0,
                             "raw": "0.864147",
                             "start": 0,
@@ -1994,7 +2366,7 @@ description: Result of parsing gear-rack.kcl
                               "suffix": "None"
                             }
                           },
-                          "commentStart": 2022,
+                          "commentStart": 1986,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -2010,13 +2382,21 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1999,
+                  "abs_path": false,
+                  "commentStart": 1963,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 1963,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1999,
+                "commentStart": 1963,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2026,11 +2406,11 @@ description: Result of parsing gear-rack.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2063,
+                    "commentStart": 2027,
                     "elements": [
                       {
                         "argument": {
-                          "commentStart": 2065,
+                          "commentStart": 2029,
                           "end": 0,
                           "raw": "0.157636",
                           "start": 0,
@@ -2041,7 +2421,7 @@ description: Result of parsing gear-rack.kcl
                             "suffix": "None"
                           }
                         },
-                        "commentStart": 2064,
+                        "commentStart": 2028,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -2050,7 +2430,7 @@ description: Result of parsing gear-rack.kcl
                       },
                       {
                         "argument": {
-                          "commentStart": 2076,
+                          "commentStart": 2040,
                           "end": 0,
                           "raw": "0.110378",
                           "start": 0,
@@ -2061,7 +2441,7 @@ description: Result of parsing gear-rack.kcl
                             "suffix": "None"
                           }
                         },
-                        "commentStart": 2075,
+                        "commentStart": 2039,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -2075,7 +2455,7 @@ description: Result of parsing gear-rack.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 2087,
+                    "commentStart": 2051,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2083,13 +2463,21 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 2039,
+                  "abs_path": false,
+                  "commentStart": 2003,
                   "end": 0,
-                  "name": "tangentialArcToRelative",
+                  "name": {
+                    "commentStart": 2003,
+                    "end": 0,
+                    "name": "tangentialArcToRelative",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2039,
+                "commentStart": 2003,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2100,29 +2488,37 @@ description: Result of parsing gear-rack.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2100,
+                      "commentStart": 2064,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2114,
+                      "commentStart": 2078,
                       "elements": [
                         {
-                          "commentStart": 2115,
+                          "commentStart": 2079,
                           "end": 0,
                           "left": {
-                            "commentStart": 2115,
+                            "abs_path": false,
+                            "commentStart": 2079,
                             "end": 0,
-                            "name": "length",
+                            "name": {
+                              "commentStart": 2079,
+                              "end": 0,
+                              "name": "length",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
-                            "commentStart": 2124,
+                            "commentStart": 2088,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -2138,12 +2534,20 @@ description: Result of parsing gear-rack.kcl
                           "type": "BinaryExpression"
                         },
                         {
-                          "commentStart": 2127,
+                          "abs_path": false,
+                          "commentStart": 2091,
                           "end": 0,
-                          "name": "minHeight",
+                          "name": {
+                            "commentStart": 2091,
+                            "end": 0,
+                            "name": "minHeight",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 0,
@@ -2154,13 +2558,21 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 2095,
+                  "abs_path": false,
+                  "commentStart": 2059,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 2059,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2095,
+                "commentStart": 2059,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2170,13 +2582,21 @@ description: Result of parsing gear-rack.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "commentStart": 2144,
+                  "abs_path": false,
+                  "commentStart": 2108,
                   "end": 0,
-                  "name": "close",
+                  "name": {
+                    "commentStart": 2108,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2144,
+                "commentStart": 2108,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2187,30 +2607,46 @@ description: Result of parsing gear-rack.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2165,
+                      "commentStart": 2129,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2174,
+                      "abs_path": false,
+                      "commentStart": 2138,
                       "end": 0,
-                      "name": "width",
+                      "name": {
+                        "commentStart": 2138,
+                        "end": 0,
+                        "name": "width",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
-                  "commentStart": 2157,
+                  "abs_path": false,
+                  "commentStart": 2121,
                   "end": 0,
-                  "name": "extrude",
+                  "name": {
+                    "commentStart": 2121,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2157,
+                "commentStart": 2121,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2218,7 +2654,7 @@ description: Result of parsing gear-rack.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 1926,
+            "commentStart": 1892,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -2268,12 +2704,20 @@ description: Result of parsing gear-rack.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "commentStart": 420,
               "end": 0,
-              "name": "mm",
+              "name": {
+                "commentStart": 420,
+                "end": 0,
+                "name": "mm",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

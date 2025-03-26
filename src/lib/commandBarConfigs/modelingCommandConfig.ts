@@ -24,7 +24,7 @@ import { getVariableDeclaration } from 'lang/queryAst/getVariableDeclaration'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { getNodeFromPath } from 'lang/queryAst'
 
-type OutputFormat = Models['OutputFormat_type']
+type OutputFormat = Models['OutputFormat3d_type']
 type OutputTypeKey = OutputFormat['type']
 type ExtractStorageTypes<T> = T extends { storage: infer U } ? U : never
 type StorageUnion = ExtractStorageTypes<OutputFormat>
@@ -80,10 +80,16 @@ export type ModelingCommandSchema = {
     edge: Selections
   }
   Fillet: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // KCL stdlib arguments
     selection: Selections
     radius: KclCommandValue
   }
   Chamfer: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // KCL stdlib arguments
     selection: Selections
     length: KclCommandValue
   }
@@ -96,12 +102,15 @@ export type ModelingCommandSchema = {
   Helix: {
     // Enables editing workflow
     nodeToEdit?: PathToNode
+    // Flow arg
+    axisOrEdge: 'Axis' | 'Edge'
     // KCL stdlib arguments
+    axis: string | undefined
+    edge: Selections | undefined
     revolutions: KclCommandValue
     angleStart: KclCommandValue
-    counterClockWise: boolean
+    ccw: boolean
     radius: KclCommandValue
-    axis: string
     length: KclCommandValue
   }
   'event.parameter.create': {
@@ -532,6 +541,38 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
         hidden: true,
       },
+      axisOrEdge: {
+        inputType: 'options',
+        required: true,
+        defaultValue: 'Axis',
+        options: [
+          { name: 'Axis', isCurrent: true, value: 'Axis' },
+          { name: 'Edge', isCurrent: false, value: 'Edge' },
+        ],
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      axis: {
+        inputType: 'options',
+        required: (commandContext) =>
+          ['Axis'].includes(
+            commandContext.argumentsToSubmit.axisOrEdge as string
+          ),
+        options: [
+          { name: 'X Axis', value: 'X' },
+          { name: 'Y Axis', value: 'Y' },
+          { name: 'Z Axis', value: 'Z' },
+        ],
+      },
+      edge: {
+        required: (commandContext) =>
+          ['Edge'].includes(
+            commandContext.argumentsToSubmit.axisOrEdge as string
+          ),
+        inputType: 'selection',
+        selectionTypes: ['segment', 'sweepEdge'],
+        multiple: false,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
       revolutions: {
         inputType: 'kcl',
         defaultValue: '1',
@@ -544,9 +585,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_DEGREE,
         required: true,
       },
-      counterClockWise: {
+      ccw: {
         inputType: 'options',
         required: true,
+        displayName: 'CounterClockWise',
         defaultValue: false,
         options: [
           { name: 'False', value: false },
@@ -557,16 +599,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
-      },
-      axis: {
-        inputType: 'options',
-        required: true,
-        defaultValue: 'X',
-        options: [
-          { name: 'X Axis', value: 'X' },
-          { name: 'Y Axis', value: 'Y' },
-          { name: 'Z Axis', value: 'Z' },
-        ],
       },
       length: {
         inputType: 'kcl',
@@ -581,14 +613,22 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     status: 'development',
     needsReview: true,
     args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        inputType: 'text',
+        required: false,
+        hidden: true,
+      },
       selection: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
+        selectionTypes: ['segment', 'sweepEdge'],
         multiple: true,
         required: true,
         skip: false,
         warningMessage:
           'Fillets cannot touch other fillets yet. This is under development.',
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       radius: {
         inputType: 'kcl',
@@ -603,14 +643,22 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     status: 'development',
     needsReview: true,
     args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        inputType: 'text',
+        required: false,
+        hidden: true,
+      },
       selection: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
+        selectionTypes: ['segment', 'sweepEdge'],
         multiple: true,
         required: true,
         skip: false,
         warningMessage:
           'Chamfers cannot touch other chamfers yet. This is under development.',
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       length: {
         inputType: 'kcl',

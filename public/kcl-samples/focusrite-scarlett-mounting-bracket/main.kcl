@@ -62,7 +62,7 @@ bracketBody = bs
          getPreviousAdjacentEdge(bs.tags.edge2),
          getPreviousAdjacentEdge(bs.tags.edge3),
          getPreviousAdjacentEdge(bs.tags.edge6)
-       ]
+       ],
      )
 
 // define the tab plane
@@ -87,7 +87,7 @@ tabsR = startSketchOn(tabPlane)
          width / 2 + thk + tabWidth / 2,
          length / 2 + thk - (tabLength / (3 / 2))
        ],
-       radius = holeDiam / 2
+       radius = holeDiam / 2,
      ), %)
   |> extrude(length = -tabThk)
   |> fillet(
@@ -95,13 +95,9 @@ tabsR = startSketchOn(tabPlane)
        tags = [
          getNextAdjacentEdge(edge11),
          getNextAdjacentEdge(edge12)
-       ]
+       ],
      )
-  |> patternLinear3d(
-       axis = [0, -1, 0],
-       instances = 2,
-       distance = length + 2 * thk - (tabLength * 4 / 3)
-     )
+  |> patternLinear3d(axis = [0, -1, 0], instances = 2, distance = length + 2 * thk - (tabLength * 4 / 3))
 
 // build the tabs of the mounting bracket (left side)
 tabsL = startSketchOn(tabPlane)
@@ -115,7 +111,7 @@ tabsL = startSketchOn(tabPlane)
          -width / 2 - thk - (tabWidth / 2),
          length / 2 + thk - (tabLength / (3 / 2))
        ],
-       radius = holeDiam / 2
+       radius = holeDiam / 2,
      ), %)
   |> extrude(length = -tabThk)
   |> fillet(
@@ -123,13 +119,9 @@ tabsL = startSketchOn(tabPlane)
        tags = [
          getNextAdjacentEdge(edge21),
          getNextAdjacentEdge(edge22)
-       ]
+       ],
      )
-  |> patternLinear3d(
-       axis = [0, -1, 0],
-       instances = 2,
-       distance = length + 2 * thk - (tabLength * 4 / 3)
-     )
+  |> patternLinear3d(axis = [0, -1, 0], instances = 2, distance = length + 2 * thk - (tabLength * 4 / 3))
 
 // define a plane for retention bumps
 retPlane = {

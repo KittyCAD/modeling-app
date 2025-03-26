@@ -1,16 +1,16 @@
 // Walkie talkie body
-
-// import constants
-import height, width, thickness, chamferLength, offset, screenWidth, screenHeight, screenYPosition, screenDepth, speakerBoxWidth, speakerBoxHeight from "globals.kcl"
+// the main body of the walkie talkie assembly
 
 // set units
 @settings(defaultLengthUnit = in)
 
-// create a function to define the body
-export fn body () {
+// import constants
+import height, width, thickness, chamferLength, offset, screenWidth, screenHeight, screenYPosition, screenDepth, speakerBoxWidth, speakerBoxHeight from "globals.kcl"
 
+// create a function to define the body
+export fn body() {
   // sketch and extrude the body of the walkie talkie
-  bodySketch = startSketchOn('XZ')
+  bodySketch = startSketchOn(XZ)
     |> startProfileAt([-width / 2, height / 2], %)
     |> xLine(length = width, tag = $chamfer1)
     |> yLine(length = -height, tag = $chamfer2)
@@ -24,7 +24,7 @@ export fn body () {
            getNextAdjacentEdge(chamfer2),
            getNextAdjacentEdge(chamfer3),
            getNextAdjacentEdge(chamfer4)
-         ]
+         ],
        )
 
   // cut out the indentation for the case
@@ -57,7 +57,7 @@ export fn body () {
        }, %)
     |> close()
   extrude002 = extrude(sketch002, length = -0.0625)
-  
+
   // Create the pocket for the screen
   sketch003 = startSketchOn(extrude002, 'start')
     |> startProfileAt([-screenWidth / 2, screenYPosition], %)
@@ -67,7 +67,7 @@ export fn body () {
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
   extrude003 = extrude(sketch003, length = screenDepth)
-  
+
   // Create the speaker box
   sketch004 = startSketchOn(extrude002, 'start')
     |> startProfileAt([-1.25 / 2, -.125], %)
@@ -77,9 +77,7 @@ export fn body () {
     |> close()
 
   body = extrude(sketch004, length = -.5)
-    |> appearance(
-      color = "#277bb0",
-    )
+    |> appearance(color = "#277bb0")
   return body
 }
 

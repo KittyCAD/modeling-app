@@ -90,21 +90,37 @@ description: Result of parsing gear.kcl
             "commentStart": 535,
             "end": 0,
             "left": {
+              "abs_path": false,
               "commentStart": 535,
               "end": 0,
-              "name": "module",
+              "name": {
+                "commentStart": 535,
+                "end": 0,
+                "name": "module",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "*",
             "right": {
+              "abs_path": false,
               "commentStart": 544,
               "end": 0,
-              "name": "nTeeth",
+              "name": {
+                "commentStart": 544,
+                "end": 0,
+                "name": "nTeeth",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "start": 0,
             "type": "BinaryExpression",
@@ -165,12 +181,20 @@ description: Result of parsing gear.kcl
             "type": "Identifier"
           },
           "init": {
+            "abs_path": false,
             "commentStart": 581,
             "end": 0,
-            "name": "module",
+            "name": {
+              "commentStart": 581,
+              "end": 0,
+              "name": "module",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier",
-            "type": "Identifier"
+            "type": "Name",
+            "type": "Name"
           },
           "start": 0,
           "type": "VariableDeclarator"
@@ -210,12 +234,20 @@ description: Result of parsing gear.kcl
             },
             "operator": "*",
             "right": {
+              "abs_path": false,
               "commentStart": 607,
               "end": 0,
-              "name": "module",
+              "name": {
+                "commentStart": 607,
+                "end": 0,
+                "name": "module",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "start": 0,
             "type": "BinaryExpression",
@@ -246,12 +278,20 @@ description: Result of parsing gear.kcl
             "commentStart": 629,
             "end": 0,
             "left": {
+              "abs_path": false,
               "commentStart": 629,
               "end": 0,
-              "name": "pitchDiameter",
+              "name": {
+                "commentStart": 629,
+                "end": 0,
+                "name": "pitchDiameter",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "*",
             "right": {
@@ -259,20 +299,36 @@ description: Result of parsing gear.kcl
                 {
                   "arguments": [
                     {
+                      "abs_path": false,
                       "commentStart": 659,
                       "end": 0,
-                      "name": "pressureAngle",
+                      "name": {
+                        "commentStart": 659,
+                        "end": 0,
+                        "name": "pressureAngle",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   ],
                   "callee": {
+                    "abs_path": false,
                     "commentStart": 649,
                     "end": 0,
-                    "name": "toRadians",
+                    "name": {
+                      "commentStart": 649,
+                      "end": 0,
+                      "name": "toRadians",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier"
+                    "type": "Name"
                   },
                   "commentStart": 649,
                   "end": 0,
@@ -282,11 +338,19 @@ description: Result of parsing gear.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 645,
                 "end": 0,
-                "name": "cos",
+                "name": {
+                  "commentStart": 645,
+                  "end": 0,
+                  "name": "cos",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 645,
               "end": 0,
@@ -323,12 +387,20 @@ description: Result of parsing gear.kcl
             "commentStart": 689,
             "end": 0,
             "left": {
+              "abs_path": false,
               "commentStart": 689,
               "end": 0,
-              "name": "pitchDiameter",
+              "name": {
+                "commentStart": 689,
+                "end": 0,
+                "name": "pitchDiameter",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "+",
             "right": {
@@ -348,12 +420,20 @@ description: Result of parsing gear.kcl
               },
               "operator": "*",
               "right": {
+                "abs_path": false,
                 "commentStart": 709,
                 "end": 0,
-                "name": "module",
+                "name": {
+                  "commentStart": 709,
+                  "end": 0,
+                  "name": "module",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "start": 0,
               "type": "BinaryExpression",
@@ -461,12 +541,20 @@ description: Result of parsing gear.kcl
                 "commentStart": 798,
                 "end": 0,
                 "endElement": {
+                  "abs_path": false,
                   "commentStart": 802,
                   "end": 0,
-                  "name": "cmo",
+                  "name": {
+                    "commentStart": 802,
+                    "end": 0,
+                    "name": "cmo",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "endInclusive": true,
                 "start": 0,
@@ -490,22 +578,30 @@ description: Result of parsing gear.kcl
                   "body": [
                     {
                       "argument": {
-                        "commentStart": 826,
+                        "commentStart": 825,
                         "end": 0,
                         "left": {
-                          "commentStart": 826,
+                          "commentStart": 825,
                           "end": 0,
                           "left": {
-                            "commentStart": 826,
+                            "abs_path": false,
+                            "commentStart": 825,
                             "end": 0,
-                            "name": "baseDiameter",
+                            "name": {
+                              "commentStart": 825,
+                              "end": 0,
+                              "name": "baseDiameter",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
-                            "commentStart": 841,
+                            "commentStart": 840,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -522,30 +618,46 @@ description: Result of parsing gear.kcl
                         },
                         "operator": "+",
                         "right": {
-                          "commentStart": 845,
+                          "commentStart": 844,
                           "end": 0,
                           "left": {
-                            "commentStart": 845,
+                            "commentStart": 844,
                             "end": 0,
                             "left": {
-                              "commentStart": 845,
+                              "commentStart": 844,
                               "end": 0,
                               "left": {
-                                "commentStart": 845,
+                                "abs_path": false,
+                                "commentStart": 844,
                                 "end": 0,
-                                "name": "i",
+                                "name": {
+                                  "commentStart": 844,
+                                  "end": 0,
+                                  "name": "i",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "/",
                               "right": {
-                                "commentStart": 849,
+                                "abs_path": false,
+                                "commentStart": 848,
                                 "end": 0,
-                                "name": "cmo",
+                                "name": {
+                                  "commentStart": 848,
+                                  "end": 0,
+                                  "name": "cmo",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 0,
                               "type": "BinaryExpression",
@@ -553,24 +665,40 @@ description: Result of parsing gear.kcl
                             },
                             "operator": "*",
                             "right": {
-                              "commentStart": 856,
+                              "commentStart": 855,
                               "end": 0,
                               "left": {
-                                "commentStart": 856,
+                                "abs_path": false,
+                                "commentStart": 855,
                                 "end": 0,
-                                "name": "tipDiameter",
+                                "name": {
+                                  "commentStart": 855,
+                                  "end": 0,
+                                  "name": "tipDiameter",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "-",
                               "right": {
-                                "commentStart": 870,
+                                "abs_path": false,
+                                "commentStart": 869,
                                 "end": 0,
-                                "name": "baseDiameter",
+                                "name": {
+                                  "commentStart": 869,
+                                  "end": 0,
+                                  "name": "baseDiameter",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 0,
                               "type": "BinaryExpression",
@@ -582,7 +710,7 @@ description: Result of parsing gear.kcl
                           },
                           "operator": "/",
                           "right": {
-                            "commentStart": 886,
+                            "commentStart": 885,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -601,24 +729,24 @@ description: Result of parsing gear.kcl
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
-                      "commentStart": 819,
+                      "commentStart": 818,
                       "end": 0,
                       "start": 0,
                       "type": "ReturnStatement",
                       "type": "ReturnStatement"
                     }
                   ],
-                  "commentStart": 815,
+                  "commentStart": 814,
                   "end": 0,
                   "start": 0
                 },
-                "commentStart": 811,
+                "commentStart": 810,
                 "end": 0,
                 "params": [
                   {
                     "type": "Parameter",
                     "identifier": {
-                      "commentStart": 812,
+                      "commentStart": 811,
                       "end": 0,
                       "name": "i",
                       "start": 0,
@@ -632,11 +760,19 @@ description: Result of parsing gear.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 794,
               "end": 0,
-              "name": "map",
+              "name": {
+                "commentStart": 794,
+                "end": 0,
+                "name": "map",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 794,
             "end": 0,
@@ -654,12 +790,12 @@ description: Result of parsing gear.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 890,
+        "commentStart": 889,
         "declaration": {
-          "commentStart": 930,
+          "commentStart": 929,
           "end": 0,
           "id": {
-            "commentStart": 930,
+            "commentStart": 929,
             "end": 0,
             "name": "angles",
             "start": 0,
@@ -668,12 +804,20 @@ description: Result of parsing gear.kcl
           "init": {
             "arguments": [
               {
-                "commentStart": 943,
+                "abs_path": false,
+                "commentStart": 942,
                 "end": 0,
-                "name": "rs",
+                "name": {
+                  "commentStart": 942,
+                  "end": 0,
+                  "name": "rs",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "body": {
@@ -684,22 +828,30 @@ description: Result of parsing gear.kcl
                           {
                             "arguments": [
                               {
-                                "commentStart": 982,
+                                "commentStart": 980,
                                 "end": 0,
                                 "left": {
-                                  "commentStart": 982,
+                                  "commentStart": 980,
                                   "end": 0,
                                   "left": {
-                                    "commentStart": 982,
+                                    "abs_path": false,
+                                    "commentStart": 980,
                                     "end": 0,
-                                    "name": "baseDiameter",
+                                    "name": {
+                                      "commentStart": 980,
+                                      "end": 0,
+                                      "name": "baseDiameter",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "/",
                                   "right": {
-                                    "commentStart": 997,
+                                    "commentStart": 995,
                                     "end": 0,
                                     "raw": "2",
                                     "start": 0,
@@ -716,12 +868,20 @@ description: Result of parsing gear.kcl
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "commentStart": 1001,
+                                  "abs_path": false,
+                                  "commentStart": 999,
                                   "end": 0,
-                                  "name": "r",
+                                  "name": {
+                                    "commentStart": 999,
+                                    "end": 0,
+                                    "name": "r",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 0,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "start": 0,
                                 "type": "BinaryExpression",
@@ -729,13 +889,21 @@ description: Result of parsing gear.kcl
                               }
                             ],
                             "callee": {
-                              "commentStart": 977,
+                              "abs_path": false,
+                              "commentStart": 975,
                               "end": 0,
-                              "name": "acos",
+                              "name": {
+                                "commentStart": 975,
+                                "end": 0,
+                                "name": "acos",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier"
+                              "type": "Name"
                             },
-                            "commentStart": 977,
+                            "commentStart": 975,
                             "end": 0,
                             "start": 0,
                             "type": "CallExpression",
@@ -743,36 +911,44 @@ description: Result of parsing gear.kcl
                           }
                         ],
                         "callee": {
-                          "commentStart": 965,
+                          "abs_path": false,
+                          "commentStart": 963,
                           "end": 0,
-                          "name": "toDegrees",
+                          "name": {
+                            "commentStart": 963,
+                            "end": 0,
+                            "name": "toDegrees",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
-                        "commentStart": 965,
+                        "commentStart": 963,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
-                      "commentStart": 958,
+                      "commentStart": 956,
                       "end": 0,
                       "start": 0,
                       "type": "ReturnStatement",
                       "type": "ReturnStatement"
                     }
                   ],
-                  "commentStart": 954,
+                  "commentStart": 952,
                   "end": 0,
                   "start": 0
                 },
-                "commentStart": 950,
+                "commentStart": 948,
                 "end": 0,
                 "params": [
                   {
                     "type": "Parameter",
                     "identifier": {
-                      "commentStart": 951,
+                      "commentStart": 949,
                       "end": 0,
                       "name": "r",
                       "start": 0,
@@ -786,13 +962,21 @@ description: Result of parsing gear.kcl
               }
             ],
             "callee": {
-              "commentStart": 939,
+              "abs_path": false,
+              "commentStart": 938,
               "end": 0,
-              "name": "map",
+              "name": {
+                "commentStart": 938,
+                "end": 0,
+                "name": "map",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
-            "commentStart": 939,
+            "commentStart": 938,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -813,12 +997,12 @@ description: Result of parsing gear.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1007,
+        "commentStart": 1005,
         "declaration": {
-          "commentStart": 1044,
+          "commentStart": 1042,
           "end": 0,
           "id": {
-            "commentStart": 1044,
+            "commentStart": 1042,
             "end": 0,
             "name": "invas",
             "start": 0,
@@ -827,41 +1011,65 @@ description: Result of parsing gear.kcl
           "init": {
             "arguments": [
               {
-                "commentStart": 1056,
+                "abs_path": false,
+                "commentStart": 1054,
                 "end": 0,
-                "name": "angles",
+                "name": {
+                  "commentStart": 1054,
+                  "end": 0,
+                  "name": "angles",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "body": {
                   "body": [
                     {
                       "argument": {
-                        "commentStart": 1082,
+                        "commentStart": 1079,
                         "end": 0,
                         "left": {
                           "arguments": [
                             {
                               "arguments": [
                                 {
-                                  "commentStart": 1096,
+                                  "abs_path": false,
+                                  "commentStart": 1093,
                                   "end": 0,
-                                  "name": "a",
+                                  "name": {
+                                    "commentStart": 1093,
+                                    "end": 0,
+                                    "name": "a",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 0,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 }
                               ],
                               "callee": {
-                                "commentStart": 1086,
+                                "abs_path": false,
+                                "commentStart": 1083,
                                 "end": 0,
-                                "name": "toRadians",
+                                "name": {
+                                  "commentStart": 1083,
+                                  "end": 0,
+                                  "name": "toRadians",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier"
+                                "type": "Name"
                               },
-                              "commentStart": 1086,
+                              "commentStart": 1083,
                               "end": 0,
                               "start": 0,
                               "type": "CallExpression",
@@ -869,13 +1077,21 @@ description: Result of parsing gear.kcl
                             }
                           ],
                           "callee": {
-                            "commentStart": 1082,
+                            "abs_path": false,
+                            "commentStart": 1079,
                             "end": 0,
-                            "name": "tan",
+                            "name": {
+                              "commentStart": 1079,
+                              "end": 0,
+                              "name": "tan",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 1082,
+                          "commentStart": 1079,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -885,22 +1101,38 @@ description: Result of parsing gear.kcl
                         "right": {
                           "arguments": [
                             {
-                              "commentStart": 1112,
+                              "abs_path": false,
+                              "commentStart": 1109,
                               "end": 0,
-                              "name": "a",
+                              "name": {
+                                "commentStart": 1109,
+                                "end": 0,
+                                "name": "a",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
-                            "commentStart": 1102,
+                            "abs_path": false,
+                            "commentStart": 1099,
                             "end": 0,
-                            "name": "toRadians",
+                            "name": {
+                              "commentStart": 1099,
+                              "end": 0,
+                              "name": "toRadians",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 1102,
+                          "commentStart": 1099,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -910,24 +1142,24 @@ description: Result of parsing gear.kcl
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
-                      "commentStart": 1075,
+                      "commentStart": 1072,
                       "end": 0,
                       "start": 0,
                       "type": "ReturnStatement",
                       "type": "ReturnStatement"
                     }
                   ],
-                  "commentStart": 1071,
+                  "commentStart": 1068,
                   "end": 0,
                   "start": 0
                 },
-                "commentStart": 1067,
+                "commentStart": 1064,
                 "end": 0,
                 "params": [
                   {
                     "type": "Parameter",
                     "identifier": {
-                      "commentStart": 1068,
+                      "commentStart": 1065,
                       "end": 0,
                       "name": "a",
                       "start": 0,
@@ -941,13 +1173,21 @@ description: Result of parsing gear.kcl
               }
             ],
             "callee": {
-              "commentStart": 1052,
+              "abs_path": false,
+              "commentStart": 1050,
               "end": 0,
-              "name": "map",
+              "name": {
+                "commentStart": 1050,
+                "end": 0,
+                "name": "map",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
-            "commentStart": 1052,
+            "commentStart": 1050,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -968,12 +1208,12 @@ description: Result of parsing gear.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1117,
+        "commentStart": 1114,
         "declaration": {
-          "commentStart": 1145,
+          "commentStart": 1142,
           "end": 0,
           "id": {
-            "commentStart": 1145,
+            "commentStart": 1142,
             "end": 0,
             "name": "xs",
             "start": 0,
@@ -982,20 +1222,28 @@ description: Result of parsing gear.kcl
           "init": {
             "arguments": [
               {
-                "commentStart": 1154,
+                "commentStart": 1151,
                 "end": 0,
                 "endElement": {
-                  "commentStart": 1158,
+                  "abs_path": false,
+                  "commentStart": 1155,
                   "end": 0,
-                  "name": "cmo",
+                  "name": {
+                    "commentStart": 1155,
+                    "end": 0,
+                    "name": "cmo",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "endInclusive": true,
                 "start": 0,
                 "startElement": {
-                  "commentStart": 1155,
+                  "commentStart": 1152,
                   "end": 0,
                   "raw": "0",
                   "start": 0,
@@ -1014,14 +1262,14 @@ description: Result of parsing gear.kcl
                   "body": [
                     {
                       "argument": {
-                        "commentStart": 1182,
+                        "commentStart": 1178,
                         "end": 0,
                         "left": {
-                          "commentStart": 1182,
+                          "commentStart": 1178,
                           "computed": true,
                           "end": 0,
                           "object": {
-                            "commentStart": 1182,
+                            "commentStart": 1178,
                             "end": 0,
                             "name": "rs",
                             "start": 0,
@@ -1029,7 +1277,7 @@ description: Result of parsing gear.kcl
                             "type": "Identifier"
                           },
                           "property": {
-                            "commentStart": 1185,
+                            "commentStart": 1181,
                             "end": 0,
                             "name": "i",
                             "start": 0,
@@ -1044,11 +1292,11 @@ description: Result of parsing gear.kcl
                         "right": {
                           "arguments": [
                             {
-                              "commentStart": 1194,
+                              "commentStart": 1190,
                               "computed": true,
                               "end": 0,
                               "object": {
-                                "commentStart": 1194,
+                                "commentStart": 1190,
                                 "end": 0,
                                 "name": "invas",
                                 "start": 0,
@@ -1056,7 +1304,7 @@ description: Result of parsing gear.kcl
                                 "type": "Identifier"
                               },
                               "property": {
-                                "commentStart": 1200,
+                                "commentStart": 1196,
                                 "end": 0,
                                 "name": "i",
                                 "start": 0,
@@ -1069,13 +1317,21 @@ description: Result of parsing gear.kcl
                             }
                           ],
                           "callee": {
-                            "commentStart": 1190,
+                            "abs_path": false,
+                            "commentStart": 1186,
                             "end": 0,
-                            "name": "cos",
+                            "name": {
+                              "commentStart": 1186,
+                              "end": 0,
+                              "name": "cos",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 1190,
+                          "commentStart": 1186,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1085,24 +1341,24 @@ description: Result of parsing gear.kcl
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
-                      "commentStart": 1175,
+                      "commentStart": 1171,
                       "end": 0,
                       "start": 0,
                       "type": "ReturnStatement",
                       "type": "ReturnStatement"
                     }
                   ],
-                  "commentStart": 1171,
+                  "commentStart": 1167,
                   "end": 0,
                   "start": 0
                 },
-                "commentStart": 1167,
+                "commentStart": 1163,
                 "end": 0,
                 "params": [
                   {
                     "type": "Parameter",
                     "identifier": {
-                      "commentStart": 1168,
+                      "commentStart": 1164,
                       "end": 0,
                       "name": "i",
                       "start": 0,
@@ -1116,13 +1372,21 @@ description: Result of parsing gear.kcl
               }
             ],
             "callee": {
-              "commentStart": 1150,
+              "abs_path": false,
+              "commentStart": 1147,
               "end": 0,
-              "name": "map",
+              "name": {
+                "commentStart": 1147,
+                "end": 0,
+                "name": "map",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
-            "commentStart": 1150,
+            "commentStart": 1147,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -1143,12 +1407,12 @@ description: Result of parsing gear.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1206,
+        "commentStart": 1202,
         "declaration": {
-          "commentStart": 1208,
+          "commentStart": 1204,
           "end": 0,
           "id": {
-            "commentStart": 1208,
+            "commentStart": 1204,
             "end": 0,
             "name": "ys",
             "start": 0,
@@ -1157,20 +1421,28 @@ description: Result of parsing gear.kcl
           "init": {
             "arguments": [
               {
-                "commentStart": 1217,
+                "commentStart": 1213,
                 "end": 0,
                 "endElement": {
-                  "commentStart": 1221,
+                  "abs_path": false,
+                  "commentStart": 1217,
                   "end": 0,
-                  "name": "cmo",
+                  "name": {
+                    "commentStart": 1217,
+                    "end": 0,
+                    "name": "cmo",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "endInclusive": true,
                 "start": 0,
                 "startElement": {
-                  "commentStart": 1218,
+                  "commentStart": 1214,
                   "end": 0,
                   "raw": "0",
                   "start": 0,
@@ -1189,14 +1461,14 @@ description: Result of parsing gear.kcl
                   "body": [
                     {
                       "argument": {
-                        "commentStart": 1245,
+                        "commentStart": 1240,
                         "end": 0,
                         "left": {
-                          "commentStart": 1245,
+                          "commentStart": 1240,
                           "computed": true,
                           "end": 0,
                           "object": {
-                            "commentStart": 1245,
+                            "commentStart": 1240,
                             "end": 0,
                             "name": "rs",
                             "start": 0,
@@ -1204,7 +1476,7 @@ description: Result of parsing gear.kcl
                             "type": "Identifier"
                           },
                           "property": {
-                            "commentStart": 1248,
+                            "commentStart": 1243,
                             "end": 0,
                             "name": "i",
                             "start": 0,
@@ -1219,11 +1491,11 @@ description: Result of parsing gear.kcl
                         "right": {
                           "arguments": [
                             {
-                              "commentStart": 1257,
+                              "commentStart": 1252,
                               "computed": true,
                               "end": 0,
                               "object": {
-                                "commentStart": 1257,
+                                "commentStart": 1252,
                                 "end": 0,
                                 "name": "invas",
                                 "start": 0,
@@ -1231,7 +1503,7 @@ description: Result of parsing gear.kcl
                                 "type": "Identifier"
                               },
                               "property": {
-                                "commentStart": 1263,
+                                "commentStart": 1258,
                                 "end": 0,
                                 "name": "i",
                                 "start": 0,
@@ -1244,13 +1516,21 @@ description: Result of parsing gear.kcl
                             }
                           ],
                           "callee": {
-                            "commentStart": 1253,
+                            "abs_path": false,
+                            "commentStart": 1248,
                             "end": 0,
-                            "name": "sin",
+                            "name": {
+                              "commentStart": 1248,
+                              "end": 0,
+                              "name": "sin",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 1253,
+                          "commentStart": 1248,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1260,24 +1540,24 @@ description: Result of parsing gear.kcl
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
-                      "commentStart": 1238,
+                      "commentStart": 1233,
                       "end": 0,
                       "start": 0,
                       "type": "ReturnStatement",
                       "type": "ReturnStatement"
                     }
                   ],
-                  "commentStart": 1234,
+                  "commentStart": 1229,
                   "end": 0,
                   "start": 0
                 },
-                "commentStart": 1230,
+                "commentStart": 1225,
                 "end": 0,
                 "params": [
                   {
                     "type": "Parameter",
                     "identifier": {
-                      "commentStart": 1231,
+                      "commentStart": 1226,
                       "end": 0,
                       "name": "i",
                       "start": 0,
@@ -1291,13 +1571,21 @@ description: Result of parsing gear.kcl
               }
             ],
             "callee": {
-              "commentStart": 1213,
+              "abs_path": false,
+              "commentStart": 1209,
               "end": 0,
-              "name": "map",
+              "name": {
+                "commentStart": 1209,
+                "end": 0,
+                "name": "map",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
-            "commentStart": 1213,
+            "commentStart": 1209,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -1313,12 +1601,12 @@ description: Result of parsing gear.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1269,
+        "commentStart": 1264,
         "declaration": {
-          "commentStart": 1296,
+          "commentStart": 1291,
           "end": 0,
           "id": {
-            "commentStart": 1296,
+            "commentStart": 1291,
             "end": 0,
             "name": "body",
             "start": 0,
@@ -1329,23 +1617,38 @@ description: Result of parsing gear.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1317,
+                    "abs_path": false,
+                    "commentStart": 1312,
                     "end": 0,
-                    "raw": "'XY'",
+                    "name": {
+                      "commentStart": 1312,
+                      "end": 0,
+                      "name": "XY",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "XY"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
-                  "commentStart": 1303,
+                  "abs_path": false,
+                  "commentStart": 1298,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 1298,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1303,
+                "commentStart": 1298,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1356,17 +1659,17 @@ description: Result of parsing gear.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1343,
+                      "commentStart": 1328,
                       "end": 0,
                       "name": "center",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1352,
+                      "commentStart": 1337,
                       "elements": [
                         {
-                          "commentStart": 1353,
+                          "commentStart": 1338,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -1378,7 +1681,7 @@ description: Result of parsing gear.kcl
                           }
                         },
                         {
-                          "commentStart": 1356,
+                          "commentStart": 1341,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -1399,26 +1702,34 @@ description: Result of parsing gear.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1367,
+                      "commentStart": 1345,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1376,
+                      "commentStart": 1354,
                       "end": 0,
                       "left": {
-                        "commentStart": 1376,
+                        "abs_path": false,
+                        "commentStart": 1354,
                         "end": 0,
-                        "name": "baseDiameter",
+                        "name": {
+                          "commentStart": 1354,
+                          "end": 0,
+                          "name": "baseDiameter",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
-                        "commentStart": 1391,
+                        "commentStart": 1369,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -1436,13 +1747,21 @@ description: Result of parsing gear.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1328,
+                  "abs_path": false,
+                  "commentStart": 1321,
                   "end": 0,
-                  "name": "circle",
+                  "name": {
+                    "commentStart": 1321,
+                    "end": 0,
+                    "name": "circle",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1328,
+                "commentStart": 1321,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1454,30 +1773,46 @@ description: Result of parsing gear.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1413,
+                      "commentStart": 1385,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1422,
+                      "abs_path": false,
+                      "commentStart": 1394,
                       "end": 0,
-                      "name": "gearHeight",
+                      "name": {
+                        "commentStart": 1394,
+                        "end": 0,
+                        "name": "gearHeight",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
-                  "commentStart": 1405,
+                  "abs_path": false,
+                  "commentStart": 1377,
                   "end": 0,
-                  "name": "extrude",
+                  "name": {
+                    "commentStart": 1377,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1405,
+                "commentStart": 1377,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1485,7 +1820,7 @@ description: Result of parsing gear.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 1303,
+            "commentStart": 1298,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -1506,25 +1841,25 @@ description: Result of parsing gear.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1433,
+        "commentStart": 1405,
         "declaration": {
-          "commentStart": 1435,
+          "commentStart": 1407,
           "end": 0,
           "id": {
-            "commentStart": 1435,
+            "commentStart": 1407,
             "end": 0,
             "name": "toothAngle",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 1448,
+            "commentStart": 1420,
             "end": 0,
             "left": {
-              "commentStart": 1448,
+              "commentStart": 1420,
               "end": 0,
               "left": {
-                "commentStart": 1448,
+                "commentStart": 1420,
                 "end": 0,
                 "raw": "360",
                 "start": 0,
@@ -1537,12 +1872,20 @@ description: Result of parsing gear.kcl
               },
               "operator": "/",
               "right": {
-                "commentStart": 1454,
+                "abs_path": false,
+                "commentStart": 1426,
                 "end": 0,
-                "name": "nTeeth",
+                "name": {
+                  "commentStart": 1426,
+                  "end": 0,
+                  "name": "nTeeth",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "start": 0,
               "type": "BinaryExpression",
@@ -1550,7 +1893,7 @@ description: Result of parsing gear.kcl
             },
             "operator": "/",
             "right": {
-              "commentStart": 1463,
+              "commentStart": 1435,
               "end": 0,
               "raw": "1.5",
               "start": 0,
@@ -1575,12 +1918,12 @@ description: Result of parsing gear.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1466,
+        "commentStart": 1438,
         "declaration": {
-          "commentStart": 1498,
+          "commentStart": 1470,
           "end": 0,
           "id": {
-            "commentStart": 1498,
+            "commentStart": 1470,
             "end": 0,
             "name": "leftInvolute",
             "start": 0,
@@ -1590,22 +1933,22 @@ description: Result of parsing gear.kcl
             "body": {
               "body": [
                 {
-                  "commentStart": 1522,
+                  "commentStart": 1494,
                   "declaration": {
-                    "commentStart": 1522,
+                    "commentStart": 1494,
                     "end": 0,
                     "id": {
-                      "commentStart": 1522,
+                      "commentStart": 1494,
                       "end": 0,
                       "name": "j",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
-                      "commentStart": 1526,
+                      "commentStart": 1498,
                       "end": 0,
                       "left": {
-                        "commentStart": 1526,
+                        "commentStart": 1498,
                         "end": 0,
                         "raw": "100",
                         "start": 0,
@@ -1618,12 +1961,20 @@ description: Result of parsing gear.kcl
                       },
                       "operator": "-",
                       "right": {
-                        "commentStart": 1532,
+                        "abs_path": false,
+                        "commentStart": 1504,
                         "end": 0,
-                        "name": "i",
+                        "name": {
+                          "commentStart": 1504,
+                          "end": 0,
+                          "name": "i",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
                       "type": "BinaryExpression",
@@ -1644,21 +1995,21 @@ description: Result of parsing gear.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "commentStart": 1573,
+                          "commentStart": 1545,
                           "end": 0,
                           "name": "endAbsolute",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "commentStart": 1587,
+                          "commentStart": 1559,
                           "elements": [
                             {
-                              "commentStart": 1588,
+                              "commentStart": 1560,
                               "computed": true,
                               "end": 0,
                               "object": {
-                                "commentStart": 1588,
+                                "commentStart": 1560,
                                 "end": 0,
                                 "name": "xs",
                                 "start": 0,
@@ -1666,7 +2017,7 @@ description: Result of parsing gear.kcl
                                 "type": "Identifier"
                               },
                               "property": {
-                                "commentStart": 1591,
+                                "commentStart": 1563,
                                 "end": 0,
                                 "name": "j",
                                 "start": 0,
@@ -1678,11 +2029,11 @@ description: Result of parsing gear.kcl
                               "type": "MemberExpression"
                             },
                             {
-                              "commentStart": 1595,
+                              "commentStart": 1567,
                               "computed": true,
                               "end": 0,
                               "object": {
-                                "commentStart": 1595,
+                                "commentStart": 1567,
                                 "end": 0,
                                 "name": "ys",
                                 "start": 0,
@@ -1690,7 +2041,7 @@ description: Result of parsing gear.kcl
                                 "type": "Identifier"
                               },
                               "property": {
-                                "commentStart": 1598,
+                                "commentStart": 1570,
                                 "end": 0,
                                 "name": "j",
                                 "start": 0,
@@ -1710,40 +2061,56 @@ description: Result of parsing gear.kcl
                       }
                     ],
                     "callee": {
-                      "commentStart": 1564,
+                      "abs_path": false,
+                      "commentStart": 1536,
                       "end": 0,
-                      "name": "line",
+                      "name": {
+                        "commentStart": 1536,
+                        "end": 0,
+                        "name": "line",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
-                    "commentStart": 1564,
+                    "commentStart": 1536,
                     "end": 0,
                     "start": 0,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": {
-                      "commentStart": 1569,
+                      "abs_path": false,
+                      "commentStart": 1541,
                       "end": 0,
-                      "name": "sg",
+                      "name": {
+                        "commentStart": 1541,
+                        "end": 0,
+                        "name": "sg",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
-                  "commentStart": 1533,
+                  "commentStart": 1505,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "commentStart": 1518,
+              "commentStart": 1490,
               "end": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "0": [
                     {
-                      "commentStart": 1533,
+                      "commentStart": 1505,
                       "end": 0,
                       "start": 0,
                       "type": "NonCodeNode",
@@ -1759,13 +2126,13 @@ description: Result of parsing gear.kcl
               },
               "start": 0
             },
-            "commentStart": 1510,
+            "commentStart": 1482,
             "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "commentStart": 1511,
+                  "commentStart": 1483,
                   "end": 0,
                   "name": "i",
                   "start": 0,
@@ -1775,7 +2142,7 @@ description: Result of parsing gear.kcl
               {
                 "type": "Parameter",
                 "identifier": {
-                  "commentStart": 1514,
+                  "commentStart": 1486,
                   "end": 0,
                   "name": "sg",
                   "start": 0,
@@ -1802,12 +2169,12 @@ description: Result of parsing gear.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1604,
+        "commentStart": 1576,
         "declaration": {
-          "commentStart": 1609,
+          "commentStart": 1581,
           "end": 0,
           "id": {
-            "commentStart": 1609,
+            "commentStart": 1581,
             "end": 0,
             "name": "rightInvolute",
             "start": 0,
@@ -1817,26 +2184,26 @@ description: Result of parsing gear.kcl
             "body": {
               "body": [
                 {
-                  "commentStart": 1634,
+                  "commentStart": 1606,
                   "declaration": {
-                    "commentStart": 1634,
+                    "commentStart": 1606,
                     "end": 0,
                     "id": {
-                      "commentStart": 1634,
+                      "commentStart": 1606,
                       "end": 0,
                       "name": "x",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
-                      "commentStart": 1638,
+                      "commentStart": 1610,
                       "end": 0,
                       "left": {
-                        "commentStart": 1638,
+                        "commentStart": 1610,
                         "computed": true,
                         "end": 0,
                         "object": {
-                          "commentStart": 1638,
+                          "commentStart": 1610,
                           "end": 0,
                           "name": "rs",
                           "start": 0,
@@ -1844,7 +2211,7 @@ description: Result of parsing gear.kcl
                           "type": "Identifier"
                         },
                         "property": {
-                          "commentStart": 1641,
+                          "commentStart": 1613,
                           "end": 0,
                           "name": "i",
                           "start": 0,
@@ -1861,18 +2228,26 @@ description: Result of parsing gear.kcl
                           {
                             "arguments": [
                               {
-                                "commentStart": 1660,
+                                "commentStart": 1632,
                                 "end": 0,
                                 "left": {
                                   "argument": {
-                                    "commentStart": 1661,
+                                    "abs_path": false,
+                                    "commentStart": 1633,
                                     "end": 0,
-                                    "name": "toothAngle",
+                                    "name": {
+                                      "commentStart": 1633,
+                                      "end": 0,
+                                      "name": "toothAngle",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
-                                  "commentStart": 1660,
+                                  "commentStart": 1632,
                                   "end": 0,
                                   "operator": "-",
                                   "start": 0,
@@ -1885,14 +2260,14 @@ description: Result of parsing gear.kcl
                                     {
                                       "arguments": [
                                         {
-                                          "commentStart": 1689,
+                                          "commentStart": 1661,
                                           "end": 0,
                                           "left": {
-                                            "commentStart": 1689,
+                                            "commentStart": 1661,
                                             "computed": true,
                                             "end": 0,
                                             "object": {
-                                              "commentStart": 1689,
+                                              "commentStart": 1661,
                                               "end": 0,
                                               "name": "ys",
                                               "start": 0,
@@ -1900,7 +2275,7 @@ description: Result of parsing gear.kcl
                                               "type": "Identifier"
                                             },
                                             "property": {
-                                              "commentStart": 1692,
+                                              "commentStart": 1664,
                                               "end": 0,
                                               "name": "i",
                                               "start": 0,
@@ -1913,11 +2288,11 @@ description: Result of parsing gear.kcl
                                           },
                                           "operator": "/",
                                           "right": {
-                                            "commentStart": 1697,
+                                            "commentStart": 1669,
                                             "computed": true,
                                             "end": 0,
                                             "object": {
-                                              "commentStart": 1697,
+                                              "commentStart": 1669,
                                               "end": 0,
                                               "name": "xs",
                                               "start": 0,
@@ -1925,7 +2300,7 @@ description: Result of parsing gear.kcl
                                               "type": "Identifier"
                                             },
                                             "property": {
-                                              "commentStart": 1700,
+                                              "commentStart": 1672,
                                               "end": 0,
                                               "name": "i",
                                               "start": 0,
@@ -1942,13 +2317,21 @@ description: Result of parsing gear.kcl
                                         }
                                       ],
                                       "callee": {
-                                        "commentStart": 1684,
+                                        "abs_path": false,
+                                        "commentStart": 1656,
                                         "end": 0,
-                                        "name": "atan",
+                                        "name": {
+                                          "commentStart": 1656,
+                                          "end": 0,
+                                          "name": "atan",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 0,
-                                        "type": "Identifier"
+                                        "type": "Name"
                                       },
-                                      "commentStart": 1684,
+                                      "commentStart": 1656,
                                       "end": 0,
                                       "start": 0,
                                       "type": "CallExpression",
@@ -1956,13 +2339,21 @@ description: Result of parsing gear.kcl
                                     }
                                   ],
                                   "callee": {
-                                    "commentStart": 1674,
+                                    "abs_path": false,
+                                    "commentStart": 1646,
                                     "end": 0,
-                                    "name": "toDegrees",
+                                    "name": {
+                                      "commentStart": 1646,
+                                      "end": 0,
+                                      "name": "toDegrees",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier"
+                                    "type": "Name"
                                   },
-                                  "commentStart": 1674,
+                                  "commentStart": 1646,
                                   "end": 0,
                                   "start": 0,
                                   "type": "CallExpression",
@@ -1974,13 +2365,21 @@ description: Result of parsing gear.kcl
                               }
                             ],
                             "callee": {
-                              "commentStart": 1650,
+                              "abs_path": false,
+                              "commentStart": 1622,
                               "end": 0,
-                              "name": "toRadians",
+                              "name": {
+                                "commentStart": 1622,
+                                "end": 0,
+                                "name": "toRadians",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier"
+                              "type": "Name"
                             },
-                            "commentStart": 1650,
+                            "commentStart": 1622,
                             "end": 0,
                             "start": 0,
                             "type": "CallExpression",
@@ -1988,13 +2387,21 @@ description: Result of parsing gear.kcl
                           }
                         ],
                         "callee": {
-                          "commentStart": 1646,
+                          "abs_path": false,
+                          "commentStart": 1618,
                           "end": 0,
-                          "name": "cos",
+                          "name": {
+                            "commentStart": 1618,
+                            "end": 0,
+                            "name": "cos",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
-                        "commentStart": 1646,
+                        "commentStart": 1618,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -2014,27 +2421,27 @@ description: Result of parsing gear.kcl
                   "type": "VariableDeclaration"
                 },
                 {
-                  "commentStart": 1709,
+                  "commentStart": 1681,
                   "declaration": {
-                    "commentStart": 1709,
+                    "commentStart": 1681,
                     "end": 0,
                     "id": {
-                      "commentStart": 1709,
+                      "commentStart": 1681,
                       "end": 0,
                       "name": "y",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
-                      "commentStart": 1713,
+                      "commentStart": 1685,
                       "end": 0,
                       "left": {
                         "argument": {
-                          "commentStart": 1714,
+                          "commentStart": 1686,
                           "computed": true,
                           "end": 0,
                           "object": {
-                            "commentStart": 1714,
+                            "commentStart": 1686,
                             "end": 0,
                             "name": "rs",
                             "start": 0,
@@ -2042,7 +2449,7 @@ description: Result of parsing gear.kcl
                             "type": "Identifier"
                           },
                           "property": {
-                            "commentStart": 1717,
+                            "commentStart": 1689,
                             "end": 0,
                             "name": "i",
                             "start": 0,
@@ -2053,7 +2460,7 @@ description: Result of parsing gear.kcl
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         },
-                        "commentStart": 1713,
+                        "commentStart": 1685,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -2066,18 +2473,26 @@ description: Result of parsing gear.kcl
                           {
                             "arguments": [
                               {
-                                "commentStart": 1736,
+                                "commentStart": 1708,
                                 "end": 0,
                                 "left": {
                                   "argument": {
-                                    "commentStart": 1737,
+                                    "abs_path": false,
+                                    "commentStart": 1709,
                                     "end": 0,
-                                    "name": "toothAngle",
+                                    "name": {
+                                      "commentStart": 1709,
+                                      "end": 0,
+                                      "name": "toothAngle",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
-                                  "commentStart": 1736,
+                                  "commentStart": 1708,
                                   "end": 0,
                                   "operator": "-",
                                   "start": 0,
@@ -2090,14 +2505,14 @@ description: Result of parsing gear.kcl
                                     {
                                       "arguments": [
                                         {
-                                          "commentStart": 1765,
+                                          "commentStart": 1737,
                                           "end": 0,
                                           "left": {
-                                            "commentStart": 1765,
+                                            "commentStart": 1737,
                                             "computed": true,
                                             "end": 0,
                                             "object": {
-                                              "commentStart": 1765,
+                                              "commentStart": 1737,
                                               "end": 0,
                                               "name": "ys",
                                               "start": 0,
@@ -2105,7 +2520,7 @@ description: Result of parsing gear.kcl
                                               "type": "Identifier"
                                             },
                                             "property": {
-                                              "commentStart": 1768,
+                                              "commentStart": 1740,
                                               "end": 0,
                                               "name": "i",
                                               "start": 0,
@@ -2118,11 +2533,11 @@ description: Result of parsing gear.kcl
                                           },
                                           "operator": "/",
                                           "right": {
-                                            "commentStart": 1773,
+                                            "commentStart": 1745,
                                             "computed": true,
                                             "end": 0,
                                             "object": {
-                                              "commentStart": 1773,
+                                              "commentStart": 1745,
                                               "end": 0,
                                               "name": "xs",
                                               "start": 0,
@@ -2130,7 +2545,7 @@ description: Result of parsing gear.kcl
                                               "type": "Identifier"
                                             },
                                             "property": {
-                                              "commentStart": 1776,
+                                              "commentStart": 1748,
                                               "end": 0,
                                               "name": "i",
                                               "start": 0,
@@ -2147,13 +2562,21 @@ description: Result of parsing gear.kcl
                                         }
                                       ],
                                       "callee": {
-                                        "commentStart": 1760,
+                                        "abs_path": false,
+                                        "commentStart": 1732,
                                         "end": 0,
-                                        "name": "atan",
+                                        "name": {
+                                          "commentStart": 1732,
+                                          "end": 0,
+                                          "name": "atan",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 0,
-                                        "type": "Identifier"
+                                        "type": "Name"
                                       },
-                                      "commentStart": 1760,
+                                      "commentStart": 1732,
                                       "end": 0,
                                       "start": 0,
                                       "type": "CallExpression",
@@ -2161,13 +2584,21 @@ description: Result of parsing gear.kcl
                                     }
                                   ],
                                   "callee": {
-                                    "commentStart": 1750,
+                                    "abs_path": false,
+                                    "commentStart": 1722,
                                     "end": 0,
-                                    "name": "toDegrees",
+                                    "name": {
+                                      "commentStart": 1722,
+                                      "end": 0,
+                                      "name": "toDegrees",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier"
+                                    "type": "Name"
                                   },
-                                  "commentStart": 1750,
+                                  "commentStart": 1722,
                                   "end": 0,
                                   "start": 0,
                                   "type": "CallExpression",
@@ -2179,13 +2610,21 @@ description: Result of parsing gear.kcl
                               }
                             ],
                             "callee": {
-                              "commentStart": 1726,
+                              "abs_path": false,
+                              "commentStart": 1698,
                               "end": 0,
-                              "name": "toRadians",
+                              "name": {
+                                "commentStart": 1698,
+                                "end": 0,
+                                "name": "toRadians",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier"
+                              "type": "Name"
                             },
-                            "commentStart": 1726,
+                            "commentStart": 1698,
                             "end": 0,
                             "start": 0,
                             "type": "CallExpression",
@@ -2193,13 +2632,21 @@ description: Result of parsing gear.kcl
                           }
                         ],
                         "callee": {
-                          "commentStart": 1722,
+                          "abs_path": false,
+                          "commentStart": 1694,
                           "end": 0,
-                          "name": "sin",
+                          "name": {
+                            "commentStart": 1694,
+                            "end": 0,
+                            "name": "sin",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
-                        "commentStart": 1722,
+                        "commentStart": 1694,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -2224,30 +2671,46 @@ description: Result of parsing gear.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "commentStart": 1801,
+                          "commentStart": 1773,
                           "end": 0,
                           "name": "endAbsolute",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "commentStart": 1815,
+                          "commentStart": 1787,
                           "elements": [
                             {
-                              "commentStart": 1816,
+                              "abs_path": false,
+                              "commentStart": 1788,
                               "end": 0,
-                              "name": "x",
+                              "name": {
+                                "commentStart": 1788,
+                                "end": 0,
+                                "name": "x",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             {
-                              "commentStart": 1819,
+                              "abs_path": false,
+                              "commentStart": 1791,
                               "end": 0,
-                              "name": "y",
+                              "name": {
+                                "commentStart": 1791,
+                                "end": 0,
+                                "name": "y",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "end": 0,
@@ -2258,44 +2721,60 @@ description: Result of parsing gear.kcl
                       }
                     ],
                     "callee": {
-                      "commentStart": 1792,
+                      "abs_path": false,
+                      "commentStart": 1764,
                       "end": 0,
-                      "name": "line",
+                      "name": {
+                        "commentStart": 1764,
+                        "end": 0,
+                        "name": "line",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
-                    "commentStart": 1792,
+                    "commentStart": 1764,
                     "end": 0,
                     "start": 0,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": {
-                      "commentStart": 1797,
+                      "abs_path": false,
+                      "commentStart": 1769,
                       "end": 0,
-                      "name": "sg",
+                      "name": {
+                        "commentStart": 1769,
+                        "end": 0,
+                        "name": "sg",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
-                  "commentStart": 1785,
+                  "commentStart": 1757,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "commentStart": 1630,
+              "commentStart": 1602,
               "end": 0,
               "start": 0
             },
-            "commentStart": 1622,
+            "commentStart": 1594,
             "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "commentStart": 1623,
+                  "commentStart": 1595,
                   "end": 0,
                   "name": "i",
                   "start": 0,
@@ -2305,7 +2784,7 @@ description: Result of parsing gear.kcl
               {
                 "type": "Parameter",
                 "identifier": {
-                  "commentStart": 1626,
+                  "commentStart": 1598,
                   "end": 0,
                   "name": "sg",
                   "start": 0,
@@ -2327,12 +2806,12 @@ description: Result of parsing gear.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1824,
+        "commentStart": 1796,
         "declaration": {
-          "commentStart": 1845,
+          "commentStart": 1817,
           "end": 0,
           "id": {
-            "commentStart": 1845,
+            "commentStart": 1817,
             "end": 0,
             "name": "start",
             "start": 0,
@@ -2343,23 +2822,38 @@ description: Result of parsing gear.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1867,
+                    "abs_path": false,
+                    "commentStart": 1839,
                     "end": 0,
-                    "raw": "'XY'",
+                    "name": {
+                      "commentStart": 1839,
+                      "end": 0,
+                      "name": "XY",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "XY"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
-                  "commentStart": 1853,
+                  "abs_path": false,
+                  "commentStart": 1825,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 1825,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1853,
+                "commentStart": 1825,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2368,14 +2862,14 @@ description: Result of parsing gear.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1893,
+                    "commentStart": 1863,
                     "elements": [
                       {
-                        "commentStart": 1894,
+                        "commentStart": 1864,
                         "computed": false,
                         "end": 0,
                         "object": {
-                          "commentStart": 1894,
+                          "commentStart": 1864,
                           "end": 0,
                           "name": "xs",
                           "start": 0,
@@ -2383,7 +2877,7 @@ description: Result of parsing gear.kcl
                           "type": "Identifier"
                         },
                         "property": {
-                          "commentStart": 1897,
+                          "commentStart": 1867,
                           "end": 0,
                           "raw": "101",
                           "start": 0,
@@ -2399,11 +2893,11 @@ description: Result of parsing gear.kcl
                         "type": "MemberExpression"
                       },
                       {
-                        "commentStart": 1903,
+                        "commentStart": 1873,
                         "computed": false,
                         "end": 0,
                         "object": {
-                          "commentStart": 1903,
+                          "commentStart": 1873,
                           "end": 0,
                           "name": "ys",
                           "start": 0,
@@ -2411,7 +2905,7 @@ description: Result of parsing gear.kcl
                           "type": "Identifier"
                         },
                         "property": {
-                          "commentStart": 1906,
+                          "commentStart": 1876,
                           "end": 0,
                           "raw": "101",
                           "start": 0,
@@ -2433,7 +2927,7 @@ description: Result of parsing gear.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 1913,
+                    "commentStart": 1883,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2441,20 +2935,28 @@ description: Result of parsing gear.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1878,
+                  "abs_path": false,
+                  "commentStart": 1848,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 1848,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1878,
+                "commentStart": 1848,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "commentStart": 1853,
+            "commentStart": 1825,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -2475,12 +2977,12 @@ description: Result of parsing gear.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1916,
+        "commentStart": 1886,
         "declaration": {
-          "commentStart": 1916,
+          "commentStart": 1886,
           "end": 0,
           "id": {
-            "commentStart": 1916,
+            "commentStart": 1886,
             "end": 0,
             "name": "teeth",
             "start": 0,
@@ -2491,10 +2993,10 @@ description: Result of parsing gear.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1931,
+                    "commentStart": 1901,
                     "end": 0,
                     "endElement": {
-                      "commentStart": 1935,
+                      "commentStart": 1905,
                       "end": 0,
                       "raw": "100",
                       "start": 0,
@@ -2508,7 +3010,7 @@ description: Result of parsing gear.kcl
                     "endInclusive": true,
                     "start": 0,
                     "startElement": {
-                      "commentStart": 1932,
+                      "commentStart": 1902,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -2523,30 +3025,54 @@ description: Result of parsing gear.kcl
                     "type": "ArrayRangeExpression"
                   },
                   {
-                    "commentStart": 1941,
+                    "abs_path": false,
+                    "commentStart": 1911,
                     "end": 0,
-                    "name": "start",
+                    "name": {
+                      "commentStart": 1911,
+                      "end": 0,
+                      "name": "start",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
-                    "commentStart": 1948,
+                    "abs_path": false,
+                    "commentStart": 1918,
                     "end": 0,
-                    "name": "leftInvolute",
+                    "name": {
+                      "commentStart": 1918,
+                      "end": 0,
+                      "name": "leftInvolute",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
-                  "commentStart": 1924,
+                  "abs_path": false,
+                  "commentStart": 1894,
                   "end": 0,
-                  "name": "reduce",
+                  "name": {
+                    "commentStart": 1894,
+                    "end": 0,
+                    "name": "reduce",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1924,
+                "commentStart": 1894,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2555,14 +3081,14 @@ description: Result of parsing gear.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1971,
+                    "commentStart": 1941,
                     "end": 0,
                     "properties": [
                       {
-                        "commentStart": 1980,
+                        "commentStart": 1950,
                         "end": 0,
                         "key": {
-                          "commentStart": 1980,
+                          "commentStart": 1950,
                           "end": 0,
                           "name": "angleStart",
                           "start": 0,
@@ -2571,7 +3097,7 @@ description: Result of parsing gear.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 1993,
+                          "commentStart": 1963,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -2584,10 +3110,10 @@ description: Result of parsing gear.kcl
                         }
                       },
                       {
-                        "commentStart": 2003,
+                        "commentStart": 1973,
                         "end": 0,
                         "key": {
-                          "commentStart": 2003,
+                          "commentStart": 1973,
                           "end": 0,
                           "name": "angleEnd",
                           "start": 0,
@@ -2596,19 +3122,27 @@ description: Result of parsing gear.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 2014,
+                          "abs_path": false,
+                          "commentStart": 1984,
                           "end": 0,
-                          "name": "toothAngle",
+                          "name": {
+                            "commentStart": 1984,
+                            "end": 0,
+                            "name": "toothAngle",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       },
                       {
-                        "commentStart": 2033,
+                        "commentStart": 2003,
                         "end": 0,
                         "key": {
-                          "commentStart": 2033,
+                          "commentStart": 2003,
                           "end": 0,
                           "name": "radius",
                           "start": 0,
@@ -2617,19 +3151,27 @@ description: Result of parsing gear.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 2042,
+                          "commentStart": 2012,
                           "end": 0,
                           "left": {
-                            "commentStart": 2042,
+                            "abs_path": false,
+                            "commentStart": 2012,
                             "end": 0,
-                            "name": "baseDiameter",
+                            "name": {
+                              "commentStart": 2012,
+                              "end": 0,
+                              "name": "baseDiameter",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
-                            "commentStart": 2057,
+                            "commentStart": 2027,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -2651,7 +3193,7 @@ description: Result of parsing gear.kcl
                     "type": "ObjectExpression"
                   },
                   {
-                    "commentStart": 2067,
+                    "commentStart": 2037,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2659,13 +3201,21 @@ description: Result of parsing gear.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1967,
+                  "abs_path": false,
+                  "commentStart": 1937,
                   "end": 0,
-                  "name": "arc",
+                  "name": {
+                    "commentStart": 1937,
+                    "end": 0,
+                    "name": "arc",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1967,
+                "commentStart": 1937,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2674,10 +3224,10 @@ description: Result of parsing gear.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2082,
+                    "commentStart": 2052,
                     "end": 0,
                     "endElement": {
-                      "commentStart": 2086,
+                      "commentStart": 2056,
                       "end": 0,
                       "raw": "101",
                       "start": 0,
@@ -2691,7 +3241,7 @@ description: Result of parsing gear.kcl
                     "endInclusive": true,
                     "start": 0,
                     "startElement": {
-                      "commentStart": 2083,
+                      "commentStart": 2053,
                       "end": 0,
                       "raw": "1",
                       "start": 0,
@@ -2706,29 +3256,45 @@ description: Result of parsing gear.kcl
                     "type": "ArrayRangeExpression"
                   },
                   {
-                    "commentStart": 2092,
+                    "commentStart": 2062,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "commentStart": 2095,
+                    "abs_path": false,
+                    "commentStart": 2065,
                     "end": 0,
-                    "name": "rightInvolute",
+                    "name": {
+                      "commentStart": 2065,
+                      "end": 0,
+                      "name": "rightInvolute",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
-                  "commentStart": 2075,
+                  "abs_path": false,
+                  "commentStart": 2045,
                   "end": 0,
-                  "name": "reduce",
+                  "name": {
+                    "commentStart": 2045,
+                    "end": 0,
+                    "name": "reduce",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2075,
+                "commentStart": 2045,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2737,13 +3303,21 @@ description: Result of parsing gear.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "commentStart": 2115,
+                  "abs_path": false,
+                  "commentStart": 2085,
                   "end": 0,
-                  "name": "close",
+                  "name": {
+                    "commentStart": 2085,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2115,
+                "commentStart": 2085,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2754,30 +3328,46 @@ description: Result of parsing gear.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2136,
+                      "commentStart": 2106,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2145,
+                      "abs_path": false,
+                      "commentStart": 2115,
                       "end": 0,
-                      "name": "gearHeight",
+                      "name": {
+                        "commentStart": 2115,
+                        "end": 0,
+                        "name": "gearHeight",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
-                  "commentStart": 2128,
+                  "abs_path": false,
+                  "commentStart": 2098,
                   "end": 0,
-                  "name": "extrude",
+                  "name": {
+                    "commentStart": 2098,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2128,
+                "commentStart": 2098,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2789,15 +3379,82 @@ description: Result of parsing gear.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2188,
+                      "commentStart": 2158,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2195,
+                      "commentStart": 2165,
                       "elements": [
+                        {
+                          "commentStart": 2166,
+                          "end": 0,
+                          "raw": "0",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "commentStart": 2169,
+                          "end": 0,
+                          "raw": "0",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "commentStart": 2172,
+                          "end": 0,
+                          "raw": "1",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 1.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 2183,
+                      "end": 0,
+                      "name": "center",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 2192,
+                      "elements": [
+                        {
+                          "commentStart": 2193,
+                          "end": 0,
+                          "raw": "0",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        },
                         {
                           "commentStart": 2196,
                           "end": 0,
@@ -2821,18 +3478,6 @@ description: Result of parsing gear.kcl
                             "value": 0.0,
                             "suffix": "None"
                           }
-                        },
-                        {
-                          "commentStart": 2202,
-                          "end": 0,
-                          "raw": "1",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 1.0,
-                            "suffix": "None"
-                          }
                         }
                       ],
                       "end": 0,
@@ -2844,87 +3489,40 @@ description: Result of parsing gear.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2213,
-                      "end": 0,
-                      "name": "center",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "commentStart": 2222,
-                      "elements": [
-                        {
-                          "commentStart": 2223,
-                          "end": 0,
-                          "raw": "0",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
-                        },
-                        {
-                          "commentStart": 2226,
-                          "end": 0,
-                          "raw": "0",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
-                        },
-                        {
-                          "commentStart": 2229,
-                          "end": 0,
-                          "raw": "0",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
-                        }
-                      ],
-                      "end": 0,
-                      "start": 0,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 2240,
+                      "commentStart": 2210,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2252,
+                      "abs_path": false,
+                      "commentStart": 2222,
                       "end": 0,
-                      "name": "nTeeth",
+                      "name": {
+                        "commentStart": 2222,
+                        "end": 0,
+                        "name": "nTeeth",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2267,
+                      "commentStart": 2237,
                       "end": 0,
                       "name": "arcDegrees",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2280,
+                      "commentStart": 2250,
                       "end": 0,
                       "raw": "360",
                       "start": 0,
@@ -2939,14 +3537,14 @@ description: Result of parsing gear.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2292,
+                      "commentStart": 2262,
                       "end": 0,
                       "name": "rotateDuplicates",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2311,
+                      "commentStart": 2281,
                       "end": 0,
                       "raw": "true",
                       "start": 0,
@@ -2957,13 +3555,21 @@ description: Result of parsing gear.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 2162,
+                  "abs_path": false,
+                  "commentStart": 2132,
                   "end": 0,
-                  "name": "patternCircular3d",
+                  "name": {
+                    "commentStart": 2132,
+                    "end": 0,
+                    "name": "patternCircular3d",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2162,
+                "commentStart": 2132,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2971,13 +3577,13 @@ description: Result of parsing gear.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 1924,
+            "commentStart": 1894,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "5": [
                   {
-                    "commentStart": 2322,
+                    "commentStart": 2293,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -3005,19 +3611,19 @@ description: Result of parsing gear.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 2380,
+        "commentStart": 2351,
         "declaration": {
-          "commentStart": 2380,
+          "commentStart": 2351,
           "end": 0,
           "id": {
-            "commentStart": 2380,
+            "commentStart": 2351,
             "end": 0,
             "name": "keywayWidth",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 2394,
+            "commentStart": 2365,
             "end": 0,
             "raw": "0.250",
             "start": 0,
@@ -3038,31 +3644,39 @@ description: Result of parsing gear.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 2400,
+        "commentStart": 2371,
         "declaration": {
-          "commentStart": 2400,
+          "commentStart": 2371,
           "end": 0,
           "id": {
-            "commentStart": 2400,
+            "commentStart": 2371,
             "end": 0,
             "name": "keywayDepth",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 2414,
+            "commentStart": 2385,
             "end": 0,
             "left": {
-              "commentStart": 2414,
+              "abs_path": false,
+              "commentStart": 2385,
               "end": 0,
-              "name": "keywayWidth",
+              "name": {
+                "commentStart": 2385,
+                "end": 0,
+                "name": "keywayWidth",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "/",
             "right": {
-              "commentStart": 2428,
+              "commentStart": 2399,
               "end": 0,
               "raw": "2",
               "start": 0,
@@ -3087,19 +3701,19 @@ description: Result of parsing gear.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 2430,
+        "commentStart": 2401,
         "declaration": {
-          "commentStart": 2430,
+          "commentStart": 2401,
           "end": 0,
           "id": {
-            "commentStart": 2430,
+            "commentStart": 2401,
             "end": 0,
             "name": "holeDiam",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 2441,
+            "commentStart": 2412,
             "end": 0,
             "raw": "2",
             "start": 0,
@@ -3120,19 +3734,19 @@ description: Result of parsing gear.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 2443,
+        "commentStart": 2414,
         "declaration": {
-          "commentStart": 2443,
+          "commentStart": 2414,
           "end": 0,
           "id": {
-            "commentStart": 2443,
+            "commentStart": 2414,
             "end": 0,
             "name": "holeRadius",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 2456,
+            "commentStart": 2427,
             "end": 0,
             "raw": "1",
             "start": 0,
@@ -3153,12 +3767,12 @@ description: Result of parsing gear.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 2458,
+        "commentStart": 2429,
         "declaration": {
-          "commentStart": 2458,
+          "commentStart": 2429,
           "end": 0,
           "id": {
-            "commentStart": 2458,
+            "commentStart": 2429,
             "end": 0,
             "name": "startAngle",
             "start": 0,
@@ -3167,22 +3781,30 @@ description: Result of parsing gear.kcl
           "init": {
             "arguments": [
               {
-                "commentStart": 2476,
+                "commentStart": 2447,
                 "end": 0,
                 "left": {
-                  "commentStart": 2476,
+                  "commentStart": 2447,
                   "end": 0,
                   "left": {
-                    "commentStart": 2476,
+                    "abs_path": false,
+                    "commentStart": 2447,
                     "end": 0,
-                    "name": "keywayWidth",
+                    "name": {
+                      "commentStart": 2447,
+                      "end": 0,
+                      "name": "keywayWidth",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "/",
                   "right": {
-                    "commentStart": 2490,
+                    "commentStart": 2461,
                     "end": 0,
                     "raw": "2",
                     "start": 0,
@@ -3199,12 +3821,20 @@ description: Result of parsing gear.kcl
                 },
                 "operator": "/",
                 "right": {
-                  "commentStart": 2494,
+                  "abs_path": false,
+                  "commentStart": 2465,
                   "end": 0,
-                  "name": "holeRadius",
+                  "name": {
+                    "commentStart": 2465,
+                    "end": 0,
+                    "name": "holeRadius",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "start": 0,
                 "type": "BinaryExpression",
@@ -3212,13 +3842,21 @@ description: Result of parsing gear.kcl
               }
             ],
             "callee": {
-              "commentStart": 2471,
+              "abs_path": false,
+              "commentStart": 2442,
               "end": 0,
-              "name": "asin",
+              "name": {
+                "commentStart": 2442,
+                "end": 0,
+                "name": "asin",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
-            "commentStart": 2471,
+            "commentStart": 2442,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -3234,12 +3872,12 @@ description: Result of parsing gear.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 2505,
+        "commentStart": 2476,
         "declaration": {
-          "commentStart": 2556,
+          "commentStart": 2527,
           "end": 0,
           "id": {
-            "commentStart": 2556,
+            "commentStart": 2527,
             "end": 0,
             "name": "keyWay",
             "start": 0,
@@ -3250,15 +3888,23 @@ description: Result of parsing gear.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2579,
+                    "abs_path": false,
+                    "commentStart": 2550,
                     "end": 0,
-                    "name": "body",
+                    "name": {
+                      "commentStart": 2550,
+                      "end": 0,
+                      "name": "body",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
-                    "commentStart": 2585,
+                    "commentStart": 2556,
                     "end": 0,
                     "raw": "'END'",
                     "start": 0,
@@ -3268,13 +3914,21 @@ description: Result of parsing gear.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 2565,
+                  "abs_path": false,
+                  "commentStart": 2536,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 2536,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2565,
+                "commentStart": 2536,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3283,39 +3937,63 @@ description: Result of parsing gear.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2612,
+                    "commentStart": 2583,
                     "elements": [
                       {
-                        "commentStart": 2621,
+                        "commentStart": 2592,
                         "end": 0,
                         "left": {
-                          "commentStart": 2621,
+                          "abs_path": false,
+                          "commentStart": 2592,
                           "end": 0,
-                          "name": "holeRadius",
+                          "name": {
+                            "commentStart": 2592,
+                            "end": 0,
+                            "name": "holeRadius",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "*",
                         "right": {
                           "arguments": [
                             {
-                              "commentStart": 2638,
+                              "abs_path": false,
+                              "commentStart": 2609,
                               "end": 0,
-                              "name": "startAngle",
+                              "name": {
+                                "commentStart": 2609,
+                                "end": 0,
+                                "name": "startAngle",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
-                            "commentStart": 2634,
+                            "abs_path": false,
+                            "commentStart": 2605,
                             "end": 0,
-                            "name": "cos",
+                            "name": {
+                              "commentStart": 2605,
+                              "end": 0,
+                              "name": "cos",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 2634,
+                          "commentStart": 2605,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3326,36 +4004,60 @@ description: Result of parsing gear.kcl
                         "type": "BinaryExpression"
                       },
                       {
-                        "commentStart": 2658,
+                        "commentStart": 2629,
                         "end": 0,
                         "left": {
-                          "commentStart": 2658,
+                          "abs_path": false,
+                          "commentStart": 2629,
                           "end": 0,
-                          "name": "holeRadius",
+                          "name": {
+                            "commentStart": 2629,
+                            "end": 0,
+                            "name": "holeRadius",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "*",
                         "right": {
                           "arguments": [
                             {
-                              "commentStart": 2675,
+                              "abs_path": false,
+                              "commentStart": 2646,
                               "end": 0,
-                              "name": "startAngle",
+                              "name": {
+                                "commentStart": 2646,
+                                "end": 0,
+                                "name": "startAngle",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
-                            "commentStart": 2671,
+                            "abs_path": false,
+                            "commentStart": 2642,
                             "end": 0,
-                            "name": "sin",
+                            "name": {
+                              "commentStart": 2642,
+                              "end": 0,
+                              "name": "sin",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 2671,
+                          "commentStart": 2642,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3372,7 +4074,7 @@ description: Result of parsing gear.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 2695,
+                    "commentStart": 2666,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -3380,13 +4082,21 @@ description: Result of parsing gear.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 2597,
+                  "abs_path": false,
+                  "commentStart": 2568,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 2568,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2597,
+                "commentStart": 2568,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3397,116 +4107,46 @@ description: Result of parsing gear.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2709,
+                      "commentStart": 2680,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2718,
+                      "abs_path": false,
+                      "commentStart": 2689,
                       "end": 0,
-                      "name": "keywayDepth",
-                      "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
-                    }
-                  }
-                ],
-                "callee": {
-                  "commentStart": 2703,
-                  "end": 0,
-                  "name": "xLine",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "commentStart": 2703,
-                "end": 0,
-                "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": null
-              },
-              {
-                "arguments": [
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 2742,
-                      "end": 0,
-                      "name": "length",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "argument": {
-                        "commentStart": 2752,
-                        "end": 0,
-                        "name": "keywayWidth",
-                        "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
-                      },
-                      "commentStart": 2751,
-                      "end": 0,
-                      "operator": "-",
-                      "start": 0,
-                      "type": "UnaryExpression",
-                      "type": "UnaryExpression"
-                    }
-                  }
-                ],
-                "callee": {
-                  "commentStart": 2736,
-                  "end": 0,
-                  "name": "yLine",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "commentStart": 2736,
-                "end": 0,
-                "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": null
-              },
-              {
-                "arguments": [
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 2776,
-                      "end": 0,
-                      "name": "length",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "argument": {
-                        "commentStart": 2786,
+                      "name": {
+                        "commentStart": 2689,
                         "end": 0,
                         "name": "keywayDepth",
                         "start": 0,
-                        "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "commentStart": 2785,
-                      "end": 0,
-                      "operator": "-",
+                      "path": [],
                       "start": 0,
-                      "type": "UnaryExpression",
-                      "type": "UnaryExpression"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
-                  "commentStart": 2770,
+                  "abs_path": false,
+                  "commentStart": 2674,
                   "end": 0,
-                  "name": "xLine",
+                  "name": {
+                    "commentStart": 2674,
+                    "end": 0,
+                    "name": "xLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2770,
+                "commentStart": 2674,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3516,14 +4156,132 @@ description: Result of parsing gear.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2808,
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 2713,
+                      "end": 0,
+                      "name": "length",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "argument": {
+                        "abs_path": false,
+                        "commentStart": 2723,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 2723,
+                          "end": 0,
+                          "name": "keywayWidth",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "commentStart": 2722,
+                      "end": 0,
+                      "operator": "-",
+                      "start": 0,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 2707,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 2707,
+                    "end": 0,
+                    "name": "yLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 2707,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 2747,
+                      "end": 0,
+                      "name": "length",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "argument": {
+                        "abs_path": false,
+                        "commentStart": 2757,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 2757,
+                          "end": 0,
+                          "name": "keywayDepth",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "commentStart": 2756,
+                      "end": 0,
+                      "operator": "-",
+                      "start": 0,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 2741,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 2741,
+                    "end": 0,
+                    "name": "xLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 2741,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "commentStart": 2779,
                     "end": 0,
                     "properties": [
                       {
-                        "commentStart": 2817,
+                        "commentStart": 2788,
                         "end": 0,
                         "key": {
-                          "commentStart": 2817,
+                          "commentStart": 2788,
                           "end": 0,
                           "name": "angleEnd",
                           "start": 0,
@@ -3532,7 +4290,7 @@ description: Result of parsing gear.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 2828,
+                          "commentStart": 2799,
                           "end": 0,
                           "raw": "180",
                           "start": 0,
@@ -3545,10 +4303,10 @@ description: Result of parsing gear.kcl
                         }
                       },
                       {
-                        "commentStart": 2840,
+                        "commentStart": 2811,
                         "end": 0,
                         "key": {
-                          "commentStart": 2840,
+                          "commentStart": 2811,
                           "end": 0,
                           "name": "angleStart",
                           "start": 0,
@@ -3557,20 +4315,20 @@ description: Result of parsing gear.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 2853,
+                          "commentStart": 2824,
                           "end": 0,
                           "left": {
-                            "commentStart": 2853,
+                            "commentStart": 2824,
                             "end": 0,
                             "left": {
-                              "commentStart": 2853,
+                              "commentStart": 2824,
                               "end": 0,
                               "left": {
-                                "commentStart": 2853,
+                                "commentStart": 2824,
                                 "end": 0,
                                 "left": {
                                   "argument": {
-                                    "commentStart": 2854,
+                                    "commentStart": 2825,
                                     "end": 0,
                                     "raw": "1",
                                     "start": 0,
@@ -3581,7 +4339,7 @@ description: Result of parsing gear.kcl
                                       "suffix": "None"
                                     }
                                   },
-                                  "commentStart": 2853,
+                                  "commentStart": 2824,
                                   "end": 0,
                                   "operator": "-",
                                   "start": 0,
@@ -3590,7 +4348,7 @@ description: Result of parsing gear.kcl
                                 },
                                 "operator": "*",
                                 "right": {
-                                  "commentStart": 2858,
+                                  "commentStart": 2829,
                                   "end": 0,
                                   "raw": "180",
                                   "start": 0,
@@ -3607,12 +4365,20 @@ description: Result of parsing gear.kcl
                               },
                               "operator": "/",
                               "right": {
-                                "commentStart": 2864,
+                                "abs_path": false,
+                                "commentStart": 2835,
                                 "end": 0,
-                                "name": "PI",
+                                "name": {
+                                  "commentStart": 2835,
+                                  "end": 0,
+                                  "name": "PI",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 0,
                               "type": "BinaryExpression",
@@ -3620,12 +4386,20 @@ description: Result of parsing gear.kcl
                             },
                             "operator": "*",
                             "right": {
-                              "commentStart": 2869,
+                              "abs_path": false,
+                              "commentStart": 2840,
                               "end": 0,
-                              "name": "startAngle",
+                              "name": {
+                                "commentStart": 2840,
+                                "end": 0,
+                                "name": "startAngle",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 0,
                             "type": "BinaryExpression",
@@ -3633,7 +4407,7 @@ description: Result of parsing gear.kcl
                           },
                           "operator": "+",
                           "right": {
-                            "commentStart": 2882,
+                            "commentStart": 2853,
                             "end": 0,
                             "raw": "360",
                             "start": 0,
@@ -3650,10 +4424,10 @@ description: Result of parsing gear.kcl
                         }
                       },
                       {
-                        "commentStart": 2894,
+                        "commentStart": 2865,
                         "end": 0,
                         "key": {
-                          "commentStart": 2894,
+                          "commentStart": 2865,
                           "end": 0,
                           "name": "radius",
                           "start": 0,
@@ -3662,12 +4436,20 @@ description: Result of parsing gear.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 2903,
+                          "abs_path": false,
+                          "commentStart": 2874,
                           "end": 0,
-                          "name": "holeRadius",
+                          "name": {
+                            "commentStart": 2874,
+                            "end": 0,
+                            "name": "holeRadius",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
@@ -3676,7 +4458,7 @@ description: Result of parsing gear.kcl
                     "type": "ObjectExpression"
                   },
                   {
-                    "commentStart": 2922,
+                    "commentStart": 2893,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -3684,13 +4466,21 @@ description: Result of parsing gear.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 2804,
+                  "abs_path": false,
+                  "commentStart": 2775,
                   "end": 0,
-                  "name": "arc",
+                  "name": {
+                    "commentStart": 2775,
+                    "end": 0,
+                    "name": "arc",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2804,
+                "commentStart": 2775,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3699,14 +4489,14 @@ description: Result of parsing gear.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2934,
+                    "commentStart": 2905,
                     "end": 0,
                     "properties": [
                       {
-                        "commentStart": 2943,
+                        "commentStart": 2914,
                         "end": 0,
                         "key": {
-                          "commentStart": 2943,
+                          "commentStart": 2914,
                           "end": 0,
                           "name": "angleEnd",
                           "start": 0,
@@ -3715,13 +4505,13 @@ description: Result of parsing gear.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 2954,
+                          "commentStart": 2925,
                           "end": 0,
                           "left": {
-                            "commentStart": 2954,
+                            "commentStart": 2925,
                             "end": 0,
                             "left": {
-                              "commentStart": 2954,
+                              "commentStart": 2925,
                               "end": 0,
                               "raw": "180",
                               "start": 0,
@@ -3734,12 +4524,20 @@ description: Result of parsing gear.kcl
                             },
                             "operator": "/",
                             "right": {
-                              "commentStart": 2960,
+                              "abs_path": false,
+                              "commentStart": 2931,
                               "end": 0,
-                              "name": "PI",
+                              "name": {
+                                "commentStart": 2931,
+                                "end": 0,
+                                "name": "PI",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 0,
                             "type": "BinaryExpression",
@@ -3747,12 +4545,20 @@ description: Result of parsing gear.kcl
                           },
                           "operator": "*",
                           "right": {
-                            "commentStart": 2965,
+                            "abs_path": false,
+                            "commentStart": 2936,
                             "end": 0,
-                            "name": "startAngle",
+                            "name": {
+                              "commentStart": 2936,
+                              "end": 0,
+                              "name": "startAngle",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 0,
                           "type": "BinaryExpression",
@@ -3760,10 +4566,10 @@ description: Result of parsing gear.kcl
                         }
                       },
                       {
-                        "commentStart": 2984,
+                        "commentStart": 2955,
                         "end": 0,
                         "key": {
-                          "commentStart": 2984,
+                          "commentStart": 2955,
                           "end": 0,
                           "name": "angleStart",
                           "start": 0,
@@ -3772,7 +4578,7 @@ description: Result of parsing gear.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 2997,
+                          "commentStart": 2968,
                           "end": 0,
                           "raw": "180",
                           "start": 0,
@@ -3785,10 +4591,10 @@ description: Result of parsing gear.kcl
                         }
                       },
                       {
-                        "commentStart": 3009,
+                        "commentStart": 2980,
                         "end": 0,
                         "key": {
-                          "commentStart": 3009,
+                          "commentStart": 2980,
                           "end": 0,
                           "name": "radius",
                           "start": 0,
@@ -3797,12 +4603,20 @@ description: Result of parsing gear.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 3018,
+                          "abs_path": false,
+                          "commentStart": 2989,
                           "end": 0,
-                          "name": "holeRadius",
+                          "name": {
+                            "commentStart": 2989,
+                            "end": 0,
+                            "name": "holeRadius",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
@@ -3811,7 +4625,7 @@ description: Result of parsing gear.kcl
                     "type": "ObjectExpression"
                   },
                   {
-                    "commentStart": 3037,
+                    "commentStart": 3008,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -3819,13 +4633,21 @@ description: Result of parsing gear.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 2930,
+                  "abs_path": false,
+                  "commentStart": 2901,
                   "end": 0,
-                  "name": "arc",
+                  "name": {
+                    "commentStart": 2901,
+                    "end": 0,
+                    "name": "arc",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2930,
+                "commentStart": 2901,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3834,13 +4656,21 @@ description: Result of parsing gear.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "commentStart": 3045,
+                  "abs_path": false,
+                  "commentStart": 3016,
                   "end": 0,
-                  "name": "close",
+                  "name": {
+                    "commentStart": 3016,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 3045,
+                "commentStart": 3016,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3851,7 +4681,7 @@ description: Result of parsing gear.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 3066,
+                      "commentStart": 3037,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -3859,14 +4689,22 @@ description: Result of parsing gear.kcl
                     },
                     "arg": {
                       "argument": {
-                        "commentStart": 3076,
+                        "abs_path": false,
+                        "commentStart": 3047,
                         "end": 0,
-                        "name": "gearHeight",
+                        "name": {
+                          "commentStart": 3047,
+                          "end": 0,
+                          "name": "gearHeight",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
-                      "commentStart": 3075,
+                      "commentStart": 3046,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -3876,13 +4714,21 @@ description: Result of parsing gear.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 3058,
+                  "abs_path": false,
+                  "commentStart": 3029,
                   "end": 0,
-                  "name": "extrude",
+                  "name": {
+                    "commentStart": 3029,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 3058,
+                "commentStart": 3029,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3890,7 +4736,7 @@ description: Result of parsing gear.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 2565,
+            "commentStart": 2536,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -3945,12 +4791,20 @@ description: Result of parsing gear.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "commentStart": 469,
               "end": 0,
-              "name": "in",
+              "name": {
+                "commentStart": 469,
+                "end": 0,
+                "name": "in",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],
@@ -3962,7 +4816,7 @@ description: Result of parsing gear.kcl
       "nonCodeNodes": {
         "13": [
           {
-            "commentStart": 1206,
+            "commentStart": 1202,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -3973,7 +4827,7 @@ description: Result of parsing gear.kcl
         ],
         "15": [
           {
-            "commentStart": 1433,
+            "commentStart": 1405,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -3984,7 +4838,7 @@ description: Result of parsing gear.kcl
         ],
         "17": [
           {
-            "commentStart": 1604,
+            "commentStart": 1576,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

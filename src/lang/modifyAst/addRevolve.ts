@@ -13,7 +13,7 @@ import { Selections } from 'lib/selections'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   createLiteral,
-  createIdentifier,
+  createLocalName,
   findUniqueName,
   createVariableDeclaration,
   createCallExpressionStdLibKw,
@@ -32,11 +32,66 @@ import {
 import { Artifact, getPathsFromArtifact } from 'lang/std/artifactGraph'
 import { kclManager } from 'lib/singletons'
 
+export function getAxisExpressionAndIndex(
+  axisOrEdge: 'Axis' | 'Edge',
+  axis: string | undefined,
+  edge: Selections | undefined,
+  ast: Node<Program>
+) {
+  let generatedAxis
+  let axisDeclaration: PathToNode | null = null
+  let axisIndexIfAxis: number | undefined = undefined
+
+  if (axisOrEdge === 'Edge' && edge) {
+    const pathToAxisSelection = getNodePathFromSourceRange(
+      ast,
+      edge.graphSelections[0]?.codeRef.range
+    )
+    const lineNode = getNodeFromPath<CallExpression | CallExpressionKw>(
+      ast,
+      pathToAxisSelection,
+      ['CallExpression', 'CallExpressionKw']
+    )
+    if (err(lineNode)) return lineNode
+
+    const tagResult = mutateAstWithTagForSketchSegment(ast, pathToAxisSelection)
+
+    // Have the tag whether it is already created or a new one is generated
+    if (err(tagResult)) return tagResult
+    const { tag } = tagResult
+    const axisSelection = edge?.graphSelections[0]?.artifact
+    if (!axisSelection) return new Error('Generated axis selection is missing.')
+    generatedAxis = getEdgeTagCall(tag, axisSelection)
+    if (
+      axisSelection.type === 'segment' ||
+      axisSelection.type === 'path' ||
+      axisSelection.type === 'edgeCut'
+    ) {
+      axisDeclaration = axisSelection.codeRef.pathToNode
+      if (!axisDeclaration)
+        return new Error('Expected to fine axis declaration')
+      const axisIndexInPathToNode =
+        axisDeclaration.findIndex((a) => a[0] === 'body') + 1
+      const value = axisDeclaration[axisIndexInPathToNode][0]
+      if (typeof value !== 'number')
+        return new Error('expected axis index value to be a number')
+      axisIndexIfAxis = value
+    }
+  } else if (axisOrEdge === 'Axis' && axis) {
+    generatedAxis = createLiteral(axis)
+  }
+
+  return {
+    generatedAxis,
+    axisIndexIfAxis,
+  }
+}
+
 export function revolveSketch(
   ast: Node<Program>,
   pathToSketchNode: PathToNode,
   angle: Expr = createLiteral(4),
-  axisOrEdge: string,
+  axisOrEdge: 'Axis' | 'Edge',
   axis: string,
   edge: Selections,
   artifactGraph: ArtifactGraph,
@@ -58,44 +113,6 @@ export function revolveSketch(
   const clonedAst = structuredClone(ast)
   const sketchNode = getNodeFromPath(clonedAst, pathToSketchNode)
   if (err(sketchNode)) return sketchNode
-
-  let generatedAxis
-  let axisDeclaration: PathToNode | null = null
-
-  if (axisOrEdge === 'Edge') {
-    const pathToAxisSelection = getNodePathFromSourceRange(
-      clonedAst,
-      edge.graphSelections[0]?.codeRef.range
-    )
-    const lineNode = getNodeFromPath<CallExpression | CallExpressionKw>(
-      clonedAst,
-      pathToAxisSelection,
-      ['CallExpression', 'CallExpressionKw']
-    )
-    if (err(lineNode)) return lineNode
-
-    const tagResult = mutateAstWithTagForSketchSegment(
-      clonedAst,
-      pathToAxisSelection
-    )
-
-    // Have the tag whether it is already created or a new one is generated
-    if (err(tagResult)) return tagResult
-    const { tag } = tagResult
-    const axisSelection = edge?.graphSelections[0]?.artifact
-    if (!axisSelection) return new Error('Generated axis selection is missing.')
-    generatedAxis = getEdgeTagCall(tag, axisSelection)
-    if (
-      axisSelection.type === 'segment' ||
-      axisSelection.type === 'path' ||
-      axisSelection.type === 'edgeCut'
-    ) {
-      axisDeclaration = axisSelection.codeRef.pathToNode
-    }
-  } else {
-    generatedAxis = createLiteral(axis)
-  }
-
   const sketchVariableDeclaratorNode = getNodeFromPath<VariableDeclarator>(
     clonedAst,
     pathToSketchNode,
@@ -104,11 +121,14 @@ export function revolveSketch(
   if (err(sketchVariableDeclaratorNode)) return sketchVariableDeclaratorNode
   const { node: sketchVariableDeclarator } = sketchVariableDeclaratorNode
 
+  const getAxisResult = getAxisExpressionAndIndex(axisOrEdge, axis, edge, ast)
+  if (err(getAxisResult)) return getAxisResult
+  const { generatedAxis, axisIndexIfAxis } = getAxisResult
   if (!generatedAxis) return new Error('Generated axis selection is missing.')
 
   const revolveCall = createCallExpressionStdLibKw(
     'revolve',
-    createIdentifier(sketchVariableDeclarator.id.name),
+    createLocalName(sketchVariableDeclarator.id.name),
     [createLabeledArg('angle', angle), createLabeledArg('axis', generatedAxis)]
   )
 
@@ -124,15 +144,8 @@ export function revolveSketch(
   }
 
   // If an axis was selected in KCL, find the max index to insert the revolve command
-  if (axisDeclaration) {
-    const axisIndexInPathToNode =
-      axisDeclaration.findIndex((a) => a[0] === 'body') + 1
-    const axisIndex = axisDeclaration[axisIndexInPathToNode][0]
-
-    if (typeof axisIndex !== 'number')
-      return new Error('expected axisIndex to be a number')
-
-    sketchIndexInBody = Math.max(sketchIndexInBody, axisIndex)
+  if (axisIndexIfAxis) {
+    sketchIndexInBody = Math.max(sketchIndexInBody, axisIndexIfAxis)
   }
 
   clonedAst.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)

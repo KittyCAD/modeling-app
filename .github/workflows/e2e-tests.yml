@@ -1,7 +1,9 @@
 name: E2E Tests
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - all-e2e # this bypasses `fixme()` using `orRunWhenFullSuiteEnabled()`
   pull_request:
   schedule:
     - cron: 0 * * * *  # hourly
@@ -14,7 +16,6 @@ permissions:
   contents: write
   pull-requests: write
   actions: read
-
 
 jobs:
 
@@ -67,14 +68,16 @@ jobs:
       - name: Display conditions
         shell: bash
         run: |
-          # For debugging purposes.
+          # For debugging purposes
           set -euo pipefail
+          echo "GITHUB_REF: $GITHUB_REF"
+          echo "GITHUB_HEAD_REF: $GITHUB_HEAD_REF"
+          echo "GITHUB_BASE_REF: $GITHUB_BASE_REF"
           echo "significant: ${{ steps.path-changes.outputs.significant }}"
           echo "should-run: ${{ steps.should-run.outputs.should-run }}"
 
-
   prepare-wasm:
-    # seperate job on Ubuntu to build or fetch the wasm blob once on the fastest runner
+    # separate job on Ubuntu to build or fetch the wasm blob once on the fastest runner
     runs-on: runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64
     needs: conditions
     steps:
@@ -159,7 +162,6 @@ jobs:
           name: prepared-wasm
           path: |
             rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
-  
 
   snapshots:
     name: playwright:snapshots:ubuntu
@@ -243,7 +245,7 @@ jobs:
           retention-days: 30
           overwrite: true
 
-      - name: check for changes
+      - name: Check for changes
         if: ${{ needs.conditions.outputs.should-run == 'true' && github.ref != 'refs/heads/main' }}
         shell: bash
         id: git-check
@@ -255,7 +257,8 @@ jobs:
             fi
 
       - name: Commit changes, if any
-        if: ${{ needs.conditions.outputs.should-run == 'true' && steps.git-check.outputs.modified == 'true' }}
+        # TODO: find a more reliable way to detect visual changes
+        if: ${{ false && needs.conditions.outputs.should-run == 'true' && steps.git-check.outputs.modified == 'true' }}
         shell: bash
         run: |
           git add e2e/playwright/snapshot-tests.spec.ts-snapshots e2e/playwright/snapshots
@@ -341,7 +344,7 @@ jobs:
         run: yarn tronb:vite:dev
 
       - name: Install vector
-        if: contains(matrix.os, 'ubuntu')
+        if: ${{ needs.conditions.outputs.should-run == 'true' && contains(matrix.os, 'ubuntu') }}
         shell: bash
         run: |
           curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh

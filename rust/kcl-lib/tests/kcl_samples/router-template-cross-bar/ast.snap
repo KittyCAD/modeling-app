@@ -89,11 +89,19 @@ description: Result of parsing router-template-cross-bar.kcl
             "right": {
               "arguments": [],
               "callee": {
+                "abs_path": false,
                 "commentStart": 184,
                 "end": 0,
-                "name": "inch",
+                "name": {
+                  "commentStart": 184,
+                  "end": 0,
+                  "name": "inch",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 184,
               "end": 0,
@@ -136,21 +144,37 @@ description: Result of parsing router-template-cross-bar.kcl
                 "commentStart": 206,
                 "end": 0,
                 "left": {
+                  "abs_path": false,
                   "commentStart": 206,
                   "end": 0,
-                  "name": "templateDiameter",
+                  "name": {
+                    "commentStart": 206,
+                    "end": 0,
+                    "name": "templateDiameter",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "-",
                 "right": {
+                  "abs_path": false,
                   "commentStart": 225,
                   "end": 0,
-                  "name": "routerDiameter",
+                  "name": {
+                    "commentStart": 225,
+                    "end": 0,
+                    "name": "routerDiameter",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "start": 0,
                 "type": "BinaryExpression",
@@ -423,21 +447,37 @@ description: Result of parsing router-template-cross-bar.kcl
               "commentStart": 376,
               "end": 0,
               "left": {
+                "abs_path": false,
                 "commentStart": 376,
                 "end": 0,
-                "name": "slateWidthHalf",
+                "name": {
+                  "commentStart": 376,
+                  "end": 0,
+                  "name": "slateWidthHalf",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "+",
               "right": {
+                "abs_path": false,
                 "commentStart": 393,
                 "end": 0,
-                "name": "templateThickness",
+                "name": {
+                  "commentStart": 393,
+                  "end": 0,
+                  "name": "templateThickness",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "start": 0,
               "type": "BinaryExpression",
@@ -445,12 +485,20 @@ description: Result of parsing router-template-cross-bar.kcl
             },
             "operator": "+",
             "right": {
+              "abs_path": false,
               "commentStart": 413,
               "end": 0,
-              "name": "templateGap",
+              "name": {
+                "commentStart": 413,
+                "end": 0,
+                "name": "templateGap",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "start": 0,
             "type": "BinaryExpression",
@@ -482,21 +530,36 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "commentStart": 451,
                     "end": 0,
-                    "raw": "'XZ'",
+                    "name": {
+                      "commentStart": 451,
+                      "end": 0,
+                      "name": "XZ",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "XZ"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 437,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 437,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 437,
                 "end": 0,
@@ -507,35 +570,59 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 477,
+                    "commentStart": 475,
                     "elements": [
                       {
-                        "commentStart": 478,
+                        "abs_path": false,
+                        "commentStart": 476,
                         "end": 0,
-                        "name": "ZERO",
+                        "name": {
+                          "commentStart": 476,
+                          "end": 0,
+                          "name": "ZERO",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       {
-                        "commentStart": 484,
+                        "commentStart": 482,
                         "end": 0,
                         "left": {
-                          "commentStart": 484,
+                          "abs_path": false,
+                          "commentStart": 482,
                           "end": 0,
-                          "name": "depth",
+                          "name": {
+                            "commentStart": 482,
+                            "end": 0,
+                            "name": "depth",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "+",
                         "right": {
-                          "commentStart": 492,
+                          "abs_path": false,
+                          "commentStart": 490,
                           "end": 0,
-                          "name": "templateGap",
+                          "name": {
+                            "commentStart": 490,
+                            "end": 0,
+                            "name": "templateGap",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 0,
                         "type": "BinaryExpression",
@@ -548,7 +635,7 @@ description: Result of parsing router-template-cross-bar.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 506,
+                    "commentStart": 504,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -556,13 +643,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 462,
+                  "abs_path": false,
+                  "commentStart": 460,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 460,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 462,
+                "commentStart": 460,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -573,31 +668,47 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 520,
+                      "commentStart": 518,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 529,
+                      "commentStart": 527,
                       "end": 0,
                       "left": {
-                        "commentStart": 529,
+                        "abs_path": false,
+                        "commentStart": 527,
                         "end": 0,
-                        "name": "slateWidthHalf",
+                        "name": {
+                          "commentStart": 527,
+                          "end": 0,
+                          "name": "slateWidthHalf",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "-",
                       "right": {
-                        "commentStart": 546,
+                        "abs_path": false,
+                        "commentStart": 544,
                         "end": 0,
-                        "name": "radius",
+                        "name": {
+                          "commentStart": 544,
+                          "end": 0,
+                          "name": "radius",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
                       "type": "BinaryExpression",
@@ -607,14 +718,14 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 554,
+                      "commentStart": 552,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 560,
+                      "commentStart": 558,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -624,13 +735,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 514,
+                  "abs_path": false,
+                  "commentStart": 512,
                   "end": 0,
-                  "name": "xLine",
+                  "name": {
+                    "commentStart": 512,
+                    "end": 0,
+                    "name": "xLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 514,
+                "commentStart": 512,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -640,14 +759,14 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 577,
+                    "commentStart": 575,
                     "end": 0,
                     "properties": [
                       {
-                        "commentStart": 586,
+                        "commentStart": 584,
                         "end": 0,
                         "key": {
-                          "commentStart": 586,
+                          "commentStart": 584,
                           "end": 0,
                           "name": "angleEnd",
                           "start": 0,
@@ -656,7 +775,7 @@ description: Result of parsing router-template-cross-bar.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 597,
+                          "commentStart": 595,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -669,10 +788,10 @@ description: Result of parsing router-template-cross-bar.kcl
                         }
                       },
                       {
-                        "commentStart": 607,
+                        "commentStart": 605,
                         "end": 0,
                         "key": {
-                          "commentStart": 607,
+                          "commentStart": 605,
                           "end": 0,
                           "name": "angleStart",
                           "start": 0,
@@ -681,7 +800,7 @@ description: Result of parsing router-template-cross-bar.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 620,
+                          "commentStart": 618,
                           "end": 0,
                           "raw": "90",
                           "start": 0,
@@ -694,10 +813,10 @@ description: Result of parsing router-template-cross-bar.kcl
                         }
                       },
                       {
-                        "commentStart": 631,
+                        "commentStart": 629,
                         "end": 0,
                         "key": {
-                          "commentStart": 631,
+                          "commentStart": 629,
                           "end": 0,
                           "name": "radius",
                           "start": 0,
@@ -706,10 +825,10 @@ description: Result of parsing router-template-cross-bar.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 640,
+                          "commentStart": 638,
                           "end": 0,
                           "left": {
-                            "commentStart": 640,
+                            "commentStart": 638,
                             "end": 0,
                             "raw": "10",
                             "start": 0,
@@ -722,12 +841,20 @@ description: Result of parsing router-template-cross-bar.kcl
                           },
                           "operator": "+",
                           "right": {
-                            "commentStart": 645,
+                            "abs_path": false,
+                            "commentStart": 643,
                             "end": 0,
-                            "name": "templateGap",
+                            "name": {
+                              "commentStart": 643,
+                              "end": 0,
+                              "name": "templateGap",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 0,
                           "type": "BinaryExpression",
@@ -740,14 +867,14 @@ description: Result of parsing router-template-cross-bar.kcl
                     "type": "ObjectExpression"
                   },
                   {
-                    "commentStart": 665,
+                    "commentStart": 663,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "commentStart": 668,
+                    "commentStart": 666,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -756,13 +883,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 573,
+                  "abs_path": false,
+                  "commentStart": 571,
                   "end": 0,
-                  "name": "arc",
+                  "name": {
+                    "commentStart": 571,
+                    "end": 0,
+                    "name": "arc",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 573,
+                "commentStart": 571,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -773,7 +908,7 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 687,
+                      "commentStart": 685,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
@@ -781,14 +916,22 @@ description: Result of parsing router-template-cross-bar.kcl
                     },
                     "arg": {
                       "argument": {
-                        "commentStart": 702,
+                        "abs_path": false,
+                        "commentStart": 700,
                         "end": 0,
-                        "name": "templateThickness",
+                        "name": {
+                          "commentStart": 700,
+                          "end": 0,
+                          "name": "templateThickness",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
-                      "commentStart": 701,
+                      "commentStart": 699,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -799,14 +942,14 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 721,
+                      "commentStart": 719,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 727,
+                      "commentStart": 725,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -816,13 +959,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 681,
+                  "abs_path": false,
+                  "commentStart": 679,
                   "end": 0,
-                  "name": "yLine",
+                  "name": {
+                    "commentStart": 679,
+                    "end": 0,
+                    "name": "yLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 681,
+                "commentStart": 679,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -834,32 +985,40 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 746,
+                      "commentStart": 744,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 755,
+                      "abs_path": false,
+                      "commentStart": 753,
                       "end": 0,
-                      "name": "templateThickness",
+                      "name": {
+                        "commentStart": 753,
+                        "end": 0,
+                        "name": "templateThickness",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 774,
+                      "commentStart": 772,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 780,
+                      "commentStart": 778,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -869,13 +1028,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 740,
+                  "abs_path": false,
+                  "commentStart": 738,
                   "end": 0,
-                  "name": "xLine",
+                  "name": {
+                    "commentStart": 738,
+                    "end": 0,
+                    "name": "xLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 740,
+                "commentStart": 738,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -887,40 +1054,56 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 799,
+                      "commentStart": 797,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 814,
+                      "commentStart": 812,
                       "end": 0,
                       "left": {
-                        "commentStart": 814,
+                        "commentStart": 812,
                         "end": 0,
                         "left": {
-                          "commentStart": 814,
+                          "commentStart": 812,
                           "end": 0,
                           "left": {
                             "arguments": [
                               {
-                                "commentStart": 822,
+                                "abs_path": false,
+                                "commentStart": 820,
                                 "end": 0,
-                                "name": "seg01",
+                                "name": {
+                                  "commentStart": 820,
+                                  "end": 0,
+                                  "name": "seg01",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               }
                             ],
                             "callee": {
-                              "commentStart": 814,
+                              "abs_path": false,
+                              "commentStart": 812,
                               "end": 0,
-                              "name": "segEndY",
+                              "name": {
+                                "commentStart": 812,
+                                "end": 0,
+                                "name": "segEndY",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier"
+                              "type": "Name"
                             },
-                            "commentStart": 814,
+                            "commentStart": 812,
                             "end": 0,
                             "start": 0,
                             "type": "CallExpression",
@@ -928,12 +1111,20 @@ description: Result of parsing router-template-cross-bar.kcl
                           },
                           "operator": "+",
                           "right": {
-                            "commentStart": 831,
+                            "abs_path": false,
+                            "commentStart": 829,
                             "end": 0,
-                            "name": "templateThickness",
+                            "name": {
+                              "commentStart": 829,
+                              "end": 0,
+                              "name": "templateThickness",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 0,
                           "type": "BinaryExpression",
@@ -941,7 +1132,7 @@ description: Result of parsing router-template-cross-bar.kcl
                         },
                         "operator": "/",
                         "right": {
-                          "commentStart": 852,
+                          "commentStart": 850,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -958,12 +1149,20 @@ description: Result of parsing router-template-cross-bar.kcl
                       },
                       "operator": "-",
                       "right": {
-                        "commentStart": 856,
+                        "abs_path": false,
+                        "commentStart": 854,
                         "end": 0,
-                        "name": "templateThickness",
+                        "name": {
+                          "commentStart": 854,
+                          "end": 0,
+                          "name": "templateThickness",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
                       "type": "BinaryExpression",
@@ -973,14 +1172,14 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 875,
+                      "commentStart": 873,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 881,
+                      "commentStart": 879,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -990,13 +1189,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 793,
+                  "abs_path": false,
+                  "commentStart": 791,
                   "end": 0,
-                  "name": "yLine",
+                  "name": {
+                    "commentStart": 791,
+                    "end": 0,
+                    "name": "yLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 793,
+                "commentStart": 791,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1008,34 +1215,50 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 900,
+                      "commentStart": 898,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 914,
+                      "commentStart": 912,
                       "end": 0,
                       "left": {
                         "arguments": [
                           {
-                            "commentStart": 922,
+                            "abs_path": false,
+                            "commentStart": 920,
                             "end": 0,
-                            "name": "seg03",
+                            "name": {
+                              "commentStart": 920,
+                              "end": 0,
+                              "name": "seg03",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
-                          "commentStart": 914,
+                          "abs_path": false,
+                          "commentStart": 912,
                           "end": 0,
-                          "name": "segEndX",
+                          "name": {
+                            "commentStart": 912,
+                            "end": 0,
+                            "name": "segEndX",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
-                        "commentStart": 914,
+                        "commentStart": 912,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -1043,12 +1266,20 @@ description: Result of parsing router-template-cross-bar.kcl
                       },
                       "operator": "+",
                       "right": {
-                        "commentStart": 931,
+                        "abs_path": false,
+                        "commentStart": 929,
                         "end": 0,
-                        "name": "minClampingDistance",
+                        "name": {
+                          "commentStart": 929,
+                          "end": 0,
+                          "name": "minClampingDistance",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
                       "type": "BinaryExpression",
@@ -1058,14 +1289,14 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 952,
+                      "commentStart": 950,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 958,
+                      "commentStart": 956,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1075,13 +1306,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 894,
+                  "abs_path": false,
+                  "commentStart": 892,
                   "end": 0,
-                  "name": "xLine",
+                  "name": {
+                    "commentStart": 892,
+                    "end": 0,
+                    "name": "xLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 894,
+                "commentStart": 892,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1093,26 +1332,34 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 977,
+                      "commentStart": 975,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 986,
+                      "commentStart": 984,
                       "end": 0,
                       "left": {
-                        "commentStart": 986,
+                        "abs_path": false,
+                        "commentStart": 984,
                         "end": 0,
-                        "name": "templateThickness",
+                        "name": {
+                          "commentStart": 984,
+                          "end": 0,
+                          "name": "templateThickness",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "*",
                       "right": {
-                        "commentStart": 1006,
+                        "commentStart": 1004,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -1131,14 +1378,14 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1009,
+                      "commentStart": 1007,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1015,
+                      "commentStart": 1013,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1148,13 +1395,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 971,
+                  "abs_path": false,
+                  "commentStart": 969,
                   "end": 0,
-                  "name": "yLine",
+                  "name": {
+                    "commentStart": 969,
+                    "end": 0,
+                    "name": "yLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 971,
+                "commentStart": 969,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1166,34 +1421,50 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1034,
+                      "commentStart": 1032,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1048,
+                      "commentStart": 1046,
                       "end": 0,
                       "left": {
                         "arguments": [
                           {
-                            "commentStart": 1056,
+                            "abs_path": false,
+                            "commentStart": 1054,
                             "end": 0,
-                            "name": "seg02",
+                            "name": {
+                              "commentStart": 1054,
+                              "end": 0,
+                              "name": "seg02",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
-                          "commentStart": 1048,
+                          "abs_path": false,
+                          "commentStart": 1046,
                           "end": 0,
-                          "name": "segEndX",
+                          "name": {
+                            "commentStart": 1046,
+                            "end": 0,
+                            "name": "segEndX",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
-                        "commentStart": 1048,
+                        "commentStart": 1046,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -1201,7 +1472,7 @@ description: Result of parsing router-template-cross-bar.kcl
                       },
                       "operator": "+",
                       "right": {
-                        "commentStart": 1065,
+                        "commentStart": 1063,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -1220,14 +1491,14 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1068,
+                      "commentStart": 1066,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1074,
+                      "commentStart": 1072,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1237,13 +1508,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1028,
+                  "abs_path": false,
+                  "commentStart": 1026,
                   "end": 0,
-                  "name": "xLine",
+                  "name": {
+                    "commentStart": 1026,
+                    "end": 0,
+                    "name": "xLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1028,
+                "commentStart": 1026,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1255,34 +1534,50 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1093,
+                      "commentStart": 1091,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1107,
+                      "commentStart": 1105,
                       "end": 0,
                       "left": {
                         "arguments": [
                           {
-                            "commentStart": 1115,
+                            "abs_path": false,
+                            "commentStart": 1113,
                             "end": 0,
-                            "name": "seg01",
+                            "name": {
+                              "commentStart": 1113,
+                              "end": 0,
+                              "name": "seg01",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
-                          "commentStart": 1107,
+                          "abs_path": false,
+                          "commentStart": 1105,
                           "end": 0,
-                          "name": "segEndY",
+                          "name": {
+                            "commentStart": 1105,
+                            "end": 0,
+                            "name": "segEndY",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
-                        "commentStart": 1107,
+                        "commentStart": 1105,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -1290,12 +1585,20 @@ description: Result of parsing router-template-cross-bar.kcl
                       },
                       "operator": "+",
                       "right": {
-                        "commentStart": 1124,
+                        "abs_path": false,
+                        "commentStart": 1122,
                         "end": 0,
-                        "name": "templateThickness",
+                        "name": {
+                          "commentStart": 1122,
+                          "end": 0,
+                          "name": "templateThickness",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
                       "type": "BinaryExpression",
@@ -1305,14 +1608,14 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1143,
+                      "commentStart": 1141,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1149,
+                      "commentStart": 1147,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1322,13 +1625,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1087,
+                  "abs_path": false,
+                  "commentStart": 1085,
                   "end": 0,
-                  "name": "yLine",
+                  "name": {
+                    "commentStart": 1085,
+                    "end": 0,
+                    "name": "yLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1087,
+                "commentStart": 1085,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1340,32 +1651,40 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1168,
+                      "commentStart": 1166,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1182,
+                      "abs_path": false,
+                      "commentStart": 1180,
                       "end": 0,
-                      "name": "ZERO",
+                      "name": {
+                        "commentStart": 1180,
+                        "end": 0,
+                        "name": "ZERO",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1188,
+                      "commentStart": 1186,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1194,
+                      "commentStart": 1192,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1375,13 +1694,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1162,
+                  "abs_path": false,
+                  "commentStart": 1160,
                   "end": 0,
-                  "name": "xLine",
+                  "name": {
+                    "commentStart": 1160,
+                    "end": 0,
+                    "name": "xLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1162,
+                "commentStart": 1160,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1393,7 +1720,7 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1213,
+                      "commentStart": 1211,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1403,28 +1730,44 @@ description: Result of parsing router-template-cross-bar.kcl
                       "argument": {
                         "arguments": [
                           {
-                            "commentStart": 1230,
+                            "abs_path": false,
+                            "commentStart": 1228,
                             "end": 0,
-                            "name": "seg04",
+                            "name": {
+                              "commentStart": 1228,
+                              "end": 0,
+                              "name": "seg04",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
-                          "commentStart": 1223,
+                          "abs_path": false,
+                          "commentStart": 1221,
                           "end": 0,
-                          "name": "segLen",
+                          "name": {
+                            "commentStart": 1221,
+                            "end": 0,
+                            "name": "segLen",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
-                        "commentStart": 1223,
+                        "commentStart": 1221,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
-                      "commentStart": 1222,
+                      "commentStart": 1220,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -1434,13 +1777,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1207,
+                  "abs_path": false,
+                  "commentStart": 1205,
                   "end": 0,
-                  "name": "xLine",
+                  "name": {
+                    "commentStart": 1205,
+                    "end": 0,
+                    "name": "xLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1207,
+                "commentStart": 1205,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1452,7 +1803,7 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1249,
+                      "commentStart": 1247,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1462,28 +1813,44 @@ description: Result of parsing router-template-cross-bar.kcl
                       "argument": {
                         "arguments": [
                           {
-                            "commentStart": 1266,
+                            "abs_path": false,
+                            "commentStart": 1264,
                             "end": 0,
-                            "name": "seg10",
+                            "name": {
+                              "commentStart": 1264,
+                              "end": 0,
+                              "name": "seg10",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
-                          "commentStart": 1259,
+                          "abs_path": false,
+                          "commentStart": 1257,
                           "end": 0,
-                          "name": "segLen",
+                          "name": {
+                            "commentStart": 1257,
+                            "end": 0,
+                            "name": "segLen",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
-                        "commentStart": 1259,
+                        "commentStart": 1257,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
-                      "commentStart": 1258,
+                      "commentStart": 1256,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -1493,13 +1860,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1243,
+                  "abs_path": false,
+                  "commentStart": 1241,
                   "end": 0,
-                  "name": "yLine",
+                  "name": {
+                    "commentStart": 1241,
+                    "end": 0,
+                    "name": "yLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1243,
+                "commentStart": 1241,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1511,7 +1886,7 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1285,
+                      "commentStart": 1283,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1521,28 +1896,44 @@ description: Result of parsing router-template-cross-bar.kcl
                       "argument": {
                         "arguments": [
                           {
-                            "commentStart": 1302,
+                            "abs_path": false,
+                            "commentStart": 1300,
                             "end": 0,
-                            "name": "seg05",
+                            "name": {
+                              "commentStart": 1300,
+                              "end": 0,
+                              "name": "seg05",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
-                          "commentStart": 1295,
+                          "abs_path": false,
+                          "commentStart": 1293,
                           "end": 0,
-                          "name": "segLen",
+                          "name": {
+                            "commentStart": 1293,
+                            "end": 0,
+                            "name": "segLen",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
-                        "commentStart": 1295,
+                        "commentStart": 1293,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
-                      "commentStart": 1294,
+                      "commentStart": 1292,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -1552,13 +1943,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1279,
+                  "abs_path": false,
+                  "commentStart": 1277,
                   "end": 0,
-                  "name": "xLine",
+                  "name": {
+                    "commentStart": 1277,
+                    "end": 0,
+                    "name": "xLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1279,
+                "commentStart": 1277,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1570,7 +1969,7 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1321,
+                      "commentStart": 1319,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1580,28 +1979,44 @@ description: Result of parsing router-template-cross-bar.kcl
                       "argument": {
                         "arguments": [
                           {
-                            "commentStart": 1338,
+                            "abs_path": false,
+                            "commentStart": 1336,
                             "end": 0,
-                            "name": "seg08",
+                            "name": {
+                              "commentStart": 1336,
+                              "end": 0,
+                              "name": "seg08",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
-                          "commentStart": 1331,
+                          "abs_path": false,
+                          "commentStart": 1329,
                           "end": 0,
-                          "name": "segLen",
+                          "name": {
+                            "commentStart": 1329,
+                            "end": 0,
+                            "name": "segLen",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
-                        "commentStart": 1331,
+                        "commentStart": 1329,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
-                      "commentStart": 1330,
+                      "commentStart": 1328,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -1611,13 +2026,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1315,
+                  "abs_path": false,
+                  "commentStart": 1313,
                   "end": 0,
-                  "name": "yLine",
+                  "name": {
+                    "commentStart": 1313,
+                    "end": 0,
+                    "name": "yLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1315,
+                "commentStart": 1313,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1629,7 +2052,7 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1357,
+                      "commentStart": 1355,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1638,22 +2061,38 @@ description: Result of parsing router-template-cross-bar.kcl
                     "arg": {
                       "arguments": [
                         {
-                          "commentStart": 1373,
+                          "abs_path": false,
+                          "commentStart": 1371,
                           "end": 0,
-                          "name": "seg06",
+                          "name": {
+                            "commentStart": 1371,
+                            "end": 0,
+                            "name": "seg06",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "callee": {
-                        "commentStart": 1366,
+                        "abs_path": false,
+                        "commentStart": 1364,
                         "end": 0,
-                        "name": "segLen",
+                        "name": {
+                          "commentStart": 1364,
+                          "end": 0,
+                          "name": "segLen",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
-                      "commentStart": 1366,
+                      "commentStart": 1364,
                       "end": 0,
                       "start": 0,
                       "type": "CallExpression",
@@ -1662,13 +2101,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1351,
+                  "abs_path": false,
+                  "commentStart": 1349,
                   "end": 0,
-                  "name": "xLine",
+                  "name": {
+                    "commentStart": 1349,
+                    "end": 0,
+                    "name": "xLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1351,
+                "commentStart": 1349,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1680,7 +2127,7 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1392,
+                      "commentStart": 1390,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1690,28 +2137,44 @@ description: Result of parsing router-template-cross-bar.kcl
                       "argument": {
                         "arguments": [
                           {
-                            "commentStart": 1409,
+                            "abs_path": false,
+                            "commentStart": 1407,
                             "end": 0,
-                            "name": "seg02",
+                            "name": {
+                              "commentStart": 1407,
+                              "end": 0,
+                              "name": "seg02",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
-                          "commentStart": 1402,
+                          "abs_path": false,
+                          "commentStart": 1400,
                           "end": 0,
-                          "name": "segLen",
+                          "name": {
+                            "commentStart": 1400,
+                            "end": 0,
+                            "name": "segLen",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
-                        "commentStart": 1402,
+                        "commentStart": 1400,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
-                      "commentStart": 1401,
+                      "commentStart": 1399,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -1721,13 +2184,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1386,
+                  "abs_path": false,
+                  "commentStart": 1384,
                   "end": 0,
-                  "name": "yLine",
+                  "name": {
+                    "commentStart": 1384,
+                    "end": 0,
+                    "name": "yLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1386,
+                "commentStart": 1384,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1739,7 +2210,7 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1428,
+                      "commentStart": 1426,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1748,22 +2219,38 @@ description: Result of parsing router-template-cross-bar.kcl
                     "arg": {
                       "arguments": [
                         {
-                          "commentStart": 1444,
+                          "abs_path": false,
+                          "commentStart": 1442,
                           "end": 0,
-                          "name": "seg07",
+                          "name": {
+                            "commentStart": 1442,
+                            "end": 0,
+                            "name": "seg07",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "callee": {
-                        "commentStart": 1437,
+                        "abs_path": false,
+                        "commentStart": 1435,
                         "end": 0,
-                        "name": "segLen",
+                        "name": {
+                          "commentStart": 1435,
+                          "end": 0,
+                          "name": "segLen",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
-                      "commentStart": 1437,
+                      "commentStart": 1435,
                       "end": 0,
                       "start": 0,
                       "type": "CallExpression",
@@ -1772,13 +2259,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1422,
+                  "abs_path": false,
+                  "commentStart": 1420,
                   "end": 0,
-                  "name": "xLine",
+                  "name": {
+                    "commentStart": 1420,
+                    "end": 0,
+                    "name": "xLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1422,
+                "commentStart": 1420,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1790,7 +2285,7 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1463,
+                      "commentStart": 1461,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1799,22 +2294,38 @@ description: Result of parsing router-template-cross-bar.kcl
                     "arg": {
                       "arguments": [
                         {
-                          "commentStart": 1479,
+                          "abs_path": false,
+                          "commentStart": 1477,
                           "end": 0,
-                          "name": "seg03",
+                          "name": {
+                            "commentStart": 1477,
+                            "end": 0,
+                            "name": "seg03",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "callee": {
-                        "commentStart": 1472,
+                        "abs_path": false,
+                        "commentStart": 1470,
                         "end": 0,
-                        "name": "segLen",
+                        "name": {
+                          "commentStart": 1470,
+                          "end": 0,
+                          "name": "segLen",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
-                      "commentStart": 1472,
+                      "commentStart": 1470,
                       "end": 0,
                       "start": 0,
                       "type": "CallExpression",
@@ -1823,13 +2334,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1457,
+                  "abs_path": false,
+                  "commentStart": 1455,
                   "end": 0,
-                  "name": "yLine",
+                  "name": {
+                    "commentStart": 1455,
+                    "end": 0,
+                    "name": "yLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1457,
+                "commentStart": 1455,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1839,14 +2358,14 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1496,
+                    "commentStart": 1494,
                     "end": 0,
                     "properties": [
                       {
-                        "commentStart": 1505,
+                        "commentStart": 1503,
                         "end": 0,
                         "key": {
-                          "commentStart": 1505,
+                          "commentStart": 1503,
                           "end": 0,
                           "name": "angleEnd",
                           "start": 0,
@@ -1855,7 +2374,7 @@ description: Result of parsing router-template-cross-bar.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 1516,
+                          "commentStart": 1514,
                           "end": 0,
                           "raw": "90",
                           "start": 0,
@@ -1868,10 +2387,10 @@ description: Result of parsing router-template-cross-bar.kcl
                         }
                       },
                       {
-                        "commentStart": 1527,
+                        "commentStart": 1525,
                         "end": 0,
                         "key": {
-                          "commentStart": 1527,
+                          "commentStart": 1525,
                           "end": 0,
                           "name": "angleStart",
                           "start": 0,
@@ -1880,7 +2399,7 @@ description: Result of parsing router-template-cross-bar.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 1540,
+                          "commentStart": 1538,
                           "end": 0,
                           "raw": "180",
                           "start": 0,
@@ -1893,10 +2412,10 @@ description: Result of parsing router-template-cross-bar.kcl
                         }
                       },
                       {
-                        "commentStart": 1552,
+                        "commentStart": 1550,
                         "end": 0,
                         "key": {
-                          "commentStart": 1552,
+                          "commentStart": 1550,
                           "end": 0,
                           "name": "radius",
                           "start": 0,
@@ -1905,10 +2424,10 @@ description: Result of parsing router-template-cross-bar.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 1561,
+                          "commentStart": 1559,
                           "end": 0,
                           "left": {
-                            "commentStart": 1561,
+                            "commentStart": 1559,
                             "end": 0,
                             "raw": "10",
                             "start": 0,
@@ -1921,12 +2440,20 @@ description: Result of parsing router-template-cross-bar.kcl
                           },
                           "operator": "+",
                           "right": {
-                            "commentStart": 1566,
+                            "abs_path": false,
+                            "commentStart": 1564,
                             "end": 0,
-                            "name": "templateGap",
+                            "name": {
+                              "commentStart": 1564,
+                              "end": 0,
+                              "name": "templateGap",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 0,
                           "type": "BinaryExpression",
@@ -1939,7 +2466,7 @@ description: Result of parsing router-template-cross-bar.kcl
                     "type": "ObjectExpression"
                   },
                   {
-                    "commentStart": 1586,
+                    "commentStart": 1584,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1947,13 +2474,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1492,
+                  "abs_path": false,
+                  "commentStart": 1490,
                   "end": 0,
-                  "name": "arc",
+                  "name": {
+                    "commentStart": 1490,
+                    "end": 0,
+                    "name": "arc",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1492,
+                "commentStart": 1490,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1964,19 +2499,19 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1599,
+                      "commentStart": 1597,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1613,
+                      "commentStart": 1611,
                       "elements": [
                         {
                           "arguments": [
                             {
-                              "commentStart": 1628,
+                              "commentStart": 1626,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -1984,13 +2519,21 @@ description: Result of parsing router-template-cross-bar.kcl
                             }
                           ],
                           "callee": {
-                            "commentStart": 1614,
+                            "abs_path": false,
+                            "commentStart": 1612,
                             "end": 0,
-                            "name": "profileStartX",
+                            "name": {
+                              "commentStart": 1612,
+                              "end": 0,
+                              "name": "profileStartX",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 1614,
+                          "commentStart": 1612,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1999,7 +2542,7 @@ description: Result of parsing router-template-cross-bar.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 1646,
+                              "commentStart": 1644,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -2007,13 +2550,21 @@ description: Result of parsing router-template-cross-bar.kcl
                             }
                           ],
                           "callee": {
-                            "commentStart": 1632,
+                            "abs_path": false,
+                            "commentStart": 1630,
                             "end": 0,
-                            "name": "profileStartY",
+                            "name": {
+                              "commentStart": 1630,
+                              "end": 0,
+                              "name": "profileStartY",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 1632,
+                          "commentStart": 1630,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2028,13 +2579,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1594,
+                  "abs_path": false,
+                  "commentStart": 1592,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 1592,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1594,
+                "commentStart": 1592,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2044,13 +2603,21 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "commentStart": 1656,
+                  "abs_path": false,
+                  "commentStart": 1654,
                   "end": 0,
-                  "name": "close",
+                  "name": {
+                    "commentStart": 1654,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1656,
+                "commentStart": 1654,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2073,12 +2640,12 @@ description: Result of parsing router-template-cross-bar.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1664,
+        "commentStart": 1662,
         "declaration": {
-          "commentStart": 1664,
+          "commentStart": 1662,
           "end": 0,
           "id": {
-            "commentStart": 1664,
+            "commentStart": 1662,
             "end": 0,
             "name": "extrude001",
             "start": 0,
@@ -2089,14 +2656,14 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 1696,
+                  "commentStart": 1694,
                   "end": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 1705,
+                  "commentStart": 1703,
                   "end": 0,
                   "raw": "5",
                   "start": 0,
@@ -2110,24 +2677,40 @@ description: Result of parsing router-template-cross-bar.kcl
               }
             ],
             "callee": {
-              "commentStart": 1677,
+              "abs_path": false,
+              "commentStart": 1675,
               "end": 0,
-              "name": "extrude",
+              "name": {
+                "commentStart": 1675,
+                "end": 0,
+                "name": "extrude",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
-            "commentStart": 1677,
+            "commentStart": 1675,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "commentStart": 1685,
+              "abs_path": false,
+              "commentStart": 1683,
               "end": 0,
-              "name": "sketch001",
+              "name": {
+                "commentStart": 1683,
+                "end": 0,
+                "name": "sketch001",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 0,
@@ -2140,12 +2723,12 @@ description: Result of parsing router-template-cross-bar.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1707,
+        "commentStart": 1705,
         "declaration": {
-          "commentStart": 1709,
+          "commentStart": 1707,
           "end": 0,
           "id": {
-            "commentStart": 1709,
+            "commentStart": 1707,
             "end": 0,
             "name": "sketch003",
             "start": 0,
@@ -2156,15 +2739,23 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1735,
+                    "abs_path": false,
+                    "commentStart": 1733,
                     "end": 0,
-                    "name": "extrude001",
+                    "name": {
+                      "commentStart": 1733,
+                      "end": 0,
+                      "name": "extrude001",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
-                    "commentStart": 1747,
+                    "commentStart": 1745,
                     "end": 0,
                     "raw": "'START'",
                     "start": 0,
@@ -2174,13 +2765,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1721,
+                  "abs_path": false,
+                  "commentStart": 1719,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 1719,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1721,
+                "commentStart": 1719,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2189,18 +2788,26 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1776,
+                    "commentStart": 1774,
                     "elements": [
                       {
-                        "commentStart": 1777,
+                        "abs_path": false,
+                        "commentStart": 1775,
                         "end": 0,
-                        "name": "distanceToInsideEdge",
+                        "name": {
+                          "commentStart": 1775,
+                          "end": 0,
+                          "name": "distanceToInsideEdge",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       {
-                        "commentStart": 1799,
+                        "commentStart": 1797,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -2218,7 +2825,7 @@ description: Result of parsing router-template-cross-bar.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 1803,
+                    "commentStart": 1801,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2226,13 +2833,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1761,
+                  "abs_path": false,
+                  "commentStart": 1759,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 1759,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1761,
+                "commentStart": 1759,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2241,10 +2856,10 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1822,
+                    "commentStart": 1820,
                     "elements": [
                       {
-                        "commentStart": 1823,
+                        "commentStart": 1821,
                         "end": 0,
                         "raw": "180",
                         "start": 0,
@@ -2256,12 +2871,20 @@ description: Result of parsing router-template-cross-bar.kcl
                         }
                       },
                       {
-                        "commentStart": 1828,
+                        "abs_path": false,
+                        "commentStart": 1826,
                         "end": 0,
-                        "name": "templateThickness",
+                        "name": {
+                          "commentStart": 1826,
+                          "end": 0,
+                          "name": "templateThickness",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 0,
@@ -2270,14 +2893,14 @@ description: Result of parsing router-template-cross-bar.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 1848,
+                    "commentStart": 1846,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "commentStart": 1851,
+                    "commentStart": 1849,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -2286,13 +2909,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1811,
+                  "abs_path": false,
+                  "commentStart": 1809,
                   "end": 0,
-                  "name": "angledLine",
+                  "name": {
+                    "commentStart": 1809,
+                    "end": 0,
+                    "name": "angledLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1811,
+                "commentStart": 1809,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2301,30 +2932,46 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1890,
+                    "commentStart": 1888,
                     "elements": [
                       {
-                        "commentStart": 1899,
+                        "commentStart": 1897,
                         "end": 0,
                         "left": {
                           "arguments": [
                             {
-                              "commentStart": 1906,
+                              "abs_path": false,
+                              "commentStart": 1904,
                               "end": 0,
-                              "name": "rectangleSegmentA002",
+                              "name": {
+                                "commentStart": 1904,
+                                "end": 0,
+                                "name": "rectangleSegmentA002",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
-                            "commentStart": 1899,
+                            "abs_path": false,
+                            "commentStart": 1897,
                             "end": 0,
-                            "name": "segAng",
+                            "name": {
+                              "commentStart": 1897,
+                              "end": 0,
+                              "name": "segAng",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 1899,
+                          "commentStart": 1897,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2332,7 +2979,7 @@ description: Result of parsing router-template-cross-bar.kcl
                         },
                         "operator": "+",
                         "right": {
-                          "commentStart": 1930,
+                          "commentStart": 1928,
                           "end": 0,
                           "raw": "90",
                           "start": 0,
@@ -2348,12 +2995,20 @@ description: Result of parsing router-template-cross-bar.kcl
                         "type": "BinaryExpression"
                       },
                       {
-                        "commentStart": 1941,
+                        "abs_path": false,
+                        "commentStart": 1939,
                         "end": 0,
-                        "name": "templateThickness",
+                        "name": {
+                          "commentStart": 1939,
+                          "end": 0,
+                          "name": "templateThickness",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 0,
@@ -2362,14 +3017,14 @@ description: Result of parsing router-template-cross-bar.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 1967,
+                    "commentStart": 1965,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "commentStart": 1970,
+                    "commentStart": 1968,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -2378,13 +3033,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1879,
+                  "abs_path": false,
+                  "commentStart": 1877,
                   "end": 0,
-                  "name": "angledLine",
+                  "name": {
+                    "commentStart": 1877,
+                    "end": 0,
+                    "name": "angledLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1879,
+                "commentStart": 1877,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2393,27 +3056,43 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2009,
+                    "commentStart": 2007,
                     "elements": [
                       {
                         "arguments": [
                           {
-                            "commentStart": 2025,
+                            "abs_path": false,
+                            "commentStart": 2023,
                             "end": 0,
-                            "name": "rectangleSegmentA002",
+                            "name": {
+                              "commentStart": 2023,
+                              "end": 0,
+                              "name": "rectangleSegmentA002",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
-                          "commentStart": 2018,
+                          "abs_path": false,
+                          "commentStart": 2016,
                           "end": 0,
-                          "name": "segAng",
+                          "name": {
+                            "commentStart": 2016,
+                            "end": 0,
+                            "name": "segAng",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
-                        "commentStart": 2018,
+                        "commentStart": 2016,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -2423,28 +3102,44 @@ description: Result of parsing router-template-cross-bar.kcl
                         "argument": {
                           "arguments": [
                             {
-                              "commentStart": 2063,
+                              "abs_path": false,
+                              "commentStart": 2061,
                               "end": 0,
-                              "name": "rectangleSegmentA002",
+                              "name": {
+                                "commentStart": 2061,
+                                "end": 0,
+                                "name": "rectangleSegmentA002",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
-                            "commentStart": 2056,
+                            "abs_path": false,
+                            "commentStart": 2054,
                             "end": 0,
-                            "name": "segLen",
+                            "name": {
+                              "commentStart": 2054,
+                              "end": 0,
+                              "name": "segLen",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 2056,
+                          "commentStart": 2054,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
-                        "commentStart": 2055,
+                        "commentStart": 2053,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -2458,14 +3153,14 @@ description: Result of parsing router-template-cross-bar.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 2093,
+                    "commentStart": 2091,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "commentStart": 2096,
+                    "commentStart": 2094,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -2474,13 +3169,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 1998,
+                  "abs_path": false,
+                  "commentStart": 1996,
                   "end": 0,
-                  "name": "angledLine",
+                  "name": {
+                    "commentStart": 1996,
+                    "end": 0,
+                    "name": "angledLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 1998,
+                "commentStart": 1996,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2491,19 +3194,19 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2129,
+                      "commentStart": 2127,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2143,
+                      "commentStart": 2141,
                       "elements": [
                         {
                           "arguments": [
                             {
-                              "commentStart": 2158,
+                              "commentStart": 2156,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -2511,13 +3214,21 @@ description: Result of parsing router-template-cross-bar.kcl
                             }
                           ],
                           "callee": {
-                            "commentStart": 2144,
+                            "abs_path": false,
+                            "commentStart": 2142,
                             "end": 0,
-                            "name": "profileStartX",
+                            "name": {
+                              "commentStart": 2142,
+                              "end": 0,
+                              "name": "profileStartX",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 2144,
+                          "commentStart": 2142,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2526,7 +3237,7 @@ description: Result of parsing router-template-cross-bar.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 2176,
+                              "commentStart": 2174,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -2534,13 +3245,21 @@ description: Result of parsing router-template-cross-bar.kcl
                             }
                           ],
                           "callee": {
-                            "commentStart": 2162,
+                            "abs_path": false,
+                            "commentStart": 2160,
                             "end": 0,
-                            "name": "profileStartY",
+                            "name": {
+                              "commentStart": 2160,
+                              "end": 0,
+                              "name": "profileStartY",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 2162,
+                          "commentStart": 2160,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2555,13 +3274,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 2124,
+                  "abs_path": false,
+                  "commentStart": 2122,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 2122,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2124,
+                "commentStart": 2122,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2571,20 +3298,28 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "commentStart": 2186,
+                  "abs_path": false,
+                  "commentStart": 2184,
                   "end": 0,
-                  "name": "close",
+                  "name": {
+                    "commentStart": 2184,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2186,
+                "commentStart": 2184,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "commentStart": 1721,
+            "commentStart": 1719,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -2600,12 +3335,12 @@ description: Result of parsing router-template-cross-bar.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 2194,
+        "commentStart": 2192,
         "declaration": {
-          "commentStart": 2194,
+          "commentStart": 2192,
           "end": 0,
           "id": {
-            "commentStart": 2194,
+            "commentStart": 2192,
             "end": 0,
             "name": "extrude003",
             "start": 0,
@@ -2616,14 +3351,14 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 2226,
+                  "commentStart": 2224,
                   "end": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 2235,
+                  "commentStart": 2233,
                   "end": 0,
                   "raw": "13",
                   "start": 0,
@@ -2637,24 +3372,40 @@ description: Result of parsing router-template-cross-bar.kcl
               }
             ],
             "callee": {
-              "commentStart": 2207,
+              "abs_path": false,
+              "commentStart": 2205,
               "end": 0,
-              "name": "extrude",
+              "name": {
+                "commentStart": 2205,
+                "end": 0,
+                "name": "extrude",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
-            "commentStart": 2207,
+            "commentStart": 2205,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "commentStart": 2215,
+              "abs_path": false,
+              "commentStart": 2213,
               "end": 0,
-              "name": "sketch003",
+              "name": {
+                "commentStart": 2213,
+                "end": 0,
+                "name": "sketch003",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 0,
@@ -2667,12 +3418,12 @@ description: Result of parsing router-template-cross-bar.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 2238,
+        "commentStart": 2236,
         "declaration": {
-          "commentStart": 2240,
+          "commentStart": 2238,
           "end": 0,
           "id": {
-            "commentStart": 2240,
+            "commentStart": 2238,
             "end": 0,
             "name": "sketch002",
             "start": 0,
@@ -2683,15 +3434,23 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2266,
+                    "abs_path": false,
+                    "commentStart": 2264,
                     "end": 0,
-                    "name": "extrude001",
+                    "name": {
+                      "commentStart": 2264,
+                      "end": 0,
+                      "name": "extrude001",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
-                    "commentStart": 2278,
+                    "commentStart": 2276,
                     "end": 0,
                     "raw": "'START'",
                     "start": 0,
@@ -2701,13 +3460,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 2252,
+                  "abs_path": false,
+                  "commentStart": 2250,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 2250,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2252,
+                "commentStart": 2250,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2716,18 +3483,26 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2307,
+                    "commentStart": 2305,
                     "elements": [
                       {
                         "argument": {
-                          "commentStart": 2309,
+                          "abs_path": false,
+                          "commentStart": 2307,
                           "end": 0,
-                          "name": "distanceToInsideEdge",
+                          "name": {
+                            "commentStart": 2307,
+                            "end": 0,
+                            "name": "distanceToInsideEdge",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
-                        "commentStart": 2308,
+                        "commentStart": 2306,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -2735,7 +3510,7 @@ description: Result of parsing router-template-cross-bar.kcl
                         "type": "UnaryExpression"
                       },
                       {
-                        "commentStart": 2331,
+                        "commentStart": 2329,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -2753,7 +3528,7 @@ description: Result of parsing router-template-cross-bar.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 2335,
+                    "commentStart": 2333,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2761,13 +3536,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 2292,
+                  "abs_path": false,
+                  "commentStart": 2290,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 2290,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2292,
+                "commentStart": 2290,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2776,10 +3559,10 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2354,
+                    "commentStart": 2352,
                     "elements": [
                       {
-                        "commentStart": 2355,
+                        "commentStart": 2353,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -2791,12 +3574,20 @@ description: Result of parsing router-template-cross-bar.kcl
                         }
                       },
                       {
-                        "commentStart": 2358,
+                        "abs_path": false,
+                        "commentStart": 2356,
                         "end": 0,
-                        "name": "templateThickness",
+                        "name": {
+                          "commentStart": 2356,
+                          "end": 0,
+                          "name": "templateThickness",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 0,
@@ -2805,14 +3596,14 @@ description: Result of parsing router-template-cross-bar.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 2378,
+                    "commentStart": 2376,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "commentStart": 2381,
+                    "commentStart": 2379,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -2821,13 +3612,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 2343,
+                  "abs_path": false,
+                  "commentStart": 2341,
                   "end": 0,
-                  "name": "angledLine",
+                  "name": {
+                    "commentStart": 2341,
+                    "end": 0,
+                    "name": "angledLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2343,
+                "commentStart": 2341,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2836,30 +3635,46 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2420,
+                    "commentStart": 2418,
                     "elements": [
                       {
-                        "commentStart": 2429,
+                        "commentStart": 2427,
                         "end": 0,
                         "left": {
                           "arguments": [
                             {
-                              "commentStart": 2436,
+                              "abs_path": false,
+                              "commentStart": 2434,
                               "end": 0,
-                              "name": "rectangleSegmentA001",
+                              "name": {
+                                "commentStart": 2434,
+                                "end": 0,
+                                "name": "rectangleSegmentA001",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
-                            "commentStart": 2429,
+                            "abs_path": false,
+                            "commentStart": 2427,
                             "end": 0,
-                            "name": "segAng",
+                            "name": {
+                              "commentStart": 2427,
+                              "end": 0,
+                              "name": "segAng",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 2429,
+                          "commentStart": 2427,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2867,7 +3682,7 @@ description: Result of parsing router-template-cross-bar.kcl
                         },
                         "operator": "-",
                         "right": {
-                          "commentStart": 2460,
+                          "commentStart": 2458,
                           "end": 0,
                           "raw": "90",
                           "start": 0,
@@ -2883,12 +3698,20 @@ description: Result of parsing router-template-cross-bar.kcl
                         "type": "BinaryExpression"
                       },
                       {
-                        "commentStart": 2471,
+                        "abs_path": false,
+                        "commentStart": 2469,
                         "end": 0,
-                        "name": "templateThickness",
+                        "name": {
+                          "commentStart": 2469,
+                          "end": 0,
+                          "name": "templateThickness",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 0,
@@ -2897,14 +3720,14 @@ description: Result of parsing router-template-cross-bar.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 2497,
+                    "commentStart": 2495,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "commentStart": 2500,
+                    "commentStart": 2498,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -2913,13 +3736,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 2409,
+                  "abs_path": false,
+                  "commentStart": 2407,
                   "end": 0,
-                  "name": "angledLine",
+                  "name": {
+                    "commentStart": 2407,
+                    "end": 0,
+                    "name": "angledLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2409,
+                "commentStart": 2407,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2928,27 +3759,43 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2539,
+                    "commentStart": 2537,
                     "elements": [
                       {
                         "arguments": [
                           {
-                            "commentStart": 2555,
+                            "abs_path": false,
+                            "commentStart": 2553,
                             "end": 0,
-                            "name": "rectangleSegmentA001",
+                            "name": {
+                              "commentStart": 2553,
+                              "end": 0,
+                              "name": "rectangleSegmentA001",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
-                          "commentStart": 2548,
+                          "abs_path": false,
+                          "commentStart": 2546,
                           "end": 0,
-                          "name": "segAng",
+                          "name": {
+                            "commentStart": 2546,
+                            "end": 0,
+                            "name": "segAng",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
-                        "commentStart": 2548,
+                        "commentStart": 2546,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -2958,28 +3805,44 @@ description: Result of parsing router-template-cross-bar.kcl
                         "argument": {
                           "arguments": [
                             {
-                              "commentStart": 2593,
+                              "abs_path": false,
+                              "commentStart": 2591,
                               "end": 0,
-                              "name": "rectangleSegmentA001",
+                              "name": {
+                                "commentStart": 2591,
+                                "end": 0,
+                                "name": "rectangleSegmentA001",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
-                            "commentStart": 2586,
+                            "abs_path": false,
+                            "commentStart": 2584,
                             "end": 0,
-                            "name": "segLen",
+                            "name": {
+                              "commentStart": 2584,
+                              "end": 0,
+                              "name": "segLen",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 2586,
+                          "commentStart": 2584,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
-                        "commentStart": 2585,
+                        "commentStart": 2583,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -2993,14 +3856,14 @@ description: Result of parsing router-template-cross-bar.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 2623,
+                    "commentStart": 2621,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "commentStart": 2626,
+                    "commentStart": 2624,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -3009,13 +3872,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 2528,
+                  "abs_path": false,
+                  "commentStart": 2526,
                   "end": 0,
-                  "name": "angledLine",
+                  "name": {
+                    "commentStart": 2526,
+                    "end": 0,
+                    "name": "angledLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2528,
+                "commentStart": 2526,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3026,19 +3897,19 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2659,
+                      "commentStart": 2657,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2673,
+                      "commentStart": 2671,
                       "elements": [
                         {
                           "arguments": [
                             {
-                              "commentStart": 2688,
+                              "commentStart": 2686,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -3046,13 +3917,21 @@ description: Result of parsing router-template-cross-bar.kcl
                             }
                           ],
                           "callee": {
-                            "commentStart": 2674,
+                            "abs_path": false,
+                            "commentStart": 2672,
                             "end": 0,
-                            "name": "profileStartX",
+                            "name": {
+                              "commentStart": 2672,
+                              "end": 0,
+                              "name": "profileStartX",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 2674,
+                          "commentStart": 2672,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3061,7 +3940,7 @@ description: Result of parsing router-template-cross-bar.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 2706,
+                              "commentStart": 2704,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -3069,13 +3948,21 @@ description: Result of parsing router-template-cross-bar.kcl
                             }
                           ],
                           "callee": {
-                            "commentStart": 2692,
+                            "abs_path": false,
+                            "commentStart": 2690,
                             "end": 0,
-                            "name": "profileStartY",
+                            "name": {
+                              "commentStart": 2690,
+                              "end": 0,
+                              "name": "profileStartY",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 2692,
+                          "commentStart": 2690,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3090,13 +3977,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 2654,
+                  "abs_path": false,
+                  "commentStart": 2652,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 2652,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2654,
+                "commentStart": 2652,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3106,20 +4001,28 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "commentStart": 2716,
+                  "abs_path": false,
+                  "commentStart": 2714,
                   "end": 0,
-                  "name": "close",
+                  "name": {
+                    "commentStart": 2714,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2716,
+                "commentStart": 2714,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "commentStart": 2252,
+            "commentStart": 2250,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -3135,12 +4038,12 @@ description: Result of parsing router-template-cross-bar.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 2723,
+        "commentStart": 2721,
         "declaration": {
-          "commentStart": 2725,
+          "commentStart": 2723,
           "end": 0,
           "id": {
-            "commentStart": 2725,
+            "commentStart": 2723,
             "end": 0,
             "name": "extrude002",
             "start": 0,
@@ -3151,14 +4054,14 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 2757,
+                  "commentStart": 2755,
                   "end": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 2766,
+                  "commentStart": 2764,
                   "end": 0,
                   "raw": "13",
                   "start": 0,
@@ -3172,24 +4075,40 @@ description: Result of parsing router-template-cross-bar.kcl
               }
             ],
             "callee": {
-              "commentStart": 2738,
+              "abs_path": false,
+              "commentStart": 2736,
               "end": 0,
-              "name": "extrude",
+              "name": {
+                "commentStart": 2736,
+                "end": 0,
+                "name": "extrude",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
-            "commentStart": 2738,
+            "commentStart": 2736,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "commentStart": 2746,
+              "abs_path": false,
+              "commentStart": 2744,
               "end": 0,
-              "name": "sketch002",
+              "name": {
+                "commentStart": 2744,
+                "end": 0,
+                "name": "sketch002",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 0,
@@ -3202,12 +4121,12 @@ description: Result of parsing router-template-cross-bar.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 2769,
+        "commentStart": 2767,
         "declaration": {
-          "commentStart": 2771,
+          "commentStart": 2769,
           "end": 0,
           "id": {
-            "commentStart": 2771,
+            "commentStart": 2769,
             "end": 0,
             "name": "sketch004",
             "start": 0,
@@ -3218,15 +4137,23 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2797,
+                    "abs_path": false,
+                    "commentStart": 2795,
                     "end": 0,
-                    "name": "extrude002",
+                    "name": {
+                      "commentStart": 2795,
+                      "end": 0,
+                      "name": "extrude002",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
-                    "commentStart": 2809,
+                    "commentStart": 2807,
                     "end": 0,
                     "raw": "'END'",
                     "start": 0,
@@ -3236,13 +4163,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 2783,
+                  "abs_path": false,
+                  "commentStart": 2781,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 2781,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2783,
+                "commentStart": 2781,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3251,18 +4186,26 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2836,
+                    "commentStart": 2834,
                     "elements": [
                       {
                         "argument": {
-                          "commentStart": 2838,
+                          "abs_path": false,
+                          "commentStart": 2836,
                           "end": 0,
-                          "name": "distanceToInsideEdge",
+                          "name": {
+                            "commentStart": 2836,
+                            "end": 0,
+                            "name": "distanceToInsideEdge",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
-                        "commentStart": 2837,
+                        "commentStart": 2835,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -3270,7 +4213,7 @@ description: Result of parsing router-template-cross-bar.kcl
                         "type": "UnaryExpression"
                       },
                       {
-                        "commentStart": 2860,
+                        "commentStart": 2858,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -3288,7 +4231,7 @@ description: Result of parsing router-template-cross-bar.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 2864,
+                    "commentStart": 2862,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -3296,13 +4239,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 2821,
+                  "abs_path": false,
+                  "commentStart": 2819,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 2819,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2821,
+                "commentStart": 2819,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3311,10 +4262,10 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2883,
+                    "commentStart": 2881,
                     "elements": [
                       {
-                        "commentStart": 2884,
+                        "commentStart": 2882,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -3326,19 +4277,27 @@ description: Result of parsing router-template-cross-bar.kcl
                         }
                       },
                       {
-                        "commentStart": 2887,
+                        "commentStart": 2885,
                         "end": 0,
                         "left": {
-                          "commentStart": 2887,
+                          "abs_path": false,
+                          "commentStart": 2885,
                           "end": 0,
-                          "name": "distanceToInsideEdge",
+                          "name": {
+                            "commentStart": 2885,
+                            "end": 0,
+                            "name": "distanceToInsideEdge",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "*",
                         "right": {
-                          "commentStart": 2910,
+                          "commentStart": 2908,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -3360,14 +4319,14 @@ description: Result of parsing router-template-cross-bar.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 2914,
+                    "commentStart": 2912,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "commentStart": 2917,
+                    "commentStart": 2915,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -3376,13 +4335,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 2872,
+                  "abs_path": false,
+                  "commentStart": 2870,
                   "end": 0,
-                  "name": "angledLine",
+                  "name": {
+                    "commentStart": 2870,
+                    "end": 0,
+                    "name": "angledLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2872,
+                "commentStart": 2870,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3391,30 +4358,46 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2956,
+                    "commentStart": 2954,
                     "elements": [
                       {
-                        "commentStart": 2965,
+                        "commentStart": 2963,
                         "end": 0,
                         "left": {
                           "arguments": [
                             {
-                              "commentStart": 2972,
+                              "abs_path": false,
+                              "commentStart": 2970,
                               "end": 0,
-                              "name": "rectangleSegmentA003",
+                              "name": {
+                                "commentStart": 2970,
+                                "end": 0,
+                                "name": "rectangleSegmentA003",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
-                            "commentStart": 2965,
+                            "abs_path": false,
+                            "commentStart": 2963,
                             "end": 0,
-                            "name": "segAng",
+                            "name": {
+                              "commentStart": 2963,
+                              "end": 0,
+                              "name": "segAng",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 2965,
+                          "commentStart": 2963,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3422,7 +4405,7 @@ description: Result of parsing router-template-cross-bar.kcl
                         },
                         "operator": "-",
                         "right": {
-                          "commentStart": 2996,
+                          "commentStart": 2994,
                           "end": 0,
                           "raw": "90",
                           "start": 0,
@@ -3438,12 +4421,20 @@ description: Result of parsing router-template-cross-bar.kcl
                         "type": "BinaryExpression"
                       },
                       {
-                        "commentStart": 3007,
+                        "abs_path": false,
+                        "commentStart": 3005,
                         "end": 0,
-                        "name": "templateThickness",
+                        "name": {
+                          "commentStart": 3005,
+                          "end": 0,
+                          "name": "templateThickness",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 0,
@@ -3452,14 +4443,14 @@ description: Result of parsing router-template-cross-bar.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 3033,
+                    "commentStart": 3031,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "commentStart": 3036,
+                    "commentStart": 3034,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -3468,13 +4459,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 2945,
+                  "abs_path": false,
+                  "commentStart": 2943,
                   "end": 0,
-                  "name": "angledLine",
+                  "name": {
+                    "commentStart": 2943,
+                    "end": 0,
+                    "name": "angledLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 2945,
+                "commentStart": 2943,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3483,27 +4482,43 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 3075,
+                    "commentStart": 3073,
                     "elements": [
                       {
                         "arguments": [
                           {
-                            "commentStart": 3091,
+                            "abs_path": false,
+                            "commentStart": 3089,
                             "end": 0,
-                            "name": "rectangleSegmentA003",
+                            "name": {
+                              "commentStart": 3089,
+                              "end": 0,
+                              "name": "rectangleSegmentA003",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
-                          "commentStart": 3084,
+                          "abs_path": false,
+                          "commentStart": 3082,
                           "end": 0,
-                          "name": "segAng",
+                          "name": {
+                            "commentStart": 3082,
+                            "end": 0,
+                            "name": "segAng",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
-                        "commentStart": 3084,
+                        "commentStart": 3082,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -3513,28 +4528,44 @@ description: Result of parsing router-template-cross-bar.kcl
                         "argument": {
                           "arguments": [
                             {
-                              "commentStart": 3129,
+                              "abs_path": false,
+                              "commentStart": 3127,
                               "end": 0,
-                              "name": "rectangleSegmentA003",
+                              "name": {
+                                "commentStart": 3127,
+                                "end": 0,
+                                "name": "rectangleSegmentA003",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
-                            "commentStart": 3122,
+                            "abs_path": false,
+                            "commentStart": 3120,
                             "end": 0,
-                            "name": "segLen",
+                            "name": {
+                              "commentStart": 3120,
+                              "end": 0,
+                              "name": "segLen",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 3122,
+                          "commentStart": 3120,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
-                        "commentStart": 3121,
+                        "commentStart": 3119,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -3548,14 +4579,14 @@ description: Result of parsing router-template-cross-bar.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 3159,
+                    "commentStart": 3157,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "commentStart": 3162,
+                    "commentStart": 3160,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -3564,13 +4595,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 3064,
+                  "abs_path": false,
+                  "commentStart": 3062,
                   "end": 0,
-                  "name": "angledLine",
+                  "name": {
+                    "commentStart": 3062,
+                    "end": 0,
+                    "name": "angledLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 3064,
+                "commentStart": 3062,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3581,19 +4620,19 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 3195,
+                      "commentStart": 3193,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 3209,
+                      "commentStart": 3207,
                       "elements": [
                         {
                           "arguments": [
                             {
-                              "commentStart": 3224,
+                              "commentStart": 3222,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -3601,13 +4640,21 @@ description: Result of parsing router-template-cross-bar.kcl
                             }
                           ],
                           "callee": {
-                            "commentStart": 3210,
+                            "abs_path": false,
+                            "commentStart": 3208,
                             "end": 0,
-                            "name": "profileStartX",
+                            "name": {
+                              "commentStart": 3208,
+                              "end": 0,
+                              "name": "profileStartX",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 3210,
+                          "commentStart": 3208,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3616,7 +4663,7 @@ description: Result of parsing router-template-cross-bar.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 3242,
+                              "commentStart": 3240,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -3624,13 +4671,21 @@ description: Result of parsing router-template-cross-bar.kcl
                             }
                           ],
                           "callee": {
-                            "commentStart": 3228,
+                            "abs_path": false,
+                            "commentStart": 3226,
                             "end": 0,
-                            "name": "profileStartY",
+                            "name": {
+                              "commentStart": 3226,
+                              "end": 0,
+                              "name": "profileStartY",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
-                          "commentStart": 3228,
+                          "commentStart": 3226,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3645,13 +4700,21 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "commentStart": 3190,
+                  "abs_path": false,
+                  "commentStart": 3188,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 3188,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 3190,
+                "commentStart": 3188,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3661,20 +4724,28 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "commentStart": 3252,
+                  "abs_path": false,
+                  "commentStart": 3250,
                   "end": 0,
-                  "name": "close",
+                  "name": {
+                    "commentStart": 3250,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "commentStart": 3252,
+                "commentStart": 3250,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "commentStart": 2783,
+            "commentStart": 2781,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -3690,12 +4761,12 @@ description: Result of parsing router-template-cross-bar.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 3260,
+        "commentStart": 3258,
         "declaration": {
-          "commentStart": 3260,
+          "commentStart": 3258,
           "end": 0,
           "id": {
-            "commentStart": 3260,
+            "commentStart": 3258,
             "end": 0,
             "name": "extrude004",
             "start": 0,
@@ -3706,14 +4777,14 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 3292,
+                  "commentStart": 3290,
                   "end": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 3301,
+                  "commentStart": 3299,
                   "end": 0,
                   "raw": "4",
                   "start": 0,
@@ -3727,24 +4798,40 @@ description: Result of parsing router-template-cross-bar.kcl
               }
             ],
             "callee": {
-              "commentStart": 3273,
+              "abs_path": false,
+              "commentStart": 3271,
               "end": 0,
-              "name": "extrude",
+              "name": {
+                "commentStart": 3271,
+                "end": 0,
+                "name": "extrude",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
-            "commentStart": 3273,
+            "commentStart": 3271,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "commentStart": 3281,
+              "abs_path": false,
+              "commentStart": 3279,
               "end": 0,
-              "name": "sketch004",
+              "name": {
+                "commentStart": 3279,
+                "end": 0,
+                "name": "sketch004",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 0,
@@ -3791,12 +4878,20 @@ description: Result of parsing router-template-cross-bar.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "commentStart": 128,
               "end": 0,
-              "name": "mm",
+              "name": {
+                "commentStart": 128,
+                "end": 0,
+                "name": "mm",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],
@@ -3808,7 +4903,7 @@ description: Result of parsing router-template-cross-bar.kcl
       "nonCodeNodes": {
         "10": [
           {
-            "commentStart": 1707,
+            "commentStart": 1705,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -3819,7 +4914,7 @@ description: Result of parsing router-template-cross-bar.kcl
         ],
         "12": [
           {
-            "commentStart": 2238,
+            "commentStart": 2236,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -3830,7 +4925,7 @@ description: Result of parsing router-template-cross-bar.kcl
         ],
         "13": [
           {
-            "commentStart": 2723,
+            "commentStart": 2721,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -3841,7 +4936,7 @@ description: Result of parsing router-template-cross-bar.kcl
         ],
         "14": [
           {
-            "commentStart": 2769,
+            "commentStart": 2767,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

@@ -467,6 +467,10 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String) 
     });
 
     let output = hbs.render("kclType", &data)?;
+    let output = cleanup_type_links(
+        &output,
+        ty.referenced_types.iter().filter(|t| !DECLARED_TYPES.contains(&&***t)),
+    );
     expectorate::assert_contents(format!("../../docs/kcl/{}.md", file_name), &output);
 
     Ok(())
@@ -514,6 +518,13 @@ fn generate_function_from_kcl(function: &FnData, file_name: String) -> Result<()
     });
 
     let output = hbs.render("function", &data)?;
+    let output = cleanup_type_links(
+        &output,
+        function
+            .referenced_types
+            .iter()
+            .filter(|t| !DECLARED_TYPES.contains(&&***t)),
+    );
     expectorate::assert_contents(format!("../../docs/kcl/{}.md", file_name), &output);
 
     Ok(())
@@ -676,6 +687,12 @@ fn cleanup_type_links<'a>(output: &str, types: impl Iterator<Item = &'a String>)
                 cleaned_output.replace(&format!("`[{}]`", type_name), &format!("[`[{}]`]{}", type_name, link));
         }
     }
+
+    // TODO handle union types generically rather than special casing them.
+    cleaned_output = cleaned_output.replace(
+        "`Sketch | Plane | Face`",
+        "[`Sketch`](/docs/kcl/types/Sketch) `|` [`Plane`](/docs/kcl/types/Face) `|` [`Plane`](/docs/kcl/types/Face)",
+    );
 
     cleanup_static_links(&cleaned_output)
 }

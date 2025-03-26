@@ -193,7 +193,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
             className="w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40 ui-open:rotate-180"
           />
         </div>
-        <Tooltip position="bottom-right" delay={1000} hoverOnly>
+        <Tooltip position="bottom-right" hoverOnly>
           User menu
         </Tooltip>
       </Popover.Button>
