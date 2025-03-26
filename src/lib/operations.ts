@@ -3,6 +3,7 @@ import {
   Artifact,
   getArtifactOfTypes,
   getCapCodeRef,
+  getEdgeCutConsumedCodeRef,
   getSweepEdgeCodeRef,
 } from 'lang/std/artifactGraph'
 import { Operation } from '@rust/kcl-lib/bindings/Operation'
@@ -121,6 +122,121 @@ const prepareToEditExtrude: PrepareToEditCallback =
       argDefaultValues,
     }
   }
+
+/**
+ * Gather up the argument values for the Chamfer or Fillet command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
+  operation,
+  artifact,
+}) => {
+  const isChamfer =
+    artifact?.type === 'edgeCut' && artifact.subType === 'chamfer'
+  const isFillet = artifact?.type === 'edgeCut' && artifact.subType === 'fillet'
+  const baseCommand = {
+    name: isChamfer ? 'Chamfer' : 'Fillet',
+    groupId: 'modeling',
+  }
+  if (
+    operation.type !== 'StdLibCall' ||
+    !operation.labeledArgs ||
+    (!isChamfer && !isFillet)
+  ) {
+    return { reason: 'Wrong operation type or artifact' }
+  }
+
+  // Recreate the selection argument (artiface and codeRef) from what we have
+  const edgeArtifact = getArtifactOfTypes(
+    {
+      key: artifact.consumedEdgeId,
+      types: ['segment', 'sweepEdge'],
+    },
+    engineCommandManager.artifactGraph
+  )
+  if (err(edgeArtifact)) {
+    return { reason: "Couldn't find edge artifact" }
+  }
+
+  let edgeCodeRef = getEdgeCutConsumedCodeRef(
+    artifact,
+    engineCommandManager.artifactGraph
+  )
+  if (err(edgeCodeRef)) {
+    return { reason: "Couldn't find edge coderef" }
+  }
+  const selection = {
+    graphSelections: [
+      {
+        artifact: edgeArtifact,
+        codeRef: edgeCodeRef,
+      },
+    ],
+    otherSelections: [],
+  }
+
+  // Assemble the default argument values for the Fillet command,
+  // with `nodeToEdit` set, which will let the Fillet actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const nodeToEdit = getNodePathFromSourceRange(
+    kclManager.ast,
+    sourceRangeFromRust(operation.sourceRange)
+  )
+  const isPipeExpression = nodeToEdit.some(
+    ([_, type]) => type === 'PipeExpression'
+  )
+  if (!isPipeExpression) {
+    return {
+      reason:
+        'Only chamfer and fillet in pipe expressions are supported for edits',
+    }
+  }
+
+  let argDefaultValues:
+    | ModelingCommandSchema['Chamfer']
+    | ModelingCommandSchema['Fillet']
+    | undefined
+
+  if (isChamfer) {
+    // Convert the length argument from a string to a KCL expression
+    const length = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs?.['length']?.sourceRange[0],
+        operation.labeledArgs?.['length']?.sourceRange[1]
+      )
+    )
+    if (err(length) || 'errors' in length) {
+      return { reason: 'Error in length argument retrieval' }
+    }
+
+    argDefaultValues = {
+      selection,
+      length,
+      nodeToEdit,
+    }
+  } else if (isFillet) {
+    const radius = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs?.['radius']?.sourceRange[0],
+        operation.labeledArgs?.['radius']?.sourceRange[1]
+      )
+    )
+    if (err(radius) || 'errors' in radius) {
+      return { reason: 'Error in radius argument retrieval' }
+    }
+
+    argDefaultValues = {
+      selection,
+      radius,
+      nodeToEdit,
+    }
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
 
 /**
  * Gather up the argument values for the Shell command
@@ -636,6 +752,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   chamfer: {
     label: 'Chamfer',
     icon: 'chamfer3d',
+    prepareToEdit: prepareToEditEdgeTreatment,
     // modelingEvent: 'Chamfer',
   },
   extrude: {
@@ -647,6 +764,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   fillet: {
     label: 'Fillet',
     icon: 'fillet3d',
+    prepareToEdit: prepareToEditEdgeTreatment,
   },
   helix: {
     label: 'Helix',
