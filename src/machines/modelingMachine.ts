@@ -2711,6 +2711,7 @@ export const modelingMachine = setup({
           on: {
             'Artifact graph populated': {
               target: 'showPlanes',
+              guard: 'no kcl errors',
             },
           },
 

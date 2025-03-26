@@ -1209,7 +1209,6 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
 
   test(`Only show axis planes when there are no errors`, async ({
     page,
-    context,
     homePage,
   }, testInfo) => {
     await page.addInitScript(async () => {
@@ -1221,7 +1220,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
 
     sketch002 = startSketchOn(XZ)
     profile002 = circle(sketch002, center = [-100.0, 100.0], radius = 50.0)
-    extrude001 = extrude(profile002, length = 0)`
+    extrude001 = extrude(profile002, length = 0)` // length = 0 is causing an error
       )
     })
 
@@ -1240,15 +1239,21 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
 
     await u.waitForPageLoad()
 
-    // const orthoOption = page.getByRole('option', { name: 'orthographic' })
-    // await orthoOption.click()
+    // Wait until axis planes are rendered.
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    // Alternatively just wait a bit
+    // await page.waitForTimeout(3000)
 
     await expect
       .poll(
         async () =>
           locationToHaveColor(
-            { x: viewportSize.width * 0.75, y: viewportSize.height * 0.75 },
-            TEST_COLORS.DARK_MODE_PLANE_XZ
+            // This is a position where the blue part of the axis plane is visible if its rendered
+            { x: viewportSize.width * 0.75, y: viewportSize.height * 0.2 },
+            TEST_COLORS.DARK_MODE_BKGD
           ),
         {
           timeout: 5000,
