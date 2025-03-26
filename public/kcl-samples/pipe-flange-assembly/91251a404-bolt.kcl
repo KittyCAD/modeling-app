@@ -1,16 +1,17 @@
 // 91251A404 Socket Head Cap Screw
-
-// import constants
-import boltDiameter, boltLength, boltHeadLength, boltHeadDiameter, boltHexDrive, boltHexFlatLength, boltThreadLength from "globals.kcl"
+// screw for mating the flanges together in the pipe flange assembly
 
 // set units
 @settings(defaultLengthUnit = in)
 
+
+// import constants
+import boltDiameter, boltLength, boltHeadLength, boltHeadDiameter, boltHexDrive, boltHexFlatLength, boltThreadLength from "globals.kcl"
+
 // create a function to make a the bolt
 export fn bolt() {
-
   // Create the head of the cap screw
-  boltHead = startSketchOn('XZ')
+  boltHead = startSketchOn(XZ)
     |> circle(center = [0, 0], radius = boltHeadDiameter / 2, tag = $topEdge)
     |> extrude(length = -boltHeadLength)
     |> fillet(radius = 0.020, tags = [topEdge, getOppositeEdge(topEdge)])

@@ -15,57 +15,37 @@ padding = 1.5
 bearingDia = 3
 
 // (Needs to be updated). Sketch the block and extrude up to where the counterbore diameter starts.
-extrude001 = startSketchOn('XY')
+extrude001 = startSketchOn(XY)
   |> startProfileAt([-width / 2, -length / 2], %)
   |> line(endAbsolute = [width / 2, -length / 2])
   |> line(endAbsolute = [width / 2, length / 2])
   |> line(endAbsolute = [-width / 2, length / 2])
   |> close()
   |> extrude(length = height)
-  
 extrude002 = startSketchOn(extrude001, 'end')
   |> circle(
-      center = [
+       center = [
          -(width / 2 - (padding / 2)),
          -(length / 2 - (padding / 2))
-      ],
-      radius = cbDia / 2,
+       ],
+       radius = cbDia / 2,
      )
-  |> patternLinear2d(
-      instances = 2,
-      distance = length - padding,
-      axis = [0, 1],
-     )
-  |> patternLinear2d(
-      instances = 2,
-      distance = width - padding,
-      axis = [1, 0],
-    )
+  |> patternLinear2d(instances = 2, distance = length - padding, axis = [0, 1])
+  |> patternLinear2d(instances = 2, distance = width - padding, axis = [1, 0])
   |> extrude(%, length = -cbDepth)
 
 extrude003 = startSketchOn(extrude001, 'start')
   |> circle(
-        center = [
-           -(width / 2 - (padding / 2)),
-           -(length / 2 - (padding / 2))
-        ],
-        radius = holeDia / 2,
+       center = [
+         -(width / 2 - (padding / 2)),
+         -(length / 2 - (padding / 2))
+       ],
+       radius = holeDia / 2,
      )
-  |> patternLinear2d(
-      instances = 2,
-      distance = length - padding,
-      axis = [0, 1],
-    )
-  |> patternLinear2d(
-      instances = 2,
-      distance = width - padding,
-      axis = [1, 0],
-    )
+  |> patternLinear2d(instances = 2, distance = length - padding, axis = [0, 1])
+  |> patternLinear2d(instances = 2, distance = width - padding, axis = [1, 0])
   |> extrude(length = -height + cbDepth)
 
 extrude004 = startSketchOn(extrude001, 'end')
-  |> circle(
-      center = [0, 0],
-      radius = bearingDia/2,
-    )
+  |> circle(center = [0, 0], radius = bearingDia / 2)
   |> extrude(length = -height)

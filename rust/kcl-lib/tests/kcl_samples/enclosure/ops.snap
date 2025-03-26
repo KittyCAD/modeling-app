@@ -7,8 +7,8 @@ description: Operations executed enclosure.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -148,8 +148,8 @@ description: Operations executed enclosure.kcl
     "type": "UserDefinedFunctionCall",
     "name": "function001",
     "functionSourceRange": [
-      1276,
-      1927,
+      1254,
+      1851,
       0
     ],
     "unlabeledArg": null,
@@ -526,8 +526,8 @@ description: Operations executed enclosure.kcl
     "type": "UserDefinedFunctionCall",
     "name": "function001",
     "functionSourceRange": [
-      1276,
-      1927,
+      1254,
+      1851,
       0
     ],
     "unlabeledArg": null,
@@ -904,8 +904,8 @@ description: Operations executed enclosure.kcl
     "type": "UserDefinedFunctionCall",
     "name": "function001",
     "functionSourceRange": [
-      1276,
-      1927,
+      1254,
+      1851,
       0
     ],
     "unlabeledArg": null,
@@ -1282,8 +1282,8 @@ description: Operations executed enclosure.kcl
     "type": "UserDefinedFunctionCall",
     "name": "function001",
     "functionSourceRange": [
-      1276,
-      1927,
+      1254,
+      1851,
       0
     ],
     "unlabeledArg": null,
@@ -1660,8 +1660,8 @@ description: Operations executed enclosure.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
