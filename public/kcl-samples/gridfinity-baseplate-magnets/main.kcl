@@ -34,7 +34,7 @@ fn face(plane) {
 }
 
 // extrude a single side of the bin
-singleSide = extrude(face(offsetPlane("YZ", offset = cornerRadius)), length = binLength - (cornerRadius * 2), )
+singleSide = extrude(face(offsetPlane(YZ, offset = cornerRadius)), length = binLength - (cornerRadius * 2))
 
 // create the other sides of the bin by using a circular pattern
 sides = patternCircular3d(
@@ -43,7 +43,7 @@ sides = patternCircular3d(
   axis = [0, 0, 1],
   center = [binLength / 2, binLength / 2, 0],
   instances = 4,
-  rotateDuplicates = true
+  rotateDuplicates = true,
 )
 
 // define an axis axis000
@@ -55,7 +55,7 @@ axis000 = {
 }
 
 // create a single corner of the bin
-singleCorner = revolve(face(offsetPlane("YZ", offset = cornerRadius)), angle = -90, axis = axis000)
+singleCorner = revolve(face(offsetPlane(YZ, offset = cornerRadius)), angle = -90, axis = axis000)
 
 // create the corners of the bin
 corners = patternCircular3d(
@@ -64,7 +64,7 @@ corners = patternCircular3d(
   axis = [0, 0, 1],
   center = [binLength / 2, binLength / 2, 0],
   instances = 4,
-  rotateDuplicates = true
+  rotateDuplicates = true,
 )
 
 // create the baseplate by patterning sides
@@ -72,26 +72,18 @@ basePlateSides = patternLinear3d(
        sides,
        axis = [1.0, 0.0, 0.0],
        instances = countBinWidth,
-       distance = binLength
+       distance = binLength,
      )
-  |> patternLinear3d(
-       axis = [0.0, 1.0, 0.0],
-       instances = countBinLength,
-       distance = binLength
-     )
+  |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength)
 
 // create the corners of the baseplate by patterning the corners
 basePlateCorners = patternLinear3d(
        corners,
        axis = [1.0, 0.0, 0.0],
        instances = countBinWidth,
-       distance = binLength
+       distance = binLength,
      )
-  |> patternLinear3d(
-       axis = [0.0, 1.0, 0.0],
-       instances = countBinLength,
-       distance = binLength
-     )
+  |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength)
 
 // create the center cutout for the magnet profile
 fn magnetCenterCutout(plane) {
@@ -149,20 +141,17 @@ fn magnetBase(plane) {
 }
 
 // create sketch profile sketch000Profile002
-magnetsSketch = startSketchOn('XY')
-  |> circle(
-       center = [cornerRadius * 2, cornerRadius * 2],
-       radius = magOuterDiam / 2
-     )
+magnetsSketch = startSketchOn(XY)
+  |> circle(center = [cornerRadius * 2, cornerRadius * 2], radius = magOuterDiam / 2)
   |> patternCircular2d(
        center = [binLength / 2, binLength / 2],
        instances = 4,
        arcDegrees = 360,
-       rotateDuplicates = true
+       rotateDuplicates = true,
      )
 
 // create a profile with holes for the magnets
-magnetProfile = magnetBase("XY")
+magnetProfile = magnetBase(XY)
   |> hole(magnetsSketch, %)
 
 // create an extrusion of the magnet cutout with holes
@@ -177,11 +166,11 @@ magnetHolesExtrudeFillets = fillet(
     getPreviousAdjacentEdge(magnetHolesExtrude.sketch.tags.line001),
     getNextAdjacentEdge(magnetHolesExtrude.sketch.tags.line003),
     getPreviousAdjacentEdge(magnetHolesExtrude.sketch.tags.line003)
-  ]
+  ],
 )
 
 // create a profile without the holes for the magnets
-magnetProfileNoMagnets = magnetBase(offsetPlane("XY", offset = -magDepth))
+magnetProfileNoMagnets = magnetBase(offsetPlane(XY, offset = -magDepth))
 
 // create an extrusion of the magnet cutout without holes
 magnetCutoutExtrude = extrude(magnetProfileNoMagnets, length = -magDepth)
@@ -195,7 +184,7 @@ magnetCutoutExtrudeFillets = fillet(
     getPreviousAdjacentEdge(magnetCutoutExtrude.sketch.tags.line001),
     getNextAdjacentEdge(magnetCutoutExtrude.sketch.tags.line003),
     getPreviousAdjacentEdge(magnetCutoutExtrude.sketch.tags.line003)
-  ]
+  ],
 )
 
 // pattern the magnet cutouts with holes
@@ -203,23 +192,15 @@ patternLinear3d(
        magnetHolesExtrudeFillets,
        axis = [1.0, 0.0, 0.0],
        instances = countBinWidth,
-       distance = binLength
+       distance = binLength,
      )
-  |> patternLinear3d(
-       axis = [0.0, 1.0, 0.0],
-       instances = countBinLength,
-       distance = binLength
-     )
+  |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength)
 
 // pattern the magnet cutouts without holes
 patternLinear3d(
        magnetCutoutExtrudeFillets,
        axis = [1.0, 0.0, 0.0],
        instances = countBinWidth,
-       distance = binLength
+       distance = binLength,
      )
-  |> patternLinear3d(
-       axis = [0.0, 1.0, 0.0],
-       instances = countBinLength,
-       distance = binLength
-     )
+  |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength)

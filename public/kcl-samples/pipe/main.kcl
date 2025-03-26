@@ -15,7 +15,7 @@ pipeTransitionLength = 0.5
 pipeSmallDiaLength = pipeTotalLength - pipeTransitionLength - pipeLargeDiaLength
 
 // Create the sketch to be revolved around the y-axis. Use the small diameter, large diameter, length, and thickness to define the sketch.
-pipeSketch = startSketchOn('XY')
+pipeSketch = startSketchOn(XY)
   |> startProfileAt([pipeSmallDia - (thickness / 2), 38], %)
   |> line(end = [thickness, 0])
   |> line(end = [0, -pipeSmallDiaLength])

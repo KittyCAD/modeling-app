@@ -1,9 +1,7 @@
 // Robot Rotating Base
 
-
 // Set Units
 @settings(defaultLengthUnit = in)
-
 
 import axisJ1, baseHeight, plane001, plane002 from "globals.kcl"
 
@@ -11,10 +9,7 @@ import axisJ1, baseHeight, plane001, plane002 from "globals.kcl"
 sketch005 = startSketchOn(plane001)
   |> circle(center = [0, 0], radius = 3.9, tag = $referenceEdge1)
 extrude005 = extrude(sketch005, length = 1.5 - 0.1)
-  |> fillet(
-       radius = 0.1,
-       tags = [getOppositeEdge(referenceEdge1)]
-     )
+  |> fillet(radius = 0.1, tags = [getOppositeEdge(referenceEdge1)])
   |> appearance(color = "#4f7d54", metalness = 90, roughness = 90)
 
 sketch006 = startSketchOn(plane002)
@@ -38,12 +33,10 @@ sketch007 = startSketchOn(extrude006, 'END')
          8
        ],
        radius = 2.75,
-       tag = $referenceEdge2)
-extrude007 = extrude(sketch007, length = 1.5)
-  |> fillet(
-       radius = 0.1,
-       tags = [getOppositeEdge(referenceEdge2)]
+       tag = $referenceEdge2,
      )
+extrude007 = extrude(sketch007, length = 1.5)
+  |> fillet(radius = 0.1, tags = [getOppositeEdge(referenceEdge2)])
 
 // Draw Bolt Pattern on Rotating Base
 sketch008 = startSketchOn(extrude007, 'END')
@@ -52,7 +45,7 @@ sketch008 = startSketchOn(extrude007, 'END')
          1.75 * cos(toRadians(axisJ1)) / abs(cos(toRadians(axisJ1))),
          6.75
        ],
-       radius = 0.2
+       radius = 0.2,
      )
   |> patternCircular2d(
        center = [
@@ -61,7 +54,7 @@ sketch008 = startSketchOn(extrude007, 'END')
        ],
        instances = 4,
        arcDegrees = 360,
-       rotateDuplicates = true
+       rotateDuplicates = true,
      )
 extrude008 = extrude(sketch008, length = 0.2)
 
@@ -72,12 +65,10 @@ sketch009 = startSketchOn(extrude007, 'END')
          8
        ],
        radius = 0.5,
-     tag = $referenceEdge3)
-extrude009 = extrude(sketch009, length = 0.15)
-  |> fillet(
-       radius = 0.1,
-       tags = [getOppositeEdge(referenceEdge3)]
+       tag = $referenceEdge3,
      )
+extrude009 = extrude(sketch009, length = 0.15)
+  |> fillet(radius = 0.1, tags = [getOppositeEdge(referenceEdge3)])
   |> appearance(color = "#4f7d54", metalness = 90, roughness = 90)
 
 sketch010 = startSketchOn(plane002)

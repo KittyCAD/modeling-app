@@ -26,7 +26,7 @@ assertGreaterThan(lbumps, 1, "lbumps must be greater than 1")
 assertGreaterThan(wbumps, 1, "wbumps must be greater than 1")
 
 // Make the base
-base = startSketchOn('XY')
+base = startSketchOn(XY)
   |> startProfileAt([-totalWidth / 2, -totalLength / 2], %)
   |> line(end = [totalWidth, 0])
   |> line(end = [0, totalLength])
@@ -53,18 +53,10 @@ peg = startSketchOn(base, 'end')
          -(pitch * (wbumps - 1) / 2),
          -(pitch * (lbumps - 1) / 2)
        ],
-       radius = bumpDiam / 2
+       radius = bumpDiam / 2,
      )
-  |> patternLinear2d(
-       axis = [1, 0],
-       instances = wbumps,
-       distance = pitch
-     )
-  |> patternLinear2d(
-       axis = [0, 1],
-       instances = lbumps,
-       distance = pitch
-     )
+  |> patternLinear2d(axis = [1, 0], instances = wbumps, distance = pitch)
+  |> patternLinear2d(axis = [0, 1], instances = lbumps, distance = pitch)
   |> extrude(length = bumpHeight)
 
 // Create the pegs on the bottom of the base
@@ -74,16 +66,8 @@ tubePattern = startSketchOn(shellExtrude, 'start')
          -(pitch * (wbumps - 1) / 2 - (pitch / 2)),
          -(pitch * (lbumps - 1) / 2 - (pitch / 2))
        ],
-       radius = bumpDiam / 2
+       radius = bumpDiam / 2,
      )
-  |> patternLinear2d(
-       axis = [1, 0],
-       instances = wbumps - 1,
-       distance = pitch
-     )
-  |> patternLinear2d(
-       axis = [0, 1],
-       instances = lbumps - 1,
-       distance = pitch
-     )
+  |> patternLinear2d(axis = [1, 0], instances = wbumps - 1, distance = pitch)
+  |> patternLinear2d(axis = [0, 1], instances = lbumps - 1, distance = pitch)
   |> extrude(length = bumpHeight)
