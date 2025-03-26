@@ -8,7 +8,7 @@ import { CSSProperties, useCallback, useState } from 'react'
 import { Logo } from 'components/Logo'
 import { CustomIcon } from 'components/CustomIcon'
 import { Link } from 'react-router-dom'
-import { APP_VERSION } from './Settings'
+import { APP_VERSION, IS_NIGHTLY } from './Settings'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
 import { toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
@@ -92,7 +92,7 @@ const SignIn = () => {
               <Logo className="text-primary h-10 lg:h-12 xl:h-16 relative translate-y-1 mr-4 lg:mr-6 xl:mr-8" />
               <h1 className="text-3xl lg:text-4xl xl:text-5xl">{APP_NAME}</h1>
               <span className="px-3 py-1 text-base rounded-full bg-primary/10 text-primary self-start">
-                alpha v{APP_VERSION}
+                {IS_NIGHTLY ? 'nightly' : ''} v{APP_VERSION}
               </span>
             </div>
             <p className="my-4 text-lg xl:text-xl">
