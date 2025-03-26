@@ -89,7 +89,7 @@ export function isNamedView(
   ] as const
 
   return namedViewKeys.every((key) => {
-    return namedView && namedView[key]
+    return namedView && key in namedView
   })
 }
 
