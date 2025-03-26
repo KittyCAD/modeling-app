@@ -1270,7 +1270,7 @@ pub enum NonCodeValue {
     /// An example of this is the following:
     /// ```no_run
     /// /* This is a
-    ///     block comment */
+    /// block comment */
     /// 1 + 1
     /// ```
     /// Now this is important. The block comment is attached to the next line.
