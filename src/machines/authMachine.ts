@@ -235,8 +235,9 @@ async function getAndSyncStoredToken(input: {
   if (token) {
     // has just logged in, update storage
     localStorage.setItem(TOKEN_PERSIST_KEY, token)
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    isDesktop() && writeTokenFile(token)
+    if (isDesktop()) {
+      await writeTokenFile(token)
+    }
     return token
   }
   if (!isDesktop()) return ''
