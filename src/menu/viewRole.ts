@@ -183,10 +183,10 @@ export const modelingViewRole = (
           },
 
           {
-            label: 'List named views',
+            label: 'Load named view',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'View.Named views.List named views',
+                menuLabel: 'View.Named views.Load named view',
               })
             },
           },

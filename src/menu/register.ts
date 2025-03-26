@@ -3,10 +3,11 @@ import type { WebContentSendPayload } from '../menu/channels'
 import { PATHS } from 'lib/paths'
 import { authActor } from 'machines/appMachine'
 import { copyFileShareLink } from 'lib/links'
-import { codeManager } from 'lib/singletons'
+import { codeManager, engineCommandManager } from 'lib/singletons'
 import { settingsActor } from 'machines/appMachine'
 import { sceneInfra } from 'lib/singletons'
 import { AxisNames } from 'lib/constants'
+import { uuidv4 } from 'lib/utils'
 
 export function modelingMenuCallbackMostActions(
   settings,
@@ -155,6 +156,37 @@ export function modelingMenuCallbackMostActions(
       sceneInfra.camControls.updateCameraToAxis(AxisNames.NEG_Y)
     } else if (data.menuLabel === 'View.Standard views.Bottom view') {
       sceneInfra.camControls.updateCameraToAxis(AxisNames.NEG_Z)
+    } else if (data.menuLabel === 'View.Standard views.Reset view') {
+      sceneInfra.camControls.resetCameraPosition()
+    } else if (
+      data.menuLabel === 'View.Standard views.Center view on selection'
+    ) {
+      // Gotcha: out of band from modelingMachineProvider, has no state or extra workflows. I am taking the function's logic and porting it here.
+      engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_center_to_selection',
+          camera_movement: 'vantage',
+        },
+      })
+    } else if (data.menuLabel === 'View.Standard views.Refresh') {
+      globalThis?.window?.location.reload()
+    } else if (data.menuLabel === 'View.Named views.Create named view') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: { name: 'Create named view', groupId: 'namedViews' },
+      })
+    } else if (data.menuLabel === 'View.Named views.Load named view') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: { name: 'Load named view', groupId: 'namedViews' },
+      })
+    } else if (data.menuLabel === 'View.Named views.Delete named view') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: { name: 'Delete named view', groupId: 'namedViews' },
+      })
     }
   }
   return cb

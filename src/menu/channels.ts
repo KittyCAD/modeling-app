@@ -64,7 +64,7 @@ export type MenuLabels =
   | 'View.Standard views.Center view on selection'
   | 'View.Standard views.Refresh'
   | 'View.Named views.Create named view'
-  | 'View.Named views.List named views'
+  | 'View.Named views.Load named view'
   | 'View.Named views.Delete named view'
   | 'View.Panes.Feature true'
   | 'View.Panes.KCL code'

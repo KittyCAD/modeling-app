@@ -75,7 +75,7 @@ type ViewRoleLabel =
   | 'Refresh'
   | 'Named views'
   | 'Create named view'
-  | 'List named views'
+  | 'Load named view'
   | 'Delete named view'
 
 type DesignRoleLabel =
