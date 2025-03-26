@@ -1587,10 +1587,7 @@ const inInches = 2.0 * inch()"#;
             )),
             fs: Arc::new(crate::fs::FileManager::new()),
             stdlib: Arc::new(crate::std::StdLib::new()),
-            settings: ExecutorSettings {
-                units: UnitLength::Ft,
-                ..Default::default()
-            },
+            settings: ExecutorSettings { ..Default::default() },
             context_type: ContextType::Mock,
         };
         let mut exec_state = ExecState::new(&ctx);
