@@ -970,11 +970,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{
-        errors::{KclErrorDetails, Severity},
-        execution::memory::Stack,
-        ModuleId,
-    };
+    use crate::{errors::KclErrorDetails, execution::memory::Stack, ModuleId};
 
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
