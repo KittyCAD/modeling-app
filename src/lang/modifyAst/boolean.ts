@@ -25,7 +25,7 @@ import { isArray } from 'lib/utils'
 
 export async function applySubtractFromTargetOperatorSelections(
   target: Selection,
-  operator: Selection,
+  tool: Selection,
   dependencies: {
     kclManager: KclManager
     engineCommandManager: EngineCommandManager
@@ -33,7 +33,7 @@ export async function applySubtractFromTargetOperatorSelections(
   }
 ): Promise<Error | void> {
   const ast = dependencies.kclManager.ast
-  if (!target.artifact || !operator.artifact) {
+  if (!target.artifact || !tool.artifact) {
     return new Error('No artifact found')
   }
   const orderedArtifactLeafsTarget = findAllLeafArtifacts(
@@ -41,7 +41,7 @@ export async function applySubtractFromTargetOperatorSelections(
     dependencies.engineCommandManager.artifactGraph
   )
   const operatorArtifactLeafs = findAllLeafArtifacts(
-    operator.artifact,
+    tool.artifact,
     dependencies.engineCommandManager.artifactGraph
   )
 

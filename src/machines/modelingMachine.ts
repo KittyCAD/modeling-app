@@ -680,7 +680,10 @@ export const modelingMachine = setup({
     },
     'assign tool in context': assign({
       currentTool: ({ event }) =>
-        'data' in event && event.data && 'tool' in event.data
+        'data' in event &&
+        event.data &&
+        'tool' in event.data &&
+        !('target' in event.data)
           ? event.data.tool
           : 'none',
     }),
@@ -2625,16 +2628,16 @@ export const modelingMachine = setup({
         if (!input) {
           return new Error('No input provided')
         }
-        const { target, operator } = input
+        const { target, tool } = input
         if (
           !target.graphSelections[0].artifact ||
-          !operator.graphSelections[0].artifact
+          !tool.graphSelections[0].artifact
         ) {
           return new Error('No artifact in selections found')
         }
         await applySubtractFromTargetOperatorSelections(
           target.graphSelections[0],
-          operator.graphSelections[0],
+          tool.graphSelections[0],
           {
             kclManager,
             codeManager,
