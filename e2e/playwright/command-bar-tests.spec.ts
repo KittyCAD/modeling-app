@@ -513,7 +513,8 @@ c = 3 + a`
     await homePage.openProject(projectName)
     // TODO: you probably shouldn't need an engine connection to add a parameter,
     // but you do because all modeling commands have that requirement
-    await scene.settled(cmdBar)
+    // Don't use scene.settled here
+    await expect(scene.startEditSketchBtn).toBeEnabled({ timeout: 15_000 })
 
     await test.step(`Create a parameter via command bar`, async () => {
       await cmdBar.cmdBarOpenBtn.click()
@@ -542,7 +543,12 @@ c = 3 + a`
     )
 
     const newValue = `2 * b + a`
+
     await test.step(`Edit the parameter via command bar`, async () => {
+      // TODO: make the command palette command registration more static, and the enabled state more dynamic
+      // so that we can just open the command palette and know all commands will be there.
+      await expect(scene.startEditSketchBtn).toBeEnabled()
+
       await cmdBar.cmdBarOpenBtn.click()
       await cmdBar.chooseCommand('edit parameter')
       await cmdBar.expectState({
