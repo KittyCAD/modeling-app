@@ -56,6 +56,7 @@ import {
   addSweep,
   createLiteral,
   createLocalName,
+  deleteNodeInExtrudePipe,
   extrudeSketch,
   insertNamedConstant,
   loftSketches,
@@ -2377,7 +2378,14 @@ export const modelingMachine = setup({
 
         // Extract inputs
         const ast = kclManager.ast
-        const { selection, radius } = input
+        const { nodeToEdit, selection, radius } = input
+
+        // If this is an edit flow, first we're going to remove the old node
+        if (nodeToEdit) {
+          const oldNodeDeletion = deleteNodeInExtrudePipe(nodeToEdit, ast)
+          if (err(oldNodeDeletion)) return oldNodeDeletion
+        }
+
         const parameters: FilletParameters = {
           type: EdgeTreatmentType.Fillet,
           radius,
@@ -2532,7 +2540,14 @@ export const modelingMachine = setup({
 
         // Extract inputs
         const ast = kclManager.ast
-        const { selection, length } = input
+        const { nodeToEdit, selection, length } = input
+
+        // If this is an edit flow, first we're going to remove the old node
+        if (nodeToEdit) {
+          const oldNodeDeletion = deleteNodeInExtrudePipe(nodeToEdit, ast)
+          if (err(oldNodeDeletion)) return oldNodeDeletion
+        }
+
         const parameters: ChamferParameters = {
           type: EdgeTreatmentType.Chamfer,
           length,
