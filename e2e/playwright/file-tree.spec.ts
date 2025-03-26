@@ -6,6 +6,7 @@ import {
   executorInputPath,
   getUtils,
   orRunWhenFullSuiteEnabled,
+  runningOnWindows,
 } from './test-utils'
 import { join } from 'path'
 import { FILE_EXT } from 'lib/constants'
@@ -15,7 +16,9 @@ test.describe('integrations tests', () => {
     'Creating a new file or switching file while in sketchMode should exit sketchMode',
     { tag: '@electron' },
     async ({ page, context, homePage, scene, editor, toolbar, cmdBar }) => {
-      test.fixme(orRunWhenFullSuiteEnabled())
+      if (runningOnWindows()) {
+        test.fixme(orRunWhenFullSuiteEnabled())
+      }
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'test-sample')
         await fsp.mkdir(bracketDir, { recursive: true })
