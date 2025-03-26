@@ -13,10 +13,7 @@ import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { sourceRangeFromRust } from 'lang/wasm'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { stringToKclExpression } from './kclHelpers'
-import {
-  EDGE_TREATMENT_TYPES,
-  ModelingCommandSchema,
-} from './commandBarConfigs/modelingCommandConfig'
+import { ModelingCommandSchema } from './commandBarConfigs/modelingCommandConfig'
 import { isDefaultPlaneStr } from './planes'
 import { Selection, Selections } from './selections'
 import { rustContext } from './singletons'
@@ -153,7 +150,7 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
   const edgeArtifact = getArtifactOfTypes(
     {
       key: artifact.consumedEdgeId,
-      types: EDGE_TREATMENT_TYPES,
+      types: ['segment', 'sweepEdge'],
     },
     engineCommandManager.artifactGraph
   )

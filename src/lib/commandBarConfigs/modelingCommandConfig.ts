@@ -38,11 +38,6 @@ export const EXTRUSION_RESULTS = [
 
 export const COMMAND_APPEARANCE_COLOR_DEFAULT = 'default'
 
-export const EDGE_TREATMENT_TYPES: ('segment' | 'sweepEdge')[] = [
-  'segment',
-  'sweepEdge',
-]
-
 export type ModelingCommandSchema = {
   'Enter sketch': {}
   Export: {
@@ -627,7 +622,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       selection: {
         inputType: 'selection',
-        selectionTypes: EDGE_TREATMENT_TYPES,
+        selectionTypes: ['segment', 'sweepEdge'],
         multiple: true,
         required: true,
         skip: false,
@@ -657,7 +652,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       selection: {
         inputType: 'selection',
-        selectionTypes: EDGE_TREATMENT_TYPES,
+        selectionTypes: ['segment', 'sweepEdge'],
         multiple: true,
         required: true,
         skip: false,
