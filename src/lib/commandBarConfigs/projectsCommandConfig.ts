@@ -4,7 +4,7 @@ import { isDesktop } from 'lib/isDesktop'
 import { projectsMachine } from 'machines/projectsMachine'
 
 export type ProjectsCommandSchema = {
-  'Read projects': {}
+  'Read projects': Record<string, unknown>
   'Create project': {
     name: string
   }
