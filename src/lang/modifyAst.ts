@@ -811,40 +811,53 @@ export function addOffsetPlane({
  */
 export function addHelix({
   node,
+  axis,
+  cylinder,
   revolutions,
   angleStart,
-  ccw,
   radius,
-  axis,
   length,
+  ccw,
   insertIndex,
   variableName,
 }: {
   node: Node<Program>
+  axis?: Node<Literal> | Node<Name | CallExpression | CallExpressionKw>
+  cylinder?: VariableDeclarator
   revolutions: Expr
   angleStart: Expr
+  radius?: Expr
+  length?: Expr
   ccw: boolean
-  radius: Expr
-  axis: Node<Literal> | Node<Name | CallExpression | CallExpressionKw>
-  length: Expr
   insertIndex?: number
   variableName?: string
 }): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   const modifiedAst = structuredClone(node)
   const name =
     variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.HELIX)
+  const modeArgs: CallExpressionKw['arguments'] = []
+  if (axis && radius) {
+    modeArgs.push(createLabeledArg('axis', axis))
+    modeArgs.push(createLabeledArg('radius', radius))
+    if (length) {
+      modeArgs.push(createLabeledArg('length', length))
+    }
+  } else if (cylinder) {
+    modeArgs.push(
+      createLabeledArg('cylinder', createLocalName(cylinder.id.name))
+    )
+  }
+
   const variable = createVariableDeclaration(
     name,
     createCallExpressionStdLibKw(
       'helix',
       null, // Not in a pipeline
       [
+        ...modeArgs,
         createLabeledArg('revolutions', revolutions),
         createLabeledArg('angleStart', angleStart),
         createLabeledArg('ccw', createLiteral(ccw)),
-        createLabeledArg('radius', radius),
-        createLabeledArg('axis', axis),
-        createLabeledArg('length', length),
       ]
     )
   )
