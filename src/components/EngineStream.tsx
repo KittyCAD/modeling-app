@@ -15,7 +15,7 @@ import { err, reportRejection, trap } from 'lib/trap'
 import { getArtifactOfTypes } from 'lang/std/artifactGraph'
 import { ViewControlContextMenu } from './ViewControlMenu'
 import { useSettings, engineStreamActor } from 'machines/appMachine'
-import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
+import { useCommandBarState } from 'machines/commandBarMachine'
 import {
   EngineStreamState,
   EngineStreamTransition,
