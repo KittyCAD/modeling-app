@@ -1511,6 +1511,8 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
         page,
         editor,
         homePage,
+        scene,
+        cmdBar,
       }) => {
         await page.addInitScript(
           async ({ lineToBeDeleted }) => {
@@ -1531,7 +1533,8 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
-        await u.waitForPageLoad()
+        await scene.connectionEstablished()
+        await scene.settled(cmdBar)
         await page.waitForTimeout(300)
 
         await page.getByText(before).click()
