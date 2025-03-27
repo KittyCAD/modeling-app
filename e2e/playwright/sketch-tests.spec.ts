@@ -2326,7 +2326,8 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `sketch001 = startSketchOn(XZ)
+          `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([6.24, 4.54], sketch001)
   |> line(end = [-0.41, 6.99])
   |> line(end = [8.61, 0.74])
