@@ -27,7 +27,7 @@ export function useMenuListener(
 }
 
 // Enable disable menu actions specifically based on if you are in the modeling mode of sketching or modeling.
-// This is a similar behavor of the command bar which disables action if you are in sketch mode
+// This is a similar behavior of the command bar which disables action if you are in sketch mode
 export function useSketchModeMenuEnableDisable(
   currentMode: ToolbarModeName,
   overallState: NetworkHealthState,
