@@ -71,7 +71,7 @@ export function useNetworkStatus() {
         ? NetworkHealthState.Disconnected
         : hasIssues || hasIssues === undefined
         ? NetworkHealthState.Issue
-        : ping > 16.6 * 3 // we consider ping longer than 3 frames as weak
+        : (ping ?? 0) > 16.6 * 3 // we consider ping longer than 3 frames as weak
         ? NetworkHealthState.Weak
         : NetworkHealthState.Ok
     )

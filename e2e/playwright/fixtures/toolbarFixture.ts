@@ -159,16 +159,10 @@ export class ToolbarFixture {
     }
   }
   /**
-   * Opens file by it's name and waits for execution to finish
+   * Opens file by it's name
    */
-  openFile = async (
-    fileName: string,
-    { wait }: { wait?: boolean } = { wait: true }
-  ) => {
+  openFile = async (fileName: string) => {
     await this.filePane.getByText(fileName).click()
-    if (wait) {
-      await scene.settled(cmdBar)
-    }
   }
   selectCenterRectangle = async () => {
     await this.page
