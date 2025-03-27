@@ -250,7 +250,12 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       },
     ] as const
     for (const { testName, value, constraint } of cases) {
-      test(`${constraint} - ${testName}`, async ({ page, homePage, scene, cmdBar }) => {
+      test(`${constraint} - ${testName}`, async ({
+        page,
+        homePage,
+        scene,
+        cmdBar,
+      }) => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
@@ -361,7 +366,12 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       },
     ] as const
     for (const { testName, addVariable, value, constraint } of cases) {
-      test(`${constraint} - ${testName}`, async ({ page, homePage, scene, cmdBar }) => {
+      test(`${constraint} - ${testName}`, async ({
+        page,
+        homePage,
+        scene,
+        cmdBar,
+      }) => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
@@ -655,7 +665,14 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       },
     ] as const
     for (const { testName, addVariable, value, constraint } of cases) {
-      test(`${testName}`, async ({ context, homePage, page, editor, scene, cmdBar }) => {
+      test(`${testName}`, async ({
+        context,
+        homePage,
+        page,
+        editor,
+        scene,
+        cmdBar,
+      }) => {
         // constants and locators
         const cmdBarKclInput = page
           .getByTestId('cmd-bar-arg-value')
@@ -995,7 +1012,7 @@ part002 = startSketchOn(XZ)
     page,
     homePage,
     scene,
-    cmdBar
+    cmdBar,
   }) => {
     test.fixme(orRunWhenFullSuiteEnabled())
     test.setTimeout(70_000)

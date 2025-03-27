@@ -189,7 +189,7 @@ test.describe('Point-and-click tests', () => {
       editor,
       toolbar,
       scene,
-      cmdBar
+      cmdBar,
     }) => {
       const file = await fs.readFile(
         path.resolve(
@@ -1588,7 +1588,7 @@ extrude001 = extrude(profile001, length = 100)
     page,
     homePage,
     scene,
-    cmdBar
+    cmdBar,
   }) => {
     const initialCode = `sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 30)
@@ -2439,7 +2439,7 @@ extrude001 = extrude(profile001, length = 5)
       await test.step(`Apply fillet`, async () => {
         await page.waitForTimeout(100)
         await toolbar.filletButton.click()
-      await page.getByText('Please select one')
+        await page.getByText('Please select one')
         await cmdBar.expectState({
           commandName: 'Fillet',
           highlightedHeaderArg: 'selection',

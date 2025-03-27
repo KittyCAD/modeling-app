@@ -401,7 +401,9 @@ test(
     await page.getByText('broken-code').click()
 
     // Gotcha: You can not use scene.settled() since the KCL code is going to fail
-    await expect(page.getByTestId('model-state-indicator-playing')).toBeAttached()
+    await expect(
+      page.getByTestId('model-state-indicator-playing')
+    ).toBeAttached()
 
     // Gotcha: Scroll to the text content in code mirror because CodeMirror lazy loads DOM content
     await editor.scrollToText(
