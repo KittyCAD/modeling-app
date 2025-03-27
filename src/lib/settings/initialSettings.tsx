@@ -223,16 +223,35 @@ export function createSettings() {
           value: settingValueInStorage,
           updateValue: writeSettingValueToStorage,
         }) => {
-          const [timeoutId, setTimeoutId] = useState(undefined)
+          const [timeoutId, setTimeoutId] = useState<
+            ReturnType<typeof setTimeout> | undefined
+          >(undefined)
           const [preview, setPreview] = useState(
             settingValueInStorage === undefined
               ? settingValueInStorage
               : settingValueInStorage / MS_IN_MINUTE
           )
-          const onChangeRange = (e: React.SyntheticEvent) =>
-            setPreview(e.currentTarget.value)
+          const onChangeRange = (e: React.SyntheticEvent) => {
+            if (
+              !(
+                e.isTrusted &&
+                'value' in e.currentTarget &&
+                e.currentTarget.value
+              )
+            )
+              return
+            setPreview(Number(e.currentTarget.value))
+          }
           const onSaveRange = (e: React.SyntheticEvent) => {
             if (preview === undefined) return
+            if (
+              !(
+                e.isTrusted &&
+                'value' in e.currentTarget &&
+                e.currentTarget.value
+              )
+            )
+              return
             writeSettingValueToStorage(
               Number(e.currentTarget.value) * MS_IN_MINUTE
             )
@@ -241,6 +260,7 @@ export function createSettings() {
           return (
             <div className="flex item-center gap-4 m-0 py-0">
               <Toggle
+                name="streamIdleModeToggle"
                 offLabel="Off"
                 onLabel="On"
                 checked={settingValueInStorage !== undefined}

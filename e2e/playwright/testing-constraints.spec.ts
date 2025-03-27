@@ -1029,7 +1029,7 @@ part002 = startSketchOn(XZ)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
-    await scene.settled()
+    await scene.settled(cmdBar)
 
     await page.getByText('line(end = [3.79, 2.68], tag = $seg01)').click()
     await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeEnabled(
