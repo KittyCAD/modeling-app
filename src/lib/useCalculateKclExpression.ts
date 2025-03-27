@@ -35,7 +35,12 @@ export function useCalculateKclExpression({
   isNewVariableNameUnique: boolean
   newVariableInsertIndex: number
   setNewVariableName: (a: string) => void
+  isExecuting: boolean
 } {
+  // Executing the mini AST to calculate the expression value
+  // is asynchronous. Use this state variable to track if execution
+  // has completed
+  const [isExecuting, setIsExecuting] = useState(false)
   const { variables, code } = useKclContext()
   const { context } = useModelingContext()
   // If there is no selection, use the end of the code
@@ -110,6 +115,7 @@ export function useCalculateKclExpression({
   useEffect(() => {
     const execAstAndSetResult = async () => {
       const result = await getCalculatedKclExpressionValue(value)
+      setIsExecuting(false)
       if (result instanceof Error || 'errors' in result || !result.astNode) {
         setCalcResult('NAN')
         setValueNode(null)
@@ -121,8 +127,10 @@ export function useCalculateKclExpression({
       result?.astNode && setValueNode(result.astNode)
     }
     if (!value) return
+    setIsExecuting(true)
     execAstAndSetResult().catch(() => {
       setCalcResult('NAN')
+      setIsExecuting(false)
       setValueNode(null)
     })
   }, [value, availableVarInfo, code, kclManager.variables])
@@ -136,5 +144,6 @@ export function useCalculateKclExpression({
     isNewVariableNameUnique,
     setNewVariableName,
     inputRef,
+    isExecuting,
   }
 }
