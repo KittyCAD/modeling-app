@@ -12,6 +12,7 @@ import {
   defaultSourceRange,
   topLevelRange,
   ArtifactGraph,
+  CallExpressionKw,
 } from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { isNonNullable, uuidv4 } from 'lib/utils'
@@ -337,7 +338,7 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
 
   Object.values(sceneEntitiesManager.activeSegments).forEach((segmentGroup) => {
     if (!SEGMENT_BODIES_PLUS_PROFILE_START.includes(segmentGroup?.name)) return
-    const nodeMeta = getNodeFromPath<Node<CallExpression | CallExpression>>(
+    const nodeMeta = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
       updated,
       segmentGroup.userData.pathToNode,
       ['CallExpression', 'CallExpressionKw']

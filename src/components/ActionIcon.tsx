@@ -1,8 +1,7 @@
 import {
-  IconDefinition as SolidIconDefinition,
+  IconDefinition,
   faCircleExclamation,
 } from '@fortawesome/free-solid-svg-icons'
-import { IconDefinition as BrandIconDefinition } from '@fortawesome/free-brands-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { CustomIcon, CustomIconName } from './CustomIcon'
 
@@ -14,7 +13,7 @@ const iconSizes = {
 }
 
 export interface ActionIconProps extends React.PropsWithChildren {
-  icon?: SolidIconDefinition | BrandIconDefinition | CustomIconName
+  icon?: IconDefinition | CustomIconName
   iconColor?: string
   className?: string
   bgClassName?: string
