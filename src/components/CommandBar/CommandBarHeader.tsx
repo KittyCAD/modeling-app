@@ -98,9 +98,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
               .map(([argName, arg], i) => {
                 const argValue =
                   (typeof argumentsToSubmit[argName] === 'function'
-                    ? (argumentsToSubmit[argName] as Function)(
-                        commandBarState.context
-                      )
+                    ? argumentsToSubmit[argName](commandBarState.context)
                     : argumentsToSubmit[argName]) || ''
 
                 return (

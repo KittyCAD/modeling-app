@@ -717,7 +717,7 @@ export function updateSelections(
         },
       }
     })
-    .filter((x?: Selection) => x !== undefined) as Selection[]
+    .filter((x?: Selection) => x !== undefined)
 
   // for when there is no artifact (sketch mode since mock execute does not update artifactGraph)
   const pathToNodeBasedSelections: Selections['graphSelections'] = []
