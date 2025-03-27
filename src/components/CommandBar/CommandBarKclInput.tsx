@@ -272,7 +272,7 @@ function CommandBarKclInput({
               : 'text-succeed-80 dark:text-succeed-40'
           }
         >
-          {isExecuting === true ? (
+          {isExecuting === true || !calcResult ? (
             <Spinner className="text-inherit w-4 h-4" />
           ) : calcResult === 'NAN' ? (
             "Can't calculate"
