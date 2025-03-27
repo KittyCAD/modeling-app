@@ -27,6 +27,7 @@ import { getNodeFromPath } from 'lang/queryAst'
 import { isPathToNode, SourceRange, VariableDeclarator } from 'lang/wasm'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import { err } from 'lib/trap'
+import { Spinner } from 'components/Spinner'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
@@ -115,6 +116,7 @@ function CommandBarKclInput({
     setNewVariableName,
     isNewVariableNameUnique,
     prevVariables,
+    isExecuting,
   } = useCalculateKclExpression({
     value,
     initialVariableName,
@@ -200,9 +202,11 @@ function CommandBarKclInput({
 
   useEffect(() => {
     setCanSubmit(
-      calcResult !== 'NAN' && (!createNewVariable || isNewVariableNameUnique)
+      calcResult !== 'NAN' &&
+        (!createNewVariable || isNewVariableNameUnique) &&
+        !isExecuting
     )
-  }, [calcResult, createNewVariable, isNewVariableNameUnique])
+  }, [calcResult, createNewVariable, isNewVariableNameUnique, isExecuting])
 
   function handleSubmit(e?: React.FormEvent<HTMLFormElement>) {
     e?.preventDefault()
@@ -268,9 +272,13 @@ function CommandBarKclInput({
               : 'text-succeed-80 dark:text-succeed-40'
           }
         >
-          {calcResult === 'NAN'
-            ? "Can't calculate"
-            : roundOff(Number(calcResult), 4)}
+          {isExecuting === true ? (
+            <Spinner className="text-inherit w-4 h-4" />
+          ) : calcResult === 'NAN' ? (
+            "Can't calculate"
+          ) : (
+            roundOff(Number(calcResult), 4)
+          )}
         </span>
       </label>
       {createNewVariable ? (
