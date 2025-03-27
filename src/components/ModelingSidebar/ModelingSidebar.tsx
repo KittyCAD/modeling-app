@@ -165,15 +165,6 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
     [context.store?.openPanes, send]
   )
 
-  window.cat = () => {
-    send({
-      type: 'Set context',
-      data: {
-        openPanes: ['code', 'files', 'feature-tree'],
-      },
-    })
-  }
-
   return (
     <Resizable
       className={`group flex-1 flex flex-col z-10 my-2 pr-1 ${paneOpacity} ${pointerEventsCssClass}`}

@@ -66,7 +66,6 @@ export type MenuLabels =
   | 'Design.Create an additive feature'
   | 'Design.Apply modification feature'
 
-
 export type WebContentSendPayload = {
   menuLabel: MenuLabels
 }

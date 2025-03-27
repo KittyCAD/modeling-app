@@ -9,14 +9,16 @@ import { sceneInfra } from 'lib/singletons'
 import { AxisNames } from 'lib/constants'
 import { uuidv4 } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
+import { NavigateFunction } from 'react-router-dom'
+import { Project } from 'lib/project'
+import { SettingsType } from 'lib/settings/initialSettings'
 
 export function modelingMenuCallbackMostActions(
-  settings,
-  navigate,
-  filePath,
-  project,
-  token,
-  fileSend
+  settings: SettingsType,
+  navigate: NavigateFunction,
+  filePath: string,
+  project: Project | undefined,
+  token: string | undefined
 ) {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {

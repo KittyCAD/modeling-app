@@ -53,7 +53,6 @@ export const FileMachineProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  window.dog = commandBarActor
   const navigate = useNavigate()
   const location = useLocation()
   const token = useToken()
@@ -410,9 +409,8 @@ export const FileMachineProvider = ({
     settings,
     navigate,
     filePath,
-    projectData,
-    token,
-    send
+    project,
+    token
   )
   useMenuListener(cb)
 
