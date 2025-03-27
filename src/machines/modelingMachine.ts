@@ -680,12 +680,7 @@ export const modelingMachine = setup({
     },
     'assign tool in context': assign({
       currentTool: ({ event }) =>
-        'data' in event &&
-        event.data &&
-        'tool' in event.data &&
-        !('target' in event.data)
-          ? event.data.tool
-          : 'none',
+        event.type === 'change tool' ? event.data.tool || 'none' : 'none',
     }),
     'reset selections': assign({
       selectionRanges: { graphSelections: [], otherSelections: [] },
