@@ -88,7 +88,7 @@ test.describe('Named view tests', () => {
 
     // Create and load project
     await createProject({ name: projectName, page })
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // Create named view
     const projectDirName = testInfo.outputPath('electron-test-projects-dir')
@@ -130,7 +130,7 @@ test.describe('Named view tests', () => {
 
     // Create project and go into the project
     await createProject({ name: projectName, page })
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // Create a new named view
     await cmdBar.openCmdBar()
@@ -186,7 +186,7 @@ test.describe('Named view tests', () => {
 
     // Create project and go into the project
     await createProject({ name: projectName, page })
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // Create a new named view
     await cmdBar.openCmdBar()
@@ -239,7 +239,7 @@ test.describe('Named view tests', () => {
 
     // Create and load project
     await createProject({ name: projectName, page })
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // Create named view
     const projectDirName = testInfo.outputPath('electron-test-projects-dir')
