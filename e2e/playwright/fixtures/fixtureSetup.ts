@@ -39,7 +39,8 @@ export class AuthenticatedApp {
   }
 
   async initialise(code = '') {
-    await setup(this.context, this.page, this.testInfo)
+    const testDir = this.testInfo.outputPath('electron-test-projects-dir')
+    await setup(this.context, this.page, testDir, this.testInfo)
     const u = await getUtils(this.page)
 
     await this.page.addInitScript(async (code) => {

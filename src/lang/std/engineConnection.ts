@@ -312,7 +312,7 @@ class EngineConnection extends EventTarget {
   public webrtcStatsCollector?: () => Promise<WebRTCClientMetrics>
   private engineCommandManager: EngineCommandManager
 
-  private pingPongSpan: { ping?: Date; pong?: Date }
+  private pingPongSpan: { ping?: number; pong?: number }
   private pingIntervalId: ReturnType<typeof setInterval> = setInterval(() => {},
   60_000)
   isUsingConnectionLite: boolean = false
@@ -358,7 +358,7 @@ class EngineConnection extends EventTarget {
 
       this.send({ type: 'ping' })
       this.pingPongSpan = {
-        ping: new Date(),
+        ping: Date.now(),
         pong: undefined,
       }
     }, pingIntervalMs)
@@ -938,7 +938,7 @@ class EngineConnection extends EventTarget {
 
           // Send an initial ping
           this.send({ type: 'ping' })
-          this.pingPongSpan.ping = new Date()
+          this.pingPongSpan.ping = Date.now()
         }
         this.websocket.addEventListener('open', this.onWebSocketOpen)
 
@@ -1035,12 +1035,14 @@ class EngineConnection extends EventTarget {
 
           switch (resp.type) {
             case 'pong':
-              this.pingPongSpan.pong = new Date()
+              this.pingPongSpan.pong = Date.now()
               this.dispatchEvent(
                 new CustomEvent(EngineConnectionEvents.PingPongChanged, {
                   detail: Math.min(
                     999,
-                    Math.floor(this.pingPongSpan.pong - this.pingPongSpan.ping)
+                    Math.floor(
+                      this.pingPongSpan.pong - (this.pingPongSpan.ping ?? 0)
+                    )
                   ),
                 })
               )
@@ -1207,7 +1209,7 @@ class EngineConnection extends EventTarget {
   // Do not change this back to an object or any, we should only be sending the
   // WebSocketRequest type!
   unreliableSend(message: Models['WebSocketRequest_type']) {
-    if (this.unreliableDataChannel.readyState !== 'open') return
+    if (this.unreliableDataChannel?.readyState !== 'open') return
 
     // TODO(paultag): Add in logic to determine the connection state and
     // take actions if needed?
