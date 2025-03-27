@@ -1376,7 +1376,7 @@ extrude001 = extrude(profile001, length = 100)
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 620, y: 257 }
@@ -2198,6 +2198,7 @@ extrude001 = extrude(sketch001, length = -12)
     homePage,
     scene,
     toolbar,
+    cmdBar,
   }) => {
     const initialCode = `sketch001 = startSketchOn(XY)
 profile001 = circle(
@@ -2214,7 +2215,7 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     await test.step('Double-click in feature tree and expect error toast', async () => {
       await toolbar.openPane('feature-tree')
