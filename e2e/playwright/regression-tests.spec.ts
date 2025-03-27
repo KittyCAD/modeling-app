@@ -690,7 +690,6 @@ extrude002 = extrude(profile002, length = 150)
     scene,
     toolbar,
     viewport,
-    cmdBar,
   }) => {
     await context.folderSetupFn(async (dir) => {
       const legoDir = path.join(dir, 'lego')
@@ -706,7 +705,7 @@ extrude002 = extrude(profile002, length = 150)
       await toolbar.closePane('code')
     })
     await test.step(`Waiting for scene to settle`, async () => {
-      await scene.settled(cmdBar)
+      await scene.connectionEstablished()
     })
     await test.step(`The part should start loading quickly, not waiting until execution is complete`, async () => {
       // TODO: use the viewport size to pick the center point, but the `viewport` fixture's values were wrong.

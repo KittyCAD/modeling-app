@@ -64,7 +64,7 @@ test.describe('Feature Tree pane', () => {
   test(
     'User can go to definition and go to function definition',
     { tag: '@electron' },
-    async ({ context, homePage, scene, editor, toolbar, cmdBar }) => {
+    async ({ context, homePage, scene, editor, toolbar, cmdBar, page }) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'test-sample')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -86,9 +86,11 @@ test.describe('Feature Tree pane', () => {
           sortBy: 'last-modified-desc',
         })
         await homePage.openProject('test-sample')
-        // await scene.connectionEstablished()
-        await editor.closePane()
+        await scene.connectionEstablished()
+        await scene.settled(cmdBar)
+
         await toolbar.openFeatureTreePane()
+        await page.getByText('Feature tree')
       })
 
       async function testViewSource({
