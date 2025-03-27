@@ -1,0 +1,1011 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing intersect_cubes.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 3,
+          "end": 0,
+          "id": {
+            "commentStart": 3,
+            "end": 0,
+            "name": "cube",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": {
+              "body": [
+                {
+                  "argument": {
+                    "body": [
+                      {
+                        "arguments": [
+                          {
+                            "abs_path": false,
+                            "commentStart": 41,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 41,
+                              "end": 0,
+                              "name": "XY",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          }
+                        ],
+                        "callee": {
+                          "abs_path": false,
+                          "commentStart": 27,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 27,
+                            "end": 0,
+                            "name": "startSketchOn",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name"
+                        },
+                        "commentStart": 27,
+                        "end": 0,
+                        "start": 0,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
+                      },
+                      {
+                        "arguments": [
+                          {
+                            "commentStart": 67,
+                            "elements": [
+                              {
+                                "commentStart": 68,
+                                "end": 0,
+                                "left": {
+                                  "commentStart": 68,
+                                  "computed": false,
+                                  "end": 0,
+                                  "object": {
+                                    "commentStart": 68,
+                                    "end": 0,
+                                    "name": "center",
+                                    "start": 0,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "property": {
+                                    "commentStart": 75,
+                                    "end": 0,
+                                    "raw": "0",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 0,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                },
+                                "operator": "-",
+                                "right": {
+                                  "commentStart": 80,
+                                  "end": 0,
+                                  "raw": "10",
+                                  "start": 0,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 10.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 0,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              {
+                                "commentStart": 84,
+                                "end": 0,
+                                "left": {
+                                  "commentStart": 84,
+                                  "computed": false,
+                                  "end": 0,
+                                  "object": {
+                                    "commentStart": 84,
+                                    "end": 0,
+                                    "name": "center",
+                                    "start": 0,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "property": {
+                                    "commentStart": 91,
+                                    "end": 0,
+                                    "raw": "1",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 0,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                },
+                                "operator": "-",
+                                "right": {
+                                  "commentStart": 96,
+                                  "end": 0,
+                                  "raw": "10",
+                                  "start": 0,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 10.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 0,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              }
+                            ],
+                            "end": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          },
+                          {
+                            "commentStart": 101,
+                            "end": 0,
+                            "start": 0,
+                            "type": "PipeSubstitution",
+                            "type": "PipeSubstitution"
+                          }
+                        ],
+                        "callee": {
+                          "abs_path": false,
+                          "commentStart": 52,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 52,
+                            "end": 0,
+                            "name": "startProfileAt",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name"
+                        },
+                        "commentStart": 52,
+                        "end": 0,
+                        "start": 0,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
+                      },
+                      {
+                        "arguments": [
+                          {
+                            "type": "LabeledArg",
+                            "label": {
+                              "commentStart": 116,
+                              "end": 0,
+                              "name": "endAbsolute",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "arg": {
+                              "commentStart": 130,
+                              "elements": [
+                                {
+                                  "commentStart": 131,
+                                  "end": 0,
+                                  "left": {
+                                    "commentStart": 131,
+                                    "computed": false,
+                                    "end": 0,
+                                    "object": {
+                                      "commentStart": 131,
+                                      "end": 0,
+                                      "name": "center",
+                                      "start": 0,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "property": {
+                                      "commentStart": 138,
+                                      "end": 0,
+                                      "raw": "0",
+                                      "start": 0,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 0.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  "operator": "+",
+                                  "right": {
+                                    "commentStart": 143,
+                                    "end": 0,
+                                    "raw": "10",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 10.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                {
+                                  "commentStart": 147,
+                                  "end": 0,
+                                  "left": {
+                                    "commentStart": 147,
+                                    "computed": false,
+                                    "end": 0,
+                                    "object": {
+                                      "commentStart": 147,
+                                      "end": 0,
+                                      "name": "center",
+                                      "start": 0,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "property": {
+                                      "commentStart": 154,
+                                      "end": 0,
+                                      "raw": "1",
+                                      "start": 0,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 1.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  "operator": "-",
+                                  "right": {
+                                    "commentStart": 159,
+                                    "end": 0,
+                                    "raw": "10",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 10.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                }
+                              ],
+                              "end": 0,
+                              "start": 0,
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
+                            }
+                          }
+                        ],
+                        "callee": {
+                          "abs_path": false,
+                          "commentStart": 111,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 111,
+                            "end": 0,
+                            "name": "line",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name"
+                        },
+                        "commentStart": 111,
+                        "end": 0,
+                        "start": 0,
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
+                      },
+                      {
+                        "arguments": [
+                          {
+                            "type": "LabeledArg",
+                            "label": {
+                              "commentStart": 176,
+                              "end": 0,
+                              "name": "endAbsolute",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "arg": {
+                              "commentStart": 190,
+                              "elements": [
+                                {
+                                  "commentStart": 191,
+                                  "end": 0,
+                                  "left": {
+                                    "commentStart": 191,
+                                    "computed": false,
+                                    "end": 0,
+                                    "object": {
+                                      "commentStart": 191,
+                                      "end": 0,
+                                      "name": "center",
+                                      "start": 0,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "property": {
+                                      "commentStart": 198,
+                                      "end": 0,
+                                      "raw": "0",
+                                      "start": 0,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 0.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  "operator": "+",
+                                  "right": {
+                                    "commentStart": 203,
+                                    "end": 0,
+                                    "raw": "10",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 10.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                {
+                                  "commentStart": 207,
+                                  "end": 0,
+                                  "left": {
+                                    "commentStart": 207,
+                                    "computed": false,
+                                    "end": 0,
+                                    "object": {
+                                      "commentStart": 207,
+                                      "end": 0,
+                                      "name": "center",
+                                      "start": 0,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "property": {
+                                      "commentStart": 214,
+                                      "end": 0,
+                                      "raw": "1",
+                                      "start": 0,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 1.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  "operator": "+",
+                                  "right": {
+                                    "commentStart": 219,
+                                    "end": 0,
+                                    "raw": "10",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 10.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                }
+                              ],
+                              "end": 0,
+                              "start": 0,
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
+                            }
+                          }
+                        ],
+                        "callee": {
+                          "abs_path": false,
+                          "commentStart": 171,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 171,
+                            "end": 0,
+                            "name": "line",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name"
+                        },
+                        "commentStart": 171,
+                        "end": 0,
+                        "start": 0,
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
+                      },
+                      {
+                        "arguments": [
+                          {
+                            "type": "LabeledArg",
+                            "label": {
+                              "commentStart": 236,
+                              "end": 0,
+                              "name": "endAbsolute",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "arg": {
+                              "commentStart": 250,
+                              "elements": [
+                                {
+                                  "commentStart": 251,
+                                  "end": 0,
+                                  "left": {
+                                    "commentStart": 251,
+                                    "computed": false,
+                                    "end": 0,
+                                    "object": {
+                                      "commentStart": 251,
+                                      "end": 0,
+                                      "name": "center",
+                                      "start": 0,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "property": {
+                                      "commentStart": 258,
+                                      "end": 0,
+                                      "raw": "0",
+                                      "start": 0,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 0.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  "operator": "-",
+                                  "right": {
+                                    "commentStart": 263,
+                                    "end": 0,
+                                    "raw": "10",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 10.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                {
+                                  "commentStart": 267,
+                                  "end": 0,
+                                  "left": {
+                                    "commentStart": 267,
+                                    "computed": false,
+                                    "end": 0,
+                                    "object": {
+                                      "commentStart": 267,
+                                      "end": 0,
+                                      "name": "center",
+                                      "start": 0,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "property": {
+                                      "commentStart": 274,
+                                      "end": 0,
+                                      "raw": "1",
+                                      "start": 0,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 1.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  "operator": "+",
+                                  "right": {
+                                    "commentStart": 279,
+                                    "end": 0,
+                                    "raw": "10",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 10.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                }
+                              ],
+                              "end": 0,
+                              "start": 0,
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
+                            }
+                          }
+                        ],
+                        "callee": {
+                          "abs_path": false,
+                          "commentStart": 231,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 231,
+                            "end": 0,
+                            "name": "line",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name"
+                        },
+                        "commentStart": 231,
+                        "end": 0,
+                        "start": 0,
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
+                      },
+                      {
+                        "arguments": [],
+                        "callee": {
+                          "abs_path": false,
+                          "commentStart": 291,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 291,
+                            "end": 0,
+                            "name": "close",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name"
+                        },
+                        "commentStart": 291,
+                        "end": 0,
+                        "start": 0,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
+                      },
+                      {
+                        "arguments": [
+                          {
+                            "type": "LabeledArg",
+                            "label": {
+                              "commentStart": 314,
+                              "end": 0,
+                              "name": "length",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "arg": {
+                              "commentStart": 323,
+                              "end": 0,
+                              "raw": "10",
+                              "start": 0,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 10.0,
+                                "suffix": "None"
+                              }
+                            }
+                          }
+                        ],
+                        "callee": {
+                          "abs_path": false,
+                          "commentStart": 306,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 306,
+                            "end": 0,
+                            "name": "extrude",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name"
+                        },
+                        "commentStart": 306,
+                        "end": 0,
+                        "start": 0,
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
+                      }
+                    ],
+                    "commentStart": 27,
+                    "end": 0,
+                    "start": 0,
+                    "type": "PipeExpression",
+                    "type": "PipeExpression"
+                  },
+                  "commentStart": 20,
+                  "end": 0,
+                  "start": 0,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "commentStart": 16,
+              "end": 0,
+              "start": 0
+            },
+            "commentStart": 7,
+            "end": 0,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "commentStart": 8,
+                  "end": 0,
+                  "name": "center",
+                  "start": 0,
+                  "type": "Identifier"
+                }
+              }
+            ],
+            "start": 0,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "fn",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 328,
+        "declaration": {
+          "commentStart": 330,
+          "end": 0,
+          "id": {
+            "commentStart": 330,
+            "end": 0,
+            "name": "part001",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "commentStart": 345,
+                "elements": [
+                  {
+                    "commentStart": 346,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  },
+                  {
+                    "commentStart": 349,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  }
+                ],
+                "end": 0,
+                "start": 0,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              }
+            ],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 340,
+              "end": 0,
+              "name": {
+                "commentStart": 340,
+                "end": 0,
+                "name": "cube",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 340,
+            "end": 0,
+            "start": 0,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 353,
+        "declaration": {
+          "commentStart": 353,
+          "end": 0,
+          "id": {
+            "commentStart": 353,
+            "end": 0,
+            "name": "part002",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "commentStart": 368,
+                "elements": [
+                  {
+                    "commentStart": 369,
+                    "end": 0,
+                    "raw": "8",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 8.0,
+                      "suffix": "None"
+                    }
+                  },
+                  {
+                    "commentStart": 372,
+                    "end": 0,
+                    "raw": "8",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 8.0,
+                      "suffix": "None"
+                    }
+                  }
+                ],
+                "end": 0,
+                "start": 0,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              }
+            ],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 363,
+              "end": 0,
+              "name": {
+                "commentStart": 363,
+                "end": 0,
+                "name": "cube",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 363,
+            "end": 0,
+            "start": 0,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 375,
+        "declaration": {
+          "commentStart": 377,
+          "end": 0,
+          "id": {
+            "commentStart": 377,
+            "end": 0,
+            "name": "fullPart",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "commentStart": 398,
+                "elements": [
+                  {
+                    "abs_path": false,
+                    "commentStart": 399,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 399,
+                      "end": 0,
+                      "name": "part001",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
+                  {
+                    "abs_path": false,
+                    "commentStart": 408,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 408,
+                      "end": 0,
+                      "name": "part002",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  }
+                ],
+                "end": 0,
+                "start": 0,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              }
+            ],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 388,
+              "end": 0,
+              "name": {
+                "commentStart": 388,
+                "end": 0,
+                "name": "intersect",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 388,
+            "end": 0,
+            "start": 0,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "0": [
+          {
+            "commentStart": 328,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "2": [
+          {
+            "commentStart": 375,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": []
+    },
+    "start": 0
+  }
+}
