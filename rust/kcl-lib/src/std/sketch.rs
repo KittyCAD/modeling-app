@@ -113,9 +113,11 @@ pub async fn involute_circular(exec_state: &mut ExecState, args: Args) -> Result
     })
 }
 
-fn involute_curve(radius: f64, angle: f64) -> (f64, f64)
-{
-    (radius * (angle.cos() + angle * angle.sin()), radius * (angle.sin() - angle * angle.cos()))
+fn involute_curve(radius: f64, angle: f64) -> (f64, f64) {
+    (
+        radius * (angle.cos() + angle * angle.sin()),
+        radius * (angle.sin() - angle * angle.cos()),
+    )
 }
 
 /// Extend the current sketch with a new involute circular curve.
@@ -192,8 +194,6 @@ async fn inner_involute_circular(
     end.x += from.x;
     end.y += from.y;
 
-    
-
     // let path_json = path_to_json();
     // let end = args
     //     .send_modeling_cmd(
@@ -217,10 +217,7 @@ async fn inner_involute_circular(
     let current_path = Path::ToPoint {
         base: BasePath {
             from: from.into(),
-            to: [
-                end.x,
-                end.y,
-            ],
+            to: [end.x, end.y],
             tag: tag.clone(),
             units: sketch.units,
             geo_meta: GeoMeta {
