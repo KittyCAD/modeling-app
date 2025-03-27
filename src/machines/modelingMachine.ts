@@ -668,7 +668,10 @@ export const modelingMachine = setup({
     },
     'assign tool in context': assign({
       currentTool: ({ event }) =>
-        'data' in event && event.data && 'tool' in event.data
+        'data' in event &&
+        event.data &&
+        typeof event.data === 'object' &&
+        'tool' in event.data
           ? event.data.tool
           : 'none',
     }),

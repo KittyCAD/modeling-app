@@ -6,7 +6,7 @@ import {
 import { ForwardedRef, forwardRef } from 'react'
 import { useLocation } from 'react-router-dom'
 
-interface AllKeybindingsFieldsProps {}
+type AllKeybindingsFieldsProps = object
 
 export const AllKeybindingsFields = forwardRef(
   (
