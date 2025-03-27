@@ -300,6 +300,7 @@ export function booleanSubtractAstMod({
   newAst.body.push(newVarDec)
   return newAst
 }
+
 export function booleanUnionAstMod({
   ast,
   solids,
