@@ -318,7 +318,8 @@ class EngineConnection extends EventTarget {
   60_000)
   isUsingConnectionLite: boolean = false
 
-  timeoutToForceConnectId: ReturnType<typeof setTimeout> = setTimeout(() => {}, 3000)
+  timeoutToForceConnectId: ReturnType<typeof setTimeout> = setTimeout(() => {},
+  3000)
 
   constructor({
     engineCommandManager,
@@ -1207,7 +1208,7 @@ class EngineConnection extends EventTarget {
   // Do not change this back to an object or any, we should only be sending the
   // WebSocketRequest type!
   unreliableSend(message: Models['WebSocketRequest_type']) {
-    if (this.unreliableDataChannel.readyState !== 'open' ) return
+    if (this.unreliableDataChannel.readyState !== 'open') return
 
     // TODO(paultag): Add in logic to determine the connection state and
     // take actions if needed?

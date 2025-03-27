@@ -75,4 +75,3 @@ test(
     await expect(page.getByText(notFoundText).nth(1)).toBeVisible()
   }
 )
-

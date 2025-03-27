@@ -447,7 +447,9 @@ const getAppFolderName = () => {
 
 export const getAppSettingsFilePath = async () => {
   const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
-  const testSettingsPath = await window.electron.getAppTestProperty('TEST_SETTINGS_FILE_KEY')
+  const testSettingsPath = await window.electron.getAppTestProperty(
+    'TEST_SETTINGS_FILE_KEY'
+  )
 
   const appConfig = await window.electron.getPath('appData')
 
@@ -467,7 +469,9 @@ export const getAppSettingsFilePath = async () => {
 }
 const getTokenFilePath = async () => {
   const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
-  const testSettingsPath = await window.electron.getAppTestProperty('TEST_SETTINGS_FILE_KEY')
+  const testSettingsPath = await window.electron.getAppTestProperty(
+    'TEST_SETTINGS_FILE_KEY'
+  )
 
   const appConfig = await window.electron.getPath('appData')
   const fullPath = isTestEnv
@@ -486,7 +490,9 @@ const getTokenFilePath = async () => {
 
 const getTelemetryFilePath = async () => {
   const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
-  const testSettingsPath = await window.electron.getAppTestProperty('TEST_SETTINGS_FILE_KEY')
+  const testSettingsPath = await window.electron.getAppTestProperty(
+    'TEST_SETTINGS_FILE_KEY'
+  )
 
   const appConfig = await window.electron.getPath('appData')
   const fullPath = isTestEnv
@@ -505,7 +511,9 @@ const getTelemetryFilePath = async () => {
 
 const getRawTelemetryFilePath = async () => {
   const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
-  const testSettingsPath = await window.electron.getAppTestProperty('TEST_SETTINGS_FILE_KEY')
+  const testSettingsPath = await window.electron.getAppTestProperty(
+    'TEST_SETTINGS_FILE_KEY'
+  )
 
   const appConfig = await window.electron.getPath('appData')
   const fullPath = isTestEnv
@@ -535,7 +543,9 @@ const getProjectSettingsFilePath = async (projectPath: string) => {
 
 export const getInitialDefaultDir = async () => {
   const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
-  const testSettingsPath = await window.electron.getAppTestProperty('TEST_SETTINGS_FILE_KEY')
+  const testSettingsPath = await window.electron.getAppTestProperty(
+    'TEST_SETTINGS_FILE_KEY'
+  )
 
   if (!window.electron) {
     return ''

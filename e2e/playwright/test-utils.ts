@@ -77,7 +77,10 @@ async function waitForPageLoadWithRetry(page: Page) {
   await expect(async () => {
     await page.goto('/')
     const errorMessage = 'App failed to load - 🔃 Retrying ...'
-    await expect(page.getByTestId('model-state-indicator-playing'), errorMessage).toBeAttached({
+    await expect(
+      page.getByTestId('model-state-indicator-playing'),
+      errorMessage
+    ).toBeAttached({
       timeout: 20_000,
     })
 
@@ -876,7 +879,7 @@ export async function setup(
   context: BrowserContext,
   page: Page,
   testDir: string,
-  testInfo?: TestInfo,
+  testInfo?: TestInfo
 ) {
   await page.addInitScript(
     async ({
