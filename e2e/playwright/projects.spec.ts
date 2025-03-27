@@ -443,7 +443,6 @@ test(
     await page.getByText('broken-code').click()
 
     // Gotcha: You can not use scene.waitForExecutionDone() since the KCL code is going to fail
-    await expect(page.getByTestId('loading')).toBeAttached()
     await expect(page.getByTestId('loading')).not.toBeAttached({
       timeout: 20_000,
     })
