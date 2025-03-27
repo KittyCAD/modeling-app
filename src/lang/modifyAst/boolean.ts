@@ -118,6 +118,7 @@ export async function applyUnionFromTargetOperatorSelections(
   )
   await dependencies.kclManager.updateAst(modifiedAst, true)
 }
+
 export async function applyIntersectFromTargetOperatorSelections(
   solids: Selections,
   dependencies: {
