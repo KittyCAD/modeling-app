@@ -24,6 +24,9 @@ import { commandBarActor } from 'machines/commandBarMachine'
 import { useCreateFileLinkQuery } from 'hooks/useCreateFileLinkQueryWatcher'
 import { useSettings } from 'machines/appMachine'
 import { reportRejection } from 'lib/trap'
+import { authActor } from 'machines/appMachine'
+import type { WebContentSendPayload } from '../menu/channels'
+import { useMenuListener } from 'hooks/useMenu'
 
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
@@ -36,6 +39,13 @@ const Home = () => {
     value: true,
     error: undefined,
   })
+
+  // Only create the native file menus on desktop
+  useEffect(() => {
+    if (isDesktop()) {
+      window.electron.createHomePageMenu().catch(reportRejection)
+    }
+  }, [])
 
   // Keep a lookout for a URL query string that invokes the 'import file from URL' command
   useCreateFileLinkQuery((argDefaultValues) => {
@@ -51,6 +61,80 @@ const Home = () => {
 
   const navigate = useNavigate()
   const settings = useSettings()
+
+  // Menu listeners
+  const cb = (data: WebContentSendPayload) => {
+    if (data.menuLabel === 'File.New project') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: {
+          groupId: 'projects',
+          name: 'Create project',
+          argDefaultValues: {
+            name: settings.projects.defaultProjectName.current,
+          },
+        },
+      })
+    } else if (data.menuLabel === 'File.Open project') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: {
+          groupId: 'projects',
+          name: 'Open project',
+        },
+      })
+    } else if (data.menuLabel === 'Edit.Rename project') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: {
+          groupId: 'projects',
+          name: 'Rename project',
+        },
+      })
+    } else if (data.menuLabel === 'Edit.Delete project') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: {
+          groupId: 'projects',
+          name: 'Delete project',
+        },
+      })
+    } else if (data.menuLabel === 'File.Import file from URL') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: {
+          groupId: 'projects',
+          name: 'Import file from URL',
+        },
+      })
+    } else if (data.menuLabel === 'File.Preferences.User settings') {
+      navigate(PATHS.HOME + PATHS.SETTINGS)
+    } else if (data.menuLabel === 'File.Preferences.Keybindings') {
+      navigate(PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS)
+    } else if (data.menuLabel === 'File.Preferences.User default units') {
+      navigate(PATHS.HOME + PATHS.SETTINGS_USER + '#defaultUnit')
+    } else if (data.menuLabel === 'Edit.Change project directory') {
+      navigate(PATHS.HOME + PATHS.SETTINGS_USER + '#projectDirectory')
+    } else if (data.menuLabel === 'File.Sign out') {
+      authActor.send({ type: 'Log out' })
+    } else if (
+      data.menuLabel === 'View.Command Palette...' ||
+      data.menuLabel === 'Help.Command Palette...'
+    ) {
+      commandBarActor.send({ type: 'Open' })
+    } else if (data.menuLabel === 'File.Preferences.Theme') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: {
+          groupId: 'settings',
+          name: 'app.theme',
+        },
+      })
+    } else if (data.menuLabel === 'File.Preferences.Theme color') {
+      navigate(PATHS.HOME + PATHS.SETTINGS_USER + '#themeColor')
+    }
+  }
+  useMenuListener(cb)
 
   // Cancel all KCL executions while on the home page
   useEffect(() => {
