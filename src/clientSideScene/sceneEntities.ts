@@ -369,8 +369,8 @@ export class SceneEntities {
     yAxisMesh.renderOrder = -1
 
     // This makes sure axis lines are picked after segment lines in case of overlapping
-    //xAxisMesh.position.z = -0.1
-    //yAxisMesh.position.z = -0.1
+    xAxisMesh.position.z = -0.1
+    yAxisMesh.position.z = -0.1
 
     xAxisMesh.userData = {
       type: X_AXIS,

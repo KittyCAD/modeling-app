@@ -1208,27 +1208,40 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
   )
 
   test('Can select lines on the main axis', async ({ page, homePage }) => {
-    // const u = await getUtils(page)
-    // await page.addInitScript(async () => {
-    //   localStorage.setItem(
-    //     'persistCode',
-    //     `sketch002 = startSketchOn(XZ)
-    //   profile001 = startProfileAt([0.94, 154.16], sketch002)
-    //   |> line(end = [244.6, -153.69])
-    //   |> line(end = [-313.95, 0])
-    //   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    //   |> close()
-    // `
-    //   )
-    // })
-    //
-    // await page.setBodyDimensions({ width: 1200, height: 500 })
-    //
-    // await homePage.goToModelingScene()
-    // await expect(
-    //   page.getByRole('button', { name: 'Start Sketch' })
-    // ).not.toBeDisabled()
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn(XZ)
+  profile001 = startProfileAt([100.00, 100.0], sketch001)
+    |> yLine(length = -100.0)
+    |> xLine(length = 200.0)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()`
+      )
+    })
 
-    await page.waitForTimeout(10000)
+    const width = 1200
+    const height = 800
+    const viewportSize = { width, height }
+    await page.setBodyDimensions(viewportSize)
+
+    await homePage.goToModelingScene()
+
+    const u = await getUtils(page)
+    await u.waitForPageLoad()
+
+    // open sketch
+    await page.mouse.dblclick(width / 2, height / 2)
+
+    await page.waitForTimeout(1000)
+
+    // Click on the bottom segment that lies on the x axis
+    await page.mouse.click(width * 0.85, height / 2)
+
+    await page.waitForTimeout(1000)
+
+    // Verify segment is selected (you can check for visual indicators or state)
+    const element = page.locator('[data-overlay-index="1"]')
+    await expect(element).toHaveAttribute('data-overlay-visible', 'true')
   })
 })
