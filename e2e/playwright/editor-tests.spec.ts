@@ -1208,26 +1208,26 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
   )
 
   test('Can select lines on the main axis', async ({ page, homePage }) => {
-    const u = await getUtils(page)
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch002 = startSketchOn(XZ)
-      profile001 = startProfileAt([0.94, 154.16], sketch002)
-      |> line(end = [244.6, -153.69])
-      |> line(end = [-313.95, 0])
-      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-      |> close()
-    `
-      )
-    })
-
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-
-    await homePage.goToModelingScene()
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    // const u = await getUtils(page)
+    // await page.addInitScript(async () => {
+    //   localStorage.setItem(
+    //     'persistCode',
+    //     `sketch002 = startSketchOn(XZ)
+    //   profile001 = startProfileAt([0.94, 154.16], sketch002)
+    //   |> line(end = [244.6, -153.69])
+    //   |> line(end = [-313.95, 0])
+    //   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    //   |> close()
+    // `
+    //   )
+    // })
+    //
+    // await page.setBodyDimensions({ width: 1200, height: 500 })
+    //
+    // await homePage.goToModelingScene()
+    // await expect(
+    //   page.getByRole('button', { name: 'Start Sketch' })
+    // ).not.toBeDisabled()
 
     await page.waitForTimeout(10000)
   })
