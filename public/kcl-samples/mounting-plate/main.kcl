@@ -13,7 +13,7 @@ centerHoleDiameter = 2
 
 // Create a function that defines the body width and length of the mounting plate. Tag the corners so they can be passed through the fillet function.
 fn rectShape(pos, w, l) {
-  rr = startSketchOn('XY')
+  rr = startSketchOn(XY)
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge1)
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge2)
@@ -34,33 +34,30 @@ part = rs
          -plateWidth / 2 + holeIndex,
          plateLength / 2 - holeIndex
        ],
-       radius = holeRadius
+       radius = holeRadius,
      ), %)
   |> hole(circle(
        center = [
          plateWidth / 2 - holeIndex,
          plateLength / 2 - holeIndex
        ],
-       radius = holeRadius
+       radius = holeRadius,
      ), %)
   |> hole(circle(
        center = [
          -plateWidth / 2 + holeIndex,
          -plateLength / 2 + holeIndex
        ],
-       radius = holeRadius
+       radius = holeRadius,
      ), %)
   |> hole(circle(
        center = [
          plateWidth / 2 - holeIndex,
          -plateLength / 2 + holeIndex
        ],
-       radius = holeRadius
+       radius = holeRadius,
      ), %)
-  |> hole(circle(
-       center = [0, 0],
-       radius = centerHoleDiameter
-     ), %)
+  |> hole(circle(center = [0, 0], radius = centerHoleDiameter), %)
   |> extrude(length = plateThickness)
   |> fillet(
        radius = filletRadius,
@@ -69,5 +66,5 @@ part = rs
          getPreviousAdjacentEdge(rs.tags.edge2),
          getPreviousAdjacentEdge(rs.tags.edge3),
          getPreviousAdjacentEdge(rs.tags.edge4)
-       ]
+       ],
      )

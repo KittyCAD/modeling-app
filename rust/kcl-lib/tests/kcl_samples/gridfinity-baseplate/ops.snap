@@ -27,8 +27,8 @@ description: Operations executed gridfinity-baseplate.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "YZ"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
       "sourceRange": []
     }
@@ -250,8 +250,8 @@ description: Operations executed gridfinity-baseplate.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "YZ"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
       "sourceRange": []
     }

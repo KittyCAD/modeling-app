@@ -1,9 +1,9 @@
 import { app, Menu, BrowserWindow } from 'electron'
 import { projectFileRole, modelingFileRole } from 'menu/fileRole'
 import { projectEditRole, modelingEditRole } from 'menu/editRole'
-import { helpRole } from 'menu/helpRole'
 import { projectViewRole, modelingViewRole } from 'menu/viewRole'
 import { modelingDesignRole } from 'menu/designRole'
+import { helpRole } from 'menu/helpRole'
 
 import os from 'node:os'
 import { ZooMenuItemConstructorOptions } from 'menu/roles'

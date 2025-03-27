@@ -28,12 +28,18 @@ jobs:
 
       - name: Sync with main
         run: |
-          # checkout our branch
+          # Create the branch
           git checkout all-e2e || git checkout -b all-e2e
-          # fetch origin
+
+          # Reset to main
           git fetch origin
-          # reset to main
           git reset --hard origin/main
-          # force push it
+
+          # Get a new SHA to prevent overwriting the commit status on main
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit --allow-empty --message="[all-e2e] $(git log --max-count=1 --pretty=%B)"
+
+          # Overwrite the branch
           git remote set-url origin https://x-access-token:${{ steps.app-token.outputs.token }}@github.com/${{ github.repository }}.git
           git push --force origin all-e2e

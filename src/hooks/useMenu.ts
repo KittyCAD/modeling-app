@@ -5,7 +5,6 @@ import { ToolbarModeName } from 'lib/toolbar'
 import { reportRejection } from 'lib/trap'
 import { useCommandBarState } from 'machines/commandBarMachine'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
-
 export function useMenuListener(
   callback: (data: WebContentSendPayload) => void
 ) {

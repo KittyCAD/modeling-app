@@ -8,7 +8,7 @@ description: Operations executed mounting-plate.kcl
     "name": "rectShape",
     "functionSourceRange": [
       519,
-      889,
+      887,
       0
     ],
     "unlabeledArg": null,
@@ -19,8 +19,8 @@ description: Operations executed mounting-plate.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }

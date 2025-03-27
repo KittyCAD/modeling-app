@@ -76,7 +76,6 @@ const Home = () => {
         },
       })
     } else if (data.menuLabel === 'File.Open project') {
-      console.log('nice.')
       commandBarActor.send({
         type: 'Find and select command',
         data: {
