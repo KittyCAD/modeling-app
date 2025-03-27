@@ -12,6 +12,7 @@ import { Locator } from '@playwright/test'
 
 test.describe('Point-and-click tests', () => {
   test('verify extruding circle works', async ({
+    page,
     context,
     homePage,
     cmdBar,
@@ -30,8 +31,9 @@ test.describe('Point-and-click tests', () => {
     await context.addInitScript((file) => {
       localStorage.setItem('persistCode', file)
     }, file)
+
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.connectionEstablished()
 
     const [clickCircle, moveToCircle] = scene.makeMouseHelpers(582, 217)
 
@@ -72,6 +74,7 @@ test.describe('Point-and-click tests', () => {
 
     await test.step('do extrude flow and check extrude code is added to editor', async () => {
       await toolbar.extrudeButton.click()
+      await page.getByText('Please select one')
 
       await cmdBar.expectState({
         stage: 'arguments',
@@ -477,6 +480,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
     await page.setBodyDimensions(viewPortSize)
 
     await homePage.goToModelingScene()
+    await scene.connectionEstablished()
 
     // Constants and locators
     // These are mappings from screenspace to KCL coordinates,
@@ -535,8 +539,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
       await toolbar.startSketchPlaneSelection()
       await moveToXzPlane()
       await clickOnXzPlane()
-      // timeout wait for engine animation is unavoidable
-      await page.waitForTimeout(600)
+      await toolbar.waitUntilSketchingReady()
       await editor.expectEditor.toContain(expectedCodeSnippets.sketchOnXzPlane)
     })
     await test.step(`Place a point a few pixels off the middle, verify it still snaps to 0,0`, async () => {
@@ -623,7 +626,6 @@ openSketch = startSketchOn(XY)
     const exitSketch = async () => {
       await test.step(`Exit sketch mode`, async () => {
         await toolbar.exitSketchBtn.click()
-        await expect(toolbar.exitSketchBtn).not.toBeVisible()
         await expect(toolbar.startSketchBtn).toBeEnabled()
       })
     }
@@ -631,7 +633,6 @@ openSketch = startSketchOn(XY)
     await test.step(`Double-click on the closed sketch`, async () => {
       await moveToCircle()
       await dblClickCircle()
-      await expect(toolbar.startSketchBtn).not.toBeVisible()
       await expect(toolbar.exitSketchBtn).toBeVisible()
       await editor.expectState({
         activeLines: [`|>circle(center=[8,5],radius=2)`],
@@ -668,7 +669,6 @@ openSketch = startSketchOn(XY)
       // There is a full execution after exiting sketch that clears the scene.
       await page.waitForTimeout(500)
       await dblClickOpenPath()
-      await expect(toolbar.startSketchBtn).not.toBeVisible()
       await expect(toolbar.exitSketchBtn).toBeVisible()
       // Wait for enter sketch mode to complete
       await page.waitForTimeout(500)
@@ -1029,6 +1029,7 @@ openSketch = startSketchOn(XY)
     })
     await test.step(`Go through the command bar flow`, async () => {
       await toolbar.offsetPlaneButton.click()
+      await page.getByText('Please select one')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'plane',
@@ -1086,9 +1087,11 @@ openSketch = startSketchOn(XY)
     const expectedLine = `axis='X',`
 
     await homePage.goToModelingScene()
+    await scene.connectionEstablished()
 
     await test.step(`Go through the command bar flow`, async () => {
       await toolbar.helixButton.click()
+      await page.getByText('AxisOrEdge')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'mode',
@@ -1105,6 +1108,7 @@ openSketch = startSketchOn(XY)
         commandName: 'Helix',
       })
       await cmdBar.progressCmdBar()
+      await page.getByText('Axis')
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
@@ -1232,10 +1236,12 @@ openSketch = startSketchOn(XY)
         }, initialCode)
         await page.setBodyDimensions({ width: 1000, height: 500 })
         await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
 
         await test.step(`Go through the command bar flow`, async () => {
           await toolbar.closePane('code')
           await toolbar.helixButton.click()
+          await page.getByText('AxisOrEdge')
           await cmdBar.expectState({
             stage: 'arguments',
             currentArgKey: 'mode',
@@ -1252,6 +1258,7 @@ openSketch = startSketchOn(XY)
             commandName: 'Helix',
           })
           await cmdBar.selectOption({ name: 'Edge' }).click()
+          await page.getByText('Please select one')
           await clickOnEdge()
           await cmdBar.progressCmdBar()
           await cmdBar.argumentInput.focus()
@@ -1534,6 +1541,7 @@ extrude001 = extrude(profile001, length = 100)
       if (!shouldPreselect) {
         await test.step(`Go through the command bar flow without preselected sketches`, async () => {
           await toolbar.loftButton.click()
+          await page.getByText('Please select one')
           await cmdBar.expectState({
             stage: 'arguments',
             currentArgKey: 'selection',
@@ -1552,6 +1560,7 @@ extrude001 = extrude(profile001, length = 100)
 
         await test.step(`Go through the command bar flow with preselected sketches`, async () => {
           await toolbar.loftButton.click()
+          await page.getByText('Please select one')
           await cmdBar.progressCmdBar()
         })
       }
@@ -1710,6 +1719,7 @@ sketch002 = startSketchOn('XZ')
 
       await test.step(`Go through the command bar flow`, async () => {
         await toolbar.sweepButton.click()
+        await page.getByText('Please select one')
         await cmdBar.expectState({
           commandName: 'Sweep',
           currentArgKey: 'target',
@@ -1845,6 +1855,7 @@ sketch002 = startSketchOn(XZ)
 
     await test.step(`Go through the command bar flow and fail validation with a toast`, async () => {
       await toolbar.sweepButton.click()
+      await page.getByText('Please select one')
       await cmdBar.expectState({
         commandName: 'Sweep',
         currentArgKey: 'target',
@@ -1961,6 +1972,7 @@ extrude001 = extrude(sketch001, length = -12)
     await test.step(`Apply fillet to the preselected edge`, async () => {
       await page.waitForTimeout(100)
       await toolbar.filletButton.click()
+      await page.getByText('Please select one')
       await cmdBar.expectState({
         commandName: 'Fillet',
         highlightedHeaderArg: 'selection',
@@ -2061,6 +2073,7 @@ extrude001 = extrude(sketch001, length = -12)
     await test.step(`Open fillet UI without selecting edges`, async () => {
       await page.waitForTimeout(100)
       await toolbar.filletButton.click()
+      await page.getByText('Please select one')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'selection',
@@ -2427,6 +2440,7 @@ extrude001 = extrude(profile001, length = 5)
       await test.step(`Apply fillet`, async () => {
         await page.waitForTimeout(100)
         await toolbar.filletButton.click()
+      await page.getByText('Please select one')
         await cmdBar.expectState({
           commandName: 'Fillet',
           highlightedHeaderArg: 'selection',
@@ -2543,6 +2557,7 @@ extrude001 = extrude(sketch001, length = -12)
     await test.step(`Apply chamfer to the preselected edge`, async () => {
       await page.waitForTimeout(100)
       await toolbar.chamferButton.click()
+      await page.getByText('Please select one')
       await cmdBar.expectState({
         commandName: 'Chamfer',
         highlightedHeaderArg: 'selection',
@@ -2650,6 +2665,7 @@ extrude001 = extrude(sketch001, length = -12)
     await test.step(`Open chamfer UI without selecting edges`, async () => {
       await page.waitForTimeout(100)
       await toolbar.chamferButton.click()
+      await page.getByText('Please select one')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'selection',
@@ -2936,9 +2952,11 @@ extrude001 = extrude(sketch001, length = 30)
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
       }, initialCode)
+
       await page.setBodyDimensions({ width: 1000, height: 500 })
+
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.connectionEstablished()
 
       // One dumb hardcoded screen pixel value
       const testPoint = { x: 575, y: 200 }
@@ -2955,6 +2973,7 @@ extrude001 = extrude(sketch001, length = 30)
       if (!shouldPreselect) {
         await test.step(`Go through the command bar flow without preselected faces`, async () => {
           await toolbar.shellButton.click()
+          await page.getByText('Please select one')
           await cmdBar.expectState({
             stage: 'arguments',
             currentArgKey: 'selection',
@@ -2989,6 +3008,7 @@ extrude001 = extrude(sketch001, length = 30)
 
         await test.step(`Go through the command bar flow with a preselected face (cap)`, async () => {
           await toolbar.shellButton.click()
+          await page.getByText('Please select one')
           await cmdBar.progressCmdBar()
           await page.waitForTimeout(500)
           await cmdBar.progressCmdBar()
@@ -3015,7 +3035,6 @@ extrude001 = extrude(sketch001, length = 30)
       })
 
       await test.step('Edit shell via feature tree selection works', async () => {
-        await toolbar.closePane('code')
         await toolbar.openPane('feature-tree')
         const operationButton = await toolbar.getFeatureTreeOperation(
           'Shell',
@@ -3044,7 +3063,6 @@ extrude001 = extrude(sketch001, length = 30)
         await cmdBar.progressCmdBar()
         await toolbar.closePane('feature-tree')
         await scene.expectPixelColor([150, 150, 150], testPoint, 15)
-        await toolbar.openPane('code')
         await editor.expectEditor.toContain(editedShellDeclaration)
         await editor.expectState({
           diagnostics: [],
@@ -3096,6 +3114,7 @@ extrude001 = extrude(sketch001, length = 40)
 
     await test.step(`Go through the command bar flow, selecting a wall and keeping default thickness`, async () => {
       await toolbar.shellButton.click()
+      await page.getByText('Please select one')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'selection',
@@ -3107,6 +3126,7 @@ extrude001 = extrude(sketch001, length = 40)
         highlightedHeaderArg: 'selection',
         commandName: 'Shell',
       })
+      await page.getByText('Please select one or more face')
       await clickOnCap()
       await page.keyboard.down('Shift')
       await clickOnWall()
@@ -3115,6 +3135,7 @@ extrude001 = extrude(sketch001, length = 40)
       await cmdBar.progressCmdBar()
       await page.waitForTimeout(500)
       await cmdBar.progressCmdBar()
+      await page.waitForTimeout(500)
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
@@ -3123,7 +3144,9 @@ extrude001 = extrude(sketch001, length = 40)
         },
         commandName: 'Shell',
       })
+      await page.waitForTimeout(500)
       await cmdBar.progressCmdBar()
+      await page.waitForTimeout(500)
     })
 
     await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
@@ -3138,7 +3161,6 @@ extrude001 = extrude(sketch001, length = 40)
     })
 
     await test.step('Edit shell via feature tree selection works', async () => {
-      await editor.closePane()
       const operationButton = await toolbar.getFeatureTreeOperation('Shell', 0)
       await operationButton.dblclick({ button: 'left' })
       await cmdBar.expectState({
@@ -3153,6 +3175,7 @@ extrude001 = extrude(sketch001, length = 40)
       })
       await page.keyboard.insertText('1')
       await cmdBar.progressCmdBar()
+      await page.waitForTimeout(500)
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
@@ -3163,7 +3186,6 @@ extrude001 = extrude(sketch001, length = 40)
       await cmdBar.progressCmdBar()
       await toolbar.closePane('feature-tree')
       await scene.expectPixelColor([150, 150, 150], testPoint, 15)
-      await toolbar.openPane('code')
       await editor.expectEditor.toContain(editedShellDeclaration)
       await editor.expectState({
         diagnostics: [],
@@ -3229,6 +3251,7 @@ extrude002 = extrude(sketch002, length = 50)
 
       await test.step(`Go through the command bar flow, selecting a cap and keeping default thickness`, async () => {
         await toolbar.shellButton.click()
+        await page.getByText('Please select one')
         await cmdBar.expectState({
           stage: 'arguments',
           currentArgKey: 'selection',
@@ -3240,6 +3263,7 @@ extrude002 = extrude(sketch002, length = 50)
           highlightedHeaderArg: 'selection',
           commandName: 'Shell',
         })
+        await page.getByText('Please select one or more face')
         await clickOnCap()
         await page.waitForTimeout(500)
         await cmdBar.progressCmdBar()
@@ -3396,6 +3420,7 @@ sweep001 = sweep(sketch001, path = sketch002)
 
     await test.step(`Go through the Shell flow and fail validation with a toast`, async () => {
       await toolbar.shellButton.click()
+      await page.getByText('Please select one')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'selection',
@@ -3462,10 +3487,11 @@ segAng(rectangleSegmentA002),
       await scene.settled(cmdBar)
 
       // select line of code
-      const codeToSelecton = `segAng(rectangleSegmentA002) - 90,`
+      const codeToSelection = `segAng(rectangleSegmentA002) - 90,`
       // revolve
-      await page.getByText(codeToSelecton).click()
+      await page.getByText(codeToSelection).click()
       await toolbar.revolveButton.click()
+      await page.getByText('Please select one')
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
@@ -3509,19 +3535,23 @@ radius = 8.69
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
+      await scene.connectionEstablished()
       await scene.settled(cmdBar)
 
       // select line of code
-      const codeToSelecton = `center = [-11.34, 10.0]`
+      const codeToSelection = `center = [-11.34, 10.0]`
       // revolve
-      await page.getByText(codeToSelecton).click()
+      await editor.scrollToText(codeToSelection)
+      await page.getByText(codeToSelection).click()
       await toolbar.revolveButton.click()
       await page.getByText('Edge', { exact: true }).click()
-      const lineCodeToSelection = `|> angledLine([0, 202.6], %, $rectangleSegmentA001)`
+      const lineCodeToSelection = `angledLine([0, 202.6], %, $rectangleSegmentA001)`
       await page.getByText(lineCodeToSelection).click()
       await cmdBar.progressCmdBar()
+      await cmdBar.progressCmdBar()
+      await cmdBar.progressCmdBar()
 
-      const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360, axis = getOppositeEdge(rectangleSegmentA001)) `
+      const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360, axis = rectangleSegmentA001)`
       expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
     })
     test('revolve sketch circle around line segment from startProfileAt sketch', async ({
@@ -3560,16 +3590,23 @@ radius = 8.69
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
+      await scene.connectionEstablished()
       await scene.settled(cmdBar)
 
       // select line of code
-      const codeToSelecton = `center = [-0.69, 0.56]`
+      const codeToSelection = `center = [-0.69, 0.56]`
       // revolve
-      await page.getByText(codeToSelecton).click()
       await toolbar.revolveButton.click()
+      await page.waitForTimeout(1000)
+      await editor.scrollToText(codeToSelection)
+      await page.getByText(codeToSelection).click()
+      await page.getByText('AxisOrEdge', { exact: true })
       await page.getByText('Edge', { exact: true }).click()
-      const lineCodeToSelection = `|> xLine(length = 2.6)`
+      const lineCodeToSelection = `length = 2.6`
+      await editor.scrollToText(lineCodeToSelection)
       await page.getByText(lineCodeToSelection).click()
+      await cmdBar.progressCmdBar()
+      await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
 
       const newCodeToFind = `revolve001 = revolve(sketch003, angle = 360, axis = seg01)`

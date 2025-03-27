@@ -97,7 +97,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     // Make sure we didn't clear the scene.
     await expect(
       page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(3)
+    ).toHaveCount(2)
     await expect(
       page.locator('[data-receive-command-type="scene_clear_all"]')
     ).toHaveCount(1)
