@@ -699,19 +699,19 @@ test.describe('Testing settings', () => {
           name: 'Current units are: ',
         })
         await gizmo.click()
-        const button = page.getByRole('button', {
+        const button = page.locator('ul').getByRole('button', {
           name: copy,
           exact: true,
         })
         await button.click()
         const toastMessage = page.getByText(
-          `Set default unit to "${unitOfMeasure}" for this project`
+          `Updated per-file units to ${unitOfMeasure}`
         )
         await expect(toastMessage).toBeVisible()
       }
 
-      await changeUnitOfMeasureInGizmo('in', 'Inches')
       await changeUnitOfMeasureInGizmo('ft', 'Feet')
+      await changeUnitOfMeasureInGizmo('in', 'Inches')
       await changeUnitOfMeasureInGizmo('yd', 'Yards')
       await changeUnitOfMeasureInGizmo('mm', 'Millimeters')
       await changeUnitOfMeasureInGizmo('cm', 'Centimeters')

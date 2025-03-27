@@ -619,6 +619,7 @@ extrude002 = extrude(profile002, length = 150)
   test(`View gizmo stays visible even when zoomed out all the way`, async ({
     page,
     homePage,
+    scene,
   }) => {
     const u = await getUtils(page)
 
@@ -638,7 +639,6 @@ extrude002 = extrude(profile002, length = 150)
       await homePage.goToModelingScene()
       await u.waitForPageLoad()
       await u.closeKclCodePanel()
-      await page.waitForTimeout(20)
     })
 
     await test.step(`Zoom out until you can't see the default planes`, async () => {
@@ -648,22 +648,30 @@ extrude002 = extrude(profile002, length = 150)
           message: 'Plane color is visible',
         })
         .toBeLessThanOrEqual(20)
+      await expect(scene.startEditSketchBtn).toBeEnabled()
 
       let maxZoomOuts = 10
       let middlePixelIsBackgroundColor =
         (await middlePixelIsColor(bgColor)) < 10
+
+      console.time('pressing control')
+      await page.keyboard.down('Control')
+
       while (!middlePixelIsBackgroundColor && maxZoomOuts > 0) {
-        await page.keyboard.down('Control')
-        await page.waitForTimeout(20)
-        await page.mouse.move(600, 460)
-        await page.mouse.down({ button: 'right' })
-        await page.mouse.move(600, 50, { steps: 20 })
-        await page.mouse.up({ button: 'right' })
-        await page.keyboard.up('Control')
         await page.waitForTimeout(100)
+        await page.mouse.move(650, 460)
+        console.time('moved to start point')
+        await page.mouse.down({ button: 'right' })
+        console.time('moused down')
+        await page.mouse.move(650, 50, { steps: 20 })
+        console.time('moved to end point')
+        await page.waitForTimeout(100)
+        await page.mouse.up({ button: 'right' })
+        console.time('moused up')
         maxZoomOuts--
         middlePixelIsBackgroundColor = (await middlePixelIsColor(bgColor)) < 15
       }
+      await page.keyboard.up('Control')
 
       expect(middlePixelIsBackgroundColor, {
         message: 'We should not see the default planes',

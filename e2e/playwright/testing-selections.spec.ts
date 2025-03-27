@@ -68,20 +68,20 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
     await u.closeDebugPanel()
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)`
+      `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)`
     )
 
     await page.waitForTimeout(100)
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
+      .toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
     |> xLine(length = ${commonPoints.num1})`)
 
     await page.waitForTimeout(100)
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
+      .toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
       commonPoints.startAt
     }, sketch001)
     |> xLine(length = ${commonPoints.num1})
@@ -89,7 +89,7 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
     await page.waitForTimeout(100)
     await page.mouse.click(startXPx, 500 - PUR * 20)
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
+      .toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
       commonPoints.startAt
     }, sketch001)
     |> xLine(length = ${commonPoints.num1})
@@ -749,7 +749,8 @@ part001 = startSketchOn(XZ)
     await page.waitForTimeout(200)
 
     await u.removeCurrentCode()
-    await u.codeLocator.fill(`sketch001 = startSketchOn(XZ)
+    await u.codeLocator.fill(`@settings(defaultLengthUnit = in)
+    sketch001 = startSketchOn(XZ)
     |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
     |> angledLine([0, 268.43], %, $rectangleSegmentA001)
     |> angledLine([
@@ -1257,7 +1258,7 @@ part001 = startSketchOn(XZ)
     await page.mouse.click(700, 200)
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)`
+      `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)`
     )
 
     await page.waitForTimeout(600)
