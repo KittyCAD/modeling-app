@@ -302,7 +302,8 @@ export function createSettings() {
        */
       defaultUnit: new Setting<BaseUnit>({
         defaultValue: DEFAULT_DEFAULT_LENGTH_UNIT,
-        description: 'The default length unit to use in modeling dimensions',
+        description:
+          'Set the default length unit setting value to give any new files.',
         validate: (v) => baseUnitsUnion.includes(v as BaseUnit),
         commandConfig: {
           inputType: 'options',
