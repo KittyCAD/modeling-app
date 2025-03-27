@@ -131,14 +131,7 @@ export const ModelingMachineProvider = ({
 }) => {
   const {
     app: { theme, allowOrbitInSketchMode },
-    modeling: {
-      defaultUnit,
-      cameraProjection,
-      highlightEdges,
-      showScaleGrid,
-      cameraOrbit,
-      enableSSAO,
-    },
+    modeling: { defaultUnit, cameraProjection, highlightEdges, cameraOrbit },
   } = useSettings()
   const navigate = useNavigate()
   const { context, send: fileMachineSend } = useFileContext()
@@ -146,9 +139,6 @@ export const ModelingMachineProvider = ({
   const token = useToken()
   const streamRef = useRef<HTMLDivElement>(null)
   const persistedContext = useMemo(() => getPersistedContext(), [])
-
-  let [searchParams] = useSearchParams()
-  const pool = searchParams.get('pool')
 
   const isCommandBarClosed = useSelector(
     commandBarActor,
