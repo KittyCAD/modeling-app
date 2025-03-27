@@ -473,6 +473,9 @@ test.describe('Can export from electron app', () => {
         if (!tronApp) {
           fail()
         }
+        if (runningOnWindows()) {
+          test.fixme(orRunWhenFullSuiteEnabled())
+        }
 
         await context.folderSetupFn(async (dir) => {
           const bracketDir = path.join(dir, 'bracket')

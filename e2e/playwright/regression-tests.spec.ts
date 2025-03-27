@@ -784,6 +784,19 @@ plane002 = offsetPlane(XZ, offset = -2 * x)`
       await editor.expectEditor.not.toContain(`plane002`)
     })
   })
+
+  test.fail(
+    'Console errors cause tests to fail',
+    async ({ page, homePage }) => {
+      const u = await getUtils(page)
+      await homePage.goToModelingScene()
+      await u.openAndClearDebugPanel()
+
+      await page.getByTestId('custom-cmd-input').fill('foobar')
+      await page.getByTestId('custom-cmd-send-button').scrollIntoViewIfNeeded()
+      await page.getByTestId('custom-cmd-send-button').click()
+    }
+  )
 })
 
 async function clickExportButton(page: Page) {
