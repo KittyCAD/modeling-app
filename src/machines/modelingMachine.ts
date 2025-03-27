@@ -1,5 +1,9 @@
 import {
+  CallExpression,
+  CallExpressionKw,
   Expr,
+  Literal,
+  Name,
   PathToNode,
   VariableDeclaration,
   VariableDeclarator,
@@ -1910,11 +1914,13 @@ export const modelingMachine = setup({
       }) => {
         if (!input) return new Error('No input provided')
         // Extract inputs
+        console.log('input', input)
         const ast = kclManager.ast
         const {
-          axisOrEdge,
+          mode,
           axis,
           edge,
+          cylinder,
           revolutions,
           angleStart,
           ccw,
@@ -1946,16 +1952,50 @@ export const modelingMachine = setup({
           opInsertIndex = nodeToEdit[1][0]
         }
 
-        const getAxisResult = getAxisExpressionAndIndex(
-          axisOrEdge,
-          axis,
-          edge,
-          ast
-        )
-        if (err(getAxisResult)) return getAxisResult
-        const { generatedAxis } = getAxisResult
-        if (!generatedAxis) {
-          return new Error('Generated axis selection is missing.')
+        let cylinderDeclarator: VariableDeclarator | undefined
+        let axisExpression:
+          | Node<CallExpression | CallExpressionKw | Name>
+          | Node<Literal>
+          | undefined
+
+        if (mode === 'Cylinder') {
+          if (
+            !(
+              cylinder &&
+              cylinder.graphSelections[0] &&
+              cylinder.graphSelections[0].artifact?.type === 'wall'
+            )
+          ) {
+            return new Error('Cylinder argument not valid')
+          }
+          const clonedAstForGetExtrude = structuredClone(ast)
+          const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
+            clonedAstForGetExtrude,
+            cylinder.graphSelections[0],
+            engineCommandManager.artifactGraph
+          )
+          if (err(extrudeLookupResult)) {
+            return extrudeLookupResult
+          }
+          const extrudeNode = getNodeFromPath<VariableDeclaration>(
+            ast,
+            extrudeLookupResult.pathToExtrudeNode,
+            'VariableDeclaration'
+          )
+          if (err(extrudeNode)) {
+            return extrudeNode
+          }
+          cylinderDeclarator = extrudeNode.node.declaration
+        } else if (mode === 'Axis' || mode === 'Edge') {
+          const getAxisResult = getAxisExpressionAndIndex(mode, axis, edge, ast)
+          if (err(getAxisResult)) {
+            return getAxisResult
+          }
+          axisExpression = getAxisResult.generatedAxis
+        } else {
+          return new Error(
+            'Generated axis or cylinder declarator selection is missing.'
+          )
         }
 
         // TODO: figure out if we want to smart insert after the sketch as below
@@ -1965,13 +2005,13 @@ export const modelingMachine = setup({
         // opInsertIndex = axisIndexIfAxis + 1
         // }
 
-        for (const variable of [revolutions, angleStart, radius, length]) {
+        for (const v of [revolutions, angleStart, radius, length]) {
+          if (v === undefined) {
+            continue
+          }
+          const variable = v as KclCommandValue
           // Insert the variable if it exists
-          if (
-            'variableName' in variable &&
-            variable.variableName &&
-            variable.insertIndex !== undefined
-          ) {
+          if ('variableName' in variable && variable.variableName) {
             const newBody = [...ast.body]
             newBody.splice(
               variable.insertIndex,
@@ -1982,19 +2022,21 @@ export const modelingMachine = setup({
           }
         }
 
-        const valueOrVariable = (variable: KclCommandValue) =>
-          'variableName' in variable
+        const valueOrVariable = (variable: KclCommandValue) => {
+          return 'variableName' in variable
             ? variable.variableIdentifierAst
             : variable.valueAst
+        }
 
         const { modifiedAst, pathToNode } = addHelix({
           node: ast,
           revolutions: valueOrVariable(revolutions),
           angleStart: valueOrVariable(angleStart),
           ccw,
-          radius: valueOrVariable(radius),
-          axis: generatedAxis,
-          length: valueOrVariable(length),
+          radius: radius ? valueOrVariable(radius) : undefined,
+          axis: axisExpression,
+          cylinder: cylinderDeclarator,
+          length: length ? valueOrVariable(length) : undefined,
           insertIndex: opInsertIndex,
           variableName: opVariableName,
         })

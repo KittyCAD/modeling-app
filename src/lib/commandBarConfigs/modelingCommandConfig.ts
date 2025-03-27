@@ -24,7 +24,7 @@ import { getVariableDeclaration } from 'lang/queryAst/getVariableDeclaration'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { getNodeFromPath } from 'lang/queryAst'
 
-type OutputFormat = Models['OutputFormat_type']
+type OutputFormat = Models['OutputFormat3d_type']
 type OutputTypeKey = OutputFormat['type']
 type ExtractStorageTypes<T> = T extends { storage: infer U } ? U : never
 type StorageUnion = ExtractStorageTypes<OutputFormat>
@@ -37,6 +37,8 @@ export const EXTRUSION_RESULTS = [
 ] as const
 
 export const COMMAND_APPEARANCE_COLOR_DEFAULT = 'default'
+
+export type HelixModes = 'Axis' | 'Edge' | 'Cylinder'
 
 export type ModelingCommandSchema = {
   'Enter sketch': {}
@@ -103,15 +105,17 @@ export type ModelingCommandSchema = {
     // Enables editing workflow
     nodeToEdit?: PathToNode
     // Flow arg
-    axisOrEdge: 'Axis' | 'Edge'
+    mode: HelixModes
+    // Three different arguments depending on mode
+    axis?: string
+    edge?: Selections
+    cylinder?: Selections
     // KCL stdlib arguments
-    axis: string | undefined
-    edge: Selections | undefined
     revolutions: KclCommandValue
     angleStart: KclCommandValue
-    ccw: boolean
-    radius: KclCommandValue
-    length: KclCommandValue
+    radius?: KclCommandValue // axis or edge modes only
+    length?: KclCommandValue // axis or edge modes only
+    ccw: boolean // optional boolean argument, default value to false
   }
   'event.parameter.create': {
     value: KclCommandValue
@@ -530,7 +534,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Helix: {
     description: 'Create a helix or spiral in 3D about an axis.',
     icon: 'helix',
-    status: 'development',
     needsReview: true,
     args: {
       nodeToEdit: {
@@ -541,35 +544,43 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
         hidden: true,
       },
-      axisOrEdge: {
+      mode: {
         inputType: 'options',
         required: true,
         defaultValue: 'Axis',
         options: [
           { name: 'Axis', isCurrent: true, value: 'Axis' },
           { name: 'Edge', isCurrent: false, value: 'Edge' },
+          { name: 'Cylinder', isCurrent: false, value: 'Cylinder' },
         ],
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       axis: {
         inputType: 'options',
         required: (commandContext) =>
-          ['Axis'].includes(
-            commandContext.argumentsToSubmit.axisOrEdge as string
-          ),
+          ['Axis'].includes(commandContext.argumentsToSubmit.mode as string),
         options: [
           { name: 'X Axis', value: 'X' },
           { name: 'Y Axis', value: 'Y' },
           { name: 'Z Axis', value: 'Z' },
         ],
+        hidden: false, // for consistency here, we can actually edit here since it's not a selection
       },
       edge: {
         required: (commandContext) =>
-          ['Edge'].includes(
-            commandContext.argumentsToSubmit.axisOrEdge as string
-          ),
+          ['Edge'].includes(commandContext.argumentsToSubmit.mode as string),
         inputType: 'selection',
         selectionTypes: ['segment', 'sweepEdge'],
+        multiple: false,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      cylinder: {
+        required: (commandContext) =>
+          ['Cylinder'].includes(
+            commandContext.argumentsToSubmit.mode as string
+          ),
+        inputType: 'selection',
+        selectionTypes: ['wall'],
         multiple: false,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
@@ -577,33 +588,47 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: '1',
         required: true,
-        warningMessage:
-          'The helix workflow is new and under tested. Please break it and report issues.',
       },
       angleStart: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_DEGREE,
         required: true,
       },
-      ccw: {
-        inputType: 'options',
-        required: true,
-        displayName: 'CounterClockWise',
-        defaultValue: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
-      },
       radius: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
-        required: true,
+        required: (commandContext) =>
+          !['Cylinder'].includes(
+            commandContext.argumentsToSubmit.mode as string
+          ),
       },
       length: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
+        required: (commandContext) =>
+          !['Cylinder'].includes(
+            commandContext.argumentsToSubmit.mode as string
+          ),
+      },
+      ccw: {
+        inputType: 'options',
+        skip: true,
         required: true,
+        defaultValue: false,
+        valueSummary: (value) => String(value),
+        displayName: 'CounterClockWise',
+        options: (commandContext) => [
+          {
+            name: 'False',
+            value: false,
+            isCurrent: !Boolean(commandContext.argumentsToSubmit.ccw),
+          },
+          {
+            name: 'True',
+            value: true,
+            isCurrent: Boolean(commandContext.argumentsToSubmit.ccw),
+          },
+        ],
       },
     },
   },

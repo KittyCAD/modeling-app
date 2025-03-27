@@ -80,7 +80,8 @@ function CommandBarKclInput({
         : arg.variableName
     }
     // or derive it from the previously set value or the argument name
-    return previouslySetValue && 'variableName' in previouslySetValue
+    return typeof previouslySetValue === 'object' &&
+      'variableName' in previouslySetValue
       ? previouslySetValue.variableName
       : arg.name
   }, [
@@ -96,7 +97,8 @@ function CommandBarKclInput({
   )
   const [value, setValue] = useState(initialValue)
   const [createNewVariable, setCreateNewVariable] = useState(
-    (previouslySetValue && 'variableName' in previouslySetValue) ||
+    (typeof previouslySetValue === 'object' &&
+      'variableName' in previouslySetValue) ||
       arg.createVariable === 'byDefault' ||
       arg.createVariable === 'force' ||
       false
@@ -132,7 +134,8 @@ function CommandBarKclInput({
     selection: {
       anchor: 0,
       head:
-        previouslySetValue && 'valueText' in previouslySetValue
+        typeof previouslySetValue === 'object' &&
+        'valueText' in previouslySetValue
           ? previouslySetValue.valueText.length
           : defaultValue.length,
     },
