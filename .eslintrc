@@ -22,6 +22,7 @@
     "rules": {
       "@typescript-eslint/no-empty-object-type": "error",
       "@typescript-eslint/no-floating-promises": "error",
+      "@typescript-eslint/no-implied-eval": "error",
       "@typescript-eslint/no-misused-promises": "error",
       "@typescript-eslint/no-unused-vars": ["error", {
         "varsIgnorePattern": "^_",
@@ -34,6 +35,7 @@
       "jsx-a11y/click-events-have-key-events": "off",
       "jsx-a11y/no-autofocus": "off",
       "jsx-a11y/no-noninteractive-element-interactions": "off",
+      "no-implied-eval": "off", // This is wrong; use the @typescript-eslint one instead.
       "no-restricted-globals": [
         "error",
         {
