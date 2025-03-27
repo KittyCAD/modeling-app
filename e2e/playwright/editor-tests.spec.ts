@@ -1207,12 +1207,11 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     }
   )
 
-  test('Corner rectangle tool panning with middle click', async ({
+  test('Rectangle tool panning with middle click', async ({
     page,
     homePage,
+    toolbar,
   }) => {
-    const u = await getUtils(page)
-
     await page.setBodyDimensions({ width: 1200, height: 900 })
     await homePage.goToModelingScene()
 
@@ -1225,29 +1224,35 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
 
     await page.waitForTimeout(1000)
 
-    const initialTest = await page.locator('.cm-content').innerText()
+    const middleMousePan = async (
+      startX: number,
+      startY: number,
+      endX: number,
+      endY: number
+    ) => {
+      const initialText = await page.locator('.cm-content').innerText()
 
-    await page.getByTestId('corner-rectangle').click()
+      await page.waitForTimeout(1000)
+      await page.mouse.click(startX, startY, { button: 'middle' })
+      await page.waitForTimeout(1000)
+      await page.mouse.move(endX, endY, {
+        steps: 10,
+      })
+      await page.waitForTimeout(1000)
 
-    await page.waitForTimeout(1000)
+      // We expect the code to be the same, middle mouse click should not modify the code, only do panning
+      const currentText = await page.locator('.cm-content').innerText()
+      expect(currentText).toBe(initialText)
+    }
 
-    await page.mouse.click(800, 500, { button: 'middle' })
-
-    await page.waitForTimeout(1000)
-    // await u.openDebugPanel()
-    // await u.expectCmdLog('[data-message-type="execution-done"]')
-    // await u.closeDebugPanel()
-
-    await page.mouse.move(900, 600, {
-      steps: 10,
+    await test.step(`Verify corner rectangle panning`, async () => {
+      await page.getByTestId('corner-rectangle').click()
+      await middleMousePan(800, 500, 900, 600)
     })
 
-    ///await page.waitForTimeout(1000)
-
-    // We expect the code to be the same, middle mouse click should not modify the code, only do panning
-    const currentText = await page.locator('.cm-content').innerText()
-    expect(currentText).toBe(initialTest)
-
-    //await page.waitForTimeout(10000)
+    await test.step(`Verify center rectangle panning`, async () => {
+      await toolbar.selectCenterRectangle()
+      await middleMousePan(800, 200, 900, 300)
+    })
   })
 })
