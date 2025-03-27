@@ -74,7 +74,7 @@ test.describe('Point-and-click tests', () => {
 
     await test.step('do extrude flow and check extrude code is added to editor', async () => {
       await toolbar.extrudeButton.click()
-      await expect(page.getByText('Please select one')).toBeVisible()
+      await expect(page.getByText('Please select one or more face')).toBeVisible()
 
       await cmdBar.expectState({
         stage: 'arguments',
@@ -1093,7 +1093,7 @@ openSketch = startSketchOn(XY)
 
     await test.step(`Go through the command bar flow`, async () => {
       await toolbar.helixButton.click()
-      await expect(page.getByText('AxisOrEdge')).toBeVisible()
+      await expect.poll(() => page.getByText('AxisOrEdge').count()).toBe(2)
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'mode',
@@ -1242,36 +1242,44 @@ openSketch = startSketchOn(XY)
         await test.step(`Go through the command bar flow`, async () => {
           await toolbar.closePane('code')
           await toolbar.helixButton.click()
-          await expect(page.getByText('AxisOrEdge')).toBeVisible()
+          await expect.poll(() => page.getByText('AxisOrEdge').count()).toBe(2)
           await cmdBar.expectState({
             stage: 'arguments',
-            currentArgKey: 'mode',
+            currentArgKey: 'axisOrEdge',
             currentArgValue: '',
             headerArguments: {
               AngleStart: '',
-              Mode: '',
+              AxisOrEdge: '',
               CounterClockWise: '',
               Radius: '',
               Revolutions: '',
             },
-            highlightedHeaderArg: 'mode',
+            highlightedHeaderArg: 'axisOrEdge',
             commandName: 'Helix',
           })
           await cmdBar.selectOption({ name: 'Edge' }).click()
           await expect(page.getByText('Please select one')).toBeVisible()
           await clickOnEdge()
+          await page.waitForTimeout(1000)
           await cmdBar.progressCmdBar()
+          await page.waitForTimeout(1000)
           await cmdBar.argumentInput.focus()
+          await page.waitForTimeout(1000)
           await page.keyboard.insertText('20')
           await cmdBar.progressCmdBar()
           await page.keyboard.insertText('0')
           await cmdBar.progressCmdBar()
+          // Skip over clockwise
+          await cmdBar.progressCmdBar()
           await page.keyboard.insertText('1')
           await cmdBar.progressCmdBar()
+          await page.keyboard.insertText('100')
+          await cmdBar.progressCmdBar()
+          await page.waitForTimeout(1000)
           await cmdBar.expectState({
             stage: 'review',
             headerArguments: {
-              Mode: 'Edge',
+              AxisOrEdge: 'Edge',
               Edge: `1 ${selectionType}`,
               AngleStart: '0',
               Revolutions: '20',
