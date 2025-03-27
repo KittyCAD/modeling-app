@@ -8,6 +8,7 @@ import { settingsActor } from 'machines/appMachine'
 import { sceneInfra } from 'lib/singletons'
 import { AxisNames } from 'lib/constants'
 import { uuidv4 } from 'lib/utils'
+import { reportRejection } from 'lib/trap'
 
 export function modelingMenuCallbackMostActions(
   settings,
@@ -54,14 +55,6 @@ export function modelingMenuCallbackMostActions(
           name: 'Delete project',
         },
       })
-    } else if (data.menuLabel === 'File.Import file from URL') {
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'projects',
-          name: 'Import file from URL',
-        },
-      })
     } else if (data.menuLabel === 'File.Preferences.User settings') {
       navigate(filePath + PATHS.SETTINGS_USER)
     } else if (data.menuLabel === 'File.Preferences.Keybindings') {
@@ -92,7 +85,7 @@ export function modelingMenuCallbackMostActions(
         token: token ?? '',
         code: codeManager.code,
         name: project?.name || '',
-      })
+      }).catch(reportRejection)
     } else if (data.menuLabel === 'File.Preferences.User default units') {
       navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
     } else if (data.menuLabel === 'File.Export current part') {
@@ -145,31 +138,45 @@ export function modelingMenuCallbackMostActions(
         },
       })
     } else if (data.menuLabel === 'View.Standard views.Right view') {
-      sceneInfra.camControls.updateCameraToAxis(AxisNames.X)
+      sceneInfra.camControls
+        .updateCameraToAxis(AxisNames.X)
+        .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Back view') {
-      sceneInfra.camControls.updateCameraToAxis(AxisNames.Y)
+      sceneInfra.camControls
+        .updateCameraToAxis(AxisNames.Y)
+        .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Top view') {
-      sceneInfra.camControls.updateCameraToAxis(AxisNames.Z)
+      sceneInfra.camControls
+        .updateCameraToAxis(AxisNames.Z)
+        .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Left view') {
-      sceneInfra.camControls.updateCameraToAxis(AxisNames.NEG_X)
+      sceneInfra.camControls
+        .updateCameraToAxis(AxisNames.NEG_X)
+        .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Front view') {
-      sceneInfra.camControls.updateCameraToAxis(AxisNames.NEG_Y)
+      sceneInfra.camControls
+        .updateCameraToAxis(AxisNames.NEG_Y)
+        .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Bottom view') {
-      sceneInfra.camControls.updateCameraToAxis(AxisNames.NEG_Z)
+      sceneInfra.camControls
+        .updateCameraToAxis(AxisNames.NEG_Z)
+        .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Reset view') {
-      sceneInfra.camControls.resetCameraPosition()
+      sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
     } else if (
       data.menuLabel === 'View.Standard views.Center view on selection'
     ) {
       // Gotcha: out of band from modelingMachineProvider, has no state or extra workflows. I am taking the function's logic and porting it here.
-      engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_center_to_selection',
-          camera_movement: 'vantage',
-        },
-      })
+      engineCommandManager
+        .sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'default_camera_center_to_selection',
+            camera_movement: 'vantage',
+          },
+        })
+        .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Refresh') {
       globalThis?.window?.location.reload()
     } else if (data.menuLabel === 'View.Named views.Create named view') {
@@ -186,6 +193,66 @@ export function modelingMenuCallbackMostActions(
       commandBarActor.send({
         type: 'Find and select command',
         data: { name: 'Delete named view', groupId: 'namedViews' },
+      })
+    } else if (data.menuLabel === 'Design.Create an offset plane') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: { name: 'Offset plane', groupId: 'modeling' },
+      })
+    } else if (data.menuLabel === 'Design.Create a helix') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: { name: 'Helix', groupId: 'modeling' },
+      })
+    } else if (data.menuLabel === 'Design.Create a parameter') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: { name: 'event.parameter.create', groupId: 'modeling' },
+      })
+    } else if (data.menuLabel === 'Design.Create an additive feature.Extrude') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: { name: 'Extrude', groupId: 'modeling' },
+      })
+    } else if (data.menuLabel === 'Design.Create an additive feature.Revolve') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: { name: 'Revolve', groupId: 'modeling' },
+      })
+    } else if (data.menuLabel === 'Design.Create an additive feature.Sweep') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: { name: 'Sweep', groupId: 'modeling' },
+      })
+    } else if (data.menuLabel === 'Design.Create an additive feature.Loft') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: { name: 'Loft', groupId: 'modeling' },
+      })
+    } else if (data.menuLabel === 'Design.Apply modification feature.Fillet') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: { name: 'Fillet', groupId: 'modeling' },
+      })
+    } else if (data.menuLabel === 'Design.Apply modification feature.Chamfer') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: { name: 'Chamfer', groupId: 'modeling' },
+      })
+    } else if (data.menuLabel === 'Design.Apply modification feature.Shell') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: { name: 'Shell', groupId: 'modeling' },
+      })
+    } else if (data.menuLabel === 'Design.Create with Zoo Text-To-CAD') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: { name: 'Text-to-CAD', groupId: 'modeling' },
+      })
+    } else if (data.menuLabel === 'Design.Modify with Zoo Text-To-CAD') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: { name: 'Prompt-to-edit', groupId: 'modeling' },
       })
     }
   }

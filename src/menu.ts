@@ -17,10 +17,9 @@ const isMac = os.platform() === 'darwin'
  * If you do not do this, <file> will not show up as file. It will be the <ApplicationName> and it contents live under that Menu
  * The .setApplicationMenu does not tell you that the 0th index forces it to <ApplicationName> on Mac.
  */
-function zooSetApplicationMenu (menu: Electron.Menu) {
+function zooSetApplicationMenu(menu: Electron.Menu) {
   Menu.setApplicationMenu(menu)
 }
-
 
 // Default electron menu.
 export function buildAndSetMenuForFallback(mainWindow: BrowserWindow) {
@@ -131,7 +130,6 @@ export function buildAndSetMenuForFallback(mainWindow: BrowserWindow) {
     helpRole(mainWindow),
   ]
 
-
   if (isMac) {
     const menu = Menu.buildFromTemplate(templateMac)
     zooSetApplicationMenu(menu)
@@ -141,12 +139,12 @@ export function buildAndSetMenuForFallback(mainWindow: BrowserWindow) {
   }
 }
 
-function appMenuMacOnly () {
+function appMenuMacOnly() {
   let extraBits: ZooMenuItemConstructorOptions[] = []
-    if (isMac) {
-      extraBits =
-        [{
-          // @ts-ignore This is required for Mac's it will show the app name first. This is safe to ts-ignore, it is a string.
+  if (isMac) {
+    extraBits = [
+      {
+        // @ts-ignore This is required for Mac's it will show the app name first. This is safe to ts-ignore, it is a string.
         label: app.name,
         submenu: [
           { role: 'about' },
@@ -157,9 +155,10 @@ function appMenuMacOnly () {
           { role: 'hideOthers' },
           { role: 'unhide' },
           { type: 'separator' },
-          { role: 'quit' }
-        ]
-      }]
+          { role: 'quit' },
+        ],
+      },
+    ]
   }
   return extraBits
 }

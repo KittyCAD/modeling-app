@@ -121,9 +121,12 @@ import { exportSave } from 'lib/exportSave'
 import { Plane } from '@rust/kcl-lib/bindings/Plane'
 import { updateModelingState } from 'lang/modelingWorkflows'
 import { EXECUTION_TYPE_MOCK } from 'lib/constants'
-import { useMenuListener } from "hooks/useMenu"
+import { useMenuListener, useSketchModeMenuEnableDisable } from 'hooks/useMenu'
 import type { WebContentSendPayload } from '../menu/channels'
 import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
+import { useKclContext } from 'lang/KclProvider'
+import { useNetworkContext } from 'hooks/useNetworkContext'
+import { useAppState } from 'AppState'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -1770,58 +1773,137 @@ export const ModelingMachineProvider = ({
   const cb = (data: WebContentSendPayload) => {
     const openPanes = modelingActor.getSnapshot().context.store.openPanes
     if (data.menuLabel === 'View.Panes.Feature tree') {
-      const featureTree : SidebarType = 'feature-tree'
-      const alwaysAddFeatureTree : SidebarType[] = [...new Set([...openPanes, featureTree])]
+      const featureTree: SidebarType = 'feature-tree'
+      const alwaysAddFeatureTree: SidebarType[] = [
+        ...new Set([...openPanes, featureTree]),
+      ]
       modelingSend({
         type: 'Set context',
         data: {
-          openPanes: alwaysAddFeatureTree
+          openPanes: alwaysAddFeatureTree,
         },
       })
     } else if (data.menuLabel === 'View.Panes.KCL code') {
-      const code : SidebarType = 'code'
-      const alwaysAddCode : SidebarType[] = [...new Set([...openPanes, code])]
+      const code: SidebarType = 'code'
+      const alwaysAddCode: SidebarType[] = [...new Set([...openPanes, code])]
       modelingSend({
         type: 'Set context',
         data: {
-          openPanes: alwaysAddCode
+          openPanes: alwaysAddCode,
         },
       })
     } else if (data.menuLabel === 'View.Panes.Project files') {
-      const projectFiles : SidebarType = 'files'
-      const alwaysAddProjectFiles : SidebarType[] = [...new Set([...openPanes, projectFiles])]
+      const projectFiles: SidebarType = 'files'
+      const alwaysAddProjectFiles: SidebarType[] = [
+        ...new Set([...openPanes, projectFiles]),
+      ]
       modelingSend({
         type: 'Set context',
         data: {
-          openPanes: alwaysAddProjectFiles
+          openPanes: alwaysAddProjectFiles,
         },
       })
     } else if (data.menuLabel === 'View.Panes.Variables') {
-      const variables : SidebarType = 'variables'
-      const alwaysAddVariables : SidebarType[] = [...new Set([...openPanes, variables])]
+      const variables: SidebarType = 'variables'
+      const alwaysAddVariables: SidebarType[] = [
+        ...new Set([...openPanes, variables]),
+      ]
       modelingSend({
         type: 'Set context',
         data: {
-          openPanes: alwaysAddVariables
+          openPanes: alwaysAddVariables,
         },
       })
     } else if (data.menuLabel === 'View.Panes.Logs') {
-      const logs : SidebarType = 'logs'
-      const alwaysAddLogs : SidebarType[] = [...new Set([...openPanes, logs])]
+      const logs: SidebarType = 'logs'
+      const alwaysAddLogs: SidebarType[] = [...new Set([...openPanes, logs])]
       modelingSend({
         type: 'Set context',
         data: {
-          openPanes: alwaysAddLogs
+          openPanes: alwaysAddLogs,
         },
       })
     } else if (data.menuLabel === 'Design.Start sketch') {
-        modelingSend({
-          type: 'Enter sketch',
-          data: { forceNewSketch: true },
-        })
+      modelingSend({
+        type: 'Enter sketch',
+        data: { forceNewSketch: true },
+      })
     }
   }
   useMenuListener(cb)
+
+  const { overallState } = useNetworkContext()
+  const { isExecuting } = useKclContext()
+  const { isStreamReady } = useAppState()
+
+  // Assumes all commands are network commands
+  useSketchModeMenuEnableDisable(
+    modelingState.context.currentMode,
+    overallState,
+    isExecuting,
+    isStreamReady,
+    [
+      { menuLabel: 'Edit.Modify with Zoo Text-To-CAD' },
+      { menuLabel: 'View.Standard views' },
+      { menuLabel: 'View.Named views' },
+      { menuLabel: 'Design.Start sketch' },
+      {
+        menuLabel: 'Design.Create an offset plane',
+        commandName: 'Offset plane',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Create a helix',
+        commandName: 'Helix',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Create an additive feature.Extrude',
+        commandName: 'Extrude',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Create an additive feature.Revolve',
+        commandName: 'Revolve',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Create an additive feature.Sweep',
+        commandName: 'Sweep',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Create an additive feature.Loft',
+        commandName: 'Loft',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Apply modification feature.Fillet',
+        commandName: 'Fillet',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Apply modification feature.Chamfer',
+        commandName: 'Chamfer',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Apply modification feature.Shell',
+        commandName: 'Shell',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Create with Zoo Text-To-CAD',
+        commandName: 'Text-to-CAD',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Modify with Zoo Text-To-CAD',
+        commandName: 'Prompt-to-edit',
+        groupId: 'modeling',
+      },
+    ]
+  )
 
   // Add debug function to window object
   useEffect(() => {

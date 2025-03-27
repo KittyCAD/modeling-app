@@ -165,13 +165,13 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
     [context.store?.openPanes, send]
   )
 
-  window.cat = () =>{
+  window.cat = () => {
     send({
-        type: 'Set context',
-        data: {
-          openPanes: ['code','files','feature-tree']
-        },
-      })
+      type: 'Set context',
+      data: {
+        openPanes: ['code', 'files', 'feature-tree'],
+      },
+    })
   }
 
   return (

@@ -38,7 +38,6 @@ import { reportRejection } from 'lib/trap'
 import { useMenuListener } from 'hooks/useMenu'
 import { modelingMenuCallbackMostActions } from 'menu/register'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
-import { useFileContext } from 'hooks/useFileContext'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>

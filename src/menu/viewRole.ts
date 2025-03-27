@@ -89,6 +89,7 @@ export const modelingViewRole = (
       { type: 'separator' },
       {
         label: 'Standard views',
+        id: 'View.Standard views',
         submenu: [
           {
             label: 'Right view',
@@ -172,6 +173,7 @@ export const modelingViewRole = (
       },
       {
         label: 'Named views',
+        id: 'View.Named views',
         submenu: [
           {
             label: 'Create named view',
@@ -244,7 +246,7 @@ export const modelingViewRole = (
                 menuLabel: 'View.Panes.Logs',
               })
             },
-          }
+          },
         ],
       },
       {

@@ -72,6 +72,12 @@ export type MenuLabels =
   | 'View.Panes.Variables'
   | 'View.Panes.Logs'
   | 'View.Panes.Debug'
+  | 'View.Standard views'
+  | 'View.Named views'
+  | 'Design.Create an additive feature'
+  | 'Design.Apply modification feature'
+  | 'Design.Create with Zoo Text-To-CAD'
+  | 'Design.Modify with Zoo Text-To-CAD'
 
 export type WebContentSendPayload = {
   menuLabel: MenuLabels

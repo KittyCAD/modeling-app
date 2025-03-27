@@ -10,6 +10,7 @@ export const modelingDesignRole = (
     submenu: [
       {
         label: 'Start sketch',
+        id: 'Design.Start sketch',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'Design.Start sketch',
@@ -19,6 +20,7 @@ export const modelingDesignRole = (
       { type: 'separator' },
       {
         label: 'Create an offset plane',
+        id: 'Design.Create an offset plane',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'Design.Create an offset plane',
@@ -27,6 +29,7 @@ export const modelingDesignRole = (
       },
       {
         label: 'Create a helix',
+        id: 'Design.Create a helix',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'Design.Create a helix',
@@ -44,9 +47,11 @@ export const modelingDesignRole = (
       { type: 'separator' },
       {
         label: 'Create an additive feature',
+        id: 'Design.Create an additive feature',
         submenu: [
           {
             label: 'Extrude',
+            id: 'Design.Create an additive feature.Extrude',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'Design.Create an additive feature.Extrude',
@@ -55,6 +60,7 @@ export const modelingDesignRole = (
           },
           {
             label: 'Revolve',
+            id: 'Design.Create an additive feature.Revolve',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'Design.Create an additive feature.Revolve',
@@ -63,6 +69,7 @@ export const modelingDesignRole = (
           },
           {
             label: 'Sweep',
+            id: 'Design.Create an additive feature.Sweep',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'Design.Create an additive feature.Sweep',
@@ -71,6 +78,7 @@ export const modelingDesignRole = (
           },
           {
             label: 'Loft',
+            id: 'Design.Create an additive feature.Loft',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'Design.Create an additive feature.Loft',
@@ -81,9 +89,11 @@ export const modelingDesignRole = (
       },
       {
         label: 'Apply modification feature',
+        id: 'Design.Apply modification feature',
         submenu: [
           {
             label: 'Fillet',
+            id: 'Design.Apply modification feature.Fillet',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'Design.Apply modification feature.Fillet',
@@ -92,6 +102,7 @@ export const modelingDesignRole = (
           },
           {
             label: 'Chamfer',
+            id: 'Design.Apply modification feature.Chamfer',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'Design.Apply modification feature.Chamfer',
@@ -100,6 +111,7 @@ export const modelingDesignRole = (
           },
           {
             label: 'Shell',
+            id: 'Design.Apply modification feature.Shell',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'Design.Apply modification feature.Shell',
@@ -111,6 +123,7 @@ export const modelingDesignRole = (
       { type: 'separator' },
       {
         label: 'Create with Zoo Text-To-CAD',
+        id: 'Design.Create with Zoo Text-To-CAD',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'Design.Create with Zoo Text-To-CAD',
@@ -119,6 +132,7 @@ export const modelingDesignRole = (
       },
       {
         label: 'Modify with Zoo Text-To-CAD',
+        id: 'Design.Modify with Zoo Text-To-CAD',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'Design.Modify with Zoo Text-To-CAD',
