@@ -606,9 +606,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: (commandContext) =>
-          !['Cylinder'].includes(
-            commandContext.argumentsToSubmit.mode as string
-          ),
+          ['Axis'].includes(commandContext.argumentsToSubmit.mode as string),
       },
       ccw: {
         inputType: 'options',
