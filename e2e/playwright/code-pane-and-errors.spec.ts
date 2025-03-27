@@ -14,6 +14,7 @@ test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
     page,
     homePage,
     scene,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
 
@@ -35,7 +36,7 @@ extrude001 = extrude(sketch001, length = 5)`
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // Ensure no badge is present
     const codePaneButtonHolder = page.locator('#code-button-holder')
@@ -170,6 +171,8 @@ extrude001 = extrude(sketch001, length = 5)`
     context,
     page,
     homePage,
+    scene,
+    cmdBar,
   }) => {
     // Load the app with the working starter code
     await context.addInitScript((code) => {
@@ -179,9 +182,7 @@ extrude001 = extrude(sketch001, length = 5)`
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
 
-    // FIXME: await scene.waitForExecutionDone() does not work. It still fails.
-    // I needed to increase this timeout to get this to pass.
-    await page.waitForTimeout(10000)
+    await scene.settled(cmdBar)
 
     // Ensure badge is present
     const codePaneButtonHolder = page.locator('#code-button-holder')

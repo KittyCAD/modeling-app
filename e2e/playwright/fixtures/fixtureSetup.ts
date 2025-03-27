@@ -39,7 +39,8 @@ export class AuthenticatedApp {
   }
 
   async initialise(code = '') {
-    await setup(this.context, this.page, this.testInfo)
+    const testDir = this.testInfo.outputPath('electron-test-projects-dir')
+    await setup(this.context, this.page, testDir, this.testInfo)
     const u = await getUtils(this.page)
 
     await this.page.addInitScript(async (code) => {
@@ -127,11 +128,9 @@ export class ElectronZoo {
     const that = this
 
     const options = {
-      timeout: 120000,
       args: ['.', '--no-sandbox'],
       env: {
         ...process.env,
-        TEST_SETTINGS_FILE_KEY: this.projectDirName,
         IS_PLAYWRIGHT: 'true',
       },
       ...(process.env.ELECTRON_OVERRIDE_DIST_PATH
@@ -154,33 +153,21 @@ export class ElectronZoo {
     if (!this.electron) {
       this.electron = await electron.launch(options)
 
-      // Mac takes quite a long time to create the first window in CI.
-      // Turns out we can't trust firstWindow() either. So loop.
-      let timeoutId: ReturnType<typeof setTimeout>
-      const tryToGetWindowPage = () =>
-        new Promise((resolve) => {
-          const fn = () => {
-            this.page = this.electron.windows()[0]
-            timeoutId = setTimeout(() => {
-              if (this.page) {
-                clearTimeout(timeoutId)
-                return resolve(undefined)
-              }
-              fn()
-            }, 0)
-          }
-          fn()
-        })
-
-      await tryToGetWindowPage()
-
+      this.page = await this.electron.firstWindow()
       this.context = this.electron.context()
       await this.context.tracing.start({ screenshots: true, snapshots: true })
     }
 
     await this.context.tracing.startChunk()
 
-    await setup(this.context, this.page, testInfo)
+    // THIS IS ABSOLUTELY NECESSARY TO CHANGE THE PROJECT DIRECTORY BETWEEN
+    // TESTS BECAUSE OF THE ELECTRON INSTANCE REUSE.
+    await this.electron?.evaluate(({ app }, projectDirName) => {
+      // @ts-ignore can't declaration merge see main.ts
+      app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
+    }, this.projectDirName)
+
+    await setup(this.context, this.page, this.projectDirName, testInfo)
 
     await this.cleanProjectDir()
 
@@ -250,11 +237,6 @@ export class ElectronZoo {
     //   return app.reuseWindowForTest();
     // });
 
-    await this.electron?.evaluate(({ app }, projectDirName) => {
-      // @ts-ignore can't declaration merge see main.ts
-      app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
-    }, this.projectDirName)
-
     // Always start at the root view
     await this.page.goto(this.firstUrl)
 
@@ -278,8 +260,9 @@ export class ElectronZoo {
       // Not a problem if it already exists.
     }
 
-    const tempSettingsFilePath = path.join(
+    const tempSettingsFilePath = path.resolve(
       this.projectDirName,
+      '..',
       SETTINGS_FILE_NAME
     )
 

@@ -693,8 +693,8 @@ extrude002 = extrude(profile002, length = 150)
       await homePage.openProject('lego')
       await toolbar.closePane('code')
     })
-    await test.step(`Waiting for the loading spinner to disappear`, async () => {
-      await scene.loadingIndicator.waitFor({ state: 'detached' })
+    await test.step(`Waiting for scene to settle`, async () => {
+      await scene.connectionEstablished()
     })
     await test.step(`The part should start loading quickly, not waiting until execution is complete`, async () => {
       await scene.expectPixelColor(
@@ -755,7 +755,7 @@ plane002 = offsetPlane(XZ, offset = -2 * x)`
       )
     })
     await homePage.openProject('test-sample')
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
     await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 20_000 })
     const operationButton = await toolbar.getFeatureTreeOperation(
       'Offset Plane',

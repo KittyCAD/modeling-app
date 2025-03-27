@@ -80,12 +80,6 @@ export class ToolbarFixture {
     return this.page.getByTestId('app-logo')
   }
 
-  get exeIndicator() {
-    return this.page
-      .getByTestId('model-state-indicator-receive-reliable')
-      .or(this.page.getByTestId('model-state-indicator-execution-done'))
-  }
-
   startSketchPlaneSelection = async () =>
     doAndWaitForImageDiff(this.page, () => this.startSketchBtn.click(), 500)
 
@@ -161,16 +155,10 @@ export class ToolbarFixture {
     }
   }
   /**
-   * Opens file by it's name and waits for execution to finish
+   * Opens file by it's name
    */
-  openFile = async (
-    fileName: string,
-    { wait }: { wait?: boolean } = { wait: true }
-  ) => {
+  openFile = async (fileName: string) => {
     await this.filePane.getByText(fileName).click()
-    if (wait) {
-      await expect(this.exeIndicator).toBeVisible({ timeout: 15_000 })
-    }
   }
   selectCenterRectangle = async () => {
     await this.page

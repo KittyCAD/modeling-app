@@ -1,4 +1,5 @@
 import { cameraMouseDragGuards, MouseGuard } from 'lib/cameraControls'
+import { engineStreamActor } from 'machines/appMachine'
 import {
   Euler,
   MathUtils,
@@ -29,7 +30,10 @@ import * as TWEEN from '@tweenjs/tween.js'
 import { isQuaternionVertical } from './helpers'
 import { reportRejection } from 'lib/trap'
 import { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
-import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
+import {
+  CameraDragInteractionType_type,
+  CameraViewState_type,
+} from '@kittycad/lib/dist/types/src/models'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
@@ -96,6 +100,7 @@ export class CameraControls {
   wasDragging: boolean
   mouseDownPosition: Vector2
   mouseNewPosition: Vector2
+  oldCameraState: undefined | CameraViewState_type
   rotationSpeed = 0.3
   enableRotate = true
   enablePan = true
@@ -276,6 +281,7 @@ export class CameraControls {
         camSettings.center.y,
         camSettings.center.z
       )
+
       const orientation = new Quaternion(
         camSettings.orientation.x,
         camSettings.orientation.y,
@@ -459,12 +465,13 @@ export class CameraControls {
       if (this.syncDirection === 'engineToClient') {
         const newCmdId = uuidv4()
 
+        const { videoRef } = engineStreamActor.getSnapshot().context
         // Nonsense to do anything until the video stream is established.
-        if (!this.engineCommandManager.elVideo) return
+        if (!videoRef.current) return
 
         const { x, y } = getNormalisedCoordinates(
           event,
-          this.engineCommandManager.elVideo,
+          videoRef.current,
           this.engineCommandManager.streamDimensions
         )
         this.throttledEngCmd({
@@ -945,6 +952,46 @@ export class CameraControls {
         animated: false, // don't animate the zoom for now
       },
     })
+  }
+
+  async restoreRemoteCameraStateAndTriggerSync() {
+    if (this.oldCameraState) {
+      await this.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_set_view',
+          view: this.oldCameraState,
+        },
+      })
+    }
+
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+  }
+
+  async saveRemoteCameraState() {
+    const cameraViewStateResponse =
+      await this.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: { type: 'default_camera_get_view' },
+      })
+    if (!cameraViewStateResponse) return
+    if (
+      'resp' in cameraViewStateResponse &&
+      'modeling_response' in cameraViewStateResponse.resp.data &&
+      'data' in cameraViewStateResponse.resp.data.modeling_response &&
+      'view' in cameraViewStateResponse.resp.data.modeling_response.data
+    ) {
+      this.oldCameraState =
+        cameraViewStateResponse.resp.data.modeling_response.data.view
+    }
   }
 
   async tweenCameraToQuaternion(

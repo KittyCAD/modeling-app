@@ -79,7 +79,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     ).toHaveCount(1)
     await expect(
       page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(2)
+    ).toHaveCount(1)
 
     // Add whitespace to the end of the code.
     await u.codeLocator.click()
@@ -97,7 +97,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     // Make sure we didn't clear the scene.
     await expect(
       page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(3)
+    ).toHaveCount(2)
     await expect(
       page.locator('[data-receive-command-type="scene_clear_all"]')
     ).toHaveCount(1)
@@ -106,12 +106,14 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
   test('ensure we use the cache, and do not clear on append', async ({
     homePage,
     page,
+    scene,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
-    await u.waitForPageLoad()
+    await scene.settled(cmdBar)
 
     await u.codeLocator.click()
     await page.keyboard.type(`sketch001 = startSketchOn(XY)

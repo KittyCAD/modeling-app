@@ -77,7 +77,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       })
       .toBe(false)
   })
-  test(`Remove constraints`, async ({ page, homePage }) => {
+  test(`Remove constraints`, async ({ page, homePage, scene, cmdBar }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
@@ -100,7 +100,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
-    await u.waitForPageLoad()
+    await scene.settled(cmdBar)
 
     await page.getByText('line(end = [74.36, 130.4], tag = $seg01)').click()
     await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -141,7 +141,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       },
     ] as const
     for (const { testName, offset } of cases) {
-      test(`${testName}`, async ({ page, homePage }) => {
+      test(`${testName}`, async ({ page, homePage, scene, cmdBar }) => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
@@ -189,7 +189,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
-        await u.waitForPageLoad()
+        await scene.settled(cmdBar)
 
         await page.getByText('line(end = [74.36, 130.4], tag = $seg01)').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -273,7 +273,12 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       },
     ] as const
     for (const { testName, value, constraint } of cases) {
-      test(`${constraint} - ${testName}`, async ({ page, homePage }) => {
+      test(`${constraint} - ${testName}`, async ({
+        page,
+        homePage,
+        scene,
+        cmdBar,
+      }) => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
@@ -296,7 +301,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.setBodyDimensions({ width: 1000, height: 500 })
 
         await homePage.goToModelingScene()
-        await u.waitForPageLoad()
+        await scene.settled(cmdBar)
 
         await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -383,7 +388,12 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       },
     ] as const
     for (const { testName, addVariable, value, constraint } of cases) {
-      test(`${constraint} - ${testName}`, async ({ page, homePage }) => {
+      test(`${constraint} - ${testName}`, async ({
+        page,
+        homePage,
+        scene,
+        cmdBar,
+      }) => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
@@ -406,7 +416,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
-        await u.waitForPageLoad()
+        await scene.settled(cmdBar)
 
         await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -496,7 +506,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       },
     ] as const
     for (const { testName, addVariable, value, axisSelect } of cases) {
-      test(`${testName}`, async ({ page, homePage }) => {
+      test(`${testName}`, async ({ page, homePage, scene, cmdBar }) => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
@@ -519,7 +529,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
-        await u.waitForPageLoad()
+        await scene.settled(cmdBar)
 
         await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -598,7 +608,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       },
     ] as const
     for (const { testName, addVariable, value, constraint } of cases) {
-      test(`${testName}`, async ({ page, homePage }) => {
+      test(`${testName}`, async ({ page, homePage, scene, cmdBar }) => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
@@ -621,7 +631,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.setBodyDimensions({ width: 1000, height: 500 })
 
         await homePage.goToModelingScene()
-        await u.waitForPageLoad()
+        await scene.settled(cmdBar)
 
         await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -674,7 +684,14 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       },
     ] as const
     for (const { testName, addVariable, value, constraint } of cases) {
-      test(`${testName}`, async ({ context, homePage, page, editor }) => {
+      test(`${testName}`, async ({
+        context,
+        homePage,
+        page,
+        editor,
+        scene,
+        cmdBar,
+      }) => {
         // constants and locators
         const cmdBarKclInput = page
           .getByTestId('cmd-bar-arg-value')
@@ -707,7 +724,7 @@ part002 = startSketchOn(XZ)
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
-        await u.waitForPageLoad()
+        await scene.settled(cmdBar)
 
         await editor.scrollToText('line(end = [74.36, 130.4])', true)
         await page.getByText('line(end = [74.36, 130.4])').click()
@@ -764,7 +781,7 @@ part002 = startSketchOn(XZ)
       },
     ] as const
     for (const { codeAfter, constraintName } of cases) {
-      test(`${constraintName}`, async ({ page, homePage }) => {
+      test(`${constraintName}`, async ({ page, homePage, scene, cmdBar }) => {
         await page.addInitScript(async (customCode) => {
           localStorage.setItem(
             'persistCode',
@@ -787,7 +804,7 @@ part002 = startSketchOn(XZ)
         await page.setBodyDimensions({ width: 1000, height: 500 })
 
         await homePage.goToModelingScene()
-        await u.waitForPageLoad()
+        await scene.settled(cmdBar)
 
         await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -865,7 +882,7 @@ part002 = startSketchOn(XZ)
       },
     ] as const
     for (const { codeAfter, constraintName } of cases) {
-      test(`${constraintName}`, async ({ page, homePage }) => {
+      test(`${constraintName}`, async ({ page, homePage, scene, cmdBar }) => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
@@ -887,7 +904,7 @@ part002 = startSketchOn(XZ)
         await page.setBodyDimensions({ width: 1000, height: 500 })
 
         await homePage.goToModelingScene()
-        await u.waitForPageLoad()
+        await scene.settled(cmdBar)
 
         await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -946,7 +963,7 @@ part002 = startSketchOn(XZ)
       },
     ] as const
     for (const { codeAfter, constraintName, axisClick } of cases) {
-      test(`${constraintName}`, async ({ page, homePage }) => {
+      test(`${constraintName}`, async ({ page, homePage, scene, cmdBar }) => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
@@ -968,7 +985,7 @@ part002 = startSketchOn(XZ)
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
-        await u.waitForPageLoad()
+        await scene.settled(cmdBar)
 
         await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -1009,6 +1026,8 @@ part002 = startSketchOn(XZ)
   test('Horizontally constrained line remains selected after applying constraint', async ({
     page,
     homePage,
+    scene,
+    cmdBar,
   }) => {
     test.fixme(orRunWhenFullSuiteEnabled())
     test.setTimeout(70_000)
@@ -1025,7 +1044,7 @@ part002 = startSketchOn(XZ)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
-    await u.waitForPageLoad()
+    await scene.settled(cmdBar)
 
     await page.getByText('line(end = [3.79, 2.68], tag = $seg01)').click()
     await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeEnabled(
@@ -1113,7 +1132,7 @@ test.describe('Electron constraint tests', () => {
   test(
     'Able to double click label to set constraint',
     { tag: '@electron' },
-    async ({ page, context, homePage, scene, editor, toolbar }) => {
+    async ({ page, context, homePage, scene, editor, toolbar, cmdBar }) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = path.join(dir, 'test-sample')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -1134,7 +1153,7 @@ test.describe('Electron constraint tests', () => {
           sortBy: 'last-modified-desc',
         })
         await homePage.openProject('test-sample')
-        await scene.waitForExecutionDone()
+        await scene.settled(cmdBar)
       })
 
       await test.step('Double click to constrain', async () => {

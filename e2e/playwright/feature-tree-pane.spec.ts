@@ -63,7 +63,7 @@ test.describe('Feature Tree pane', () => {
   test(
     'User can go to definition and go to function definition',
     { tag: '@electron' },
-    async ({ context, homePage, scene, editor, toolbar }) => {
+    async ({ context, homePage, scene, editor, toolbar, cmdBar, page }) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'test-sample')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -85,9 +85,11 @@ test.describe('Feature Tree pane', () => {
           sortBy: 'last-modified-desc',
         })
         await homePage.openProject('test-sample')
-        await scene.waitForExecutionDone()
-        await editor.closePane()
+        await scene.connectionEstablished()
+        await scene.settled(cmdBar)
+
         await toolbar.openFeatureTreePane()
+        await expect(page.getByText('Feature tree')).toBeVisible()
       })
 
       async function testViewSource({
@@ -253,7 +255,7 @@ test.describe('Feature Tree pane', () => {
         sortBy: 'last-modified-desc',
       })
       await homePage.openProject('test-sample')
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
       await toolbar.openFeatureTreePane()
     })
 
@@ -338,7 +340,7 @@ test.describe('Feature Tree pane', () => {
         sortBy: 'last-modified-desc',
       })
       await homePage.openProject('test-sample')
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
       await toolbar.openFeatureTreePane()
     })
 
@@ -413,8 +415,7 @@ profile003 = startProfileAt([0, -4.93], sketch001)
     const planeColor: [number, number, number] = [74, 74, 74]
 
     await homePage.openProject('test-sample')
-    // FIXME: @lf94 has a better way to verify execution completion, in a PR rn
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     await test.step(`Verify we see the sketch`, async () => {
       await scene.expectPixelColor(sketchColor, testPoint, 10)

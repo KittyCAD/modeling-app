@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
-import { Stream } from './components/Stream'
 import { AppHeader } from './components/AppHeader'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { useLoaderData, useNavigate } from 'react-router-dom'
+import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { type IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
 import { onboardingPaths } from 'routes/Onboarding/paths'
@@ -27,12 +26,13 @@ import { writeProjectThumbnailFile } from 'lib/desktop'
 import { useRouteLoaderData } from 'react-router-dom'
 import { useEngineCommands } from 'components/EngineCommands'
 import { commandBarActor } from 'machines/commandBarMachine'
-import { useToken } from 'machines/appMachine'
-import { useSettings } from 'machines/appMachine'
+import { EngineStreamTransition } from 'machines/engineStreamMachine'
+import { useToken, useSettings, engineStreamActor } from 'machines/appMachine'
 import { rustContext } from 'lib/singletons'
 maybeWriteToDisk()
   .then(() => {})
   .catch(() => {})
+import { EngineStream } from 'components/EngineStream'
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
@@ -56,6 +56,10 @@ export function App() {
   // the coredump.
   const ref = useRef<HTMLDivElement>(null)
 
+  // Stream related refs and data
+  let [searchParams] = useSearchParams()
+  const pool = searchParams.get('pool')
+
   const projectName = project?.name || null
   const projectPath = project?.path || null
 
@@ -70,7 +74,7 @@ export function App() {
   useHotKeyListener()
 
   const settings = useSettings()
-  const token = useToken()
+  const authToken = useToken()
 
   const coreDumpManager = useMemo(
     () =>
@@ -78,7 +82,7 @@ export function App() {
         engineCommandManager,
         codeManager,
         rustContext,
-        token
+        authToken
       ),
     []
   )
@@ -128,6 +132,13 @@ export function App() {
     }
   }, [lastCommandType])
 
+  useEffect(() => {
+    // When leaving the modeling scene, cut the engine stream.
+    return () => {
+      engineStreamActor.send({ type: EngineStreamTransition.Pause })
+    }
+  }, [])
+
   return (
     <div className="relative h-full flex flex-col" ref={ref}>
       <AppHeader
@@ -137,7 +148,7 @@ export function App() {
       />
       <ModalContainer />
       <ModelingSidebar paneOpacity={paneOpacity} />
-      <Stream />
+      <EngineStream pool={pool} authToken={authToken} />
       {/* <CamToggle /> */}
       <LowerRightControls coreDumpManager={coreDumpManager}>
         <UnitsMenu />
