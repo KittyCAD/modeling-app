@@ -11,7 +11,7 @@ import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 import { err, reportRejection } from './trap'
 import { IndexLoaderData } from './types'
 import { copyFileShareLink } from './links'
-import { baseUnitsUnion, SettingsLevel } from './settings/settingsTypes'
+import { baseUnitsUnion } from './settings/settingsTypes'
 import toast from 'react-hot-toast'
 import {
   changeKclSettings,
