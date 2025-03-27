@@ -73,7 +73,10 @@ import {
 } from './std/artifactGraph'
 import { BodyItem } from '@rust/kcl-lib/bindings/BodyItem'
 import { findKwArg } from './util'
-import { deleteEdgeTreatment } from './modifyAst/addEdgeTreatment'
+import {
+  deleteEdgeTreatment,
+  locateExtrudeDeclarator,
+} from './modifyAst/addEdgeTreatment'
 import { Name } from '@rust/kcl-lib/bindings/Name'
 
 export function startSketchOnDefault(
@@ -808,40 +811,53 @@ export function addOffsetPlane({
  */
 export function addHelix({
   node,
+  axis,
+  cylinder,
   revolutions,
   angleStart,
-  ccw,
   radius,
-  axis,
   length,
+  ccw,
   insertIndex,
   variableName,
 }: {
   node: Node<Program>
+  axis?: Node<Literal> | Node<Name | CallExpression | CallExpressionKw>
+  cylinder?: VariableDeclarator
   revolutions: Expr
   angleStart: Expr
+  radius?: Expr
+  length?: Expr
   ccw: boolean
-  radius: Expr
-  axis: Node<Literal> | Node<Name | CallExpression | CallExpressionKw>
-  length: Expr
   insertIndex?: number
   variableName?: string
 }): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   const modifiedAst = structuredClone(node)
   const name =
     variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.HELIX)
+  const modeArgs: CallExpressionKw['arguments'] = []
+  if (axis && radius) {
+    modeArgs.push(createLabeledArg('axis', axis))
+    modeArgs.push(createLabeledArg('radius', radius))
+    if (length) {
+      modeArgs.push(createLabeledArg('length', length))
+    }
+  } else if (cylinder) {
+    modeArgs.push(
+      createLabeledArg('cylinder', createLocalName(cylinder.id.name))
+    )
+  }
+
   const variable = createVariableDeclaration(
     name,
     createCallExpressionStdLibKw(
       'helix',
       null, // Not in a pipeline
       [
+        ...modeArgs,
         createLabeledArg('revolutions', revolutions),
         createLabeledArg('angleStart', angleStart),
         createLabeledArg('ccw', createLiteral(ccw)),
-        createLabeledArg('radius', radius),
-        createLabeledArg('axis', axis),
-        createLabeledArg('length', length),
       ]
     )
   )
@@ -1888,6 +1904,27 @@ export async function deleteFromSelection(
   }
 
   return new Error('Selection not recognised, could not delete')
+}
+
+export function deleteNodeInExtrudePipe(
+  node: PathToNode,
+  ast: Node<Program>
+): Error | void {
+  const pipeIndex = node.findIndex(([_, type]) => type === 'PipeExpression') + 1
+  if (!(node[pipeIndex][0] && typeof node[pipeIndex][0] === 'number')) {
+    return new Error("Couldn't find node to delete in ast")
+  }
+
+  const lookup = locateExtrudeDeclarator(ast, node)
+  if (err(lookup)) {
+    return lookup
+  }
+
+  if (lookup.extrudeDeclarator.init.type !== 'PipeExpression') {
+    return new Error("Couldn't find node to delete in looked up extrusion")
+  }
+
+  lookup.extrudeDeclarator.init.body.splice(node[pipeIndex][0], 1)
 }
 
 export const nonCodeMetaEmpty = () => {

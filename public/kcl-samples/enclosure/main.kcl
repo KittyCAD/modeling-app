@@ -11,7 +11,7 @@ wallThickness = 3
 holeDia = 4
 
 // Model a box with base enclosure dimensions
-sketch001 = startSketchOn('XY')
+sketch001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> angledLine([0, width], %, $rectangleSegmentA001)
   |> angledLine([
@@ -32,14 +32,11 @@ extrude001 = extrude(sketch001, length = height)
          getNextAdjacentEdge(rectangleSegmentB001),
          getNextAdjacentEdge(rectangleSegmentC001),
          getNextAdjacentEdge(rectangleSegmentD001)
-       ]
+       ],
      )
 
   // Apply a shell to the enclosure base to create the internal storage
-  |> shell(
-       faces = ["end"],
-       thickness = wallThickness
-     )
+  |> shell(faces = ["end"], thickness = wallThickness)
 
 // Define a function to create the internal structure to secure a fastener at each corner
 fn function001(originStart) {
@@ -55,14 +52,8 @@ fn function001(originStart) {
 
   // Create a pillar with a fasterner hole at the center
   sketch002 = startSketchOn(plane001)
-    |> circle(
-         center = [originStart[0], originStart[1]],
-         radius = holeDia + wallThickness
-       )
-    |> hole(circle(
-         center = [originStart[0], originStart[1]],
-         radius = holeDia
-       ), %)
+    |> circle(center = [originStart[0], originStart[1]], radius = holeDia + wallThickness)
+    |> hole(circle(center = [originStart[0], originStart[1]], radius = holeDia), %)
   extrude002 = extrude(sketch002, length = height - wallThickness)
 
   return extrude002
@@ -87,7 +78,7 @@ function001([
 ])
 
 // Define lid position and outer surface
-sketch003 = startSketchOn('XY')
+sketch003 = startSketchOn(XY)
   |> startProfileAt([width * 1.2, 0], %)
   |> angledLine([0, width], %, $rectangleSegmentA002)
   |> angledLine([
@@ -105,28 +96,28 @@ sketch003 = startSketchOn('XY')
          width * 1.2 + wallThickness * 3 + holeDia,
          wallThickness * 3 + holeDia
        ],
-       radius = holeDia
+       radius = holeDia,
      ), %)
   |> hole(circle(
        center = [
          width * 1.2 + wallThickness * 3 + holeDia,
          length - (wallThickness * 3 + holeDia)
        ],
-       radius = holeDia
+       radius = holeDia,
      ), %)
   |> hole(circle(
        center = [
          width * 2.2 - (wallThickness * 3 + holeDia),
          wallThickness * 3 + holeDia
        ],
-       radius = holeDia
+       radius = holeDia,
      ), %)
   |> hole(circle(
        center = [
          width * 2.2 - (wallThickness * 3 + holeDia),
          length - (wallThickness * 3 + holeDia)
        ],
-       radius = holeDia
+       radius = holeDia,
      ), %)
 extrude003 = extrude(sketch003, length = wallThickness)
   |> fillet(
@@ -136,7 +127,7 @@ extrude003 = extrude(sketch003, length = wallThickness)
          getNextAdjacentEdge(rectangleSegmentB002),
          getNextAdjacentEdge(rectangleSegmentC002),
          getNextAdjacentEdge(rectangleSegmentD002)
-       ]
+       ],
      )
 
 // Define lid inner and sealing surfaces
@@ -161,28 +152,28 @@ sketch004 = startSketchOn(extrude003, 'END')
          width * 1.2 + wallThickness * 3 + holeDia,
          wallThickness * 3 + holeDia
        ],
-       radius = holeDia + wallThickness
+       radius = holeDia + wallThickness,
      ), %)
   |> hole(circle(
        center = [
          width * 1.2 + wallThickness * 3 + holeDia,
          length - (wallThickness * 3 + holeDia)
        ],
-       radius = holeDia + wallThickness
+       radius = holeDia + wallThickness,
      ), %)
   |> hole(circle(
        center = [
          width * 2.2 - (wallThickness * 3 + holeDia),
          wallThickness * 3 + holeDia
        ],
-       radius = holeDia + wallThickness
+       radius = holeDia + wallThickness,
      ), %)
   |> hole(circle(
        center = [
          width * 2.2 - (wallThickness * 3 + holeDia),
          length - (wallThickness * 3 + holeDia)
        ],
-       radius = holeDia + wallThickness
+       radius = holeDia + wallThickness,
      ), %)
 extrude004 = extrude(sketch004, length = wallThickness)
   |> fillet(
@@ -192,5 +183,5 @@ extrude004 = extrude(sketch004, length = wallThickness)
          getNextAdjacentEdge(rectangleSegmentB003),
          getNextAdjacentEdge(rectangleSegmentC003),
          getNextAdjacentEdge(rectangleSegmentD003)
-       ]
+       ],
      )

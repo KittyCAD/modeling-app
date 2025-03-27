@@ -7,7 +7,7 @@
 // Define function
 fn rail8020(originStart, railHeight, railLength) {
   // Sketch side 1 of profile
-  sketch001 = startSketchOn('-XZ')
+  sketch001 = startSketchOn(-XZ)
     |> startProfileAt([
          originStart[0],
          0.1 * railHeight + originStart[1]
@@ -194,7 +194,7 @@ fn rail8020(originStart, railHeight, railLength) {
            .5 * railHeight + originStart[0],
            .5 * railHeight + originStart[1]
          ],
-         radius = .205 * railHeight / 2
+         radius = .205 * railHeight / 2,
        ), %)
     |> extrude(length = railLength)
     |> fillet(
@@ -216,7 +216,7 @@ fn rail8020(originStart, railHeight, railLength) {
            getNextAdjacentEdge(edge28),
            getNextAdjacentEdge(edge29),
            getNextAdjacentEdge(edge30)
-         ]
+         ],
        )
     |> fillet(
          radius = 0.03,
@@ -237,7 +237,7 @@ fn rail8020(originStart, railHeight, railLength) {
            getNextAdjacentEdge(edge26),
            getNextAdjacentEdge(edge31),
            getNextAdjacentEdge(edge32)
-         ]
+         ],
        )
   return sketch001
 }

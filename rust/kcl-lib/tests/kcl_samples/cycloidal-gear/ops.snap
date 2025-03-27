@@ -7,8 +7,8 @@ description: Operations executed cycloidal-gear.kcl
     "type": "UserDefinedFunctionCall",
     "name": "cycloidalGear",
     "functionSourceRange": [
-      222,
-      1721,
+      221,
+      1685,
       0
     ],
     "unlabeledArg": null,
@@ -19,8 +19,8 @@ description: Operations executed cycloidal-gear.kcl
     "type": "UserDefinedFunctionCall",
     "name": "gearSketch",
     "functionSourceRange": [
-      448,
-      1512,
+      447,
+      1476,
       0
     ],
     "unlabeledArg": null,
@@ -51,8 +51,8 @@ description: Operations executed cycloidal-gear.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "XY"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
       "sourceRange": []
     }
@@ -225,8 +225,8 @@ description: Operations executed cycloidal-gear.kcl
     "type": "UserDefinedFunctionCall",
     "name": "gearSketch",
     "functionSourceRange": [
-      448,
-      1512,
+      447,
+      1476,
       0
     ],
     "unlabeledArg": null,
@@ -251,8 +251,8 @@ description: Operations executed cycloidal-gear.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "XY"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
       "sourceRange": []
     }
@@ -425,8 +425,8 @@ description: Operations executed cycloidal-gear.kcl
     "type": "UserDefinedFunctionCall",
     "name": "gearSketch",
     "functionSourceRange": [
-      448,
-      1512,
+      447,
+      1476,
       0
     ],
     "unlabeledArg": null,
@@ -457,8 +457,8 @@ description: Operations executed cycloidal-gear.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "XY"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
       "sourceRange": []
     }

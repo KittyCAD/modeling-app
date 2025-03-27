@@ -317,13 +317,28 @@ description: Result of parsing sheet-metal-bracket.kcl
               {
                 "arguments": [
                   {
+                    "argument": {
+                      "abs_path": false,
+                      "commentStart": 719,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 719,
+                        "end": 0,
+                        "name": "XZ",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
                     "commentStart": 718,
                     "end": 0,
-                    "raw": "'-XZ'",
+                    "operator": "-",
                     "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "-XZ"
+                    "type": "UnaryExpression",
+                    "type": "UnaryExpression"
                   }
                 ],
                 "callee": {
@@ -350,10 +365,10 @@ description: Result of parsing sheet-metal-bracket.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 745,
+                    "commentStart": 743,
                     "elements": [
                       {
-                        "commentStart": 746,
+                        "commentStart": 744,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -365,7 +380,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "commentStart": 749,
+                        "commentStart": 747,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -383,7 +398,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 753,
+                    "commentStart": 751,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -392,10 +407,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 730,
+                  "commentStart": 728,
                   "end": 0,
                   "name": {
-                    "commentStart": 730,
+                    "commentStart": 728,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -405,7 +420,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 730,
+                "commentStart": 728,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -416,17 +431,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 766,
+                      "commentStart": 764,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 772,
+                      "commentStart": 770,
                       "elements": [
                         {
-                          "commentStart": 773,
+                          "commentStart": 771,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -439,10 +454,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                         },
                         {
                           "abs_path": false,
-                          "commentStart": 776,
+                          "commentStart": 774,
                           "end": 0,
                           "name": {
-                            "commentStart": 776,
+                            "commentStart": 774,
                             "end": 0,
                             "name": "thickness",
                             "start": 0,
@@ -463,14 +478,14 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 788,
+                      "commentStart": 786,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 794,
+                      "commentStart": 792,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -481,10 +496,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 761,
+                  "commentStart": 759,
                   "end": 0,
                   "name": {
-                    "commentStart": 761,
+                    "commentStart": 759,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -494,7 +509,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 761,
+                "commentStart": 759,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -506,21 +521,21 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 809,
+                      "commentStart": 807,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 815,
+                      "commentStart": 813,
                       "elements": [
                         {
                           "abs_path": false,
-                          "commentStart": 816,
+                          "commentStart": 814,
                           "end": 0,
                           "name": {
-                            "commentStart": 816,
+                            "commentStart": 814,
                             "end": 0,
                             "name": "flangeLength",
                             "start": 0,
@@ -532,7 +547,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                           "type": "Name"
                         },
                         {
-                          "commentStart": 830,
+                          "commentStart": 828,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -553,14 +568,14 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 834,
+                      "commentStart": 832,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 840,
+                      "commentStart": 838,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -571,10 +586,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 804,
+                  "commentStart": 802,
                   "end": 0,
                   "name": {
-                    "commentStart": 804,
+                    "commentStart": 802,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -584,7 +599,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 804,
+                "commentStart": 802,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -596,17 +611,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 855,
+                      "commentStart": 853,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 861,
+                      "commentStart": 859,
                       "elements": [
                         {
-                          "commentStart": 862,
+                          "commentStart": 860,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -619,10 +634,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                         },
                         {
                           "abs_path": false,
-                          "commentStart": 865,
+                          "commentStart": 863,
                           "end": 0,
                           "name": {
-                            "commentStart": 865,
+                            "commentStart": 863,
                             "end": 0,
                             "name": "hatHeight",
                             "start": 0,
@@ -643,14 +658,14 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 877,
+                      "commentStart": 875,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 883,
+                      "commentStart": 881,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -661,10 +676,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 850,
+                  "commentStart": 848,
                   "end": 0,
                   "name": {
-                    "commentStart": 850,
+                    "commentStart": 848,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -674,7 +689,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 850,
+                "commentStart": 848,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -686,21 +701,21 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 898,
+                      "commentStart": 896,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 904,
+                      "commentStart": 902,
                       "elements": [
                         {
                           "abs_path": false,
-                          "commentStart": 905,
+                          "commentStart": 903,
                           "end": 0,
                           "name": {
-                            "commentStart": 905,
+                            "commentStart": 903,
                             "end": 0,
                             "name": "hatWidth",
                             "start": 0,
@@ -712,7 +727,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                           "type": "Name"
                         },
                         {
-                          "commentStart": 915,
+                          "commentStart": 913,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -733,14 +748,14 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 919,
+                      "commentStart": 917,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 925,
+                      "commentStart": 923,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -751,10 +766,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 893,
+                  "commentStart": 891,
                   "end": 0,
                   "name": {
-                    "commentStart": 893,
+                    "commentStart": 891,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -764,7 +779,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 893,
+                "commentStart": 891,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -776,17 +791,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 940,
+                      "commentStart": 938,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 946,
+                      "commentStart": 944,
                       "elements": [
                         {
-                          "commentStart": 947,
+                          "commentStart": 945,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -800,10 +815,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                         {
                           "argument": {
                             "abs_path": false,
-                            "commentStart": 951,
+                            "commentStart": 949,
                             "end": 0,
                             "name": {
-                              "commentStart": 951,
+                              "commentStart": 949,
                               "end": 0,
                               "name": "hatHeight",
                               "start": 0,
@@ -814,7 +829,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                             "type": "Name",
                             "type": "Name"
                           },
-                          "commentStart": 950,
+                          "commentStart": 948,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -831,14 +846,14 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 963,
+                      "commentStart": 961,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 969,
+                      "commentStart": 967,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -849,10 +864,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 935,
+                  "commentStart": 933,
                   "end": 0,
                   "name": {
-                    "commentStart": 935,
+                    "commentStart": 933,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -862,7 +877,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 935,
+                "commentStart": 933,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -874,21 +889,21 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 984,
+                      "commentStart": 982,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 990,
+                      "commentStart": 988,
                       "elements": [
                         {
                           "abs_path": false,
-                          "commentStart": 991,
+                          "commentStart": 989,
                           "end": 0,
                           "name": {
-                            "commentStart": 991,
+                            "commentStart": 989,
                             "end": 0,
                             "name": "flangeLength",
                             "start": 0,
@@ -900,7 +915,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                           "type": "Name"
                         },
                         {
-                          "commentStart": 1005,
+                          "commentStart": 1003,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -921,14 +936,14 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1009,
+                      "commentStart": 1007,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1015,
+                      "commentStart": 1013,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -939,10 +954,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 979,
+                  "commentStart": 977,
                   "end": 0,
                   "name": {
-                    "commentStart": 979,
+                    "commentStart": 977,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -952,7 +967,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 979,
+                "commentStart": 977,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -964,17 +979,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1030,
+                      "commentStart": 1028,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1036,
+                      "commentStart": 1034,
                       "elements": [
                         {
-                          "commentStart": 1037,
+                          "commentStart": 1035,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -988,10 +1003,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                         {
                           "argument": {
                             "abs_path": false,
-                            "commentStart": 1041,
+                            "commentStart": 1039,
                             "end": 0,
                             "name": {
-                              "commentStart": 1041,
+                              "commentStart": 1039,
                               "end": 0,
                               "name": "thickness",
                               "start": 0,
@@ -1002,7 +1017,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                             "type": "Name",
                             "type": "Name"
                           },
-                          "commentStart": 1040,
+                          "commentStart": 1038,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -1019,14 +1034,14 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1053,
+                      "commentStart": 1051,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1059,
+                      "commentStart": 1057,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1037,10 +1052,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1025,
+                  "commentStart": 1023,
                   "end": 0,
                   "name": {
-                    "commentStart": 1025,
+                    "commentStart": 1023,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -1050,7 +1065,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1025,
+                "commentStart": 1023,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1062,25 +1077,25 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1074,
+                      "commentStart": 1072,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1080,
+                      "commentStart": 1078,
                       "elements": [
                         {
-                          "commentStart": 1081,
+                          "commentStart": 1079,
                           "end": 0,
                           "left": {
                             "argument": {
                               "abs_path": false,
-                              "commentStart": 1082,
+                              "commentStart": 1080,
                               "end": 0,
                               "name": {
-                                "commentStart": 1082,
+                                "commentStart": 1080,
                                 "end": 0,
                                 "name": "flangeLength",
                                 "start": 0,
@@ -1091,7 +1106,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                               "type": "Name",
                               "type": "Name"
                             },
-                            "commentStart": 1081,
+                            "commentStart": 1079,
                             "end": 0,
                             "operator": "-",
                             "start": 0,
@@ -1101,10 +1116,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                           "operator": "-",
                           "right": {
                             "abs_path": false,
-                            "commentStart": 1097,
+                            "commentStart": 1095,
                             "end": 0,
                             "name": {
-                              "commentStart": 1097,
+                              "commentStart": 1095,
                               "end": 0,
                               "name": "thickness",
                               "start": 0,
@@ -1120,7 +1135,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                           "type": "BinaryExpression"
                         },
                         {
-                          "commentStart": 1108,
+                          "commentStart": 1106,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -1141,14 +1156,14 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1112,
+                      "commentStart": 1110,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1118,
+                      "commentStart": 1116,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1159,10 +1174,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1069,
+                  "commentStart": 1067,
                   "end": 0,
                   "name": {
-                    "commentStart": 1069,
+                    "commentStart": 1067,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -1172,7 +1187,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1069,
+                "commentStart": 1067,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1184,17 +1199,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1133,
+                      "commentStart": 1131,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1139,
+                      "commentStart": 1137,
                       "elements": [
                         {
-                          "commentStart": 1140,
+                          "commentStart": 1138,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -1207,10 +1222,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                         },
                         {
                           "abs_path": false,
-                          "commentStart": 1143,
+                          "commentStart": 1141,
                           "end": 0,
                           "name": {
-                            "commentStart": 1143,
+                            "commentStart": 1141,
                             "end": 0,
                             "name": "hatHeight",
                             "start": 0,
@@ -1231,14 +1246,14 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1155,
+                      "commentStart": 1153,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1161,
+                      "commentStart": 1159,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1249,10 +1264,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1128,
+                  "commentStart": 1126,
                   "end": 0,
                   "name": {
-                    "commentStart": 1128,
+                    "commentStart": 1126,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -1262,7 +1277,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1128,
+                "commentStart": 1126,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1274,25 +1289,25 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1176,
+                      "commentStart": 1174,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1182,
+                      "commentStart": 1180,
                       "elements": [
                         {
-                          "commentStart": 1183,
+                          "commentStart": 1181,
                           "end": 0,
                           "left": {
                             "argument": {
                               "abs_path": false,
-                              "commentStart": 1184,
+                              "commentStart": 1182,
                               "end": 0,
                               "name": {
-                                "commentStart": 1184,
+                                "commentStart": 1182,
                                 "end": 0,
                                 "name": "hatWidth",
                                 "start": 0,
@@ -1303,7 +1318,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                               "type": "Name",
                               "type": "Name"
                             },
-                            "commentStart": 1183,
+                            "commentStart": 1181,
                             "end": 0,
                             "operator": "-",
                             "start": 0,
@@ -1312,10 +1327,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                           },
                           "operator": "+",
                           "right": {
-                            "commentStart": 1195,
+                            "commentStart": 1193,
                             "end": 0,
                             "left": {
-                              "commentStart": 1195,
+                              "commentStart": 1193,
                               "end": 0,
                               "raw": "2",
                               "start": 0,
@@ -1329,10 +1344,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                             "operator": "*",
                             "right": {
                               "abs_path": false,
-                              "commentStart": 1199,
+                              "commentStart": 1197,
                               "end": 0,
                               "name": {
-                                "commentStart": 1199,
+                                "commentStart": 1197,
                                 "end": 0,
                                 "name": "thickness",
                                 "start": 0,
@@ -1352,7 +1367,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                           "type": "BinaryExpression"
                         },
                         {
-                          "commentStart": 1210,
+                          "commentStart": 1208,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -1373,14 +1388,14 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1214,
+                      "commentStart": 1212,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1220,
+                      "commentStart": 1218,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1391,10 +1406,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1171,
+                  "commentStart": 1169,
                   "end": 0,
                   "name": {
-                    "commentStart": 1171,
+                    "commentStart": 1169,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -1404,7 +1419,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1171,
+                "commentStart": 1169,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1416,17 +1431,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1236,
+                      "commentStart": 1234,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1242,
+                      "commentStart": 1240,
                       "elements": [
                         {
-                          "commentStart": 1243,
+                          "commentStart": 1241,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -1440,10 +1455,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                         {
                           "argument": {
                             "abs_path": false,
-                            "commentStart": 1247,
+                            "commentStart": 1245,
                             "end": 0,
                             "name": {
-                              "commentStart": 1247,
+                              "commentStart": 1245,
                               "end": 0,
                               "name": "hatHeight",
                               "start": 0,
@@ -1454,7 +1469,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                             "type": "Name",
                             "type": "Name"
                           },
-                          "commentStart": 1246,
+                          "commentStart": 1244,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -1471,14 +1486,14 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1259,
+                      "commentStart": 1257,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1265,
+                      "commentStart": 1263,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1489,10 +1504,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1231,
+                  "commentStart": 1229,
                   "end": 0,
                   "name": {
-                    "commentStart": 1231,
+                    "commentStart": 1229,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -1502,7 +1517,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1231,
+                "commentStart": 1229,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1514,14 +1529,14 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1282,
+                      "commentStart": 1280,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1288,
+                      "commentStart": 1286,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1532,10 +1547,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1276,
+                  "commentStart": 1274,
                   "end": 0,
                   "name": {
-                    "commentStart": 1276,
+                    "commentStart": 1274,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -1545,7 +1560,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1276,
+                "commentStart": 1274,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1557,7 +1572,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1307,
+                      "commentStart": 1305,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1565,10 +1580,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1316,
+                      "commentStart": 1314,
                       "end": 0,
                       "name": {
-                        "commentStart": 1316,
+                        "commentStart": 1314,
                         "end": 0,
                         "name": "hatWidth",
                         "start": 0,
@@ -1583,10 +1598,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1299,
+                  "commentStart": 1297,
                   "end": 0,
                   "name": {
-                    "commentStart": 1299,
+                    "commentStart": 1297,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -1596,7 +1611,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1299,
+                "commentStart": 1297,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1608,7 +1623,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1346,
+                      "commentStart": 1336,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
@@ -1616,10 +1631,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1355,
+                      "commentStart": 1345,
                       "end": 0,
                       "name": {
-                        "commentStart": 1355,
+                        "commentStart": 1345,
                         "end": 0,
                         "name": "bendRad",
                         "start": 0,
@@ -1634,23 +1649,23 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1371,
+                      "commentStart": 1354,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1378,
+                      "commentStart": 1361,
                       "elements": [
                         {
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 1399,
+                              "commentStart": 1382,
                               "end": 0,
                               "name": {
-                                "commentStart": 1399,
+                                "commentStart": 1382,
                                 "end": 0,
                                 "name": "e2",
                                 "start": 0,
@@ -1664,10 +1679,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1379,
+                            "commentStart": 1362,
                             "end": 0,
                             "name": {
-                              "commentStart": 1379,
+                              "commentStart": 1362,
                               "end": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
@@ -1677,7 +1692,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1379,
+                          "commentStart": 1362,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1693,10 +1708,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1331,
+                  "commentStart": 1329,
                   "end": 0,
                   "name": {
-                    "commentStart": 1331,
+                    "commentStart": 1329,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -1706,7 +1721,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1331,
+                "commentStart": 1329,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1718,7 +1733,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1431,
+                      "commentStart": 1400,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
@@ -1726,10 +1741,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1440,
+                      "commentStart": 1409,
                       "end": 0,
                       "name": {
-                        "commentStart": 1440,
+                        "commentStart": 1409,
                         "end": 0,
                         "name": "outsideBendRad",
                         "start": 0,
@@ -1744,23 +1759,23 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1463,
+                      "commentStart": 1425,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1470,
+                      "commentStart": 1432,
                       "elements": [
                         {
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 1491,
+                              "commentStart": 1453,
                               "end": 0,
                               "name": {
-                                "commentStart": 1491,
+                                "commentStart": 1453,
                                 "end": 0,
                                 "name": "e3",
                                 "start": 0,
@@ -1774,10 +1789,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1471,
+                            "commentStart": 1433,
                             "end": 0,
                             "name": {
-                              "commentStart": 1471,
+                              "commentStart": 1433,
                               "end": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
@@ -1787,7 +1802,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1471,
+                          "commentStart": 1433,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1803,10 +1818,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1416,
+                  "commentStart": 1393,
                   "end": 0,
                   "name": {
-                    "commentStart": 1416,
+                    "commentStart": 1393,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -1816,7 +1831,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1416,
+                "commentStart": 1393,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1828,7 +1843,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1523,
+                      "commentStart": 1471,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
@@ -1836,10 +1851,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1532,
+                      "commentStart": 1480,
                       "end": 0,
                       "name": {
-                        "commentStart": 1532,
+                        "commentStart": 1480,
                         "end": 0,
                         "name": "outsideBendRad",
                         "start": 0,
@@ -1854,23 +1869,23 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1555,
+                      "commentStart": 1496,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1562,
+                      "commentStart": 1503,
                       "elements": [
                         {
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 1583,
+                              "commentStart": 1524,
                               "end": 0,
                               "name": {
-                                "commentStart": 1583,
+                                "commentStart": 1524,
                                 "end": 0,
                                 "name": "e4",
                                 "start": 0,
@@ -1884,10 +1899,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1563,
+                            "commentStart": 1504,
                             "end": 0,
                             "name": {
-                              "commentStart": 1563,
+                              "commentStart": 1504,
                               "end": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
@@ -1897,7 +1912,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1563,
+                          "commentStart": 1504,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1913,10 +1928,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1508,
+                  "commentStart": 1464,
                   "end": 0,
                   "name": {
-                    "commentStart": 1508,
+                    "commentStart": 1464,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -1926,7 +1941,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1508,
+                "commentStart": 1464,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1938,7 +1953,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1615,
+                      "commentStart": 1542,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
@@ -1946,10 +1961,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1624,
+                      "commentStart": 1551,
                       "end": 0,
                       "name": {
-                        "commentStart": 1624,
+                        "commentStart": 1551,
                         "end": 0,
                         "name": "bendRad",
                         "start": 0,
@@ -1964,23 +1979,23 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1640,
+                      "commentStart": 1560,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1647,
+                      "commentStart": 1567,
                       "elements": [
                         {
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 1668,
+                              "commentStart": 1588,
                               "end": 0,
                               "name": {
-                                "commentStart": 1668,
+                                "commentStart": 1588,
                                 "end": 0,
                                 "name": "e5",
                                 "start": 0,
@@ -1994,10 +2009,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1648,
+                            "commentStart": 1568,
                             "end": 0,
                             "name": {
-                              "commentStart": 1648,
+                              "commentStart": 1568,
                               "end": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
@@ -2007,7 +2022,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1648,
+                          "commentStart": 1568,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2023,10 +2038,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1600,
+                  "commentStart": 1535,
                   "end": 0,
                   "name": {
-                    "commentStart": 1600,
+                    "commentStart": 1535,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -2036,7 +2051,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1600,
+                "commentStart": 1535,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2048,7 +2063,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1700,
+                      "commentStart": 1606,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
@@ -2056,10 +2071,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1709,
+                      "commentStart": 1615,
                       "end": 0,
                       "name": {
-                        "commentStart": 1709,
+                        "commentStart": 1615,
                         "end": 0,
                         "name": "outsideBendRad",
                         "start": 0,
@@ -2074,23 +2089,23 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1732,
+                      "commentStart": 1631,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1739,
+                      "commentStart": 1638,
                       "elements": [
                         {
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 1760,
+                              "commentStart": 1659,
                               "end": 0,
                               "name": {
-                                "commentStart": 1760,
+                                "commentStart": 1659,
                                 "end": 0,
                                 "name": "e8",
                                 "start": 0,
@@ -2104,10 +2119,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1740,
+                            "commentStart": 1639,
                             "end": 0,
                             "name": {
-                              "commentStart": 1740,
+                              "commentStart": 1639,
                               "end": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
@@ -2117,7 +2132,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1740,
+                          "commentStart": 1639,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2133,10 +2148,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1685,
+                  "commentStart": 1599,
                   "end": 0,
                   "name": {
-                    "commentStart": 1685,
+                    "commentStart": 1599,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -2146,7 +2161,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1685,
+                "commentStart": 1599,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2158,7 +2173,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1792,
+                      "commentStart": 1677,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
@@ -2166,10 +2181,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1801,
+                      "commentStart": 1686,
                       "end": 0,
                       "name": {
-                        "commentStart": 1801,
+                        "commentStart": 1686,
                         "end": 0,
                         "name": "bendRad",
                         "start": 0,
@@ -2184,23 +2199,23 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1817,
+                      "commentStart": 1695,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1824,
+                      "commentStart": 1702,
                       "elements": [
                         {
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 1845,
+                              "commentStart": 1723,
                               "end": 0,
                               "name": {
-                                "commentStart": 1845,
+                                "commentStart": 1723,
                                 "end": 0,
                                 "name": "e9",
                                 "start": 0,
@@ -2214,10 +2229,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1825,
+                            "commentStart": 1703,
                             "end": 0,
                             "name": {
-                              "commentStart": 1825,
+                              "commentStart": 1703,
                               "end": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
@@ -2227,7 +2242,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1825,
+                          "commentStart": 1703,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2243,10 +2258,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1777,
+                  "commentStart": 1670,
                   "end": 0,
                   "name": {
-                    "commentStart": 1777,
+                    "commentStart": 1670,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -2256,7 +2271,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1777,
+                "commentStart": 1670,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2268,7 +2283,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1877,
+                      "commentStart": 1741,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
@@ -2276,10 +2291,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1886,
+                      "commentStart": 1750,
                       "end": 0,
                       "name": {
-                        "commentStart": 1886,
+                        "commentStart": 1750,
                         "end": 0,
                         "name": "bendRad",
                         "start": 0,
@@ -2294,23 +2309,23 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1902,
+                      "commentStart": 1759,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1909,
+                      "commentStart": 1766,
                       "elements": [
                         {
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 1930,
+                              "commentStart": 1787,
                               "end": 0,
                               "name": {
-                                "commentStart": 1930,
+                                "commentStart": 1787,
                                 "end": 0,
                                 "name": "e10",
                                 "start": 0,
@@ -2324,10 +2339,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1910,
+                            "commentStart": 1767,
                             "end": 0,
                             "name": {
-                              "commentStart": 1910,
+                              "commentStart": 1767,
                               "end": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
@@ -2337,7 +2352,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1910,
+                          "commentStart": 1767,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2353,10 +2368,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1862,
+                  "commentStart": 1734,
                   "end": 0,
                   "name": {
-                    "commentStart": 1862,
+                    "commentStart": 1734,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -2366,7 +2381,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1862,
+                "commentStart": 1734,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2378,7 +2393,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1963,
+                      "commentStart": 1806,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
@@ -2386,10 +2401,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1972,
+                      "commentStart": 1815,
                       "end": 0,
                       "name": {
-                        "commentStart": 1972,
+                        "commentStart": 1815,
                         "end": 0,
                         "name": "outsideBendRad",
                         "start": 0,
@@ -2404,23 +2419,23 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1995,
+                      "commentStart": 1831,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2002,
+                      "commentStart": 1838,
                       "elements": [
                         {
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 2023,
+                              "commentStart": 1859,
                               "end": 0,
                               "name": {
-                                "commentStart": 2023,
+                                "commentStart": 1859,
                                 "end": 0,
                                 "name": "e11",
                                 "start": 0,
@@ -2434,10 +2449,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 2003,
+                            "commentStart": 1839,
                             "end": 0,
                             "name": {
-                              "commentStart": 2003,
+                              "commentStart": 1839,
                               "end": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
@@ -2447,7 +2462,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 2003,
+                          "commentStart": 1839,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2463,10 +2478,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1948,
+                  "commentStart": 1799,
                   "end": 0,
                   "name": {
-                    "commentStart": 1948,
+                    "commentStart": 1799,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -2476,7 +2491,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1948,
+                "commentStart": 1799,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2490,7 +2505,7 @@ description: Result of parsing sheet-metal-bracket.kcl
               "nonCodeNodes": {
                 "22": [
                   {
-                    "commentStart": 2035,
+                    "commentStart": 1865,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -2523,12 +2538,12 @@ description: Result of parsing sheet-metal-bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 2084,
+        "commentStart": 1914,
         "declaration": {
-          "commentStart": 2084,
+          "commentStart": 1914,
           "end": 0,
           "id": {
-            "commentStart": 2084,
+            "commentStart": 1914,
             "end": 0,
             "name": "flange1",
             "start": 0,
@@ -2539,21 +2554,28 @@ description: Result of parsing sheet-metal-bracket.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2108,
+                    "abs_path": false,
+                    "commentStart": 1938,
                     "end": 0,
-                    "raw": "'XY'",
+                    "name": {
+                      "commentStart": 1938,
+                      "end": 0,
+                      "name": "XY",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "XY"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2094,
+                  "commentStart": 1924,
                   "end": 0,
                   "name": {
-                    "commentStart": 2094,
+                    "commentStart": 1924,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -2563,7 +2585,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2094,
+                "commentStart": 1924,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2572,10 +2594,10 @@ description: Result of parsing sheet-metal-bracket.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2134,
+                    "commentStart": 1962,
                     "elements": [
                       {
-                        "commentStart": 2135,
+                        "commentStart": 1963,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -2587,7 +2609,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                         }
                       },
                       {
-                        "commentStart": 2138,
+                        "commentStart": 1966,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -2605,7 +2627,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 2142,
+                    "commentStart": 1970,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2614,10 +2636,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2119,
+                  "commentStart": 1947,
                   "end": 0,
                   "name": {
-                    "commentStart": 2119,
+                    "commentStart": 1947,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -2627,7 +2649,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2119,
+                "commentStart": 1947,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2638,17 +2660,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2155,
+                      "commentStart": 1983,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2161,
+                      "commentStart": 1989,
                       "elements": [
                         {
-                          "commentStart": 2162,
+                          "commentStart": 1990,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -2661,10 +2683,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                         },
                         {
                           "abs_path": false,
-                          "commentStart": 2165,
+                          "commentStart": 1993,
                           "end": 0,
                           "name": {
-                            "commentStart": 2165,
+                            "commentStart": 1993,
                             "end": 0,
                             "name": "hatWidth",
                             "start": 0,
@@ -2685,10 +2707,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2150,
+                  "commentStart": 1978,
                   "end": 0,
                   "name": {
-                    "commentStart": 2150,
+                    "commentStart": 1978,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -2698,7 +2720,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2150,
+                "commentStart": 1978,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2710,21 +2732,21 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2186,
+                      "commentStart": 2014,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2192,
+                      "commentStart": 2020,
                       "elements": [
                         {
                           "abs_path": false,
-                          "commentStart": 2193,
+                          "commentStart": 2021,
                           "end": 0,
                           "name": {
-                            "commentStart": 2193,
+                            "commentStart": 2021,
                             "end": 0,
                             "name": "flangeWidth",
                             "start": 0,
@@ -2736,7 +2758,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                           "type": "Name"
                         },
                         {
-                          "commentStart": 2206,
+                          "commentStart": 2034,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -2757,14 +2779,14 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2210,
+                      "commentStart": 2038,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2216,
+                      "commentStart": 2044,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -2775,10 +2797,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2181,
+                  "commentStart": 2009,
                   "end": 0,
                   "name": {
-                    "commentStart": 2181,
+                    "commentStart": 2009,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -2788,7 +2810,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2181,
+                "commentStart": 2009,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2800,17 +2822,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2232,
+                      "commentStart": 2060,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2238,
+                      "commentStart": 2066,
                       "elements": [
                         {
-                          "commentStart": 2239,
+                          "commentStart": 2067,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -2824,10 +2846,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                         {
                           "argument": {
                             "abs_path": false,
-                            "commentStart": 2243,
+                            "commentStart": 2071,
                             "end": 0,
                             "name": {
-                              "commentStart": 2243,
+                              "commentStart": 2071,
                               "end": 0,
                               "name": "hatWidth",
                               "start": 0,
@@ -2838,7 +2860,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                             "type": "Name",
                             "type": "Name"
                           },
-                          "commentStart": 2242,
+                          "commentStart": 2070,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -2855,14 +2877,14 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2254,
+                      "commentStart": 2082,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2260,
+                      "commentStart": 2088,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -2873,10 +2895,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2227,
+                  "commentStart": 2055,
                   "end": 0,
                   "name": {
-                    "commentStart": 2227,
+                    "commentStart": 2055,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -2886,7 +2908,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2227,
+                "commentStart": 2055,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2897,10 +2919,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 "arguments": [],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2271,
+                  "commentStart": 2099,
                   "end": 0,
                   "name": {
-                    "commentStart": 2271,
+                    "commentStart": 2099,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -2910,7 +2932,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2271,
+                "commentStart": 2099,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2923,17 +2945,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "commentStart": 2304,
+                          "commentStart": 2124,
                           "end": 0,
                           "name": "center",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "commentStart": 2313,
+                          "commentStart": 2133,
                           "elements": [
                             {
-                              "commentStart": 2314,
+                              "commentStart": 2134,
                               "end": 0,
                               "raw": "0.75",
                               "start": 0,
@@ -2945,7 +2967,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                               }
                             },
                             {
-                              "commentStart": 2320,
+                              "commentStart": 2140,
                               "end": 0,
                               "raw": "1",
                               "start": 0,
@@ -2966,7 +2988,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "commentStart": 2331,
+                          "commentStart": 2144,
                           "end": 0,
                           "name": "radius",
                           "start": 0,
@@ -2974,10 +2996,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                         },
                         "arg": {
                           "abs_path": false,
-                          "commentStart": 2340,
+                          "commentStart": 2153,
                           "end": 0,
                           "name": {
-                            "commentStart": 2340,
+                            "commentStart": 2153,
                             "end": 0,
                             "name": "boltSize",
                             "start": 0,
@@ -2992,10 +3014,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                     ],
                     "callee": {
                       "abs_path": false,
-                      "commentStart": 2289,
+                      "commentStart": 2117,
                       "end": 0,
                       "name": {
-                        "commentStart": 2289,
+                        "commentStart": 2117,
                         "end": 0,
                         "name": "circle",
                         "start": 0,
@@ -3005,7 +3027,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                       "start": 0,
                       "type": "Name"
                     },
-                    "commentStart": 2289,
+                    "commentStart": 2117,
                     "end": 0,
                     "start": 0,
                     "type": "CallExpressionKw",
@@ -3013,7 +3035,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                     "unlabeled": null
                   },
                   {
-                    "commentStart": 2357,
+                    "commentStart": 2164,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -3022,10 +3044,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2284,
+                  "commentStart": 2112,
                   "end": 0,
                   "name": {
-                    "commentStart": 2284,
+                    "commentStart": 2112,
                     "end": 0,
                     "name": "hole",
                     "start": 0,
@@ -3035,7 +3057,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2284,
+                "commentStart": 2112,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3048,17 +3070,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "commentStart": 2385,
+                          "commentStart": 2184,
                           "end": 0,
                           "name": "center",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "commentStart": 2394,
+                          "commentStart": 2193,
                           "elements": [
                             {
-                              "commentStart": 2395,
+                              "commentStart": 2194,
                               "end": 0,
                               "raw": "0.75",
                               "start": 0,
@@ -3070,7 +3092,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                               }
                             },
                             {
-                              "commentStart": 2401,
+                              "commentStart": 2200,
                               "end": 0,
                               "raw": "4",
                               "start": 0,
@@ -3091,7 +3113,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "commentStart": 2412,
+                          "commentStart": 2204,
                           "end": 0,
                           "name": "radius",
                           "start": 0,
@@ -3099,10 +3121,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                         },
                         "arg": {
                           "abs_path": false,
-                          "commentStart": 2421,
+                          "commentStart": 2213,
                           "end": 0,
                           "name": {
-                            "commentStart": 2421,
+                            "commentStart": 2213,
                             "end": 0,
                             "name": "boltSize",
                             "start": 0,
@@ -3117,10 +3139,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                     ],
                     "callee": {
                       "abs_path": false,
-                      "commentStart": 2370,
+                      "commentStart": 2177,
                       "end": 0,
                       "name": {
-                        "commentStart": 2370,
+                        "commentStart": 2177,
                         "end": 0,
                         "name": "circle",
                         "start": 0,
@@ -3130,7 +3152,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                       "start": 0,
                       "type": "Name"
                     },
-                    "commentStart": 2370,
+                    "commentStart": 2177,
                     "end": 0,
                     "start": 0,
                     "type": "CallExpressionKw",
@@ -3138,7 +3160,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                     "unlabeled": null
                   },
                   {
-                    "commentStart": 2438,
+                    "commentStart": 2224,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -3147,10 +3169,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2365,
+                  "commentStart": 2172,
                   "end": 0,
                   "name": {
-                    "commentStart": 2365,
+                    "commentStart": 2172,
                     "end": 0,
                     "name": "hole",
                     "start": 0,
@@ -3160,7 +3182,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2365,
+                "commentStart": 2172,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3171,7 +3193,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2454,
+                      "commentStart": 2240,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -3179,10 +3201,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 2463,
+                      "commentStart": 2249,
                       "end": 0,
                       "name": {
-                        "commentStart": 2463,
+                        "commentStart": 2249,
                         "end": 0,
                         "name": "thickness",
                         "start": 0,
@@ -3197,10 +3219,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2446,
+                  "commentStart": 2232,
                   "end": 0,
                   "name": {
-                    "commentStart": 2446,
+                    "commentStart": 2232,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -3210,7 +3232,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2446,
+                "commentStart": 2232,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3222,14 +3244,14 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2494,
+                      "commentStart": 2280,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2503,
+                      "commentStart": 2289,
                       "end": 0,
                       "raw": "0.5",
                       "start": 0,
@@ -3244,23 +3266,23 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2515,
+                      "commentStart": 2301,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2522,
+                      "commentStart": 2308,
                       "elements": [
                         {
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 2553,
+                              "commentStart": 2339,
                               "end": 0,
                               "name": {
-                                "commentStart": 2553,
+                                "commentStart": 2339,
                                 "end": 0,
                                 "name": "e13",
                                 "start": 0,
@@ -3274,10 +3296,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 2533,
+                            "commentStart": 2319,
                             "end": 0,
                             "name": {
-                              "commentStart": 2533,
+                              "commentStart": 2319,
                               "end": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
@@ -3287,7 +3309,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 2533,
+                          "commentStart": 2319,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3297,10 +3319,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 2588,
+                              "commentStart": 2374,
                               "end": 0,
                               "name": {
-                                "commentStart": 2588,
+                                "commentStart": 2374,
                                 "end": 0,
                                 "name": "e14",
                                 "start": 0,
@@ -3314,10 +3336,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 2568,
+                            "commentStart": 2354,
                             "end": 0,
                             "name": {
-                              "commentStart": 2568,
+                              "commentStart": 2354,
                               "end": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
@@ -3327,7 +3349,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 2568,
+                          "commentStart": 2354,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3343,10 +3365,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2479,
+                  "commentStart": 2265,
                   "end": 0,
                   "name": {
-                    "commentStart": 2479,
+                    "commentStart": 2265,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -3356,7 +3378,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2479,
+                "commentStart": 2265,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3364,7 +3386,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 2094,
+            "commentStart": 1924,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -3380,12 +3402,12 @@ description: Result of parsing sheet-metal-bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 2608,
+        "commentStart": 2395,
         "declaration": {
-          "commentStart": 2610,
+          "commentStart": 2397,
           "end": 0,
           "id": {
-            "commentStart": 2610,
+            "commentStart": 2397,
             "end": 0,
             "name": "flange2",
             "start": 0,
@@ -3396,21 +3418,28 @@ description: Result of parsing sheet-metal-bracket.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2634,
+                    "abs_path": false,
+                    "commentStart": 2421,
                     "end": 0,
-                    "raw": "'XY'",
+                    "name": {
+                      "commentStart": 2421,
+                      "end": 0,
+                      "name": "XY",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "XY"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2620,
+                  "commentStart": 2407,
                   "end": 0,
                   "name": {
-                    "commentStart": 2620,
+                    "commentStart": 2407,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -3420,7 +3449,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2620,
+                "commentStart": 2407,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3429,11 +3458,11 @@ description: Result of parsing sheet-metal-bracket.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2660,
+                    "commentStart": 2445,
                     "elements": [
                       {
                         "argument": {
-                          "commentStart": 2662,
+                          "commentStart": 2447,
                           "end": 0,
                           "raw": "6",
                           "start": 0,
@@ -3444,7 +3473,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                             "suffix": "None"
                           }
                         },
-                        "commentStart": 2661,
+                        "commentStart": 2446,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -3452,7 +3481,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                         "type": "UnaryExpression"
                       },
                       {
-                        "commentStart": 2665,
+                        "commentStart": 2450,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -3470,7 +3499,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 2669,
+                    "commentStart": 2454,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -3479,10 +3508,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2645,
+                  "commentStart": 2430,
                   "end": 0,
                   "name": {
-                    "commentStart": 2645,
+                    "commentStart": 2430,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -3492,7 +3521,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2645,
+                "commentStart": 2430,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3503,17 +3532,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2682,
+                      "commentStart": 2467,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2688,
+                      "commentStart": 2473,
                       "elements": [
                         {
-                          "commentStart": 2689,
+                          "commentStart": 2474,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -3526,10 +3555,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                         },
                         {
                           "abs_path": false,
-                          "commentStart": 2692,
+                          "commentStart": 2477,
                           "end": 0,
                           "name": {
-                            "commentStart": 2692,
+                            "commentStart": 2477,
                             "end": 0,
                             "name": "hatWidth",
                             "start": 0,
@@ -3550,10 +3579,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2677,
+                  "commentStart": 2462,
                   "end": 0,
                   "name": {
-                    "commentStart": 2677,
+                    "commentStart": 2462,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -3563,7 +3592,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2677,
+                "commentStart": 2462,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3575,22 +3604,22 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2713,
+                      "commentStart": 2498,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2719,
+                      "commentStart": 2504,
                       "elements": [
                         {
                           "argument": {
                             "abs_path": false,
-                            "commentStart": 2721,
+                            "commentStart": 2506,
                             "end": 0,
                             "name": {
-                              "commentStart": 2721,
+                              "commentStart": 2506,
                               "end": 0,
                               "name": "flangeWidth",
                               "start": 0,
@@ -3601,7 +3630,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                             "type": "Name",
                             "type": "Name"
                           },
-                          "commentStart": 2720,
+                          "commentStart": 2505,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -3609,7 +3638,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                           "type": "UnaryExpression"
                         },
                         {
-                          "commentStart": 2734,
+                          "commentStart": 2519,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -3630,14 +3659,14 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2738,
+                      "commentStart": 2523,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2744,
+                      "commentStart": 2529,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -3648,10 +3677,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2708,
+                  "commentStart": 2493,
                   "end": 0,
                   "name": {
-                    "commentStart": 2708,
+                    "commentStart": 2493,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -3661,7 +3690,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2708,
+                "commentStart": 2493,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3673,17 +3702,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2760,
+                      "commentStart": 2545,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2766,
+                      "commentStart": 2551,
                       "elements": [
                         {
-                          "commentStart": 2767,
+                          "commentStart": 2552,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -3697,10 +3726,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                         {
                           "argument": {
                             "abs_path": false,
-                            "commentStart": 2771,
+                            "commentStart": 2556,
                             "end": 0,
                             "name": {
-                              "commentStart": 2771,
+                              "commentStart": 2556,
                               "end": 0,
                               "name": "hatWidth",
                               "start": 0,
@@ -3711,7 +3740,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                             "type": "Name",
                             "type": "Name"
                           },
-                          "commentStart": 2770,
+                          "commentStart": 2555,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -3728,14 +3757,14 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2782,
+                      "commentStart": 2567,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2788,
+                      "commentStart": 2573,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -3746,10 +3775,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2755,
+                  "commentStart": 2540,
                   "end": 0,
                   "name": {
-                    "commentStart": 2755,
+                    "commentStart": 2540,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -3759,7 +3788,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2755,
+                "commentStart": 2540,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3770,10 +3799,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 "arguments": [],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2799,
+                  "commentStart": 2584,
                   "end": 0,
                   "name": {
-                    "commentStart": 2799,
+                    "commentStart": 2584,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -3783,7 +3812,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2799,
+                "commentStart": 2584,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3796,18 +3825,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "commentStart": 2832,
+                          "commentStart": 2609,
                           "end": 0,
                           "name": "center",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "commentStart": 2841,
+                          "commentStart": 2618,
                           "elements": [
                             {
                               "argument": {
-                                "commentStart": 2843,
+                                "commentStart": 2620,
                                 "end": 0,
                                 "raw": "6.75",
                                 "start": 0,
@@ -3818,7 +3847,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "suffix": "None"
                                 }
                               },
-                              "commentStart": 2842,
+                              "commentStart": 2619,
                               "end": 0,
                               "operator": "-",
                               "start": 0,
@@ -3826,7 +3855,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                               "type": "UnaryExpression"
                             },
                             {
-                              "commentStart": 2849,
+                              "commentStart": 2626,
                               "end": 0,
                               "raw": "1",
                               "start": 0,
@@ -3847,7 +3876,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "commentStart": 2860,
+                          "commentStart": 2630,
                           "end": 0,
                           "name": "radius",
                           "start": 0,
@@ -3855,10 +3884,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                         },
                         "arg": {
                           "abs_path": false,
-                          "commentStart": 2869,
+                          "commentStart": 2639,
                           "end": 0,
                           "name": {
-                            "commentStart": 2869,
+                            "commentStart": 2639,
                             "end": 0,
                             "name": "boltSize",
                             "start": 0,
@@ -3873,10 +3902,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                     ],
                     "callee": {
                       "abs_path": false,
-                      "commentStart": 2817,
+                      "commentStart": 2602,
                       "end": 0,
                       "name": {
-                        "commentStart": 2817,
+                        "commentStart": 2602,
                         "end": 0,
                         "name": "circle",
                         "start": 0,
@@ -3886,7 +3915,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                       "start": 0,
                       "type": "Name"
                     },
-                    "commentStart": 2817,
+                    "commentStart": 2602,
                     "end": 0,
                     "start": 0,
                     "type": "CallExpressionKw",
@@ -3894,7 +3923,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                     "unlabeled": null
                   },
                   {
-                    "commentStart": 2886,
+                    "commentStart": 2650,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -3903,10 +3932,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2812,
+                  "commentStart": 2597,
                   "end": 0,
                   "name": {
-                    "commentStart": 2812,
+                    "commentStart": 2597,
                     "end": 0,
                     "name": "hole",
                     "start": 0,
@@ -3916,7 +3945,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2812,
+                "commentStart": 2597,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3929,18 +3958,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "commentStart": 2914,
+                          "commentStart": 2670,
                           "end": 0,
                           "name": "center",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "commentStart": 2923,
+                          "commentStart": 2679,
                           "elements": [
                             {
                               "argument": {
-                                "commentStart": 2925,
+                                "commentStart": 2681,
                                 "end": 0,
                                 "raw": "6.75",
                                 "start": 0,
@@ -3951,7 +3980,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "suffix": "None"
                                 }
                               },
-                              "commentStart": 2924,
+                              "commentStart": 2680,
                               "end": 0,
                               "operator": "-",
                               "start": 0,
@@ -3959,7 +3988,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                               "type": "UnaryExpression"
                             },
                             {
-                              "commentStart": 2931,
+                              "commentStart": 2687,
                               "end": 0,
                               "raw": "4",
                               "start": 0,
@@ -3980,7 +4009,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "commentStart": 2942,
+                          "commentStart": 2691,
                           "end": 0,
                           "name": "radius",
                           "start": 0,
@@ -3988,10 +4017,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                         },
                         "arg": {
                           "abs_path": false,
-                          "commentStart": 2951,
+                          "commentStart": 2700,
                           "end": 0,
                           "name": {
-                            "commentStart": 2951,
+                            "commentStart": 2700,
                             "end": 0,
                             "name": "boltSize",
                             "start": 0,
@@ -4006,10 +4035,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                     ],
                     "callee": {
                       "abs_path": false,
-                      "commentStart": 2899,
+                      "commentStart": 2663,
                       "end": 0,
                       "name": {
-                        "commentStart": 2899,
+                        "commentStart": 2663,
                         "end": 0,
                         "name": "circle",
                         "start": 0,
@@ -4019,7 +4048,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                       "start": 0,
                       "type": "Name"
                     },
-                    "commentStart": 2899,
+                    "commentStart": 2663,
                     "end": 0,
                     "start": 0,
                     "type": "CallExpressionKw",
@@ -4027,7 +4056,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                     "unlabeled": null
                   },
                   {
-                    "commentStart": 2968,
+                    "commentStart": 2711,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -4036,10 +4065,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2894,
+                  "commentStart": 2658,
                   "end": 0,
                   "name": {
-                    "commentStart": 2894,
+                    "commentStart": 2658,
                     "end": 0,
                     "name": "hole",
                     "start": 0,
@@ -4049,7 +4078,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2894,
+                "commentStart": 2658,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -4060,7 +4089,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2984,
+                      "commentStart": 2727,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -4068,10 +4097,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 2993,
+                      "commentStart": 2736,
                       "end": 0,
                       "name": {
-                        "commentStart": 2993,
+                        "commentStart": 2736,
                         "end": 0,
                         "name": "thickness",
                         "start": 0,
@@ -4086,10 +4115,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2976,
+                  "commentStart": 2719,
                   "end": 0,
                   "name": {
-                    "commentStart": 2976,
+                    "commentStart": 2719,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -4099,7 +4128,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2976,
+                "commentStart": 2719,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4111,14 +4140,14 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 3024,
+                      "commentStart": 2767,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 3033,
+                      "commentStart": 2776,
                       "end": 0,
                       "raw": "0.25",
                       "start": 0,
@@ -4133,23 +4162,23 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 3046,
+                      "commentStart": 2789,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 3053,
+                      "commentStart": 2796,
                       "elements": [
                         {
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 3084,
+                              "commentStart": 2827,
                               "end": 0,
                               "name": {
-                                "commentStart": 3084,
+                                "commentStart": 2827,
                                 "end": 0,
                                 "name": "e15",
                                 "start": 0,
@@ -4163,10 +4192,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 3064,
+                            "commentStart": 2807,
                             "end": 0,
                             "name": {
-                              "commentStart": 3064,
+                              "commentStart": 2807,
                               "end": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
@@ -4176,7 +4205,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 3064,
+                          "commentStart": 2807,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -4186,10 +4215,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 3119,
+                              "commentStart": 2862,
                               "end": 0,
                               "name": {
-                                "commentStart": 3119,
+                                "commentStart": 2862,
                                 "end": 0,
                                 "name": "e16",
                                 "start": 0,
@@ -4203,10 +4232,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 3099,
+                            "commentStart": 2842,
                             "end": 0,
                             "name": {
-                              "commentStart": 3099,
+                              "commentStart": 2842,
                               "end": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
@@ -4216,7 +4245,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 3099,
+                          "commentStart": 2842,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -4232,10 +4261,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 3009,
+                  "commentStart": 2752,
                   "end": 0,
                   "name": {
-                    "commentStart": 3009,
+                    "commentStart": 2752,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -4245,7 +4274,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 3009,
+                "commentStart": 2752,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4253,7 +4282,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 2620,
+            "commentStart": 2407,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -4328,7 +4357,7 @@ description: Result of parsing sheet-metal-bracket.kcl
       "nonCodeNodes": {
         "9": [
           {
-            "commentStart": 2608,
+            "commentStart": 2395,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
