@@ -90,7 +90,7 @@ import {
   traverse,
 } from 'lang/queryAst'
 import toast from 'react-hot-toast'
-import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
+import { useLoaderData, useNavigate } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { err, reportRejection, trap, reject } from 'lib/trap'
 import {
@@ -140,14 +140,7 @@ export const ModelingMachineProvider = ({
 }) => {
   const {
     app: { theme, allowOrbitInSketchMode },
-    modeling: {
-      defaultUnit,
-      cameraProjection,
-      highlightEdges,
-      showScaleGrid,
-      cameraOrbit,
-      enableSSAO,
-    },
+    modeling: { defaultUnit, cameraProjection, highlightEdges, cameraOrbit },
   } = useSettings()
   const navigate = useNavigate()
   const { context, send: fileMachineSend } = useFileContext()
@@ -155,9 +148,6 @@ export const ModelingMachineProvider = ({
   const token = useToken()
   const streamRef = useRef<HTMLDivElement>(null)
   const persistedContext = useMemo(() => getPersistedContext(), [])
-
-  let [searchParams] = useSearchParams()
-  const pool = searchParams.get('pool')
 
   const isCommandBarClosed = useSelector(
     commandBarActor,

@@ -774,7 +774,6 @@ test.describe(`Project management commands`, () => {
           `${dir}/${projectName}/main.kcl`
         )
       })
-      const u = await getUtils(page)
 
       // Constants and locators
       const projectHomeLink = page.getByTestId('project-link')
@@ -835,7 +834,6 @@ test.describe(`Project management commands`, () => {
           `${dir}/${projectName}/main.kcl`
         )
       })
-      const u = await getUtils(page)
 
       // Constants and locators
       const projectHomeLink = page.getByTestId('project-link')

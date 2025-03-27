@@ -1,5 +1,4 @@
 import { jsAppSettings } from 'lang/wasm'
-import { uuidv4 } from 'lib/utils'
 import { MutableRefObject } from 'react'
 import { setup, assign, fromPromise } from 'xstate'
 import {
@@ -8,8 +7,6 @@ import {
   sceneInfra,
   engineCommandManager,
 } from 'lib/singletons'
-import { trap } from 'lib/trap'
-import { Vector3, Vector4 } from 'three'
 
 export enum EngineStreamState {
   Off = 'off',

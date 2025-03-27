@@ -1,8 +1,4 @@
 import { useSelector } from '@xstate/react'
-import { useEffect, useState } from 'react'
-import { useEngineCommands } from './EngineCommands'
-import { CustomIcon } from './CustomIcon'
-import { CommandLogType } from 'lang/std/engineConnection'
 import { engineStreamActor } from 'machines/appMachine'
 import { EngineStreamState } from 'machines/engineStreamMachine'
 

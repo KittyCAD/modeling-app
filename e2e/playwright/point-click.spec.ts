@@ -74,7 +74,7 @@ test.describe('Point-and-click tests', () => {
 
     await test.step('do extrude flow and check extrude code is added to editor', async () => {
       await toolbar.extrudeButton.click()
-      await page.getByText('Please select one')
+      await expect(page.getByText('Please select one')).toBeVisible()
 
       await cmdBar.expectState({
         stage: 'arguments',
@@ -1029,7 +1029,7 @@ openSketch = startSketchOn(XY)
     })
     await test.step(`Go through the command bar flow`, async () => {
       await toolbar.offsetPlaneButton.click()
-      await page.getByText('Please select one')
+      await expect(page.getByText('Please select one')).toBeVisible()
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'plane',
@@ -1091,7 +1091,7 @@ openSketch = startSketchOn(XY)
 
     await test.step(`Go through the command bar flow`, async () => {
       await toolbar.helixButton.click()
-      await page.getByText('AxisOrEdge')
+      await expect(page.getByText('AxisOrEdge')).toBeVisible()
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'mode',
@@ -1108,7 +1108,7 @@ openSketch = startSketchOn(XY)
         commandName: 'Helix',
       })
       await cmdBar.progressCmdBar()
-      await page.getByText('Axis')
+      await expect(page.getByText('Axis')).toBeVisible()
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
@@ -1241,7 +1241,7 @@ openSketch = startSketchOn(XY)
         await test.step(`Go through the command bar flow`, async () => {
           await toolbar.closePane('code')
           await toolbar.helixButton.click()
-          await page.getByText('AxisOrEdge')
+          await expect(page.getByText('AxisOrEdge')).toBeVisible()
           await cmdBar.expectState({
             stage: 'arguments',
             currentArgKey: 'mode',
@@ -1258,7 +1258,7 @@ openSketch = startSketchOn(XY)
             commandName: 'Helix',
           })
           await cmdBar.selectOption({ name: 'Edge' }).click()
-          await page.getByText('Please select one')
+          await expect(page.getByText('Please select one')).toBeVisible()
           await clickOnEdge()
           await cmdBar.progressCmdBar()
           await cmdBar.argumentInput.focus()
@@ -1541,7 +1541,7 @@ extrude001 = extrude(profile001, length = 100)
       if (!shouldPreselect) {
         await test.step(`Go through the command bar flow without preselected sketches`, async () => {
           await toolbar.loftButton.click()
-          await page.getByText('Please select one')
+          await expect(page.getByText('Please select one')).toBeVisible()
           await cmdBar.expectState({
             stage: 'arguments',
             currentArgKey: 'selection',
@@ -1560,7 +1560,7 @@ extrude001 = extrude(profile001, length = 100)
 
         await test.step(`Go through the command bar flow with preselected sketches`, async () => {
           await toolbar.loftButton.click()
-          await page.getByText('Please select one')
+          await expect(page.getByText('Please select one')).toBeVisible()
           await cmdBar.progressCmdBar()
         })
       }
@@ -1719,7 +1719,7 @@ sketch002 = startSketchOn('XZ')
 
       await test.step(`Go through the command bar flow`, async () => {
         await toolbar.sweepButton.click()
-        await page.getByText('Please select one')
+        await expect(page.getByText('Please select one')).toBeVisible()
         await cmdBar.expectState({
           commandName: 'Sweep',
           currentArgKey: 'target',
@@ -1855,7 +1855,7 @@ sketch002 = startSketchOn(XZ)
 
     await test.step(`Go through the command bar flow and fail validation with a toast`, async () => {
       await toolbar.sweepButton.click()
-      await page.getByText('Please select one')
+      await expect(page.getByText('Please select one')).toBeVisible()
       await cmdBar.expectState({
         commandName: 'Sweep',
         currentArgKey: 'target',
@@ -1972,7 +1972,7 @@ extrude001 = extrude(sketch001, length = -12)
     await test.step(`Apply fillet to the preselected edge`, async () => {
       await page.waitForTimeout(100)
       await toolbar.filletButton.click()
-      await page.getByText('Please select one')
+      await expect(page.getByText('Please select one')).toBeVisible()
       await cmdBar.expectState({
         commandName: 'Fillet',
         highlightedHeaderArg: 'selection',
@@ -2073,7 +2073,7 @@ extrude001 = extrude(sketch001, length = -12)
     await test.step(`Open fillet UI without selecting edges`, async () => {
       await page.waitForTimeout(100)
       await toolbar.filletButton.click()
-      await page.getByText('Please select one')
+      await expect(page.getByText('Please select one')).toBeVisible()
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'selection',
@@ -2440,7 +2440,7 @@ extrude001 = extrude(profile001, length = 5)
       await test.step(`Apply fillet`, async () => {
         await page.waitForTimeout(100)
         await toolbar.filletButton.click()
-        await page.getByText('Please select one')
+        await expect(page.getByText('Please select one')).toBeVisible()
         await cmdBar.expectState({
           commandName: 'Fillet',
           highlightedHeaderArg: 'selection',
@@ -2557,7 +2557,7 @@ extrude001 = extrude(sketch001, length = -12)
     await test.step(`Apply chamfer to the preselected edge`, async () => {
       await page.waitForTimeout(100)
       await toolbar.chamferButton.click()
-      await page.getByText('Please select one')
+      await expect(page.getByText('Please select one')).toBeVisible()
       await cmdBar.expectState({
         commandName: 'Chamfer',
         highlightedHeaderArg: 'selection',
@@ -2665,7 +2665,7 @@ extrude001 = extrude(sketch001, length = -12)
     await test.step(`Open chamfer UI without selecting edges`, async () => {
       await page.waitForTimeout(100)
       await toolbar.chamferButton.click()
-      await page.getByText('Please select one')
+      await expect(page.getByText('Please select one')).toBeVisible()
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'selection',
@@ -2973,7 +2973,7 @@ extrude001 = extrude(sketch001, length = 30)
       if (!shouldPreselect) {
         await test.step(`Go through the command bar flow without preselected faces`, async () => {
           await toolbar.shellButton.click()
-          await page.getByText('Please select one')
+          await expect(page.getByText('Please select one')).toBeVisible()
           await cmdBar.expectState({
             stage: 'arguments',
             currentArgKey: 'selection',
@@ -3008,7 +3008,7 @@ extrude001 = extrude(sketch001, length = 30)
 
         await test.step(`Go through the command bar flow with a preselected face (cap)`, async () => {
           await toolbar.shellButton.click()
-          await page.getByText('Please select one')
+          await expect(page.getByText('Please select one')).toBeVisible()
           await cmdBar.progressCmdBar()
           await page.waitForTimeout(500)
           await cmdBar.progressCmdBar()
@@ -3114,7 +3114,7 @@ extrude001 = extrude(sketch001, length = 40)
 
     await test.step(`Go through the command bar flow, selecting a wall and keeping default thickness`, async () => {
       await toolbar.shellButton.click()
-      await page.getByText('Please select one')
+      await expect(page.getByText('Please select one')).toBeVisible()
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'selection',
@@ -3126,7 +3126,9 @@ extrude001 = extrude(sketch001, length = 40)
         highlightedHeaderArg: 'selection',
         commandName: 'Shell',
       })
-      await page.getByText('Please select one or more face')
+      await expect(
+        page.getByText('Please select one or more face')
+      ).toBeVisible()
       await clickOnCap()
       await page.keyboard.down('Shift')
       await clickOnWall()
@@ -3251,7 +3253,7 @@ extrude002 = extrude(sketch002, length = 50)
 
       await test.step(`Go through the command bar flow, selecting a cap and keeping default thickness`, async () => {
         await toolbar.shellButton.click()
-        await page.getByText('Please select one')
+        await expect(page.getByText('Please select one')).toBeVisible()
         await cmdBar.expectState({
           stage: 'arguments',
           currentArgKey: 'selection',
@@ -3263,7 +3265,9 @@ extrude002 = extrude(sketch002, length = 50)
           highlightedHeaderArg: 'selection',
           commandName: 'Shell',
         })
-        await page.getByText('Please select one or more face')
+        await expect(
+          page.getByText('Please select one or more face')
+        ).toBeVisible()
         await clickOnCap()
         await page.waitForTimeout(500)
         await cmdBar.progressCmdBar()
@@ -3420,7 +3424,7 @@ sweep001 = sweep(sketch001, path = sketch002)
 
     await test.step(`Go through the Shell flow and fail validation with a toast`, async () => {
       await toolbar.shellButton.click()
-      await page.getByText('Please select one')
+      await expect(page.getByText('Please select one')).toBeVisible()
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'selection',
@@ -3491,7 +3495,7 @@ segAng(rectangleSegmentA002),
       // revolve
       await page.getByText(codeToSelection).click()
       await toolbar.revolveButton.click()
-      await page.getByText('Please select one')
+      await expect(page.getByText('Please select one')).toBeVisible()
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
@@ -3600,7 +3604,7 @@ radius = 8.69
       await page.waitForTimeout(1000)
       await editor.scrollToText(codeToSelection)
       await page.getByText(codeToSelection).click()
-      await page.getByText('AxisOrEdge', { exact: true })
+      await expect(page.getByText('AxisOrEdge', { exact: true })).toBeVisible()
       await page.getByText('Edge', { exact: true }).click()
       const lineCodeToSelection = `length = 2.6`
       await editor.scrollToText(lineCodeToSelection)

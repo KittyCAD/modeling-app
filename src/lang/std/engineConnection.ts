@@ -1,4 +1,3 @@
-import { rustContext } from 'lib/singletons'
 import {
   ArtifactGraph,
   defaultSourceRange,

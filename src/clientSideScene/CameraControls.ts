@@ -33,8 +33,6 @@ import { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionTyp
 import {
   CameraDragInteractionType_type,
   CameraViewState_type,
-  DefaultCameraGetView_type,
-  WorldCoordinateSystem_type,
 } from '@kittycad/lib/dist/types/src/models'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20

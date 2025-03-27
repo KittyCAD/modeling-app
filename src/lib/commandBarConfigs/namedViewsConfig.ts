@@ -7,7 +7,6 @@ import { settingsActor, getSettings } from 'machines/appMachine'
 import { err, reportRejection } from 'lib/trap'
 import {
   CameraViewState_type,
-  DefaultCameraGetView_type,
   WorldCoordinateSystem_type,
 } from '@kittycad/lib/dist/types/src/models'
 

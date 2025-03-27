@@ -2,8 +2,6 @@ import usePlatform from 'hooks/usePlatform'
 import { hotkeyDisplay } from 'lib/hotkeyWrapper'
 import { COMMAND_PALETTE_HOTKEY } from './CommandBar/CommandBar'
 import { commandBarActor } from 'machines/commandBarMachine'
-import { useNetworkContext } from 'hooks/useNetworkContext'
-import { EngineConnectionStateType } from 'lang/std/engineConnection'
 
 export function CommandBarOpenButton() {
   const platform = usePlatform()
