@@ -295,7 +295,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         },
         hotkey: 'H',
         icon: 'helix',
-        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
+        status: 'available',
         title: 'Helix',
         description: 'Create a helix or spiral in 3D about an axis.',
         links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/helix' }],
