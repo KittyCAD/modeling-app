@@ -110,12 +110,14 @@ sketch001 = startSketchOn(XY)
   test('ensure we use the cache, and do not clear on append', async ({
     homePage,
     page,
+    scene,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
-    await u.waitForPageLoad()
+    await scene.settled(cmdBar)
 
     await u.codeLocator.click()
     await page.keyboard.type(`sketch001 = startSketchOn(XY)
