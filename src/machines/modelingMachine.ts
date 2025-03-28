@@ -2694,6 +2694,7 @@ export const modelingMachine = setup({
             kclManager,
             codeManager,
             engineCommandManager,
+            editorManager,
           }
         )
       }
@@ -2715,6 +2716,7 @@ export const modelingMachine = setup({
           kclManager,
           codeManager,
           engineCommandManager,
+          editorManager,
         })
       }
     ),
@@ -2735,6 +2737,7 @@ export const modelingMachine = setup({
           kclManager,
           codeManager,
           engineCommandManager,
+          editorManager,
         })
       }
     ),
