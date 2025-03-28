@@ -98,6 +98,58 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// loft([sketch001, sketch002])
 /// ```
+///
+/// ```no_run
+/// // You can reuse the tags from the original geometry with the cloned geometry.
+///
+/// sketch001 = startSketchOn(XY)
+///   |> startProfileAt([0, 0], %)
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10], tag = $sketchingFace)
+///   |> line(end = [-10, 0])
+///   |> close()
+///
+/// sketch002 = clone(sketch001)
+///     |> translate(x = 10, y = 20, z = 0)
+///     |> extrude(length = 5)
+///
+/// startSketchOn(sketch002, sketchingFace)
+///   |> startProfileAt([1, 1], %)
+///   |> line(end = [8, 0])
+///   |> line(end = [0, 8])
+///   |> line(end = [-8, 0])
+///   |> close(tag = $sketchingFace002)
+///   |> extrude(exampleSketch002, length = 10)
+/// ```
+///
+/// ```no_run
+/// // You can also use the tags from the original geometry to fillet the cloned geometry.
+/// width = 20
+/// length = 10
+/// thickness = 1
+/// filletRadius = 2
+///
+/// mountingPlateSketch = startSketchOn("XY")
+///   |> startProfileAt([-width/2, -length/2], %)
+///   |> line(endAbsolute = [width/2, -length/2], tag = $edge1)
+///   |> line(endAbsolute = [width/2, length/2], tag = $edge2)
+///   |> line(endAbsolute = [-width/2, length/2], tag = $edge3)
+///   |> close(tag = $edge4)
+///
+/// mountingPlate = extrude(mountingPlateSketch, length = thickness)
+///
+/// clonedMountingPlate = clone(mountingPlate)
+///   |> fillet(
+///     radius = filletRadius,
+///     tags = [
+///       getNextAdjacentEdge(edge1),
+///       getNextAdjacentEdge(edge2),
+///       getNextAdjacentEdge(edge3),
+///       getNextAdjacentEdge(edge4)
+///     ],
+///   )
+///   |> translate(x = 0, y = 50, z = 0)
+/// ```
 #[stdlib {
     name = "clone",
     feature_tree_operation = true,
