@@ -1,6 +1,6 @@
 import { Models } from '@kittycad/lib/dist/types/src'
 
-export const APP_NAME = 'Modeling App'
+export const APP_NAME = 'Design Studio'
 /** Search string in new project names to increment as an index */
 export const INDEX_IDENTIFIER = '$n'
 /** The maximum number of 0's to pad a default project name's index with */
@@ -21,7 +21,7 @@ export const BROWSER_FILE_NAME = 'main'
  */
 export const PROJECT_FOLDER = 'zoo-modeling-app-projects'
 /**
- * File extension for Modeling App's files, which are written in kcl
+ * File extension for Design Studio's files, which are written in kcl
  * @link - https://zoo.dev/docs/kcl
  * */
 export const FILE_EXT = '.kcl'

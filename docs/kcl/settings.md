@@ -1,12 +1,12 @@
 ---
 title: "KCL Settings"
-excerpt: "Documentation of settings for the KCL language and Zoo Modeling App."
+excerpt: "Documentation of settings for the KCL language and Zoo Design Studio."
 layout: manual
 ---
 
 # KCL Settings
 
-There are three levels of settings available in the KittyCAD modeling application:
+There are three levels of settings available in the KittyCAD Design Studiolication:
 
 1. [User Settings](/docs/kcl/settings/user): Global settings that apply to all projects, stored in `user.toml`
 2. [Project Settings](/docs/kcl/settings/project): Settings specific to a project, stored in `project.toml`
@@ -14,7 +14,7 @@ There are three levels of settings available in the KittyCAD modeling applicatio
 
 ## Configuration Files
 
-The KittyCAD modeling app uses TOML files for configuration:
+The KittyCAD Design Studio uses TOML files for configuration:
 
 * **User Settings**: `user.toml` - See [complete documentation](/docs/kcl/settings/user)
 * **Project Settings**: `project.toml` - See [complete documentation](/docs/kcl/settings/project)

@@ -2,7 +2,7 @@
  * Modeling Workflows
  *
  * This module contains higher-level CAD operation workflows that
- * coordinate between different subsystems in the modeling app:
+ * coordinate between different subsystems in the Design Studio:
  * AST, code editor, file system and 3D engine.
  */
 

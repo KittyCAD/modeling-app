@@ -1347,7 +1347,7 @@ export enum EngineCommandManagerEvents {
 }
 
 /**
- * The EngineCommandManager is the main interface to the Engine for Modeling App.
+ * The EngineCommandManager is the main interface to the Engine for Design Studio.
  *
  * It is responsible for sending commands to the Engine, and managing the state
  * of those commands. It also sets up and tears down the connection to the Engine

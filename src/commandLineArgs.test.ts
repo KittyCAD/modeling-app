@@ -21,18 +21,18 @@ const linuxPathArgv = [
 ]
 
 const winDeepLinkArgv = [
-  'C:\\Program Files\\Zoo Modeling App\\Zoo Modeling App.exe',
+  'C:\\Program Files\\Zoo Design Studio\\Zoo Design Studio.exe',
   '--allow-file-access-from-files',
   'zoo-studio:///?create-file=true&name=deeplinkscopy&code=cGxhbmUwMDEgPSBvZmZzZXRQbGFuZSgnWFonLCBvZmZzZXQgPSA1KQo%3D',
 ]
 
 const winNoPathArgv = [
-  'C:\\Program Files\\Zoo Modeling App\\Zoo Modeling App.exe',
+  'C:\\Program Files\\Zoo Design Studio\\Zoo Design Studio.exe',
   '--allow-file-access-from-files',
 ]
 
 const winPathArgv = [
-  'C:\\Program Files\\Zoo Modeling App\\Zoo Modeling App.exe',
+  'C:\\Program Files\\Zoo Design Studio\\Zoo Design Studio.exe',
   '--allow-file-access-from-files',
   'C:\\Users\\pierr\\Documents\\zoo-modeling-app-projects\\deeplink\\main.kcl',
 ]
@@ -40,11 +40,11 @@ const winPathArgv = [
 // macos doesn't uses the open-url scheme so is different so no macDeepLinkArgv
 
 const macNoPathArgv = [
-  '/Applications/Zoo Modeling App.app/Contents/MacOS/Zoo Modeling App',
+  '/Applications/Zoo Design Studio.app/Contents/MacOS/Zoo Design Studio',
 ]
 
 const macPathArgv = [
-  '/Applications/Zoo Modeling App.app/Contents/MacOS/Zoo Modeling App',
+  '/Applications/Zoo Design Studio.app/Contents/MacOS/Zoo Design Studio',
   '/Users/pierremtb/Documents/zoo-modeling-app-projects/loft/main.kcl',
 ]
 

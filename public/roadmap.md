@@ -1,4 +1,4 @@
-## Zoo Modeling App Roadmap
+## Zoo Design Studio Roadmap
 
 This document ties into our [GH Discussions Feature List](https://github.com/KittyCAD/modeling-app/discussions). Please upvote any features that you want to see next, or add ones that are not listed and we will review. 
 
