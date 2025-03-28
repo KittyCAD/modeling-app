@@ -757,7 +757,9 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
     } else {
       return { reason: "Couldn't find radius argument" }
     }
+  }
 
+  if (mode === 'Axis') {
     if ('length' in operation.labeledArgs && operation.labeledArgs.length) {
       const r = await stringToKclExpression(
         codeManager.code.slice(
