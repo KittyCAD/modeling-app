@@ -129,6 +129,7 @@ impl StdLibFnArg {
         };
         if (self.type_ == "Sketch"
             || self.type_ == "[Sketch]"
+            || self.type_ == "Geometry"
             || self.type_ == "Solid"
             || self.type_ == "[Solid]"
             || self.type_ == "SketchSurface"
@@ -1087,6 +1088,14 @@ mod tests {
             snippet,
             r#"rotate(${0:%}, roll = ${1:3.14}, pitch = ${2:3.14}, yaw = ${3:3.14})"#
         );
+    }
+
+    #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
+    fn get_autocomplete_snippet_clone() {
+        let clone_fn: Box<dyn StdLibFn> = Box::new(crate::std::clone::Clone);
+        let snippet = clone_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(snippet, r#"clone(${0:%})${}"#);
     }
 
     // We want to test the snippets we compile at lsp start.
