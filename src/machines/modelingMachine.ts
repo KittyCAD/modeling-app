@@ -1791,6 +1791,7 @@ export const modelingMachine = setup({
       const { nodeToEdit, selection, angle, axis, edge, axisOrEdge } = input
       let ast = kclManager.ast
       let variableName: string | undefined = undefined
+      let insertIndex: number | undefined = undefined
 
       // If this is an edit flow, first we're going to remove the old extrusion
       if (nodeToEdit && typeof nodeToEdit[1][0] === 'number') {
@@ -1810,6 +1811,7 @@ export const modelingMachine = setup({
         const newBody = [...ast.body]
         newBody.splice(nodeToEdit[1][0], 1)
         ast.body = newBody
+        insertIndex = nodeToEdit[1][0]
       }
 
       if (
@@ -1831,13 +1833,14 @@ export const modelingMachine = setup({
       const revolveSketchRes = revolveSketch(
         ast,
         pathToNode,
-        variableName,
         'variableName' in angle ? angle.variableIdentifierAst : angle.valueAst,
         axisOrEdge,
         axis,
         edge,
         engineCommandManager.artifactGraph,
-        selection.graphSelections[0]?.artifact
+        selection.graphSelections[0]?.artifact,
+        variableName,
+        insertIndex
       )
       if (trap(revolveSketchRes)) return
       const { modifiedAst, pathToRevolveArg } = revolveSketchRes

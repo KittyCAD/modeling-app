@@ -81,13 +81,14 @@ export function getAxisExpressionAndIndex(
 export function revolveSketch(
   ast: Node<Program>,
   pathToSketchNode: PathToNode,
-  variableName: string | undefined,
-  angle: Expr = createLiteral(4),
+  angle: Expr,
   axisOrEdge: 'Axis' | 'Edge',
   axis: string | undefined,
   edge: Selections | undefined,
   artifactGraph: ArtifactGraph,
-  artifact?: Artifact
+  artifact?: Artifact,
+  variableName?: string,
+  insertIndex?: number
 ):
   | {
       modifiedAst: Node<Program>
@@ -134,20 +135,27 @@ export function revolveSketch(
   const name =
     variableName ??
     findUniqueName(clonedAst, KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE)
-  const VariableDeclaration = createVariableDeclaration(name, revolveCall)
-  const lastSketchNodePath =
-    orderedSketchNodePaths[orderedSketchNodePaths.length - 1]
-  let sketchIndexInBody = Number(lastSketchNodePath[1][0])
-  if (typeof sketchIndexInBody !== 'number') {
-    return new Error('expected sketchIndexInBody to be a number')
+  const declaration = createVariableDeclaration(name, revolveCall)
+
+  let sketchIndexInBody: number | undefined
+  // If it's an edit flow (no change on selection yet)
+  if (insertIndex) {
+    sketchIndexInBody = insertIndex
+  } else {
+    const lastSketchNodePath =
+      orderedSketchNodePaths[orderedSketchNodePaths.length - 1]
+    sketchIndexInBody = Number(lastSketchNodePath[1][0])
+    if (typeof sketchIndexInBody !== 'number') {
+      return new Error('expected sketchIndexInBody to be a number')
+    }
+
+    // If an axis was selected in KCL, find the max index to insert the revolve command
+    if (axisIndexIfAxis) {
+      sketchIndexInBody = Math.max(sketchIndexInBody, axisIndexIfAxis)
+    }
   }
 
-  // If an axis was selected in KCL, find the max index to insert the revolve command
-  if (axisIndexIfAxis) {
-    sketchIndexInBody = Math.max(sketchIndexInBody, axisIndexIfAxis)
-  }
-
-  clonedAst.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)
+  clonedAst.body.splice(sketchIndexInBody + 1, 0, declaration)
 
   const pathToRevolveArg: PathToNode = [
     ['body', ''],
