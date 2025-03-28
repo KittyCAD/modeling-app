@@ -11,5 +11,15 @@ screw
        pitch = 3.14,
        yaw = 3.14,
      )
-  |> translate(%, translate = [3.14, 3.14, 3.14])
-  |> scale(%, scale = [3.14, 3.14, 3.14])
+  |> translate(
+       %,
+       x = 3.14,
+       y = 3.14,
+       z = 3.14,
+     )
+  |> scale(
+       %,
+       x = 3.14,
+       y = 3.14,
+       z = 3.14,
+     )
