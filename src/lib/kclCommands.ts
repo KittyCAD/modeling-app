@@ -73,7 +73,10 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         if (typeof data === 'object' && 'unit' in data) {
           const newCode = changeKclSettings(codeManager.code, {
             defaultLengthUnits: unitLengthToUnitLen(data.unit),
-            defaultAngleUnits: unitAngleToUnitAng(DEFAULT_DEFAULT_ANGLE_UNIT),
+            defaultAngleUnits: unitAngleToUnitAng(
+              kclManager.fileSettings.defaultAngleUnit ??
+                DEFAULT_DEFAULT_ANGLE_UNIT
+            ),
           })
           if (err(newCode)) {
             toast.error(`Failed to set per-file units: ${newCode.message}`)
