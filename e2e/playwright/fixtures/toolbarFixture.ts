@@ -181,6 +181,14 @@ export class ToolbarFixture {
     ).toBeVisible()
     await this.page.getByTestId('dropdown-center-rectangle').click()
   }
+  selectBoolean = async (operation: 'union' | 'subtract' | 'intersect') => {
+    await this.page
+      .getByRole('button', { name: 'caret down Union: open menu' })
+      .click()
+    const operationTestId = `dropdown-boolean-${operation}`
+    await expect(this.page.getByTestId(operationTestId)).toBeVisible()
+    await this.page.getByTestId(operationTestId).click()
+  }
 
   selectCircleThreePoint = async () => {
     await this.page
