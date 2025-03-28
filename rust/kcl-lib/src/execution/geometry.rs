@@ -600,7 +600,10 @@ pub struct Solid {
     /// Chamfers or fillets on this solid.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cuts: Vec<EdgeCut>,
+    /// The units of the solid.
     pub units: UnitLen,
+    /// Is this a sectional solid?
+    pub sectional: bool,
     /// Metadata.
     #[serde(skip)]
     pub meta: Vec<Metadata>,
@@ -942,6 +945,21 @@ impl Path {
             Path::CircleThreePoint { base, .. } => base.geo_meta.id,
             Path::Arc { base, .. } => base.geo_meta.id,
             Path::ArcThreePoint { base, .. } => base.geo_meta.id,
+        }
+    }
+
+    pub fn set_id(&mut self, id: uuid::Uuid) {
+        match self {
+            Path::ToPoint { base } => base.geo_meta.id = id,
+            Path::Horizontal { base, .. } => base.geo_meta.id = id,
+            Path::AngledLineTo { base, .. } => base.geo_meta.id = id,
+            Path::Base { base } => base.geo_meta.id = id,
+            Path::TangentialArcTo { base, .. } => base.geo_meta.id = id,
+            Path::TangentialArc { base, .. } => base.geo_meta.id = id,
+            Path::Circle { base, .. } => base.geo_meta.id = id,
+            Path::CircleThreePoint { base, .. } => base.geo_meta.id = id,
+            Path::Arc { base, .. } => base.geo_meta.id = id,
+            Path::ArcThreePoint { base, .. } => base.geo_meta.id = id,
         }
     }
 
