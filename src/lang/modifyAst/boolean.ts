@@ -158,6 +158,10 @@ export async function applyIntersectFromTargetOperatorSelections(
   await updateModelingState(modifiedAst, EXECUTION_TYPE_REAL, dependencies)
 }
 
+/** returns all children of a given artifact, and sorts them DESC by start sourceRange 
+ * The usecase is we want the last declare relevant  child to use in the boolean operations
+ * but might be useful else where.
+*/
 export function findAllChildrenAndOrderByPlaceInCode(
   artifact: Artifact,
   artifactGraph: ArtifactGraph
