@@ -230,9 +230,9 @@ test.describe('Onboarding tests', () => {
 
     // Override beforeEach test setup
     await context.addInitScript(
-      async ({ settingsKey, settings }) => {
+      async ({ settingsKey, settings, code }) => {
         // Give some initial code, so we can test that it's cleared
-        localStorage.setItem('persistCode', originalCode)
+        localStorage.setItem('persistCode', code)
         localStorage.setItem(settingsKey, settings)
       },
       {
@@ -240,6 +240,7 @@ test.describe('Onboarding tests', () => {
         settings: settingsToToml({
           settings: TEST_SETTINGS_ONBOARDING_EXPORT,
         }),
+        code: originalCode,
       }
     )
 
