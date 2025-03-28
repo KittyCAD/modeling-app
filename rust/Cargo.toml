@@ -50,7 +50,7 @@ tokio = { version = "1" }
 tower-lsp = { version = "0.20.0", default-features = false }
 tracing-subscriber = { version = "0.3.19", features = ["registry", "std", "fmt", "smallvec", "ansi", "tracing-log", "json"] }
 uuid = { version = "1", features = ["v4", "serde"] }
-zip = { version = "2.4.2", default-features = false }
+zip = { version = "2.5.0", default-features = false }
 
 [workspace.lints.clippy]
 assertions_on_result_states = "warn"
