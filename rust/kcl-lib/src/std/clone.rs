@@ -121,11 +121,8 @@ async fn inner_clone(geometry: Geometry, exec_state: &mut ExecState, args: Args)
         return Ok(new_geometry);
     }
 
-    args.batch_modeling_cmd(
-        exec_state.next_uuid(),
-        ModelingCmd::from(mcmd::EntityClone { entity_id: old_id }),
-    )
-    .await?;
+    args.batch_modeling_cmd(new_id, ModelingCmd::from(mcmd::EntityClone { entity_id: old_id }))
+        .await?;
 
     Ok(new_geometry)
 }
