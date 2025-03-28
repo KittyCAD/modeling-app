@@ -43,7 +43,7 @@ export const COMMAND_APPEARANCE_COLOR_DEFAULT = 'default'
 export type HelixModes = 'Axis' | 'Edge' | 'Cylinder'
 
 export type ModelingCommandSchema = {
-  'Enter sketch': {}
+  'Enter sketch': { forceNewSketch?: boolean }
   Export: {
     type: OutputTypeKey
     storage?: StorageUnion
@@ -148,6 +148,8 @@ export type ModelingCommandSchema = {
     prompt: string
     selection: Selections
   }
+  // TODO: {} means any non-nullish value. This is probably not what we want.
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   'Delete selection': {}
   Appearance: {
     nodeToEdit?: PathToNode
