@@ -13,14 +13,10 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 export function UnitsMenu() {
-  const [lengthSetting, setLengthSetting] = useState(
-    kclManager.fileSettings.defaultLengthUnit || DEFAULT_DEFAULT_LENGTH_UNIT
-  )
+  const [fileSettings, setFileSettings] = useState(kclManager.fileSettings)
   useEffect(() => {
-    setLengthSetting(
-      kclManager.fileSettings.defaultLengthUnit || DEFAULT_DEFAULT_LENGTH_UNIT
-    )
-  }, [kclManager.fileSettings.defaultLengthUnit, DEFAULT_DEFAULT_LENGTH_UNIT])
+    setFileSettings(kclManager.fileSettings)
+  }, [kclManager.fileSettings])
 
   return (
     <Popover className="relative pointer-events-auto">
@@ -36,7 +32,7 @@ export function UnitsMenu() {
               <div className="absolute w-[1px] h-[1em] bg-primary right-0 top-1/2 -translate-y-1/2"></div>
             </div>
             <span className="sr-only">Current units are:&nbsp;</span>
-            {lengthSetting}
+            {fileSettings.defaultLengthUnit ?? DEFAULT_DEFAULT_LENGTH_UNIT}
           </Popover.Button>
           <Popover.Panel
             className={`absolute bottom-full right-0 mb-2 w-48 bg-chalkboard-10 dark:bg-chalkboard-90
@@ -52,7 +48,8 @@ export function UnitsMenu() {
                       const newCode = changeKclSettings(codeManager.code, {
                         defaultLengthUnits: unitLengthToUnitLen(unit),
                         defaultAngleUnits: unitAngleToUnitAng(
-                          DEFAULT_DEFAULT_ANGLE_UNIT
+                          fileSettings.defaultAngleUnit ??
+                            DEFAULT_DEFAULT_ANGLE_UNIT
                         ),
                       })
                       if (err(newCode)) {
@@ -74,7 +71,9 @@ export function UnitsMenu() {
                     }}
                   >
                     <span className="flex-1">{baseUnitLabels[unit]}</span>
-                    {unit === lengthSetting && (
+                    {unit ===
+                      (fileSettings.defaultLengthUnit ??
+                        DEFAULT_DEFAULT_LENGTH_UNIT) && (
                       <span className="text-chalkboard-60">current</span>
                     )}
                   </button>
