@@ -2097,54 +2097,65 @@ description: Result of parsing scale_after_fillet.kcl
                   "label": {
                     "commentStart": 1593,
                     "end": 0,
-                    "name": "scale",
+                    "name": "x",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1601,
-                    "elements": [
-                      {
-                        "commentStart": 1602,
-                        "end": 0,
-                        "raw": "3.14",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 3.14,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "commentStart": 1608,
-                        "end": 0,
-                        "raw": "3.14",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 3.14,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "commentStart": 1614,
-                        "end": 0,
-                        "raw": "3.14",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 3.14,
-                          "suffix": "None"
-                        }
-                      }
-                    ],
+                    "commentStart": 1597,
                     "end": 0,
+                    "raw": "3.14",
                     "start": 0,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 3.14,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 1603,
+                    "end": 0,
+                    "name": "y",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 1607,
+                    "end": 0,
+                    "raw": "3.14",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 3.14,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 1613,
+                    "end": 0,
+                    "name": "z",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 1617,
+                    "end": 0,
+                    "raw": "3.14",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 3.14,
+                      "suffix": "None"
+                    }
                   }
                 }
               ],
@@ -2177,7 +2188,7 @@ description: Result of parsing scale_after_fillet.kcl
             "nonCodeNodes": {
               "1": [
                 {
-                  "commentStart": 1620,
+                  "commentStart": 1622,
                   "end": 0,
                   "start": 0,
                   "type": "NonCodeNode",

@@ -151,54 +151,65 @@ description: Result of parsing import_transform.kcl
                   "label": {
                     "commentStart": 159,
                     "end": 0,
-                    "name": "translate",
+                    "name": "x",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 171,
-                    "elements": [
-                      {
-                        "commentStart": 172,
-                        "end": 0,
-                        "raw": "3.14",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 3.14,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "commentStart": 178,
-                        "end": 0,
-                        "raw": "3.14",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 3.14,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "commentStart": 184,
-                        "end": 0,
-                        "raw": "3.14",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 3.14,
-                          "suffix": "None"
-                        }
-                      }
-                    ],
+                    "commentStart": 163,
                     "end": 0,
+                    "raw": "3.14",
                     "start": 0,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 3.14,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 169,
+                    "end": 0,
+                    "name": "y",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 173,
+                    "end": 0,
+                    "raw": "3.14",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 3.14,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 179,
+                    "end": 0,
+                    "name": "z",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 183,
+                    "end": 0,
+                    "raw": "3.14",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 3.14,
+                      "suffix": "None"
+                    }
                   }
                 }
               ],
@@ -235,65 +246,76 @@ description: Result of parsing import_transform.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 205,
+                    "commentStart": 203,
                     "end": 0,
-                    "name": "scale",
+                    "name": "x",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 213,
-                    "elements": [
-                      {
-                        "commentStart": 214,
-                        "end": 0,
-                        "raw": "3.14",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 3.14,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "commentStart": 220,
-                        "end": 0,
-                        "raw": "3.14",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 3.14,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "commentStart": 226,
-                        "end": 0,
-                        "raw": "3.14",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 3.14,
-                          "suffix": "None"
-                        }
-                      }
-                    ],
+                    "commentStart": 207,
                     "end": 0,
+                    "raw": "3.14",
                     "start": 0,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 3.14,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 213,
+                    "end": 0,
+                    "name": "y",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 217,
+                    "end": 0,
+                    "raw": "3.14",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 3.14,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 223,
+                    "end": 0,
+                    "name": "z",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 227,
+                    "end": 0,
+                    "raw": "3.14",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 3.14,
+                      "suffix": "None"
+                    }
                   }
                 }
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 196,
+                "commentStart": 194,
                 "end": 0,
                 "name": {
-                  "commentStart": 196,
+                  "commentStart": 194,
                   "end": 0,
                   "name": "scale",
                   "start": 0,
@@ -303,13 +325,13 @@ description: Result of parsing import_transform.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 196,
+              "commentStart": 194,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
-                "commentStart": 202,
+                "commentStart": 200,
                 "end": 0,
                 "start": 0,
                 "type": "PipeSubstitution",

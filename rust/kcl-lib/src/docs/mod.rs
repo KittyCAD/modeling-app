@@ -1141,7 +1141,7 @@ mod tests {
         let snippet = scale_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(
             snippet,
-            r#"scale(${0:%}, scale = [${1:3.14}, ${2:3.14}, ${3:3.14}])${}"#
+            r#"scale(${0:%}, x = ${1:3.14}, y = ${2:3.14}, z = ${3:3.14})${}"#
         );
     }
 
@@ -1152,7 +1152,7 @@ mod tests {
         let snippet = translate_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(
             snippet,
-            r#"translate(${0:%}, translate = [${1:3.14}, ${2:3.14}, ${3:3.14}])${}"#
+            r#"translate(${0:%}, x = ${1:3.14}, y = ${2:3.14}, z = ${3:3.14})${}"#
         );
     }
 
