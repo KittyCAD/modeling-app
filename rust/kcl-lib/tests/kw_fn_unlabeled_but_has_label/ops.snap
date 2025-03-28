@@ -27,17 +27,9 @@ description: Operations executed kw_fn_unlabeled_but_has_label.kcl
             }
           }
         },
-        "sourceRange": [
-          45,
-          46,
-          0
-        ]
+        "sourceRange": []
       }
     },
-    "sourceRange": [
-      37,
-      47,
-      0
-    ]
+    "sourceRange": []
   }
 ]

@@ -250,6 +250,7 @@ export const commandBarMachine = setup({
   },
   guards: {
     'Command needs review': ({ context }) =>
+      // Edit flows are (for now) always considered to need review
       context.selectedCommand?.needsReview ||
       ('nodeToEdit' in context.argumentsToSubmit &&
         context.argumentsToSubmit.nodeToEdit !== undefined) ||
@@ -365,6 +366,7 @@ export const commandBarMachine = setup({
                 !(argConfig.inputType === 'kcl' || argConfig.skip)
               const hasInvalidKclValue =
                 argConfig.inputType === 'kcl' &&
+                isRequired &&
                 !(argValue as Partial<KclCommandValue> | undefined)?.valueAst
               const hasInvalidOptionsValue =
                 isRequired &&
@@ -376,7 +378,18 @@ export const commandBarMachine = setup({
                         argConfig.machineActor?.getSnapshot().context
                       )
                     : argConfig.options
-                ).some((o) => o.value === argValue)
+                ).some((o) => {
+                  // Objects are only equal by reference in JavaScript, so we compare stringified values.
+                  // GOTCHA: this means that JS class instances will behave badly as option arg values I believe.
+                  if (
+                    typeof o.value === 'object' &&
+                    typeof argValue === 'object'
+                  ) {
+                    return JSON.stringify(o.value) === JSON.stringify(argValue)
+                  } else {
+                    return o.value === argValue
+                  }
+                })
 
               if (
                 hasMismatchedDefaultValueType ||

@@ -19,30 +19,18 @@ description: Operations executed gridfinity-baseplate.kcl
             }
           }
         },
-        "sourceRange": [
-          1150,
-          1162,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "offsetPlane",
-    "sourceRange": [
-      1123,
-      1163,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "YZ"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
-      "sourceRange": [
-        1135,
-        1139,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -55,11 +43,7 @@ description: Operations executed gridfinity-baseplate.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1118,
-      1164,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -68,19 +52,11 @@ description: Operations executed gridfinity-baseplate.kcl
           "type": "Plane",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          784,
-          789,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      770,
-      790,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -97,19 +73,11 @@ description: Operations executed gridfinity-baseplate.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          1175,
-          1204,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1110,
-      1206,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -118,11 +86,7 @@ description: Operations executed gridfinity-baseplate.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1118,
-        1164,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -141,11 +105,7 @@ description: Operations executed gridfinity-baseplate.kcl
             }
           }
         },
-        "sourceRange": [
-          1329,
-          1332,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
@@ -192,11 +152,7 @@ description: Operations executed gridfinity-baseplate.kcl
             }
           ]
         },
-        "sourceRange": [
-          1343,
-          1352,
-          0
-        ]
+        "sourceRange": []
       },
       "center": {
         "value": {
@@ -231,11 +187,7 @@ description: Operations executed gridfinity-baseplate.kcl
             }
           ]
         },
-        "sourceRange": [
-          1365,
-          1398,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -251,30 +203,18 @@ description: Operations executed gridfinity-baseplate.kcl
             }
           }
         },
-        "sourceRange": [
-          1414,
-          1415,
-          0
-        ]
+        "sourceRange": []
       },
       "rotateDuplicates": {
         "value": {
           "type": "Bool",
           "value": true
         },
-        "sourceRange": [
-          1438,
-          1442,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternCircular3d",
-    "sourceRange": [
-      1281,
-      1444,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -283,11 +223,7 @@ description: Operations executed gridfinity-baseplate.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1302,
-        1312,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -306,30 +242,18 @@ description: Operations executed gridfinity-baseplate.kcl
             }
           }
         },
-        "sourceRange": [
-          1694,
-          1706,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "offsetPlane",
-    "sourceRange": [
-      1667,
-      1707,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "YZ"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
-      "sourceRange": [
-        1679,
-        1683,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -342,11 +266,7 @@ description: Operations executed gridfinity-baseplate.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1662,
-      1708,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -355,19 +275,11 @@ description: Operations executed gridfinity-baseplate.kcl
           "type": "Plane",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          784,
-          789,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      770,
-      790,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -376,125 +288,110 @@ description: Operations executed gridfinity-baseplate.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "angle": {
+        "value": {
+          "type": "Number",
+          "value": -90.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "axis": {
         "value": {
           "type": "Object",
           "value": {
-            "angle": {
-              "type": "Number",
-              "value": -90.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "axis": {
+            "custom": {
               "type": "Object",
               "value": {
-                "custom": {
-                  "type": "Object",
-                  "value": {
-                    "axis": {
-                      "type": "Array",
-                      "value": [
-                        {
-                          "type": "Number",
-                          "value": 0.0,
-                          "ty": {
-                            "type": "Default",
-                            "len": {
-                              "type": "Mm"
-                            },
-                            "angle": {
-                              "type": "Degrees"
-                            }
-                          }
+                "axis": {
+                  "type": "Array",
+                  "value": [
+                    {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
                         },
-                        {
-                          "type": "Number",
-                          "value": 1.0,
-                          "ty": {
-                            "type": "Default",
-                            "len": {
-                              "type": "Mm"
-                            },
-                            "angle": {
-                              "type": "Degrees"
-                            }
-                          }
+                        "angle": {
+                          "type": "Degrees"
                         }
-                      ]
+                      }
                     },
-                    "origin": {
-                      "type": "Array",
-                      "value": [
-                        {
-                          "type": "Number",
-                          "value": 4.0,
-                          "ty": {
-                            "type": "Default",
-                            "len": {
-                              "type": "Mm"
-                            },
-                            "angle": {
-                              "type": "Degrees"
-                            }
-                          }
+                    {
+                      "type": "Number",
+                      "value": 1.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
                         },
-                        {
-                          "type": "Number",
-                          "value": 4.0,
-                          "ty": {
-                            "type": "Default",
-                            "len": {
-                              "type": "Mm"
-                            },
-                            "angle": {
-                              "type": "Degrees"
-                            }
-                          }
+                        "angle": {
+                          "type": "Degrees"
                         }
-                      ]
+                      }
                     }
-                  }
+                  ]
+                },
+                "origin": {
+                  "type": "Array",
+                  "value": [
+                    {
+                      "type": "Number",
+                      "value": 4.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    {
+                      "type": "Number",
+                      "value": 4.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
           }
         },
-        "sourceRange": [
-          1629,
-          1660,
-          0
-        ]
-      },
-      "sketches": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          1662,
-          1708,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "revolve",
-    "sourceRange": [
-      1621,
-      1709,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -512,11 +409,7 @@ description: Operations executed gridfinity-baseplate.kcl
             }
           }
         },
-        "sourceRange": [
-          1804,
-          1807,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
@@ -563,11 +456,7 @@ description: Operations executed gridfinity-baseplate.kcl
             }
           ]
         },
-        "sourceRange": [
-          1818,
-          1827,
-          0
-        ]
+        "sourceRange": []
       },
       "center": {
         "value": {
@@ -602,11 +491,7 @@ description: Operations executed gridfinity-baseplate.kcl
             }
           ]
         },
-        "sourceRange": [
-          1840,
-          1873,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -622,30 +507,18 @@ description: Operations executed gridfinity-baseplate.kcl
             }
           }
         },
-        "sourceRange": [
-          1889,
-          1890,
-          0
-        ]
+        "sourceRange": []
       },
       "rotateDuplicates": {
         "value": {
           "type": "Bool",
           "value": true
         },
-        "sourceRange": [
-          1913,
-          1917,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternCircular3d",
-    "sourceRange": [
-      1754,
-      1919,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -654,11 +527,7 @@ description: Operations executed gridfinity-baseplate.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1775,
-        1787,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -708,11 +577,7 @@ description: Operations executed gridfinity-baseplate.kcl
             }
           ]
         },
-        "sourceRange": [
-          2027,
-          2042,
-          0
-        ]
+        "sourceRange": []
       },
       "distance": {
         "value": {
@@ -728,11 +593,7 @@ description: Operations executed gridfinity-baseplate.kcl
             }
           }
         },
-        "sourceRange": [
-          2096,
-          2105,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -748,19 +609,11 @@ description: Operations executed gridfinity-baseplate.kcl
             }
           }
         },
-        "sourceRange": [
-          2063,
-          2076,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternLinear3d",
-    "sourceRange": [
-      1982,
-      2112,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -792,11 +645,7 @@ description: Operations executed gridfinity-baseplate.kcl
           }
         ]
       },
-      "sourceRange": [
-        2006,
-        2011,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -846,11 +695,7 @@ description: Operations executed gridfinity-baseplate.kcl
             }
           ]
         },
-        "sourceRange": [
-          2149,
-          2164,
-          0
-        ]
+        "sourceRange": []
       },
       "distance": {
         "value": {
@@ -866,11 +711,7 @@ description: Operations executed gridfinity-baseplate.kcl
             }
           }
         },
-        "sourceRange": [
-          2219,
-          2228,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -886,19 +727,11 @@ description: Operations executed gridfinity-baseplate.kcl
             }
           }
         },
-        "sourceRange": [
-          2185,
-          2199,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternLinear3d",
-    "sourceRange": [
-      2118,
-      2235,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -954,11 +787,7 @@ description: Operations executed gridfinity-baseplate.kcl
           }
         ]
       },
-      "sourceRange": [
-        2118,
-        2235,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1008,11 +837,7 @@ description: Operations executed gridfinity-baseplate.kcl
             }
           ]
         },
-        "sourceRange": [
-          2368,
-          2383,
-          0
-        ]
+        "sourceRange": []
       },
       "distance": {
         "value": {
@@ -1028,11 +853,7 @@ description: Operations executed gridfinity-baseplate.kcl
             }
           }
         },
-        "sourceRange": [
-          2437,
-          2446,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -1048,19 +869,11 @@ description: Operations executed gridfinity-baseplate.kcl
             }
           }
         },
-        "sourceRange": [
-          2404,
-          2417,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternLinear3d",
-    "sourceRange": [
-      2321,
-      2453,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1092,11 +905,7 @@ description: Operations executed gridfinity-baseplate.kcl
           }
         ]
       },
-      "sourceRange": [
-        2345,
-        2352,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1146,11 +955,7 @@ description: Operations executed gridfinity-baseplate.kcl
             }
           ]
         },
-        "sourceRange": [
-          2490,
-          2505,
-          0
-        ]
+        "sourceRange": []
       },
       "distance": {
         "value": {
@@ -1166,11 +971,7 @@ description: Operations executed gridfinity-baseplate.kcl
             }
           }
         },
-        "sourceRange": [
-          2560,
-          2569,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -1186,19 +987,11 @@ description: Operations executed gridfinity-baseplate.kcl
             }
           }
         },
-        "sourceRange": [
-          2526,
-          2540,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternLinear3d",
-    "sourceRange": [
-      2459,
-      2576,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1254,11 +1047,7 @@ description: Operations executed gridfinity-baseplate.kcl
           }
         ]
       },
-      "sourceRange": [
-        2459,
-        2576,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

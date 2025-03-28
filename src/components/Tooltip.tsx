@@ -24,7 +24,7 @@ export default function Tooltip({
   wrapperClassName: className,
   contentClassName,
   wrapperStyle = {},
-  delay = 200,
+  delay = 0,
   hoverOnly = false,
   inert = true,
 }: TooltipProps) {

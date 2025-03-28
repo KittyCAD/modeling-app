@@ -1,13 +1,16 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
 ---
 {
   "body": [
     {
+      "commentStart": 0,
       "declaration": {
+        "commentStart": 0,
         "end": 30,
         "id": {
+          "commentStart": 0,
           "end": 5,
           "name": "myVar",
           "start": 0,
@@ -16,8 +19,10 @@ expression: actual
         "init": {
           "body": [
             {
+              "commentStart": 8,
               "end": 13,
               "left": {
+                "commentStart": 8,
                 "end": 9,
                 "raw": "5",
                 "start": 8,
@@ -30,6 +35,7 @@ expression: actual
               },
               "operator": "+",
               "right": {
+                "commentStart": 12,
                 "end": 13,
                 "raw": "6",
                 "start": 12,
@@ -47,6 +53,7 @@ expression: actual
             {
               "arguments": [
                 {
+                  "commentStart": 24,
                   "end": 26,
                   "raw": "45",
                   "start": 24,
@@ -58,6 +65,7 @@ expression: actual
                   }
                 },
                 {
+                  "commentStart": 28,
                   "end": 29,
                   "start": 28,
                   "type": "PipeSubstitution",
@@ -65,17 +73,28 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
+                "commentStart": 17,
                 "end": 23,
-                "name": "myFunc",
+                "name": {
+                  "commentStart": 17,
+                  "end": 23,
+                  "name": "myFunc",
+                  "start": 17,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 17,
-                "type": "Identifier"
+                "type": "Name"
               },
+              "commentStart": 17,
               "end": 30,
               "start": 17,
               "type": "CallExpression",
               "type": "CallExpression"
             }
           ],
+          "commentStart": 8,
           "end": 30,
           "start": 8,
           "type": "PipeExpression",
@@ -91,6 +110,7 @@ expression: actual
       "type": "VariableDeclaration"
     }
   ],
+  "commentStart": 0,
   "end": 30,
   "start": 0
 }

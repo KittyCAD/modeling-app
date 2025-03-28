@@ -15,6 +15,8 @@ loft(
   bezApproximateRational: bool,
   baseCurveIndex?: integer,
   tolerance?: number,
+  tagStart?: TagDeclarator,
+  tagEnd?: TagDeclarator,
 ): Solid
 ```
 
@@ -28,6 +30,8 @@ loft(
 | `bezApproximateRational` | [`bool`](/docs/kcl/types/bool) | Attempt to approximate rational curves (such as arcs) using a bezier. This will remove banding around interpolations between arcs and non-arcs. It may produce errors in other scenarios Over time, this field won't be necessary. | Yes |
 | `baseCurveIndex` | `integer` | This can be set to override the automatically determined topological base curve, which is usually the first section encountered. | No |
 | `tolerance` | [`number`](/docs/kcl/types/number) | Tolerance for the loft operation. | No |
+| `tagStart` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | A named tag for the face at the start of the loft, i.e. the original sketch | No |
+| `tagEnd` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | A named tag for the face at the end of the loft, i.e. the last sketch | No |
 
 ### Returns
 
@@ -38,7 +42,7 @@ loft(
 
 ```js
 // Loft a square and a triangle.
-squareSketch = startSketchOn('XY')
+squareSketch = startSketchOn(XY)
   |> startProfileAt([-100, 200], %)
   |> line(end = [200, 0])
   |> line(end = [0, -200])
@@ -46,7 +50,7 @@ squareSketch = startSketchOn('XY')
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
-triangleSketch = startSketchOn(offsetPlane('XY', offset = 75))
+triangleSketch = startSketchOn(offsetPlane(XY, offset = 75))
   |> startProfileAt([0, 125], %)
   |> line(end = [-15, -30])
   |> line(end = [30, 0])
@@ -60,7 +64,7 @@ loft([squareSketch, triangleSketch])
 
 ```js
 // Loft a square, a circle, and another circle.
-squareSketch = startSketchOn('XY')
+squareSketch = startSketchOn(XY)
   |> startProfileAt([-100, 200], %)
   |> line(end = [200, 0])
   |> line(end = [0, -200])
@@ -68,10 +72,10 @@ squareSketch = startSketchOn('XY')
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
-circleSketch0 = startSketchOn(offsetPlane('XY', offset = 75))
+circleSketch0 = startSketchOn(offsetPlane(XY, offset = 75))
   |> circle(center = [0, 100], radius = 50)
 
-circleSketch1 = startSketchOn(offsetPlane('XY', offset = 150))
+circleSketch1 = startSketchOn(offsetPlane(XY, offset = 150))
   |> circle(center = [0, 100], radius = 20)
 
 loft([
@@ -85,7 +89,7 @@ loft([
 
 ```js
 // Loft a square, a circle, and another circle with options.
-squareSketch = startSketchOn('XY')
+squareSketch = startSketchOn(XY)
   |> startProfileAt([-100, 200], %)
   |> line(end = [200, 0])
   |> line(end = [0, -200])
@@ -93,10 +97,10 @@ squareSketch = startSketchOn('XY')
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
-circleSketch0 = startSketchOn(offsetPlane('XY', offset = 75))
+circleSketch0 = startSketchOn(offsetPlane(XY, offset = 75))
   |> circle(center = [0, 100], radius = 50)
 
-circleSketch1 = startSketchOn(offsetPlane('XY', offset = 150))
+circleSketch1 = startSketchOn(offsetPlane(XY, offset = 150))
   |> circle(center = [0, 100], radius = 20)
 
 loft(

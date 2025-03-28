@@ -148,14 +148,11 @@ description: Variables in memory after executing bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1117,
-            1170,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 1169,
-            "start": 1163,
+            "commentStart": 1162,
+            "end": 1168,
+            "start": 1162,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -164,14 +161,11 @@ description: Variables in memory after executing bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1176,
-            1215,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 1214,
-            "start": 1208,
+            "commentStart": 1207,
+            "end": 1213,
+            "start": 1207,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -180,14 +174,11 @@ description: Variables in memory after executing bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1221,
-            1263,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 1262,
-            "start": 1256,
+            "commentStart": 1255,
+            "end": 1261,
+            "start": 1255,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -196,14 +187,11 @@ description: Variables in memory after executing bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1269,
-            1310,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 1309,
-            "start": 1303,
+            "commentStart": 1302,
+            "end": 1308,
+            "start": 1302,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -212,14 +200,11 @@ description: Variables in memory after executing bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1316,
-            1355,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 1354,
-            "start": 1348,
+            "commentStart": 1347,
+            "end": 1353,
+            "start": 1347,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -228,14 +213,11 @@ description: Variables in memory after executing bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1361,
-            1431,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 1430,
-            "start": 1424,
+            "commentStart": 1423,
+            "end": 1429,
+            "start": 1423,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -249,19 +231,16 @@ description: Variables in memory after executing bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1117,
-                1170,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
               0.0
             ],
             "tag": {
-              "end": 1169,
-              "start": 1163,
+              "commentStart": 1162,
+              "end": 1168,
+              "start": 1162,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -277,19 +256,16 @@ description: Variables in memory after executing bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1176,
-                1215,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.6487,
               0.0
             ],
             "tag": {
-              "end": 1214,
-              "start": 1208,
+              "commentStart": 1207,
+              "end": 1213,
+              "start": 1207,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -305,19 +281,16 @@ description: Variables in memory after executing bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1221,
-                1263,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.6487,
               0.3513
             ],
             "tag": {
-              "end": 1262,
-              "start": 1256,
+              "commentStart": 1255,
+              "end": 1261,
+              "start": 1255,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -333,19 +306,16 @@ description: Variables in memory after executing bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1269,
-                1310,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -0.3513,
               0.3513
             ],
             "tag": {
-              "end": 1309,
-              "start": 1303,
+              "commentStart": 1302,
+              "end": 1308,
+              "start": 1302,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -361,19 +331,16 @@ description: Variables in memory after executing bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1316,
-                1355,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -0.3513,
               -1.6487
             ],
             "tag": {
-              "end": 1354,
-              "start": 1348,
+              "commentStart": 1347,
+              "end": 1353,
+              "start": 1347,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -389,19 +356,16 @@ description: Variables in memory after executing bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1361,
-                1431,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -0.0,
               -1.6487
             ],
             "tag": {
-              "end": 1430,
-              "start": 1424,
+              "commentStart": 1423,
+              "end": 1429,
+              "start": 1423,
               "type": "TagDeclarator",
               "value": "seg06"
             },
@@ -417,11 +381,7 @@ description: Variables in memory after executing bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1437,
-                1444,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -482,11 +442,7 @@ description: Variables in memory after executing bracket.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1086,
-              1111,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
@@ -586,11 +542,7 @@ description: Variables in memory after executing bracket.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1906,
-                1981,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -602,11 +554,7 @@ description: Variables in memory after executing bracket.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1906,
-                    1981,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": true,
                 "center": [
@@ -657,14 +605,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1117,
-                      1170,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1169,
-                      "start": 1163,
+                      "commentStart": 1162,
+                      "end": 1168,
+                      "start": 1162,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -673,14 +618,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1176,
-                      1215,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1214,
-                      "start": 1208,
+                      "commentStart": 1207,
+                      "end": 1213,
+                      "start": 1207,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -689,14 +631,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1221,
-                      1263,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1262,
-                      "start": 1256,
+                      "commentStart": 1255,
+                      "end": 1261,
+                      "start": 1255,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -705,14 +644,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1269,
-                      1310,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1309,
-                      "start": 1303,
+                      "commentStart": 1302,
+                      "end": 1308,
+                      "start": 1302,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -721,14 +657,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1316,
-                      1355,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1354,
-                      "start": 1348,
+                      "commentStart": 1347,
+                      "end": 1353,
+                      "start": 1347,
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
@@ -737,14 +670,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1361,
-                      1431,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1430,
-                      "start": 1424,
+                      "commentStart": 1423,
+                      "end": 1429,
+                      "start": 1423,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -758,19 +688,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1117,
-                          1170,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
                         0.0
                       ],
                       "tag": {
-                        "end": 1169,
-                        "start": 1163,
+                        "commentStart": 1162,
+                        "end": 1168,
+                        "start": 1162,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -786,19 +713,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1176,
-                          1215,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.6487,
                         0.0
                       ],
                       "tag": {
-                        "end": 1214,
-                        "start": 1208,
+                        "commentStart": 1207,
+                        "end": 1213,
+                        "start": 1207,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -814,19 +738,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1221,
-                          1263,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.6487,
                         0.3513
                       ],
                       "tag": {
-                        "end": 1262,
-                        "start": 1256,
+                        "commentStart": 1255,
+                        "end": 1261,
+                        "start": 1255,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -842,19 +763,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1269,
-                          1310,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.3513,
                         0.3513
                       ],
                       "tag": {
-                        "end": 1309,
-                        "start": 1303,
+                        "commentStart": 1302,
+                        "end": 1308,
+                        "start": 1302,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -870,19 +788,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1316,
-                          1355,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.3513,
                         -1.6487
                       ],
                       "tag": {
-                        "end": 1354,
-                        "start": 1348,
+                        "commentStart": 1347,
+                        "end": 1353,
+                        "start": 1347,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -898,19 +813,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1361,
-                          1431,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.0,
                         -1.6487
                       ],
                       "tag": {
-                        "end": 1430,
-                        "start": 1424,
+                        "commentStart": 1423,
+                        "end": 1429,
+                        "start": 1423,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -926,11 +838,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1437,
-                          1444,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
@@ -991,11 +899,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1086,
-                        1111,
-                        0
-                      ]
+                      "sourceRange": []
                     }
                   },
                   "tags": {
@@ -1100,11 +1004,7 @@ description: Variables in memory after executing bracket.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  1906,
-                  1981,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -1131,11 +1031,7 @@ description: Variables in memory after executing bracket.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1906,
-                1981,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -1147,11 +1043,7 @@ description: Variables in memory after executing bracket.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1906,
-                    1981,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": true,
                 "center": [
@@ -1202,14 +1094,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1117,
-                      1170,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1169,
-                      "start": 1163,
+                      "commentStart": 1162,
+                      "end": 1168,
+                      "start": 1162,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -1218,14 +1107,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1176,
-                      1215,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1214,
-                      "start": 1208,
+                      "commentStart": 1207,
+                      "end": 1213,
+                      "start": 1207,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -1234,14 +1120,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1221,
-                      1263,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1262,
-                      "start": 1256,
+                      "commentStart": 1255,
+                      "end": 1261,
+                      "start": 1255,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -1250,14 +1133,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1269,
-                      1310,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1309,
-                      "start": 1303,
+                      "commentStart": 1302,
+                      "end": 1308,
+                      "start": 1302,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -1266,14 +1146,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1316,
-                      1355,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1354,
-                      "start": 1348,
+                      "commentStart": 1347,
+                      "end": 1353,
+                      "start": 1347,
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
@@ -1282,14 +1159,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1361,
-                      1431,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1430,
-                      "start": 1424,
+                      "commentStart": 1423,
+                      "end": 1429,
+                      "start": 1423,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -1303,19 +1177,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1117,
-                          1170,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
                         0.0
                       ],
                       "tag": {
-                        "end": 1169,
-                        "start": 1163,
+                        "commentStart": 1162,
+                        "end": 1168,
+                        "start": 1162,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -1331,19 +1202,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1176,
-                          1215,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.6487,
                         0.0
                       ],
                       "tag": {
-                        "end": 1214,
-                        "start": 1208,
+                        "commentStart": 1207,
+                        "end": 1213,
+                        "start": 1207,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -1359,19 +1227,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1221,
-                          1263,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.6487,
                         0.3513
                       ],
                       "tag": {
-                        "end": 1262,
-                        "start": 1256,
+                        "commentStart": 1255,
+                        "end": 1261,
+                        "start": 1255,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -1387,19 +1252,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1269,
-                          1310,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.3513,
                         0.3513
                       ],
                       "tag": {
-                        "end": 1309,
-                        "start": 1303,
+                        "commentStart": 1302,
+                        "end": 1308,
+                        "start": 1302,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -1415,19 +1277,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1316,
-                          1355,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.3513,
                         -1.6487
                       ],
                       "tag": {
-                        "end": 1354,
-                        "start": 1348,
+                        "commentStart": 1347,
+                        "end": 1353,
+                        "start": 1347,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -1443,19 +1302,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1361,
-                          1431,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.0,
                         -1.6487
                       ],
                       "tag": {
-                        "end": 1430,
-                        "start": 1424,
+                        "commentStart": 1423,
+                        "end": 1429,
+                        "start": 1423,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -1471,11 +1327,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1437,
-                          1444,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
@@ -1536,11 +1388,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1086,
-                        1111,
-                        0
-                      ]
+                      "sourceRange": []
                     }
                   },
                   "tags": {
@@ -1645,11 +1493,7 @@ description: Variables in memory after executing bracket.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  1906,
-                  1981,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -1676,11 +1520,7 @@ description: Variables in memory after executing bracket.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1906,
-                1981,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -1692,11 +1532,7 @@ description: Variables in memory after executing bracket.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1906,
-                    1981,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": true,
                 "center": [
@@ -1747,14 +1583,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1117,
-                      1170,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1169,
-                      "start": 1163,
+                      "commentStart": 1162,
+                      "end": 1168,
+                      "start": 1162,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -1763,14 +1596,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1176,
-                      1215,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1214,
-                      "start": 1208,
+                      "commentStart": 1207,
+                      "end": 1213,
+                      "start": 1207,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -1779,14 +1609,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1221,
-                      1263,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1262,
-                      "start": 1256,
+                      "commentStart": 1255,
+                      "end": 1261,
+                      "start": 1255,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -1795,14 +1622,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1269,
-                      1310,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1309,
-                      "start": 1303,
+                      "commentStart": 1302,
+                      "end": 1308,
+                      "start": 1302,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -1811,14 +1635,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1316,
-                      1355,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1354,
-                      "start": 1348,
+                      "commentStart": 1347,
+                      "end": 1353,
+                      "start": 1347,
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
@@ -1827,14 +1648,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1361,
-                      1431,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1430,
-                      "start": 1424,
+                      "commentStart": 1423,
+                      "end": 1429,
+                      "start": 1423,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -1848,19 +1666,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1117,
-                          1170,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
                         0.0
                       ],
                       "tag": {
-                        "end": 1169,
-                        "start": 1163,
+                        "commentStart": 1162,
+                        "end": 1168,
+                        "start": 1162,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -1876,19 +1691,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1176,
-                          1215,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.6487,
                         0.0
                       ],
                       "tag": {
-                        "end": 1214,
-                        "start": 1208,
+                        "commentStart": 1207,
+                        "end": 1213,
+                        "start": 1207,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -1904,19 +1716,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1221,
-                          1263,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.6487,
                         0.3513
                       ],
                       "tag": {
-                        "end": 1262,
-                        "start": 1256,
+                        "commentStart": 1255,
+                        "end": 1261,
+                        "start": 1255,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -1932,19 +1741,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1269,
-                          1310,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.3513,
                         0.3513
                       ],
                       "tag": {
-                        "end": 1309,
-                        "start": 1303,
+                        "commentStart": 1302,
+                        "end": 1308,
+                        "start": 1302,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -1960,19 +1766,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1316,
-                          1355,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.3513,
                         -1.6487
                       ],
                       "tag": {
-                        "end": 1354,
-                        "start": 1348,
+                        "commentStart": 1347,
+                        "end": 1353,
+                        "start": 1347,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -1988,19 +1791,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1361,
-                          1431,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.0,
                         -1.6487
                       ],
                       "tag": {
-                        "end": 1430,
-                        "start": 1424,
+                        "commentStart": 1423,
+                        "end": 1429,
+                        "start": 1423,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -2016,11 +1816,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1437,
-                          1444,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
@@ -2081,11 +1877,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1086,
-                        1111,
-                        0
-                      ]
+                      "sourceRange": []
                     }
                   },
                   "tags": {
@@ -2190,11 +1982,7 @@ description: Variables in memory after executing bracket.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  1906,
-                  1981,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -2221,11 +2009,7 @@ description: Variables in memory after executing bracket.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1906,
-                1981,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -2237,11 +2021,7 @@ description: Variables in memory after executing bracket.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1906,
-                    1981,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": true,
                 "center": [
@@ -2292,14 +2072,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1117,
-                      1170,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1169,
-                      "start": 1163,
+                      "commentStart": 1162,
+                      "end": 1168,
+                      "start": 1162,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2308,14 +2085,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1176,
-                      1215,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1214,
-                      "start": 1208,
+                      "commentStart": 1207,
+                      "end": 1213,
+                      "start": 1207,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -2324,14 +2098,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1221,
-                      1263,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1262,
-                      "start": 1256,
+                      "commentStart": 1255,
+                      "end": 1261,
+                      "start": 1255,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -2340,14 +2111,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1269,
-                      1310,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1309,
-                      "start": 1303,
+                      "commentStart": 1302,
+                      "end": 1308,
+                      "start": 1302,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -2356,14 +2124,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1316,
-                      1355,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1354,
-                      "start": 1348,
+                      "commentStart": 1347,
+                      "end": 1353,
+                      "start": 1347,
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
@@ -2372,14 +2137,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1361,
-                      1431,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1430,
-                      "start": 1424,
+                      "commentStart": 1423,
+                      "end": 1429,
+                      "start": 1423,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -2393,19 +2155,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1117,
-                          1170,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
                         0.0
                       ],
                       "tag": {
-                        "end": 1169,
-                        "start": 1163,
+                        "commentStart": 1162,
+                        "end": 1168,
+                        "start": 1162,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -2421,19 +2180,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1176,
-                          1215,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.6487,
                         0.0
                       ],
                       "tag": {
-                        "end": 1214,
-                        "start": 1208,
+                        "commentStart": 1207,
+                        "end": 1213,
+                        "start": 1207,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -2449,19 +2205,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1221,
-                          1263,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.6487,
                         0.3513
                       ],
                       "tag": {
-                        "end": 1262,
-                        "start": 1256,
+                        "commentStart": 1255,
+                        "end": 1261,
+                        "start": 1255,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -2477,19 +2230,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1269,
-                          1310,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.3513,
                         0.3513
                       ],
                       "tag": {
-                        "end": 1309,
-                        "start": 1303,
+                        "commentStart": 1302,
+                        "end": 1308,
+                        "start": 1302,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -2505,19 +2255,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1316,
-                          1355,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.3513,
                         -1.6487
                       ],
                       "tag": {
-                        "end": 1354,
-                        "start": 1348,
+                        "commentStart": 1347,
+                        "end": 1353,
+                        "start": 1347,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -2533,19 +2280,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1361,
-                          1431,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.0,
                         -1.6487
                       ],
                       "tag": {
-                        "end": 1430,
-                        "start": 1424,
+                        "commentStart": 1423,
+                        "end": 1429,
+                        "start": 1423,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -2561,11 +2305,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1437,
-                          1444,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
@@ -2626,11 +2366,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1086,
-                        1111,
-                        0
-                      ]
+                      "sourceRange": []
                     }
                   },
                   "tags": {
@@ -2735,11 +2471,7 @@ description: Variables in memory after executing bracket.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  1906,
-                  1981,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -2771,11 +2503,7 @@ description: Variables in memory after executing bracket.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                2240,
-                2312,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -2787,11 +2515,7 @@ description: Variables in memory after executing bracket.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2240,
-                    2312,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": true,
                 "center": [
@@ -2842,14 +2566,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1117,
-                      1170,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1169,
-                      "start": 1163,
+                      "commentStart": 1162,
+                      "end": 1168,
+                      "start": 1162,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2858,14 +2579,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1176,
-                      1215,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1214,
-                      "start": 1208,
+                      "commentStart": 1207,
+                      "end": 1213,
+                      "start": 1207,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -2874,14 +2592,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1221,
-                      1263,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1262,
-                      "start": 1256,
+                      "commentStart": 1255,
+                      "end": 1261,
+                      "start": 1255,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -2890,14 +2605,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1269,
-                      1310,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1309,
-                      "start": 1303,
+                      "commentStart": 1302,
+                      "end": 1308,
+                      "start": 1302,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -2906,14 +2618,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1316,
-                      1355,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1354,
-                      "start": 1348,
+                      "commentStart": 1347,
+                      "end": 1353,
+                      "start": 1347,
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
@@ -2922,14 +2631,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1361,
-                      1431,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1430,
-                      "start": 1424,
+                      "commentStart": 1423,
+                      "end": 1429,
+                      "start": 1423,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -2943,19 +2649,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1117,
-                          1170,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
                         0.0
                       ],
                       "tag": {
-                        "end": 1169,
-                        "start": 1163,
+                        "commentStart": 1162,
+                        "end": 1168,
+                        "start": 1162,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -2971,19 +2674,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1176,
-                          1215,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.6487,
                         0.0
                       ],
                       "tag": {
-                        "end": 1214,
-                        "start": 1208,
+                        "commentStart": 1207,
+                        "end": 1213,
+                        "start": 1207,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -2999,19 +2699,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1221,
-                          1263,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.6487,
                         0.3513
                       ],
                       "tag": {
-                        "end": 1262,
-                        "start": 1256,
+                        "commentStart": 1255,
+                        "end": 1261,
+                        "start": 1255,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -3027,19 +2724,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1269,
-                          1310,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.3513,
                         0.3513
                       ],
                       "tag": {
-                        "end": 1309,
-                        "start": 1303,
+                        "commentStart": 1302,
+                        "end": 1308,
+                        "start": 1302,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -3055,19 +2749,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1316,
-                          1355,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.3513,
                         -1.6487
                       ],
                       "tag": {
-                        "end": 1354,
-                        "start": 1348,
+                        "commentStart": 1347,
+                        "end": 1353,
+                        "start": 1347,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -3083,19 +2774,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1361,
-                          1431,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.0,
                         -1.6487
                       ],
                       "tag": {
-                        "end": 1430,
-                        "start": 1424,
+                        "commentStart": 1423,
+                        "end": 1429,
+                        "start": 1423,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -3111,11 +2799,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1437,
-                          1444,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
@@ -3176,11 +2860,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1086,
-                        1111,
-                        0
-                      ]
+                      "sourceRange": []
                     }
                   },
                   "tags": {
@@ -3285,11 +2965,7 @@ description: Variables in memory after executing bracket.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  2240,
-                  2312,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -3316,11 +2992,7 @@ description: Variables in memory after executing bracket.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                2240,
-                2312,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -3332,11 +3004,7 @@ description: Variables in memory after executing bracket.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2240,
-                    2312,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": true,
                 "center": [
@@ -3387,14 +3055,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1117,
-                      1170,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1169,
-                      "start": 1163,
+                      "commentStart": 1162,
+                      "end": 1168,
+                      "start": 1162,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -3403,14 +3068,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1176,
-                      1215,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1214,
-                      "start": 1208,
+                      "commentStart": 1207,
+                      "end": 1213,
+                      "start": 1207,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -3419,14 +3081,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1221,
-                      1263,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1262,
-                      "start": 1256,
+                      "commentStart": 1255,
+                      "end": 1261,
+                      "start": 1255,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -3435,14 +3094,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1269,
-                      1310,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1309,
-                      "start": 1303,
+                      "commentStart": 1302,
+                      "end": 1308,
+                      "start": 1302,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -3451,14 +3107,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1316,
-                      1355,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1354,
-                      "start": 1348,
+                      "commentStart": 1347,
+                      "end": 1353,
+                      "start": 1347,
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
@@ -3467,14 +3120,11 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1361,
-                      1431,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
-                      "end": 1430,
-                      "start": 1424,
+                      "commentStart": 1423,
+                      "end": 1429,
+                      "start": 1423,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -3488,19 +3138,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1117,
-                          1170,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
                         0.0
                       ],
                       "tag": {
-                        "end": 1169,
-                        "start": 1163,
+                        "commentStart": 1162,
+                        "end": 1168,
+                        "start": 1162,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -3516,19 +3163,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1176,
-                          1215,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.6487,
                         0.0
                       ],
                       "tag": {
-                        "end": 1214,
-                        "start": 1208,
+                        "commentStart": 1207,
+                        "end": 1213,
+                        "start": 1207,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -3544,19 +3188,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1221,
-                          1263,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.6487,
                         0.3513
                       ],
                       "tag": {
-                        "end": 1262,
-                        "start": 1256,
+                        "commentStart": 1255,
+                        "end": 1261,
+                        "start": 1255,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -3572,19 +3213,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1269,
-                          1310,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.3513,
                         0.3513
                       ],
                       "tag": {
-                        "end": 1309,
-                        "start": 1303,
+                        "commentStart": 1302,
+                        "end": 1308,
+                        "start": 1302,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -3600,19 +3238,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1316,
-                          1355,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.3513,
                         -1.6487
                       ],
                       "tag": {
-                        "end": 1354,
-                        "start": 1348,
+                        "commentStart": 1347,
+                        "end": 1353,
+                        "start": 1347,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -3628,19 +3263,16 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1361,
-                          1431,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.0,
                         -1.6487
                       ],
                       "tag": {
-                        "end": 1430,
-                        "start": 1424,
+                        "commentStart": 1423,
+                        "end": 1429,
+                        "start": 1423,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -3656,11 +3288,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1437,
-                          1444,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
@@ -3721,11 +3349,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1086,
-                        1111,
-                        0
-                      ]
+                      "sourceRange": []
                     }
                   },
                   "tags": {
@@ -3830,11 +3454,7 @@ description: Variables in memory after executing bracket.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  2240,
-                  2312,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",

@@ -15,7 +15,7 @@ pub(crate) use import::{
     import_foreign, send_to_engine as send_import_to_engine, PreImportedGeometry, ZOO_COORD_SYSTEM,
 };
 use indexmap::IndexMap;
-pub use kcl_value::{KclObjectFields, KclValue, PrimitiveType, UnitAngle, UnitLen};
+pub use kcl_value::{KclObjectFields, KclValue};
 use kcmc::{
     each_cmd as mcmd,
     ok_response::{output::TakeSnapshot, OkModelingCmdResponse},
@@ -35,6 +35,7 @@ use crate::{
     execution::{
         artifact::build_artifact_graph,
         cache::{CacheInformation, CacheResult},
+        types::{UnitAngle, UnitLen},
     },
     fs::FileManager,
     modules::{ModuleId, ModulePath},
@@ -56,6 +57,7 @@ mod import;
 pub(crate) mod kcl_value;
 mod memory;
 mod state;
+pub(crate) mod types;
 
 /// Outcome of executing a program.  This is used in TS.
 #[derive(Debug, Clone, Serialize, ts_rs::TS)]
@@ -740,33 +742,34 @@ impl ExecutorContext {
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
         let default_planes = self.engine.get_default_planes().read().await.clone();
-        let env_ref = self
+        let result = self
             .execute_and_build_graph(&program.ast, exec_state, preserve_mem)
-            .await
-            .map_err(|e| {
-                let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
-                    .global
-                    .path_to_source_id
-                    .iter()
-                    .map(|(k, v)| ((*v), k.clone()))
-                    .collect();
-
-                KclErrorWithOutputs::new(
-                    e,
-                    exec_state.global.operations.clone(),
-                    exec_state.global.artifact_commands.clone(),
-                    exec_state.global.artifact_graph.clone(),
-                    module_id_to_module_path,
-                    exec_state.global.id_to_source.clone(),
-                    default_planes,
-                )
-            })?;
+            .await;
 
         crate::log::log(format!(
             "Post interpretation KCL memory stats: {:#?}",
             exec_state.stack().memory.stats
         ));
         crate::log::log(format!("Engine stats: {:?}", self.engine.stats()));
+
+        let env_ref = result.map_err(|e| {
+            let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
+                .global
+                .path_to_source_id
+                .iter()
+                .map(|(k, v)| ((*v), k.clone()))
+                .collect();
+
+            KclErrorWithOutputs::new(
+                e,
+                exec_state.global.operations.clone(),
+                exec_state.global.artifact_commands.clone(),
+                exec_state.global.artifact_graph.clone(),
+                module_id_to_module_path,
+                exec_state.global.id_to_source.clone(),
+                default_planes,
+            )
+        })?;
 
         if !self.is_mock() {
             let mut mem = exec_state.stack().deep_clone();
@@ -801,6 +804,10 @@ impl ExecutorContext {
                 &ModulePath::Main,
             )
             .await;
+
+        // If we errored out and early-returned, there might be commands which haven't been executed
+        // and should be dropped.
+        self.engine.clear_queues().await;
 
         // Move the artifact commands and responses to simplify cache management
         // and error creation.
@@ -847,8 +854,7 @@ impl ExecutorContext {
                 .await?;
             let (module_memory, _) = self
                 .exec_module_for_items(id, exec_state, ExecutionKind::Isolated, source_range)
-                .await
-                .unwrap();
+                .await?;
 
             exec_state.mut_stack().memory.set_std(module_memory);
         }
@@ -1002,7 +1008,11 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{errors::KclErrorDetails, execution::memory::Stack, ModuleId};
+    use crate::{
+        errors::{KclErrorDetails, Severity},
+        execution::memory::Stack,
+        ModuleId,
+    };
 
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
@@ -1410,6 +1420,22 @@ const answer = returnX()"#;
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn type_aliases() {
+        let text = r#"type MyTy = [number; 2]
+fn foo(x: MyTy) {
+    return x[0]
+}
+
+foo([0, 1])
+
+type Other = MyTy | Helix
+"#;
+        let result = parse_execute(text).await.unwrap();
+        let errs = result.exec_state.errors();
+        assert!(errs.is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_cannot_shebang_in_fn() {
         let ast = r#"
 fn foo () {
@@ -1590,6 +1616,34 @@ const inInches = 2.0 * inch()"#;
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_unit_suggest() {
+        let src = "foo = 42";
+        let program = crate::Program::parse_no_errs(src).unwrap();
+        let ctx = ExecutorContext {
+            engine: Arc::new(Box::new(
+                crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
+            )),
+            fs: Arc::new(crate::fs::FileManager::new()),
+            stdlib: Arc::new(crate::std::StdLib::new()),
+            settings: ExecutorSettings {
+                units: UnitLength::Ft,
+                ..Default::default()
+            },
+            context_type: ContextType::Mock,
+        };
+        let mut exec_state = ExecState::new(&ctx);
+        ctx.run(&program, &mut exec_state).await.unwrap();
+        let errs = exec_state.errors();
+        assert_eq!(errs.len(), 1, "{errs:?}");
+        let warn = &errs[0];
+        assert_eq!(warn.severity, Severity::Warning);
+        assert_eq!(
+            warn.apply_suggestion(src).unwrap(),
+            "@settings(defaultLengthUnit = ft)\nfoo = 42"
+        )
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_zero_param_fn() {
         let ast = r#"const sigmaAllow = 35000 // psi
 const leg1 = 5 // inches
@@ -1604,6 +1658,18 @@ const bracket = startSketchOn(XY)
   |> line(end = [-leg2 + thickness(), 0])
 "#;
         parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_bad_arg_count_std() {
+        let ast = "startSketchOn(XY)
+  |> startProfileAt([0, 0], %)
+  |> profileStartX()";
+        assert!(parse_execute(ast)
+            .await
+            .unwrap_err()
+            .message()
+            .contains("Expected a sketch argument"));
     }
 
     #[tokio::test(flavor = "multi_thread")]

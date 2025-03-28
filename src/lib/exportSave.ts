@@ -1,5 +1,4 @@
 import { isDesktop } from './isDesktop'
-import { deserialize_files } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { browserSaveFile } from './browserSaveFile'
 
 import JSZip from 'jszip'
@@ -78,19 +77,14 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
 // Saves files locally from an export call.
 // We override the file's name with one passed in from the client side.
 export async function exportSave({
-  data,
+  files,
   fileName,
   toastId,
 }: {
-  data: ArrayBuffer
+  files: ModelingAppFile[]
   fileName: string
   toastId: string
 }) {
-  // This converts the ArrayBuffer to a Rust equivalent Vec<u8>.
-  let uintArray = new Uint8Array(data)
-
-  let files: ModelingAppFile[] = deserialize_files(uintArray)
-
   if (files.length > 1) {
     let zip = new JSZip()
     for (const file of files) {

@@ -5,11 +5,7 @@ description: Artifact commands color-cube.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,11 +13,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -29,11 +21,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +30,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +39,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      133,
-      166,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -67,11 +47,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      350,
-      386,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -96,11 +72,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      350,
-      386,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -114,11 +86,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      401,
-      438,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -143,11 +111,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      401,
-      438,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -161,11 +125,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      452,
-      489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -190,11 +150,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      452,
-      489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -208,11 +164,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      504,
-      542,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -221,7 +173,7 @@ description: Artifact commands color-cube.kcl
         "z": 0.0
       },
       "x_axis": {
-        "x": -1.0,
+        "x": 1.0,
         "y": 0.0,
         "z": 0.0
       },
@@ -237,11 +189,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      504,
-      542,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -255,11 +203,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      554,
-      606,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -284,11 +228,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      554,
-      606,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -302,11 +242,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      619,
-      656,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -331,11 +267,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      619,
-      656,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -349,11 +281,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -369,22 +297,14 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -397,22 +317,14 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      824,
-      871,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -429,11 +341,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      977,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -450,11 +358,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      983,
-      1103,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -471,11 +375,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1109,
-      1165,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -492,11 +392,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1171,
-      1178,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -504,11 +400,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -524,11 +416,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -538,22 +426,14 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -561,11 +441,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -574,11 +450,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -588,11 +460,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -602,11 +470,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -616,11 +480,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -630,11 +490,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -644,11 +500,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -658,11 +510,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -672,11 +520,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -686,11 +530,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1224,
-      1307,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -707,11 +547,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -727,22 +563,14 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -755,22 +583,14 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      824,
-      871,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -787,11 +607,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      977,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -808,11 +624,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      983,
-      1103,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -829,11 +641,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1109,
-      1165,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -850,11 +658,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1171,
-      1178,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -862,11 +666,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -882,11 +682,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -896,22 +692,14 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -919,11 +707,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -932,11 +716,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -946,11 +726,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -960,11 +736,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -974,11 +746,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -988,11 +756,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1002,11 +766,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1016,11 +776,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1030,11 +786,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1044,11 +796,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1224,
-      1307,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -1065,11 +813,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1085,22 +829,14 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1113,22 +849,14 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      824,
-      871,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1145,11 +873,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      977,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1166,11 +890,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      983,
-      1103,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1187,11 +907,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1109,
-      1165,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1208,11 +924,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1171,
-      1178,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1220,11 +932,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1240,11 +948,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1254,22 +958,14 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1277,11 +973,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1290,11 +982,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1304,11 +992,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1318,11 +1002,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1332,11 +1012,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1346,11 +1022,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1360,11 +1032,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1374,11 +1042,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1388,11 +1052,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1402,11 +1062,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1224,
-      1307,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -1423,11 +1079,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1443,22 +1095,14 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1471,22 +1115,14 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      824,
-      871,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1503,11 +1139,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      977,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1524,11 +1156,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      983,
-      1103,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1545,11 +1173,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1109,
-      1165,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1566,11 +1190,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1171,
-      1178,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1578,11 +1198,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1598,11 +1214,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1612,22 +1224,14 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1635,11 +1239,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1648,11 +1248,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1662,11 +1258,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1676,11 +1268,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1690,11 +1278,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1704,11 +1288,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1718,11 +1298,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1732,11 +1308,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1746,11 +1318,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1760,11 +1328,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1224,
-      1307,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -1781,11 +1345,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1801,22 +1361,14 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1829,22 +1381,14 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      824,
-      871,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1861,11 +1405,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      977,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1882,11 +1422,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      983,
-      1103,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1903,11 +1439,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1109,
-      1165,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1924,11 +1456,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1171,
-      1178,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1936,11 +1464,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1956,11 +1480,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1970,22 +1490,14 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1993,11 +1505,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -2006,11 +1514,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2020,11 +1524,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2034,11 +1534,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2048,11 +1544,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2062,11 +1554,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2076,11 +1564,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2090,11 +1574,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2104,11 +1584,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2118,11 +1594,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1224,
-      1307,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -2139,11 +1611,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2151,30 +1619,22 @@ description: Artifact commands color-cube.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.0,
+        "x": -0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": -0.0
       }
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2187,22 +1647,14 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      824,
-      871,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2219,11 +1671,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      877,
-      977,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2240,11 +1688,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      983,
-      1103,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2261,11 +1705,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1109,
-      1165,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2282,11 +1722,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1171,
-      1178,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2294,11 +1730,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2306,19 +1738,15 @@ description: Artifact commands color-cube.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.0,
+        "x": -0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": -0.0
       }
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -2328,22 +1756,14 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -2351,11 +1771,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -2364,11 +1780,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2378,11 +1790,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2392,11 +1800,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2406,11 +1810,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2420,11 +1820,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2434,11 +1830,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2448,11 +1840,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2462,11 +1850,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1184,
-      1218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2476,11 +1860,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1224,
-      1307,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -2497,11 +1877,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2510,11 +1886,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2523,11 +1895,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2536,11 +1904,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2549,11 +1913,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2562,11 +1922,7 @@ description: Artifact commands color-cube.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",

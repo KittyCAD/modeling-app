@@ -8,16 +8,12 @@ description: Operations executed exhaust-manifold.kcl
     "name": "primaryTube",
     "functionSourceRange": [
       329,
-      1587,
+      1531,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1664,
-      1690,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionCall",
@@ -29,11 +25,7 @@ description: Operations executed exhaust-manifold.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      582,
-      607,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -48,11 +40,7 @@ description: Operations executed exhaust-manifold.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      617,
-      642,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -230,19 +218,11 @@ description: Operations executed exhaust-manifold.kcl
             }
           }
         },
-        "sourceRange": [
-          797,
-          807,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      783,
-      808,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -250,24 +230,124 @@ description: Operations executed exhaust-manifold.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          1315,
-          1319,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1301,
-      1320,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Unknown"
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.8125,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Unknown"
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.7325,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -278,11 +358,7 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1430,
-          1535,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -291,19 +367,11 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1537,
-          1538,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      1425,
-      1539,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -316,19 +384,11 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1560,
-          1569,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "sweep",
-    "sourceRange": [
-      1547,
-      1570,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -337,11 +397,7 @@ description: Operations executed exhaust-manifold.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1547,
-        1570,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -352,16 +408,12 @@ description: Operations executed exhaust-manifold.kcl
     "name": "primaryTube",
     "functionSourceRange": [
       329,
-      1587,
+      1531,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1691,
-      1717,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionCall",
@@ -373,11 +425,7 @@ description: Operations executed exhaust-manifold.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      582,
-      607,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -392,11 +440,7 @@ description: Operations executed exhaust-manifold.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      617,
-      642,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -574,19 +618,11 @@ description: Operations executed exhaust-manifold.kcl
             }
           }
         },
-        "sourceRange": [
-          797,
-          807,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      783,
-      808,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -594,24 +630,124 @@ description: Operations executed exhaust-manifold.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          1315,
-          1319,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1301,
-      1320,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 2.0,
+              "ty": {
+                "type": "Unknown"
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.8125,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 2.0,
+              "ty": {
+                "type": "Unknown"
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.7325,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -622,11 +758,7 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1430,
-          1535,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -635,19 +767,11 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1537,
-          1538,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      1425,
-      1539,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -660,19 +784,11 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1560,
-          1569,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "sweep",
-    "sourceRange": [
-      1547,
-      1570,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -681,11 +797,7 @@ description: Operations executed exhaust-manifold.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1547,
-        1570,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -696,16 +808,12 @@ description: Operations executed exhaust-manifold.kcl
     "name": "primaryTube",
     "functionSourceRange": [
       329,
-      1587,
+      1531,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1718,
-      1747,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionCall",
@@ -717,11 +825,7 @@ description: Operations executed exhaust-manifold.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      582,
-      607,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -736,11 +840,7 @@ description: Operations executed exhaust-manifold.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      617,
-      642,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -918,19 +1018,11 @@ description: Operations executed exhaust-manifold.kcl
             }
           }
         },
-        "sourceRange": [
-          797,
-          807,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      783,
-      808,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -938,24 +1030,124 @@ description: Operations executed exhaust-manifold.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          1315,
-          1319,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1301,
-      1320,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 4.0,
+              "ty": {
+                "type": "Unknown"
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.8125,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 4.0,
+              "ty": {
+                "type": "Unknown"
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.7325,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -966,11 +1158,7 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1430,
-          1535,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -979,19 +1167,11 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1537,
-          1538,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      1425,
-      1539,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1004,19 +1184,11 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1560,
-          1569,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "sweep",
-    "sourceRange": [
-      1547,
-      1570,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1025,11 +1197,7 @@ description: Operations executed exhaust-manifold.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1547,
-        1570,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1040,16 +1208,12 @@ description: Operations executed exhaust-manifold.kcl
     "name": "primaryTube",
     "functionSourceRange": [
       329,
-      1587,
+      1531,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1748,
-      1777,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionCall",
@@ -1061,11 +1225,7 @@ description: Operations executed exhaust-manifold.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      582,
-      607,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -1080,11 +1240,7 @@ description: Operations executed exhaust-manifold.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      617,
-      642,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -1262,19 +1418,11 @@ description: Operations executed exhaust-manifold.kcl
             }
           }
         },
-        "sourceRange": [
-          797,
-          807,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      783,
-      808,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1282,24 +1430,124 @@ description: Operations executed exhaust-manifold.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          1315,
-          1319,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1301,
-      1320,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 6.0,
+              "ty": {
+                "type": "Unknown"
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.8125,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 6.0,
+              "ty": {
+                "type": "Unknown"
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.7325,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -1310,11 +1558,7 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1430,
-          1535,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -1323,19 +1567,11 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1537,
-          1538,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      1425,
-      1539,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1348,19 +1584,11 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1560,
-          1569,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "sweep",
-    "sourceRange": [
-      1547,
-      1570,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1369,11 +1597,7 @@ description: Operations executed exhaust-manifold.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1547,
-        1570,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1383,24 +1607,76 @@ description: Operations executed exhaust-manifold.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          1853,
-          1857,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1839,
-      1858,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.7325,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -1411,11 +1687,7 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2792,
-          2886,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -1424,21 +1696,73 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2888,
-          2889,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      2787,
-      2890,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 2.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.7325,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -1449,11 +1773,7 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2901,
-          2995,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -1462,21 +1782,73 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2997,
-          2998,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      2896,
-      2999,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 4.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.7325,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -1487,11 +1859,7 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          3010,
-          3104,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -1500,21 +1868,73 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          3106,
-          3107,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      3005,
-      3108,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 6.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.7325,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -1525,11 +1945,7 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          3119,
-          3213,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -1538,21 +1954,61 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          3215,
-          3216,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      3114,
-      3217,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": -0.975,
+              "ty": {
+                "type": "Unknown"
+              }
+            },
+            {
+              "type": "Number",
+              "value": -0.975,
+              "ty": {
+                "type": "Unknown"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.125,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -1563,11 +2019,7 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          3267,
-          3405,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -1576,21 +2028,61 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          3407,
-          3408,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      3262,
-      3409,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.975,
+              "ty": {
+                "type": "Unknown"
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.975,
+              "ty": {
+                "type": "Unknown"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.125,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -1601,11 +2093,7 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          3420,
-          3556,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -1614,21 +2102,61 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          3558,
-          3559,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      3415,
-      3560,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 5.025,
+              "ty": {
+                "type": "Unknown"
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.975,
+              "ty": {
+                "type": "Unknown"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.125,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -1639,11 +2167,7 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          3571,
-          3717,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -1652,21 +2176,61 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          3719,
-          3720,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      3566,
-      3721,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 6.975,
+              "ty": {
+                "type": "Unknown"
+              }
+            },
+            {
+              "type": "Number",
+              "value": -0.975,
+              "ty": {
+                "type": "Unknown"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.125,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -1677,11 +2241,7 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          3732,
-          3877,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -1690,19 +2250,11 @@ description: Operations executed exhaust-manifold.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          3879,
-          3880,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      3727,
-      3881,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1722,19 +2274,11 @@ description: Operations executed exhaust-manifold.kcl
             }
           }
         },
-        "sourceRange": [
-          3950,
-          3961,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      3933,
-      3962,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1743,11 +2287,7 @@ description: Operations executed exhaust-manifold.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        3933,
-        3962,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1766,11 +2306,7 @@ description: Operations executed exhaust-manifold.kcl
             }
           }
         },
-        "sourceRange": [
-          3992,
-          3995,
-          0
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -1786,19 +2322,11 @@ description: Operations executed exhaust-manifold.kcl
             }
           ]
         },
-        "sourceRange": [
-          4011,
-          4094,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      3968,
-      4101,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1807,11 +2335,7 @@ description: Operations executed exhaust-manifold.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        3968,
-        4101,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1830,11 +2354,7 @@ description: Operations executed exhaust-manifold.kcl
             }
           }
         },
-        "sourceRange": [
-          4131,
-          4134,
-          0
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -1850,19 +2370,11 @@ description: Operations executed exhaust-manifold.kcl
             }
           ]
         },
-        "sourceRange": [
-          4150,
-          4233,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      4107,
-      4240,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1871,11 +2383,7 @@ description: Operations executed exhaust-manifold.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        4107,
-        4240,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

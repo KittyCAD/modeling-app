@@ -1,0 +1,35 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing boolean_logical_or.kcl
+---
+aa = true | false
+a = if aa {
+  1
+} else {
+  2
+}
+assert(a == 1, "left branch of or is true makes the whole expression true")
+
+bb = false | true
+b = if bb {
+  1
+} else {
+  2
+}
+assert(b == 1, "right branch of or is true makes the whole expression true")
+
+cc = true | true
+c = if cc {
+  1
+} else {
+  2
+}
+assert(c == 1, "both branches of or are true makes the whole expression true")
+
+dd = false | false
+d = if dd {
+  1
+} else {
+  2
+}
+assert(d == 2, "both branches of or are false makes the whole expression false")

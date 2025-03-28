@@ -1,6 +1,6 @@
 // Zoo logo
 
-// Define a function to draw the ZOO "Z"
+// define a function to draw the ZOO "Z"
 export fn zLogo(surface, origin, scale) {
   zSketch = surface
     |> startProfileAt([
@@ -39,7 +39,7 @@ export fn zLogo(surface, origin, scale) {
   return zSketch
 }
 
-// Define a function to draw the ZOO "O"
+// define a function to draw the ZOO "O"
 export fn oLogo(surface, origin, scale) {
   oSketch001 = surface
     |> startProfileAt([

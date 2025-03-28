@@ -1,0 +1,75 @@
+// Makeup Mirror
+// A circular vanity mirror mounted on a swiveling arm with pivot joints, used for personal grooming.
+
+// Settings
+@settings(defaultLengthUnit = mm)
+
+// hinge
+hingeRadius = 8
+hingeHeight = hingeRadius * 3
+hingeGap = 0.5
+
+// arm
+armLength = 170
+armRadius = 5
+
+// mirror
+mirrorRadius = 170 / 2
+mirrorThickness = 10
+archToMirrorGap = 5
+archThickness = 1
+archRadius = mirrorRadius + archToMirrorGap
+
+// Geometry
+// hinge
+fn hingeFn(x, y, z) {
+  hingeBody = startSketchOn(offsetPlane(XY, offset = z))
+    |> circle(center = [x, y], radius = hingeRadius)
+    |> extrude(length = hingeHeight)
+  return hingeBody
+}
+
+hingePartA1 = hingeFn(0, 0, 0)
+hingePartA2 = hingeFn(0, 0, hingeHeight + hingeGap)
+hingePartA3 = hingeFn(0, 0, hingeHeight * 2 + hingeGap * 2)
+
+hingePartB2 = hingeFn(armLength, 0, hingeHeight + hingeGap)
+hingePartB3 = hingeFn(armLength, 0, hingeHeight * 2 + hingeGap * 2)
+
+hingePartC2 = hingeFn(armLength, -armLength, hingeHeight * 2 + hingeGap * 2)
+hingePartC3 = hingeFn(armLength, -armLength, hingeHeight * 3 + hingeGap * 3)
+
+// arm
+fn armFn(plane, offset, altitude) {
+  armBody = startSketchOn(plane)
+    |> circle(center = [offset, altitude], radius = armRadius)
+    |> extrude(length = armLength)
+  return armBody
+}
+
+armPartA = armFn(YZ, 0, hingeHeight * 1.5 + hingeGap)
+armPartB = armFn(XZ, armLength, hingeHeight * 2.5 + hingeGap * 2)
+
+// mirror
+fn mirrorFn(plane, offsetX, offsetY, altitude, radius, tiefe, gestellR, gestellD) {
+  armPlane = startSketchOn(offsetPlane(plane, offset = offsetY - (tiefe / 2)))
+  armBody = circle(armPlane, center = [offsetX, altitude], radius = radius)
+    |> extrude(length = tiefe)
+
+  archBody = startProfileAt([offsetX-gestellR, altitude], armPlane)
+    |> xLine(length = gestellD)
+    |> arcTo({
+         interior = [offsetX, altitude-gestellR],
+         end = [offsetX+gestellR, altitude]
+       }, %)
+    |> xLine(length = gestellD)
+    |> arcTo({
+         interior = [offsetX, altitude-gestellR-gestellD],
+         end = [profileStartX(%), profileStartY(%)]
+       }, %)
+    |> close()
+    |> extrude(length = tiefe)
+  return armBody
+}
+
+mirror = mirrorFn(XZ, armLength, armLength, hingeHeight * 4 + hingeGap * 3 + mirrorRadius+archToMirrorGap+archThickness, mirrorRadius, mirrorThickness, archRadius, archThickness)

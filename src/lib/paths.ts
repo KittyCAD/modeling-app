@@ -23,7 +23,7 @@ type OnboardingPaths = {
   [K in keyof typeof onboardingPaths]: `/onboarding${(typeof onboardingPaths)[K]}`
 }
 
-const SETTINGS = '/settings' as const
+const SETTINGS = '/settings'
 
 export type ProjectRoute = {
   projectName: string | null

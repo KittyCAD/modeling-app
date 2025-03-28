@@ -6,7 +6,7 @@ const FEATURE_TREE_EXAMPLE_CODE = `export fn timesFive(x) {
   return 5 * x
 }
 export fn triangle() {
-  return startSketchOn('XZ')
+  return startSketchOn(XZ)
     |> startProfileAt([0, 0], %)
     |> xLine(length = 10)
     |> line(end = [-10, -5])
@@ -15,16 +15,16 @@ export fn triangle() {
 }
 
 length001 = timesFive(1) * 5
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([20, 10], %)
   |> line(end = [10, 10])
   |> angledLine([-45, length001], %)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-revolve001 = revolve({ axis = "X" }, sketch001)
+revolve001 = revolve(sketch001, axis = "X")
 triangle()
   |> extrude(length = 30)
-plane001 = offsetPlane('XY', offset = 10)
+plane001 = offsetPlane(XY, offset = 10)
 sketch002 = startSketchOn(plane001)
   |> startProfileAt([-20, 0], %)
   |> line(end = [5, -15])
@@ -35,7 +35,7 @@ sketch002 = startSketchOn(plane001)
 extrude001 = extrude(sketch002, length = 10)
 `
 
-const FEATURE_TREE_SKETCH_CODE = `sketch001 = startSketchOn('XZ')
+const FEATURE_TREE_SKETCH_CODE = `sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> angledLine([0, 4], %, $rectangleSegmentA001)
   |> angledLine([
@@ -54,7 +54,7 @@ sketch002 = startSketchOn(extrude001, rectangleSegmentB001)
        center = [-1, 2],
        radius = .5
      )
-plane001 = offsetPlane('XZ', offset = -5)
+plane001 = offsetPlane(XZ, offset = -5)
 sketch003 = startSketchOn(plane001)
   |> circle(center = [0, 0], radius = 5)
 `
@@ -116,7 +116,7 @@ test.describe('Feature Tree pane', () => {
       await testViewSource({
         operationName: 'Offset Plane',
         operationIndex: 0,
-        expectedActiveLine: "plane001 = offsetPlane('XY', offset = 10)",
+        expectedActiveLine: 'plane001 = offsetPlane(XY, offset = 10)',
       })
       await testViewSource({
         operationName: 'Extrude',
@@ -126,7 +126,7 @@ test.describe('Feature Tree pane', () => {
       await testViewSource({
         operationName: 'Revolve',
         operationIndex: 0,
-        expectedActiveLine: 'revolve001 = revolve({ axis = "X" }, sketch001)',
+        expectedActiveLine: 'revolve001 = revolve(sketch001, axis = "X")',
       })
       await testViewSource({
         operationName: 'Triangle',
@@ -174,7 +174,7 @@ test.describe('Feature Tree pane', () => {
         await editor.expectState({
           highlightedCode: '',
           diagnostics: [],
-          activeLines: ["sketch001 = startSketchOn('XZ')"],
+          activeLines: ['sketch001 = startSketchOn(XZ)'],
         })
         await toolbar.exitSketchBtn.click()
       })
@@ -227,14 +227,14 @@ test.describe('Feature Tree pane', () => {
     page,
   }) => {
     const initialInput = '23'
-    const initialCode = `sketch001 = startSketchOn('XZ')
+    const initialCode = `sketch001 = startSketchOn(XZ)
       |> circle(center = [0, 0], radius = 5)
       renamedExtrude = extrude(sketch001, length = ${initialInput})`
     const newConstantName = 'distance001'
-    const expectedCode = `sketch001 = startSketchOn('XZ')
+    const expectedCode = `${newConstantName} = 23
+    sketch001 = startSketchOn(XZ)
       |> circle(center = [0, 0], radius = 5)
-      ${newConstantName} = 23
-      renamedExtrude = extrude(sketch001, length = ${newConstantName})`
+            renamedExtrude = extrude(sketch001, length = ${newConstantName})`
 
     await context.folderSetupFn(async (dir) => {
       const testDir = join(dir, 'test-sample')
@@ -316,8 +316,7 @@ test.describe('Feature Tree pane', () => {
     toolbar,
     cmdBar,
   }) => {
-    const testCode = (value: string) =>
-      `p = offsetPlane('XY', offset = ${value})`
+    const testCode = (value: string) => `p = offsetPlane(XY, offset = ${value})`
     const initialInput = '10'
     const initialCode = testCode(initialInput)
     const newInput = '5 + 10'
@@ -396,7 +395,7 @@ test.describe('Feature Tree pane', () => {
     toolbar,
     cmdBar,
   }) => {
-    const beforeKclCode = `plane001 = offsetPlane('XY', offset = 5)
+    const beforeKclCode = `plane001 = offsetPlane(XY, offset = 5)
 sketch001 = startSketchOn(plane001)
 profile001 = circle(sketch001, center = [0, 20], radius = 12)
 profile002 = startProfileAt([0, 7.25], sketch001)

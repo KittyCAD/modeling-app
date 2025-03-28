@@ -26,16 +26,19 @@ import { isArray } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
 import { DeepPartial } from 'lib/types'
 import { Configuration } from 'lang/wasm'
+import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
 }
 
-type TestColor = [number, number, number]
-export const TEST_COLORS = {
-  WHITE: [249, 249, 249] as TestColor,
-  YELLOW: [255, 255, 0] as TestColor,
-  BLUE: [0, 0, 255] as TestColor,
+export type TestColor = [number, number, number]
+export const TEST_COLORS: { [key: string]: TestColor } = {
+  WHITE: [249, 249, 249],
+  YELLOW: [255, 255, 0],
+  BLUE: [0, 0, 255],
+  DARK_MODE_BKGD: [27, 27, 27],
+  DARK_MODE_PLANE_XZ: [50, 50, 99],
 } as const
 
 export const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
@@ -50,16 +53,25 @@ export const commonPoints = {
   num3: -2.44,
 } as const
 
-/** A semi-reliable color to check the default XZ plane on
- * in dark mode in the default camera position
- */
-export const darkModePlaneColorXZ: [number, number, number] = [50, 50, 99]
-
-/** A semi-reliable color to check the default dark mode bg color against */
-export const darkModeBgColor: [number, number, number] = [27, 27, 27]
-
 export const editorSelector = '[role="textbox"][data-language="kcl"]'
 type PaneId = 'variables' | 'code' | 'files' | 'logs'
+
+export function runningOnLinux() {
+  return process.platform === 'linux'
+}
+
+export function runningOnMac() {
+  return process.platform === 'darwin'
+}
+
+export function runningOnWindows() {
+  return process.platform === 'win32'
+}
+
+export function orRunWhenFullSuiteEnabled() {
+  const branch = process.env.GITHUB_REF?.replace('refs/heads/', '')
+  return branch !== 'all-e2e'
+}
 
 async function waitForPageLoadWithRetry(page: Page) {
   await expect(async () => {
@@ -750,7 +762,7 @@ export interface Paths {
 }
 
 export const doExport = async (
-  output: Models['OutputFormat_type'],
+  output: Models['OutputFormat3d_type'],
   rootDir: string,
   page: Page,
   exportFrom: 'dropdown' | 'sidebarButton' | 'commandBar' = 'dropdown'
@@ -923,47 +935,39 @@ export async function setup(
 }
 
 function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {
-  // enabled for chrome for now
-  if (page.context().browser()?.browserType().name() === 'chromium') {
-    // No idea wtf exception is
-    page.on('pageerror', (exception: any) => {
-      if (isErrorWhitelisted(exception)) {
-        return
-      }
+  page.on('pageerror', (exception: any) => {
+    if (isErrorWhitelisted(exception)) {
+      return
+    }
+    // Only disable this environment variable if you want to collect console errors
+    if (process.env.FAIL_ON_CONSOLE_ERRORS !== 'false') {
+      // Use expect to prevent page from closing and not cleaning up
+      expect(`An error was detected in the console: \r\n message:${exception.message} \r\n name:${exception.name} \r\n stack:${exception.stack}
 
-      // only set this env var to false if you want to collect console errors
-      // This can be configured in the GH workflow.  This should be set to true by default (we want tests to fail when
-      // unwhitelisted console errors are detected).
-      if (process.env.FAIL_ON_CONSOLE_ERRORS === 'true') {
-        // Fail when running on CI and FAIL_ON_CONSOLE_ERRORS is set
-        // use expect to prevent page from closing and not cleaning up
-        expect(`An error was detected in the console: \r\n message:${exception.message} \r\n name:${exception.name} \r\n stack:${exception.stack}
-          
-          *Either fix the console error or add it to the whitelist defined in ./lib/console-error-whitelist.ts (if the error can be safely ignored)       
-          `).toEqual('Console error detected')
-      } else {
-        // the (test-results/exceptions.txt) file will be uploaded as part of an upload artifact in GH
-        fsp
-          .appendFile(
-            './test-results/exceptions.txt',
-            [
-              '~~~',
-              `triggered_by_test:${
-                testInfo?.file + ' ' + (testInfo?.title || ' ')
-              }`,
-              `name:${exception.name}`,
-              `message:${exception.message}`,
-              `stack:${exception.stack}`,
-              `project:${testInfo?.project.name}`,
-              '~~~',
-            ].join('\n')
-          )
-          .catch((err) => {
-            console.error(err)
-          })
-      }
-    })
-  }
+        *Either fix the console error or add it to the whitelist defined in ./lib/console-error-whitelist.ts (if the error can be safely ignored)
+        `).toEqual('Console error detected')
+    } else {
+      // Add errors to `test-results/exceptions.txt` as a test artifact
+      fsp
+        .appendFile(
+          './test-results/exceptions.txt',
+          [
+            '~~~',
+            `triggered_by_test:${
+              testInfo?.file + ' ' + (testInfo?.title || ' ')
+            }`,
+            `name:${exception.name}`,
+            `message:${exception.message}`,
+            `stack:${exception.stack}`,
+            `project:${testInfo?.project.name}`,
+            '~~~',
+          ].join('\n')
+        )
+        .catch((err) => {
+          console.error(err)
+        })
+    }
+  })
 }
 export async function isOutOfViewInScrollContainer(
   element: Locator,
@@ -1113,4 +1117,16 @@ export function settingsToToml(settings: DeepPartial<Configuration>) {
 
 export function tomlToSettings(toml: string): DeepPartial<Configuration> {
   return TOML.parse(toml)
+}
+
+export function tomlToPerProjectSettings(
+  toml: string
+): DeepPartial<ProjectConfiguration> {
+  return TOML.parse(toml)
+}
+
+export function perProjectsettingsToToml(
+  settings: DeepPartial<ProjectConfiguration>
+) {
+  return TOML.stringify(settings as any)
 }

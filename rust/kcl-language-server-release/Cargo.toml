@@ -1,6 +1,6 @@
 [package]
 name = "kcl-language-server-release"
-version = "0.1.50"
+version = "0.1.55"
 edition = "2021"
 authors = ["KittyCAD Inc <kcl@kittycad.io>"]
 publish = false
@@ -21,7 +21,7 @@ slog = { workspace = true }
 slog-async = { workspace = true }
 slog-json = { workspace = true }
 slog-term = { workspace = true }
-time = "0.3.37"
+time = "0.3.40"
 tokio = { workspace = true, features = ["full"] }
 tracing-subscriber = { workspace = true }
 xshell = "0.2.6"

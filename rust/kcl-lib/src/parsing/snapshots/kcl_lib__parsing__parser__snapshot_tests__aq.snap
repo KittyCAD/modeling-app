@@ -1,14 +1,16 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
 ---
 {
   "body": [
     {
+      "commentStart": 0,
       "end": 28,
       "expression": {
         "arguments": [
           {
+            "commentStart": 4,
             "end": 5,
             "raw": "5",
             "start": 4,
@@ -20,6 +22,7 @@ expression: actual
             }
           },
           {
+            "commentStart": 7,
             "end": 14,
             "raw": "\"hello\"",
             "start": 7,
@@ -28,19 +31,38 @@ expression: actual
             "value": "hello"
           },
           {
+            "abs_path": false,
+            "commentStart": 16,
             "end": 27,
-            "name": "aIdentifier",
+            "name": {
+              "commentStart": 16,
+              "end": 27,
+              "name": "aIdentifier",
+              "start": 16,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 16,
-            "type": "Identifier",
-            "type": "Identifier"
+            "type": "Name",
+            "type": "Name"
           }
         ],
         "callee": {
+          "abs_path": false,
+          "commentStart": 0,
           "end": 3,
-          "name": "log",
+          "name": {
+            "commentStart": 0,
+            "end": 3,
+            "name": "log",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 0,
-          "type": "Identifier"
+          "type": "Name"
         },
+        "commentStart": 0,
         "end": 28,
         "start": 0,
         "type": "CallExpression",
@@ -51,6 +73,7 @@ expression: actual
       "type": "ExpressionStatement"
     }
   ],
+  "commentStart": 0,
   "end": 28,
   "start": 0
 }

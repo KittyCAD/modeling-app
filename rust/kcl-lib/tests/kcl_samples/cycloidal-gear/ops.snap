@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed cycloidal-gear.kcl
 ---
 [
@@ -7,33 +7,25 @@ description: Operations executed cycloidal-gear.kcl
     "type": "UserDefinedFunctionCall",
     "name": "cycloidalGear",
     "functionSourceRange": [
-      222,
-      1721,
+      221,
+      1685,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1723,
-      1757,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionCall",
     "name": "gearSketch",
     "functionSourceRange": [
-      448,
-      1512,
+      447,
+      1476,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1622,
-      1635,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -51,30 +43,18 @@ description: Operations executed cycloidal-gear.kcl
             }
           }
         },
-        "sourceRange": [
-          571,
-          578,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "offsetPlane",
-    "sourceRange": [
-      544,
-      579,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "XY"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
-      "sourceRange": [
-        556,
-        560,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -84,19 +64,11 @@ description: Operations executed cycloidal-gear.kcl
           "type": "Plane",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          544,
-          579,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      530,
-      580,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -110,11 +82,7 @@ description: Operations executed cycloidal-gear.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      637,
-      664,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -129,11 +97,7 @@ description: Operations executed cycloidal-gear.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      679,
-      707,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -148,11 +112,7 @@ description: Operations executed cycloidal-gear.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      739,
-      766,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -167,11 +127,67 @@ description: Operations executed cycloidal-gear.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      781,
-      809,
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
       0
-    ]
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.1485,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -185,11 +201,7 @@ description: Operations executed cycloidal-gear.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1398,
-          1481,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -198,19 +210,11 @@ description: Operations executed cycloidal-gear.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1483,
-          1484,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      1393,
-      1485,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -221,17 +225,13 @@ description: Operations executed cycloidal-gear.kcl
     "type": "UserDefinedFunctionCall",
     "name": "gearSketch",
     "functionSourceRange": [
-      448,
-      1512,
+      447,
+      1476,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1641,
-      1667,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -243,30 +243,18 @@ description: Operations executed cycloidal-gear.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          571,
-          578,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "offsetPlane",
-    "sourceRange": [
-      544,
-      579,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "XY"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
-      "sourceRange": [
-        556,
-        560,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -276,19 +264,11 @@ description: Operations executed cycloidal-gear.kcl
           "type": "Plane",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          544,
-          579,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      530,
-      580,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -302,11 +282,7 @@ description: Operations executed cycloidal-gear.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      637,
-      664,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -321,11 +297,7 @@ description: Operations executed cycloidal-gear.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      679,
-      707,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -340,11 +312,7 @@ description: Operations executed cycloidal-gear.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      739,
-      766,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -359,11 +327,67 @@ description: Operations executed cycloidal-gear.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      781,
-      809,
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
       0
-    ]
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.1485,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -377,11 +401,7 @@ description: Operations executed cycloidal-gear.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1398,
-          1481,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -390,19 +410,11 @@ description: Operations executed cycloidal-gear.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1483,
-          1484,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      1393,
-      1485,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -413,17 +425,13 @@ description: Operations executed cycloidal-gear.kcl
     "type": "UserDefinedFunctionCall",
     "name": "gearSketch",
     "functionSourceRange": [
-      448,
-      1512,
+      447,
+      1476,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1673,
-      1695,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -441,30 +449,18 @@ description: Operations executed cycloidal-gear.kcl
             }
           }
         },
-        "sourceRange": [
-          571,
-          578,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "offsetPlane",
-    "sourceRange": [
-      544,
-      579,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "XY"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
-      "sourceRange": [
-        556,
-        560,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -474,19 +470,11 @@ description: Operations executed cycloidal-gear.kcl
           "type": "Plane",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          544,
-          579,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      530,
-      580,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -500,11 +488,7 @@ description: Operations executed cycloidal-gear.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      637,
-      664,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -519,11 +503,7 @@ description: Operations executed cycloidal-gear.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      679,
-      707,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -538,11 +518,7 @@ description: Operations executed cycloidal-gear.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      739,
-      766,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -557,11 +533,67 @@ description: Operations executed cycloidal-gear.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      781,
-      809,
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
       0
-    ]
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.1485,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -575,11 +607,7 @@ description: Operations executed cycloidal-gear.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1398,
-          1481,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -588,19 +616,11 @@ description: Operations executed cycloidal-gear.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1483,
-          1484,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      1393,
-      1485,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -633,19 +653,11 @@ description: Operations executed cycloidal-gear.kcl
             }
           ]
         },
-        "sourceRange": [
-          1616,
-          1699,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "loft",
-    "sourceRange": [
-      1611,
-      1700,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },

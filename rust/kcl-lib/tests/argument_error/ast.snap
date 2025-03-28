@@ -1,17 +1,20 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing argument_error.kcl
 ---
 {
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 22,
+          "commentStart": 3,
+          "end": 0,
           "id": {
-            "end": 4,
+            "commentStart": 3,
+            "end": 0,
             "name": "f",
-            "start": 3,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -19,9 +22,10 @@ description: Result of parsing argument_error.kcl
               "body": [
                 {
                   "argument": {
-                    "end": 20,
+                    "commentStart": 19,
+                    "end": 0,
                     "raw": "5",
-                    "start": 19,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -29,57 +33,73 @@ description: Result of parsing argument_error.kcl
                       "suffix": "None"
                     }
                   },
-                  "end": 20,
-                  "start": 12,
+                  "commentStart": 12,
+                  "end": 0,
+                  "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 22,
-              "start": 8
+              "commentStart": 8,
+              "end": 0,
+              "start": 0
             },
-            "end": 22,
+            "commentStart": 4,
+            "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 6,
+                  "commentStart": 5,
+                  "end": 0,
                   "name": "i",
-                  "start": 5,
+                  "start": 0,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 4,
+            "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 3,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 22,
+        "end": 0,
         "kind": "fn",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 38,
+        "commentStart": 22,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 29,
-              "name": "f",
-              "start": 28,
-              "type": "Identifier",
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 28,
+              "end": 0,
+              "name": {
+                "commentStart": 28,
+                "end": 0,
+                "name": "f",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             },
             {
+              "commentStart": 31,
               "elements": [
                 {
-                  "end": 33,
+                  "commentStart": 32,
+                  "end": 0,
                   "raw": "0",
-                  "start": 32,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -88,9 +108,10 @@ description: Result of parsing argument_error.kcl
                   }
                 },
                 {
-                  "end": 36,
+                  "commentStart": 35,
+                  "end": 0,
                   "raw": "1",
-                  "start": 35,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -99,35 +120,47 @@ description: Result of parsing argument_error.kcl
                   }
                 }
               ],
-              "end": 37,
-              "start": 31,
+              "end": 0,
+              "start": 0,
               "type": "ArrayExpression",
               "type": "ArrayExpression"
             }
           ],
           "callee": {
-            "end": 27,
-            "name": "map",
-            "start": 24,
-            "type": "Identifier"
+            "abs_path": false,
+            "commentStart": 24,
+            "end": 0,
+            "name": {
+              "commentStart": 24,
+              "end": 0,
+              "name": "map",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
           },
-          "end": 38,
-          "start": 24,
+          "commentStart": 24,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 24,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 39,
+    "commentStart": 0,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "end": 24,
-            "start": 22,
+            "commentStart": 22,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

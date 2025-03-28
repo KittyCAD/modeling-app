@@ -1037,7 +1037,7 @@ class ArcSegment implements SegmentUtils {
       endAngle,
       scale,
       color: grey, // Red color for the angle indicator
-    }) as Line
+    })
     angleIndicator.name = 'angleIndicator'
 
     // Create a new angle indicator for the end angle
@@ -1048,7 +1048,7 @@ class ArcSegment implements SegmentUtils {
       endAngle: (endAngle * Math.PI) / 180,
       scale,
       color: grey, // Green color for the end angle indicator
-    }) as Line
+    })
     endAngleIndicator.name = 'endAngleIndicator'
 
     // Create a length indicator for the end angle

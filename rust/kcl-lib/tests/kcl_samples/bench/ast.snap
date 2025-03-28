@@ -6,18 +6,22 @@ description: Result of parsing bench.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 394,
         "declaration": {
-          "end": 439,
+          "commentStart": 423,
+          "end": 0,
           "id": {
-            "end": 434,
+            "commentStart": 423,
+            "end": 0,
             "name": "benchLength",
-            "start": 423,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 439,
+            "commentStart": 437,
+            "end": 0,
             "raw": "56",
-            "start": 437,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -25,44 +29,56 @@ description: Result of parsing bench.kcl
               "suffix": "None"
             }
           },
-          "start": 423,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 439,
+        "end": 0,
         "kind": "const",
-        "start": 423,
+        "preComments": [
+          "// Define the bench length"
+        ],
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 546,
+        "commentStart": 439,
+        "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "bench-parts.kcl"
         },
+        "preComments": [
+          "",
+          "",
+          "// Import various constants and functions from our library"
+        ],
         "selector": {
           "type": "List",
           "items": [
             {
               "alias": null,
-              "end": 523,
+              "commentStart": 507,
+              "end": 0,
               "name": {
-                "end": 523,
+                "commentStart": 507,
+                "end": 0,
                 "name": "dividerThickness",
-                "start": 507,
+                "start": 0,
                 "type": "Identifier"
               },
-              "start": 507,
+              "start": 0,
               "type": "ImportItem"
             }
           ]
         },
-        "start": 500,
+        "start": 0,
         "type": "ImportStatement",
         "type": "ImportStatement"
       },
       {
-        "end": 584,
+        "commentStart": 547,
+        "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "bench-parts.kcl"
@@ -72,24 +88,27 @@ description: Result of parsing bench.kcl
           "items": [
             {
               "alias": null,
-              "end": 561,
+              "commentStart": 554,
+              "end": 0,
               "name": {
-                "end": 561,
+                "commentStart": 554,
+                "end": 0,
                 "name": "divider",
-                "start": 554,
+                "start": 0,
                 "type": "Identifier"
               },
-              "start": 554,
+              "start": 0,
               "type": "ImportItem"
             }
           ]
         },
-        "start": 547,
+        "start": 0,
         "type": "ImportStatement",
         "type": "ImportStatement"
       },
       {
-        "end": 624,
+        "commentStart": 585,
+        "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "bench-parts.kcl"
@@ -99,24 +118,27 @@ description: Result of parsing bench.kcl
           "items": [
             {
               "alias": null,
-              "end": 601,
+              "commentStart": 592,
+              "end": 0,
               "name": {
-                "end": 601,
+                "commentStart": 592,
+                "end": 0,
                 "name": "connector",
-                "start": 592,
+                "start": 0,
                 "type": "Identifier"
               },
-              "start": 592,
+              "start": 0,
               "type": "ImportItem"
             }
           ]
         },
-        "start": 585,
+        "start": 0,
         "type": "ImportStatement",
         "type": "ImportStatement"
       },
       {
-        "end": 664,
+        "commentStart": 625,
+        "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "bench-parts.kcl"
@@ -126,24 +148,27 @@ description: Result of parsing bench.kcl
           "items": [
             {
               "alias": null,
-              "end": 641,
+              "commentStart": 632,
+              "end": 0,
               "name": {
-                "end": 641,
+                "commentStart": 632,
+                "end": 0,
                 "name": "seatSlats",
-                "start": 632,
+                "start": 0,
                 "type": "Identifier"
               },
-              "start": 632,
+              "start": 0,
               "type": "ImportItem"
             }
           ]
         },
-        "start": 625,
+        "start": 0,
         "type": "ImportStatement",
         "type": "ImportStatement"
       },
       {
-        "end": 704,
+        "commentStart": 665,
+        "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "bench-parts.kcl"
@@ -153,24 +178,27 @@ description: Result of parsing bench.kcl
           "items": [
             {
               "alias": null,
-              "end": 681,
+              "commentStart": 672,
+              "end": 0,
               "name": {
-                "end": 681,
+                "commentStart": 672,
+                "end": 0,
                 "name": "backSlats",
-                "start": 672,
+                "start": 0,
                 "type": "Identifier"
               },
-              "start": 672,
+              "start": 0,
               "type": "ImportItem"
             }
           ]
         },
-        "start": 665,
+        "start": 0,
         "type": "ImportStatement",
         "type": "ImportStatement"
       },
       {
-        "end": 742,
+        "commentStart": 705,
+        "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "bench-parts.kcl"
@@ -180,128 +208,79 @@ description: Result of parsing bench.kcl
           "items": [
             {
               "alias": null,
-              "end": 719,
+              "commentStart": 712,
+              "end": 0,
               "name": {
-                "end": 719,
+                "commentStart": 712,
+                "end": 0,
                 "name": "armRest",
-                "start": 712,
+                "start": 0,
                 "type": "Identifier"
               },
-              "start": 712,
+              "start": 0,
               "type": "ImportItem"
             }
           ]
         },
-        "start": 705,
+        "start": 0,
         "type": "ImportStatement",
         "type": "ImportStatement"
       },
       {
-        "end": 816,
+        "commentStart": 742,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 815,
-              "raw": "\"YZ\"",
-              "start": 811,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "YZ"
-            }
-          ],
-          "callee": {
-            "end": 810,
-            "name": "divider",
-            "start": 803,
-            "type": "Identifier"
-          },
-          "end": 816,
-          "start": 803,
-          "type": "CallExpression",
-          "type": "CallExpression"
-        },
-        "start": 803,
-        "type": "ExpressionStatement",
-        "type": "ExpressionStatement"
-      },
-      {
-        "end": 870,
-        "expression": {
-          "arguments": [
-            {
-              "arguments": [
-                {
-                  "type": "LabeledArg",
-                  "label": {
-                    "end": 850,
-                    "name": "offset",
-                    "start": 844,
-                    "type": "Identifier"
-                  },
-                  "arg": {
-                    "end": 868,
-                    "left": {
-                      "end": 864,
-                      "name": "benchLength",
-                      "start": 853,
-                      "type": "Identifier",
-                      "type": "Identifier"
-                    },
-                    "operator": "/",
-                    "right": {
-                      "end": 868,
-                      "raw": "2",
-                      "start": 867,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 2.0,
-                        "suffix": "None"
-                      }
-                    },
-                    "start": 853,
-                    "type": "BinaryExpression",
-                    "type": "BinaryExpression"
-                  }
-                }
-              ],
-              "callee": {
-                "end": 836,
-                "name": "offsetPlane",
-                "start": 825,
+              "abs_path": false,
+              "commentStart": 811,
+              "end": 0,
+              "name": {
+                "commentStart": 811,
+                "end": 0,
+                "name": "YZ",
+                "start": 0,
                 "type": "Identifier"
               },
-              "end": 869,
-              "start": 825,
-              "type": "CallExpressionKw",
-              "type": "CallExpressionKw",
-              "unlabeled": {
-                "end": 842,
-                "raw": "\"-YZ\"",
-                "start": 837,
-                "type": "Literal",
-                "type": "Literal",
-                "value": "-YZ"
-              }
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             }
           ],
           "callee": {
-            "end": 824,
-            "name": "divider",
-            "start": 817,
-            "type": "Identifier"
+            "abs_path": false,
+            "commentStart": 803,
+            "end": 0,
+            "name": {
+              "commentStart": 803,
+              "end": 0,
+              "name": "divider",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
           },
-          "end": 870,
-          "start": 817,
+          "commentStart": 803,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 817,
+        "preComments": [
+          "",
+          "",
+          "// Create the dividers, these hold the seat and back slats"
+        ],
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 923,
+        "commentStart": 815,
+        "end": 0,
         "expression": {
           "arguments": [
             {
@@ -309,108 +288,287 @@ description: Result of parsing bench.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "end": 903,
+                    "commentStart": 840,
+                    "end": 0,
                     "name": "offset",
-                    "start": 897,
+                    "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "end": 921,
+                    "commentStart": 849,
+                    "end": 0,
                     "left": {
-                      "end": 917,
-                      "name": "benchLength",
-                      "start": 906,
-                      "type": "Identifier",
-                      "type": "Identifier"
-                    },
-                    "operator": "/",
-                    "right": {
-                      "end": 921,
-                      "raw": "2",
-                      "start": 920,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 2.0,
-                        "suffix": "None"
-                      }
-                    },
-                    "start": 906,
-                    "type": "BinaryExpression",
-                    "type": "BinaryExpression"
-                  }
-                }
-              ],
-              "callee": {
-                "end": 890,
-                "name": "offsetPlane",
-                "start": 879,
-                "type": "Identifier"
-              },
-              "end": 922,
-              "start": 879,
-              "type": "CallExpressionKw",
-              "type": "CallExpressionKw",
-              "unlabeled": {
-                "end": 895,
-                "raw": "\"YZ\"",
-                "start": 891,
-                "type": "Literal",
-                "type": "Literal",
-                "value": "YZ"
-              }
-            }
-          ],
-          "callee": {
-            "end": 878,
-            "name": "divider",
-            "start": 871,
-            "type": "Identifier"
-          },
-          "end": 923,
-          "start": 871,
-          "type": "CallExpression",
-          "type": "CallExpression"
-        },
-        "start": 871,
-        "type": "ExpressionStatement",
-        "type": "ExpressionStatement"
-      },
-      {
-        "end": 1039,
-        "expression": {
-          "arguments": [
-            {
-              "arguments": [
-                {
-                  "type": "LabeledArg",
-                  "label": {
-                    "end": 1005,
-                    "name": "offset",
-                    "start": 999,
-                    "type": "Identifier"
-                  },
-                  "arg": {
-                    "end": 1024,
-                    "left": {
-                      "argument": {
-                        "end": 1020,
+                      "abs_path": false,
+                      "commentStart": 849,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 849,
+                        "end": 0,
                         "name": "benchLength",
-                        "start": 1009,
-                        "type": "Identifier",
+                        "start": 0,
                         "type": "Identifier"
                       },
-                      "end": 1020,
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "operator": "/",
+                    "right": {
+                      "commentStart": 863,
+                      "end": 0,
+                      "raw": "2",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 2.0,
+                        "suffix": "None"
+                      }
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  }
+                }
+              ],
+              "callee": {
+                "abs_path": false,
+                "commentStart": 823,
+                "end": 0,
+                "name": {
+                  "commentStart": 823,
+                  "end": 0,
+                  "name": "offsetPlane",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name"
+              },
+              "commentStart": 823,
+              "end": 0,
+              "start": 0,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": {
+                "argument": {
+                  "abs_path": false,
+                  "commentStart": 836,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 836,
+                    "end": 0,
+                    "name": "YZ",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                },
+                "commentStart": 835,
+                "end": 0,
+                "operator": "-",
+                "start": 0,
+                "type": "UnaryExpression",
+                "type": "UnaryExpression"
+              }
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 815,
+            "end": 0,
+            "name": {
+              "commentStart": 815,
+              "end": 0,
+              "name": "divider",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 815,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 867,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 891,
+                    "end": 0,
+                    "name": "offset",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 900,
+                    "end": 0,
+                    "left": {
+                      "abs_path": false,
+                      "commentStart": 900,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 900,
+                        "end": 0,
+                        "name": "benchLength",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "operator": "/",
+                    "right": {
+                      "commentStart": 914,
+                      "end": 0,
+                      "raw": "2",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 2.0,
+                        "suffix": "None"
+                      }
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  }
+                }
+              ],
+              "callee": {
+                "abs_path": false,
+                "commentStart": 875,
+                "end": 0,
+                "name": {
+                  "commentStart": 875,
+                  "end": 0,
+                  "name": "offsetPlane",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name"
+              },
+              "commentStart": 875,
+              "end": 0,
+              "start": 0,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": {
+                "abs_path": false,
+                "commentStart": 887,
+                "end": 0,
+                "name": {
+                  "commentStart": 887,
+                  "end": 0,
+                  "name": "YZ",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
+              }
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 867,
+            "end": 0,
+            "name": {
+              "commentStart": 867,
+              "end": 0,
+              "name": "divider",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 867,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 917,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 991,
+                    "end": 0,
+                    "name": "offset",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 1000,
+                    "end": 0,
+                    "left": {
+                      "argument": {
+                        "abs_path": false,
+                        "commentStart": 1001,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 1001,
+                          "end": 0,
+                          "name": "benchLength",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "commentStart": 1000,
+                      "end": 0,
                       "operator": "-",
-                      "start": 1008,
+                      "start": 0,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     },
                     "operator": "/",
                     "right": {
-                      "end": 1024,
+                      "commentStart": 1015,
+                      "end": 0,
                       "raw": "2",
-                      "start": 1023,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -418,56 +576,99 @@ description: Result of parsing bench.kcl
                         "suffix": "None"
                       }
                     },
-                    "start": 1008,
+                    "start": 0,
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   }
                 }
               ],
               "callee": {
-                "end": 992,
-                "name": "offsetPlane",
-                "start": 981,
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 975,
+                "end": 0,
+                "name": {
+                  "commentStart": 975,
+                  "end": 0,
+                  "name": "offsetPlane",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name"
               },
-              "end": 1025,
-              "start": 981,
+              "commentStart": 975,
+              "end": 0,
+              "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
-                "end": 997,
-                "raw": "\"YZ\"",
-                "start": 993,
-                "type": "Literal",
-                "type": "Literal",
-                "value": "YZ"
+                "abs_path": false,
+                "commentStart": 987,
+                "end": 0,
+                "name": {
+                  "commentStart": 987,
+                  "end": 0,
+                  "name": "YZ",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               }
             },
             {
-              "end": 1038,
-              "name": "benchLength",
-              "start": 1027,
-              "type": "Identifier",
+              "abs_path": false,
+              "commentStart": 1019,
+              "end": 0,
+              "name": {
+                "commentStart": 1019,
+                "end": 0,
+                "name": "benchLength",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 965,
+            "end": 0,
+            "name": {
+              "commentStart": 965,
+              "end": 0,
+              "name": "connector",
+              "start": 0,
               "type": "Identifier"
-            }
-          ],
-          "callee": {
-            "end": 980,
-            "name": "connector",
-            "start": 971,
-            "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
           },
-          "end": 1039,
-          "start": 971,
+          "commentStart": 965,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 971,
+        "preComments": [
+          "",
+          "",
+          "// Create the connectors to join the dividers"
+        ],
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 1176,
+        "commentStart": 1031,
+        "end": 0,
         "expression": {
           "arguments": [
             {
@@ -475,34 +676,48 @@ description: Result of parsing bench.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "end": 1100,
+                    "commentStart": 1084,
+                    "end": 0,
                     "name": "offset",
-                    "start": 1094,
+                    "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "end": 1142,
+                    "commentStart": 1093,
+                    "end": 0,
                     "left": {
-                      "end": 1119,
+                      "commentStart": 1093,
+                      "end": 0,
                       "left": {
                         "argument": {
-                          "end": 1115,
-                          "name": "benchLength",
-                          "start": 1104,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "abs_path": false,
+                          "commentStart": 1094,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 1094,
+                            "end": 0,
+                            "name": "benchLength",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
                         },
-                        "end": 1115,
+                        "commentStart": 1093,
+                        "end": 0,
                         "operator": "-",
-                        "start": 1103,
+                        "start": 0,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 1119,
+                        "commentStart": 1108,
+                        "end": 0,
                         "raw": "2",
-                        "start": 1118,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -510,25 +725,36 @@ description: Result of parsing bench.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 1103,
+                      "start": 0,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
                     "operator": "-",
                     "right": {
-                      "end": 1142,
+                      "commentStart": 1113,
+                      "end": 0,
                       "left": {
-                        "end": 1138,
-                        "name": "dividerThickness",
-                        "start": 1122,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "abs_path": false,
+                        "commentStart": 1113,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 1113,
+                          "end": 0,
+                          "name": "dividerThickness",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 1142,
+                        "commentStart": 1132,
+                        "end": 0,
                         "raw": "2",
-                        "start": 1141,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -536,74 +762,127 @@ description: Result of parsing bench.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 1122,
+                      "start": 0,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
-                    "start": 1103,
+                    "start": 0,
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   }
                 }
               ],
               "callee": {
-                "end": 1087,
-                "name": "offsetPlane",
-                "start": 1076,
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 1068,
+                "end": 0,
+                "name": {
+                  "commentStart": 1068,
+                  "end": 0,
+                  "name": "offsetPlane",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name"
               },
-              "end": 1143,
-              "start": 1076,
+              "commentStart": 1068,
+              "end": 0,
+              "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
-                "end": 1092,
-                "raw": "\"YZ\"",
-                "start": 1088,
-                "type": "Literal",
-                "type": "Literal",
-                "value": "YZ"
+                "abs_path": false,
+                "commentStart": 1080,
+                "end": 0,
+                "name": {
+                  "commentStart": 1080,
+                  "end": 0,
+                  "name": "YZ",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               }
             },
             {
-              "end": 1175,
+              "commentStart": 1137,
+              "end": 0,
               "left": {
-                "end": 1156,
-                "name": "benchLength",
-                "start": 1145,
-                "type": "Identifier",
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 1137,
+                "end": 0,
+                "name": {
+                  "commentStart": 1137,
+                  "end": 0,
+                  "name": "benchLength",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "+",
               "right": {
-                "end": 1175,
-                "name": "dividerThickness",
-                "start": 1159,
-                "type": "Identifier",
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 1151,
+                "end": 0,
+                "name": {
+                  "commentStart": 1151,
+                  "end": 0,
+                  "name": "dividerThickness",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               },
-              "start": 1145,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             }
           ],
           "callee": {
-            "end": 1075,
-            "name": "seatSlats",
-            "start": 1066,
-            "type": "Identifier"
+            "abs_path": false,
+            "commentStart": 1058,
+            "end": 0,
+            "name": {
+              "commentStart": 1058,
+              "end": 0,
+              "name": "seatSlats",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
           },
-          "end": 1176,
-          "start": 1066,
+          "commentStart": 1058,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1066,
+        "preComments": [
+          "",
+          "",
+          "// Create the seat slats"
+        ],
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 1313,
+        "commentStart": 1168,
+        "end": 0,
         "expression": {
           "arguments": [
             {
@@ -611,34 +890,48 @@ description: Result of parsing bench.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "end": 1237,
+                    "commentStart": 1221,
+                    "end": 0,
                     "name": "offset",
-                    "start": 1231,
+                    "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "end": 1279,
+                    "commentStart": 1230,
+                    "end": 0,
                     "left": {
-                      "end": 1256,
+                      "commentStart": 1230,
+                      "end": 0,
                       "left": {
                         "argument": {
-                          "end": 1252,
-                          "name": "benchLength",
-                          "start": 1241,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "abs_path": false,
+                          "commentStart": 1231,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 1231,
+                            "end": 0,
+                            "name": "benchLength",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
                         },
-                        "end": 1252,
+                        "commentStart": 1230,
+                        "end": 0,
                         "operator": "-",
-                        "start": 1240,
+                        "start": 0,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 1256,
+                        "commentStart": 1245,
+                        "end": 0,
                         "raw": "2",
-                        "start": 1255,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -646,25 +939,36 @@ description: Result of parsing bench.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 1240,
+                      "start": 0,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
                     "operator": "-",
                     "right": {
-                      "end": 1279,
+                      "commentStart": 1250,
+                      "end": 0,
                       "left": {
-                        "end": 1275,
-                        "name": "dividerThickness",
-                        "start": 1259,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "abs_path": false,
+                        "commentStart": 1250,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 1250,
+                          "end": 0,
+                          "name": "dividerThickness",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 1279,
+                        "commentStart": 1269,
+                        "end": 0,
                         "raw": "2",
-                        "start": 1278,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -672,98 +976,178 @@ description: Result of parsing bench.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 1259,
+                      "start": 0,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
-                    "start": 1240,
+                    "start": 0,
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   }
                 }
               ],
               "callee": {
-                "end": 1224,
-                "name": "offsetPlane",
-                "start": 1213,
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 1205,
+                "end": 0,
+                "name": {
+                  "commentStart": 1205,
+                  "end": 0,
+                  "name": "offsetPlane",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name"
               },
-              "end": 1280,
-              "start": 1213,
+              "commentStart": 1205,
+              "end": 0,
+              "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
-                "end": 1229,
-                "raw": "\"YZ\"",
-                "start": 1225,
-                "type": "Literal",
-                "type": "Literal",
-                "value": "YZ"
+                "abs_path": false,
+                "commentStart": 1217,
+                "end": 0,
+                "name": {
+                  "commentStart": 1217,
+                  "end": 0,
+                  "name": "YZ",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               }
             },
             {
-              "end": 1312,
+              "commentStart": 1274,
+              "end": 0,
               "left": {
-                "end": 1293,
-                "name": "benchLength",
-                "start": 1282,
-                "type": "Identifier",
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 1274,
+                "end": 0,
+                "name": {
+                  "commentStart": 1274,
+                  "end": 0,
+                  "name": "benchLength",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "+",
               "right": {
-                "end": 1312,
-                "name": "dividerThickness",
-                "start": 1296,
-                "type": "Identifier",
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 1288,
+                "end": 0,
+                "name": {
+                  "commentStart": 1288,
+                  "end": 0,
+                  "name": "dividerThickness",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               },
-              "start": 1282,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             }
           ],
           "callee": {
-            "end": 1212,
-            "name": "backSlats",
-            "start": 1203,
-            "type": "Identifier"
+            "abs_path": false,
+            "commentStart": 1195,
+            "end": 0,
+            "name": {
+              "commentStart": 1195,
+              "end": 0,
+              "name": "backSlats",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
           },
-          "end": 1313,
-          "start": 1203,
+          "commentStart": 1195,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1203,
+        "preComments": [
+          "",
+          "",
+          "// Create the back slats"
+        ],
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 1370,
+        "commentStart": 1305,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 1352,
-              "raw": "\"-YZ\"",
-              "start": 1347,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "-YZ"
+              "argument": {
+                "abs_path": false,
+                "commentStart": 1340,
+                "end": 0,
+                "name": {
+                  "commentStart": 1340,
+                  "end": 0,
+                  "name": "YZ",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
+              },
+              "commentStart": 1339,
+              "end": 0,
+              "operator": "-",
+              "start": 0,
+              "type": "UnaryExpression",
+              "type": "UnaryExpression"
             },
             {
-              "end": 1369,
+              "commentStart": 1344,
+              "end": 0,
               "left": {
-                "end": 1365,
-                "name": "benchLength",
-                "start": 1354,
-                "type": "Identifier",
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 1344,
+                "end": 0,
+                "name": {
+                  "commentStart": 1344,
+                  "end": 0,
+                  "name": "benchLength",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "/",
               "right": {
-                "end": 1369,
+                "commentStart": 1358,
+                "end": 0,
                 "raw": "2",
-                "start": 1368,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -771,59 +1155,103 @@ description: Result of parsing bench.kcl
                   "suffix": "None"
                 }
               },
-              "start": 1354,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             }
           ],
           "callee": {
-            "end": 1346,
-            "name": "armRest",
-            "start": 1339,
-            "type": "Identifier"
+            "abs_path": false,
+            "commentStart": 1331,
+            "end": 0,
+            "name": {
+              "commentStart": 1331,
+              "end": 0,
+              "name": "armRest",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
           },
-          "end": 1370,
-          "start": 1339,
+          "commentStart": 1331,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1339,
+        "preComments": [
+          "",
+          "",
+          "// Create the arm rests"
+        ],
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 1403,
+        "commentStart": 1361,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 1384,
-              "raw": "\"-YZ\"",
-              "start": 1379,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "-YZ"
-            },
-            {
-              "end": 1402,
-              "left": {
-                "argument": {
-                  "end": 1398,
-                  "name": "benchLength",
-                  "start": 1387,
-                  "type": "Identifier",
+              "argument": {
+                "abs_path": false,
+                "commentStart": 1370,
+                "end": 0,
+                "name": {
+                  "commentStart": 1370,
+                  "end": 0,
+                  "name": "YZ",
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1398,
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
+              },
+              "commentStart": 1369,
+              "end": 0,
+              "operator": "-",
+              "start": 0,
+              "type": "UnaryExpression",
+              "type": "UnaryExpression"
+            },
+            {
+              "commentStart": 1374,
+              "end": 0,
+              "left": {
+                "argument": {
+                  "abs_path": false,
+                  "commentStart": 1375,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 1375,
+                    "end": 0,
+                    "name": "benchLength",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                },
+                "commentStart": 1374,
+                "end": 0,
                 "operator": "-",
-                "start": 1386,
+                "start": 0,
                 "type": "UnaryExpression",
                 "type": "UnaryExpression"
               },
               "operator": "/",
               "right": {
-                "end": 1402,
+                "commentStart": 1389,
+                "end": 0,
                 "raw": "2",
-                "start": 1401,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -831,191 +1259,102 @@ description: Result of parsing bench.kcl
                   "suffix": "None"
                 }
               },
-              "start": 1386,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             }
           ],
           "callee": {
-            "end": 1378,
-            "name": "armRest",
-            "start": 1371,
-            "type": "Identifier"
+            "abs_path": false,
+            "commentStart": 1361,
+            "end": 0,
+            "name": {
+              "commentStart": 1361,
+              "end": 0,
+              "name": "armRest",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
           },
-          "end": 1403,
-          "start": 1371,
+          "commentStart": 1361,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1371,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 1404,
+    "commentStart": 0,
+    "end": 0,
     "innerAttrs": [
       {
-        "end": 394,
+        "commentStart": 0,
+        "end": 0,
         "name": {
-          "end": 370,
+          "commentStart": 362,
+          "end": 0,
           "name": "settings",
-          "start": 362,
+          "start": 0,
           "type": "Identifier"
         },
+        "preComments": [
+          "// Bench",
+          "// This is a slight remix of Depep1's original 3D Boaty (https://www.printables.com/model/1141963-3d-boaty). This is a tool used for benchmarking 3D FDM printers for bed adhesion, overhangs, bridging and top surface quality. The name of this file is a bit of misnomer, the shape of the object is a typical park bench.",
+          "",
+          "",
+          "// Set units in millimeters (mm)"
+        ],
         "properties": [
           {
-            "end": 393,
+            "commentStart": 371,
+            "end": 0,
             "key": {
-              "end": 388,
+              "commentStart": 371,
+              "end": 0,
               "name": "defaultLengthUnit",
-              "start": 371,
+              "start": 0,
               "type": "Identifier"
             },
-            "start": 371,
+            "start": 0,
             "type": "ObjectProperty",
             "value": {
-              "end": 393,
-              "name": "mm",
-              "start": 391,
-              "type": "Identifier",
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 391,
+              "end": 0,
+              "name": {
+                "commentStart": 391,
+                "end": 0,
+                "name": "mm",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],
-        "start": 361,
+        "start": 0,
         "type": "Annotation"
       }
     ],
     "nonCodeMeta": {
-      "nonCodeNodes": {
-        "0": [
-          {
-            "end": 499,
-            "start": 439,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "Import various constants and functions from our library",
-              "style": "line"
-            }
-          }
-        ],
-        "6": [
-          {
-            "end": 802,
-            "start": 742,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "Create the dividers, these hold the seat and back slats",
-              "style": "line"
-            }
-          }
-        ],
-        "9": [
-          {
-            "end": 970,
-            "start": 923,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "Create the connectors to join the dividers",
-              "style": "line"
-            }
-          }
-        ],
-        "10": [
-          {
-            "end": 1065,
-            "start": 1039,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "Create the seat slats",
-              "style": "line"
-            }
-          }
-        ],
-        "11": [
-          {
-            "end": 1202,
-            "start": 1176,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "Create the back slats",
-              "style": "line"
-            }
-          }
-        ],
-        "12": [
-          {
-            "end": 1338,
-            "start": 1313,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "Create the arm rests",
-              "style": "line"
-            }
-          }
-        ]
-      },
+      "nonCodeNodes": {},
       "startNodes": [
         {
-          "end": 8,
+          "commentStart": 394,
+          "end": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
-            "type": "blockComment",
-            "value": "Bench",
-            "style": "line"
-          }
-        },
-        {
-          "end": 326,
-          "start": 9,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "This is a slight remix of Depep1's original 3D Boaty (https://www.printables.com/model/1141963-3d-boaty). This is a tool used for benchmarking 3D FDM printers for bed adhesion, overhangs, bridging and top surface quality. The name of this file is a bit of misnomer, the shape of the object is a typical park bench.",
-            "style": "line"
-          }
-        },
-        {
-          "end": 328,
-          "start": 326,
-          "type": "NonCodeNode",
-          "value": {
             "type": "newLine"
-          }
-        },
-        {
-          "end": 360,
-          "start": 328,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Set units in millimeters (mm)",
-            "style": "line"
-          }
-        },
-        {
-          "end": 396,
-          "start": 394,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "newLine"
-          }
-        },
-        {
-          "end": 422,
-          "start": 396,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Define the bench length",
-            "style": "line"
           }
         }
       ]

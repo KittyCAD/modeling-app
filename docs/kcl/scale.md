@@ -1,10 +1,10 @@
 ---
 title: "scale"
-excerpt: "Scale a solid."
+excerpt: "Scale a solid or a sketch."
 layout: manual
 ---
 
-Scale a solid.
+Scale a solid or a sketch.
 
 By default the transform is applied in local sketch axis, therefore the origin will not move.
 
@@ -12,10 +12,10 @@ If you want to apply the transform in global space, set `global` to `true`. The 
 
 ```js
 scale(
-  solids: SolidOrImportedGeometry,
+  objects: SolidOrSketchOrImportedGeometry,
   scale: [number],
   global?: bool,
-): SolidOrImportedGeometry
+): SolidOrSketchOrImportedGeometry
 ```
 
 
@@ -23,13 +23,13 @@ scale(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solids` | [`SolidOrImportedGeometry`](/docs/kcl/types/SolidOrImportedGeometry) | The solid or set of solids to scale. | Yes |
+| `objects` | [`SolidOrSketchOrImportedGeometry`](/docs/kcl/types/SolidOrSketchOrImportedGeometry) | The solid, sketch, or set of solids or sketches to scale. | Yes |
 | `scale` | [`[number]`](/docs/kcl/types/number) | The scale factor for the x, y, and z axes. | Yes |
 | `global` | [`bool`](/docs/kcl/types/bool) | If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move. | No |
 
 ### Returns
 
-[`SolidOrImportedGeometry`](/docs/kcl/types/SolidOrImportedGeometry) - Data for a solid or an imported geometry.
+[`SolidOrSketchOrImportedGeometry`](/docs/kcl/types/SolidOrSketchOrImportedGeometry) - Data for a solid or an imported geometry.
 
 
 ### Examples
@@ -37,9 +37,8 @@ scale(
 ```js
 // Scale a pipe.
 
-
 // Create a path for the sweep.
-sweepPath = startSketchOn('XZ')
+sweepPath = startSketchOn(XZ)
   |> startProfileAt([0.05, 0.05], %)
   |> line(end = [0, 7])
   |> tangentialArc({ offset = 90, radius = 5 }, %)
@@ -48,10 +47,10 @@ sweepPath = startSketchOn('XZ')
   |> line(end = [0, 7])
 
 // Create a hole for the pipe.
-pipeHole = startSketchOn('XY')
+pipeHole = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1.5)
 
-sweepSketch = startSketchOn('XY')
+sweepSketch = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 2)
   |> hole(pipeHole, %)
   |> sweep(path = sweepPath)
@@ -76,7 +75,7 @@ cube
 // Sweep two sketches along the same path.
 
 
-sketch001 = startSketchOn('XY')
+sketch001 = startSketchOn(XY)
 rectangleSketch = startProfileAt([-200, 23.86], sketch001)
   |> angledLine([0, 73.47], %, $rectangleSegmentA001)
   |> angledLine([
@@ -92,7 +91,7 @@ rectangleSketch = startProfileAt([-200, 23.86], sketch001)
 
 circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
 
-sketch002 = startSketchOn('YZ')
+sketch002 = startSketchOn(YZ)
 sweepPath = startProfileAt([0, 0], sketch002)
   |> yLine(length = 231.81)
   |> tangentialArc({ radius = 80, offset = -90 }, %)

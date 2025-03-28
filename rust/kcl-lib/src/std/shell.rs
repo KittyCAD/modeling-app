@@ -7,20 +7,13 @@ use kittycad_modeling_cmds as kcmc;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{
-        kcl_value::{ArrayLen, RuntimeType},
-        ExecState, KclValue, PrimitiveType, Solid,
-    },
+    execution::{types::RuntimeType, ExecState, KclValue, Solid},
     std::{sketch::FaceTag, Args},
 };
 
 /// Create a shell.
 pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids = args.get_unlabeled_kw_arg_typed(
-        "solids",
-        &RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty),
-        exec_state,
-    )?;
+    let solids = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
     let thickness = args.get_kw_arg("thickness")?;
     let faces = args.get_kw_arg("faces")?;
 
@@ -210,7 +203,7 @@ async fn inner_shell(
     for solid in &solids {
         // Flush the batch for our fillets/chamfers if there are any.
         // If we do not do these for sketch on face, things will fail with face does not exist.
-        args.flush_batch_for_solids(exec_state, vec![solid.clone()]).await?;
+        args.flush_batch_for_solids(exec_state, &[solid.clone()]).await?;
 
         for tag in &faces {
             let extrude_plane_id = tag.get_face_id(solid, exec_state, &args, false).await?;
@@ -320,7 +313,7 @@ async fn inner_hollow(
 ) -> Result<Box<Solid>, KclError> {
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not do these for sketch on face, things will fail with face does not exist.
-    args.flush_batch_for_solids(exec_state, vec![(*solid).clone()]).await?;
+    args.flush_batch_for_solids(exec_state, &[(*solid).clone()]).await?;
 
     args.batch_modeling_cmd(
         exec_state.next_uuid(),

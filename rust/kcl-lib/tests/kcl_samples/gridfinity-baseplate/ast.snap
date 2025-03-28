@@ -6,18 +6,22 @@ description: Result of parsing gridfinity-baseplate.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 344,
         "declaration": {
-          "end": 382,
+          "commentStart": 366,
+          "end": 0,
           "id": {
-            "end": 375,
+            "commentStart": 366,
+            "end": 0,
             "name": "binLength",
-            "start": 366,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 382,
+            "commentStart": 378,
+            "end": 0,
             "raw": "42.0",
-            "start": 378,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -25,28 +29,35 @@ description: Result of parsing gridfinity-baseplate.kcl
               "suffix": "None"
             }
           },
-          "start": 366,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 382,
+        "end": 0,
         "kind": "const",
-        "start": 366,
+        "preComments": [
+          "// Define constants"
+        ],
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 383,
         "declaration": {
-          "end": 401,
+          "commentStart": 383,
+          "end": 0,
           "id": {
-            "end": 395,
+            "commentStart": 383,
+            "end": 0,
             "name": "cornerRadius",
-            "start": 383,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 401,
+            "commentStart": 398,
+            "end": 0,
             "raw": "4.0",
-            "start": 398,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -54,28 +65,32 @@ description: Result of parsing gridfinity-baseplate.kcl
               "suffix": "None"
             }
           },
-          "start": 383,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 401,
+        "end": 0,
         "kind": "const",
-        "start": 383,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 402,
         "declaration": {
-          "end": 417,
+          "commentStart": 402,
+          "end": 0,
           "id": {
-            "end": 411,
+            "commentStart": 402,
+            "end": 0,
             "name": "firstStep",
-            "start": 402,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 417,
+            "commentStart": 414,
+            "end": 0,
             "raw": "0.7",
-            "start": 414,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -83,28 +98,32 @@ description: Result of parsing gridfinity-baseplate.kcl
               "suffix": "None"
             }
           },
-          "start": 402,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 417,
+        "end": 0,
         "kind": "const",
-        "start": 402,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 418,
         "declaration": {
-          "end": 434,
+          "commentStart": 418,
+          "end": 0,
           "id": {
-            "end": 428,
+            "commentStart": 418,
+            "end": 0,
             "name": "secondStep",
-            "start": 418,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 434,
+            "commentStart": 431,
+            "end": 0,
             "raw": "1.8",
-            "start": 431,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -112,28 +131,32 @@ description: Result of parsing gridfinity-baseplate.kcl
               "suffix": "None"
             }
           },
-          "start": 418,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 434,
+        "end": 0,
         "kind": "const",
-        "start": 418,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 435,
         "declaration": {
-          "end": 451,
+          "commentStart": 435,
+          "end": 0,
           "id": {
-            "end": 444,
+            "commentStart": 435,
+            "end": 0,
             "name": "thirdStep",
-            "start": 435,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 451,
+            "commentStart": 447,
+            "end": 0,
             "raw": "2.15",
-            "start": 447,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -141,28 +164,32 @@ description: Result of parsing gridfinity-baseplate.kcl
               "suffix": "None"
             }
           },
-          "start": 435,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 451,
+        "end": 0,
         "kind": "const",
-        "start": 435,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 451,
         "declaration": {
-          "end": 506,
+          "commentStart": 489,
+          "end": 0,
           "id": {
-            "end": 502,
+            "commentStart": 489,
+            "end": 0,
             "name": "countBinWidth",
-            "start": 489,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 506,
+            "commentStart": 505,
+            "end": 0,
             "raw": "2",
-            "start": 505,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -170,28 +197,37 @@ description: Result of parsing gridfinity-baseplate.kcl
               "suffix": "None"
             }
           },
-          "start": 489,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 506,
+        "end": 0,
         "kind": "const",
-        "start": 489,
+        "preComments": [
+          "",
+          "",
+          "// Number of bins in each direction"
+        ],
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 507,
         "declaration": {
-          "end": 525,
+          "commentStart": 507,
+          "end": 0,
           "id": {
-            "end": 521,
+            "commentStart": 507,
+            "end": 0,
             "name": "countBinLength",
-            "start": 507,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 525,
+            "commentStart": 524,
+            "end": 0,
             "raw": "3",
-            "start": 524,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -199,87 +235,130 @@ description: Result of parsing gridfinity-baseplate.kcl
               "suffix": "None"
             }
           },
-          "start": 507,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 525,
+        "end": 0,
         "kind": "const",
-        "start": 507,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 525,
         "declaration": {
-          "end": 669,
+          "commentStart": 626,
+          "end": 0,
           "id": {
-            "end": 632,
+            "commentStart": 626,
+            "end": 0,
             "name": "height",
-            "start": 626,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 669,
+            "commentStart": 635,
+            "end": 0,
             "left": {
-              "end": 657,
+              "commentStart": 635,
+              "end": 0,
               "left": {
-                "end": 644,
-                "name": "firstStep",
-                "start": 635,
-                "type": "Identifier",
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 635,
+                "end": 0,
+                "name": {
+                  "commentStart": 635,
+                  "end": 0,
+                  "name": "firstStep",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "+",
               "right": {
-                "end": 657,
-                "name": "secondStep",
-                "start": 647,
-                "type": "Identifier",
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 647,
+                "end": 0,
+                "name": {
+                  "commentStart": 647,
+                  "end": 0,
+                  "name": "secondStep",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               },
-              "start": 635,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             "operator": "+",
             "right": {
-              "end": 669,
-              "name": "thirdStep",
-              "start": 660,
-              "type": "Identifier",
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 660,
+              "end": 0,
+              "name": {
+                "commentStart": 660,
+                "end": 0,
+                "name": "thirdStep",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             },
-            "start": 635,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 626,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 669,
+        "end": 0,
         "kind": "const",
-        "start": 626,
+        "preComments": [
+          "",
+          "",
+          "// The total height of the baseplate is a summation of the vertical heights of the baseplate steps"
+        ],
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 669,
         "declaration": {
-          "end": 1059,
+          "commentStart": 741,
+          "end": 0,
           "id": {
-            "end": 745,
+            "commentStart": 741,
+            "end": 0,
             "name": "face",
-            "start": 741,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "body": {
               "body": [
                 {
+                  "commentStart": 757,
                   "declaration": {
-                    "end": 1037,
+                    "commentStart": 757,
+                    "end": 0,
                     "id": {
-                      "end": 767,
+                      "commentStart": 757,
+                      "end": 0,
                       "name": "faceSketch",
-                      "start": 757,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
@@ -287,32 +366,53 @@ description: Result of parsing gridfinity-baseplate.kcl
                         {
                           "arguments": [
                             {
-                              "end": 789,
-                              "name": "plane",
-                              "start": 784,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "abs_path": false,
+                              "commentStart": 784,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 784,
+                                "end": 0,
+                                "name": "plane",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
-                            "end": 783,
-                            "name": "startSketchOn",
-                            "start": 770,
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 770,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 770,
+                              "end": 0,
+                              "name": "startSketchOn",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
                           },
-                          "end": 790,
-                          "start": 770,
+                          "commentStart": 770,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
+                              "commentStart": 813,
                               "elements": [
                                 {
-                                  "end": 815,
+                                  "commentStart": 814,
+                                  "end": 0,
                                   "raw": "0",
-                                  "start": 814,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -321,9 +421,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                                   }
                                 },
                                 {
-                                  "end": 818,
+                                  "commentStart": 817,
+                                  "end": 0,
                                   "raw": "0",
-                                  "start": 817,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -332,26 +433,37 @@ description: Result of parsing gridfinity-baseplate.kcl
                                   }
                                 }
                               ],
-                              "end": 819,
-                              "start": 813,
+                              "end": 0,
+                              "start": 0,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             },
                             {
-                              "end": 822,
-                              "start": 821,
+                              "commentStart": 821,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 812,
-                            "name": "startProfileAt",
-                            "start": 798,
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 798,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 798,
+                              "end": 0,
+                              "name": "startProfileAt",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
                           },
-                          "end": 823,
-                          "start": 798,
+                          "commentStart": 798,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -360,28 +472,48 @@ description: Result of parsing gridfinity-baseplate.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 843,
+                                "commentStart": 837,
+                                "end": 0,
                                 "name": "length",
-                                "start": 837,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 852,
-                                "name": "height",
-                                "start": 846,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "abs_path": false,
+                                "commentStart": 846,
+                                "end": 0,
+                                "name": {
+                                  "commentStart": 846,
+                                  "end": 0,
+                                  "name": "height",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 836,
-                            "name": "yLine",
-                            "start": 831,
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 831,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 831,
+                              "end": 0,
+                              "name": "yLine",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
                           },
-                          "end": 853,
-                          "start": 831,
+                          "commentStart": 831,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -389,23 +521,27 @@ description: Result of parsing gridfinity-baseplate.kcl
                         {
                           "arguments": [
                             {
-                              "end": 916,
+                              "commentStart": 881,
+                              "end": 0,
                               "properties": [
                                 {
-                                  "end": 894,
+                                  "commentStart": 883,
+                                  "end": 0,
                                   "key": {
-                                    "end": 888,
+                                    "commentStart": 883,
+                                    "end": 0,
                                     "name": "angle",
-                                    "start": 883,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 883,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
                                     "argument": {
-                                      "end": 894,
+                                      "commentStart": 892,
+                                      "end": 0,
                                       "raw": "45",
-                                      "start": 892,
+                                      "start": 0,
                                       "type": "Literal",
                                       "type": "Literal",
                                       "value": {
@@ -413,51 +549,74 @@ description: Result of parsing gridfinity-baseplate.kcl
                                         "suffix": "None"
                                       }
                                     },
-                                    "end": 894,
+                                    "commentStart": 891,
+                                    "end": 0,
                                     "operator": "-",
-                                    "start": 891,
+                                    "start": 0,
                                     "type": "UnaryExpression",
                                     "type": "UnaryExpression"
                                   }
                                 },
                                 {
-                                  "end": 914,
+                                  "commentStart": 896,
+                                  "end": 0,
                                   "key": {
-                                    "end": 902,
+                                    "commentStart": 896,
+                                    "end": 0,
                                     "name": "length",
-                                    "start": 896,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 896,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 914,
-                                    "name": "thirdStep",
-                                    "start": 905,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "abs_path": false,
+                                    "commentStart": 905,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 905,
+                                      "end": 0,
+                                      "name": "thirdStep",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
-                              "start": 881,
+                              "start": 0,
                               "type": "ObjectExpression",
                               "type": "ObjectExpression"
                             },
                             {
-                              "end": 919,
-                              "start": 918,
+                              "commentStart": 918,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 880,
-                            "name": "angledLineOfYLength",
-                            "start": 861,
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 861,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 861,
+                              "end": 0,
+                              "name": "angledLineOfYLength",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
                           },
-                          "end": 920,
-                          "start": 861,
+                          "commentStart": 861,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -466,35 +625,56 @@ description: Result of parsing gridfinity-baseplate.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 940,
+                                "commentStart": 934,
+                                "end": 0,
                                 "name": "length",
-                                "start": 934,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
                                 "argument": {
-                                  "end": 954,
-                                  "name": "secondStep",
-                                  "start": 944,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "abs_path": false,
+                                  "commentStart": 944,
+                                  "end": 0,
+                                  "name": {
+                                    "commentStart": 944,
+                                    "end": 0,
+                                    "name": "secondStep",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
-                                "end": 954,
+                                "commentStart": 943,
+                                "end": 0,
                                 "operator": "-",
-                                "start": 943,
+                                "start": 0,
                                 "type": "UnaryExpression",
                                 "type": "UnaryExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 933,
-                            "name": "yLine",
-                            "start": 928,
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 928,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 928,
+                              "end": 0,
+                              "name": "yLine",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
                           },
-                          "end": 955,
-                          "start": 928,
+                          "commentStart": 928,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -502,23 +682,27 @@ description: Result of parsing gridfinity-baseplate.kcl
                         {
                           "arguments": [
                             {
-                              "end": 1018,
+                              "commentStart": 983,
+                              "end": 0,
                               "properties": [
                                 {
-                                  "end": 996,
+                                  "commentStart": 985,
+                                  "end": 0,
                                   "key": {
-                                    "end": 990,
+                                    "commentStart": 985,
+                                    "end": 0,
                                     "name": "angle",
-                                    "start": 985,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 985,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
                                     "argument": {
-                                      "end": 996,
+                                      "commentStart": 994,
+                                      "end": 0,
                                       "raw": "45",
-                                      "start": 994,
+                                      "start": 0,
                                       "type": "Literal",
                                       "type": "Literal",
                                       "value": {
@@ -526,131 +710,186 @@ description: Result of parsing gridfinity-baseplate.kcl
                                         "suffix": "None"
                                       }
                                     },
-                                    "end": 996,
+                                    "commentStart": 993,
+                                    "end": 0,
                                     "operator": "-",
-                                    "start": 993,
+                                    "start": 0,
                                     "type": "UnaryExpression",
                                     "type": "UnaryExpression"
                                   }
                                 },
                                 {
-                                  "end": 1016,
+                                  "commentStart": 998,
+                                  "end": 0,
                                   "key": {
-                                    "end": 1004,
+                                    "commentStart": 998,
+                                    "end": 0,
                                     "name": "length",
-                                    "start": 998,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 998,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1016,
-                                    "name": "firstStep",
-                                    "start": 1007,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "abs_path": false,
+                                    "commentStart": 1007,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 1007,
+                                      "end": 0,
+                                      "name": "firstStep",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
-                              "start": 983,
+                              "start": 0,
                               "type": "ObjectExpression",
                               "type": "ObjectExpression"
                             },
                             {
-                              "end": 1021,
-                              "start": 1020,
+                              "commentStart": 1020,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 982,
-                            "name": "angledLineOfYLength",
-                            "start": 963,
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 963,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 963,
+                              "end": 0,
+                              "name": "angledLineOfYLength",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
                           },
-                          "end": 1022,
-                          "start": 963,
+                          "commentStart": 963,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [],
                           "callee": {
-                            "end": 1035,
-                            "name": "close",
-                            "start": 1030,
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 1030,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 1030,
+                              "end": 0,
+                              "name": "close",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
                           },
-                          "end": 1037,
-                          "start": 1030,
+                          "commentStart": 1030,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 1037,
-                      "start": 770,
+                      "commentStart": 770,
+                      "end": 0,
+                      "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
-                    "start": 757,
+                    "start": 0,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1037,
+                  "end": 0,
                   "kind": "const",
-                  "start": 757,
+                  "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "argument": {
-                    "end": 1057,
-                    "name": "faceSketch",
-                    "start": 1047,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "abs_path": false,
+                    "commentStart": 1047,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 1047,
+                      "end": 0,
+                      "name": "faceSketch",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "end": 1057,
-                  "start": 1040,
+                  "commentStart": 1040,
+                  "end": 0,
+                  "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 1059,
-              "start": 753
+              "commentStart": 753,
+              "end": 0,
+              "start": 0
             },
-            "end": 1059,
+            "commentStart": 745,
+            "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 751,
+                  "commentStart": 746,
+                  "end": 0,
                   "name": "plane",
-                  "start": 746,
+                  "start": 0,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 745,
+            "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 741,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 1059,
+        "end": 0,
         "kind": "fn",
-        "start": 738,
+        "preComments": [
+          "",
+          "",
+          "// define a function which builds the profile of the baseplate bin"
+        ],
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 1059,
         "declaration": {
-          "end": 1206,
+          "commentStart": 1097,
+          "end": 0,
           "id": {
-            "end": 1107,
+            "commentStart": 1097,
+            "end": 0,
             "name": "singleSide",
-            "start": 1097,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -658,35 +897,57 @@ description: Result of parsing gridfinity-baseplate.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1172,
+                  "commentStart": 1164,
+                  "end": 0,
                   "name": "length",
-                  "start": 1166,
+                  "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 1204,
+                  "commentStart": 1173,
+                  "end": 0,
                   "left": {
-                    "end": 1184,
-                    "name": "binLength",
-                    "start": 1175,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "abs_path": false,
+                    "commentStart": 1173,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 1173,
+                      "end": 0,
+                      "name": "binLength",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "-",
                   "right": {
-                    "end": 1204,
+                    "commentStart": 1186,
+                    "end": 0,
                     "left": {
-                      "end": 1200,
-                      "name": "cornerRadius",
-                      "start": 1188,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "abs_path": false,
+                      "commentStart": 1186,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 1186,
+                        "end": 0,
+                        "name": "cornerRadius",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "*",
                     "right": {
-                      "end": 1204,
+                      "commentStart": 1201,
+                      "end": 0,
                       "raw": "2",
-                      "start": 1203,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -694,24 +955,34 @@ description: Result of parsing gridfinity-baseplate.kcl
                         "suffix": "None"
                       }
                     },
-                    "start": 1188,
+                    "start": 0,
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
-                  "start": 1175,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 }
               }
             ],
             "callee": {
-              "end": 1117,
-              "name": "extrude",
-              "start": 1110,
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 1110,
+              "end": 0,
+              "name": {
+                "commentStart": 1110,
+                "end": 0,
+                "name": "extrude",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
             },
-            "end": 1206,
-            "start": 1110,
+            "commentStart": 1110,
+            "end": 0,
+            "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
@@ -721,68 +992,114 @@ description: Result of parsing gridfinity-baseplate.kcl
                     {
                       "type": "LabeledArg",
                       "label": {
-                        "end": 1147,
+                        "commentStart": 1139,
+                        "end": 0,
                         "name": "offset",
-                        "start": 1141,
+                        "start": 0,
                         "type": "Identifier"
                       },
                       "arg": {
-                        "end": 1162,
-                        "name": "cornerRadius",
-                        "start": 1150,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "abs_path": false,
+                        "commentStart": 1148,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 1148,
+                          "end": 0,
+                          "name": "cornerRadius",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
                       }
                     }
                   ],
                   "callee": {
-                    "end": 1134,
-                    "name": "offsetPlane",
-                    "start": 1123,
-                    "type": "Identifier"
+                    "abs_path": false,
+                    "commentStart": 1123,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 1123,
+                      "end": 0,
+                      "name": "offsetPlane",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name"
                   },
-                  "end": 1163,
-                  "start": 1123,
+                  "commentStart": 1123,
+                  "end": 0,
+                  "start": 0,
                   "type": "CallExpressionKw",
                   "type": "CallExpressionKw",
                   "unlabeled": {
-                    "end": 1139,
-                    "raw": "\"YZ\"",
-                    "start": 1135,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "YZ"
+                    "abs_path": false,
+                    "commentStart": 1135,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 1135,
+                      "end": 0,
+                      "name": "YZ",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   }
                 }
               ],
               "callee": {
-                "end": 1122,
-                "name": "face",
-                "start": 1118,
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 1118,
+                "end": 0,
+                "name": {
+                  "commentStart": 1118,
+                  "end": 0,
+                  "name": "face",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name"
               },
-              "end": 1164,
-              "start": 1118,
+              "commentStart": 1118,
+              "end": 0,
+              "start": 0,
               "type": "CallExpression",
               "type": "CallExpression"
             }
           },
-          "start": 1097,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 1206,
+        "end": 0,
         "kind": "const",
-        "start": 1097,
+        "preComments": [
+          "",
+          "",
+          "// extrude a single side of the bin"
+        ],
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 1204,
         "declaration": {
-          "end": 1444,
+          "commentStart": 1271,
+          "end": 0,
           "id": {
-            "end": 1278,
+            "commentStart": 1271,
+            "end": 0,
             "name": "sides",
-            "start": 1273,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -790,15 +1107,17 @@ description: Result of parsing gridfinity-baseplate.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1326,
+                  "commentStart": 1314,
+                  "end": 0,
                   "name": "arcDegrees",
-                  "start": 1316,
+                  "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 1332,
+                  "commentStart": 1327,
+                  "end": 0,
                   "raw": "360",
-                  "start": 1329,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -810,17 +1129,20 @@ description: Result of parsing gridfinity-baseplate.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1340,
+                  "commentStart": 1334,
+                  "end": 0,
                   "name": "axis",
-                  "start": 1336,
+                  "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 1341,
                   "elements": [
                     {
-                      "end": 1345,
+                      "commentStart": 1342,
+                      "end": 0,
                       "raw": "0",
-                      "start": 1344,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -829,9 +1151,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                       }
                     },
                     {
-                      "end": 1348,
+                      "commentStart": 1345,
+                      "end": 0,
                       "raw": "0",
-                      "start": 1347,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -840,9 +1163,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                       }
                     },
                     {
-                      "end": 1351,
+                      "commentStart": 1348,
+                      "end": 0,
                       "raw": "1",
-                      "start": 1350,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -851,8 +1175,8 @@ description: Result of parsing gridfinity-baseplate.kcl
                       }
                     }
                   ],
-                  "end": 1352,
-                  "start": 1343,
+                  "end": 0,
+                  "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
                 }
@@ -860,27 +1184,40 @@ description: Result of parsing gridfinity-baseplate.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1362,
+                  "commentStart": 1354,
+                  "end": 0,
                   "name": "center",
-                  "start": 1356,
+                  "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 1363,
                   "elements": [
                     {
-                      "end": 1379,
+                      "commentStart": 1364,
+                      "end": 0,
                       "left": {
-                        "end": 1375,
-                        "name": "binLength",
-                        "start": 1366,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "abs_path": false,
+                        "commentStart": 1364,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 1364,
+                          "end": 0,
+                          "name": "binLength",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 1379,
+                        "commentStart": 1376,
+                        "end": 0,
                         "raw": "2",
-                        "start": 1378,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -888,24 +1225,35 @@ description: Result of parsing gridfinity-baseplate.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 1366,
+                      "start": 0,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
                     {
-                      "end": 1394,
+                      "commentStart": 1379,
+                      "end": 0,
                       "left": {
-                        "end": 1390,
-                        "name": "binLength",
-                        "start": 1381,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "abs_path": false,
+                        "commentStart": 1379,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 1379,
+                          "end": 0,
+                          "name": "binLength",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 1394,
+                        "commentStart": 1391,
+                        "end": 0,
                         "raw": "2",
-                        "start": 1393,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -913,14 +1261,15 @@ description: Result of parsing gridfinity-baseplate.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 1381,
+                      "start": 0,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
                     {
-                      "end": 1397,
+                      "commentStart": 1394,
+                      "end": 0,
                       "raw": "0",
-                      "start": 1396,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -929,8 +1278,8 @@ description: Result of parsing gridfinity-baseplate.kcl
                       }
                     }
                   ],
-                  "end": 1398,
-                  "start": 1365,
+                  "end": 0,
+                  "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
                 }
@@ -938,15 +1287,17 @@ description: Result of parsing gridfinity-baseplate.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1411,
+                  "commentStart": 1400,
+                  "end": 0,
                   "name": "instances",
-                  "start": 1402,
+                  "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 1415,
+                  "commentStart": 1412,
+                  "end": 0,
                   "raw": "4",
-                  "start": 1414,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -958,15 +1309,17 @@ description: Result of parsing gridfinity-baseplate.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1435,
+                  "commentStart": 1417,
+                  "end": 0,
                   "name": "rotateDuplicates",
-                  "start": 1419,
+                  "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 1442,
+                  "commentStart": 1436,
+                  "end": 0,
                   "raw": "true",
-                  "start": 1438,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": true
@@ -974,73 +1327,108 @@ description: Result of parsing gridfinity-baseplate.kcl
               }
             ],
             "callee": {
-              "end": 1298,
-              "name": "patternCircular3d",
-              "start": 1281,
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 1279,
+              "end": 0,
+              "name": {
+                "commentStart": 1279,
+                "end": 0,
+                "name": "patternCircular3d",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
             },
-            "end": 1444,
-            "start": 1281,
+            "commentStart": 1279,
+            "end": 0,
+            "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 1312,
-              "name": "singleSide",
-              "start": 1302,
-              "type": "Identifier",
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 1300,
+              "end": 0,
+              "name": {
+                "commentStart": 1300,
+                "end": 0,
+                "name": "singleSide",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             }
           },
-          "start": 1273,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 1444,
+        "end": 0,
         "kind": "const",
-        "start": 1273,
+        "preComments": [
+          "",
+          "",
+          "// create the other sides of the bin by using a circular pattern"
+        ],
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 1443,
         "declaration": {
-          "end": 1567,
+          "commentStart": 1471,
+          "end": 0,
           "id": {
-            "end": 1479,
+            "commentStart": 1471,
+            "end": 0,
             "name": "axis000",
-            "start": 1472,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 1567,
+            "commentStart": 1481,
+            "end": 0,
             "properties": [
               {
-                "end": 1565,
+                "commentStart": 1485,
+                "end": 0,
                 "key": {
-                  "end": 1492,
+                  "commentStart": 1485,
+                  "end": 0,
                   "name": "custom",
-                  "start": 1486,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "start": 1486,
+                "start": 0,
                 "type": "ObjectProperty",
                 "value": {
-                  "end": 1565,
+                  "commentStart": 1494,
+                  "end": 0,
                   "properties": [
                     {
-                      "end": 1518,
+                      "commentStart": 1500,
+                      "end": 0,
                       "key": {
-                        "end": 1505,
+                        "commentStart": 1500,
+                        "end": 0,
                         "name": "axis",
-                        "start": 1501,
+                        "start": 0,
                         "type": "Identifier"
                       },
-                      "start": 1501,
+                      "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "commentStart": 1507,
                         "elements": [
                           {
-                            "end": 1512,
+                            "commentStart": 1508,
+                            "end": 0,
                             "raw": "0.0",
-                            "start": 1509,
+                            "start": 0,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1049,9 +1437,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                             }
                           },
                           {
-                            "end": 1517,
+                            "commentStart": 1513,
+                            "end": 0,
                             "raw": "1.0",
-                            "start": 1514,
+                            "start": 0,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1060,211 +1449,101 @@ description: Result of parsing gridfinity-baseplate.kcl
                             }
                           }
                         ],
-                        "end": 1518,
-                        "start": 1508,
+                        "end": 0,
+                        "start": 0,
                         "type": "ArrayExpression",
                         "type": "ArrayExpression"
                       }
                     },
                     {
-                      "end": 1561,
+                      "commentStart": 1523,
+                      "end": 0,
                       "key": {
-                        "end": 1530,
+                        "commentStart": 1523,
+                        "end": 0,
                         "name": "origin",
-                        "start": 1524,
+                        "start": 0,
                         "type": "Identifier"
                       },
-                      "start": 1524,
+                      "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "commentStart": 1532,
                         "elements": [
                           {
-                            "end": 1546,
-                            "name": "cornerRadius",
-                            "start": 1534,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 1533,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 1533,
+                              "end": 0,
+                              "name": "cornerRadius",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
                           },
                           {
-                            "end": 1560,
-                            "name": "cornerRadius",
-                            "start": 1548,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 1547,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 1547,
+                              "end": 0,
+                              "name": "cornerRadius",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
-                        "end": 1561,
-                        "start": 1533,
+                        "end": 0,
+                        "start": 0,
                         "type": "ArrayExpression",
                         "type": "ArrayExpression"
                       }
                     }
                   ],
-                  "start": 1495,
+                  "start": 0,
                   "type": "ObjectExpression",
                   "type": "ObjectExpression"
                 }
               }
             ],
-            "start": 1482,
+            "start": 0,
             "type": "ObjectExpression",
             "type": "ObjectExpression"
           },
-          "start": 1472,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 1567,
+        "end": 0,
         "kind": "const",
-        "start": 1472,
+        "preComments": [
+          "",
+          "",
+          "// define an axis axis000"
+        ],
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 1566,
         "declaration": {
-          "end": 1709,
+          "commentStart": 1605,
+          "end": 0,
           "id": {
-            "end": 1618,
+            "commentStart": 1605,
+            "end": 0,
             "name": "singleCorner",
-            "start": 1606,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [
-              {
-                "end": 1660,
-                "properties": [
-                  {
-                    "end": 1642,
-                    "key": {
-                      "end": 1636,
-                      "name": "angle",
-                      "start": 1631,
-                      "type": "Identifier"
-                    },
-                    "start": 1631,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "argument": {
-                        "end": 1642,
-                        "raw": "90",
-                        "start": 1640,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 90.0,
-                          "suffix": "None"
-                        }
-                      },
-                      "end": 1642,
-                      "operator": "-",
-                      "start": 1639,
-                      "type": "UnaryExpression",
-                      "type": "UnaryExpression"
-                    }
-                  },
-                  {
-                    "end": 1658,
-                    "key": {
-                      "end": 1648,
-                      "name": "axis",
-                      "start": 1644,
-                      "type": "Identifier"
-                    },
-                    "start": 1644,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "end": 1658,
-                      "name": "axis000",
-                      "start": 1651,
-                      "type": "Identifier",
-                      "type": "Identifier"
-                    }
-                  }
-                ],
-                "start": 1629,
-                "type": "ObjectExpression",
-                "type": "ObjectExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "arguments": [
-                      {
-                        "type": "LabeledArg",
-                        "label": {
-                          "end": 1691,
-                          "name": "offset",
-                          "start": 1685,
-                          "type": "Identifier"
-                        },
-                        "arg": {
-                          "end": 1706,
-                          "name": "cornerRadius",
-                          "start": 1694,
-                          "type": "Identifier",
-                          "type": "Identifier"
-                        }
-                      }
-                    ],
-                    "callee": {
-                      "end": 1678,
-                      "name": "offsetPlane",
-                      "start": 1667,
-                      "type": "Identifier"
-                    },
-                    "end": 1707,
-                    "start": 1667,
-                    "type": "CallExpressionKw",
-                    "type": "CallExpressionKw",
-                    "unlabeled": {
-                      "end": 1683,
-                      "raw": "\"YZ\"",
-                      "start": 1679,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": "YZ"
-                    }
-                  }
-                ],
-                "callee": {
-                  "end": 1666,
-                  "name": "face",
-                  "start": 1662,
-                  "type": "Identifier"
-                },
-                "end": 1708,
-                "start": 1662,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              }
-            ],
-            "callee": {
-              "end": 1628,
-              "name": "revolve",
-              "start": 1621,
-              "type": "Identifier"
-            },
-            "end": 1709,
-            "start": 1621,
-            "type": "CallExpression",
-            "type": "CallExpression"
-          },
-          "start": 1606,
-          "type": "VariableDeclarator"
-        },
-        "end": 1709,
-        "kind": "const",
-        "start": 1606,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "declaration": {
-          "end": 1919,
-          "id": {
-            "end": 1751,
-            "name": "corners",
-            "start": 1744,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -1272,15 +1551,213 @@ description: Result of parsing gridfinity-baseplate.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1801,
-                  "name": "arcDegrees",
-                  "start": 1791,
+                  "commentStart": 1674,
+                  "end": 0,
+                  "name": "angle",
+                  "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 1807,
+                  "argument": {
+                    "commentStart": 1683,
+                    "end": 0,
+                    "raw": "90",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 90.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "commentStart": 1682,
+                  "end": 0,
+                  "operator": "-",
+                  "start": 0,
+                  "type": "UnaryExpression",
+                  "type": "UnaryExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 1687,
+                  "end": 0,
+                  "name": "axis",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "abs_path": false,
+                  "commentStart": 1694,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 1694,
+                    "end": 0,
+                    "name": "axis000",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
+              }
+            ],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 1620,
+              "end": 0,
+              "name": {
+                "commentStart": 1620,
+                "end": 0,
+                "name": "revolve",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 1620,
+            "end": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "arguments": [
+                {
+                  "arguments": [
+                    {
+                      "type": "LabeledArg",
+                      "label": {
+                        "commentStart": 1649,
+                        "end": 0,
+                        "name": "offset",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "arg": {
+                        "abs_path": false,
+                        "commentStart": 1658,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 1658,
+                          "end": 0,
+                          "name": "cornerRadius",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      }
+                    }
+                  ],
+                  "callee": {
+                    "abs_path": false,
+                    "commentStart": 1633,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 1633,
+                      "end": 0,
+                      "name": "offsetPlane",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name"
+                  },
+                  "commentStart": 1633,
+                  "end": 0,
+                  "start": 0,
+                  "type": "CallExpressionKw",
+                  "type": "CallExpressionKw",
+                  "unlabeled": {
+                    "abs_path": false,
+                    "commentStart": 1645,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 1645,
+                      "end": 0,
+                      "name": "YZ",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  }
+                }
+              ],
+              "callee": {
+                "abs_path": false,
+                "commentStart": 1628,
+                "end": 0,
+                "name": {
+                  "commentStart": 1628,
+                  "end": 0,
+                  "name": "face",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name"
+              },
+              "commentStart": 1628,
+              "end": 0,
+              "start": 0,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// create a single corner of the bin"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 1702,
+        "declaration": {
+          "commentStart": 1737,
+          "end": 0,
+          "id": {
+            "commentStart": 1737,
+            "end": 0,
+            "name": "corners",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 1784,
+                  "end": 0,
+                  "name": "arcDegrees",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 1797,
+                  "end": 0,
                   "raw": "360",
-                  "start": 1804,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -1292,17 +1769,20 @@ description: Result of parsing gridfinity-baseplate.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1815,
+                  "commentStart": 1804,
+                  "end": 0,
                   "name": "axis",
-                  "start": 1811,
+                  "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 1811,
                   "elements": [
                     {
-                      "end": 1820,
+                      "commentStart": 1812,
+                      "end": 0,
                       "raw": "0",
-                      "start": 1819,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1311,9 +1791,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                       }
                     },
                     {
-                      "end": 1823,
+                      "commentStart": 1815,
+                      "end": 0,
                       "raw": "0",
-                      "start": 1822,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1322,9 +1803,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                       }
                     },
                     {
-                      "end": 1826,
+                      "commentStart": 1818,
+                      "end": 0,
                       "raw": "1",
-                      "start": 1825,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1333,8 +1815,8 @@ description: Result of parsing gridfinity-baseplate.kcl
                       }
                     }
                   ],
-                  "end": 1827,
-                  "start": 1818,
+                  "end": 0,
+                  "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
                 }
@@ -1342,27 +1824,40 @@ description: Result of parsing gridfinity-baseplate.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1837,
+                  "commentStart": 1824,
+                  "end": 0,
                   "name": "center",
-                  "start": 1831,
+                  "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 1833,
                   "elements": [
                     {
-                      "end": 1854,
+                      "commentStart": 1834,
+                      "end": 0,
                       "left": {
-                        "end": 1850,
-                        "name": "binLength",
-                        "start": 1841,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "abs_path": false,
+                        "commentStart": 1834,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 1834,
+                          "end": 0,
+                          "name": "binLength",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 1854,
+                        "commentStart": 1846,
+                        "end": 0,
                         "raw": "2",
-                        "start": 1853,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -1370,24 +1865,35 @@ description: Result of parsing gridfinity-baseplate.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 1841,
+                      "start": 0,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
                     {
-                      "end": 1869,
+                      "commentStart": 1849,
+                      "end": 0,
                       "left": {
-                        "end": 1865,
-                        "name": "binLength",
-                        "start": 1856,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "abs_path": false,
+                        "commentStart": 1849,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 1849,
+                          "end": 0,
+                          "name": "binLength",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 1869,
+                        "commentStart": 1861,
+                        "end": 0,
                         "raw": "2",
-                        "start": 1868,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -1395,14 +1901,15 @@ description: Result of parsing gridfinity-baseplate.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 1856,
+                      "start": 0,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
                     {
-                      "end": 1872,
+                      "commentStart": 1864,
+                      "end": 0,
                       "raw": "0",
-                      "start": 1871,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1411,8 +1918,8 @@ description: Result of parsing gridfinity-baseplate.kcl
                       }
                     }
                   ],
-                  "end": 1873,
-                  "start": 1840,
+                  "end": 0,
+                  "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
                 }
@@ -1420,15 +1927,17 @@ description: Result of parsing gridfinity-baseplate.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1886,
+                  "commentStart": 1870,
+                  "end": 0,
                   "name": "instances",
-                  "start": 1877,
+                  "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 1890,
+                  "commentStart": 1882,
+                  "end": 0,
                   "raw": "4",
-                  "start": 1889,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -1440,15 +1949,17 @@ description: Result of parsing gridfinity-baseplate.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1910,
+                  "commentStart": 1887,
+                  "end": 0,
                   "name": "rotateDuplicates",
-                  "start": 1894,
+                  "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 1917,
+                  "commentStart": 1906,
+                  "end": 0,
                   "raw": "true",
-                  "start": 1913,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": true
@@ -1456,39 +1967,66 @@ description: Result of parsing gridfinity-baseplate.kcl
               }
             ],
             "callee": {
-              "end": 1771,
-              "name": "patternCircular3d",
-              "start": 1754,
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 1747,
+              "end": 0,
+              "name": {
+                "commentStart": 1747,
+                "end": 0,
+                "name": "patternCircular3d",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
             },
-            "end": 1919,
-            "start": 1754,
+            "commentStart": 1747,
+            "end": 0,
+            "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 1787,
-              "name": "singleCorner",
-              "start": 1775,
-              "type": "Identifier",
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 1768,
+              "end": 0,
+              "name": {
+                "commentStart": 1768,
+                "end": 0,
+                "name": "singleCorner",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             }
           },
-          "start": 1744,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 1919,
+        "end": 0,
         "kind": "const",
-        "start": 1744,
+        "preComments": [
+          "",
+          "",
+          "// create the corners of the bin"
+        ],
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 1913,
         "declaration": {
-          "end": 2301,
+          "commentStart": 1959,
+          "end": 0,
           "id": {
-            "end": 1979,
+            "commentStart": 1959,
+            "end": 0,
             "name": "basePlateSides",
-            "start": 1965,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -1498,17 +2036,20 @@ description: Result of parsing gridfinity-baseplate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2024,
+                      "commentStart": 2014,
+                      "end": 0,
                       "name": "axis",
-                      "start": 2020,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2021,
                       "elements": [
                         {
-                          "end": 2031,
+                          "commentStart": 2022,
+                          "end": 0,
                           "raw": "1.0",
-                          "start": 2028,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1517,9 +2058,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                           }
                         },
                         {
-                          "end": 2036,
+                          "commentStart": 2027,
+                          "end": 0,
                           "raw": "0.0",
-                          "start": 2033,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1528,9 +2070,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                           }
                         },
                         {
-                          "end": 2041,
+                          "commentStart": 2032,
+                          "end": 0,
                           "raw": "0.0",
-                          "start": 2038,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1539,8 +2082,8 @@ description: Result of parsing gridfinity-baseplate.kcl
                           }
                         }
                       ],
-                      "end": 2042,
-                      "start": 2027,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -1548,52 +2091,91 @@ description: Result of parsing gridfinity-baseplate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2060,
+                      "commentStart": 2045,
+                      "end": 0,
                       "name": "instances",
-                      "start": 2051,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2076,
-                      "name": "countBinWidth",
-                      "start": 2063,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "abs_path": false,
+                      "commentStart": 2057,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 2057,
+                        "end": 0,
+                        "name": "countBinWidth",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2093,
+                      "commentStart": 2079,
+                      "end": 0,
                       "name": "distance",
-                      "start": 2085,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2105,
-                      "name": "binLength",
-                      "start": 2096,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "abs_path": false,
+                      "commentStart": 2090,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 2090,
+                        "end": 0,
+                        "name": "binLength",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1997,
-                  "name": "patternLinear3d",
-                  "start": 1982,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 1976,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 1976,
+                    "end": 0,
+                    "name": "patternLinear3d",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 2112,
-                "start": 1982,
+                "commentStart": 1976,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
-                  "end": 2011,
-                  "name": "sides",
-                  "start": 2006,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 2000,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 2000,
+                    "end": 0,
+                    "name": "sides",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
                 }
               },
               {
@@ -1601,17 +2183,20 @@ description: Result of parsing gridfinity-baseplate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2146,
+                      "commentStart": 2129,
+                      "end": 0,
                       "name": "axis",
-                      "start": 2142,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2136,
                       "elements": [
                         {
-                          "end": 2153,
+                          "commentStart": 2137,
+                          "end": 0,
                           "raw": "0.0",
-                          "start": 2150,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1620,9 +2205,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                           }
                         },
                         {
-                          "end": 2158,
+                          "commentStart": 2142,
+                          "end": 0,
                           "raw": "1.0",
-                          "start": 2155,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1631,9 +2217,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                           }
                         },
                         {
-                          "end": 2163,
+                          "commentStart": 2147,
+                          "end": 0,
                           "raw": "0.0",
-                          "start": 2160,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1642,8 +2229,8 @@ description: Result of parsing gridfinity-baseplate.kcl
                           }
                         }
                       ],
-                      "end": 2164,
-                      "start": 2149,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -1651,56 +2238,88 @@ description: Result of parsing gridfinity-baseplate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2182,
+                      "commentStart": 2153,
+                      "end": 0,
                       "name": "instances",
-                      "start": 2173,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2199,
-                      "name": "countBinLength",
-                      "start": 2185,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "abs_path": false,
+                      "commentStart": 2165,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 2165,
+                        "end": 0,
+                        "name": "countBinLength",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2216,
+                      "commentStart": 2181,
+                      "end": 0,
                       "name": "distance",
-                      "start": 2208,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2228,
-                      "name": "binLength",
-                      "start": 2219,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "abs_path": false,
+                      "commentStart": 2192,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 2192,
+                        "end": 0,
+                        "name": "binLength",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2133,
-                  "name": "patternLinear3d",
-                  "start": 2118,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 2113,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 2113,
+                    "end": 0,
+                    "name": "patternLinear3d",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 2235,
-                "start": 2118,
+                "commentStart": 2113,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 2301,
+            "commentStart": 1976,
+            "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
-                    "end": 2301,
-                    "start": 2235,
+                    "commentStart": 2202,
+                    "end": 0,
+                    "start": 0,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -1712,26 +2331,34 @@ description: Result of parsing gridfinity-baseplate.kcl
               },
               "startNodes": []
             },
-            "start": 1982,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1965,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 2301,
+        "end": 0,
         "kind": "const",
-        "start": 1965,
+        "preComments": [
+          "",
+          "",
+          "// create the baseplate by patterning sides"
+        ],
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 2269,
         "declaration": {
-          "end": 2576,
+          "commentStart": 2269,
+          "end": 0,
           "id": {
-            "end": 2318,
+            "commentStart": 2269,
+            "end": 0,
             "name": "basePlateCorners",
-            "start": 2302,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -1741,17 +2368,20 @@ description: Result of parsing gridfinity-baseplate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2365,
+                      "commentStart": 2328,
+                      "end": 0,
                       "name": "axis",
-                      "start": 2361,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2335,
                       "elements": [
                         {
-                          "end": 2372,
+                          "commentStart": 2336,
+                          "end": 0,
                           "raw": "1.0",
-                          "start": 2369,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1760,9 +2390,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                           }
                         },
                         {
-                          "end": 2377,
+                          "commentStart": 2341,
+                          "end": 0,
                           "raw": "0.0",
-                          "start": 2374,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1771,9 +2402,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                           }
                         },
                         {
-                          "end": 2382,
+                          "commentStart": 2346,
+                          "end": 0,
                           "raw": "0.0",
-                          "start": 2379,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1782,8 +2414,8 @@ description: Result of parsing gridfinity-baseplate.kcl
                           }
                         }
                       ],
-                      "end": 2383,
-                      "start": 2368,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -1791,52 +2423,91 @@ description: Result of parsing gridfinity-baseplate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2401,
+                      "commentStart": 2359,
+                      "end": 0,
                       "name": "instances",
-                      "start": 2392,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2417,
-                      "name": "countBinWidth",
-                      "start": 2404,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "abs_path": false,
+                      "commentStart": 2371,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 2371,
+                        "end": 0,
+                        "name": "countBinWidth",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2434,
+                      "commentStart": 2393,
+                      "end": 0,
                       "name": "distance",
-                      "start": 2426,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2446,
-                      "name": "binLength",
-                      "start": 2437,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "abs_path": false,
+                      "commentStart": 2404,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 2404,
+                        "end": 0,
+                        "name": "binLength",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2336,
-                  "name": "patternLinear3d",
-                  "start": 2321,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 2288,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 2288,
+                    "end": 0,
+                    "name": "patternLinear3d",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 2453,
-                "start": 2321,
+                "commentStart": 2288,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
-                  "end": 2352,
-                  "name": "corners",
-                  "start": 2345,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 2312,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 2312,
+                    "end": 0,
+                    "name": "corners",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
                 }
               },
               {
@@ -1844,17 +2515,20 @@ description: Result of parsing gridfinity-baseplate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2487,
+                      "commentStart": 2443,
+                      "end": 0,
                       "name": "axis",
-                      "start": 2483,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2450,
                       "elements": [
                         {
-                          "end": 2494,
+                          "commentStart": 2451,
+                          "end": 0,
                           "raw": "0.0",
-                          "start": 2491,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1863,9 +2537,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                           }
                         },
                         {
-                          "end": 2499,
+                          "commentStart": 2456,
+                          "end": 0,
                           "raw": "1.0",
-                          "start": 2496,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1874,9 +2549,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                           }
                         },
                         {
-                          "end": 2504,
+                          "commentStart": 2461,
+                          "end": 0,
                           "raw": "0.0",
-                          "start": 2501,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1885,8 +2561,8 @@ description: Result of parsing gridfinity-baseplate.kcl
                           }
                         }
                       ],
-                      "end": 2505,
-                      "start": 2490,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -1894,264 +2570,160 @@ description: Result of parsing gridfinity-baseplate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2523,
+                      "commentStart": 2467,
+                      "end": 0,
                       "name": "instances",
-                      "start": 2514,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2540,
-                      "name": "countBinLength",
-                      "start": 2526,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "abs_path": false,
+                      "commentStart": 2479,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 2479,
+                        "end": 0,
+                        "name": "countBinLength",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2557,
+                      "commentStart": 2495,
+                      "end": 0,
                       "name": "distance",
-                      "start": 2549,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2569,
-                      "name": "binLength",
-                      "start": 2560,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "abs_path": false,
+                      "commentStart": 2506,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 2506,
+                        "end": 0,
+                        "name": "binLength",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2474,
-                  "name": "patternLinear3d",
-                  "start": 2459,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 2427,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 2427,
+                    "end": 0,
+                    "name": "patternLinear3d",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 2576,
-                "start": 2459,
+                "commentStart": 2427,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 2576,
-            "start": 2321,
+            "commentStart": 2288,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 2302,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 2576,
+        "end": 0,
         "kind": "const",
-        "start": 2302,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 2577,
+    "commentStart": 0,
+    "end": 0,
     "innerAttrs": [
       {
-        "end": 344,
+        "commentStart": 0,
+        "end": 0,
         "name": {
-          "end": 320,
+          "commentStart": 312,
+          "end": 0,
           "name": "settings",
-          "start": 312,
+          "start": 0,
           "type": "Identifier"
         },
+        "preComments": [
+          "// Gridfinity Baseplate",
+          "// Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion",
+          "",
+          "",
+          "// Set units in millimeters (mm)"
+        ],
         "properties": [
           {
-            "end": 343,
+            "commentStart": 321,
+            "end": 0,
             "key": {
-              "end": 338,
+              "commentStart": 321,
+              "end": 0,
               "name": "defaultLengthUnit",
-              "start": 321,
+              "start": 0,
               "type": "Identifier"
             },
-            "start": 321,
+            "start": 0,
             "type": "ObjectProperty",
             "value": {
-              "end": 343,
-              "name": "mm",
-              "start": 341,
-              "type": "Identifier",
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 341,
+              "end": 0,
+              "name": {
+                "commentStart": 341,
+                "end": 0,
+                "name": "mm",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],
-        "start": 311,
+        "start": 0,
         "type": "Annotation"
       }
     ],
     "nonCodeMeta": {
-      "nonCodeNodes": {
-        "4": [
-          {
-            "end": 488,
-            "start": 451,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "Number of bins in each direction",
-              "style": "line"
-            }
-          }
-        ],
-        "6": [
-          {
-            "end": 625,
-            "start": 525,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "The total height of the baseplate is a summation of the vertical heights of the baseplate steps",
-              "style": "line"
-            }
-          }
-        ],
-        "7": [
-          {
-            "end": 737,
-            "start": 669,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "define a function which builds the profile of the baseplate bin",
-              "style": "line"
-            }
-          }
-        ],
-        "8": [
-          {
-            "end": 1096,
-            "start": 1059,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "extrude a single side of the bin",
-              "style": "line"
-            }
-          }
-        ],
-        "9": [
-          {
-            "end": 1272,
-            "start": 1206,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "create the other sides of the bin by using a circular pattern",
-              "style": "line"
-            }
-          }
-        ],
-        "10": [
-          {
-            "end": 1471,
-            "start": 1444,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "define an axis axis000",
-              "style": "line"
-            }
-          }
-        ],
-        "11": [
-          {
-            "end": 1605,
-            "start": 1567,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "create a single corner of the bin",
-              "style": "line"
-            }
-          }
-        ],
-        "12": [
-          {
-            "end": 1743,
-            "start": 1709,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "create the corners of the bin",
-              "style": "line"
-            }
-          }
-        ],
-        "13": [
-          {
-            "end": 1964,
-            "start": 1919,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "create the baseplate by patterning sides",
-              "style": "line"
-            }
-          }
-        ]
-      },
+      "nonCodeNodes": {},
       "startNodes": [
         {
-          "end": 23,
+          "commentStart": 344,
+          "end": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
-            "type": "blockComment",
-            "value": "Gridfinity Baseplate",
-            "style": "line"
-          }
-        },
-        {
-          "end": 276,
-          "start": 24,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion",
-            "style": "line"
-          }
-        },
-        {
-          "end": 278,
-          "start": 276,
-          "type": "NonCodeNode",
-          "value": {
             "type": "newLine"
-          }
-        },
-        {
-          "end": 310,
-          "start": 278,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Set units in millimeters (mm)",
-            "style": "line"
-          }
-        },
-        {
-          "end": 346,
-          "start": 344,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "newLine"
-          }
-        },
-        {
-          "end": 365,
-          "start": 346,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Define constants",
-            "style": "line"
           }
         }
       ]

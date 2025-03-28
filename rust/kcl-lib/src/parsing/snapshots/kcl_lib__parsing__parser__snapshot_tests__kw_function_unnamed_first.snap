@@ -5,9 +5,12 @@ expression: actual
 {
   "body": [
     {
+      "commentStart": 0,
       "declaration": {
+        "commentStart": 0,
         "end": 19,
         "id": {
+          "commentStart": 0,
           "end": 3,
           "name": "val",
           "start": 0,
@@ -18,36 +21,65 @@ expression: actual
             {
               "type": "LabeledArg",
               "label": {
+                "commentStart": 13,
                 "end": 14,
                 "name": "y",
                 "start": 13,
                 "type": "Identifier"
               },
               "arg": {
+                "abs_path": false,
+                "commentStart": 17,
                 "end": 18,
-                "name": "z",
+                "name": {
+                  "commentStart": 17,
+                  "end": 18,
+                  "name": "z",
+                  "start": 17,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 17,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             }
           ],
           "callee": {
+            "abs_path": false,
+            "commentStart": 6,
             "end": 9,
-            "name": "foo",
+            "name": {
+              "commentStart": 6,
+              "end": 9,
+              "name": "foo",
+              "start": 6,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 6,
-            "type": "Identifier"
+            "type": "Name"
           },
+          "commentStart": 6,
           "end": 19,
           "start": 6,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
+            "abs_path": false,
+            "commentStart": 10,
             "end": 11,
-            "name": "x",
+            "name": {
+              "commentStart": 10,
+              "end": 11,
+              "name": "x",
+              "start": 10,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 10,
-            "type": "Identifier",
-            "type": "Identifier"
+            "type": "Name",
+            "type": "Name"
           }
         },
         "start": 0,
@@ -60,6 +92,7 @@ expression: actual
       "type": "VariableDeclaration"
     }
   ],
+  "commentStart": 0,
   "end": 19,
   "start": 0
 }

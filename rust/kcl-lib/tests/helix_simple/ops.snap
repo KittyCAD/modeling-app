@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed helix_simple.kcl
 ---
 [
@@ -10,19 +10,11 @@ description: Operations executed helix_simple.kcl
           "type": "String",
           "value": "XZ"
         },
-        "sourceRange": [
-          60,
-          64,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      46,
-      65,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,11 +34,7 @@ description: Operations executed helix_simple.kcl
             }
           }
         },
-        "sourceRange": [
-          173,
-          174,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
@@ -54,22 +42,14 @@ description: Operations executed helix_simple.kcl
           "value": "edge001",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          247,
-          254,
-          0
-        ]
+        "sourceRange": []
       },
       "ccw": {
         "value": {
           "type": "Bool",
           "value": true
         },
-        "sourceRange": [
-          184,
-          188,
-          0
-        ]
+        "sourceRange": []
       },
       "length": {
         "value": {
@@ -85,11 +65,7 @@ description: Operations executed helix_simple.kcl
             }
           }
         },
-        "sourceRange": [
-          220,
-          222,
-          0
-        ]
+        "sourceRange": []
       },
       "radius": {
         "value": {
@@ -105,11 +81,7 @@ description: Operations executed helix_simple.kcl
             }
           }
         },
-        "sourceRange": [
-          235,
-          236,
-          0
-        ]
+        "sourceRange": []
       },
       "revolutions": {
         "value": {
@@ -125,19 +97,11 @@ description: Operations executed helix_simple.kcl
             }
           }
         },
-        "sourceRange": [
-          206,
-          207,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "helix",
-    "sourceRange": [
-      151,
-      257,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   }

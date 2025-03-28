@@ -3,11 +3,12 @@ import { kclManager } from 'lib/singletons'
 import { useKclContext } from 'lang/KclProvider'
 import { findUniqueName } from 'lang/modifyAst'
 import { PrevVariable, findAllPreviousVariables } from 'lang/queryAst'
-import { Expr } from 'lang/wasm'
-import { useEffect, useRef, useState } from 'react'
+import { Expr, SourceRange } from 'lang/wasm'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { getCalculatedKclExpressionValue } from './kclHelpers'
 import { parse, resultIsOk } from 'lang/wasm'
 import { err } from 'lib/trap'
+import { getSafeInsertIndex } from 'lang/queryAst/getSafeInsertIndex'
 
 const isValidVariableName = (name: string) =>
   /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)
@@ -20,9 +21,11 @@ const isValidVariableName = (name: string) =>
 export function useCalculateKclExpression({
   value,
   initialVariableName: valueName = '',
+  sourceRange,
 }: {
   value: string
   initialVariableName?: string
+  sourceRange?: SourceRange
 }): {
   inputRef: React.RefObject<HTMLInputElement>
   valueNode: Expr | null
@@ -32,7 +35,12 @@ export function useCalculateKclExpression({
   isNewVariableNameUnique: boolean
   newVariableInsertIndex: number
   setNewVariableName: (a: string) => void
+  isExecuting: boolean
 } {
+  // Executing the mini AST to calculate the expression value
+  // is asynchronous. Use this state variable to track if execution
+  // has completed
+  const [isExecuting, setIsExecuting] = useState(false)
   const { variables, code } = useKclContext()
   const { context } = useModelingContext()
   // If there is no selection, use the end of the code
@@ -40,6 +48,12 @@ export function useCalculateKclExpression({
   const selectionRange:
     | (typeof context)['selectionRanges']['graphSelections'][number]['codeRef']['range']
     | undefined = context.selectionRanges.graphSelections[0]?.codeRef?.range
+  // If there is no selection, use the end of the code
+  // If we don't memoize this, we risk an infinite set/read state loop
+  const endingSourceRange = useMemo(
+    () => sourceRange || selectionRange || [code.length, code.length],
+    [code, selectionRange, sourceRange]
+  )
   const inputRef = useRef<HTMLInputElement>(null)
   const [availableVarInfo, setAvailableVarInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>
@@ -48,6 +62,7 @@ export function useCalculateKclExpression({
     insertIndex: 0,
     bodyPath: [],
   })
+  const [insertIndex, setInsertIndex] = useState(0)
   const [valueNode, setValueNode] = useState<Expr | null>(null)
   // Gotcha: If we do not attempt to parse numeric literals instantly it means that there is an async action to verify
   // the value is good. This means all E2E tests have a race condition on when they can hit "next" in the command bar.
@@ -92,26 +107,30 @@ export function useCalculateKclExpression({
     const varInfo = findAllPreviousVariables(
       kclManager.ast,
       kclManager.variables,
-      // If there is no selection, use the end of the code
-      selectionRange || [code.length, code.length]
+      endingSourceRange
     )
     setAvailableVarInfo(varInfo)
-  }, [kclManager.ast, kclManager.variables, selectionRange])
+  }, [kclManager.ast, kclManager.variables, endingSourceRange])
 
   useEffect(() => {
     const execAstAndSetResult = async () => {
       const result = await getCalculatedKclExpressionValue(value)
-      if (result instanceof Error || 'errors' in result) {
+      setIsExecuting(false)
+      if (result instanceof Error || 'errors' in result || !result.astNode) {
         setCalcResult('NAN')
         setValueNode(null)
         return
       }
+      const newInsertIndex = getSafeInsertIndex(result.astNode, kclManager.ast)
+      setInsertIndex(newInsertIndex)
       setCalcResult(result?.valueAsString || 'NAN')
       result?.astNode && setValueNode(result.astNode)
     }
     if (!value) return
+    setIsExecuting(true)
     execAstAndSetResult().catch(() => {
       setCalcResult('NAN')
+      setIsExecuting(false)
       setValueNode(null)
     })
   }, [value, availableVarInfo, code, kclManager.variables])
@@ -120,10 +139,11 @@ export function useCalculateKclExpression({
     valueNode,
     calcResult,
     prevVariables: availableVarInfo.variables,
-    newVariableInsertIndex: availableVarInfo.insertIndex,
+    newVariableInsertIndex: insertIndex,
     newVariableName,
     isNewVariableNameUnique,
     setNewVariableName,
     inputRef,
+    isExecuting,
   }
 }

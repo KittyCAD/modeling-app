@@ -21,44 +21,32 @@ nHoles = 4
 assertGreaterThan(nHoles, 1, "nHoles must be greater than 1")
 
 // Create the circular pattern for the mounting holes
-circles = startSketchOn('XY')
-  |> circle(
-       center = [mountingHolePlacementDiameter / 2, 0],
-       radius = mountingHoleDia / 2
-     )
+circles = startSketchOn(XY)
+  |> circle(center = [mountingHolePlacementDiameter / 2, 0], radius = mountingHoleDia / 2)
   |> patternCircular2d(
        arcDegrees = 360,
        center = [0, 0],
        instances = nHoles,
-       rotateDuplicates = true
+       rotateDuplicates = true,
      )
 
 // Create the base of the flange and add the mounting holes
-flangeBase = startSketchOn('XY')
-  |> circle(
-       center = [0, 0],
-       radius = baseDia / 2
-     )
+flangeBase = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = baseDia / 2)
   |> hole(circles, %)
   |> extrude(length = baseThickness)
 
 // Create the extrusion on the top of the flange base
 topExtrusion = startSketchOn(flangeBase, 'end')
-  |> circle(
-       center = [0, 0],
-       radius = topTotalDiameter / 2
-     )
+  |> circle(center = [0, 0], radius = topTotalDiameter / 2)
   |> extrude(length = topTotalThickness)
 
 // Create the extrusion on the bottom of the flange base
 bottomExtrusion = startSketchOn(flangeBase, 'start')
-  |> circle(
-       center = [0, 0],
-       radius = bottomTotalDiameter / 2
-     )
+  |> circle(center = [0, 0], radius = bottomTotalDiameter / 2)
   |> extrude(length = bottomThickness)
 
 // Cut a hole through the entire body
 pipeHole = startSketchOn(topExtrusion, 'end')
-  |> circle(center = [0, 0], radius = pipeDia/2)
+  |> circle(center = [0, 0], radius = pipeDia / 2)
   |> extrude(%, length = -(topTotalThickness + baseThickness + bottomThickness))

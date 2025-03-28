@@ -7,22 +7,14 @@ description: Operations executed kitt.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          616,
-          620,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      602,
-      621,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,19 +34,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          917,
-          929,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      900,
-      930,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -63,11 +47,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        900,
-        930,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -80,11 +60,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1168,
-      1272,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -95,30 +71,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -138,19 +102,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -159,11 +115,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -178,30 +130,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1477,
-          1484,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          1486,
-          1491,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1463,
-      1492,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -221,19 +161,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          2221,
-          2234,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2204,
-      2235,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -242,11 +174,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        2204,
-        2235,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -259,11 +187,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      2419,
-      2493,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -274,30 +198,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "START"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -317,19 +229,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -338,11 +242,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -358,11 +258,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      2527,
-      2609,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -373,30 +269,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "START"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -416,19 +300,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -437,11 +313,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -457,11 +329,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      2624,
-      2702,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -472,30 +340,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "START"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -515,19 +371,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -536,11 +384,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -556,11 +400,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      2717,
-      2798,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -571,30 +411,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "START"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -614,19 +442,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -635,11 +455,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -654,30 +470,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2859,
-          2866,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "START"
         },
-        "sourceRange": [
-          2868,
-          2875,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      2845,
-      2876,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -697,19 +501,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          3502,
-          3513,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      3485,
-      3514,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -718,11 +514,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        3485,
-        3514,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -735,11 +527,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      3605,
-      3683,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -750,30 +538,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "START"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -793,19 +569,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -814,11 +582,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -834,11 +598,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      3722,
-      3808,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -849,30 +609,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "START"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -892,19 +640,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -913,11 +653,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -933,11 +669,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      3827,
-      3904,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -948,30 +680,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "START"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -991,19 +711,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1012,11 +724,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1032,11 +740,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      3925,
-      4010,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -1047,30 +751,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "START"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1090,19 +782,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1111,11 +795,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1131,11 +811,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      4198,
-      4307,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -1146,30 +822,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1189,19 +853,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1210,11 +866,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1230,11 +882,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      4428,
-      4528,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -1245,30 +893,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1288,19 +924,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1309,11 +937,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1329,11 +953,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      4711,
-      4824,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -1344,30 +964,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1387,19 +995,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1408,11 +1008,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1428,11 +1024,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      4838,
-      4955,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -1443,30 +1035,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1486,19 +1066,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1507,11 +1079,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1527,11 +1095,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      4969,
-      5082,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -1542,30 +1106,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1585,19 +1137,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1606,11 +1150,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1626,11 +1166,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      5302,
-      5438,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -1641,30 +1177,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1684,19 +1208,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1705,11 +1221,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1725,11 +1237,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      5569,
-      5686,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -1740,30 +1248,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1783,19 +1279,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1804,11 +1292,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1824,11 +1308,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      5718,
-      5856,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -1839,30 +1319,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1882,19 +1350,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1903,11 +1363,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1923,11 +1379,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      5870,
-      6016,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -1938,30 +1390,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1981,19 +1421,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2002,11 +1434,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -2016,38 +1444,26 @@ description: Operations executed kitt.kcl
     "type": "UserDefinedFunctionCall",
     "name": "kitLeg",
     "functionSourceRange": [
-      6082,
-      6899,
+      6080,
+      6895,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      6932,
-      6955,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          6218,
-          6222,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      6204,
-      6223,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -2067,19 +1483,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          6520,
-          6533,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      6489,
-      6534,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2088,11 +1496,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        6497,
-        6509,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -2105,11 +1509,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      6763,
-      6879,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -2120,30 +1520,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -2163,19 +1551,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2184,11 +1564,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -2201,38 +1577,26 @@ description: Operations executed kitt.kcl
     "type": "UserDefinedFunctionCall",
     "name": "kitLeg",
     "functionSourceRange": [
-      6082,
-      6899,
+      6080,
+      6895,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      6969,
-      7008,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          6218,
-          6222,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      6204,
-      6223,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -2252,19 +1616,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          6520,
-          6533,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      6489,
-      6534,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2273,11 +1629,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        6497,
-        6509,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -2290,11 +1642,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      6763,
-      6879,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -2305,30 +1653,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -2348,19 +1684,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2369,11 +1697,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -2386,17 +1710,13 @@ description: Operations executed kitt.kcl
     "type": "UserDefinedFunctionCall",
     "name": "kitEar",
     "functionSourceRange": [
-      7086,
-      8007,
+      7082,
+      8003,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      8066,
-      8109,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionCall",
@@ -2408,11 +1728,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      7250,
-      7358,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -2423,11 +1739,7 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
@@ -2435,19 +1747,11 @@ description: Operations executed kitt.kcl
           "value": "seg01",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -2467,19 +1771,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2488,11 +1784,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -2508,11 +1800,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      7395,
-      7568,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -2523,30 +1811,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -2566,19 +1842,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2587,11 +1855,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -2607,11 +1871,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      7603,
-      7774,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -2622,30 +1882,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -2665,19 +1913,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2686,11 +1926,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -2706,11 +1942,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      7811,
-      7984,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -2721,30 +1953,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -2764,19 +1984,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2785,11 +1997,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -2802,17 +2010,13 @@ description: Operations executed kitt.kcl
     "type": "UserDefinedFunctionCall",
     "name": "kitEar",
     "functionSourceRange": [
-      7086,
-      8007,
+      7082,
+      8003,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      8123,
-      8195,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionCall",
@@ -2824,11 +2028,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      7250,
-      7358,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -2839,11 +2039,7 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
@@ -2851,19 +2047,11 @@ description: Operations executed kitt.kcl
           "value": "seg01",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -2883,19 +2071,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2904,11 +2084,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -2924,11 +2100,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      7395,
-      7568,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -2939,30 +2111,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -2982,19 +2142,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -3003,11 +2155,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -3023,11 +2171,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      7603,
-      7774,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -3038,30 +2182,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -3081,19 +2213,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -3102,11 +2226,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -3122,11 +2242,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      7811,
-      7984,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -3137,30 +2253,18 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -3180,19 +2284,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -3201,11 +2297,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -3224,11 +2316,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      8580,
-      8675,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -3239,11 +2327,7 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
@@ -3251,19 +2335,11 @@ description: Operations executed kitt.kcl
           "value": "seg02",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -3283,19 +2359,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -3304,11 +2372,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -3324,11 +2388,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      8691,
-      8786,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -3339,11 +2399,7 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
@@ -3351,19 +2407,11 @@ description: Operations executed kitt.kcl
           "value": "seg02",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -3383,19 +2431,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -3404,11 +2444,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -3424,11 +2460,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      8802,
-      8897,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -3439,11 +2471,7 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
@@ -3451,19 +2479,11 @@ description: Operations executed kitt.kcl
           "value": "seg02",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -3483,19 +2503,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -3504,11 +2516,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -3524,11 +2532,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      8913,
-      9008,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -3539,11 +2543,7 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
@@ -3551,19 +2551,11 @@ description: Operations executed kitt.kcl
           "value": "seg02",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -3583,19 +2575,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -3604,11 +2588,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -3624,11 +2604,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      9024,
-      9119,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -3639,11 +2615,7 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
@@ -3651,19 +2623,11 @@ description: Operations executed kitt.kcl
           "value": "seg02",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -3683,19 +2647,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -3704,11 +2660,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -3724,11 +2676,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      9135,
-      9230,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -3739,11 +2687,7 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
@@ -3751,19 +2695,11 @@ description: Operations executed kitt.kcl
           "value": "seg02",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -3783,19 +2719,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -3804,11 +2732,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -3824,11 +2748,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      9246,
-      9341,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -3839,11 +2759,7 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
@@ -3851,19 +2767,11 @@ description: Operations executed kitt.kcl
           "value": "seg02",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -3883,19 +2791,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -3904,11 +2804,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -3924,11 +2820,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      9508,
-      9620,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -3939,11 +2831,7 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
@@ -3951,19 +2839,11 @@ description: Operations executed kitt.kcl
           "value": "seg02",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -3983,19 +2863,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -4004,11 +2876,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -4024,11 +2892,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      9633,
-      9749,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -4039,11 +2903,7 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
@@ -4051,19 +2911,11 @@ description: Operations executed kitt.kcl
           "value": "seg02",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -4083,19 +2935,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -4104,11 +2948,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -4124,11 +2964,7 @@ description: Operations executed kitt.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      9762,
-      9878,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -4139,11 +2975,7 @@ description: Operations executed kitt.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          197,
-          207,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
@@ -4151,19 +2983,11 @@ description: Operations executed kitt.kcl
           "value": "seg02",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          209,
-          219,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      183,
-      220,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -4183,19 +3007,11 @@ description: Operations executed kitt.kcl
             }
           }
         },
-        "sourceRange": [
-          466,
-          471,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      449,
-      472,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -4204,11 +3020,7 @@ description: Operations executed kitt.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        449,
-        472,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {

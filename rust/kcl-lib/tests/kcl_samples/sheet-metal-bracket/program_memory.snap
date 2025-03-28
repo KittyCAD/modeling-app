@@ -13,14 +13,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            761,
-            798,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 797,
-            "start": 794,
+            "commentStart": 792,
+            "end": 795,
+            "start": 792,
             "type": "TagDeclarator",
             "value": "e1"
           },
@@ -29,14 +26,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            804,
-            844,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 843,
-            "start": 840,
+            "commentStart": 838,
+            "end": 841,
+            "start": 838,
             "type": "TagDeclarator",
             "value": "e2"
           },
@@ -45,14 +39,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            850,
-            887,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 886,
-            "start": 883,
+            "commentStart": 881,
+            "end": 884,
+            "start": 881,
             "type": "TagDeclarator",
             "value": "e3"
           },
@@ -61,14 +52,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            893,
-            929,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 928,
-            "start": 925,
+            "commentStart": 923,
+            "end": 926,
+            "start": 923,
             "type": "TagDeclarator",
             "value": "e4"
           },
@@ -77,14 +65,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            935,
-            973,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 972,
-            "start": 969,
+            "commentStart": 967,
+            "end": 970,
+            "start": 967,
             "type": "TagDeclarator",
             "value": "e5"
           },
@@ -93,14 +78,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            979,
-            1019,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 1018,
-            "start": 1015,
+            "commentStart": 1013,
+            "end": 1016,
+            "start": 1013,
             "type": "TagDeclarator",
             "value": "e6"
           },
@@ -109,14 +91,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1025,
-            1063,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 1062,
-            "start": 1059,
+            "commentStart": 1057,
+            "end": 1060,
+            "start": 1057,
             "type": "TagDeclarator",
             "value": "e7"
           },
@@ -125,14 +104,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1069,
-            1122,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 1121,
-            "start": 1118,
+            "commentStart": 1116,
+            "end": 1119,
+            "start": 1116,
             "type": "TagDeclarator",
             "value": "e8"
           },
@@ -141,14 +117,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1128,
-            1165,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 1164,
-            "start": 1161,
+            "commentStart": 1159,
+            "end": 1162,
+            "start": 1159,
             "type": "TagDeclarator",
             "value": "e9"
           },
@@ -157,14 +130,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1171,
-            1225,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 1224,
-            "start": 1220,
+            "commentStart": 1218,
+            "end": 1222,
+            "start": 1218,
             "type": "TagDeclarator",
             "value": "e10"
           },
@@ -173,14 +143,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1231,
-            1270,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 1269,
-            "start": 1265,
+            "commentStart": 1263,
+            "end": 1267,
+            "start": 1263,
             "type": "TagDeclarator",
             "value": "e11"
           },
@@ -189,14 +156,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1276,
-            1293,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 1292,
-            "start": 1288,
+            "commentStart": 1286,
+            "end": 1290,
+            "start": 1286,
             "type": "TagDeclarator",
             "value": "e12"
           },
@@ -210,19 +174,16 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                761,
-                798,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
               0.0
             ],
             "tag": {
-              "end": 797,
-              "start": 794,
+              "commentStart": 792,
+              "end": 795,
+              "start": 792,
               "type": "TagDeclarator",
               "value": "e1"
             },
@@ -238,19 +199,16 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                804,
-                844,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
               0.09
             ],
             "tag": {
-              "end": 843,
-              "start": 840,
+              "commentStart": 838,
+              "end": 841,
+              "start": 838,
               "type": "TagDeclarator",
               "value": "e2"
             },
@@ -266,19 +224,16 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                850,
-                887,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.5,
               0.09
             ],
             "tag": {
-              "end": 886,
-              "start": 883,
+              "commentStart": 881,
+              "end": 884,
+              "start": 881,
               "type": "TagDeclarator",
               "value": "e3"
             },
@@ -294,19 +249,16 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                893,
-                929,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.5,
               3.09
             ],
             "tag": {
-              "end": 928,
-              "start": 925,
+              "commentStart": 923,
+              "end": 926,
+              "start": 923,
               "type": "TagDeclarator",
               "value": "e4"
             },
@@ -322,19 +274,16 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                935,
-                973,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.5,
               3.09
             ],
             "tag": {
-              "end": 972,
-              "start": 969,
+              "commentStart": 967,
+              "end": 970,
+              "start": 967,
               "type": "TagDeclarator",
               "value": "e5"
             },
@@ -350,19 +299,16 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                979,
-                1019,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.5,
               0.09
             ],
             "tag": {
-              "end": 1018,
-              "start": 1015,
+              "commentStart": 1013,
+              "end": 1016,
+              "start": 1013,
               "type": "TagDeclarator",
               "value": "e6"
             },
@@ -378,19 +324,16 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1025,
-                1063,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               6.0,
               0.09
             ],
             "tag": {
-              "end": 1062,
-              "start": 1059,
+              "commentStart": 1057,
+              "end": 1060,
+              "start": 1057,
               "type": "TagDeclarator",
               "value": "e7"
             },
@@ -406,19 +349,16 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1069,
-                1122,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               6.0,
               -0.0
             ],
             "tag": {
-              "end": 1121,
-              "start": 1118,
+              "commentStart": 1116,
+              "end": 1119,
+              "start": 1116,
               "type": "TagDeclarator",
               "value": "e8"
             },
@@ -434,19 +374,16 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1128,
-                1165,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.41,
               -0.0
             ],
             "tag": {
-              "end": 1164,
-              "start": 1161,
+              "commentStart": 1159,
+              "end": 1162,
+              "start": 1159,
               "type": "TagDeclarator",
               "value": "e9"
             },
@@ -462,19 +399,16 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1171,
-                1225,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.41,
               3.0
             ],
             "tag": {
-              "end": 1224,
-              "start": 1220,
+              "commentStart": 1218,
+              "end": 1222,
+              "start": 1218,
               "type": "TagDeclarator",
               "value": "e10"
             },
@@ -490,19 +424,16 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1231,
-                1270,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.59,
               3.0
             ],
             "tag": {
-              "end": 1269,
-              "start": 1265,
+              "commentStart": 1263,
+              "end": 1267,
+              "start": 1263,
               "type": "TagDeclarator",
               "value": "e11"
             },
@@ -518,19 +449,16 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1276,
-                1293,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.59,
               0.0
             ],
             "tag": {
-              "end": 1292,
-              "start": 1288,
+              "commentStart": 1286,
+              "end": 1290,
+              "start": 1286,
               "type": "TagDeclarator",
               "value": "e12"
             },
@@ -588,11 +516,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              730,
-              755,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
@@ -833,25 +757,18 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2150,
-            2175,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2181,
-            2221,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 2220,
-            "start": 2216,
+            "commentStart": 2044,
+            "end": 2048,
+            "start": 2044,
             "type": "TagDeclarator",
             "value": "e13"
           },
@@ -860,14 +777,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2227,
-            2265,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 2264,
-            "start": 2260,
+            "commentStart": 2088,
+            "end": 2092,
+            "start": 2088,
             "type": "TagDeclarator",
             "value": "e14"
           },
@@ -876,11 +790,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2271,
-            2278,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -892,11 +802,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2150,
-                2175,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -915,19 +821,16 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2181,
-                2221,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
               5.0
             ],
             "tag": {
-              "end": 2220,
-              "start": 2216,
+              "commentStart": 2044,
+              "end": 2048,
+              "start": 2044,
               "type": "TagDeclarator",
               "value": "e13"
             },
@@ -943,19 +846,16 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2227,
-                2265,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.5,
               5.0
             ],
             "tag": {
-              "end": 2264,
-              "start": 2260,
+              "commentStart": 2088,
+              "end": 2092,
+              "start": 2088,
               "type": "TagDeclarator",
               "value": "e14"
             },
@@ -971,11 +871,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2271,
-                2278,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.5,
@@ -1036,11 +932,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2119,
-              2144,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
@@ -1093,25 +985,18 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2677,
-            2702,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2708,
-            2749,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 2748,
-            "start": 2744,
+            "commentStart": 2529,
+            "end": 2533,
+            "start": 2529,
             "type": "TagDeclarator",
             "value": "e15"
           },
@@ -1120,14 +1005,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2755,
-            2793,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 2792,
-            "start": 2788,
+            "commentStart": 2573,
+            "end": 2577,
+            "start": 2573,
             "type": "TagDeclarator",
             "value": "e16"
           },
@@ -1136,11 +1018,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2799,
-            2806,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -1152,11 +1030,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2677,
-                2702,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -6.0,
@@ -1175,19 +1049,16 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2708,
-                2749,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -6.0,
               5.0
             ],
             "tag": {
-              "end": 2748,
-              "start": 2744,
+              "commentStart": 2529,
+              "end": 2533,
+              "start": 2529,
               "type": "TagDeclarator",
               "value": "e15"
             },
@@ -1203,19 +1074,16 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2755,
-                2793,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -7.5,
               5.0
             ],
             "tag": {
-              "end": 2792,
-              "start": 2788,
+              "commentStart": 2573,
+              "end": 2577,
+              "start": 2573,
               "type": "TagDeclarator",
               "value": "e16"
             },
@@ -1231,11 +1099,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2799,
-                2806,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -7.5,
@@ -1296,11 +1160,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2645,
-              2671,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {

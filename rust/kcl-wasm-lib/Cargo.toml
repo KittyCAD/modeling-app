@@ -1,6 +1,6 @@
 [package]
 name = "kcl-wasm-lib"
-version = "0.1.50"
+version = "0.1.55"
 edition = "2021"
 repository = "https://github.com/KittyCAD/modeling-app"
 rust-version = "1.83"
@@ -11,7 +11,7 @@ crate-type = ["cdylib"]
 bench = false
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-bson = { version = "2.13.0", features = ["uuid-1", "chrono"] }
+bson = { workspace = true, features = ["uuid-1", "chrono"] }
 console_error_panic_hook = "0.1.7"
 data-encoding = "2.6.0"
 futures = "0.3.31"
@@ -22,6 +22,7 @@ gloo-utils = "0.2.0"
 js-sys = "0.3.72"
 kcl-lib = { path = "../kcl-lib" }
 kittycad = { workspace = true }
+kittycad-modeling-cmds = { workspace = true }
 serde_json = { workspace = true }
 tokio = { workspace = true, features = ["sync"] }
 toml = "0.8.19"

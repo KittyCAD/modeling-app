@@ -6,20 +6,25 @@ description: Result of parsing array_elem_pop.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 15,
+          "commentStart": 0,
+          "end": 0,
           "id": {
-            "end": 3,
+            "commentStart": 0,
+            "end": 0,
             "name": "arr",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 6,
             "elements": [
               {
-                "end": 8,
+                "commentStart": 7,
+                "end": 0,
                 "raw": "1",
-                "start": 7,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -28,9 +33,10 @@ description: Result of parsing array_elem_pop.kcl
                 }
               },
               {
-                "end": 11,
+                "commentStart": 10,
+                "end": 0,
                 "raw": "2",
-                "start": 10,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -39,9 +45,10 @@ description: Result of parsing array_elem_pop.kcl
                 }
               },
               {
-                "end": 14,
+                "commentStart": 13,
+                "end": 0,
                 "raw": "3",
-                "start": 13,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -50,155 +57,225 @@ description: Result of parsing array_elem_pop.kcl
                 }
               }
             ],
-            "end": 15,
-            "start": 6,
+            "end": 0,
+            "start": 0,
             "type": "ArrayExpression",
             "type": "ArrayExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 15,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 16,
         "declaration": {
-          "end": 35,
+          "commentStart": 16,
+          "end": 0,
           "id": {
-            "end": 24,
+            "commentStart": 16,
+            "end": 0,
             "name": "new_arr1",
-            "start": 16,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 34,
-                "name": "arr",
-                "start": 31,
-                "type": "Identifier",
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 31,
+                "end": 0,
+                "name": {
+                  "commentStart": 31,
+                  "end": 0,
+                  "name": "arr",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
-              "end": 30,
-              "name": "pop",
-              "start": 27,
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 27,
+              "end": 0,
+              "name": {
+                "commentStart": 27,
+                "end": 0,
+                "name": "pop",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
             },
-            "end": 35,
-            "start": 27,
+            "commentStart": 27,
+            "end": 0,
+            "start": 0,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 16,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 35,
+        "end": 0,
         "kind": "const",
-        "start": 16,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 36,
         "declaration": {
-          "end": 60,
+          "commentStart": 36,
+          "end": 0,
           "id": {
-            "end": 44,
+            "commentStart": 36,
+            "end": 0,
             "name": "new_arr2",
-            "start": 36,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 59,
-                "name": "new_arr1",
-                "start": 51,
-                "type": "Identifier",
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 51,
+                "end": 0,
+                "name": {
+                  "commentStart": 51,
+                  "end": 0,
+                  "name": "new_arr1",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
-              "end": 50,
-              "name": "pop",
-              "start": 47,
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 47,
+              "end": 0,
+              "name": {
+                "commentStart": 47,
+                "end": 0,
+                "name": "pop",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
             },
-            "end": 60,
-            "start": 47,
+            "commentStart": 47,
+            "end": 0,
+            "start": 0,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 36,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 60,
+        "end": 0,
         "kind": "const",
-        "start": 36,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 61,
         "declaration": {
-          "end": 85,
+          "commentStart": 61,
+          "end": 0,
           "id": {
-            "end": 69,
+            "commentStart": 61,
+            "end": 0,
             "name": "new_arr3",
-            "start": 61,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 84,
-                "name": "new_arr2",
-                "start": 76,
-                "type": "Identifier",
-                "type": "Identifier"
+                "abs_path": false,
+                "commentStart": 76,
+                "end": 0,
+                "name": {
+                  "commentStart": 76,
+                  "end": 0,
+                  "name": "new_arr2",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
-              "end": 75,
-              "name": "pop",
-              "start": 72,
-              "type": "Identifier"
+              "abs_path": false,
+              "commentStart": 72,
+              "end": 0,
+              "name": {
+                "commentStart": 72,
+                "end": 0,
+                "name": "pop",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
             },
-            "end": 85,
-            "start": 72,
+            "commentStart": 72,
+            "end": 0,
+            "start": 0,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 61,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 85,
+        "end": 0,
         "kind": "const",
-        "start": 61,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 159,
+        "commentStart": 86,
+        "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 98,
               "computed": false,
-              "end": 109,
+              "end": 0,
               "object": {
-                "end": 106,
+                "commentStart": 98,
+                "end": 0,
                 "name": "new_arr1",
-                "start": 98,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "property": {
-                "end": 108,
+                "commentStart": 107,
+                "end": 0,
                 "raw": "0",
-                "start": 107,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -206,14 +283,15 @@ description: Result of parsing array_elem_pop.kcl
                   "suffix": "None"
                 }
               },
-              "start": 98,
+              "start": 0,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
             {
-              "end": 112,
+              "commentStart": 111,
+              "end": 0,
               "raw": "1",
-              "start": 111,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -222,9 +300,10 @@ description: Result of parsing array_elem_pop.kcl
               }
             },
             {
-              "end": 121,
+              "commentStart": 114,
+              "end": 0,
               "raw": "0.00001",
-              "start": 114,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -233,47 +312,62 @@ description: Result of parsing array_elem_pop.kcl
               }
             },
             {
-              "end": 158,
+              "commentStart": 123,
+              "end": 0,
               "raw": "\"element 0 should not have changed\"",
-              "start": 123,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "element 0 should not have changed"
             }
           ],
           "callee": {
-            "end": 97,
-            "name": "assertEqual",
-            "start": 86,
-            "type": "Identifier"
+            "abs_path": false,
+            "commentStart": 86,
+            "end": 0,
+            "name": {
+              "commentStart": 86,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
           },
-          "end": 159,
-          "start": 86,
+          "commentStart": 86,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 86,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 233,
+        "commentStart": 160,
+        "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 172,
               "computed": false,
-              "end": 183,
+              "end": 0,
               "object": {
-                "end": 180,
+                "commentStart": 172,
+                "end": 0,
                 "name": "new_arr1",
-                "start": 172,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "property": {
-                "end": 182,
+                "commentStart": 181,
+                "end": 0,
                 "raw": "1",
-                "start": 181,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -281,14 +375,15 @@ description: Result of parsing array_elem_pop.kcl
                   "suffix": "None"
                 }
               },
-              "start": 172,
+              "start": 0,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
             {
-              "end": 186,
+              "commentStart": 185,
+              "end": 0,
               "raw": "2",
-              "start": 185,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -297,9 +392,10 @@ description: Result of parsing array_elem_pop.kcl
               }
             },
             {
-              "end": 195,
+              "commentStart": 188,
+              "end": 0,
               "raw": "0.00001",
-              "start": 188,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -308,47 +404,62 @@ description: Result of parsing array_elem_pop.kcl
               }
             },
             {
-              "end": 232,
+              "commentStart": 197,
+              "end": 0,
               "raw": "\"element 1 should not have changed\"",
-              "start": 197,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "element 1 should not have changed"
             }
           ],
           "callee": {
-            "end": 171,
-            "name": "assertEqual",
-            "start": 160,
-            "type": "Identifier"
+            "abs_path": false,
+            "commentStart": 160,
+            "end": 0,
+            "name": {
+              "commentStart": 160,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
           },
-          "end": 233,
-          "start": 160,
+          "commentStart": 160,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 160,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 307,
+        "commentStart": 234,
+        "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 246,
               "computed": false,
-              "end": 257,
+              "end": 0,
               "object": {
-                "end": 254,
+                "commentStart": 246,
+                "end": 0,
                 "name": "new_arr2",
-                "start": 246,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "property": {
-                "end": 256,
+                "commentStart": 255,
+                "end": 0,
                 "raw": "0",
-                "start": 255,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -356,14 +467,15 @@ description: Result of parsing array_elem_pop.kcl
                   "suffix": "None"
                 }
               },
-              "start": 246,
+              "start": 0,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
             {
-              "end": 260,
+              "commentStart": 259,
+              "end": 0,
               "raw": "1",
-              "start": 259,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -372,9 +484,10 @@ description: Result of parsing array_elem_pop.kcl
               }
             },
             {
-              "end": 269,
+              "commentStart": 262,
+              "end": 0,
               "raw": "0.00001",
-              "start": 262,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -383,31 +496,43 @@ description: Result of parsing array_elem_pop.kcl
               }
             },
             {
-              "end": 306,
+              "commentStart": 271,
+              "end": 0,
               "raw": "\"element 0 should not have changed\"",
-              "start": 271,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "element 0 should not have changed"
             }
           ],
           "callee": {
-            "end": 245,
-            "name": "assertEqual",
-            "start": 234,
-            "type": "Identifier"
+            "abs_path": false,
+            "commentStart": 234,
+            "end": 0,
+            "name": {
+              "commentStart": 234,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
           },
-          "end": 307,
-          "start": 234,
+          "commentStart": 234,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 234,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 308,
+    "commentStart": 0,
+    "end": 0,
     "start": 0
   }
 }

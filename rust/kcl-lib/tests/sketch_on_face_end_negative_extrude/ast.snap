@@ -6,24 +6,30 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 184,
+          "commentStart": 3,
+          "end": 0,
           "id": {
-            "end": 7,
+            "commentStart": 3,
+            "end": 0,
             "name": "cube",
-            "start": 3,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "body": {
               "body": [
                 {
+                  "commentStart": 24,
                   "declaration": {
-                    "end": 169,
+                    "commentStart": 24,
+                    "end": 0,
                     "id": {
-                      "end": 26,
+                      "commentStart": 24,
+                      "end": 0,
                       "name": "sg",
-                      "start": 24,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
@@ -31,49 +37,80 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                         {
                           "arguments": [
                             {
-                              "end": 47,
+                              "commentStart": 43,
+                              "end": 0,
                               "raw": "'XY'",
-                              "start": 43,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": "XY"
                             }
                           ],
                           "callee": {
-                            "end": 42,
-                            "name": "startSketchOn",
-                            "start": 29,
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 29,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 29,
+                              "end": 0,
+                              "name": "startSketchOn",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
                           },
-                          "end": 48,
-                          "start": 29,
+                          "commentStart": 29,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 74,
-                              "name": "pos",
-                              "start": 71,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "abs_path": false,
+                              "commentStart": 71,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 71,
+                                "end": 0,
+                                "name": "pos",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
                             },
                             {
-                              "end": 77,
-                              "start": 76,
+                              "commentStart": 76,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 70,
-                            "name": "startProfileAt",
-                            "start": 56,
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 56,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 56,
+                              "end": 0,
+                              "name": "startProfileAt",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
                           },
-                          "end": 78,
-                          "start": 56,
+                          "commentStart": 56,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -82,17 +119,20 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 94,
+                                "commentStart": 91,
+                                "end": 0,
                                 "name": "end",
-                                "start": 91,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "commentStart": 97,
                                 "elements": [
                                   {
-                                    "end": 99,
+                                    "commentStart": 98,
+                                    "end": 0,
                                     "raw": "0",
-                                    "start": 98,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -101,28 +141,47 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                                     }
                                   },
                                   {
-                                    "end": 106,
-                                    "name": "scale",
-                                    "start": 101,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "abs_path": false,
+                                    "commentStart": 101,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 101,
+                                      "end": 0,
+                                      "name": "scale",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 ],
-                                "end": 107,
-                                "start": 97,
+                                "end": 0,
+                                "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 90,
-                            "name": "line",
-                            "start": 86,
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 86,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 86,
+                              "end": 0,
+                              "name": "line",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
                           },
-                          "end": 108,
-                          "start": 86,
+                          "commentStart": 86,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -132,24 +191,36 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 124,
+                                "commentStart": 121,
+                                "end": 0,
                                 "name": "end",
-                                "start": 121,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "commentStart": 127,
                                 "elements": [
                                   {
-                                    "end": 133,
-                                    "name": "scale",
-                                    "start": 128,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "abs_path": false,
+                                    "commentStart": 128,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 128,
+                                      "end": 0,
+                                      "name": "scale",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   {
-                                    "end": 136,
+                                    "commentStart": 135,
+                                    "end": 0,
                                     "raw": "0",
-                                    "start": 135,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -158,21 +229,31 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                                     }
                                   }
                                 ],
-                                "end": 137,
-                                "start": 127,
+                                "end": 0,
+                                "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 120,
-                            "name": "line",
-                            "start": 116,
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 116,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 116,
+                              "end": 0,
+                              "name": "line",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
                           },
-                          "end": 138,
-                          "start": 116,
+                          "commentStart": 116,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -182,17 +263,20 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 154,
+                                "commentStart": 151,
+                                "end": 0,
                                 "name": "end",
-                                "start": 151,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "commentStart": 157,
                                 "elements": [
                                   {
-                                    "end": 159,
+                                    "commentStart": 158,
+                                    "end": 0,
                                     "raw": "0",
-                                    "start": 158,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -202,74 +286,107 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                                   },
                                   {
                                     "argument": {
-                                      "end": 167,
-                                      "name": "scale",
-                                      "start": 162,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "abs_path": false,
+                                      "commentStart": 162,
+                                      "end": 0,
+                                      "name": {
+                                        "commentStart": 162,
+                                        "end": 0,
+                                        "name": "scale",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
-                                    "end": 167,
+                                    "commentStart": 161,
+                                    "end": 0,
                                     "operator": "-",
-                                    "start": 161,
+                                    "start": 0,
                                     "type": "UnaryExpression",
                                     "type": "UnaryExpression"
                                   }
                                 ],
-                                "end": 168,
-                                "start": 157,
+                                "end": 0,
+                                "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 150,
-                            "name": "line",
-                            "start": 146,
-                            "type": "Identifier"
+                            "abs_path": false,
+                            "commentStart": 146,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 146,
+                              "end": 0,
+                              "name": "line",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
                           },
-                          "end": 169,
-                          "start": 146,
+                          "commentStart": 146,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
                         }
                       ],
-                      "end": 169,
-                      "start": 29,
+                      "commentStart": 29,
+                      "end": 0,
+                      "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
-                    "start": 24,
+                    "start": 0,
                     "type": "VariableDeclarator"
                   },
-                  "end": 169,
+                  "end": 0,
                   "kind": "const",
-                  "start": 24,
+                  "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "argument": {
-                    "end": 182,
-                    "name": "sg",
-                    "start": 180,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "abs_path": false,
+                    "commentStart": 180,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 180,
+                      "end": 0,
+                      "name": "sg",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "end": 182,
-                  "start": 173,
+                  "commentStart": 169,
+                  "end": 0,
+                  "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 184,
+              "commentStart": 20,
+              "end": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "0": [
                     {
-                      "end": 173,
-                      "start": 169,
+                      "commentStart": 169,
+                      "end": 0,
+                      "start": 0,
                       "type": "NonCodeNode",
                       "value": {
                         "type": "newLine"
@@ -279,49 +396,55 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                 },
                 "startNodes": []
               },
-              "start": 20
+              "start": 0
             },
-            "end": 184,
+            "commentStart": 7,
+            "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 11,
+                  "commentStart": 8,
+                  "end": 0,
                   "name": "pos",
-                  "start": 8,
+                  "start": 0,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 18,
+                  "commentStart": 13,
+                  "end": 0,
                   "name": "scale",
-                  "start": 13,
+                  "start": 0,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 7,
+            "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 3,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 184,
+        "end": 0,
         "kind": "fn",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 185,
         "declaration": {
-          "end": 251,
+          "commentStart": 185,
+          "end": 0,
           "id": {
-            "end": 192,
+            "commentStart": 185,
+            "end": 0,
             "name": "part001",
-            "start": 185,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -329,11 +452,13 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 200,
                     "elements": [
                       {
-                        "end": 202,
+                        "commentStart": 201,
+                        "end": 0,
                         "raw": "0",
-                        "start": 201,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -342,9 +467,10 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                         }
                       },
                       {
-                        "end": 205,
+                        "commentStart": 204,
+                        "end": 0,
                         "raw": "0",
-                        "start": 204,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -353,15 +479,16 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                         }
                       }
                     ],
-                    "end": 206,
-                    "start": 200,
+                    "end": 0,
+                    "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 210,
+                    "commentStart": 208,
+                    "end": 0,
                     "raw": "20",
-                    "start": 208,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -371,33 +498,54 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                   }
                 ],
                 "callee": {
-                  "end": 199,
-                  "name": "cube",
-                  "start": 195,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 195,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 195,
+                    "end": 0,
+                    "name": "cube",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 211,
-                "start": 195,
+                "commentStart": 195,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 224,
-                    "start": 223,
+                    "commentStart": 223,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 222,
-                  "name": "close",
-                  "start": 217,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 217,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 217,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 225,
-                "start": 217,
+                "commentStart": 217,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -406,15 +554,17 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 245,
+                      "commentStart": 239,
+                      "end": 0,
                       "name": "length",
-                      "start": 239,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 250,
+                      "commentStart": 248,
+                      "end": 0,
                       "raw": "20",
-                      "start": 248,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -425,39 +575,53 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                   }
                 ],
                 "callee": {
-                  "end": 238,
-                  "name": "extrude",
-                  "start": 231,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 231,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 231,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 251,
-                "start": 231,
+                "commentStart": 231,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 251,
-            "start": 195,
+            "commentStart": 195,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 185,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 251,
+        "end": 0,
         "kind": "const",
-        "start": 185,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 251,
         "declaration": {
-          "end": 439,
+          "commentStart": 253,
+          "end": 0,
           "id": {
-            "end": 260,
+            "commentStart": 253,
+            "end": 0,
             "name": "part002",
-            "start": 253,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -465,40 +629,62 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
               {
                 "arguments": [
                   {
-                    "end": 284,
-                    "name": "part001",
-                    "start": 277,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "abs_path": false,
+                    "commentStart": 277,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 277,
+                      "end": 0,
+                      "name": "part001",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
-                    "end": 291,
+                    "commentStart": 286,
+                    "end": 0,
                     "raw": "\"END\"",
-                    "start": 286,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "END"
                   }
                 ],
                 "callee": {
-                  "end": 276,
-                  "name": "startSketchOn",
-                  "start": 263,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 263,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 263,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 292,
-                "start": 263,
+                "commentStart": 263,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
+                    "commentStart": 313,
                     "elements": [
                       {
-                        "end": 315,
+                        "commentStart": 314,
+                        "end": 0,
                         "raw": "0",
-                        "start": 314,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -507,9 +693,10 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                         }
                       },
                       {
-                        "end": 318,
+                        "commentStart": 317,
+                        "end": 0,
                         "raw": "0",
-                        "start": 317,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -518,26 +705,37 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                         }
                       }
                     ],
-                    "end": 319,
-                    "start": 313,
+                    "end": 0,
+                    "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 322,
-                    "start": 321,
+                    "commentStart": 321,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 312,
-                  "name": "startProfileAt",
-                  "start": 298,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 298,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 298,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 323,
-                "start": 298,
+                "commentStart": 298,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -546,17 +744,20 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 337,
+                      "commentStart": 334,
+                      "end": 0,
                       "name": "end",
-                      "start": 334,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 340,
                       "elements": [
                         {
-                          "end": 342,
+                          "commentStart": 341,
+                          "end": 0,
                           "raw": "0",
-                          "start": 341,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -565,9 +766,10 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                           }
                         },
                         {
-                          "end": 346,
+                          "commentStart": 344,
+                          "end": 0,
                           "raw": "10",
-                          "start": 344,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -576,21 +778,31 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                           }
                         }
                       ],
-                      "end": 347,
-                      "start": 340,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 333,
-                  "name": "line",
-                  "start": 329,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 329,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 329,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 348,
-                "start": 329,
+                "commentStart": 329,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -600,17 +812,20 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 362,
+                      "commentStart": 359,
+                      "end": 0,
                       "name": "end",
-                      "start": 359,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 365,
                       "elements": [
                         {
-                          "end": 368,
+                          "commentStart": 366,
+                          "end": 0,
                           "raw": "10",
-                          "start": 366,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -619,9 +834,10 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                           }
                         },
                         {
-                          "end": 371,
+                          "commentStart": 370,
+                          "end": 0,
                           "raw": "0",
-                          "start": 370,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -630,21 +846,31 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                           }
                         }
                       ],
-                      "end": 372,
-                      "start": 365,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 358,
-                  "name": "line",
-                  "start": 354,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 354,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 354,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 373,
-                "start": 354,
+                "commentStart": 354,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -654,17 +880,20 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 387,
+                      "commentStart": 384,
+                      "end": 0,
                       "name": "end",
-                      "start": 384,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 390,
                       "elements": [
                         {
-                          "end": 392,
+                          "commentStart": 391,
+                          "end": 0,
                           "raw": "0",
-                          "start": 391,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -674,9 +903,10 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                         },
                         {
                           "argument": {
-                            "end": 397,
+                            "commentStart": 395,
+                            "end": 0,
                             "raw": "10",
-                            "start": 395,
+                            "start": 0,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -684,28 +914,39 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 397,
+                          "commentStart": 394,
+                          "end": 0,
                           "operator": "-",
-                          "start": 394,
+                          "start": 0,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       ],
-                      "end": 398,
-                      "start": 390,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 383,
-                  "name": "line",
-                  "start": 379,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 379,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 379,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 399,
-                "start": 379,
+                "commentStart": 379,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -713,20 +954,31 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
               {
                 "arguments": [
                   {
-                    "end": 412,
-                    "start": 411,
+                    "commentStart": 411,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 410,
-                  "name": "close",
-                  "start": 405,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 405,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 405,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 413,
-                "start": 405,
+                "commentStart": 405,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -735,16 +987,18 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 433,
+                      "commentStart": 427,
+                      "end": 0,
                       "name": "length",
-                      "start": 427,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
-                        "end": 438,
+                        "commentStart": 437,
+                        "end": 0,
                         "raw": "5",
-                        "start": 437,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -752,49 +1006,63 @@ description: Result of parsing sketch_on_face_end_negative_extrude.kcl
                           "suffix": "None"
                         }
                       },
-                      "end": 438,
+                      "commentStart": 436,
+                      "end": 0,
                       "operator": "-",
-                      "start": 436,
+                      "start": 0,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 426,
-                  "name": "extrude",
-                  "start": 419,
-                  "type": "Identifier"
+                  "abs_path": false,
+                  "commentStart": 419,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 419,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
                 },
-                "end": 439,
-                "start": 419,
+                "commentStart": 419,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 439,
-            "start": 263,
+            "commentStart": 263,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 253,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 439,
+        "end": 0,
         "kind": "const",
-        "start": 253,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 440,
+    "commentStart": 0,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "1": [
           {
-            "end": 253,
-            "start": 251,
+            "commentStart": 251,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

@@ -1,0 +1,25 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing out_of_band_sketches.kcl
+---
+sketch001 = startSketchOn(XZ)
+profile001 = startProfileAt([27.67, 239.34], sketch001)
+  // enter sketch mode, start path, move path pen, disable sketch mode
+  |> line(end = [414.61, 0]) // extend path
+  |> line(end = [33.98, -389.36]) // extend path
+
+sketch002 = startSketchOn(XY)
+profile002 = startProfileAt([67.04, -63.5], sketch002)
+  // enter sketch mode, start path, move path pen, disable sketch mode
+  |> line(end = [282.37, 0]) // extend path
+  |> line(end = [-12.77, -178.07]) // extend path
+
+profile001extended = profile001
+  |> line(end = [-455.38, 0]) // extend path
+  |> close() // close
+
+profile002extended = profile002
+  |> line(end = [-299.39, 21.28]) // extend path
+  |> close() // close
+
+extrude([profile001extended, profile002extended], length = 10.14) // for each extrude: enter sketch mode, extrude, exit sketch mode

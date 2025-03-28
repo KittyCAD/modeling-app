@@ -69,7 +69,7 @@ model = import("tests/inputs/cube.step")
 ```js
 import height, buildSketch from "common.kcl"
 
-plane = 'XZ'
+plane = XZ
 margin = 2
 s1 = buildSketch(plane, [0, 0])
 s2 = buildSketch(plane, [0, height() + margin])

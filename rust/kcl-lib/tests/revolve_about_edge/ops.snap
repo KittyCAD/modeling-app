@@ -10,19 +10,11 @@ description: Operations executed revolve_about_edge.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          26,
-          30,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      12,
-      31,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -33,31 +25,31 @@ description: Operations executed revolve_about_edge.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          146,
-          150,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      132,
-      151,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
   {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
     "labeledArgs": {
-      "data": {
+      "center": {
         "value": {
-          "type": "Object",
-          "value": {
-            "angle": {
+          "type": "Array",
+          "value": [
+            {
               "type": "Number",
-              "value": 90.0,
+              "value": -50.0,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -68,40 +60,83 @@ description: Operations executed revolve_about_edge.kcl
                 }
               }
             },
-            "axis": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentB001",
-              "artifact_id": "[uuid]"
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 10.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
             }
           }
         },
-        "sourceRange": [
-          209,
-          271,
-          0
-        ]
-      },
-      "sketches": {
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "angle": {
         "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
+          "type": "Number",
+          "value": 90.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
-        "sourceRange": [
-          273,
-          274,
-          0
-        ]
+        "sourceRange": []
+      },
+      "axis": {
+        "value": {
+          "type": "TagIdentifier",
+          "value": "rectangleSegmentB001",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
       }
     },
     "name": "revolve",
-    "sourceRange": [
-      201,
-      275,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   }
 ]
