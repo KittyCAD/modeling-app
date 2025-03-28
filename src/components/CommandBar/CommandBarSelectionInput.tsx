@@ -6,7 +6,7 @@ import {
   getSelectionCountByType,
   getSelectionTypeDisplayText,
 } from 'lib/selections'
-import { kclManager } from 'lib/singletons'
+import { engineCommandManager, kclManager } from 'lib/singletons'
 import { reportRejection } from 'lib/trap'
 import { toSync } from 'lib/utils'
 import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
@@ -111,6 +111,23 @@ function CommandBarSelectionInput({
 
     onSubmit(selection)
   }
+
+  // Clear selection if needed
+  useEffect(() => {
+    arg.clearSelectionFirst &&
+      engineCommandManager.modelingSend({
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+        },
+      })
+  }, [arg.clearSelectionFirst])
+
+  // Set selection filter if needed, and reset it when the component unmounts
+  useEffect(() => {
+    arg.selectionFilter && kclManager.setSelectionFilter(arg.selectionFilter)
+    return () => kclManager.defaultSelectionFilter(selection)
+  }, [arg.selectionFilter])
 
   return (
     <form id="arg-form" onSubmit={handleSubmit}>

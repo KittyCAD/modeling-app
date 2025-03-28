@@ -757,7 +757,9 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
     } else {
       return { reason: "Couldn't find radius argument" }
     }
+  }
 
+  if (mode === 'Axis') {
     if ('length' in operation.labeledArgs && operation.labeledArgs.length) {
       const r = await stringToKclExpression(
         codeManager.code.slice(
@@ -847,6 +849,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Import',
     icon: 'import',
   },
+  intersect: {
+    label: 'Intersect',
+    icon: 'booleanIntersect',
+  },
   loft: {
     label: 'Loft',
     icon: 'loft',
@@ -903,11 +909,19 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
       }
     },
   },
+  subtract: {
+    label: 'Subtract',
+    icon: 'booleanSubtract',
+  },
   sweep: {
     label: 'Sweep',
     icon: 'sweep',
     prepareToEdit: prepareToEditSweep,
     supportsAppearance: true,
+  },
+  union: {
+    label: 'Union',
+    icon: 'booleanUnion',
   },
 }
 

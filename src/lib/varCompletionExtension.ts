@@ -17,7 +17,7 @@ export function varMentions(data: Completion[] = []): Extension {
           return null
         }
         return {
-          from: word?.from!,
+          from: word?.from,
           options: [...data],
         }
       },
