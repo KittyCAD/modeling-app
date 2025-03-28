@@ -173,6 +173,14 @@ export function Toolbar({
     }
   }, [currentMode, disableAllButtons, configCallbackProps])
 
+  // To remember the last selected item in an ActionButtonDropdown
+  const [lastSelectedMultiActionItem, _] = useState(
+    new Map<
+      number /* index in currentModeItems */,
+      number /* index in maybeIconConfig */
+    >()
+  )
+
   return (
     <menu
       data-current-mode={currentMode}
@@ -199,7 +207,14 @@ export function Toolbar({
           } else if (isArray(maybeIconConfig)) {
             // A button with a dropdown
             const selectedIcon =
-              maybeIconConfig.find((c) => c.isActive) || maybeIconConfig[0]
+              maybeIconConfig.find((c) => c.isActive) ||
+              maybeIconConfig[lastSelectedMultiActionItem.get(i) ?? 0]
+
+            // Save the last selected item in the dropdown
+            lastSelectedMultiActionItem.set(
+              i,
+              maybeIconConfig.indexOf(selectedIcon)
+            )
             return (
               <ActionButtonDropdown
                 Element="button"
