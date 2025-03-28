@@ -20,17 +20,20 @@
       "plugin:react-hooks/recommended"
     ],
     "rules": {
+      "no-array-constructor": "off", // This is wrong; use the @typescript-eslint one instead.
       "@typescript-eslint/no-array-constructor": "error",
       "@typescript-eslint/no-array-delete": "error",
       "@typescript-eslint/no-duplicate-enum-values": "error",
       "@typescript-eslint/no-duplicate-type-constituents": "error",
       "@typescript-eslint/no-empty-object-type": "error",
       "@typescript-eslint/no-floating-promises": "error",
+      "no-implied-eval": "off", // This is wrong; use the @typescript-eslint one instead.
       "@typescript-eslint/no-implied-eval": "error",
       "@typescript-eslint/no-misused-promises": "error",
       "@typescript-eslint/no-namespace": "error",
       "@typescript-eslint/no-unnecessary-type-assertion": "error",
       "@typescript-eslint/no-unnecessary-type-constraint": "error",
+      "no-unused-vars": "off", // This is wrong; use the @typescript-eslint one instead.
       "@typescript-eslint/no-unused-vars": ["error", {
         "varsIgnorePattern": "^_",
         "argsIgnorePattern": "^_",
@@ -42,7 +45,6 @@
       "jsx-a11y/click-events-have-key-events": "off",
       "jsx-a11y/no-autofocus": "off",
       "jsx-a11y/no-noninteractive-element-interactions": "off",
-      "no-implied-eval": "off", // This is wrong; use the @typescript-eslint one instead.
       "no-restricted-globals": [
         "error",
         {
