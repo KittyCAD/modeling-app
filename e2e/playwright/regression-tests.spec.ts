@@ -706,7 +706,7 @@ extrude002 = extrude(profile002, length = 150)
       await scene.loadingIndicator.waitFor({ state: 'detached' })
     })
     await test.step(`The part should start loading quickly, not waiting until execution is complete`, async () => {
-      // TODO: use the viewport size to pick the center point, but the `viewport` fixutre's values were wrong.
+      // TODO: use the viewport size to pick the center point, but the `viewport` fixture's values were wrong.
       await scene.expectPixelColor([116, 116, 116], { x: 500, y: 250 }, 15)
     })
   })
