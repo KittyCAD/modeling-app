@@ -23,6 +23,8 @@ import {
 import { getVariableDeclaration } from 'lang/queryAst/getVariableDeclaration'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { getNodeFromPath } from 'lang/queryAst'
+import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
+import { DEV } from 'env'
 
 type OutputFormat = Models['OutputFormat3d_type']
 type OutputTypeKey = OutputFormat['type']
@@ -41,7 +43,7 @@ export const COMMAND_APPEARANCE_COLOR_DEFAULT = 'default'
 export type HelixModes = 'Axis' | 'Edge' | 'Cylinder'
 
 export type ModelingCommandSchema = {
-  'Enter sketch': {}
+  'Enter sketch': { forceNewSketch?: boolean }
   Export: {
     type: OutputTypeKey
     storage?: StorageUnion
@@ -146,10 +148,22 @@ export type ModelingCommandSchema = {
     prompt: string
     selection: Selections
   }
+  // TODO: {} means any non-nullish value. This is probably not what we want.
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   'Delete selection': {}
   Appearance: {
     nodeToEdit?: PathToNode
     color: string
+  }
+  'Boolean Subtract': {
+    target: Selections
+    tool: Selections
+  }
+  'Boolean Union': {
+    solids: Selections
+  }
+  'Boolean Intersect': {
+    solids: Selections
   }
 }
 
@@ -326,7 +340,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: (commandBarContext) => {
           return Object.values(
             commandBarContext.machineManager.machines || []
-          )[0] as components['schemas']['MachineInfoResponse']
+          )[0]
         },
       },
     },
@@ -502,6 +516,67 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_DEGREE,
         required: true,
+      },
+    },
+  },
+  'Boolean Subtract': {
+    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
+    description: 'Subtract one solid from another.',
+    icon: 'booleanSubtract',
+    needsReview: true,
+    args: {
+      target: {
+        inputType: 'selection',
+        selectionTypes: ['path'],
+        selectionFilter: ['object'],
+        multiple: false,
+        required: true,
+        skip: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      tool: {
+        clearSelectionFirst: true,
+        inputType: 'selection',
+        selectionTypes: ['path'],
+        selectionFilter: ['object'],
+        multiple: false,
+        required: true,
+        skip: false,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+    },
+  },
+  'Boolean Union': {
+    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
+    description: 'Union multiple solids into a single solid.',
+    icon: 'booleanUnion',
+    needsReview: true,
+    args: {
+      solids: {
+        inputType: 'selection',
+        selectionTypes: ['path'],
+        selectionFilter: ['object'],
+        multiple: true,
+        required: true,
+        skip: false,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+    },
+  },
+  'Boolean Intersect': {
+    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
+    description: 'Subtract one solid from another.',
+    icon: 'booleanIntersect',
+    needsReview: true,
+    args: {
+      solids: {
+        inputType: 'selectionMixed',
+        selectionTypes: ['path'],
+        selectionFilter: ['object'],
+        multiple: true,
+        required: true,
+        skip: false,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
     },
   },
@@ -938,3 +1013,5 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
 }
+
+modelingMachineCommandConfig
