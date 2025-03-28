@@ -107,6 +107,7 @@ async fn inner_clone(geometry: Geometry, exec_state: &mut ExecState, args: Args)
         Geometry::Sketch(sketch) => {
             let mut new_sketch = sketch.clone();
             new_sketch.id = new_id;
+            new_sketch.original_id = new_id;
             Geometry::Sketch(new_sketch)
         }
         Geometry::Solid(solid) => {
