@@ -234,6 +234,10 @@ export type Face
 @(impl = std_rust)
 export type Helix
 
+/// The edge of a solid.
+@(impl = std_rust)
+export type Edge
+
 /// A point in two dimensional space.
 ///
 /// `Point2d` is an alias for a two-element array of [number](/docs/kcl/types/number)s. To write a value

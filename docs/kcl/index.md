@@ -22,6 +22,7 @@ layout: manual
   * [`string`](kcl/types/string)
   * [`tag`](kcl/types/tag)
 * **std**
+  * [`Edge`](kcl/types/Edge)
   * [`Face`](kcl/types/Face)
   * [`Helix`](kcl/types/Helix)
   * [`Plane`](kcl/types/Plane)

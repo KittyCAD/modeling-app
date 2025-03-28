@@ -233,6 +233,7 @@ pub enum PrimitiveType {
     Plane,
     Helix,
     Face,
+    Edge,
     ImportedGeometry,
 }
 
@@ -248,6 +249,7 @@ impl PrimitiveType {
             PrimitiveType::Plane => "Planes".to_owned(),
             PrimitiveType::Helix => "Helices".to_owned(),
             PrimitiveType::Face => "Faces".to_owned(),
+            PrimitiveType::Edge => "Edges".to_owned(),
             PrimitiveType::ImportedGeometry => "imported geometries".to_owned(),
             PrimitiveType::Tag => "tags".to_owned(),
         }
@@ -273,6 +275,7 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Solid => write!(f, "Solid"),
             PrimitiveType::Plane => write!(f, "Plane"),
             PrimitiveType::Face => write!(f, "Face"),
+            PrimitiveType::Edge => write!(f, "Edge"),
             PrimitiveType::Helix => write!(f, "Helix"),
             PrimitiveType::ImportedGeometry => write!(f, "imported geometry"),
         }
@@ -607,6 +610,11 @@ impl KclValue {
             },
             PrimitiveType::Helix => match value {
                 KclValue::Helix { .. } => Some(value.clone()),
+                _ => None,
+            },
+            PrimitiveType::Edge => match value {
+                KclValue::Uuid { .. } => Some(value.clone()),
+                KclValue::TagIdentifier { .. } => Some(value.clone()),
                 _ => None,
             },
             PrimitiveType::ImportedGeometry => match value {
