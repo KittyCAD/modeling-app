@@ -1,6 +1,7 @@
-use std::{any::type_name, collections::HashMap, num::NonZeroU32};
+use std::num::NonZeroU32;
 
 use anyhow::Result;
+use indexmap::IndexMap;
 use kcmc::{
     websocket::{ModelingCmdReq, OkWebSocketResponseData},
     ModelingCmd,
@@ -12,9 +13,10 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        kcl_value::{ArrayLen, FunctionSource, NumericType, RuntimeType},
-        ExecState, ExecutorContext, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, PrimitiveType, Sketch,
-        SketchSurface, Solid, TagIdentifier,
+        kcl_value::FunctionSource,
+        types::{NumericType, PrimitiveType, RuntimeType},
+        ExecState, ExecutorContext, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Sketch, SketchSurface,
+        Solid, TagIdentifier,
     },
     parsing::ast::types::TagNode,
     source_range::SourceRange,
@@ -56,7 +58,7 @@ pub struct KwArgs {
     /// Unlabeled keyword args. Currently only the first arg can be unlabeled.
     pub unlabeled: Option<Arg>,
     /// Labeled args.
-    pub labeled: HashMap<String, Arg>,
+    pub labeled: IndexMap<String, Arg>,
 }
 
 impl KwArgs {
@@ -145,7 +147,7 @@ impl Args {
                 source_ranges: vec![self.source_range],
                 message: format!(
                     "The arg {label} was given, but it was the wrong type. It should be type {} but it was {}",
-                    type_name::<T>(),
+                    tynm::type_name::<T>(),
                     arg.value.human_friendly_type(),
                 ),
             })
@@ -188,8 +190,10 @@ impl Args {
                 ty.human_friendly_type(),
             );
             let suggestion = match (ty, actual_type_name) {
-                (RuntimeType::Primitive(PrimitiveType::Solid), "Sketch")
-                | (RuntimeType::Array(PrimitiveType::Solid, _), "Sketch") => Some(
+                (RuntimeType::Primitive(PrimitiveType::Solid), "Sketch") => Some(
+                    "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`",
+                ),
+                (RuntimeType::Array(t, _), "Sketch") if **t == RuntimeType::Primitive(PrimitiveType::Solid) => Some(
                     "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`",
                 ),
                 _ => None,
@@ -226,7 +230,7 @@ impl Args {
                 source_ranges: vec![arg.source_range],
                 message: format!(
                     "Expected an array of {} but found {}",
-                    type_name::<T>(),
+                    tynm::type_name::<T>(),
                     arg.value.human_friendly_type()
                 ),
             });
@@ -241,7 +245,7 @@ impl Args {
                         source_ranges: arg.source_ranges(),
                         message: format!(
                             "Expected a {} but found {}",
-                            type_name::<T>(),
+                            tynm::type_name::<T>(),
                             arg.value.human_friendly_type()
                         ),
                     })
@@ -309,8 +313,10 @@ impl Args {
                 ty.human_friendly_type(),
             );
             let suggestion = match (ty, actual_type_name) {
-                (RuntimeType::Primitive(PrimitiveType::Solid), "Sketch")
-                | (RuntimeType::Array(PrimitiveType::Solid, _), "Sketch") => Some(
+                (RuntimeType::Primitive(PrimitiveType::Solid), "Sketch") => Some(
+                    "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`",
+                ),
+                (RuntimeType::Array(ty, _), "Sketch") if **ty == RuntimeType::Primitive(PrimitiveType::Solid) => Some(
                     "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`",
                 ),
                 _ => None,
@@ -597,7 +603,7 @@ impl Args {
         };
         let sarg = arg0
             .value
-            .coerce(&RuntimeType::Array(PrimitiveType::Sketch, ArrayLen::None), exec_state)
+            .coerce(&RuntimeType::sketches(), exec_state)
             .ok_or(KclError::Type(KclErrorDetails {
                 message: format!(
                     "Expected an array of sketches, found {}",
@@ -685,7 +691,7 @@ impl Args {
         };
         let sarg = arg1
             .value
-            .coerce(&RuntimeType::Array(PrimitiveType::Sketch, ArrayLen::None), exec_state)
+            .coerce(&RuntimeType::sketches(), exec_state)
             .ok_or(KclError::Type(KclErrorDetails {
                 message: format!(
                     "Expected one or more sketches for second argument, found {}",
@@ -919,7 +925,7 @@ where
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
                     "Argument at index {i} was supposed to be type {} but found {}",
-                    type_name::<T>(),
+                    tynm::type_name::<T>(),
                     arg.value.human_friendly_type(),
                 ),
                 source_ranges: arg.source_ranges(),
@@ -942,7 +948,7 @@ where
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
                     "Argument at index {i} was supposed to be type Option<{}> but found {}",
-                    type_name::<T>(),
+                    tynm::type_name::<T>(),
                     arg.value.human_friendly_type()
                 ),
                 source_ranges: arg.source_ranges(),
@@ -995,48 +1001,54 @@ where
 
 impl<'a> FromKclValue<'a> for [f64; 2] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::MixedArray { value, meta: _ } = arg else {
-            return None;
-        };
-        if value.len() != 2 {
-            return None;
+        match arg {
+            KclValue::MixedArray { value, meta: _ } | KclValue::HomArray { value, .. } => {
+                if value.len() != 2 {
+                    return None;
+                }
+                let v0 = value.first()?;
+                let v1 = value.get(1)?;
+                let array = [v0.as_f64()?, v1.as_f64()?];
+                Some(array)
+            }
+            _ => None,
         }
-        let v0 = value.first()?;
-        let v1 = value.get(1)?;
-        let array = [v0.as_f64()?, v1.as_f64()?];
-        Some(array)
     }
 }
 
 impl<'a> FromKclValue<'a> for [usize; 3] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::MixedArray { value, meta: _ } = arg else {
-            return None;
-        };
-        if value.len() != 3 {
-            return None;
+        match arg {
+            KclValue::MixedArray { value, meta: _ } | KclValue::HomArray { value, .. } => {
+                if value.len() != 3 {
+                    return None;
+                }
+                let v0 = value.first()?;
+                let v1 = value.get(1)?;
+                let v2 = value.get(2)?;
+                let array = [v0.as_usize()?, v1.as_usize()?, v2.as_usize()?];
+                Some(array)
+            }
+            _ => None,
         }
-        let v0 = value.first()?;
-        let v1 = value.get(1)?;
-        let v2 = value.get(2)?;
-        let array = [v0.as_usize()?, v1.as_usize()?, v2.as_usize()?];
-        Some(array)
     }
 }
 
 impl<'a> FromKclValue<'a> for [f64; 3] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::MixedArray { value, meta: _ } = arg else {
-            return None;
-        };
-        if value.len() != 3 {
-            return None;
+        match arg {
+            KclValue::MixedArray { value, meta: _ } | KclValue::HomArray { value, .. } => {
+                if value.len() != 3 {
+                    return None;
+                }
+                let v0 = value.first()?;
+                let v1 = value.get(1)?;
+                let v2 = value.get(2)?;
+                let array = [v0.as_f64()?, v1.as_f64()?, v2.as_f64()?];
+                Some(array)
+            }
+            _ => None,
         }
-        let v0 = value.first()?;
-        let v1 = value.get(1)?;
-        let v2 = value.get(2)?;
-        let array = [v0.as_f64()?, v1.as_f64()?, v2.as_f64()?];
-        Some(array)
     }
 }
 
@@ -1250,23 +1262,6 @@ impl<'a> FromKclValue<'a> for super::sketch::BezierData {
         let_field_of!(obj, control1);
         let_field_of!(obj, control2);
         Some(Self { to, control1, control2 })
-    }
-}
-
-impl<'a> FromKclValue<'a> for super::helix::HelixRevolutionsData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, revolutions);
-        let_field_of!(obj, length?);
-        let_field_of!(obj, ccw?);
-        let ccw = ccw.unwrap_or_default();
-        let angle_start = obj.get("angleStart")?.as_f64()?;
-        Some(Self {
-            revolutions,
-            angle_start,
-            ccw,
-            length,
-        })
     }
 }
 

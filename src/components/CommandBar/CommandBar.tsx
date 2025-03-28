@@ -136,7 +136,7 @@ export const CommandBar = () => {
                   name="close"
                   className="w-5 h-5 rounded-sm bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
                 />
-                <Tooltip position="bottom" delay={500}>
+                <Tooltip position="bottom">
                   Cancel{' '}
                   <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">esc</kbd>
                 </Tooltip>
@@ -144,7 +144,7 @@ export const CommandBar = () => {
               {!commandBarState.matches('Selecting command') && (
                 <button onClick={stepBack} className="m-0 p-0 border-none">
                   <CustomIcon name="arrowLeft" className="w-5 h-5 rounded-sm" />
-                  <Tooltip position="bottom" delay={500}>
+                  <Tooltip position="bottom">
                     Step back{' '}
                     <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">
                       Shift

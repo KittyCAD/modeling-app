@@ -43,8 +43,8 @@ export const INTERSECTION_PLANE_LAYER = 1
 export const SKETCH_LAYER = 2
 
 // redundant types so that it can be changed temporarily but CI will catch the wrong type
-export const DEBUG_SHOW_INTERSECTION_PLANE: false = false
-export const DEBUG_SHOW_BOTH_SCENES: false = false
+export const DEBUG_SHOW_INTERSECTION_PLANE = false
+export const DEBUG_SHOW_BOTH_SCENES = false
 
 export const RAYCASTABLE_PLANE = 'raycastable-plane'
 
@@ -110,18 +110,16 @@ interface OnMoveCallbackArgs {
 type Voidish = void | Promise<void>
 export class SceneInfra {
   static instance: SceneInfra
-  scene: Scene
-  renderer: WebGLRenderer
-  labelRenderer: CSS2DRenderer
-  camControls: CameraControls
-  isPerspective = true
-  fov = 45
-  fovBeforeAnimate = 45
+  readonly scene: Scene
+  readonly renderer: WebGLRenderer
+  readonly labelRenderer: CSS2DRenderer
+  readonly camControls: CameraControls
+  private readonly fov = 45
   isFovAnimationInProgress = false
   _baseUnit: BaseUnit = 'mm'
   _baseUnitMultiplier = 1
   _theme: Themes = Themes.System
-  extraSegmentTexture: Texture
+  readonly extraSegmentTexture: Texture
   lastMouseState: MouseState = { type: 'idle' }
   onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onDragEndCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}

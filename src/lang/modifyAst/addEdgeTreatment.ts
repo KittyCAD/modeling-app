@@ -3,7 +3,6 @@ import {
   CallExpression,
   CallExpressionKw,
   Expr,
-  Identifier,
   ObjectExpression,
   PathToNode,
   PipeExpression,
@@ -14,7 +13,7 @@ import {
 import {
   createCallExpressionStdLib,
   createArrayExpression,
-  createIdentifier,
+  createLocalName,
   createPipeExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
@@ -40,10 +39,12 @@ import { Artifact, getSweepArtifactFromSelection } from 'lang/std/artifactGraph'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import { findKwArg } from 'lang/util'
 import { KclManager } from 'lang/KclSingleton'
+import { EXECUTION_TYPE_REAL } from 'lib/constants'
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import EditorManager from 'editor/manager'
 import CodeManager from 'lang/codeManager'
 import { updateModelingState } from 'lang/modelingWorkflows'
+import { Name } from '@rust/kcl-lib/bindings/Name'
 
 // Edge Treatment Types
 export enum EdgeTreatmentType {
@@ -86,6 +87,7 @@ export async function applyEdgeTreatmentToSelection(
   // 2. update ast
   await updateModelingState(
     modifiedAst,
+    EXECUTION_TYPE_REAL,
     {
       kclManager: dependencies.kclManager,
       editorManager: dependencies.editorManager,
@@ -319,8 +321,8 @@ export function mutateAstWithTagForSketchSegment(
   // Check whether selection is a valid segment
   if (
     !(
-      segmentNode.node.callee.name in sketchLineHelperMap ||
-      segmentNode.node.callee.name in sketchLineHelperMapKw
+      segmentNode.node.callee.name.name in sketchLineHelperMap ||
+      segmentNode.node.callee.name.name in sketchLineHelperMapKw
     )
   ) {
     return new Error('Selection is not a sketch segment')
@@ -333,7 +335,7 @@ export function mutateAstWithTagForSketchSegment(
       pathToNode: pathToSegmentNode,
       node: astClone,
     },
-    segmentNode.node.callee.name,
+    segmentNode.node.callee.name.name,
     null
   )
   if (err(taggedSegment)) return taggedSegment
@@ -345,8 +347,8 @@ export function mutateAstWithTagForSketchSegment(
 export function getEdgeTagCall(
   tag: string,
   artifact: Artifact
-): Node<Identifier | CallExpression | CallExpressionKw> {
-  let tagCall: Expr = createIdentifier(tag)
+): Node<Name | CallExpression | CallExpressionKw> {
+  let tagCall: Expr = createLocalName(tag)
 
   // Modify the tag based on selectionType
   if (artifact.type === 'sweepEdge' && artifact.subType === 'opposite') {
@@ -393,7 +395,7 @@ export function locateExtrudeDeclarator(
 function getPathToNodeOfEdgeTreatmentLiteral(
   pathToExtrudeNode: PathToNode,
   extrudeDeclarator: VariableDeclarator,
-  tag: Identifier | CallExpression | CallExpressionKw,
+  tag: Name | CallExpression | CallExpressionKw,
   parameters: EdgeTreatmentParameters
 ): PathToNode {
   let pathToEdgeTreatmentObj: PathToNode = []
@@ -403,7 +405,7 @@ function getPathToNodeOfEdgeTreatmentLiteral(
     enter(node, path) {
       if (
         (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
-        node.callee.name === parameters.type
+        node.callee.name.name === parameters.type
       ) {
         inEdgeTreatment = true
       }
@@ -419,7 +421,7 @@ function getPathToNodeOfEdgeTreatmentLiteral(
     leave(node) {
       if (
         (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
-        node.callee.name === parameters.type
+        node.callee.name.name === parameters.type
       ) {
         inEdgeTreatment = false
       }
@@ -442,15 +444,15 @@ function getPathToNodeOfEdgeTreatmentLiteral(
 
 function hasTag(
   node: ObjectExpression,
-  tag: Identifier | CallExpression | CallExpressionKw
+  tag: Name | CallExpression | CallExpressionKw
 ): boolean {
   return node.properties.some((prop) => {
     if (prop.key.name === 'tags' && prop.value.type === 'ArrayExpression') {
       // if selection is a base edge:
-      if (tag.type === 'Identifier') {
+      if (tag.type === 'Name') {
         return prop.value.elements.some(
           (element) =>
-            element.type === 'Identifier' && element.name === tag.name
+            element.type === 'Name' && element.name.name === tag.name.name
         )
       }
       // if selection is an adjacent or opposite edge:
@@ -458,10 +460,10 @@ function hasTag(
         return prop.value.elements.some(
           (element) =>
             element.type === 'CallExpression' &&
-            element.callee.name === tag.callee.name && // edge location
-            element.arguments[0].type === 'Identifier' &&
-            tag.arguments[0].type === 'Identifier' &&
-            element.arguments[0].name === tag.arguments[0].name // tag name
+            element.callee.name.name === tag.callee.name.name && // edge location
+            element.arguments[0].type === 'Name' &&
+            tag.arguments[0].type === 'Name' &&
+            element.arguments[0].name.name === tag.arguments[0].name.name // tag name
         )
       }
       if (tag.type === 'CallExpressionKw') {
@@ -474,12 +476,12 @@ function hasTag(
           const tagTag = findKwArg(ARG_TAG, tag)
 
           return (
-            element.callee.name === tag.callee.name && // edge location
+            element.callee.name.name === tag.callee.name.name && // edge location
             elementTag !== undefined &&
-            elementTag.type === 'Identifier' &&
+            elementTag.type === 'Name' &&
             tagTag !== undefined &&
-            tagTag.type === 'Identifier' &&
-            elementTag.name === tagTag.name
+            tagTag.type === 'Name' &&
+            elementTag.name.name === tagTag.name.name
           )
         })
       }
@@ -558,7 +560,8 @@ export const hasValidEdgeTreatmentSelection = ({
     enter(node) {
       if (
         (node.type === 'CallExpression' || node.type == 'CallExpressionKw') &&
-        (node.callee.name === 'extrude' || node.callee.name === 'revolve')
+        (node.callee.name.name === 'extrude' ||
+          node.callee.name.name === 'revolve')
       ) {
         extrudeExists = true
       }
@@ -593,8 +596,8 @@ export const hasValidEdgeTreatmentSelection = ({
     }
     if (
       !(
-        segmentNode.node.callee.name in sketchLineHelperMap ||
-        segmentNode.node.callee.name in sketchLineHelperMapKw
+        segmentNode.node.callee.name.name in sketchLineHelperMap ||
+        segmentNode.node.callee.name.name in sketchLineHelperMapKw
       )
     ) {
       return false
@@ -638,7 +641,7 @@ export const hasValidEdgeTreatmentSelection = ({
           if (
             (node.type === 'CallExpression' ||
               node.type === 'CallExpressionKw') &&
-            isEdgeTreatmentType(node.callee.name)
+            isEdgeTreatmentType(node.callee.name.name)
           ) {
             inEdgeTreatment = true
           }
@@ -652,7 +655,7 @@ export const hasValidEdgeTreatmentSelection = ({
           if (
             (node.type === 'CallExpression' ||
               node.type === 'CallExpressionKw') &&
-            isEdgeTreatmentType(node.callee.name)
+            isEdgeTreatmentType(node.callee.name.name)
           ) {
             inEdgeTreatment = false
           }
@@ -710,7 +713,7 @@ export const isTagUsedInEdgeTreatment = ({
       // Check if we are entering an edge treatment call
       if (
         (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
-        isEdgeTreatmentType(node.callee.name)
+        isEdgeTreatmentType(node.callee.name.name)
       ) {
         inEdgeTreatment = true
       }
@@ -738,16 +741,16 @@ export const isTagUsedInEdgeTreatment = ({
         inObj &&
         inEdgeTreatment &&
         (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
-        isEdgeType(node.callee.name)
+        isEdgeType(node.callee.name.name)
       ) {
-        inTagHelper = node.callee.name
+        inTagHelper = node.callee.name.name
       }
       if (
         inObj &&
         inEdgeTreatment &&
         !inTagHelper &&
-        node.type === 'Identifier' &&
-        node.name === tag
+        node.type === 'Name' &&
+        node.name.name === tag
       ) {
         edges.push('baseEdge')
       }
@@ -755,8 +758,8 @@ export const isTagUsedInEdgeTreatment = ({
         inObj &&
         inEdgeTreatment &&
         inTagHelper &&
-        node.type === 'Identifier' &&
-        node.name === tag
+        node.type === 'Name' &&
+        node.name.name === tag
       ) {
         edges.push(inTagHelper)
       }
@@ -764,7 +767,7 @@ export const isTagUsedInEdgeTreatment = ({
     leave: (node) => {
       if (
         (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
-        isEdgeTreatmentType(node.callee.name)
+        isEdgeTreatmentType(node.callee.name.name)
       ) {
         inEdgeTreatment = false
       }
@@ -792,7 +795,7 @@ export const isTagUsedInEdgeTreatment = ({
         inObj &&
         inEdgeTreatment &&
         (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
-        isEdgeType(node.callee.name)
+        isEdgeType(node.callee.name.name)
       ) {
         inTagHelper = ''
       }

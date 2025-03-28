@@ -12,10 +12,7 @@ use validator::Validate;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{
-        kcl_value::{ArrayLen, RuntimeType},
-        ExecState, KclValue, PrimitiveType, Solid,
-    },
+    execution::{types::RuntimeType, ExecState, KclValue, Solid},
     std::Args,
 };
 
@@ -42,11 +39,7 @@ struct AppearanceData {
 
 /// Set the appearance of a solid. This only works on solids, not sketches or individual paths.
 pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids = args.get_unlabeled_kw_arg_typed(
-        "solids",
-        &RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty),
-        exec_state,
-    )?;
+    let solids = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
 
     let color: String = args.get_kw_arg("color")?;
     let metalness: Option<f64> = args.get_kw_arg_opt("metalness")?;

@@ -86,8 +86,16 @@ function ProjectCard({
     >
       <Link
         data-testid="project-link"
-        to={`${PATHS.FILE}/${encodeURIComponent(project.default_file)}`}
-        className="flex flex-col flex-1 !no-underline !text-chalkboard-110 dark:!text-chalkboard-10 group-hover:!hue-rotate-0 min-h-[5em] divide-y divide-primary/40 dark:divide-chalkboard-80 group-hover:!divide-primary"
+        to={
+          project.readWriteAccess
+            ? `${PATHS.FILE}/${encodeURIComponent(project.default_file)}`
+            : ''
+        }
+        className={`flex flex-col flex-1 !no-underline !text-chalkboard-110 dark:!text-chalkboard-10 min-h-[5em] divide-y divide-primary/40 dark:divide-chalkboard-80  ${
+          project.readWriteAccess
+            ? 'group-hover:!divide-primary group-hover:!hue-rotate-0'
+            : 'cursor-not-allowed'
+        }`}
       >
         <div className="h-36 relative overflow-hidden bg-gradient-to-b from-transparent to-primary/10 rounded-t-sm">
           {imageUrl && (
@@ -116,19 +124,21 @@ function ProjectCard({
               {project.name?.replace(FILE_EXT, '')}
             </h3>
           )}
-          <span className="px-2 text-chalkboard-60 text-xs">
-            <span data-testid="project-file-count">{numberOfFiles}</span> file
-            {numberOfFiles === 1 ? '' : 's'}{' '}
-            {numberOfFolders > 0 && (
-              <>
-                {'/ '}
-                <span data-testid="project-folder-count">
-                  {numberOfFolders}
-                </span>{' '}
-                folder{numberOfFolders === 1 ? '' : 's'}
-              </>
-            )}
-          </span>
+          {project.readWriteAccess && (
+            <span className="px-2 text-chalkboard-60 text-xs">
+              <span data-testid="project-file-count">{numberOfFiles}</span> file
+              {numberOfFiles === 1 ? '' : 's'}{' '}
+              {numberOfFolders > 0 && (
+                <>
+                  {'/ '}
+                  <span data-testid="project-folder-count">
+                    {numberOfFolders}
+                  </span>{' '}
+                  folder{numberOfFolders === 1 ? '' : 's'}
+                </>
+              )}
+            </span>
+          )}
           <span className="px-2 text-chalkboard-60 text-xs">
             Edited{' '}
             <span data-testid="project-edit-date">
@@ -145,6 +155,7 @@ function ProjectCard({
           data-edit-buttons-for={project.name?.replace(FILE_EXT, '')}
         >
           <ActionButton
+            disabled={!project.readWriteAccess}
             Element="button"
             iconStart={{
               icon: 'sketch',
@@ -158,11 +169,10 @@ function ProjectCard({
             }}
             className="!p-0"
           >
-            <Tooltip position="top-right" delay={1000}>
-              Rename project
-            </Tooltip>
+            <Tooltip position="top-right">Rename project</Tooltip>
           </ActionButton>
           <ActionButton
+            disabled={!project.readWriteAccess}
             Element="button"
             iconStart={{
               icon: 'trash',
@@ -176,9 +186,7 @@ function ProjectCard({
               setIsConfirmingDelete(true)
             }}
           >
-            <Tooltip position="top-right" delay={1000}>
-              Delete project
-            </Tooltip>
+            <Tooltip position="top-right">Delete project</Tooltip>
           </ActionButton>
         </div>
       )}

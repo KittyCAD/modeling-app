@@ -90,7 +90,7 @@ export default class StreamDemuxer extends Queue<Uint8Array> {
   }
 
   add(bytes: Uint8Array): void {
-    const message = Codec.decode(bytes) as vsrpc.Message
+    const message = Codec.decode<vsrpc.Message>(bytes)
     if (this.trace) {
       Tracer.server(message)
     }

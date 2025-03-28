@@ -23,12 +23,20 @@ expression: actual
                 "argument": {
                   "arguments": [
                     {
+                      "abs_path": false,
                       "commentStart": 36,
                       "end": 41,
-                      "name": "angle",
+                      "name": {
+                        "commentStart": 36,
+                        "end": 41,
+                        "name": "angle",
+                        "start": 36,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 36,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     {
                       "commentStart": 43,
@@ -44,11 +52,19 @@ expression: actual
                     }
                   ],
                   "callee": {
+                    "abs_path": false,
                     "commentStart": 28,
                     "end": 35,
-                    "name": "default",
+                    "name": {
+                      "commentStart": 28,
+                      "end": 35,
+                      "name": "default",
+                      "start": 28,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 28,
-                    "type": "Identifier"
+                    "type": "Name"
                   },
                   "commentStart": 28,
                   "end": 47,

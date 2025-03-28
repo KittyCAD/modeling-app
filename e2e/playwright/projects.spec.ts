@@ -7,6 +7,8 @@ import {
   Paths,
   createProject,
   getPlaywrightDownloadDir,
+  orRunWhenFullSuiteEnabled,
+  runningOnWindows,
 } from './test-utils'
 import fsp from 'fs/promises'
 import fs from 'fs'
@@ -190,7 +192,7 @@ test(
 
       // error text on hover
       await page.hover('.cm-lint-marker-error')
-      const crypticErrorText = `Expected a tag declarator`
+      const crypticErrorText = `The arg tag was given, but it was the wrong type`
       await expect(page.getByText(crypticErrorText).first()).toBeVisible()
 
       // black pixel means the scene has been cleared.
@@ -350,6 +352,9 @@ test(
   'open a file in a project works and renders, open another file in the same project with errors, it should clear the scene',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
+    if (runningOnWindows()) {
+      test.fixme(orRunWhenFullSuiteEnabled())
+    }
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
@@ -408,7 +413,7 @@ test(
 
       // error text on hover
       await page.hover('.cm-lint-marker-error')
-      const crypticErrorText = `Expected a tag declarator`
+      const crypticErrorText = `The arg tag was given, but it was the wrong type`
       await expect(page.getByText(crypticErrorText).first()).toBeVisible()
 
       // black pixel means the scene has been cleared.
@@ -452,7 +457,7 @@ test(
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
-    const crypticErrorText = `Expected a tag declarator`
+    const crypticErrorText = `The arg tag was given, but it was the wrong type`
     await expect(page.getByText(crypticErrorText).first()).toBeVisible()
   }
 )
@@ -467,6 +472,9 @@ test.describe('Can export from electron app', () => {
       async ({ context, page, tronApp }, testInfo) => {
         if (!tronApp) {
           fail()
+        }
+        if (runningOnWindows()) {
+          test.fixme(orRunWhenFullSuiteEnabled())
         }
 
         await context.folderSetupFn(async (dir) => {
@@ -1244,10 +1252,11 @@ test(
   }
 )
 
-test.fixme(
+test(
   'Deleting projects, can delete individual project, can still create projects after deleting all',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
+    test.fixme(orRunWhenFullSuiteEnabled())
     const projectData = [
       ['router-template-slate', 'cylinder.kcl'],
       ['bracket', 'focusrite_scarlett_mounting_braket.kcl'],
@@ -1326,6 +1335,9 @@ test(
   'Can load a file with CRLF line endings',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
+    if (runningOnWindows()) {
+      test.fixme(orRunWhenFullSuiteEnabled())
+    }
     await context.folderSetupFn(async (dir) => {
       const routerTemplateDir = path.join(dir, 'router-template-slate')
       await fsp.mkdir(routerTemplateDir, { recursive: true })
@@ -1466,10 +1478,11 @@ test(
   }
 )
 
-test.fixme(
+test(
   'When the project folder is empty, user can create new project and open it.',
   { tag: '@electron' },
   async ({ page }, testInfo) => {
+    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -1494,7 +1507,7 @@ test.fixme(
 
     await u.waitForPageLoad()
 
-    await page.locator('.cm-content').fill(`sketch001 = startSketchOn('XZ')
+    await page.locator('.cm-content').fill(`sketch001 = startSketchOn(XZ)
   |> startProfileAt([-87.4, 282.92], %)
   |> line(end = [324.07, 27.199], tag = $seg01)
   |> line(end = [118.328, -291.754])
@@ -2050,10 +2063,11 @@ test(
 )
 
 // Flaky
-test.fixme(
+test(
   'Original project name persist after onboarding',
   { tag: '@electron' },
   async ({ page }, testInfo) => {
+    test.fixme(orRunWhenFullSuiteEnabled())
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     const getAllProjects = () => page.getByTestId('project-link').all()

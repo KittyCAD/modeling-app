@@ -1,16 +1,16 @@
 // 9472K188 Gasket
-
-// import constants
-import gasketOutsideDiameter, gasketInnerDiameter, gasketThickness from "globals.kcl"
+// gasket for the pipe flange assembly. A gasket is a mechanical seal that fills the space between two or more mating surfaces, preventing leaks of liquids or gases under compression
 
 // set units
 @settings(defaultLengthUnit = in)
 
+// import constants
+import gasketOutsideDiameter, gasketInnerDiameter, gasketThickness from "globals.kcl"
+
 // create a function to make the gasket
 export fn gasket() {
-
   // create the base of the gasket
-  gasketBase = startSketchOn("XY")
+  gasketBase = startSketchOn(XY)
     |> circle(%, center = [0, 0], radius = gasketOutsideDiameter / 2)
     |> extrude(%, length = gasketThickness)
 

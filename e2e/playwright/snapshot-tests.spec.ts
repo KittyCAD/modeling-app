@@ -1,6 +1,12 @@
 import { test, expect } from './zoo-test'
 import { secrets } from './secrets'
-import { Paths, doExport, getUtils, settingsToToml } from './test-utils'
+import {
+  Paths,
+  doExport,
+  getUtils,
+  settingsToToml,
+  orRunWhenFullSuiteEnabled,
+} from './test-utils'
 import { Models } from '@kittycad/lib'
 import fsp from 'fs/promises'
 import { spawn } from 'child_process'
@@ -36,10 +42,11 @@ test.setTimeout(60_000)
 // a snapshot of it feels weird. I'd rather our regular tests fail.
 // The primary failure is doExport now relies on the filesystem. We can follow
 // up with another PR if we want this back.
-test.skip(
+test(
   'exports of each format should work',
   { tag: ['@snapshot', '@skipWin', '@skipMacos'] },
   async ({ page, context, scene, cmdBar, tronApp }) => {
+    test.fixme(orRunWhenFullSuiteEnabled())
     if (!tronApp) {
       fail()
     }
@@ -58,7 +65,7 @@ baseHeight = 1
 totalHeightHalf = 2
 armThick = 0.5
 totalLen = 9.5
-part001 = startSketchOn('-XZ')
+part001 = startSketchOn(-XZ)
   |> startProfileAt([0, 0], %)
   |> yLine(length = baseHeight)
   |> xLine(length = baseLen)
@@ -315,7 +322,7 @@ const extrudeDefaultPlane = async (
   scene: SceneFixture,
   plane: string
 ) => {
-  const code = `part001 = startSketchOn('${plane}')
+  const code = `part001 = startSketchOn(${plane})
   |> startProfileAt([7.00, 4.40], %)
   |> line(end = [6.60, -0.20])
   |> line(end = [2.80, 5.00])
@@ -406,9 +413,6 @@ test(
   'Draft segments should look right',
   { tag: '@snapshot' },
   async ({ page, scene, toolbar }) => {
-    // FIXME: Skip on macos its being weird.
-    // test.skip(process.platform === 'darwin', 'Skip on macos')
-
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -442,7 +446,7 @@ test(
     // select a plane
     await page.mouse.click(700, 200)
 
-    let code = `sketch001 = startSketchOn('XZ')`
+    let code = `sketch001 = startSketchOn(XZ)`
     await expect(page.locator('.cm-content')).toHaveText(code)
 
     await page.waitForTimeout(700) // TODO detect animation ending, or disable animation
@@ -556,7 +560,7 @@ test(
     await page.mouse.click(700, 200)
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn('XZ')`
+      `sketch001 = startSketchOn(XZ)`
     )
 
     // Wait for camera animation
@@ -585,9 +589,6 @@ test(
   'Draft circle should look right',
   { tag: '@snapshot' },
   async ({ page, context, cmdBar, scene }) => {
-    // FIXME: Skip on macos its being weird.
-    // test.skip(process.platform === 'darwin', 'Skip on macos')
-
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -605,7 +606,7 @@ test(
     await page.mouse.click(700, 200)
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn('XZ')`
+      `sketch001 = startSketchOn(XZ)`
     )
 
     // Wait for camera animation
@@ -627,7 +628,7 @@ test(
       mask: [page.getByTestId('model-state-indicator')],
     })
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn('XZ')profile001 = circle(sketch001, center = [14.44, -2.44], radius = 1)`
+      `sketch001 = startSketchOn(XZ)profile001 = circle(sketch001, center = [14.44, -2.44], radius = 1)`
     )
   }
 )
@@ -656,7 +657,7 @@ test.describe(
       // select a plane
       await page.mouse.click(700, 200)
 
-      let code = `sketch001 = startSketchOn('XZ')`
+      let code = `sketch001 = startSketchOn(XZ)`
       await expect(page.locator('.cm-content')).toHaveText(code)
 
       // Wait for camera animation
@@ -751,7 +752,7 @@ test.describe(
       // select a plane
       await page.mouse.click(700, 200)
 
-      let code = `sketch001 = startSketchOn('XZ')`
+      let code = `sketch001 = startSketchOn(XZ)`
       await expect(u.codeLocator).toHaveText(code)
 
       // Wait for camera animation
@@ -822,7 +823,7 @@ test(
     await context.addInitScript(async (KCL_DEFAULT_LENGTH) => {
       localStorage.setItem(
         'persistCode',
-        `part001 = startSketchOn('-XZ')
+        `part001 = startSketchOn(-XZ)
   |> startProfileAt([1.4, 2.47], %)
   |> line(end = [9.31, 10.55], tag = $seg01)
   |> line(end = [11.91, -10.42])
@@ -868,6 +869,7 @@ part002 = startSketchOn(part001, seg01)
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
     })
   }
 )
@@ -883,7 +885,7 @@ test(
     await context.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `part001 = startSketchOn('XY')
+        `part001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -907,6 +909,7 @@ test(
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
     })
   }
 )
@@ -922,7 +925,7 @@ test(
     await context.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `part001 = startSketchOn('XY')
+        `part001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -947,14 +950,12 @@ test(
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
     })
   }
 )
 
 test.describe('Grid visibility', { tag: '@snapshot' }, () => {
-  // FIXME: Skip on macos its being weird.
-  // test.skip(process.platform === 'darwin', 'Skip on macos')
-
   test('Grid turned off to on via command bar', async ({
     page,
     cmdBar,
@@ -1097,12 +1098,13 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
   })
 })
 
-test.fixme('theme persists', async ({ page, context }) => {
+test('theme persists', async ({ page, context }) => {
+  test.fixme(orRunWhenFullSuiteEnabled())
   const u = await getUtils(page)
   await context.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
-      `part001 = startSketchOn('XY')
+      `part001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -1172,7 +1174,7 @@ test.describe('code color goober', { tag: '@snapshot' }, () => {
         `// Create a pipe using a sweep.
 
 // Create a path for the sweep.
-sweepPath = startSketchOn('XZ')
+sweepPath = startSketchOn(XZ)
   |> startProfileAt([0.05, 0.05], %)
   |> line(end = [0, 7])
   |> tangentialArc({ offset = 90, radius = 5 }, %)
@@ -1180,7 +1182,7 @@ sweepPath = startSketchOn('XZ')
   |> tangentialArc({ offset = -90, radius = 5 }, %)
   |> line(end = [0, 7])
 
-sweepSketch = startSketchOn('XY')
+sweepSketch = startSketchOn(XY)
   |> startProfileAt([2, 0], %)
   |> arc({
        angleEnd = 360,
@@ -1205,6 +1207,7 @@ sweepSketch = startSketchOn('XY')
 
     await expect(page, 'expect small color widget').toHaveScreenshot({
       maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
     })
   })
 
@@ -1221,7 +1224,7 @@ sweepSketch = startSketchOn('XY')
         `// Create a pipe using a sweep.
 
 // Create a path for the sweep.
-sweepPath = startSketchOn('XZ')
+sweepPath = startSketchOn(XZ)
   |> startProfileAt([0.05, 0.05], %)
   |> line(end = [0, 7])
   |> tangentialArc({ offset = 90, radius = 5 }, %)
@@ -1229,7 +1232,7 @@ sweepPath = startSketchOn('XZ')
   |> tangentialArc({ offset = -90, radius = 5 }, %)
   |> line(end = [0, 7])
 
-sweepSketch = startSketchOn('XY')
+sweepSketch = startSketchOn(XY)
   |> startProfileAt([2, 0], %)
   |> arc({
        angleEnd = 360,
@@ -1262,6 +1265,7 @@ sweepSketch = startSketchOn('XY')
       'expect small color widget to have window open'
     ).toHaveScreenshot({
       maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
     })
   })
 })

@@ -15,7 +15,7 @@ pub(crate) use import::{
     import_foreign, send_to_engine as send_import_to_engine, PreImportedGeometry, ZOO_COORD_SYSTEM,
 };
 use indexmap::IndexMap;
-pub use kcl_value::{KclObjectFields, KclValue, PrimitiveType, UnitAngle, UnitLen};
+pub use kcl_value::{KclObjectFields, KclValue};
 use kcmc::{
     each_cmd as mcmd,
     ok_response::{output::TakeSnapshot, OkModelingCmdResponse},
@@ -34,6 +34,7 @@ use crate::{
     execution::{
         artifact::build_artifact_graph,
         cache::{CacheInformation, CacheResult},
+        types::{UnitAngle, UnitLen},
     },
     fs::FileManager,
     modules::{ModuleId, ModulePath},
@@ -55,6 +56,7 @@ mod import;
 pub(crate) mod kcl_value;
 mod memory;
 mod state;
+pub(crate) mod types;
 
 /// Outcome of executing a program.  This is used in TS.
 #[derive(Debug, Clone, Serialize, ts_rs::TS)]
@@ -990,7 +992,11 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{errors::KclErrorDetails, execution::memory::Stack, ModuleId};
+    use crate::{
+        errors::{KclErrorDetails, Severity},
+        execution::memory::Stack,
+        ModuleId,
+    };
 
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
@@ -1398,6 +1404,22 @@ const answer = returnX()"#;
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn type_aliases() {
+        let text = r#"type MyTy = [number; 2]
+fn foo(x: MyTy) {
+    return x[0]
+}
+
+foo([0, 1])
+
+type Other = MyTy | Helix
+"#;
+        let result = parse_execute(text).await.unwrap();
+        let errs = result.exec_state.errors();
+        assert!(errs.is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_cannot_shebang_in_fn() {
         let ast = r#"
 fn foo () {
@@ -1575,6 +1597,34 @@ const inInches = 2.0 * inch()"#;
                 .as_f64()
                 .unwrap()
         );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_unit_suggest() {
+        let src = "foo = 42";
+        let program = crate::Program::parse_no_errs(src).unwrap();
+        let ctx = ExecutorContext {
+            engine: Arc::new(Box::new(
+                crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
+            )),
+            fs: Arc::new(crate::fs::FileManager::new()),
+            stdlib: Arc::new(crate::std::StdLib::new()),
+            settings: ExecutorSettings {
+                units: UnitLength::Ft,
+                ..Default::default()
+            },
+            context_type: ContextType::Mock,
+        };
+        let mut exec_state = ExecState::new(&ctx);
+        ctx.run(&program, &mut exec_state).await.unwrap();
+        let errs = exec_state.errors();
+        assert_eq!(errs.len(), 1, "{errs:?}");
+        let warn = &errs[0];
+        assert_eq!(warn.severity, Severity::Warning);
+        assert_eq!(
+            warn.apply_suggestion(src).unwrap(),
+            "@settings(defaultLengthUnit = ft)\nfoo = 42"
+        )
     }
 
     #[tokio::test(flavor = "multi_thread")]

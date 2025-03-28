@@ -4,7 +4,6 @@ import { type IndexLoaderData } from 'lib/types'
 import { BROWSER_PATH, PATHS } from 'lib/paths'
 import React, { createContext, useEffect, useMemo } from 'react'
 import { toast } from 'react-hot-toast'
-import { DEV } from 'env'
 import {
   Actor,
   AnyStateMachine,
@@ -61,49 +60,39 @@ export const FileMachineProvider = ({
     []
   )
 
-  // Write code mirror content to disk when the page is trying to reroute
-  // Our logic for codeManager.writeToFile has an artificial 1000ms timeout which
-  // won't run quickly enough so users can make an edit, exit the page and lose their
-  // progress within that 1000ms window.
+  // Only create the native file menus on desktop
   useEffect(() => {
-    const preventUnload = (event: BeforeUnloadEvent) => {
-      codeManager.writeToFileNoTimeout().catch(reportRejection)
-    }
-    window.addEventListener('beforeunload', preventUnload)
-    return () => {
-      window.removeEventListener('beforeunload', preventUnload)
+    if (isDesktop()) {
+      window.electron.createModelingPageMenu().catch(reportRejection)
     }
   }, [])
 
   useEffect(() => {
-    // TODO: Engine feature is not deployed
-    if (DEV) {
-      const {
-        createNamedViewCommand,
-        deleteNamedViewCommand,
-        loadNamedViewCommand,
-      } = createNamedViewsCommand()
+    const {
+      createNamedViewCommand,
+      deleteNamedViewCommand,
+      loadNamedViewCommand,
+    } = createNamedViewsCommand()
 
-      const commands = [
-        createNamedViewCommand,
-        deleteNamedViewCommand,
-        loadNamedViewCommand,
-      ]
+    const commands = [
+      createNamedViewCommand,
+      deleteNamedViewCommand,
+      loadNamedViewCommand,
+    ]
+    commandBarActor.send({
+      type: 'Add commands',
+      data: {
+        commands,
+      },
+    })
+    return () => {
+      // Remove commands if you go to the home page
       commandBarActor.send({
-        type: 'Add commands',
+        type: 'Remove commands',
         data: {
           commands,
         },
       })
-      return () => {
-        // Remove commands if you go to the home page
-        commandBarActor.send({
-          type: 'Remove commands',
-          data: {
-            commands,
-          },
-        })
-      }
     }
   }, [])
 

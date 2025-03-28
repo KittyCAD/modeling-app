@@ -104,7 +104,7 @@ impl From<SolidOrSketchOrImportedGeometry> for crate::execution::KclValue {
                             .into_iter()
                             .map(|s| crate::execution::KclValue::Solid { value: Box::new(s) })
                             .collect(),
-                        ty: crate::execution::PrimitiveType::Solid,
+                        ty: crate::execution::types::RuntimeType::solid(),
                     }
                 }
             }
@@ -119,7 +119,7 @@ impl From<SolidOrSketchOrImportedGeometry> for crate::execution::KclValue {
                             .into_iter()
                             .map(|s| crate::execution::KclValue::Sketch { value: Box::new(s) })
                             .collect(),
-                        ty: crate::execution::PrimitiveType::Sketch,
+                        ty: crate::execution::types::RuntimeType::sketch(),
                     }
                 }
             }
@@ -152,6 +152,8 @@ pub struct Helix {
     pub angle_start: f64,
     /// Is the helix rotation counter clockwise?
     pub ccw: bool,
+    /// The cylinder the helix was created on.
+    pub cylinder_id: Option<uuid::Uuid>,
     pub units: UnitLen,
     #[serde(skip)]
     pub meta: Vec<Metadata>,

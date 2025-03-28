@@ -50,7 +50,7 @@ const newVar = myVar + 1`
     expect(mem['magicNum']?.value).toBe(69)
   })
   it('sketch declaration', async () => {
-    let code = `const mySketch = startSketchOn('XY')
+    let code = `const mySketch = startSketchOn(XY)
   |> startProfileAt([0,0], %)
   |> line(endAbsolute = [0,2], tag = $myPath)
   |> line(endAbsolute = [2,3])
@@ -77,8 +77,8 @@ const newVar = myVar + 1`
           id: expect.any(String),
         },
         tag: {
-          end: 111,
-          start: 104,
+          end: 109,
+          start: 102,
           commentStart: expect.any(Number),
           type: 'TagDeclarator',
           value: 'myPath',
@@ -105,8 +105,8 @@ const newVar = myVar + 1`
           id: expect.any(String),
         },
         tag: {
-          end: 192,
-          start: 182,
+          end: 190,
+          start: 180,
           commentStart: expect.any(Number),
           type: 'TagDeclarator',
           value: 'rightPath',
@@ -153,7 +153,7 @@ const newVar = myVar + 1`
   it('execute pipe sketch into call expression', async () => {
     // Enable rotations #152
     const code = [
-      "const mySk1 = startSketchOn('XY')",
+      'const mySk1 = startSketchOn(XY)',
       '  |> startProfileAt([0,0], %)',
       '  |> line(endAbsolute = [1,1])',
       '  |> line(endAbsolute = [0, 1], tag = $myPath)',
@@ -204,8 +204,8 @@ const newVar = myVar + 1`
               id: expect.any(String),
             },
             tag: {
-              end: 140,
-              start: 133,
+              end: 138,
+              start: 131,
               commentStart: expect.any(Number),
               type: 'TagDeclarator',
               value: 'myPath',
@@ -400,7 +400,7 @@ describe('testing math operators', () => {
   })
   it('with unaryExpression in ArrayExpression in CallExpression, checking nothing funny happens when used in a sketch', async () => {
     const code = [
-      "const part001 = startSketchOn('XY')",
+      'const part001 = startSketchOn(XY)',
       '  |> startProfileAt([0, 0], %)',
       '|> line(end = [-2.21, -legLen(5, min(3, 999))])',
     ].join('\n')
@@ -413,7 +413,7 @@ describe('testing math operators', () => {
   it('test that % substitution feeds down CallExp->ArrExp->UnaryExp->CallExp', async () => {
     const code = [
       `const myVar = 3`,
-      `const part001 = startSketchOn('XY')`,
+      `const part001 = startSketchOn(XY)`,
       `  |> startProfileAt([0, 0], %)`,
       `  |> line(end = [3, 4], tag = $seg01)`,
       `  |> line(end = [`,
@@ -455,7 +455,7 @@ describe('testing math operators', () => {
 describe('Testing Errors', () => {
   it('should throw an error when a variable is not defined', async () => {
     const code = `const myVar = 5
-const theExtrude = startSketchOn('XY')
+const theExtrude = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(end = [-2.4, 5])
   |> line(end = myVarZ)

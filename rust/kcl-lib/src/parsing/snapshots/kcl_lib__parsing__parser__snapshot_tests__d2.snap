@@ -21,12 +21,20 @@ expression: actual
           "end": 21,
           "left": {
             "argument": {
+              "abs_path": false,
               "commentStart": 5,
               "end": 9,
-              "name": "leg2",
+              "name": {
+                "commentStart": 5,
+                "end": 9,
+                "name": "leg2",
+                "start": 5,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 5,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "commentStart": 4,
             "end": 9,
@@ -37,12 +45,20 @@ expression: actual
           },
           "operator": "+",
           "right": {
+            "abs_path": false,
             "commentStart": 12,
             "end": 21,
-            "name": "thickness",
+            "name": {
+              "commentStart": 12,
+              "end": 21,
+              "name": "thickness",
+              "start": 12,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 12,
-            "type": "Identifier",
-            "type": "Identifier"
+            "type": "Name",
+            "type": "Name"
           },
           "start": 4,
           "type": "BinaryExpression",

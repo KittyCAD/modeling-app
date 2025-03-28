@@ -1,13 +1,14 @@
 import { CustomIconName } from 'components/CustomIcon'
 import { AllMachines } from 'hooks/useStateMachineCommands'
 import { Actor, AnyStateMachine, ContextFrom, EventFrom } from 'xstate'
-import { Identifier, Expr, VariableDeclaration } from 'lang/wasm'
+import { Expr, Name, VariableDeclaration } from 'lang/wasm'
 import { commandBarMachine } from 'machines/commandBarMachine'
 import { ReactNode } from 'react'
 import { MachineManager } from 'components/MachineManagerProvider'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import { Artifact } from 'lang/std/artifactGraph'
 import { CommandBarContext } from 'machines/commandBarMachine'
+import { EntityType_type } from '@kittycad/lib/dist/types/src/models'
 
 type Icon = CustomIconName
 const _PLATFORMS = ['both', 'web', 'desktop'] as const
@@ -30,7 +31,7 @@ export interface KclExpression {
 export interface KclExpressionWithVariable extends KclExpression {
   variableName: string
   variableDeclarationAst: Node<VariableDeclaration>
-  variableIdentifierAst: Node<Identifier>
+  variableIdentifierAst: Node<Name>
   insertIndex: number
 }
 export type KclCommandValue = KclExpression | KclExpressionWithVariable
@@ -114,6 +115,7 @@ export type CommandArgumentConfig<
   OutputType,
   C = ContextFrom<AnyStateMachine>
 > = {
+  displayName?: string
   description?: string
   required:
     | boolean
@@ -158,6 +160,8 @@ export type CommandArgumentConfig<
   | {
       inputType: 'selection'
       selectionTypes: Artifact['type'][]
+      clearSelectionFirst?: boolean
+      selectionFilter?: EntityType_type[]
       multiple: boolean
       validation?: ({
         data,
@@ -170,6 +174,7 @@ export type CommandArgumentConfig<
   | {
       inputType: 'selectionMixed'
       selectionTypes: Artifact['type'][]
+      selectionFilter?: EntityType_type[]
       multiple: boolean
       allowNoSelection?: boolean
       validation?: ({
@@ -236,6 +241,7 @@ export type CommandArgument<
   OutputType,
   T extends AnyStateMachine = AnyStateMachine
 > = {
+  displayName?: string
   description?: string
   required:
     | boolean
@@ -278,6 +284,8 @@ export type CommandArgument<
   | {
       inputType: 'selection'
       selectionTypes: Artifact['type'][]
+      clearSelectionFirst?: boolean
+      selectionFilter?: EntityType_type[]
       multiple: boolean
       validation?: ({
         data,
@@ -290,6 +298,7 @@ export type CommandArgument<
   | {
       inputType: 'selectionMixed'
       selectionTypes: Artifact['type'][]
+      selectionFilter?: EntityType_type[]
       multiple: boolean
       allowNoSelection?: boolean
       validation?: ({

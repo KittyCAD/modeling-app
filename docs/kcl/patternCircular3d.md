@@ -41,7 +41,7 @@ patternCircular3d(
 ### Examples
 
 ```js
-exampleSketch = startSketchOn('XZ')
+exampleSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
 
 example = extrude(exampleSketch, length = -5)

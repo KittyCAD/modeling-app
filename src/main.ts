@@ -10,6 +10,7 @@ import {
   nativeTheme,
   desktopCapturer,
   systemPreferences,
+  Menu,
   screen,
 } from 'electron'
 import path from 'path'
@@ -27,10 +28,25 @@ import {
   getPathOrUrlFromArgs,
   parseCLIArgs,
 } from './commandLineArgs'
-
 import * as packageJSON from '../package.json'
+import {
+  buildAndSetMenuForFallback,
+  buildAndSetMenuForModelingPage,
+  buildAndSetMenuForProjectPage,
+  enableMenu,
+  disableMenu,
+} from './menu'
 
 let mainWindow: BrowserWindow | null = null
+
+// Preemptive code, GC may delete a menu while a user is using it as seen in VSCode
+// as seen on https://github.com/microsoft/vscode/issues/55347
+let oldMenus: Menu[] = []
+const scheduleMenuGC = () => {
+  setTimeout(() => {
+    oldMenus = []
+  }, 10000)
+}
 
 // Check the command line arguments for a project path
 const args = parseCLIArgs(process.argv)
@@ -215,6 +231,8 @@ app.on('ready', (event, data) => {
   if (mainWindow) return
   // Create the mainWindow
   mainWindow = createWindow()
+  // Set menu application to null to avoid default electron menu
+  Menu.setApplicationMenu(null)
 })
 
 // For now there is no good reason to separate these out to another file(s)
@@ -384,6 +402,43 @@ ipcMain.handle('find_machine_api', () => {
       }
     )
   })
+})
+
+// Given the route create the new context menu
+// internal menu state will be reset since it creates a new one from
+// the initial state
+ipcMain.handle('create-menu', (event, data) => {
+  const page = data.page
+
+  if (!(page === 'project' || page === 'modeling' || page === 'fallback')) {
+    return
+  }
+
+  // Store old menu in our array to avoid GC to collect the menu and crash
+  const oldMenu = Menu.getApplicationMenu()
+  if (oldMenu) {
+    oldMenus.push(oldMenu)
+  }
+
+  if (page === 'project' && mainWindow) {
+    buildAndSetMenuForProjectPage(mainWindow)
+  } else if (page === 'modeling' && mainWindow) {
+    buildAndSetMenuForModelingPage(mainWindow)
+  } else if (page === 'fallback' && mainWindow) {
+    buildAndSetMenuForFallback(mainWindow)
+  }
+
+  scheduleMenuGC()
+})
+
+ipcMain.handle('enable-menu', (event, data) => {
+  const menuId = data.menuId
+  enableMenu(menuId)
+})
+
+ipcMain.handle('disable-menu', (event, data) => {
+  const menuId = data.menuId
+  disableMenu(menuId)
 })
 
 export function getAutoUpdater(): AppUpdater {

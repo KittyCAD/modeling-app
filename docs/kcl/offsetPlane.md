@@ -32,7 +32,7 @@ offsetPlane(
 
 ```js
 // Loft a square and a circle on the `XY` plane using offset.
-squareSketch = startSketchOn('XY')
+squareSketch = startSketchOn(XY)
   |> startProfileAt([-100, 200], %)
   |> line(end = [200, 0])
   |> line(end = [0, -200])
@@ -40,7 +40,7 @@ squareSketch = startSketchOn('XY')
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
-circleSketch = startSketchOn(offsetPlane('XY', offset = 150))
+circleSketch = startSketchOn(offsetPlane(XY, offset = 150))
   |> circle(center = [0, 100], radius = 50)
 
 loft([squareSketch, circleSketch])
@@ -50,7 +50,7 @@ loft([squareSketch, circleSketch])
 
 ```js
 // Loft a square and a circle on the `XZ` plane using offset.
-squareSketch = startSketchOn('XZ')
+squareSketch = startSketchOn(XZ)
   |> startProfileAt([-100, 200], %)
   |> line(end = [200, 0])
   |> line(end = [0, -200])
@@ -58,7 +58,7 @@ squareSketch = startSketchOn('XZ')
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
-circleSketch = startSketchOn(offsetPlane('XZ', offset = 150))
+circleSketch = startSketchOn(offsetPlane(XZ, offset = 150))
   |> circle(center = [0, 100], radius = 50)
 
 loft([squareSketch, circleSketch])
@@ -68,7 +68,7 @@ loft([squareSketch, circleSketch])
 
 ```js
 // Loft a square and a circle on the `YZ` plane using offset.
-squareSketch = startSketchOn('YZ')
+squareSketch = startSketchOn(YZ)
   |> startProfileAt([-100, 200], %)
   |> line(end = [200, 0])
   |> line(end = [0, -200])
@@ -76,7 +76,7 @@ squareSketch = startSketchOn('YZ')
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
-circleSketch = startSketchOn(offsetPlane('YZ', offset = 150))
+circleSketch = startSketchOn(offsetPlane(YZ, offset = 150))
   |> circle(center = [0, 100], radius = 50)
 
 loft([squareSketch, circleSketch])
@@ -86,7 +86,7 @@ loft([squareSketch, circleSketch])
 
 ```js
 // Loft a square and a circle on the `-XZ` plane using offset.
-squareSketch = startSketchOn('-XZ')
+squareSketch = startSketchOn(-XZ)
   |> startProfileAt([-100, 200], %)
   |> line(end = [200, 0])
   |> line(end = [0, -200])
@@ -94,7 +94,7 @@ squareSketch = startSketchOn('-XZ')
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
-circleSketch = startSketchOn(offsetPlane('-XZ', offset = -150))
+circleSketch = startSketchOn(offsetPlane(-XZ, offset = -150))
   |> circle(center = [0, 100], radius = 50)
 
 loft([squareSketch, circleSketch])
@@ -104,12 +104,12 @@ loft([squareSketch, circleSketch])
 
 ```js
 // A circle on the XY plane
-startSketchOn("XY")
+startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> circle(radius = 10, center = [0, 0])
 
 // Triangle on the plane 4 units above
-startSketchOn(offsetPlane("XY", offset = 4))
+startSketchOn(offsetPlane(XY, offset = 4))
   |> startProfileAt([0, 0], %)
   |> line(end = [10, 0])
   |> line(end = [0, 10])

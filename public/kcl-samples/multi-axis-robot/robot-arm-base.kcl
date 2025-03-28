@@ -1,15 +1,13 @@
 // Robot Arm Base
 
-
 // Set Units
 @settings(defaultLengthUnit = in)
-
 
 // Import Constants
 import basePlateRadius, basePlateThickness, baseChamfer, baseHeight from "globals.kcl"
 
 // Base Plate
-sketch001 = startSketchOn('XY')
+sketch001 = startSketchOn(XY)
   |> startProfileAt([-basePlateRadius, -basePlateRadius], %)
   |> angledLine([0, 2 * basePlateRadius], %, $rectangleSegmentA001)
   |> angledLine([
@@ -30,17 +28,14 @@ extrude001 = extrude(sketch001, length = basePlateThickness)
          getNextAdjacentEdge(rectangleSegmentB001),
          getNextAdjacentEdge(rectangleSegmentC001),
          getNextAdjacentEdge(rectangleSegmentD001)
-       ]
+       ],
      )
 
 // Base Motor for actuating first joint
 sketch002 = startSketchOn(extrude001, 'END')
   |> circle(center = [0, 0], radius = 4, tag = $referenceEdge)
 extrude002 = extrude(sketch002, length = baseHeight - basePlateThickness - 1.5)
-  |> fillet(
-       radius = 0.1,
-       tags = [getOppositeEdge(referenceEdge)]
-     )
+  |> fillet(radius = 0.1, tags = [getOppositeEdge(referenceEdge)])
 sketch003 = startSketchOn(extrude002, 'END')
   |> circle(center = [0, 0], radius = 0.5)
 extrude003 = extrude(sketch003, length = 1)
@@ -52,13 +47,13 @@ sketch4A = startSketchOn(extrude001, 'END')
          -basePlateRadius + 1,
          -basePlateRadius + baseChamfer + 0.5
        ],
-       radius = 0.4
+       radius = 0.4,
      )
   |> patternCircular2d(
        arcDegrees = 360,
        center = [0, 0],
        instances = 4,
-       rotateDuplicates = true
+       rotateDuplicates = true,
      )
 
 extrude4A = extrude(sketch4A, length = -basePlateThickness)
@@ -69,13 +64,13 @@ sketch4B = startSketchOn(extrude001, 'END')
          -basePlateRadius + 0.5 + baseChamfer,
          -basePlateRadius + 1
        ],
-       radius = 0.4
+       radius = 0.4,
      )
   |> patternCircular2d(
        arcDegrees = 360,
        center = [0, 0],
        instances = 4,
-       rotateDuplicates = true
+       rotateDuplicates = true,
      )
 
 extrude(sketch4B, length = -basePlateThickness)

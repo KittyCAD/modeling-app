@@ -1,7 +1,6 @@
 // Pipe with bend
 // A tubular section or hollow cylinder, usually but not necessarily of circular cross-section, used mainly to convey substances that can flow.
 
-
 // Set units
 @settings(defaultLengthUnit = in)
 
@@ -12,7 +11,7 @@ bendRadius = 30
 bendAngle = 90
 
 // create a sketch in the 'XZ' plane
-sketch000 = startSketchOn("XZ")
+sketch000 = startSketchOn(XZ)
 
 // create a profile for the outer diameter
 outerProfile = circle(sketch000, center = [bendRadius, 0], radius = outerDiameter / 2)
