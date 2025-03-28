@@ -201,6 +201,35 @@
 //! check safety, it is not ever used for any decision. In any case, modifying the env storage is
 //! must be safe if the env is in either state, so even if the transition happens at the same time
 //! as the storage modification, it is ok.
+//!
+//! Here is an ascii art diagram of the memory system:
+//!
+//!                       +----------------------------+
+//!                       |      ProgramMemory         |
+//!                       |----------------------------|
+//!                       | Envs:                      |
+//!                       |                            |
+//!                       |  [ Env 1 ]                 |
+//!                       |   - Vars: { "a" = 10 }     |
+//!                       |   - Epoch: 1               |
+//!                       |   - Owner ID: 0            | <- read-only
+//!                       |                            |
+//!                       |  [ Env 2 ]                 |
+//!                       |   - Vars: { "b" = a }      |
+//!                       |   - Epoch: 2               |
+//!                       |   - Owner ID: 42           | <- owned by Stack 42
+//!                       |                            |
+//!                       +-------------^--------------+
+//!                                     |
+//!                                     | shared, immutable OR
+//!                                     | uniquely owned immutable reference
+//!                           +---------+---------+
+//!                           |      Stack 42     |
+//!                           |-------------------|
+//!                           | stack_id: 42      |
+//!                           | env_stack: [2]    |
+//!                           | epoch: 2          |
+//!                           +-------------------+
 
 use std::{
     cell::UnsafeCell,
