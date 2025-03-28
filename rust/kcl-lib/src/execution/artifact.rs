@@ -151,7 +151,7 @@ pub struct Segment {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub edge_cut_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
-    // #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub common_surface_ids: Vec<ArtifactId>,
 }
 
@@ -255,7 +255,7 @@ pub struct SweepEdge {
     pub sub_type: SweepEdgeSubType,
     pub seg_id: ArtifactId,
     pub sweep_id: ArtifactId,
-    // #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub common_surface_ids: Vec<ArtifactId>,
 }
 
@@ -1016,7 +1016,6 @@ fn artifacts_to_update(
             return Ok(return_arr);
         }
         ModelingCmd::Solid3dGetAllEdgeFaces(kcmc::Solid3dGetAllEdgeFaces { edge_id, .. }) => {
-            println!("Solid3dGetAllEdgeFaces");
             let OkModelingCmdResponse::Solid3dGetAllEdgeFaces(faces) = response else {
                 return Ok(Vec::new());
             };
@@ -1024,7 +1023,6 @@ fn artifacts_to_update(
             let Some(artifact) = artifacts.get(&edge_id) else {
                 return Ok(Vec::new());
             };
-            println!("Solid3dGetAllEdgeFaces: {:?}", artifact);
             let mut return_arr = Vec::new();
             match artifact {
                 Artifact::Segment(segment) => {
@@ -1039,7 +1037,6 @@ fn artifacts_to_update(
                 }
                 _ => {}
             };
-            println!("Solid3dGetAllEdgeFaces: {:?}", return_arr);
 
             return Ok(return_arr);
         }

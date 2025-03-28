@@ -201,7 +201,6 @@ export function modifyAstWithEdgeTreatmentAndTag(
       }
     }
 
-
     // Group tags by their corresponding extrude node
     const extrudeKey = JSON.stringify(pathToExtrudeNode)
 
