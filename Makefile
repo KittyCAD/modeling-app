@@ -37,7 +37,7 @@ build-web: public/kcl_wasm_lib_bg.wasm build/index.html
 build-desktop: public/kcl_wasm_lib_bg.wasm .vite/build/main.js
 
 public/kcl_wasm_lib_bg.wasm: $(CARGO_SOURCES)$(RUST_SOURCES)
-	yarn build:wasm
+	yarn build:wasm:dev
 
 build/index.html: $(REACT_SOURCES) $(TYPESCRIPT_SOURCES) $(VITE_SOURCES)
 	yarn build:local
@@ -99,7 +99,7 @@ test-e2e-web: install build-web ## Run the web e2e tests
 
 .PHONY: test-e2e-desktop
 test-e2e-desktop: install build-desktop ## Run the desktop e2e tests
-	yarn test:playwright:electron --workers=$(E2E_WORKERS) --max-failures=$(E2E_FAILURES) --grep=$(E2E_GREP)
+	yarn test:playwright:electron --workers=$(E2E_WORKERS) --max-failures=$(E2E_FAILURES) --grep="$(E2E_GREP)"
 
 ###############################################################################
 # CLEAN
