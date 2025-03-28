@@ -45,7 +45,7 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```
 #[stdlib {
     name = "union",
-    feature_tree_operation = false,
+    feature_tree_operation = true,
     keywords = true,
     unlabeled_first = true,
     deprecated = true,
@@ -107,7 +107,7 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// ```
 #[stdlib {
     name = "intersect",
-    feature_tree_operation = false,
+    feature_tree_operation = true,
     keywords = true,
     unlabeled_first = true,
     deprecated = true,
@@ -164,7 +164,7 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 /// ```
 #[stdlib {
     name = "subtract",
-    feature_tree_operation = false,
+    feature_tree_operation = true,
     keywords = true,
     unlabeled_first = true,
     deprecated = true,

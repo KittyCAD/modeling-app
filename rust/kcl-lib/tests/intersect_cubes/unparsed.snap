@@ -1,0 +1,18 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing intersect_cubes.kcl
+---
+fn cube(center) {
+  return startSketchOn(XY)
+    |> startProfileAt([center[0] - 10, center[1] - 10], %)
+    |> line(endAbsolute = [center[0] + 10, center[1] - 10])
+    |> line(endAbsolute = [center[0] + 10, center[1] + 10])
+    |> line(endAbsolute = [center[0] - 10, center[1] + 10])
+    |> close()
+    |> extrude(length = 10)
+}
+
+part001 = cube([0, 0])
+part002 = cube([8, 8])
+
+fullPart = intersect([part001, part002])

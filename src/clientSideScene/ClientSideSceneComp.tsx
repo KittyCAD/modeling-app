@@ -669,7 +669,7 @@ const ConstraintSymbol = ({
                 return Promise.reject(pResult)
 
               const _node1 = getNodeFromPath<CallExpression | CallExpressionKw>(
-                pResult.program!,
+                pResult.program,
                 pathToNode,
                 ['CallExpression', 'CallExpressionKw'],
                 true
