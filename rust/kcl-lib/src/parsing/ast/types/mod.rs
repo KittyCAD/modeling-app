@@ -362,9 +362,6 @@ impl Node<Program> {
 
     /// Returns true if the given KCL is empty or only contains settings that
     /// would be auto-generated.
-    ///
-    /// TODO: Don't consider comments to be empty since they will get blown away
-    /// by the UI.
     pub fn is_empty_or_only_settings(&self) -> bool {
         if !self.body.is_empty() {
             return false;
