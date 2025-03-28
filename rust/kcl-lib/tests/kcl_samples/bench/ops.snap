@@ -31,8 +31,8 @@ description: Operations executed bench.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "YZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -87,8 +87,8 @@ description: Operations executed bench.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "YZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -236,8 +236,8 @@ description: Operations executed bench.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "-YZ"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
       "sourceRange": []
     }
@@ -475,8 +475,8 @@ description: Operations executed bench.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "YZ"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
       "sourceRange": []
     }
@@ -714,8 +714,8 @@ description: Operations executed bench.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "YZ"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
       "sourceRange": []
     }
@@ -877,8 +877,8 @@ description: Operations executed bench.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "YZ"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
       "sourceRange": []
     }
@@ -995,8 +995,8 @@ description: Operations executed bench.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "YZ"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
       "sourceRange": []
     }
@@ -1094,7 +1094,7 @@ description: Operations executed bench.kcl
     "name": "armRest",
     "functionSourceRange": [
       3671,
-      3861,
+      3859,
       4
     ],
     "unlabeledArg": null,
@@ -1119,8 +1119,8 @@ description: Operations executed bench.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "-YZ"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
       "sourceRange": []
     }
@@ -1179,8 +1179,8 @@ description: Operations executed bench.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "-XZ"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
       "sourceRange": []
     }
@@ -1248,7 +1248,7 @@ description: Operations executed bench.kcl
     "name": "armRest",
     "functionSourceRange": [
       3671,
-      3861,
+      3859,
       4
     ],
     "unlabeledArg": null,
@@ -1273,8 +1273,8 @@ description: Operations executed bench.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "-YZ"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
       "sourceRange": []
     }
@@ -1333,8 +1333,8 @@ description: Operations executed bench.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "-XZ"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
       "sourceRange": []
     }

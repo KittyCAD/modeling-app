@@ -27,8 +27,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "YZ"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
       "sourceRange": []
     }
@@ -250,8 +250,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "YZ"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
       "sourceRange": []
     }
@@ -1054,8 +1054,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -1117,8 +1117,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "type": "UserDefinedFunctionCall",
     "name": "magnetBase",
     "functionSourceRange": [
-      4422,
-      4764,
+      4364,
+      4706,
       0
     ],
     "unlabeledArg": null,
@@ -1129,8 +1129,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -1144,8 +1144,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "type": "UserDefinedFunctionCall",
     "name": "magnetCenterCutout",
     "functionSourceRange": [
-      2771,
-      4362,
+      2713,
+      4304,
       0
     ],
     "unlabeledArg": null,
@@ -1156,8 +1156,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -1360,8 +1360,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "XY"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
       "sourceRange": []
     }
@@ -1370,8 +1370,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "type": "UserDefinedFunctionCall",
     "name": "magnetBase",
     "functionSourceRange": [
-      4422,
-      4764,
+      4364,
+      4706,
       0
     ],
     "unlabeledArg": null,
@@ -1397,8 +1397,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "type": "UserDefinedFunctionCall",
     "name": "magnetCenterCutout",
     "functionSourceRange": [
-      2771,
-      4362,
+      2713,
+      4304,
       0
     ],
     "unlabeledArg": null,

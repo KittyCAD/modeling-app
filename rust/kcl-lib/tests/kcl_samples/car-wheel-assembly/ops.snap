@@ -7,8 +7,8 @@ description: Operations executed car-wheel-assembly.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -1121,8 +1121,8 @@ description: Operations executed car-wheel-assembly.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -1770,8 +1770,8 @@ description: Operations executed car-wheel-assembly.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -1808,8 +1808,8 @@ description: Operations executed car-wheel-assembly.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -1846,8 +1846,8 @@ description: Operations executed car-wheel-assembly.kcl
     "type": "UserDefinedFunctionCall",
     "name": "spoke",
     "functionSourceRange": [
-      2752,
-      4324,
+      2620,
+      4193,
       4
     ],
     "unlabeledArg": null,
@@ -2233,8 +2233,8 @@ description: Operations executed car-wheel-assembly.kcl
     "type": "UserDefinedFunctionCall",
     "name": "spoke",
     "functionSourceRange": [
-      2752,
-      4324,
+      2620,
+      4193,
       4
     ],
     "unlabeledArg": null,
@@ -2620,8 +2620,8 @@ description: Operations executed car-wheel-assembly.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -2658,8 +2658,8 @@ description: Operations executed car-wheel-assembly.kcl
     "type": "UserDefinedFunctionCall",
     "name": "lug",
     "functionSourceRange": [
-      666,
-      1293,
+      664,
+      1291,
       7
     ],
     "unlabeledArg": null,
@@ -3030,8 +3030,8 @@ description: Operations executed car-wheel-assembly.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -3084,8 +3084,8 @@ description: Operations executed car-wheel-assembly.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }

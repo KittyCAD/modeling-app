@@ -3,8 +3,88 @@ import { Command, CommandArgumentOption } from '../commandTypes'
 import toast from 'react-hot-toast'
 import { engineCommandManager } from 'lib/singletons'
 import { uuidv4 } from 'lib/utils'
-import { settingsActor } from 'machines/appMachine'
-import { reportRejection } from 'lib/trap'
+import { settingsActor, getSettings } from 'machines/appMachine'
+import { err, reportRejection } from 'lib/trap'
+import {
+  CameraViewState_type,
+  WorldCoordinateSystem_type,
+} from '@kittycad/lib/dist/types/src/models'
+
+function isWorldCoordinateSystemType(
+  x: string
+): x is WorldCoordinateSystem_type {
+  return x === 'right_handed_up_z' || x === 'right_handed_up_y'
+}
+
+function namedViewToCameraViewState(
+  namedView: NamedView
+): CameraViewState_type | Error {
+  const worldCoordinateSystem: string = namedView.world_coord_system
+
+  if (!isWorldCoordinateSystemType(worldCoordinateSystem)) {
+    return new Error('world coordinate system is not typed')
+  }
+
+  const cameraViewState: CameraViewState_type = {
+    eye_offset: namedView.eye_offset,
+    fov_y: namedView.fov_y,
+    ortho_scale_enabled: namedView.ortho_scale_enabled,
+    ortho_scale_factor: namedView.ortho_scale_factor,
+    world_coord_system: worldCoordinateSystem,
+    is_ortho: namedView.is_ortho,
+    pivot_position: namedView.pivot_position,
+    pivot_rotation: namedView.pivot_rotation,
+  }
+
+  return cameraViewState
+}
+
+function cameraViewStateToNamedView(
+  name: string,
+  cameraViewState: CameraViewState_type
+): NamedView | Error {
+  let pivot_position: [number, number, number] | null = null
+  let pivot_rotation: [number, number, number, number] | null = null
+
+  if (cameraViewState.pivot_position.length === 3) {
+    pivot_position = [
+      cameraViewState.pivot_position[0],
+      cameraViewState.pivot_position[1],
+      cameraViewState.pivot_position[2],
+    ]
+  } else {
+    return new Error(`invalid pivot position ${cameraViewState.pivot_position}`)
+  }
+
+  if (cameraViewState.pivot_rotation.length === 4) {
+    pivot_rotation = [
+      cameraViewState.pivot_rotation[0],
+      cameraViewState.pivot_rotation[1],
+      cameraViewState.pivot_rotation[2],
+      cameraViewState.pivot_rotation[3],
+    ]
+  } else {
+    return new Error(`invalid pivot rotation ${cameraViewState.pivot_rotation}`)
+  }
+
+  // Create a new named view
+  const requestedView: NamedView = {
+    name,
+    eye_offset: cameraViewState.eye_offset,
+    fov_y: cameraViewState.fov_y,
+    ortho_scale_enabled: cameraViewState.ortho_scale_enabled,
+    ortho_scale_factor: cameraViewState.ortho_scale_factor,
+    world_coord_system: cameraViewState.world_coord_system,
+    is_ortho: cameraViewState.is_ortho,
+    pivot_position,
+    pivot_rotation,
+    // TS side knows about the version for the time being the version is not used for anything for now.
+    // Can be detected and cleaned up later if we have new version.
+    version: 1.0,
+  }
+
+  return requestedView
+}
 
 export function createNamedViewsCommand() {
   // Creates a command to be registered in the command bar.
@@ -30,7 +110,6 @@ export function createNamedViewsCommand() {
           await engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
-            // @ts-ignore TODO: Not in production yet.
             cmd: { type: 'default_camera_get_view' },
           })
 
@@ -39,32 +118,43 @@ export function createNamedViewsCommand() {
         }
 
         if ('modeling_response' in cameraGetViewResponse.resp.data) {
-          // @ts-ignore TODO: Not in production yet.
-          const view = cameraGetViewResponse.resp.data.modeling_response.data
-          // Create a new named view
-          const requestedView: NamedView = {
-            name: data.name,
-            ...view.view,
-          }
-          // Retrieve application state for namedViews
-          const namedViews = {
-            ...settingsActor.getSnapshot().context.app.namedViews.current,
-          }
+          if (cameraGetViewResponse.success) {
+            if (
+              cameraGetViewResponse.resp.data.modeling_response.type ===
+              'default_camera_get_view'
+            ) {
+              const view =
+                cameraGetViewResponse.resp.data.modeling_response.data
+              const requestedView = cameraViewStateToNamedView(
+                data.name,
+                view.view
+              )
+              if (err(requestedView)) {
+                toast.error('Unable to create named view.')
+                return
+              }
+              // Retrieve application state for namedViews
+              const namedViews = {
+                ...settingsActor.getSnapshot().context.app.namedViews.current,
+              }
 
-          // Create and set namedViews application state
-          const uniqueUuidV4 = uuidv4()
-          const requestedNamedViews = {
-            ...namedViews,
-            [uniqueUuidV4]: requestedView,
+              // Create and set namedViews application state
+              const uniqueUuidV4 = uuidv4()
+              const requestedNamedViews = {
+                ...namedViews,
+                [uniqueUuidV4]: requestedView,
+              }
+              settingsActor.send({
+                type: `set.app.namedViews`,
+                data: {
+                  level: 'project',
+                  value: requestedNamedViews,
+                },
+              })
+
+              toast.success(`Named view ${requestedView.name} created.`)
+            }
           }
-          settingsActor.send({
-            type: `set.app.namedViews`,
-            data: {
-              level: 'project',
-              value: requestedNamedViews,
-            },
-          })
-          toast.success(`Named view ${requestedView.name} created.`)
         }
       }
       invokeAndForgetCreateNamedView().catch(reportRejection)
@@ -120,9 +210,10 @@ export function createNamedViewsCommand() {
       name: {
         required: true,
         inputType: 'options',
-        options: () => {
+        options: (commandBar, machineContext) => {
+          const settings = getSettings()
           const namedViews = {
-            ...settingsActor.getSnapshot().context.app.namedViews.current,
+            ...settings.app.namedViews.current,
           }
           const options: CommandArgumentOption<any>[] = []
           Object.entries(namedViews).forEach(([key, view]) => {
@@ -164,6 +255,12 @@ export function createNamedViewsCommand() {
         if (viewToLoad) {
           // Split into the name and the engine data
           const { name, version, ...engineViewData } = viewToLoad
+          const cameraViewState = namedViewToCameraViewState(viewToLoad)
+
+          if (err(cameraViewState)) {
+            toast.error(`Unable to load named view ${data.name}`)
+            return
+          }
 
           // Only send the specific camera information, the NamedView itself
           // is not directly compatible with the engine API
@@ -171,10 +268,9 @@ export function createNamedViewsCommand() {
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
             cmd: {
-              // @ts-ignore TODO: Not in production yet.
               type: 'default_camera_set_view',
               view: {
-                ...engineViewData,
+                ...cameraViewState,
               },
             },
           })
@@ -190,6 +286,16 @@ export function createNamedViewsCommand() {
             },
           })
 
+          // Update the camera by triggering the callback workflow to get the camera settings
+          // Setting the view won't update the client side camera.
+          // Asking for the default camera settings after setting the view will internally sync the camera
+          await engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'default_camera_get_settings',
+            },
+          })
           toast.success(`Named view ${name} loaded.`)
         } else {
           toast.error(`Unable to load named view, could not find named view`)
@@ -202,8 +308,9 @@ export function createNamedViewsCommand() {
         required: true,
         inputType: 'options',
         options: () => {
+          const settings = getSettings()
           const namedViews = {
-            ...settingsActor.getSnapshot().context.app.namedViews.current,
+            ...settings.app.namedViews.current,
           }
           const options: CommandArgumentOption<any>[] = []
           Object.entries(namedViews).forEach(([key, view]) => {

@@ -214,17 +214,17 @@ description: Result of parsing washer.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 845,
+                                "commentStart": 835,
                                 "end": 0,
                                 "name": "center",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 854,
+                                "commentStart": 844,
                                 "elements": [
                                   {
-                                    "commentStart": 855,
+                                    "commentStart": 845,
                                     "end": 0,
                                     "raw": "0",
                                     "start": 0,
@@ -236,7 +236,7 @@ description: Result of parsing washer.kcl
                                     }
                                   },
                                   {
-                                    "commentStart": 858,
+                                    "commentStart": 848,
                                     "end": 0,
                                     "raw": "0",
                                     "start": 0,
@@ -257,21 +257,21 @@ description: Result of parsing washer.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 871,
+                                "commentStart": 852,
                                 "end": 0,
                                 "name": "radius",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 880,
+                                "commentStart": 861,
                                 "end": 0,
                                 "left": {
                                   "abs_path": false,
-                                  "commentStart": 880,
+                                  "commentStart": 861,
                                   "end": 0,
                                   "name": {
-                                    "commentStart": 880,
+                                    "commentStart": 861,
                                     "end": 0,
                                     "name": "outerDia",
                                     "start": 0,
@@ -284,7 +284,7 @@ description: Result of parsing washer.kcl
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "commentStart": 891,
+                                  "commentStart": 872,
                                   "end": 0,
                                   "raw": "2",
                                   "start": 0,
@@ -330,17 +330,17 @@ description: Result of parsing washer.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
-                                    "commentStart": 931,
+                                    "commentStart": 894,
                                     "end": 0,
                                     "name": "center",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
                                   "arg": {
-                                    "commentStart": 940,
+                                    "commentStart": 903,
                                     "elements": [
                                       {
-                                        "commentStart": 941,
+                                        "commentStart": 904,
                                         "end": 0,
                                         "raw": "0",
                                         "start": 0,
@@ -352,7 +352,7 @@ description: Result of parsing washer.kcl
                                         }
                                       },
                                       {
-                                        "commentStart": 944,
+                                        "commentStart": 907,
                                         "end": 0,
                                         "raw": "0",
                                         "start": 0,
@@ -373,21 +373,21 @@ description: Result of parsing washer.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
-                                    "commentStart": 957,
+                                    "commentStart": 911,
                                     "end": 0,
                                     "name": "radius",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
                                   "arg": {
-                                    "commentStart": 966,
+                                    "commentStart": 920,
                                     "end": 0,
                                     "left": {
                                       "abs_path": false,
-                                      "commentStart": 966,
+                                      "commentStart": 920,
                                       "end": 0,
                                       "name": {
-                                        "commentStart": 966,
+                                        "commentStart": 920,
                                         "end": 0,
                                         "name": "innerDia",
                                         "start": 0,
@@ -400,7 +400,7 @@ description: Result of parsing washer.kcl
                                     },
                                     "operator": "/",
                                     "right": {
-                                      "commentStart": 977,
+                                      "commentStart": 931,
                                       "end": 0,
                                       "raw": "2",
                                       "start": 0,
@@ -419,10 +419,10 @@ description: Result of parsing washer.kcl
                               ],
                               "callee": {
                                 "abs_path": false,
-                                "commentStart": 914,
+                                "commentStart": 887,
                                 "end": 0,
                                 "name": {
-                                  "commentStart": 914,
+                                  "commentStart": 887,
                                   "end": 0,
                                   "name": "circle",
                                   "start": 0,
@@ -432,7 +432,7 @@ description: Result of parsing washer.kcl
                                 "start": 0,
                                 "type": "Name"
                               },
-                              "commentStart": 914,
+                              "commentStart": 887,
                               "end": 0,
                               "start": 0,
                               "type": "CallExpressionKw",
@@ -440,7 +440,7 @@ description: Result of parsing washer.kcl
                               "unlabeled": null
                             },
                             {
-                              "commentStart": 989,
+                              "commentStart": 935,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -449,10 +449,10 @@ description: Result of parsing washer.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 909,
+                            "commentStart": 882,
                             "end": 0,
                             "name": {
-                              "commentStart": 909,
+                              "commentStart": 882,
                               "end": 0,
                               "name": "hole",
                               "start": 0,
@@ -462,7 +462,7 @@ description: Result of parsing washer.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 909,
+                          "commentStart": 882,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -488,12 +488,12 @@ description: Result of parsing washer.kcl
                   "type": "VariableDeclaration"
                 },
                 {
-                  "commentStart": 991,
+                  "commentStart": 937,
                   "declaration": {
-                    "commentStart": 995,
+                    "commentStart": 941,
                     "end": 0,
                     "id": {
-                      "commentStart": 995,
+                      "commentStart": 941,
                       "end": 0,
                       "name": "washer",
                       "start": 0,
@@ -504,7 +504,7 @@ description: Result of parsing washer.kcl
                         {
                           "type": "LabeledArg",
                           "label": {
-                            "commentStart": 1026,
+                            "commentStart": 972,
                             "end": 0,
                             "name": "length",
                             "start": 0,
@@ -512,10 +512,10 @@ description: Result of parsing washer.kcl
                           },
                           "arg": {
                             "abs_path": false,
-                            "commentStart": 1035,
+                            "commentStart": 981,
                             "end": 0,
                             "name": {
-                              "commentStart": 1035,
+                              "commentStart": 981,
                               "end": 0,
                               "name": "thk",
                               "start": 0,
@@ -530,10 +530,10 @@ description: Result of parsing washer.kcl
                       ],
                       "callee": {
                         "abs_path": false,
-                        "commentStart": 1004,
+                        "commentStart": 950,
                         "end": 0,
                         "name": {
-                          "commentStart": 1004,
+                          "commentStart": 950,
                           "end": 0,
                           "name": "extrude",
                           "start": 0,
@@ -543,17 +543,17 @@ description: Result of parsing washer.kcl
                         "start": 0,
                         "type": "Name"
                       },
-                      "commentStart": 1004,
+                      "commentStart": 950,
                       "end": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
                       "unlabeled": {
                         "abs_path": false,
-                        "commentStart": 1012,
+                        "commentStart": 958,
                         "end": 0,
                         "name": {
-                          "commentStart": 1012,
+                          "commentStart": 958,
                           "end": 0,
                           "name": "washerSketch",
                           "start": 0,
@@ -577,10 +577,10 @@ description: Result of parsing washer.kcl
                 {
                   "argument": {
                     "abs_path": false,
-                    "commentStart": 1049,
+                    "commentStart": 995,
                     "end": 0,
                     "name": {
-                      "commentStart": 1049,
+                      "commentStart": 995,
                       "end": 0,
                       "name": "washer",
                       "start": 0,
@@ -591,7 +591,7 @@ description: Result of parsing washer.kcl
                     "type": "Name",
                     "type": "Name"
                   },
-                  "commentStart": 1042,
+                  "commentStart": 988,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
@@ -604,7 +604,7 @@ description: Result of parsing washer.kcl
                 "nonCodeNodes": {
                   "0": [
                     {
-                      "commentStart": 991,
+                      "commentStart": 937,
                       "end": 0,
                       "start": 0,
                       "type": "NonCodeNode",
@@ -681,25 +681,32 @@ description: Result of parsing washer.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1057,
+        "commentStart": 1003,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "commentStart": 1066,
+              "abs_path": false,
+              "commentStart": 1012,
               "end": 0,
-              "raw": "'XY'",
+              "name": {
+                "commentStart": 1012,
+                "end": 0,
+                "name": "XY",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "XY"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "abs_path": false,
-              "commentStart": 1072,
+              "commentStart": 1016,
               "end": 0,
               "name": {
-                "commentStart": 1072,
+                "commentStart": 1016,
                 "end": 0,
                 "name": "innerDiameter",
                 "start": 0,
@@ -712,10 +719,10 @@ description: Result of parsing washer.kcl
             },
             {
               "abs_path": false,
-              "commentStart": 1087,
+              "commentStart": 1031,
               "end": 0,
               "name": {
-                "commentStart": 1087,
+                "commentStart": 1031,
                 "end": 0,
                 "name": "outerDiameter",
                 "start": 0,
@@ -728,10 +735,10 @@ description: Result of parsing washer.kcl
             },
             {
               "abs_path": false,
-              "commentStart": 1102,
+              "commentStart": 1046,
               "end": 0,
               "name": {
-                "commentStart": 1102,
+                "commentStart": 1046,
                 "end": 0,
                 "name": "thicknessMax",
                 "start": 0,
@@ -745,10 +752,10 @@ description: Result of parsing washer.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 1059,
+            "commentStart": 1005,
             "end": 0,
             "name": {
-              "commentStart": 1059,
+              "commentStart": 1005,
               "end": 0,
               "name": "washer",
               "start": 0,
@@ -758,7 +765,7 @@ description: Result of parsing washer.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 1059,
+          "commentStart": 1005,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -828,7 +835,7 @@ description: Result of parsing washer.kcl
       "nonCodeNodes": {
         "4": [
           {
-            "commentStart": 1057,
+            "commentStart": 1003,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

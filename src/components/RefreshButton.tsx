@@ -9,6 +9,8 @@ import { reportRejection } from 'lib/trap'
 import { toSync } from 'lib/utils'
 import { useToken } from 'machines/appMachine'
 import { rustContext } from 'lib/singletons'
+import type { WebContentSendPayload } from '../menu/channels'
+import { useMenuListener } from 'hooks/useMenu'
 
 export const RefreshButton = ({ children }: React.PropsWithChildren) => {
   const token = useToken()
@@ -60,6 +62,13 @@ export const RefreshButton = ({ children }: React.PropsWithChildren) => {
       })
       .catch(reportRejection)
   }
+
+  const cb = (data: WebContentSendPayload) => {
+    if (data.menuLabel === 'Help.Refresh and report a bug') {
+      refresh().catch(reportRejection)
+    }
+  }
+  useMenuListener(cb)
 
   return (
     <button

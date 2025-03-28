@@ -8,7 +8,7 @@ description: Operations executed washer.kcl
     "name": "washer",
     "functionSourceRange": [
       711,
-      1057,
+      1003,
       0
     ],
     "unlabeledArg": null,
@@ -19,8 +19,8 @@ description: Operations executed washer.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }

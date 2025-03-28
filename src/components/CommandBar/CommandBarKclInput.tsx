@@ -27,6 +27,7 @@ import { getNodeFromPath } from 'lang/queryAst'
 import { isPathToNode, SourceRange, VariableDeclarator } from 'lang/wasm'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import { err } from 'lib/trap'
+import { Spinner } from 'components/Spinner'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
@@ -80,7 +81,8 @@ function CommandBarKclInput({
         : arg.variableName
     }
     // or derive it from the previously set value or the argument name
-    return previouslySetValue && 'variableName' in previouslySetValue
+    return typeof previouslySetValue === 'object' &&
+      'variableName' in previouslySetValue
       ? previouslySetValue.variableName
       : arg.name
   }, [
@@ -96,7 +98,8 @@ function CommandBarKclInput({
   )
   const [value, setValue] = useState(initialValue)
   const [createNewVariable, setCreateNewVariable] = useState(
-    (previouslySetValue && 'variableName' in previouslySetValue) ||
+    (typeof previouslySetValue === 'object' &&
+      'variableName' in previouslySetValue) ||
       arg.createVariable === 'byDefault' ||
       arg.createVariable === 'force' ||
       false
@@ -113,6 +116,7 @@ function CommandBarKclInput({
     setNewVariableName,
     isNewVariableNameUnique,
     prevVariables,
+    isExecuting,
   } = useCalculateKclExpression({
     value,
     initialVariableName,
@@ -132,7 +136,8 @@ function CommandBarKclInput({
     selection: {
       anchor: 0,
       head:
-        previouslySetValue && 'valueText' in previouslySetValue
+        typeof previouslySetValue === 'object' &&
+        'valueText' in previouslySetValue
           ? previouslySetValue.valueText.length
           : defaultValue.length,
     },
@@ -197,9 +202,11 @@ function CommandBarKclInput({
 
   useEffect(() => {
     setCanSubmit(
-      calcResult !== 'NAN' && (!createNewVariable || isNewVariableNameUnique)
+      calcResult !== 'NAN' &&
+        (!createNewVariable || isNewVariableNameUnique) &&
+        !isExecuting
     )
-  }, [calcResult, createNewVariable, isNewVariableNameUnique])
+  }, [calcResult, createNewVariable, isNewVariableNameUnique, isExecuting])
 
   function handleSubmit(e?: React.FormEvent<HTMLFormElement>) {
     e?.preventDefault()
@@ -265,9 +272,13 @@ function CommandBarKclInput({
               : 'text-succeed-80 dark:text-succeed-40'
           }
         >
-          {calcResult === 'NAN'
-            ? "Can't calculate"
-            : roundOff(Number(calcResult), 4)}
+          {isExecuting === true || !calcResult ? (
+            <Spinner className="text-inherit w-4 h-4" />
+          ) : calcResult === 'NAN' ? (
+            "Can't calculate"
+          ) : (
+            roundOff(Number(calcResult), 4)
+          )}
         </span>
       </label>
       {createNewVariable ? (

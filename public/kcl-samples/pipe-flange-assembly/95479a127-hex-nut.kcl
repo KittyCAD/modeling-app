@@ -1,16 +1,16 @@
 // 95479A127 Hex Nut
-
-// import constants
-import hexNutDiameter, hexNutFlatToFlat, hexNutThickness, hexNutFlatLength from "globals.kcl"
+// hex nut for the screws in the pipe flange assembly.
 
 // set units
 @settings(defaultLengthUnit = in)
 
+// import constants
+import hexNutDiameter, hexNutFlatToFlat, hexNutThickness, hexNutFlatLength from "globals.kcl"
+
 // create a function to make the hex nut
 export fn hexNut() {
-
   // create the base of the hex nut
-  hexNutBase = startSketchOn('XY')
+  hexNutBase = startSketchOn(XY)
     |> startProfileAt([
          hexNutFlatToFlat / 2,
          hexNutFlatLength / 2
