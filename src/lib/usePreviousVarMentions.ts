@@ -17,7 +17,7 @@ export function usePreviousVarMentions(context: CompletionContext) {
     return null
   }
   return {
-    from: word?.from!,
+    from: word?.from,
     options: [...data],
   }
 }
