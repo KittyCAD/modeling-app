@@ -2,11 +2,13 @@
 
 use anyhow::Result;
 use kcl_derive_docs::stdlib;
-use kcmc::{each_cmd as mcmd, ModelingCmd};
+use kcmc::{each_cmd as mcmd, ModelingCmd,
+    websocket::{ModelingCmdReq, OkWebSocketResponseData},
+};
 use kittycad_modeling_cmds::{self as kcmc};
 
 use crate::{
-    errors::KclError,
+    errors::{KclError, KclErrorDetails},
     execution::{
         types::{PrimitiveType, RuntimeType},
         ExecState, Geometry, KclValue,
@@ -123,6 +125,27 @@ async fn inner_clone(geometry: Geometry, exec_state: &mut ExecState, args: Args)
 
     args.batch_modeling_cmd(new_id, ModelingCmd::from(mcmd::EntityClone { entity_id: old_id }))
         .await?;
+
+    // Get all the uuids of all the children of the geometry.
+    let response = args
+        .send_modeling_cmd(
+            exec_state.next_uuid(),
+            ModelingCmd::from(mcmd::EntityGetAllChildUuids { entity_id: new_id }),
+        )
+        .await?;
+
+    let child_uuids = if let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::EntityGetAllChildUuids(data),
+    } = response else
+    {
+            return Err(KclError::Type(KclErrorDetails {
+                message: format!(
+                    "Expected a start cap ID for tag `{}` for extrusion of sketch {:?}",
+                    tag_start.name, sketch.id
+                ),
+                source_ranges: vec![args.source_range],
+            }));
+    } ;
 
     Ok(new_geometry)
 }
