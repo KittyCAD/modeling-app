@@ -273,21 +273,12 @@ export const isErrorWhitelisted = (exception: Error) => {
       project: 'Google Chrome',
       foundInSpec: 'e2e/playwright/snapshot-tests.spec.ts',
     },
-    // TODO: fix this error in the code
     {
       name: 'TypeError',
       message: 'Failed to fetch',
       stack: '',
       project: 'Google Chrome',
       foundInSpec: 'e2e/playwright/snapshot-tests.spec.ts',
-    },
-    // TODO: fix this error in the code
-    {
-      name: 'ReferenceError',
-      message: 'originalCode is not defined',
-      stack: '',
-      project: 'Google Chrome',
-      foundInSpec: 'e2e/playwright/onboarding-tests.spec.ts',
     },
     // TODO: fix this error in the code
     {
