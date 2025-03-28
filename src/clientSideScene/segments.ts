@@ -1724,7 +1724,7 @@ function createLengthIndicator({
           if (hasEndAbsolute) {
             // Won't be able to constrain that length
             toast.error(
-              'Unable to constraint the length of a segment with endAbsolute'
+              'Unable to constrain the length of a segment with endAbsolute'
             )
             return
           }
