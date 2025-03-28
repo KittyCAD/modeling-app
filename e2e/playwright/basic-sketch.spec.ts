@@ -120,7 +120,6 @@ async function doBasicSketch(
 
   if (openPanes.includes('code')) {
     expect(await u.getGreatestPixDiff(line1, TEST_COLORS.BLUE)).toBeLessThan(3)
-    expect(await u.getGreatestPixDiff(line1, [0, 0, 255])).toBeLessThan(3)
   }
 
   // hold down shift
