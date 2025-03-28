@@ -259,14 +259,6 @@ export const isErrorWhitelisted = (exception: Error) => {
     },
     // TODO: fix this error in the code
     {
-      name: 'TypeError',
-      message: "Cannot read properties of undefined (reading 'length')",
-      stack: '',
-      project: 'Google Chrome',
-      foundInSpec: '', // many tests are impacted by this error
-    },
-    // TODO: fix this error in the code
-    {
       name: 'ReferenceError',
       message: '_testUtils is not defined',
       stack: '',
