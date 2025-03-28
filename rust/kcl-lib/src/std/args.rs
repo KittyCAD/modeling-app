@@ -15,8 +15,8 @@ use crate::{
     execution::{
         kcl_value::FunctionSource,
         types::{NumericType, PrimitiveType, RuntimeType},
-        ExecState, ExecutorContext, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Sketch, SketchSurface,
-        Solid, TagIdentifier,
+        ExecState, ExecutorContext, ExtrudeSurface, Geometry, Helix, KclObjectFields, KclValue, Metadata, Sketch,
+        SketchSurface, Solid, TagIdentifier,
     },
     parsing::ast::types::TagNode,
     source_range::SourceRange,
@@ -1262,6 +1262,16 @@ impl<'a> FromKclValue<'a> for super::sketch::BezierData {
         let_field_of!(obj, control1);
         let_field_of!(obj, control2);
         Some(Self { to, control1, control2 })
+    }
+}
+
+impl<'a> FromKclValue<'a> for Geometry {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Sketch { value } => Some(Self::Sketch(*value.to_owned())),
+            KclValue::Solid { value } => Some(Self::Solid(*value.to_owned())),
+            _ => None,
+        }
     }
 }
 
