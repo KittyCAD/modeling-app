@@ -1211,17 +1211,23 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     page,
     homePage,
     toolbar,
+    scene,
+    cmdBar,
+    editor,
   }) => {
     await page.setBodyDimensions({ width: 1200, height: 900 })
     await homePage.goToModelingScene()
 
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
+    // wait until scene is ready to be interacted with
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
 
-    await page.waitForTimeout(100)
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
 
     // select an axis plane
     await page.mouse.click(700, 200)
 
+    // Needed as we don't yet have a way to get a signal from the engine that the camera has animated to the sketch plane
     await page.waitForTimeout(1000)
 
     const middleMousePan = async (
@@ -1230,19 +1236,15 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
       endX: number,
       endY: number
     ) => {
-      const initialText = await page.locator('.cm-content').innerText()
+      const initialCode = await editor.getCurrentCode()
 
-      await page.waitForTimeout(1000)
       await page.mouse.click(startX, startY, { button: 'middle' })
-      await page.waitForTimeout(1000)
       await page.mouse.move(endX, endY, {
         steps: 10,
       })
-      await page.waitForTimeout(1000)
 
       // We expect the code to be the same, middle mouse click should not modify the code, only do panning
-      const currentText = await page.locator('.cm-content').innerText()
-      expect(currentText).toBe(initialText)
+      await editor.expectEditor.toBe(initialCode)
     }
 
     await test.step(`Verify corner rectangle panning`, async () => {
