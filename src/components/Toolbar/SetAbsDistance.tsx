@@ -14,7 +14,7 @@ import {
   createSetAngleLengthModal,
 } from '../SetAngleLengthModal'
 import {
-  createLocalName,
+  createName,
   createVariableDeclaration,
 } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
@@ -169,7 +169,7 @@ export function applyConstraintAxisAlign({
   if (err(info)) return info
   const transformInfos = info.transforms
 
-  let finalValue = createLocalName('ZERO')
+  let finalValue = createName(['turns'], 'ZERO')
 
   return transformAstSketchLines({
     ast: structuredClone(kclManager.ast),

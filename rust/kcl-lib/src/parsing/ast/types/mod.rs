@@ -1609,19 +1609,21 @@ impl ImportStatement {
             return Some(alias.name.clone());
         }
 
-        let mut parts = match &self.path {
-            ImportPath::Kcl { filename: s } | ImportPath::Foreign { path: s } => s.split('.'),
-            _ => return None,
-        };
-        let path = parts.next()?;
-        let _ext = parts.next()?;
-        let rest = parts.next();
+        match &self.path {
+            ImportPath::Kcl { filename: s } | ImportPath::Foreign { path: s } => {
+                let mut parts = s.split('.');
+                let path = parts.next()?;
+                let _ext = parts.next()?;
+                let rest = parts.next();
 
-        if rest.is_some() {
-            return None;
+                if rest.is_some() {
+                    return None;
+                }
+
+                path.rsplit(&['/', '\\']).next().map(str::to_owned)
+            }
+            ImportPath::Std { path } => path.last().cloned(),
         }
-
-        path.rsplit(&['/', '\\']).next().map(str::to_owned)
     }
 }
 

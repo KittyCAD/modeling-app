@@ -1823,14 +1823,6 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
             )
             .into(),
         ));
-    } else if matches!(path, ImportPath::Std { .. }) && matches!(selector, ImportSelector::None { .. }) {
-        return Err(ErrMode::Cut(
-            CompilationError::fatal(
-                SourceRange::new(start, end, module_id),
-                "the standard library cannot be imported as a part",
-            )
-            .into(),
-        ));
     }
 
     Ok(Node::boxed(
