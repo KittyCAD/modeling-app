@@ -12,7 +12,7 @@ export type FileLoaderData = {
   file?: FileEntry
 }
 
-export type HomeLoaderData = {}
+export type HomeLoaderData = Record<string, never>
 
 // From the very helpful @jcalz on StackOverflow: https://stackoverflow.com/a/58436959/22753272
 type Join<K, P> = K extends string | number

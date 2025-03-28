@@ -38,7 +38,7 @@ jobs:
           # Get a new SHA to prevent overwriting the commit status on main
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git commit --amend --message="[all-e2e] $(git log --max-count=1 --pretty=%B)"
+          git commit --allow-empty --message="[all-e2e] $(git log --max-count=1 --pretty=%B)"
 
           # Overwrite the branch
           git remote set-url origin https://x-access-token:${{ steps.app-token.outputs.token }}@github.com/${{ github.repository }}.git

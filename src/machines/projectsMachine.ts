@@ -12,7 +12,7 @@ export const projectsMachine = setup({
       hasListedProjects: boolean
     },
     events: {} as
-      | { type: 'Read projects'; data: {} }
+      | { type: 'Read projects'; data: ProjectsCommandSchema['Read projects'] }
       | { type: 'Open project'; data: ProjectsCommandSchema['Open project'] }
       | {
           type: 'Rename project'

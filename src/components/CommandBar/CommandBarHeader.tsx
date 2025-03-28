@@ -8,7 +8,7 @@ import Tooltip from 'components/Tooltip'
 import { roundOff } from 'lib/utils'
 import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
 
-function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
+function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
   const commandBarState = useCommandBarState()
   const {
     context: { selectedCommand, currentArgument, argumentsToSubmit },
@@ -98,9 +98,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
               .map(([argName, arg], i) => {
                 const argValue =
                   (typeof argumentsToSubmit[argName] === 'function'
-                    ? (argumentsToSubmit[argName] as Function)(
-                        commandBarState.context
-                      )
+                    ? argumentsToSubmit[argName](commandBarState.context)
                     : argumentsToSubmit[argName]) || ''
 
                 return (

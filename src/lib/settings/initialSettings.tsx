@@ -302,7 +302,7 @@ export function createSettings() {
       defaultUnit: new Setting<BaseUnit>({
         defaultValue: 'mm',
         description: 'The default unit to use in modeling dimensions',
-        validate: (v) => baseUnitsUnion.includes(v as BaseUnit),
+        validate: (v) => baseUnitsUnion.includes(v),
         commandConfig: {
           inputType: 'options',
           defaultValueFromContext: (context) =>
@@ -332,7 +332,7 @@ export function createSettings() {
       mouseControls: new Setting<CameraSystem>({
         defaultValue: 'Zoo',
         description: 'The controls for how to navigate the 3D view',
-        validate: (v) => cameraSystems.includes(v as CameraSystem),
+        validate: (v) => cameraSystems.includes(v),
         hideOnLevel: 'project',
         commandConfig: {
           inputType: 'options',

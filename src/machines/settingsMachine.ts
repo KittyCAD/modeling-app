@@ -146,7 +146,7 @@ export const settingsMachine = setup({
               actor: input.actor,
             })
           )
-          .filter((c) => c !== null) as Command[]
+          .filter((c) => c !== null)
       const addCommands = () =>
         commandBarActor.send({
           type: 'Add commands',

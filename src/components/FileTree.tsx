@@ -517,10 +517,7 @@ interface FileTreeProps {
   className?: string
   file?: IndexLoaderData['file']
   onNavigateToFile: (
-    focusableElement?:
-      | HTMLElement
-      | React.MutableRefObject<HTMLElement | null>
-      | undefined
+    focusableElement?: HTMLElement | React.MutableRefObject<HTMLElement | null>
   ) => void
 }
 
