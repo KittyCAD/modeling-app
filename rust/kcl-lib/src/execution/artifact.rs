@@ -151,6 +151,8 @@ pub struct Segment {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub edge_cut_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
+    // #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub common_surface_ids: Vec<ArtifactId>,
 }
 
 /// A sweep is a more generic term for extrude, revolve, loft, and sweep.
@@ -253,6 +255,8 @@ pub struct SweepEdge {
     pub sub_type: SweepEdgeSubType,
     pub seg_id: ArtifactId,
     pub sweep_id: ArtifactId,
+    // #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub common_surface_ids: Vec<ArtifactId>,
 }
 
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
@@ -424,6 +428,7 @@ impl Segment {
         merge_opt_id(&mut self.surface_id, new.surface_id);
         merge_ids(&mut self.edge_ids, new.edge_ids);
         merge_opt_id(&mut self.edge_cut_id, new.edge_cut_id);
+        merge_ids(&mut self.common_surface_ids, new.common_surface_ids);
 
         None
     }
@@ -752,6 +757,7 @@ fn artifacts_to_update(
                 edge_ids: Vec::new(),
                 edge_cut_id: None,
                 code_ref: CodeRef { range, path_to_node },
+                common_surface_ids: Vec::new(),
             }));
             let path = artifacts.get(&path_id);
             if let Some(Artifact::Path(path)) = path {
@@ -999,6 +1005,7 @@ fn artifacts_to_update(
                 sub_type,
                 seg_id: edge_id,
                 sweep_id: sweep.id,
+                common_surface_ids: Vec::new(),
             }));
             let mut new_segment = segment.clone();
             new_segment.edge_ids = vec![response_edge_id];
@@ -1006,6 +1013,34 @@ fn artifacts_to_update(
             let mut new_sweep = sweep.clone();
             new_sweep.edge_ids = vec![response_edge_id];
             return_arr.push(Artifact::Sweep(new_sweep));
+            return Ok(return_arr);
+        }
+        ModelingCmd::Solid3dGetAllEdgeFaces(kcmc::Solid3dGetAllEdgeFaces { edge_id, .. }) => {
+            println!("Solid3dGetAllEdgeFaces");
+            let OkModelingCmdResponse::Solid3dGetAllEdgeFaces(faces) = response else {
+                return Ok(Vec::new());
+            };
+            let edge_id = ArtifactId::new(*edge_id);
+            let Some(artifact) = artifacts.get(&edge_id) else {
+                return Ok(Vec::new());
+            };
+            println!("Solid3dGetAllEdgeFaces: {:?}", artifact);
+            let mut return_arr = Vec::new();
+            match artifact {
+                Artifact::Segment(segment) => {
+                    let mut new_segment = segment.clone();
+                    new_segment.common_surface_ids = faces.faces.iter().map(|face| ArtifactId::new(*face)).collect();
+                    return_arr.push(Artifact::Segment(new_segment));
+                }
+                Artifact::SweepEdge(sweep_edge) => {
+                    let mut new_sweep_edge = sweep_edge.clone();
+                    new_sweep_edge.common_surface_ids = faces.faces.iter().map(|face| ArtifactId::new(*face)).collect();
+                    return_arr.push(Artifact::SweepEdge(new_sweep_edge));
+                }
+                _ => {}
+            };
+            println!("Solid3dGetAllEdgeFaces: {:?}", return_arr);
+
             return Ok(return_arr);
         }
         ModelingCmd::Solid3dFilletEdge(cmd) => {

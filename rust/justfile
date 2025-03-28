@@ -32,10 +32,10 @@ new-sim-test test_name render_to_png="true":
 # Run a KCL deterministic simulation test case and accept output.
 run-sim-test test_name:
     # Run all the tests for the first time, in the right order.
-    {{cita}} -p kcl-lib -- simulation_tests::{{test_name}}::parse
-    {{cita}} -p kcl-lib -- simulation_tests::{{test_name}}::unparse
-    {{cita}} -p kcl-lib -- tests::{{test_name}}::kcl_test_execute
-    {{cita}} -p kcl-lib -- simulation_tests::{{test_name}}::test_after_engine
+    {{cita}} -p kcl-lib -- --nocapture simulation_tests::{{test_name}}::parse
+    {{cita}} -p kcl-lib -- --nocapture simulation_tests::{{test_name}}::unparse
+    {{cita}} -p kcl-lib -- --nocapture tests::{{test_name}}::kcl_test_execute
+    {{cita}} -p kcl-lib -- --nocapture simulation_tests::{{test_name}}::test_after_engine
 
 overwrite-sim-test test_name:
     EXPECTORATE=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::{{test_name}}::parse

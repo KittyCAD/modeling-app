@@ -462,6 +462,19 @@ export function getSweepFromSuspectedPath(
   )
 }
 
+export function getCommonFacesForEdge(
+  artifact: SweepEdge | SegmentArtifact,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'wall' | 'cap' }>[] | Error {
+  const faces = getArtifactsOfTypes(
+    { keys: artifact.commonSurfaceIds, types: ['wall', 'cap'] },
+    artifactGraph
+  )
+  if (err(faces)) return faces
+  if (faces.size === 0) return new Error('No common face found')
+  return [...faces.values()]
+}
+
 export function getSweepArtifactFromSelection(
   selection: Selection,
   artifactGraph: ArtifactGraph
