@@ -28,43 +28,57 @@ jobs:
       - run: yarn fmt-check
 
   yarn-build-wasm:
-    runs-on: ubuntu-22.04
-
+    # Build the wasm blob once on the fastest runner.
+    runs-on: runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
-      - run: yarn install
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Use correct Rust toolchain
+        shell: bash
+        run: |
+          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
+
+      - name: Install rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache: false # Configured below.
+
       - uses: taiki-e/install-action@37bdc826eaedac215f638a96472df572feab0f9b
         with:
           tool: wasm-pack
-      - run: yarn build:wasm
 
-  yarn-tsc:
-    runs-on: ubuntu-22.04
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'yarn'
-      - run: yarn install
-      - run: yarn --cwd ./rust/kcl-language-server --modules-folder node_modules install
-      - uses: Swatinem/rust-cache@v2
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
         with:
           workspaces: './rust'
 
-      - uses: taiki-e/install-action@37bdc826eaedac215f638a96472df572feab0f9b
-        with:
-          tool: wasm-pack
-      - run: yarn build:wasm
-      - run: yarn tsc
+      - name: Build Wasm
+        shell: bash
+        run: yarn build:wasm
 
-  yarn-lint:
-    runs-on: ubuntu-22.04
+      - uses: actions/upload-artifact@v4
+        with:
+          name: prepared-wasm
+          path: |
+            rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: prepared-ts-rs-bindings
+          path: |
+            rust/kcl-lib/bindings/*
+
+  yarn-tsc:
+    runs-on: ubuntu-latest
+    needs: yarn-build-wasm
 
     steps:
       - uses: actions/checkout@v4
@@ -73,7 +87,53 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn'
       - run: yarn install
-      - run: yarn --cwd ./rust/kcl-language-server --modules-folder node_modules install
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Copy prepared wasm
+        run: |
+          ls -R prepared-wasm
+          cp prepared-wasm/kcl_wasm_lib_bg.wasm public
+          mkdir rust/kcl-wasm-lib/pkg
+          cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
+
+      - name: Copy prepared ts-rs bindings
+        run: |
+          ls -R prepared-ts-rs-bindings
+          mkdir rust/kcl-lib/bindings
+          cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
+
+      - run: yarn tsc
+
+  yarn-lint:
+    runs-on: ubuntu-latest
+    needs: yarn-build-wasm
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+      - run: yarn install
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Copy prepared wasm
+        run: |
+          ls -R prepared-wasm
+          cp prepared-wasm/kcl_wasm_lib_bg.wasm public
+          mkdir rust/kcl-wasm-lib/pkg
+          cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
+
+      - name: Copy prepared ts-rs bindings
+        run: |
+          ls -R prepared-ts-rs-bindings
+          mkdir rust/kcl-lib/bindings
+          cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
+
       - run: yarn lint
 
   python-codespell:
@@ -91,6 +151,7 @@ jobs:
 
   yarn-unit-test-kcl-samples:
     runs-on: ubuntu-latest
+    needs: yarn-build-wasm
     steps:
       - uses: actions/checkout@v4
 
@@ -103,7 +164,22 @@ jobs:
       - uses: taiki-e/install-action@37bdc826eaedac215f638a96472df572feab0f9b
         with:
           tool: wasm-pack
-      - run: yarn build:wasm
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Copy prepared wasm
+        run: |
+          ls -R prepared-wasm
+          cp prepared-wasm/kcl_wasm_lib_bg.wasm public
+          mkdir rust/kcl-wasm-lib/pkg
+          cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
+
+      - name: Copy prepared ts-rs bindings
+        run: |
+          ls -R prepared-ts-rs-bindings
+          mkdir rust/kcl-lib/bindings
+          cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
       - run: yarn simpleserver:bg
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
@@ -120,6 +196,7 @@ jobs:
 
   yarn-unit-test:
     runs-on: ubuntu-latest
+    needs: yarn-build-wasm
     steps:
       - uses: actions/checkout@v4
 
@@ -132,7 +209,22 @@ jobs:
       - uses: taiki-e/install-action@37bdc826eaedac215f638a96472df572feab0f9b
         with:
           tool: wasm-pack
-      - run: yarn build:wasm
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Copy prepared wasm
+        run: |
+          ls -R prepared-wasm
+          cp prepared-wasm/kcl_wasm_lib_bg.wasm public
+          mkdir rust/kcl-wasm-lib/pkg
+          cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
+
+      - name: Copy prepared ts-rs bindings
+        run: |
+          ls -R prepared-ts-rs-bindings
+          mkdir rust/kcl-lib/bindings
+          cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
       - run: yarn simpleserver:bg
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}

@@ -1431,7 +1431,6 @@ export const ModelingMachineProvider = ({
             parsed = pResult.program
 
             if (trap(parsed)) return Promise.reject(parsed)
-            parsed = parsed as Node<Program>
             if (!result.pathToReplaced)
               return Promise.reject(new Error('No path to replaced node'))
             const {

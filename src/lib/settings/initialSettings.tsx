@@ -304,7 +304,7 @@ export function createSettings() {
         defaultValue: DEFAULT_DEFAULT_LENGTH_UNIT,
         description:
           'Set the default length unit setting value to give any new files.',
-        validate: (v) => baseUnitsUnion.includes(v as BaseUnit),
+        validate: (v) => baseUnitsUnion.includes(v),
         commandConfig: {
           inputType: 'options',
           defaultValueFromContext: (context) =>
@@ -334,7 +334,7 @@ export function createSettings() {
       mouseControls: new Setting<CameraSystem>({
         defaultValue: 'Zoo',
         description: 'The controls for how to navigate the 3D view',
-        validate: (v) => cameraSystems.includes(v as CameraSystem),
+        validate: (v) => cameraSystems.includes(v),
         hideOnLevel: 'project',
         commandConfig: {
           inputType: 'options',

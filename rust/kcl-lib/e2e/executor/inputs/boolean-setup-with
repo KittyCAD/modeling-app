@@ -1,0 +1,77 @@
+@settings(defaultLengthUnit = mm)
+
+sketch001 = startSketchOn(XZ)
+profile001 = circle(sketch001, center = [154.36, 113.92], radius = 41.09)
+extrude001 = extrude(profile001, length = 200)
+sketch002 = startSketchOn(XY)
+profile002 = startProfileAt([72.24, -52.05], sketch002)
+  |> angledLine([0, 181.26], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       21.54
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %, $mySeg)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude002 = extrude(profile002, length = 150)
+  |> chamfer(
+       %,
+       length = 15,
+       tags = [mySeg],
+       tag = $seg02,
+     )
+
+sketch003 = startSketchOn(extrude002, mySeg)
+profile003 = startProfileAt([207.36, 126.19], sketch003)
+  |> angledLine([0, 33.57], %, $rectangleSegmentA002)
+  |> angledLine([
+       segAng(rectangleSegmentA002) - 90,
+       99.11
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA002),
+       -segLen(rectangleSegmentA002)
+     ], %, $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude003 = extrude(profile003, length = -20)
+sketch004 = startSketchOn(extrude003, seg01)
+profile004 = startProfileAt([-235.38, 66.16], sketch004)
+  |> angledLine([0, 24.21], %, $rectangleSegmentA003)
+  |> angledLine([
+       segAng(rectangleSegmentA003) - 90,
+       3.72
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA003),
+       -segLen(rectangleSegmentA003)
+     ], %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude004 = extrude(profile004, length = 30)
+
+sketch005 = startSketchOn(extrude002, seg02)
+profile005 = startProfileAt([-129.93, -59.19], sketch005)
+  |> xLine(length = 48.79)
+  |> line(end = [1.33, 11.03])
+  |> xLine(length = -60.56, tag = $seg03)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude005 = extrude(profile005, length = -10)
+sketch006 = startSketchOn(extrude005, seg03)
+profile006 = startProfileAt([-95.86, 38.73], sketch006)
+  |> angledLine([0, 3.48], %, $rectangleSegmentA004)
+  |> angledLine([
+       segAng(rectangleSegmentA004) - 90,
+       3.36
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA004),
+       -segLen(rectangleSegmentA004)
+     ], %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude006 = extrude(profile006, length = 13)
