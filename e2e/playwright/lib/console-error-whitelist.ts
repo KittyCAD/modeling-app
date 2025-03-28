@@ -300,7 +300,8 @@ export const isErrorWhitelisted = (exception: Error) => {
     {
       name: 'Error',
       message: 'The "path" argument must be of type string. Received undefined',
-      stack: 'Error: The "path" argument must be of type string. Received undefined',
+      stack:
+        'Error: The "path" argument must be of type string. Received undefined',
       project: 'Google Chrome',
       foundInSpec: '', // many tests are impacted by this error
     },
