@@ -1808,7 +1808,7 @@ export const modelingMachine = setup({
 
         // Removing the old extrusion statement
         const newBody = [...ast.body]
-        newBody.splice(nodeToEdit[1][0] as number, 1)
+        newBody.splice(nodeToEdit[1][0], 1)
         ast.body = newBody
       }
 
