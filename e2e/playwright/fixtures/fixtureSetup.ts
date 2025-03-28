@@ -103,17 +103,15 @@ export class ElectronZoo {
             return resolve(undefined)
           }
 
-          if (Date.now() - timeA > 10000) {
+          if (Date.now() - timeA > 3000) {
             return resolve(undefined)
           }
 
-          setTimeout(checkDisconnected, 0)
+          setTimeout(checkDisconnected, 1)
         }
         checkDisconnected()
       })
     })
-
-    await this.context.tracing.stopChunk({ path: 'trace.zip' })
 
     // Only after cleanup we're ready.
     this.available = true
@@ -156,7 +154,6 @@ export class ElectronZoo {
 
       this.page = await this.electron.firstWindow()
       this.context = this.electron.context()
-      await this.context.tracing.start({ screenshots: true, snapshots: true })
 
       // We need to patch this because addInitScript will bind too late in our
       // electron tests, never running. We need to call reload() after each call
@@ -178,7 +175,8 @@ export class ElectronZoo {
       }
     }
 
-    await this.context.tracing.startChunk()
+    this.page = await this.electron.firstWindow()
+    this.context = this.electron.context()
 
     // THIS IS ABSOLUTELY NECESSARY TO CHANGE THE PROJECT DIRECTORY BETWEEN
     // TESTS BECAUSE OF THE ELECTRON INSTANCE REUSE.

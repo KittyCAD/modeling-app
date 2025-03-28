@@ -112,10 +112,7 @@ export class CmdBarFixture {
    * and assumes we are past the `pickCommand` step.
    */
   progressCmdBar = async (shouldFuzzProgressMethod = true) => {
-    // FIXME: Progressing the command bar is a race condition. We have an async useEffect that reports the final state via useCalculateKclExpression. If this does not run quickly enough, it will not "fail" the continue because you can press continue if the state is not ready. E2E tests do not know this.
-    // Wait 1250ms to assume the await executeAst of the KCL input field is finished
-    await this.page.waitForTimeout(1250)
-    if (shouldFuzzProgressMethod || Math.random() > 0.5) {
+      await this.page.waitForTimeout(2000)
       const arrowButton = this.page.getByRole('button', {
         name: 'arrow right Continue',
       })
@@ -126,9 +123,6 @@ export class CmdBarFixture {
           .getByRole('button', { name: 'checkmark Submit command' })
           .click()
       }
-    } else {
-      await this.page.keyboard.press('Enter')
-    }
   }
 
   // Added data-testid to the command bar buttons
