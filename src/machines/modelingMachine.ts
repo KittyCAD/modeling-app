@@ -1822,6 +1822,10 @@ export const modelingMachine = setup({
         const newBody = [...ast.body]
         newBody.splice(angle.insertIndex, 0, angle.variableDeclarationAst)
         ast.body = newBody
+        if (insertIndex) {
+          // if editing need to offset that new var
+          insertIndex += 1
+        }
       }
 
       // This is the selection of the sketch that will be revolved

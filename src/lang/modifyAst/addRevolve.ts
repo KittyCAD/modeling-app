@@ -135,16 +135,15 @@ export function revolveSketch(
   const name =
     variableName ??
     findUniqueName(clonedAst, KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE)
-  const declaration = createVariableDeclaration(name, revolveCall)
-
-  let sketchIndexInBody: number | undefined
-  // If it's an edit flow (no change on selection yet)
-  if (insertIndex) {
-    sketchIndexInBody = insertIndex
+  const variableDeclaration = createVariableDeclaration(name, revolveCall)
+  let bodyInsertIndex: number | undefined
+  const isEditing = insertIndex !== undefined
+  if (isEditing) {
+    bodyInsertIndex = insertIndex
   } else {
     const lastSketchNodePath =
       orderedSketchNodePaths[orderedSketchNodePaths.length - 1]
-    sketchIndexInBody = Number(lastSketchNodePath[1][0])
+    let sketchIndexInBody = Number(lastSketchNodePath[1][0])
     if (typeof sketchIndexInBody !== 'number') {
       return new Error('expected sketchIndexInBody to be a number')
     }
@@ -153,17 +152,19 @@ export function revolveSketch(
     if (axisIndexIfAxis) {
       sketchIndexInBody = Math.max(sketchIndexInBody, axisIndexIfAxis)
     }
+
+    bodyInsertIndex = sketchIndexInBody + 1
   }
 
-  clonedAst.body.splice(sketchIndexInBody + 1, 0, declaration)
-
+  clonedAst.body.splice(bodyInsertIndex, 0, variableDeclaration)
+  const argIndex = 0
   const pathToRevolveArg: PathToNode = [
     ['body', ''],
-    [sketchIndexInBody + 1, 'index'],
+    [bodyInsertIndex, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpressionKw'],
-    [0, ARG_INDEX_FIELD],
+    [argIndex, ARG_INDEX_FIELD],
     ['arg', LABELED_ARG_FIELD],
   ]
 
