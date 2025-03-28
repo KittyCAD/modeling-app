@@ -229,7 +229,7 @@ jobs:
           timeout_minutes: 30
           max_attempts: 3
         env:
-          VITE_KC_SKIP_AUTH: true
+          token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
           snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
 
       - uses: actions/upload-artifact@v4
