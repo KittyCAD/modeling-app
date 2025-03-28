@@ -288,6 +288,14 @@ export const isErrorWhitelisted = (exception: Error) => {
       project: 'Google Chrome',
       foundInSpec: 'e2e/playwright/testing-constraints.spec.ts',
     },
+    {
+      name: 'Error',
+      message: 'The "path" argument must be of type string. Received undefined',
+      stack:
+        'Error: The "path" argument must be of type string. Received undefined',
+      project: 'Google Chrome',
+      foundInSpec: '', // many tests are impacted by this error
+    },
   ]
 
   const cleanString = (str: string) => str.replace(/[`"]/g, '')
