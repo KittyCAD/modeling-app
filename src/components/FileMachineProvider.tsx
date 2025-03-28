@@ -369,10 +369,16 @@ export const FileMachineProvider = ({
           const hasKclEntries =
             entries.filter((e: string) => e.endsWith('.kcl')).length !== 0
           if (!hasKclEntries) {
-            await window.electron.writeFile(
-              window.electron.path.join(project.path, DEFAULT_PROJECT_KCL_FILE),
-              ''
+            const codeToWrite = newKclFile(
+              undefined,
+              settings.modeling.defaultUnit.current
             )
+            if (err(codeToWrite)) return Promise.reject(codeToWrite)
+            const path = window.electron.path.join(
+              project.path,
+              DEFAULT_PROJECT_KCL_FILE
+            )
+            await window.electron.writeFile(path, codeToWrite)
             // Refresh the route selected above because it's possible we're on
             // the same path on the navigate, which doesn't cause anything to
             // refresh, leaving a stale execution state.
