@@ -102,27 +102,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/extrude' }],
       },
       {
-        id: 'revolve',
-        onClick: () =>
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Revolve', groupId: 'modeling' },
-          }),
-        icon: 'revolve',
-        status: 'available',
-        title: 'Revolve',
-        hotkey: 'R',
-        description:
-          'Create a 3D body by rotating a sketch region about an axis.',
-        links: [
-          { label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/revolve' },
-          {
-            label: 'KCL example',
-            url: 'https://zoo.dev/docs/kcl-samples/ball-bearing',
-          },
-        ],
-      },
-      {
         id: 'sweep',
         onClick: () =>
           commandBarActor.send({
@@ -159,6 +138,27 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           {
             label: 'KCL docs',
             url: 'https://zoo.dev/docs/kcl/loft',
+          },
+        ],
+      },
+      {
+        id: 'revolve',
+        onClick: () =>
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Revolve', groupId: 'modeling' },
+          }),
+        icon: 'revolve',
+        status: 'available',
+        title: 'Revolve',
+        hotkey: 'R',
+        description:
+          'Create a 3D body by rotating a sketch region about an axis.',
+        links: [
+          { label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/revolve' },
+          {
+            label: 'KCL example',
+            url: 'https://zoo.dev/docs/kcl-samples/ball-bearing',
           },
         ],
       },
