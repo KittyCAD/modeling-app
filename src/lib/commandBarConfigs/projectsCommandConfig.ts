@@ -74,8 +74,8 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
         required: true,
         options: (_, context) =>
           context?.projects.map((p) => ({
-            name: p.name!,
-            value: p.name!,
+            name: p.name,
+            value: p.name,
           })) || [],
       },
     },
@@ -91,8 +91,8 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
         required: true,
         options: (_, context) =>
           context?.projects.map((p) => ({
-            name: p.name!,
-            value: p.name!,
+            name: p.name,
+            value: p.name,
           })) || [],
       },
       newName: {
@@ -136,8 +136,8 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
         skip: true,
         options: (_, context) =>
           context?.projects.map((p) => ({
-            name: p.name!,
-            value: p.name!,
+            name: p.name,
+            value: p.name,
           })) || [],
       },
       name: {

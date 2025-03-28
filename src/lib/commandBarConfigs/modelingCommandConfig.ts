@@ -340,7 +340,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: (commandBarContext) => {
           return Object.values(
             commandBarContext.machineManager.machines || []
-          )[0] as components['schemas']['MachineInfoResponse']
+          )[0]
         },
       },
     },
