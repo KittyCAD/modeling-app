@@ -1217,7 +1217,7 @@ impl Node<CallExpressionKw> {
             ctx.clone(),
             exec_state.mod_local.pipe_value.clone().map(|v| Arg::new(v, callsite)),
         );
-        match ctx.stdlib.get_either(fn_name) {
+        match ctx.stdlib.read().await.get_either(fn_name) {
             FunctionKind::Core(func) => {
                 if func.deprecated() {
                     exec_state.warn(CompilationError::err(
@@ -1369,7 +1369,7 @@ impl Node<CallExpression> {
         }
         let fn_args = fn_args; // remove mutability
 
-        match ctx.stdlib.get_either(fn_name) {
+        match ctx.stdlib.read().await.get_either(fn_name) {
             FunctionKind::Core(func) => {
                 if func.deprecated() {
                     exec_state.warn(CompilationError::err(
@@ -2228,7 +2228,7 @@ mod test {
         parsing::ast::types::{DefaultParamVal, Identifier, Parameter},
     };
     use std::sync::Arc;
-    use tokio::task::JoinSet;
+    use tokio::{sync::RwLock, task::JoinSet};
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_assign_args_to_params() {
@@ -2347,7 +2347,7 @@ mod test {
                     crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
                 )),
                 fs: Arc::new(crate::fs::FileManager::new()),
-                stdlib: Arc::new(crate::std::StdLib::new()),
+                stdlib: Arc::new(RwLock::new(crate::std::StdLib::new())),
                 settings: Default::default(),
                 context_type: ContextType::Mock,
             };
@@ -2487,7 +2487,7 @@ import 'a.kcl'
                     .unwrap(),
             )),
             fs: Arc::new(crate::fs::FileManager::new()),
-            stdlib: Arc::new(crate::std::StdLib::new()),
+            stdlib: Arc::new(RwLock::new(crate::std::StdLib::new())),
             settings: Default::default(),
             context_type: ContextType::Mock,
         };
