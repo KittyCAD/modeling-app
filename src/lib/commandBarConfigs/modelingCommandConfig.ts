@@ -23,6 +23,8 @@ import {
 import { getVariableDeclaration } from 'lang/queryAst/getVariableDeclaration'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { getNodeFromPath } from 'lang/queryAst'
+import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
+import { DEV } from 'env'
 
 type OutputFormat = Models['OutputFormat3d_type']
 type OutputTypeKey = OutputFormat['type']
@@ -516,6 +518,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'Boolean Subtract': {
+    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
     description: 'Subtract one solid from another.',
     icon: 'booleanSubtract',
     needsReview: true,
@@ -542,6 +545,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'Boolean Union': {
+    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
     description: 'Union multiple solids into a single solid.',
     icon: 'booleanUnion',
     needsReview: true,
@@ -558,6 +562,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'Boolean Intersect': {
+    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
     description: 'Subtract one solid from another.',
     icon: 'booleanIntersect',
     needsReview: true,
@@ -1006,3 +1011,5 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
 }
+
+modelingMachineCommandConfig

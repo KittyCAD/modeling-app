@@ -1,6 +1,8 @@
 import { Node } from '@rust/kcl-lib/bindings/Node'
+import EditorManager from 'editor/manager'
 import CodeManager from 'lang/codeManager'
 import { KclManager } from 'lang/KclSingleton'
+import { updateModelingState } from 'lang/modelingWorkflows'
 import {
   createArrayExpression,
   createCallExpressionStdLibKw,
@@ -19,6 +21,7 @@ import {
   Program,
   VariableDeclaration,
 } from 'lang/wasm'
+import { EXECUTION_TYPE_REAL } from 'lib/constants'
 import { Selection, Selections } from 'lib/selections'
 import { err } from 'lib/trap'
 import { isArray } from 'lib/utils'
@@ -30,6 +33,7 @@ export async function applySubtractFromTargetOperatorSelections(
     kclManager: KclManager
     engineCommandManager: EngineCommandManager
     codeManager: CodeManager
+    editorManager: EditorManager
   }
 ): Promise<Error | void> {
   const ast = dependencies.kclManager.ast
@@ -56,14 +60,8 @@ export async function applySubtractFromTargetOperatorSelections(
     targets: [lastVarTarget?.variableDeclaration?.node],
     tools: [lastVarTool?.variableDeclaration.node],
   })
-  const updateAstResult = await dependencies.kclManager.updateAst(
-    modifiedAst,
-    false
-  )
-  await dependencies.codeManager.updateEditorWithAstAndWriteToFile(
-    updateAstResult.newAst
-  )
-  await dependencies.kclManager.updateAst(modifiedAst, true)
+
+  await updateModelingState(modifiedAst, EXECUTION_TYPE_REAL, dependencies)
 }
 
 export async function applyUnionFromTargetOperatorSelections(
@@ -72,6 +70,7 @@ export async function applyUnionFromTargetOperatorSelections(
     kclManager: KclManager
     engineCommandManager: EngineCommandManager
     codeManager: CodeManager
+    editorManager: EditorManager
   }
 ): Promise<Error | void> {
   const ast = dependencies.kclManager.ast
@@ -109,14 +108,7 @@ export async function applyUnionFromTargetOperatorSelections(
     ast,
     solids: lastVars,
   })
-  const updateAstResult = await dependencies.kclManager.updateAst(
-    modifiedAst,
-    false
-  )
-  await dependencies.codeManager.updateEditorWithAstAndWriteToFile(
-    updateAstResult.newAst
-  )
-  await dependencies.kclManager.updateAst(modifiedAst, true)
+  await updateModelingState(modifiedAst, EXECUTION_TYPE_REAL, dependencies)
 }
 
 export async function applyIntersectFromTargetOperatorSelections(
@@ -125,6 +117,7 @@ export async function applyIntersectFromTargetOperatorSelections(
     kclManager: KclManager
     engineCommandManager: EngineCommandManager
     codeManager: CodeManager
+    editorManager: EditorManager
   }
 ): Promise<Error | void> {
   const ast = dependencies.kclManager.ast
@@ -162,14 +155,7 @@ export async function applyIntersectFromTargetOperatorSelections(
     ast,
     solids: lastVars,
   })
-  const updateAstResult = await dependencies.kclManager.updateAst(
-    modifiedAst,
-    false
-  )
-  await dependencies.codeManager.updateEditorWithAstAndWriteToFile(
-    updateAstResult.newAst
-  )
-  await dependencies.kclManager.updateAst(modifiedAst, true)
+  await updateModelingState(modifiedAst, EXECUTION_TYPE_REAL, dependencies)
 }
 
 export function findAllChildrenAndOrderByPlaceInCode(
