@@ -1207,7 +1207,11 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     }
   )
 
-  test('Can select lines on the main axis', async ({ page, homePage }) => {
+  test('Can select lines on the main axis', async ({
+    page,
+    homePage,
+    toolbar,
+  }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
@@ -1230,8 +1234,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     const u = await getUtils(page)
     await u.waitForPageLoad()
 
-    // open sketch
-    await page.mouse.dblclick(width / 2, height / 2)
+    await toolbar.editSketch(0)
 
     await page.waitForTimeout(1000)
 
