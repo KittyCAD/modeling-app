@@ -229,10 +229,6 @@ jobs:
           timeout_minutes: 30
           max_attempts: 3
         env:
-          CI: true
-          NODE_ENV: development
-          VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-          VITE_KC_SKIP_AUTH: true
           token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
           snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
 
@@ -377,11 +373,7 @@ jobs:
           timeout_minutes: 45
           max_attempts: 15
         env:
-          CI: true
           FAIL_ON_CONSOLE_ERRORS: true
-          NODE_ENV: development
-          VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-          VITE_KC_SKIP_AUTH: true
           token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
 
       - uses: actions/upload-artifact@v4
