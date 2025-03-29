@@ -1016,6 +1016,8 @@ startSketchOn(XY)
         }
         _ => unreachable!(),
     }
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2318,6 +2320,8 @@ async fn kcl_test_kcl_lsp_on_change_update_memory() {
             }],
         })
         .await;
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 10)]
@@ -2390,6 +2394,8 @@ part001 = cube([0,0], 20)
 
     let units = server.executor_ctx().await.clone().unwrap().settings.units;
     assert_eq!(units, crate::settings::types::UnitLength::M);
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2506,6 +2512,8 @@ async fn kcl_test_kcl_lsp_diagnostics_on_execution_error() {
 
     // Get the diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2556,6 +2564,8 @@ async fn kcl_test_kcl_lsp_full_to_empty_file_updates_ast_and_memory() {
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
     assert_eq!(ast.ast, default_hashed);
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2642,6 +2652,8 @@ async fn kcl_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2717,6 +2729,8 @@ async fn kcl_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecute()
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2795,6 +2809,8 @@ async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_reexe
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2852,6 +2868,8 @@ async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecute_
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2975,6 +2993,8 @@ async fn kcl_test_kcl_lsp_cant_execute_set() {
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -3243,6 +3263,8 @@ part001 = startSketchOn(XY)
 
     // Check the diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 2);
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -3310,6 +3332,8 @@ NEW_LINT = 1"#
 
     // Check the diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 2);
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -3377,6 +3401,8 @@ NEW_LINT = 1"#
 
     // Check the diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -3460,6 +3486,8 @@ NEW_LINT = 1"#
 
     // Check the diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -3551,6 +3579,8 @@ part001 = startSketchOn(XY)
 
     // Check the diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 2);
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -3649,4 +3679,6 @@ async fn kcl_test_kcl_lsp_multi_file_error() {
     } else {
         panic!("Expected diagnostics");
     }
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }

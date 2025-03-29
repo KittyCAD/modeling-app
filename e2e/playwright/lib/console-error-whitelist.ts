@@ -259,14 +259,6 @@ export const isErrorWhitelisted = (exception: Error) => {
     },
     // TODO: fix this error in the code
     {
-      name: 'TypeError',
-      message: "Cannot read properties of undefined (reading 'length')",
-      stack: '',
-      project: 'Google Chrome',
-      foundInSpec: '', // many tests are impacted by this error
-    },
-    // TODO: fix this error in the code
-    {
       name: 'ReferenceError',
       message: '_testUtils is not defined',
       stack: '',
@@ -287,6 +279,14 @@ export const isErrorWhitelisted = (exception: Error) => {
       stack: '',
       project: 'Google Chrome',
       foundInSpec: 'e2e/playwright/testing-constraints.spec.ts',
+    },
+    {
+      name: 'Error',
+      message: 'The "path" argument must be of type string. Received undefined',
+      stack:
+        'Error: The "path" argument must be of type string. Received undefined',
+      project: 'Google Chrome',
+      foundInSpec: '', // many tests are impacted by this error
     },
   ]
 
