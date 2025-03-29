@@ -276,6 +276,7 @@ async fn fix_tags_and_references(
             *solid = new_solid;
         }
     }
+
     Ok(())
 }
 
@@ -338,7 +339,7 @@ async fn fix_sketch_tags_and_references(
     entity_id_map: &HashMap<uuid::Uuid, uuid::Uuid>,
 ) -> Result<()> {
     // Fix the path references in the sketch.
-    for path in &mut new_sketch.paths {
+    for path in new_sketch.paths.as_mut_slice() {
         let Some(new_path_id) = entity_id_map.get(&path.get_id()) else {
             anyhow::bail!("Failed to find new path id for old path id: {:?}", path.get_id());
         };
@@ -385,4 +386,96 @@ fn get_named_cap_tags(solid: &Solid) -> (Option<TagNode>, Option<TagNode>) {
     }
 
     (start_tag, end_tag)
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::exec::KclValue;
+    use pretty_assertions::assert_ne;
+
+    // Ensure the clone function returns a sketch with different ids for all the internal paths and
+    // the resulting sketch.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_clone_sketch() {
+        let code = r#"cube = startSketchOn(XY)
+    |> startProfileAt([0,0], %)
+    |> line(end = [0, 10])
+    |> line(end = [10, 0])
+    |> line(end = [0, -10])
+    |> close()
+
+clonedCube = clone(cube)
+"#;
+        let ctx = crate::test_server::new_context(crate::UnitLength::Mm, true, None)
+            .await
+            .unwrap();
+        let program = crate::Program::parse_no_errs(code).unwrap();
+
+        // Execute the program.
+        let result = ctx.run_with_caching(program.clone()).await.unwrap();
+        let cube = result.variables.get("cube").unwrap();
+        let cloned_cube = result.variables.get("clonedCube").unwrap();
+
+        assert_ne!(cube, cloned_cube);
+
+        let KclValue::Sketch { value: cube } = cube else {
+            panic!("Expected a sketch, got: {:?}", cube);
+        };
+        let KclValue::Sketch { value: cloned_cube } = cloned_cube else {
+            panic!("Expected a sketch, got: {:?}", cloned_cube);
+        };
+
+        assert_ne!(cube.id, cloned_cube.id);
+        assert_ne!(cube.original_id, cloned_cube.original_id);
+
+        for (path, cloned_path) in cube.paths.iter().zip(cloned_cube.paths.iter()) {
+            assert_ne!(path.get_id(), cloned_path.get_id());
+        }
+    }
+
+    // Ensure the clone function returns a solid with different ids for all the internal paths and
+    // references.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_clone_solid() {
+        let code = r#"cube = startSketchOn(XY)
+    |> startProfileAt([0,0], %)
+    |> line(end = [0, 10])
+    |> line(end = [10, 0])
+    |> line(end = [0, -10])
+    |> close()
+    |> extrude(length = 5)
+
+clonedCube = clone(cube)
+"#;
+        let ctx = crate::test_server::new_context(crate::UnitLength::Mm, true, None)
+            .await
+            .unwrap();
+        let program = crate::Program::parse_no_errs(code).unwrap();
+
+        // Execute the program.
+        let result = ctx.run_with_caching(program.clone()).await.unwrap();
+        let cube = result.variables.get("cube").unwrap();
+        let cloned_cube = result.variables.get("clonedCube").unwrap();
+
+        assert_ne!(cube, cloned_cube);
+
+        let KclValue::Solid { value: cube } = cube else {
+            panic!("Expected a solid, got: {:?}", cube);
+        };
+        let KclValue::Solid { value: cloned_cube } = cloned_cube else {
+            panic!("Expected a solid, got: {:?}", cloned_cube);
+        };
+
+        assert_ne!(cube.id, cloned_cube.id);
+        assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
+        assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
+
+        for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {
+            assert_ne!(path.get_id(), cloned_path.get_id());
+        }
+
+        for (value, cloned_value) in cube.value.iter().zip(cloned_cube.value.iter()) {
+            assert_ne!(value.get_id(), cloned_value.get_id());
+        }
+    }
 }
