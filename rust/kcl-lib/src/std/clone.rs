@@ -119,7 +119,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///   |> line(end = [0, 8])
 ///   |> line(end = [-8, 0])
 ///   |> close(tag = $sketchingFace002)
-///   |> extrude(exampleSketch002, length = 10)
+///   |> extrude(length = 10)
 /// ```
 ///
 /// ```no_run
