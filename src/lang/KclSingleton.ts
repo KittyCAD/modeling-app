@@ -313,13 +313,13 @@ export class KclManager {
         this.engineCommandManager.modelingSend({
           type: 'Artifact graph emptied',
         })
-      }, 200)
+      }, 200)(null)
     } else {
       deferExecution((a?: null) => {
         this.engineCommandManager.modelingSend({
           type: 'Artifact graph populated',
         })
-      }, 200)
+      }, 200)(null)
     }
   }
 
