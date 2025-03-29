@@ -559,7 +559,10 @@ impl ExecutorContext {
         let mut exec_state = ExecState::new(self);
         if use_prev_memory {
             match cache::read_old_memory().await {
-                Some(mem) => *exec_state.mut_stack() = mem,
+                Some(mem) => {
+                    *exec_state.mut_stack() = mem.0;
+                    exec_state.global.module_infos = mem.1;
+                }
                 None => self.prepare_mem(&mut exec_state).await?,
             }
         } else {
@@ -577,10 +580,11 @@ impl ExecutorContext {
         // memory, not to the exec_state which is not cached for mock execution.
 
         let mut mem = exec_state.stack().clone();
+        let module_infos = exec_state.global.module_infos.clone();
         let outcome = exec_state.to_mock_wasm_outcome(result.0).await;
 
         mem.squash_env(result.0);
-        cache::write_old_memory(mem).await;
+        cache::write_old_memory((mem, module_infos)).await;
 
         Ok(outcome)
     }
@@ -770,7 +774,7 @@ impl ExecutorContext {
         if !self.is_mock() {
             let mut mem = exec_state.stack().deep_clone();
             mem.restore_env(env_ref);
-            cache::write_old_memory(mem).await;
+            cache::write_old_memory((mem, exec_state.global.module_infos.clone())).await;
         }
         let session_data = self.engine.get_session_data().await;
         Ok((env_ref, session_data))
