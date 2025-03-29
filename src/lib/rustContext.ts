@@ -146,16 +146,13 @@ export default class RustContext {
     return this._defaultPlanes
   }
 
-  // Clear the scene and bust the cache.
+  // Clear/reset the scene and bust the cache.
   async clearSceneAndBustCache(
     settings: DeepPartial<Configuration>,
     path?: string
-  ) {
-    // Send through and empty ast to clear the scene.
-    // This will also bust the cache and reset the default planes.
-    // We do it like this so it works better with adding stuff later and the
-    // cache.
-    // It also works better with the id generator.
+  ): Promise<ExecState> {
+    const instance = await this._checkInstance()
+
     const ast: Node<Program> = {
       body: [],
       shebang: null,
@@ -172,7 +169,23 @@ export default class RustContext {
       commentStart: 0,
     }
 
-    await this.execute(ast, settings, path)
+    try {
+      const result = await instance.bustCacheAndResetScene(
+        JSON.stringify(settings),
+        path
+      )
+      /* Set the default planes, safe to call after execute. */
+      const outcome = execStateFromRust(result, ast)
+
+      this._defaultPlanes = outcome.defaultPlanes
+
+      // Return the result.
+      return outcome
+    } catch (e: any) {
+      const err = errFromErrWithOutputs(e)
+      this._defaultPlanes = err.defaultPlanes
+      return Promise.reject(err)
+    }
   }
 
   getDefaultPlaneId(name: DefaultPlaneStr): string | Error {
