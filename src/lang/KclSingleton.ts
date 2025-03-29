@@ -5,7 +5,7 @@ import {
   compilationErrorsToDiagnostics,
   kclErrorsToDiagnostics,
 } from './errors'
-import { uuidv4, isOverlap } from 'lib/utils'
+import { uuidv4, isOverlap, deferExecution } from 'lib/utils'
 import { EngineCommandManager } from './std/engineConnection'
 import { err, reportRejection } from 'lib/trap'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
@@ -307,11 +307,19 @@ export class KclManager {
     this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
     if (this.artifactGraph.size) {
       // TODO: we wanna remove this logic from xstate, it is racey
-      this.engineCommandManager.modelingSend({ type: 'Artifact graph emptied' })
+      // This defer is bullshit but playwright wants it
+      // It was like this in engineConnection.ts already
+      deferExecution((a?: null) => {
+        this.engineCommandManager.modelingSend({
+          type: 'Artifact graph emptied',
+        })
+      }, 200)
     } else {
-      this.engineCommandManager.modelingSend({
-        type: 'Artifact graph populated',
-      })
+      deferExecution((a?: null) => {
+        this.engineCommandManager.modelingSend({
+          type: 'Artifact graph populated',
+        })
+      }, 200)
     }
   }
 
