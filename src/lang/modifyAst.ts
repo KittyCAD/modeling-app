@@ -1087,6 +1087,22 @@ export function createLocalName(name: string): Node<Name> {
   }
 }
 
+export function createName(path: [string], name: string): Node<Name> {
+  return {
+    type: 'Name',
+    start: 0,
+    end: 0,
+    moduleId: 0,
+    outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
+
+    abs_path: false,
+    path: path.map(createIdentifier),
+    name: createIdentifier(name),
+  }
+}
+
 export function createPipeSubstitution(): Node<PipeSubstitution> {
   return {
     type: 'PipeSubstitution',

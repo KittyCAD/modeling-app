@@ -30,6 +30,8 @@ pub struct ExecState {
     pub(super) exec_context: Option<super::ExecutorContext>,
 }
 
+pub type ModuleInfoMap = IndexMap<ModuleId, ModuleInfo>;
+
 #[derive(Debug, Clone)]
 pub(super) struct GlobalState {
     /// Map from source file absolute path to module ID.
@@ -37,7 +39,7 @@ pub(super) struct GlobalState {
     /// Map from module ID to source file.
     pub id_to_source: IndexMap<ModuleId, ModuleSource>,
     /// Map from module ID to module info.
-    pub module_infos: IndexMap<ModuleId, ModuleInfo>,
+    pub module_infos: ModuleInfoMap,
     /// Output map of UUIDs to artifacts.
     pub artifacts: IndexMap<ArtifactId, Artifact>,
     /// Output commands to allow building the artifact graph by the caller.

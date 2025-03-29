@@ -16,6 +16,7 @@ import {
 import {
   createBinaryExpressionWithUnary,
   createLocalName,
+  createName,
   createVariableDeclaration,
 } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
@@ -167,14 +168,16 @@ export async function applyConstraintAngleLength({
     isReferencingXAxis && angleOrLength === 'setAngle'
 
   let forceVal = valueUsedInTransform || 0
-  let calcIdentifier = createLocalName('ZERO')
+  let calcIdentifier = createName(['turns'], 'ZERO')
   if (isReferencingYAxisAngle) {
-    calcIdentifier = createLocalName(
+    calcIdentifier = createName(
+      ['turns'],
       forceVal < 0 ? 'THREE_QUARTER_TURN' : 'QUARTER_TURN'
     )
     forceVal = normaliseAngle(forceVal + (forceVal < 0 ? 90 : -90))
   } else if (isReferencingXAxisAngle) {
-    calcIdentifier = createLocalName(
+    calcIdentifier = createName(
+      ['turns'],
       Math.abs(forceVal) > 90 ? 'HALF_TURN' : 'ZERO'
     )
     forceVal =

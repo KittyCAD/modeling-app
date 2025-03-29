@@ -6,7 +6,7 @@ use itertools::{EitherOrBoth, Itertools};
 use tokio::sync::RwLock;
 
 use crate::{
-    execution::{annotations, memory::Stack, EnvironmentRef, ExecState, ExecutorSettings},
+    execution::{annotations, memory::Stack, state::ModuleInfoMap, EnvironmentRef, ExecState, ExecutorSettings},
     parsing::ast::types::{Annotation, Node, Program},
     walk::Node as WalkNode,
 };
@@ -15,7 +15,7 @@ lazy_static::lazy_static! {
     /// A static mutable lock for updating the last successful execution state for the cache.
     static ref OLD_AST: Arc<RwLock<Option<OldAstState>>> = Default::default();
     // The last successful run's memory. Not cleared after an unssuccessful run.
-    static ref PREV_MEMORY: Arc<RwLock<Option<Stack>>> = Default::default();
+    static ref PREV_MEMORY: Arc<RwLock<Option<(Stack, ModuleInfoMap)>>> = Default::default();
 }
 
 /// Read the old ast memory from the lock.
@@ -29,12 +29,12 @@ pub(super) async fn write_old_ast(old_state: OldAstState) {
     *old_ast = Some(old_state);
 }
 
-pub(crate) async fn read_old_memory() -> Option<Stack> {
+pub(crate) async fn read_old_memory() -> Option<(Stack, ModuleInfoMap)> {
     let old_mem = PREV_MEMORY.read().await;
     old_mem.clone()
 }
 
-pub(super) async fn write_old_memory(mem: Stack) {
+pub(super) async fn write_old_memory(mem: (Stack, ModuleInfoMap)) {
     let mut old_mem = PREV_MEMORY.write().await;
     *old_mem = Some(mem);
 }

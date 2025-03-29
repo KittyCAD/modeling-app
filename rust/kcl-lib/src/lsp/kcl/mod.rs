@@ -1635,7 +1635,7 @@ fn position_to_char_index(position: Position, code: &str) -> usize {
 
 async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T> {
     let mem = cache::read_old_memory().await?;
-    let value = mem.get(name, SourceRange::default()).ok()?;
+    let value = mem.0.get(name, SourceRange::default()).ok()?;
 
     Some(f(value))
 }

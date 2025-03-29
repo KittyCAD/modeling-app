@@ -111,6 +111,6 @@ description: Variables in memory after executing import_whole.kcl
   },
   "foo": {
     "type": "Module",
-    "value": 4
+    "value": 5
   }
 }

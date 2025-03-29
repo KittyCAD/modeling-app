@@ -14,7 +14,7 @@ radius = 10
 depth = 30
 distanceToInsideEdge = slateWidthHalf + templateThickness + templateGap
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([ZERO, depth + templateGap], %)
+  |> startProfileAt([0, depth + templateGap], %)
   |> xLine(length = slateWidthHalf - radius, tag = $seg01)
   |> arc({
        angleEnd = 0,
@@ -28,7 +28,7 @@ sketch001 = startSketchOn(XZ)
   |> yLine(length = templateThickness * 2, tag = $seg08)
   |> xLine(endAbsolute = segEndX(seg02) + 0, tag = $seg05)
   |> yLine(endAbsolute = segEndY(seg01) + templateThickness, tag = $seg10)
-  |> xLine(endAbsolute = ZERO, tag = $seg04)
+  |> xLine(endAbsolute = 0, tag = $seg04)
   |> xLine(length = -segLen(seg04))
   |> yLine(length = -segLen(seg10))
   |> xLine(length = -segLen(seg05))

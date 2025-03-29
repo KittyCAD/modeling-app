@@ -1,0 +1,6 @@
+@no_std
+
+export ZERO = 0
+export QUARTER_TURN = 90deg
+export HALF_TURN = 180deg
+export THREE_QUARTER_TURN = 270deg

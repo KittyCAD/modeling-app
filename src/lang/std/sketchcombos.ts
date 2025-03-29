@@ -35,6 +35,7 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
+  createName,
   createObjectExpression,
   createPipeSubstitution,
   createUnaryExpression,
@@ -612,7 +613,7 @@ const setAngledIntersectLineForLines: CreateStdLibSketchCallExpr = ({
     270: 'THREE_QUARTER_TURN',
   }
   const angleVal = [0, 90, 180, 270].includes(angle)
-    ? createLocalName(varNamMap[angle])
+    ? createName(['turns'], varNamMap[angle])
     : createLiteral(angle)
   return intersectCallWrapper({
     fnName: 'angledLineThatIntersects',
@@ -665,7 +666,7 @@ const setAngleBetweenCreateNode =
       firstHalfValue = createBinaryExpression([
         firstHalfValue,
         '+',
-        createLocalName('HALF_TURN'),
+        createName(['turns'], 'HALF_TURN'),
       ])
       valueUsedInTransform = normaliseAngle(valueUsedInTransform - 180)
     }
