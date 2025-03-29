@@ -306,42 +306,13 @@ export class KclManager {
     this.artifactGraph = execStateArtifactGraph
     this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
     if (this.artifactGraph.size) {
-      // Hide the planes.
-      await Promise.all([this.hidePlanes(), this.defaultSelectionFilter()])
-    } else if (!this.hasErrors()) {
-      // Only show the planes if there are no errors.
-      // Show the planes and reset.
-      await this.showAndResetPlanes()
+        // TODO: we wanna remove this logic from xstate, it is racey
+      this.engineCommandManager.modelingSend({ type: 'Artifact graph emptied' })
+    } else {
+      this.engineCommandManager.modelingSend({
+        type: 'Artifact graph populated',
+      })
     }
-  }
-
-  private async showAndResetPlanes(): Promise<void> {
-    await Promise.all([
-      this.showPlanes(),
-      this.resetCameraPosition(),
-      this.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'set_selection_filter',
-          filter: ['curve'],
-        },
-      }),
-    ])
-  }
-
-  async resetCameraPosition(): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_look_at',
-        center: { x: 0, y: 0, z: 0 },
-        vantage: { x: 0, y: -1250, z: 580 },
-        up: { x: 0, y: 0, z: 1 },
-      },
-    })
   }
 
   // Some "objects" have the same source range, such as sketch_mode_start and start_path.
