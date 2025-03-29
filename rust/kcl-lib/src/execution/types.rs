@@ -56,6 +56,20 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::ImportedGeometry)
     }
 
+    /// `[number; 2]`
+    pub fn point2d() -> Self {
+        RuntimeType::Array(Box::new(RuntimeType::number_any()), ArrayLen::Known(2))
+    }
+
+    /// `[number; 3]`
+    pub fn point3d() -> Self {
+        RuntimeType::Array(Box::new(RuntimeType::number_any()), ArrayLen::Known(3))
+    }
+
+    pub fn number_any() -> Self {
+        RuntimeType::Primitive(PrimitiveType::Number(NumericType::Any))
+    }
+
     pub fn from_parsed(
         value: Type,
         exec_state: &mut ExecState,
@@ -93,21 +107,27 @@ impl RuntimeType {
             AstPrimitiveType::Number(suffix) => RuntimeType::Primitive(PrimitiveType::Number(
                 NumericType::from_parsed(suffix, &exec_state.mod_local.settings),
             )),
-            AstPrimitiveType::Named(name) => {
-                let ty_val = exec_state
-                    .stack()
-                    .get(&format!("{}{}", memory::TYPE_PREFIX, name.name), source_range)
-                    .map_err(|_| CompilationError::err(source_range, format!("Unknown type: {}", name.name)))?;
-
-                match ty_val {
-                    KclValue::Type { value, .. } => match value {
-                        TypeDef::RustRepr(ty, _) => RuntimeType::Primitive(ty.clone()),
-                        TypeDef::Alias(ty) => ty.clone(),
-                    },
-                    _ => unreachable!(),
-                }
-            }
+            AstPrimitiveType::Named(name) => Self::from_alias(&name.name, exec_state, source_range)?,
             AstPrimitiveType::Tag => RuntimeType::Primitive(PrimitiveType::Tag),
+        })
+    }
+
+    pub fn from_alias(
+        alias: &str,
+        exec_state: &mut ExecState,
+        source_range: SourceRange,
+    ) -> Result<Self, CompilationError> {
+        let ty_val = exec_state
+            .stack()
+            .get(&format!("{}{}", memory::TYPE_PREFIX, alias), source_range)
+            .map_err(|_| CompilationError::err(source_range, format!("Unknown type: {}", alias)))?;
+
+        Ok(match ty_val {
+            KclValue::Type { value, .. } => match value {
+                TypeDef::RustRepr(ty, _) => RuntimeType::Primitive(ty.clone()),
+                TypeDef::Alias(ty) => ty.clone(),
+            },
+            _ => unreachable!(),
         })
     }
 
@@ -143,6 +163,35 @@ impl RuntimeType {
             (Object(t1), Object(t2)) => t2
                 .iter()
                 .all(|(f, t)| t1.iter().any(|(ff, tt)| f == ff && tt.subtype(t))),
+            // Equality between Axis types and their object representation.
+            (Object(t1), Primitive(PrimitiveType::Axis2d)) => {
+                t1.iter()
+                    .any(|(n, t)| n == "origin" && t.subtype(&RuntimeType::point2d()))
+                    && t1
+                        .iter()
+                        .any(|(n, t)| n == "direction" && t.subtype(&RuntimeType::point2d()))
+            }
+            (Object(t1), Primitive(PrimitiveType::Axis3d)) => {
+                t1.iter()
+                    .any(|(n, t)| n == "origin" && t.subtype(&RuntimeType::point3d()))
+                    && t1
+                        .iter()
+                        .any(|(n, t)| n == "direction" && t.subtype(&RuntimeType::point3d()))
+            }
+            (Primitive(PrimitiveType::Axis2d), Object(t2)) => {
+                t2.iter()
+                    .any(|(n, t)| n == "origin" && t.subtype(&RuntimeType::point2d()))
+                    && t2
+                        .iter()
+                        .any(|(n, t)| n == "direction" && t.subtype(&RuntimeType::point2d()))
+            }
+            (Primitive(PrimitiveType::Axis3d), Object(t2)) => {
+                t2.iter()
+                    .any(|(n, t)| n == "origin" && t.subtype(&RuntimeType::point3d()))
+                    && t2
+                        .iter()
+                        .any(|(n, t)| n == "direction" && t.subtype(&RuntimeType::point3d()))
+            }
             _ => false,
         }
     }
@@ -213,11 +262,11 @@ impl ArrayLen {
     }
 
     /// True if the length constraint is satisfied by the supplied length.
-    fn satisfied(self, len: usize) -> bool {
+    fn satisfied(self, len: usize, allow_shrink: bool) -> Option<usize> {
         match self {
-            ArrayLen::None => true,
-            ArrayLen::NonEmpty => len > 0,
-            ArrayLen::Known(s) => len == s,
+            ArrayLen::None => Some(len),
+            ArrayLen::NonEmpty => (len > 0).then_some(len),
+            ArrayLen::Known(s) => (if allow_shrink { len >= s } else { len == s }).then_some(s),
         }
     }
 }
@@ -233,6 +282,9 @@ pub enum PrimitiveType {
     Plane,
     Helix,
     Face,
+    Edge,
+    Axis2d,
+    Axis3d,
     ImportedGeometry,
 }
 
@@ -248,6 +300,9 @@ impl PrimitiveType {
             PrimitiveType::Plane => "Planes".to_owned(),
             PrimitiveType::Helix => "Helices".to_owned(),
             PrimitiveType::Face => "Faces".to_owned(),
+            PrimitiveType::Edge => "Edges".to_owned(),
+            PrimitiveType::Axis2d => "2d axes".to_owned(),
+            PrimitiveType::Axis3d => "3d axes".to_owned(),
             PrimitiveType::ImportedGeometry => "imported geometries".to_owned(),
             PrimitiveType::Tag => "tags".to_owned(),
         }
@@ -273,6 +328,9 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Solid => write!(f, "Solid"),
             PrimitiveType::Plane => write!(f, "Plane"),
             PrimitiveType::Face => write!(f, "Face"),
+            PrimitiveType::Edge => write!(f, "Edge"),
+            PrimitiveType::Axis2d => write!(f, "Axis2d"),
+            PrimitiveType::Axis3d => write!(f, "Axis3d"),
             PrimitiveType::Helix => write!(f, "Helix"),
             PrimitiveType::ImportedGeometry => write!(f, "imported geometry"),
         }
@@ -296,6 +354,10 @@ pub enum NumericType {
 impl NumericType {
     pub fn count() -> Self {
         NumericType::Known(UnitType::Count)
+    }
+
+    pub fn mm() -> Self {
+        NumericType::Known(UnitType::Length(UnitLen::Mm))
     }
 
     /// Combine two types when we expect them to be equal.
@@ -541,7 +603,7 @@ impl KclValue {
     pub fn coerce(&self, ty: &RuntimeType, exec_state: &mut ExecState) -> Option<KclValue> {
         match ty {
             RuntimeType::Primitive(ty) => self.coerce_to_primitive_type(ty, exec_state),
-            RuntimeType::Array(ty, len) => self.coerce_to_array_type(ty, *len, exec_state),
+            RuntimeType::Array(ty, len) => self.coerce_to_array_type(ty, *len, exec_state, false),
             RuntimeType::Tuple(tys) => self.coerce_to_tuple_type(tys, exec_state),
             RuntimeType::Union(tys) => self.coerce_to_union_type(tys, exec_state),
             RuntimeType::Object(tys) => self.coerce_to_object_type(tys, exec_state),
@@ -609,6 +671,55 @@ impl KclValue {
                 KclValue::Helix { .. } => Some(value.clone()),
                 _ => None,
             },
+            PrimitiveType::Edge => match value {
+                KclValue::Uuid { .. } => Some(value.clone()),
+                KclValue::TagIdentifier { .. } => Some(value.clone()),
+                _ => None,
+            },
+            PrimitiveType::Axis2d => match value {
+                KclValue::Object { value: values, meta } => {
+                    if values.get("origin")?.has_type(&RuntimeType::point2d())
+                        && values.get("direction")?.has_type(&RuntimeType::point2d())
+                    {
+                        return Some(value.clone());
+                    }
+
+                    let origin = values.get("origin").and_then(|p| {
+                        p.coerce_to_array_type(&RuntimeType::number_any(), ArrayLen::Known(2), exec_state, true)
+                    })?;
+                    let direction = values.get("direction").and_then(|p| {
+                        p.coerce_to_array_type(&RuntimeType::number_any(), ArrayLen::Known(2), exec_state, true)
+                    })?;
+
+                    Some(KclValue::Object {
+                        value: [("origin".to_owned(), origin), ("direction".to_owned(), direction)].into(),
+                        meta: meta.clone(),
+                    })
+                }
+                _ => None,
+            },
+            PrimitiveType::Axis3d => match value {
+                KclValue::Object { value: values, meta } => {
+                    if values.get("origin")?.has_type(&RuntimeType::point3d())
+                        && values.get("direction")?.has_type(&RuntimeType::point3d())
+                    {
+                        return Some(value.clone());
+                    }
+
+                    let origin = values.get("origin").and_then(|p| {
+                        p.coerce_to_array_type(&RuntimeType::number_any(), ArrayLen::Known(3), exec_state, true)
+                    })?;
+                    let direction = values.get("direction").and_then(|p| {
+                        p.coerce_to_array_type(&RuntimeType::number_any(), ArrayLen::Known(3), exec_state, true)
+                    })?;
+
+                    Some(KclValue::Object {
+                        value: [("origin".to_owned(), origin), ("direction".to_owned(), direction)].into(),
+                        meta: meta.clone(),
+                    })
+                }
+                _ => None,
+            },
             PrimitiveType::ImportedGeometry => match value {
                 KclValue::ImportedGeometry { .. } => Some(value.clone()),
                 _ => None,
@@ -621,60 +732,35 @@ impl KclValue {
         }
     }
 
-    fn coerce_to_array_type(&self, ty: &RuntimeType, len: ArrayLen, exec_state: &mut ExecState) -> Option<KclValue> {
+    fn coerce_to_array_type(
+        &self,
+        ty: &RuntimeType,
+        len: ArrayLen,
+        exec_state: &mut ExecState,
+        allow_shrink: bool,
+    ) -> Option<KclValue> {
         match self {
-            KclValue::HomArray { value, ty: aty } if aty == ty => {
-                let value = match len {
-                    ArrayLen::None => value.clone(),
-                    ArrayLen::NonEmpty => {
-                        if value.is_empty() {
-                            return None;
-                        }
-
-                        value.clone()
-                    }
-                    ArrayLen::Known(n) => {
-                        if n != value.len() {
-                            return None;
-                        }
-
-                        value[..n].to_vec()
-                    }
-                };
-
-                Some(KclValue::HomArray { value, ty: ty.clone() })
+            KclValue::HomArray { value, ty: aty } if aty.subtype(ty) => {
+                len.satisfied(value.len(), allow_shrink).map(|len| KclValue::HomArray {
+                    value: value[..len].to_vec(),
+                    ty: aty.clone(),
+                })
             }
-            value if len.satisfied(1) && value.has_type(ty) => Some(KclValue::HomArray {
+            value if len.satisfied(1, false).is_some() && value.has_type(ty) => Some(KclValue::HomArray {
                 value: vec![value.clone()],
                 ty: ty.clone(),
             }),
             KclValue::MixedArray { value, .. } => {
-                let value = match len {
-                    ArrayLen::None => value.clone(),
-                    ArrayLen::NonEmpty => {
-                        if value.is_empty() {
-                            return None;
-                        }
+                let len = len.satisfied(value.len(), allow_shrink)?;
 
-                        value.clone()
-                    }
-                    ArrayLen::Known(n) => {
-                        if n != value.len() {
-                            return None;
-                        }
-
-                        value[..n].to_vec()
-                    }
-                };
-
-                let value = value
+                let value = value[..len]
                     .iter()
                     .map(|v| v.coerce(ty, exec_state))
                     .collect::<Option<Vec<_>>>()?;
 
                 Some(KclValue::HomArray { value, ty: ty.clone() })
             }
-            KclValue::KclNone { .. } if len.satisfied(0) => Some(KclValue::HomArray {
+            KclValue::KclNone { .. } if len.satisfied(0, false).is_some() => Some(KclValue::HomArray {
                 value: Vec::new(),
                 ty: ty.clone(),
             }),
@@ -1250,5 +1336,120 @@ mod test {
         ]);
         assert!(count.coerce(&tyb, &mut exec_state).is_none());
         assert!(count.coerce(&tyb2, &mut exec_state).is_none());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn coerce_axes() {
+        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock().await);
+
+        // Subtyping
+        assert!(RuntimeType::Primitive(PrimitiveType::Axis2d).subtype(&RuntimeType::Primitive(PrimitiveType::Axis2d)));
+        assert!(RuntimeType::Primitive(PrimitiveType::Axis3d).subtype(&RuntimeType::Primitive(PrimitiveType::Axis3d)));
+        assert!(!RuntimeType::Primitive(PrimitiveType::Axis3d).subtype(&RuntimeType::Primitive(PrimitiveType::Axis2d)));
+        assert!(!RuntimeType::Primitive(PrimitiveType::Axis2d).subtype(&RuntimeType::Primitive(PrimitiveType::Axis3d)));
+
+        // Coercion
+        let a2d = KclValue::Object {
+            value: [
+                (
+                    "origin".to_owned(),
+                    KclValue::HomArray {
+                        value: vec![
+                            KclValue::Number {
+                                value: 0.0,
+                                ty: NumericType::mm(),
+                                meta: Vec::new(),
+                            },
+                            KclValue::Number {
+                                value: 0.0,
+                                ty: NumericType::mm(),
+                                meta: Vec::new(),
+                            },
+                        ],
+                        ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::mm())),
+                    },
+                ),
+                (
+                    "direction".to_owned(),
+                    KclValue::HomArray {
+                        value: vec![
+                            KclValue::Number {
+                                value: 1.0,
+                                ty: NumericType::mm(),
+                                meta: Vec::new(),
+                            },
+                            KclValue::Number {
+                                value: 0.0,
+                                ty: NumericType::mm(),
+                                meta: Vec::new(),
+                            },
+                        ],
+                        ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::mm())),
+                    },
+                ),
+            ]
+            .into(),
+            meta: Vec::new(),
+        };
+        let a3d = KclValue::Object {
+            value: [
+                (
+                    "origin".to_owned(),
+                    KclValue::HomArray {
+                        value: vec![
+                            KclValue::Number {
+                                value: 0.0,
+                                ty: NumericType::mm(),
+                                meta: Vec::new(),
+                            },
+                            KclValue::Number {
+                                value: 0.0,
+                                ty: NumericType::mm(),
+                                meta: Vec::new(),
+                            },
+                            KclValue::Number {
+                                value: 0.0,
+                                ty: NumericType::mm(),
+                                meta: Vec::new(),
+                            },
+                        ],
+                        ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::mm())),
+                    },
+                ),
+                (
+                    "direction".to_owned(),
+                    KclValue::HomArray {
+                        value: vec![
+                            KclValue::Number {
+                                value: 1.0,
+                                ty: NumericType::mm(),
+                                meta: Vec::new(),
+                            },
+                            KclValue::Number {
+                                value: 0.0,
+                                ty: NumericType::mm(),
+                                meta: Vec::new(),
+                            },
+                            KclValue::Number {
+                                value: 1.0,
+                                ty: NumericType::mm(),
+                                meta: Vec::new(),
+                            },
+                        ],
+                        ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::mm())),
+                    },
+                ),
+            ]
+            .into(),
+            meta: Vec::new(),
+        };
+
+        let ty2d = RuntimeType::Primitive(PrimitiveType::Axis2d);
+        let ty3d = RuntimeType::Primitive(PrimitiveType::Axis3d);
+
+        assert_coerce_results(&a2d, &ty2d, &a2d, &mut exec_state);
+        assert_coerce_results(&a3d, &ty3d, &a3d, &mut exec_state);
+        assert_coerce_results(&a3d, &ty2d, &a2d, &mut exec_state);
+        assert!(a2d.coerce(&ty3d, &mut exec_state).is_none());
     }
 }
