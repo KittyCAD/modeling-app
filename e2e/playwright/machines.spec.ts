@@ -11,7 +11,7 @@ test(
       const bracketDir = join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        executorInputPath('cylinder-inches.kcl'),
         join(bracketDir, 'main.kcl')
       )
     })
@@ -51,7 +51,7 @@ test(
       const bracketDir = join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        executorInputPath('cylinder-inches.kcl'),
         join(bracketDir, 'main.kcl')
       )
     })

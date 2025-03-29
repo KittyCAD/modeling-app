@@ -80,7 +80,7 @@ impl ExecState {
     pub fn new(exec_context: &super::ExecutorContext) -> Self {
         ExecState {
             global: GlobalState::new(&exec_context.settings),
-            mod_local: ModuleState::new(&exec_context.settings, None, ProgramMemory::new(), Default::default()),
+            mod_local: ModuleState::new(None, ProgramMemory::new(), Default::default()),
             exec_context: Some(exec_context.clone()),
         }
     }
@@ -90,7 +90,7 @@ impl ExecState {
 
         *self = ExecState {
             global,
-            mod_local: ModuleState::new(&exec_context.settings, None, ProgramMemory::new(), Default::default()),
+            mod_local: ModuleState::new(None, ProgramMemory::new(), Default::default()),
             exec_context: Some(exec_context.clone()),
         };
     }
@@ -287,12 +287,7 @@ impl GlobalState {
 }
 
 impl ModuleState {
-    pub(super) fn new(
-        exec_settings: &ExecutorSettings,
-        std_path: Option<String>,
-        memory: Arc<ProgramMemory>,
-        module_id: Option<ModuleId>,
-    ) -> Self {
+    pub(super) fn new(std_path: Option<String>, memory: Arc<ProgramMemory>, module_id: Option<ModuleId>) -> Self {
         ModuleState {
             id_generator: IdGenerator::new(module_id),
             stack: memory.new_stack(),
@@ -301,14 +296,14 @@ impl ModuleState {
             explicit_length_units: false,
             std_path,
             settings: MetaSettings {
-                default_length_units: exec_settings.units.into(),
+                default_length_units: Default::default(),
                 default_angle_units: Default::default(),
             },
         }
     }
 }
 
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct MetaSettings {

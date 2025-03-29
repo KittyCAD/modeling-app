@@ -22,6 +22,7 @@ import {
   base64_decode as Base64Decode,
   kcl_settings as KclSettings,
   change_kcl_settings as ChangeKclSettings,
+  is_kcl_empty_or_only_settings as IsKclEmptyOrOnlySettings,
   get_kcl_version as GetKclVersion,
   serialize_configuration as SerializeConfiguration,
   serialize_project_configuration as SerializeProjectConfiguration,
@@ -92,6 +93,11 @@ export const kcl_settings: typeof KclSettings = (...args) => {
 }
 export const change_kcl_settings: typeof ChangeKclSettings = (...args) => {
   return getModule().change_kcl_settings(...args)
+}
+export const is_kcl_empty_or_only_settings: typeof IsKclEmptyOrOnlySettings = (
+  ...args
+) => {
+  return getModule().is_kcl_empty_or_only_settings(...args)
 }
 export const get_kcl_version: typeof GetKclVersion = () => {
   return getModule().get_kcl_version()

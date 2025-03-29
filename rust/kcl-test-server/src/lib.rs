@@ -15,7 +15,7 @@ use hyper::{
     service::{make_service_fn, service_fn},
     Body, Error, Response, Server,
 };
-use kcl_lib::{test_server::RequestBody, ExecState, ExecutorContext, Program, UnitLength};
+use kcl_lib::{test_server::RequestBody, ExecState, ExecutorContext, Program};
 use tokio::{
     sync::{mpsc, oneshot},
     task::JoinHandle,
@@ -69,9 +69,7 @@ fn start_worker(i: u8, engine_addr: Option<String>) -> mpsc::Sender<WorkerReq> {
     // Make a work queue for this worker.
     let (tx, mut rx) = mpsc::channel(1);
     tokio::task::spawn(async move {
-        let state = ExecutorContext::new_for_unit_test(UnitLength::Mm, engine_addr)
-            .await
-            .unwrap();
+        let state = ExecutorContext::new_for_unit_test(engine_addr).await.unwrap();
         println!("Worker {i} ready");
         while let Some(req) = rx.recv().await {
             let req: WorkerReq = req;
