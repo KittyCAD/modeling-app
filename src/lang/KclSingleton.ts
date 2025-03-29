@@ -5,10 +5,12 @@ import {
   compilationErrorsToDiagnostics,
   kclErrorsToDiagnostics,
 } from './errors'
-import { uuidv4 } from 'lib/utils'
+import { uuidv4, isOverlap } from 'lib/utils'
 import { EngineCommandManager } from './std/engineConnection'
 import { err, reportRejection } from 'lib/trap'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
+import { buildArtifactIndex } from 'lib/artifactIndex'
+import { ArtifactIndex } from 'lib/artifactIndex'
 
 import {
   emptyExecState,
@@ -24,6 +26,7 @@ import {
   SourceRange,
   topLevelRange,
   VariableMap,
+  ArtifactGraph,
 } from 'lang/wasm'
 import { getNodeFromPath, getSettingsAnnotation } from './queryAst'
 import {
@@ -53,6 +56,14 @@ interface ExecuteArgs {
 }
 
 export class KclManager {
+  /**
+   * The artifactGraph is a client-side representation of the commands that have been sent
+   * see: src/lang/std/artifactGraph-README.md for a full explanation.
+   */
+  artifactGraph: ArtifactGraph = new Map()
+  artifactIndex: ArtifactIndex = []
+  defaultPlanesShown: boolean = false
+
   private _ast: Node<Program> = {
     body: [],
     shebang: null,
@@ -289,6 +300,68 @@ export class KclManager {
     }
   }
 
+  private async updateArtifactGraph(
+    execStateArtifactGraph: ExecState['artifactGraph']
+  ) {
+    this.artifactGraph = execStateArtifactGraph
+    this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
+    if (this.artifactGraph.size) {
+      // Hide the planes.
+      await Promise.all([this.hidePlanes(), this.defaultSelectionFilter()])
+    } else if (!this.hasErrors()) {
+      // Only show the planes if there are no errors.
+      // Show the planes and reset.
+      await this.showAndResetPlanes()
+    }
+  }
+
+  private async showAndResetPlanes(): Promise<void> {
+    await Promise.all([
+      this.showPlanes(),
+      this.resetCameraPosition(),
+      this.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'set_selection_filter',
+          filter: ['curve'],
+        },
+      }),
+    ])
+  }
+
+  async resetCameraPosition(): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        center: { x: 0, y: 0, z: 0 },
+        vantage: { x: 0, y: -1250, z: 580 },
+        up: { x: 0, y: 0, z: 1 },
+      },
+    })
+  }
+
+  // Some "objects" have the same source range, such as sketch_mode_start and start_path.
+  // So when passing a range, we need to also specify the command type
+  private mapRangeToObjectId(
+    range: SourceRange,
+    commandTypeToTarget: string
+  ): string | undefined {
+    for (const [artifactId, artifact] of this.artifactGraph) {
+      if (
+        'codeRef' in artifact &&
+        artifact.codeRef &&
+        isOverlap(range, artifact.codeRef.range)
+      ) {
+        if (commandTypeToTarget === artifact.type) return artifactId
+      }
+    }
+    return undefined
+  }
+
   async safeParse(code: string): Promise<Node<Program> | null> {
     const result = parse(code)
     this.diagnostics = []
@@ -330,6 +403,7 @@ export class KclManager {
       }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
+      console.error(e)
       this.wasmInitFailed = true
     }
   }
@@ -370,12 +444,12 @@ export class KclManager {
     // Do not send send scene commands if the program was interrupted, go to clean up
     if (!isInterrupted) {
       this.addDiagnostics(await lintAst({ ast: ast }))
-      setSelectionFilterToDefault(this.engineCommandManager)
+      await setSelectionFilterToDefault(this.engineCommandManager)
 
       if (args.zoomToFit) {
         let zoomObjectId: string | undefined = ''
         if (args.zoomOnRangeAndType) {
-          zoomObjectId = this.engineCommandManager?.mapRangeToObjectId(
+          zoomObjectId = this.mapRangeToObjectId(
             args.zoomOnRangeAndType.range,
             args.zoomOnRangeAndType.type
           )
@@ -429,7 +503,7 @@ export class KclManager {
     }
     this.ast = { ...ast }
     // updateArtifactGraph relies on updated executeState/variables
-    this.engineCommandManager.updateArtifactGraph(execState.artifactGraph)
+    await this.updateArtifactGraph(execState.artifactGraph)
     this._executeCallback()
     if (!isInterrupted) {
       sceneInfra.modelingSend({ type: 'code edit during sketch' })
