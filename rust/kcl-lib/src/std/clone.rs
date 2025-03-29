@@ -43,6 +43,9 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// This works essentially like a copy-paste operation.
 ///
+/// This doesnt really have much utility unless you need the equivalent of a single
+/// instance pattern with zero transformations.
+///
 /// ```no_run
 /// exampleSketch = startSketchOn("XY")
 ///   |> startProfileAt([0, 0], %)
