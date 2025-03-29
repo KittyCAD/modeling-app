@@ -306,7 +306,7 @@ export class KclManager {
     this.artifactGraph = execStateArtifactGraph
     this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
     if (this.artifactGraph.size) {
-        // TODO: we wanna remove this logic from xstate, it is racey
+      // TODO: we wanna remove this logic from xstate, it is racey
       this.engineCommandManager.modelingSend({ type: 'Artifact graph emptied' })
     } else {
       this.engineCommandManager.modelingSend({
