@@ -265,6 +265,21 @@ async fn fix_tags_and_references(
 
             let (start_tag, end_tag) = get_named_cap_tags(solid);
 
+            // Fix the edge cuts.
+            for edge_cut in solid.edge_cuts.iter_mut() {
+                let Some(new_edge_id) = entity_id_map.get(&edge_cut.edge_id()) else {
+                    anyhow::bail!("Failed to find new edge id for old edge id: {:?}", edge_cut.edge_id());
+                };
+                edge_cut.set_edge_id(*new_edge_id);
+                let Some(id) = entity_id_map.get(&edge_cut.id()) else {
+                    anyhow::bail!(
+                        "Failed to find new edge cut id for old edge cut id: {:?}",
+                        edge_cut.id()
+                    );
+                };
+                edge_cut.set_id(*id);
+            }
+
             // Do the after extrude things to update those ids, based on the new sketch
             // information.
             let new_solid = do_post_extrude(
@@ -735,7 +750,10 @@ clonedCube = clone(cube)
             assert_ne!(tag_info.surface, cloned_tag_info.surface);
         }
 
-        assert_eq!(cube.edge_cuts.len(), 0);
-        assert_eq!(cloned_cube.edge_cuts.len(), 0);
+        for (edge_cut, cloned_edge_cut) in cube.edge_cuts.iter().zip(cloned_cube.edge_cuts.iter()) {
+            assert_ne!(edge_cut.id(), cloned_edge_cut.id());
+            assert_ne!(edge_cut.edge_id(), cloned_edge_cut.edge_id());
+            assert_eq!(edge_cut.tag(), cloned_edge_cut.tag());
+        }
     }
 }
