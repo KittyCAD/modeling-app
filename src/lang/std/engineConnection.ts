@@ -1,13 +1,8 @@
-import {
-  ArtifactGraph,
-  defaultSourceRange,
-  ExecState,
-  SourceRange,
-} from 'lang/wasm'
+import { defaultSourceRange, SourceRange } from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from 'env'
 import { Models } from '@kittycad/lib'
-import { deferExecution, isOverlap, uuidv4 } from 'lib/utils'
-import { BSON, Binary as BSONBinary } from 'bson'
+import { uuidv4, binaryToUuid } from 'lib/utils'
+import { BSON } from 'bson'
 import {
   Themes,
   getThemeColorForEngine,
@@ -22,8 +17,6 @@ import { KclManager } from 'lang/KclSingleton'
 import { reportRejection } from 'lib/trap'
 import { markOnce } from 'lib/performance'
 import { MachineManager } from 'components/MachineManagerProvider'
-import { buildArtifactIndex } from 'lib/artifactIndex'
-import { ArtifactIndex } from 'lib/artifactIndex'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 5_000
@@ -1047,11 +1040,9 @@ class EngineConnection extends EventTarget {
               })
               .join('\n')
             if (message.request_id) {
-              const artifactThatFailed =
-                this.engineCommandManager.artifactGraph.get(message.request_id)
               console.error(
                 `Error in response to request ${message.request_id}:\n${errorsString}
-    failed cmd type was ${artifactThatFailed?.type}`
+    failed`
               )
             } else {
               console.error(`Error from server:\n${errorsString}`)
@@ -1355,8 +1346,7 @@ export enum EngineCommandManagerEvents {
  *
  * As commands are send their state is tracked in {@link pendingCommands} and clear as soon as we receive a response.
  *
- * Also all commands that are sent are kept track of in WASM artifactCommands and their responses are kept in {@link responseMap}
- * Both of these data structures are used to process the {@link artifactGraph}.
+ * Also all commands that are sent are kept track of in WASM and their responses are kept in {@link responseMap}
  */
 
 interface PendingMessage {
@@ -1370,19 +1360,13 @@ interface PendingMessage {
 }
 export class EngineCommandManager extends EventTarget {
   /**
-   * The artifactGraph is a client-side representation of the commands that have been sent
-   * see: src/lang/std/artifactGraph-README.md for a full explanation.
-   */
-  artifactGraph: ArtifactGraph = new Map()
-  artifactIndex: ArtifactIndex = []
-  /**
    * The pendingCommands object is a map of the commands that have been sent to the engine that are still waiting on a reply
    */
   pendingCommands: {
     [commandId: string]: PendingMessage
   } = {}
   /**
-   * A map of the responses to the WASM artifactCommands, when processing the commands into the artifactGraph, this response map allow
+   * A map of the responses to the WASM, this response map allow
    * us to look up the response by command id
    */
   responseMap: ResponseMap = {}
@@ -1878,7 +1862,7 @@ export class EngineCommandManager extends EventTarget {
   registerCommandLogCallback(callback: (command: CommandLog[]) => void) {
     this._commandLogCallBack = callback
   }
-  sendSceneCommand(
+  async sendSceneCommand(
     command: EngineCommand,
     forceWebsocket = false
   ): Promise<Models['WebSocketResponse_type'] | null> {
@@ -2032,13 +2016,6 @@ export class EngineCommandManager extends EventTarget {
     return promise
   }
 
-  deferredArtifactPopulated = deferExecution((a?: null) => {
-    this.modelingSend({ type: 'Artifact graph populated' })
-  }, 200)
-  deferredArtifactEmptied = deferExecution((a?: null) => {
-    this.modelingSend({ type: 'Artifact graph emptied' })
-  }, 200)
-
   /**
    * When an execution takes place we want to wait until we've got replies for all of the commands
    * When this is done when we build the artifact map synchronously.
@@ -2047,16 +2024,6 @@ export class EngineCommandManager extends EventTarget {
     return Promise.all(
       Object.values(this.pendingCommands).map((a) => a.promise)
     )
-  }
-  updateArtifactGraph(execStateArtifactGraph: ExecState['artifactGraph']) {
-    this.artifactGraph = execStateArtifactGraph
-    this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
-    // TODO check if these still need to be deferred once e2e tests are working again.
-    if (this.artifactGraph.size) {
-      this.deferredArtifactEmptied(null)
-    } else {
-      this.deferredArtifactPopulated(null)
-    }
   }
 
   /**
@@ -2121,24 +2088,6 @@ export class EngineCommandManager extends EventTarget {
       },
     }).catch(reportRejection)
   }
-
-  // Some "objects" have the same source range, such as sketch_mode_start and start_path.
-  // So when passing a range, we need to also specify the command type
-  mapRangeToObjectId(
-    range: SourceRange,
-    commandTypeToTarget: string
-  ): string | undefined {
-    for (const [artifactId, artifact] of this.artifactGraph) {
-      if (
-        'codeRef' in artifact &&
-        artifact.codeRef &&
-        isOverlap(range, artifact.codeRef.range)
-      ) {
-        if (commandTypeToTarget === artifact.type) return artifactId
-      }
-    }
-    return undefined
-  }
 }
 
 function promiseFactory<T>() {
@@ -2149,66 +2098,4 @@ function promiseFactory<T>() {
     reject = _reject
   })
   return { promise, resolve, reject }
-}
-
-/**
- * Converts a binary buffer to a UUID string.
- *
- * @param buffer - The binary buffer containing the UUID bytes.
- * @returns A string representation of the UUID in the format 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.
- */
-function binaryToUuid(
-  binaryData: Buffer | Uint8Array | BSONBinary | string
-): string {
-  if (typeof binaryData === 'string') {
-    return binaryData
-  }
-
-  let buffer: Uint8Array
-
-  // Handle MongoDB BSON Binary object
-  if (
-    binaryData &&
-    '_bsontype' in binaryData &&
-    binaryData._bsontype === 'Binary'
-  ) {
-    // Extract the buffer from the BSON Binary object
-    buffer = binaryData.buffer
-  }
-  // Handle case where buffer property exists (some MongoDB drivers structure)
-  else if (binaryData && binaryData.buffer instanceof Uint8Array) {
-    buffer = binaryData.buffer
-  }
-  // Handle direct Buffer or Uint8Array
-  else if (binaryData instanceof Uint8Array || Buffer.isBuffer(binaryData)) {
-    buffer = binaryData
-  } else {
-    console.error(
-      'Invalid input type: expected MongoDB BSON Binary, Buffer, or Uint8Array'
-    )
-    return ''
-  }
-
-  // Ensure we have exactly 16 bytes (128 bits) for a UUID
-  if (buffer.length !== 16) {
-    // For debugging
-    console.log('Buffer length:', buffer.length)
-    console.log('Buffer content:', Array.from(buffer))
-    console.error('UUID must be exactly 16 bytes')
-    return ''
-  }
-
-  // Convert each byte to a hex string and pad with zeros if needed
-  const hexValues = Array.from(buffer).map((byte) =>
-    byte.toString(16).padStart(2, '0')
-  )
-
-  // Format into UUID structure (8-4-4-4-12 characters)
-  return [
-    hexValues.slice(0, 4).join(''),
-    hexValues.slice(4, 6).join(''),
-    hexValues.slice(6, 8).join(''),
-    hexValues.slice(8, 10).join(''),
-    hexValues.slice(10, 16).join(''),
-  ].join('-')
 }

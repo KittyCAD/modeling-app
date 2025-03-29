@@ -304,7 +304,7 @@ export const Stream = () => {
         }
         const path = getArtifactOfTypes(
           { key: entity_id, types: ['path', 'solid2d', 'segment', 'helix'] },
-          engineCommandManager.artifactGraph
+          kclManager.artifactGraph
         )
         if (err(path)) {
           return path

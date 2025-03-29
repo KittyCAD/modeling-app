@@ -766,7 +766,7 @@ export const modelingMachine = setup({
           axisOrEdge,
           axis,
           edge,
-          engineCommandManager.artifactGraph,
+          kclManager.artifactGraph,
           selection.graphSelections[0]?.artifact
         )
         if (trap(revolveSketchRes)) return
@@ -1123,9 +1123,7 @@ export const modelingMachine = setup({
     }),
     're-eval nodePaths': assign(({ context: { sketchDetails } }) => {
       if (!sketchDetails) return {}
-      const planeArtifact = [
-        ...engineCommandManager.artifactGraph.values(),
-      ].find(
+      const planeArtifact = [...kclManager.artifactGraph.values()].find(
         (artifact) =>
           artifact.type === 'plane' &&
           stringifyPathToNode(artifact.codeRef.pathToNode) ===
@@ -1134,7 +1132,7 @@ export const modelingMachine = setup({
       if (planeArtifact?.type !== 'plane') return {}
       const newPaths = getPathsFromPlaneArtifact(
         planeArtifact,
-        engineCommandManager.artifactGraph,
+        kclManager.artifactGraph,
         kclManager.ast
       )
       return {
@@ -1794,7 +1792,7 @@ export const modelingMachine = setup({
         node: ast,
         pathToNode,
         artifact: selection.graphSelections[0].artifact,
-        artifactGraph: engineCommandManager.artifactGraph,
+        artifactGraph: kclManager.artifactGraph,
         distance:
           'variableName' in distance
             ? distance.variableIdentifierAst
@@ -1987,7 +1985,7 @@ export const modelingMachine = setup({
           const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
             clonedAstForGetExtrude,
             cylinder.graphSelections[0],
-            engineCommandManager.artifactGraph
+            kclManager.artifactGraph
           )
           if (err(extrudeLookupResult)) {
             return extrudeLookupResult
@@ -2249,7 +2247,7 @@ export const modelingMachine = setup({
           const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
             clonedAstForGetExtrude,
             graphSelection,
-            engineCommandManager.artifactGraph
+            kclManager.artifactGraph
           )
           if (err(extrudeLookupResult)) {
             return new Error(
