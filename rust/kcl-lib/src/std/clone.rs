@@ -17,8 +17,9 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         types::{PrimitiveType, RuntimeType},
-        ExecState, Geometry, KclValue, Sketch,
+        ExecState, Geometry, KclValue, Sketch, Solid,
     },
+    parsing::ast::types::TagNode,
     std::{extrude::NamedCapTags, Args},
 };
 
@@ -220,6 +221,8 @@ async fn fix_tags_and_references(
 
             fix_sketch_tags_and_references(&mut solid.sketch, &entity_id_map).await?;
 
+            let (start_tag, end_tag) = get_named_cap_tags(solid);
+
             // Do the after extrude things to update those ids, based on the new sketch
             // information.
             let new_solid = do_post_extrude(
@@ -227,8 +230,10 @@ async fn fix_tags_and_references(
                 new_geometry_id.into(),
                 solid.height,
                 solid.sectional,
-                // TODO: fix these
-                &NamedCapTags { start: None, end: None },
+                &NamedCapTags {
+                    start: start_tag.as_ref(),
+                    end: end_tag.as_ref(),
+                },
                 exec_state,
                 args,
             )
@@ -317,4 +322,33 @@ async fn fix_sketch_tags_and_references(
     new_sketch.start.geo_meta.id = *new_base_path;*/
 
     Ok(())
+}
+
+// Return the named cap tags for the original solid.
+fn get_named_cap_tags(solid: &Solid) -> (Option<TagNode>, Option<TagNode>) {
+    let mut start_tag = None;
+    let mut end_tag = None;
+    // Check the start cap.
+    if let Some(start_cap_id) = solid.start_cap_id {
+        // Check if we had a value for that cap.
+        for value in &solid.value {
+            if value.get_id() == start_cap_id {
+                start_tag = value.get_tag().clone();
+                break;
+            }
+        }
+    }
+
+    // Check the end cap.
+    if let Some(end_cap_id) = solid.end_cap_id {
+        // Check if we had a value for that cap.
+        for value in &solid.value {
+            if value.get_id() == end_cap_id {
+                end_tag = value.get_tag().clone();
+                break;
+            }
+        }
+    }
+
+    (start_tag, end_tag)
 }
