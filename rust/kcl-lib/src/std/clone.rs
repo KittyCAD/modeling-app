@@ -206,11 +206,13 @@ async fn inner_clone(geometry: Geometry, exec_state: &mut ExecState, args: Args)
             let mut new_sketch = sketch.clone();
             new_sketch.id = new_id;
             new_sketch.original_id = new_id;
+            new_sketch.artifact_id = new_id.into();
             Geometry::Sketch(new_sketch)
         }
         Geometry::Solid(solid) => {
             let mut new_solid = solid.clone();
             new_solid.id = new_id;
+            new_solid.artifact_id = new_id.into();
             Geometry::Solid(new_solid)
         }
     };
@@ -246,14 +248,15 @@ async fn fix_tags_and_references(
     // Fix the path references in the new geometry.
     match new_geometry {
         Geometry::Sketch(sketch) => {
-            fix_sketch_tags_and_references(sketch, &entity_id_map).await?;
+            fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state).await?;
         }
         Geometry::Solid(solid) => {
             // Make the sketch id the new geometry id.
             solid.sketch.id = new_geometry_id;
             solid.sketch.original_id = new_geometry_id;
+            solid.sketch.artifact_id = new_geometry_id.into();
 
-            fix_sketch_tags_and_references(&mut solid.sketch, &entity_id_map).await?;
+            fix_sketch_tags_and_references(&mut solid.sketch, &entity_id_map, exec_state).await?;
 
             let (start_tag, end_tag) = get_named_cap_tags(solid);
 
@@ -337,6 +340,7 @@ async fn get_old_new_child_map(
 async fn fix_sketch_tags_and_references(
     new_sketch: &mut Sketch,
     entity_id_map: &HashMap<uuid::Uuid, uuid::Uuid>,
+    exec_state: &mut ExecState,
 ) -> Result<()> {
     // Fix the path references in the sketch.
     for path in new_sketch.paths.as_mut_slice() {
@@ -344,6 +348,17 @@ async fn fix_sketch_tags_and_references(
             anyhow::bail!("Failed to find new path id for old path id: {:?}", path.get_id());
         };
         path.set_id(*new_path_id);
+    }
+
+    // Fix the tags
+    // This is annoying, in order to fix the tags we need to iterate over the paths again, but not
+    // mutable borrow the paths.
+    for path in new_sketch.paths.clone() {
+        // Check if this path has a tag.
+        if let Some(tag) = path.get_tag() {
+            println!("Fixing tag: {:?}", tag);
+            new_sketch.add_tag(&tag, &path, exec_state);
+        }
     }
 
     // Fix the base path.
@@ -390,8 +405,9 @@ fn get_named_cap_tags(solid: &Solid) -> (Option<TagNode>, Option<TagNode>) {
 
 #[cfg(test)]
 mod tests {
+    use pretty_assertions::{assert_eq, assert_ne};
+
     use crate::exec::KclValue;
-    use pretty_assertions::assert_ne;
 
     // Ensure the clone function returns a sketch with different ids for all the internal paths and
     // the resulting sketch.
@@ -427,10 +443,18 @@ clonedCube = clone(cube)
 
         assert_ne!(cube.id, cloned_cube.id);
         assert_ne!(cube.original_id, cloned_cube.original_id);
+        assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
+
+        assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
+        assert_eq!(cloned_cube.original_id, cloned_cube.id);
 
         for (path, cloned_path) in cube.paths.iter().zip(cloned_cube.paths.iter()) {
             assert_ne!(path.get_id(), cloned_path.get_id());
+            assert_eq!(path.get_tag(), cloned_path.get_tag());
         }
+
+        assert_eq!(cube.tags.len(), 0);
+        assert_eq!(cloned_cube.tags.len(), 0);
     }
 
     // Ensure the clone function returns a solid with different ids for all the internal paths and
@@ -469,13 +493,142 @@ clonedCube = clone(cube)
         assert_ne!(cube.id, cloned_cube.id);
         assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
         assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
+        assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
+        assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
+
+        assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {
             assert_ne!(path.get_id(), cloned_path.get_id());
+            assert_eq!(path.get_tag(), cloned_path.get_tag());
         }
 
         for (value, cloned_value) in cube.value.iter().zip(cloned_cube.value.iter()) {
             assert_ne!(value.get_id(), cloned_value.get_id());
+            assert_eq!(value.get_tag(), cloned_value.get_tag());
+        }
+
+        assert_eq!(cube.sketch.tags.len(), 0);
+        assert_eq!(cloned_cube.sketch.tags.len(), 0);
+    }
+
+    // Ensure the clone function returns a sketch with different ids for all the internal paths and
+    // the resulting sketch.
+    // AND TAGS.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_clone_sketch_with_tags() {
+        let code = r#"cube = startSketchOn(XY)
+    |> startProfileAt([0,0], %) // tag this one
+    |> line(end = [0, 10], tag = $tag02)
+    |> line(end = [10, 0], tag = $tag03)
+    |> line(end = [0, -10], tag = $tag04)
+    |> close(tag = $tag05)
+
+clonedCube = clone(cube)
+"#;
+        let ctx = crate::test_server::new_context(crate::UnitLength::Mm, true, None)
+            .await
+            .unwrap();
+        let program = crate::Program::parse_no_errs(code).unwrap();
+
+        // Execute the program.
+        let result = ctx.run_with_caching(program.clone()).await.unwrap();
+        let cube = result.variables.get("cube").unwrap();
+        let cloned_cube = result.variables.get("clonedCube").unwrap();
+
+        assert_ne!(cube, cloned_cube);
+
+        let KclValue::Sketch { value: cube } = cube else {
+            panic!("Expected a sketch, got: {:?}", cube);
+        };
+        let KclValue::Sketch { value: cloned_cube } = cloned_cube else {
+            panic!("Expected a sketch, got: {:?}", cloned_cube);
+        };
+
+        assert_ne!(cube.id, cloned_cube.id);
+        assert_ne!(cube.original_id, cloned_cube.original_id);
+
+        for (path, cloned_path) in cube.paths.iter().zip(cloned_cube.paths.iter()) {
+            assert_ne!(path.get_id(), cloned_path.get_id());
+            assert_eq!(path.get_tag(), cloned_path.get_tag());
+        }
+
+        for (tag_name, tag) in &cube.tags {
+            let cloned_tag = cloned_cube.tags.get(tag_name).unwrap();
+
+            let tag_info = tag.get_cur_info().unwrap();
+            let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
+
+            assert_ne!(tag_info.id, cloned_tag_info.id);
+            assert_ne!(tag_info.sketch, cloned_tag_info.sketch);
+            assert_ne!(tag_info.path, cloned_tag_info.path);
+            assert_eq!(tag_info.surface, None);
+            assert_eq!(cloned_tag_info.surface, None);
+        }
+    }
+
+    // Ensure the clone function returns a solid with different ids for all the internal paths and
+    // references.
+    // WITH TAGS.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_clone_solid_with_tags() {
+        let code = r#"cube = startSketchOn(XY)
+    |> startProfileAt([0,0], %) // tag this one
+    |> line(end = [0, 10], tag = $tag02)
+    |> line(end = [10, 0], tag = $tag03)
+    |> line(end = [0, -10], tag = $tag04)
+    |> close(tag = $tag05)
+    |> extrude(length = 5) // TODO: Tag these
+
+clonedCube = clone(cube)
+"#;
+        let ctx = crate::test_server::new_context(crate::UnitLength::Mm, true, None)
+            .await
+            .unwrap();
+        let program = crate::Program::parse_no_errs(code).unwrap();
+
+        // Execute the program.
+        let result = ctx.run_with_caching(program.clone()).await.unwrap();
+        let cube = result.variables.get("cube").unwrap();
+        let cloned_cube = result.variables.get("clonedCube").unwrap();
+
+        assert_ne!(cube, cloned_cube);
+
+        let KclValue::Solid { value: cube } = cube else {
+            panic!("Expected a solid, got: {:?}", cube);
+        };
+        let KclValue::Solid { value: cloned_cube } = cloned_cube else {
+            panic!("Expected a solid, got: {:?}", cloned_cube);
+        };
+
+        assert_ne!(cube.id, cloned_cube.id);
+        assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
+        assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
+        assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
+        assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
+
+        assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
+
+        for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {
+            assert_ne!(path.get_id(), cloned_path.get_id());
+            assert_eq!(path.get_tag(), cloned_path.get_tag());
+        }
+
+        for (value, cloned_value) in cube.value.iter().zip(cloned_cube.value.iter()) {
+            assert_ne!(value.get_id(), cloned_value.get_id());
+            assert_eq!(value.get_tag(), cloned_value.get_tag());
+        }
+
+        for (tag_name, tag) in &cube.sketch.tags {
+            let cloned_tag = cloned_cube.sketch.tags.get(tag_name).unwrap();
+
+            let tag_info = tag.get_cur_info().unwrap();
+            let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
+
+            assert_ne!(tag_info.id, cloned_tag_info.id);
+            assert_ne!(tag_info.sketch, cloned_tag_info.sketch);
+            assert_ne!(tag_info.path, cloned_tag_info.path);
+            assert_ne!(tag_info.surface, cloned_tag_info.surface);
         }
     }
 }
