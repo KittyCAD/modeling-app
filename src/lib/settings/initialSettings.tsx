@@ -16,7 +16,7 @@ import { isDesktop } from 'lib/isDesktop'
 import { useRef } from 'react'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
-import { isArray, toSync } from 'lib/utils'
+import { capitaliseFC, isArray, toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
 import { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
@@ -406,7 +406,7 @@ export function createSettings() {
               : 'perspective',
           options: (cmdContext, settingsContext) =>
             (['perspective', 'orthographic'] as const).map((v) => ({
-              name: v.charAt(0).toUpperCase() + v.slice(1),
+              name: capitaliseFC(v),
               value: v,
               isCurrent:
                 settingsContext.modeling.cameraProjection.shouldShowCurrentLabel(
@@ -430,7 +430,7 @@ export function createSettings() {
             context.modeling.cameraOrbit.current,
           options: (cmdContext, settingsContext) =>
             (['spherical', 'trackball'] as const).map((v) => ({
-              name: v.charAt(0).toUpperCase() + v.slice(1),
+              name: capitaliseFC(v),
               value: v,
               isCurrent:
                 settingsContext.modeling.cameraOrbit.shouldShowCurrentLabel(

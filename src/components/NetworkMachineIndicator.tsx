@@ -5,6 +5,7 @@ import { isDesktop } from 'lib/isDesktop'
 import { components } from 'lib/machine-api'
 import { MachineManagerContext } from 'components/MachineManagerProvider'
 import { CustomIcon } from './CustomIcon'
+import { capitaliseFC } from 'lib/utils'
 
 export const NetworkMachineIndicator = ({
   className,
@@ -68,9 +69,7 @@ export const NetworkMachineIndicator = ({
                         </p>
                       )}
                     <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
-                      {`Status: ${machine.state.state
-                        .charAt(0)
-                        .toUpperCase()}${machine.state.state.slice(1)}`}
+                      {`Status: ${capitaliseFC(machine.state.state)}`}
                       {machine.state.state === 'failed' && machine.state.message
                         ? ` (${machine.state.message})`
                         : ''}

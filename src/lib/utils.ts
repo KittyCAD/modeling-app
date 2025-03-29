@@ -406,3 +406,8 @@ export function isClockwise(points: [number, number][]): boolean {
   // If sum is positive, the points are in clockwise order
   return sum > 0
 }
+
+/** Capitalise a string's first character */
+export function capitaliseFC(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
