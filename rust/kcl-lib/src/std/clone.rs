@@ -44,8 +44,11 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// This works essentially like a copy-paste operation.
 ///
-/// This doesnt really have much utility unless you need the equivalent of a single
+/// This doesnt really have much utility unless you need the equivalent of a double
 /// instance pattern with zero transformations.
+///
+/// Really only use this function if YOU ARE SURE you need it. In most cases you
+/// do not need clone and using a pattern with `instance = 2` is more appropriate.
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn("XY")
@@ -153,6 +156,37 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     ],
 ///   )
 ///   |> translate(x = 0, y = 50, z = 0)
+/// ```
+///
+/// ```no_run
+/// // Sketch on the end of a revolved face by tagging the end face.
+/// // This shows the cloned geometry will have the same tags as the original geometry.
+///
+/// exampleSketch = startSketchOn(XY)
+///   |> startProfileAt([4, 12], %)
+///   |> line(end = [2, 0])
+///   |> line(end = [0, -6])
+///   |> line(end = [4, -6])
+///   |> line(end = [0, -6])
+///   |> line(end = [-3.75, -4.5])
+///   |> line(end = [0, -5.5])
+///   |> line(end = [-2, 0])
+///   |> close()
+///
+/// example001 = revolve(exampleSketch, axis = 'y', angle = 180, tagEnd = $end01)
+///
+/// example002 = clone(example001)
+///  |> translate(x = 0, y = 20, z = 0)
+///
+/// // Sketch on the cloned face.
+/// exampleSketch002 = startSketchOn(example002, end01)
+///   |> startProfileAt([4.5, -5], %)
+///   |> line(end = [0, 5])
+///   |> line(end = [5, 0])
+///   |> line(end = [0, -5])
+///   |> close()
+///
+/// example003 = extrude(exampleSketch002, length = 5)
 /// ```
 #[stdlib {
     name = "clone",
