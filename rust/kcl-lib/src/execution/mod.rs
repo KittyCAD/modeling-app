@@ -2044,6 +2044,8 @@ let w = f() + f()
 
         // Ensure the settings are as expected.
         assert_eq!(settings_state, ctx.settings);
+
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2057,6 +2059,9 @@ let w = f() + f()
         let program2 = crate::Program::parse_no_errs("z = x + 1").unwrap();
         let result = ctx2.run_mock(program2, true).await.unwrap();
         assert_eq!(result.variables.get("z").unwrap().as_f64().unwrap(), 3.0);
+
+        ctx.close().await;
+        ctx2.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]

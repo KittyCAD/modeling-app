@@ -121,6 +121,13 @@ impl EngineConnection {
             }
         })?;
 
+        if value.is_null() || value.is_undefined() {
+            return Err(KclError::Engine(KclErrorDetails {
+                message: "Received null or undefined response from engine".into(),
+                source_ranges: vec![source_range],
+            }));
+        }
+
         // Convert JsValue to a Uint8Array
         let data = js_sys::Uint8Array::from(value);
 
