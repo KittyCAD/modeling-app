@@ -44,13 +44,14 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// This works essentially like a copy-paste operation.
 ///
-/// This doesnt really have much utility unless you need the equivalent of a double
+/// This doesn't really have much utility unless you need the equivalent of a double
 /// instance pattern with zero transformations.
 ///
 /// Really only use this function if YOU ARE SURE you need it. In most cases you
 /// do not need clone and using a pattern with `instance = 2` is more appropriate.
 ///
 /// ```no_run
+/// // Clone a basic sketch and move it and extrude it.
 /// exampleSketch = startSketchOn("XY")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [10, 0])
@@ -73,6 +74,8 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```
 ///
 /// ```no_run
+/// // Clone a basic solid and move it.
+///
 /// exampleSketch = startSketchOn("XY")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [10, 0])
@@ -91,6 +94,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// ```no_run
 /// // Translate and rotate a cloned sketch to create a loft.
+///
 /// sketch001 = startSketchOn('XY')
 ///         |> startProfileAt([-10, 10], %)
 ///         |> xLine(length = 20)
@@ -131,6 +135,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// ```no_run
 /// // You can also use the tags from the original geometry to fillet the cloned geometry.
+///
 /// width = 20
 /// length = 10
 /// thickness = 1
