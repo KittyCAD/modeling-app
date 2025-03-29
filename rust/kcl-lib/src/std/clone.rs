@@ -515,6 +515,9 @@ clonedCube = clone(cube)
 
         assert_eq!(cube.sketch.tags.len(), 0);
         assert_eq!(cloned_cube.sketch.tags.len(), 0);
+
+        assert_eq!(cube.edge_cuts.len(), 0);
+        assert_eq!(cloned_cube.edge_cuts.len(), 0);
     }
 
     // Ensure the clone function returns a sketch with different ids for all the internal paths and
@@ -635,5 +638,104 @@ clonedCube = clone(cube)
             assert_ne!(tag_info.path, cloned_tag_info.path);
             assert_ne!(tag_info.surface, cloned_tag_info.surface);
         }
+
+        assert_eq!(cube.edge_cuts.len(), 0);
+        assert_eq!(cloned_cube.edge_cuts.len(), 0);
+    }
+
+    // Ensure the clone function returns a solid with different ids for all the internal paths and
+    // references.
+    // WITH TAGS AND EDGE CUTS.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_clone_solid_with_edge_cuts() {
+        let code = r#"cube = startSketchOn(XY)
+    |> startProfileAt([0,0], %) // tag this one
+    |> line(end = [0, 10], tag = $tag02)
+    |> line(end = [10, 0], tag = $tag03)
+    |> line(end = [0, -10], tag = $tag04)
+    |> close(tag = $tag05)
+    |> extrude(length = 5) // TODO: Tag these
+  |> fillet(
+    radius = 2,
+    tags = [
+      getNextAdjacentEdge(tag02),
+    ],
+    tag = $fillet01,
+  )
+  |> fillet(
+    radius = 2,
+    tags = [
+      getNextAdjacentEdge(tag04),
+    ],
+    tag = $fillet02,
+  )
+  |> chamfer(
+    length = 2,
+    tags = [
+      getNextAdjacentEdge(tag03),
+    ],
+    tag = $chamfer01,
+  )
+  |> chamfer(
+    length = 2,
+    tags = [
+      getNextAdjacentEdge(tag05),
+    ],
+    tag = $chamfer02,
+  )
+
+clonedCube = clone(cube)
+"#;
+        let ctx = crate::test_server::new_context(crate::UnitLength::Mm, true, None)
+            .await
+            .unwrap();
+        let program = crate::Program::parse_no_errs(code).unwrap();
+
+        // Execute the program.
+        let result = ctx.run_with_caching(program.clone()).await.unwrap();
+        let cube = result.variables.get("cube").unwrap();
+        let cloned_cube = result.variables.get("clonedCube").unwrap();
+
+        assert_ne!(cube, cloned_cube);
+
+        let KclValue::Solid { value: cube } = cube else {
+            panic!("Expected a solid, got: {:?}", cube);
+        };
+        let KclValue::Solid { value: cloned_cube } = cloned_cube else {
+            panic!("Expected a solid, got: {:?}", cloned_cube);
+        };
+
+        assert_ne!(cube.id, cloned_cube.id);
+        assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
+        assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
+        assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
+        assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
+
+        assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
+
+        for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {
+            assert_ne!(path.get_id(), cloned_path.get_id());
+            assert_eq!(path.get_tag(), cloned_path.get_tag());
+        }
+
+        for (value, cloned_value) in cube.value.iter().zip(cloned_cube.value.iter()) {
+            assert_ne!(value.get_id(), cloned_value.get_id());
+            assert_eq!(value.get_tag(), cloned_value.get_tag());
+        }
+
+        for (tag_name, tag) in &cube.sketch.tags {
+            let cloned_tag = cloned_cube.sketch.tags.get(tag_name).unwrap();
+
+            let tag_info = tag.get_cur_info().unwrap();
+            let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
+
+            assert_ne!(tag_info.id, cloned_tag_info.id);
+            assert_ne!(tag_info.sketch, cloned_tag_info.sketch);
+            assert_ne!(tag_info.path, cloned_tag_info.path);
+            assert_ne!(tag_info.surface, cloned_tag_info.surface);
+        }
+
+        assert_eq!(cube.edge_cuts.len(), 0);
+        assert_eq!(cloned_cube.edge_cuts.len(), 0);
     }
 }
