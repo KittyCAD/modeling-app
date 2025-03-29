@@ -529,6 +529,18 @@ impl ExecutorContext {
             .await
     }
 
+    pub async fn bust_cache_and_reset_scene(&self) -> Result<ExecOutcome, KclErrorWithOutputs> {
+        cache::bust_cache().await;
+
+        // Execute an empty program to clear and reset the scene.
+        // We specifically want to be returned the objects after the scene is reset.
+        // Like the default planes so it is easier to just execute an empty program
+        // after the cache is busted.
+        let outcome = self.run_with_caching(crate::Program::empty()).await?;
+
+        Ok(outcome)
+    }
+
     async fn prepare_mem(&self, exec_state: &mut ExecState) -> Result<(), KclErrorWithOutputs> {
         self.eval_prelude(exec_state, SourceRange::synthetic())
             .await

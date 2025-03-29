@@ -211,6 +211,14 @@ impl Program {
     pub fn recast_with_options(&self, options: &FormatOptions) -> String {
         self.ast.recast(options, 0)
     }
+
+    /// Create an empty program.
+    pub fn empty() -> Self {
+        Self {
+            ast: parsing::ast::types::Node::no_src(parsing::ast::types::Program::default()),
+            original_file_contents: String::new(),
+        }
+    }
 }
 
 #[inline]
