@@ -117,6 +117,14 @@ description: Operations executed helix_ccw.kcl
     }
   },
   {
+    "type": "UserDefinedFunctionCall",
+    "name": "helix",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
     "labeledArgs": {
       "angleStart": {
         "value": {
@@ -167,9 +175,11 @@ description: Operations executed helix_ccw.kcl
         "sourceRange": []
       }
     },
-    "name": "helix",
-    "sourceRange": [],
-    "type": "StdLibCall",
+    "sourceRange": []
+  },
+  {
+    "type": "KclStdLibCall",
+    "name": "",
     "unlabeledArg": {
       "value": {
         "type": "Solid",
@@ -178,6 +188,60 @@ description: Operations executed helix_ccw.kcl
         }
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {
+      "angleStart": {
+        "value": {
+          "type": "Number",
+          "value": 0.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "ccw": {
+        "value": {
+          "type": "Bool",
+          "value": true
+        },
+        "sourceRange": []
+      },
+      "cylinder": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "revolutions": {
+        "value": {
+          "type": "Number",
+          "value": 16.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   }
 ]

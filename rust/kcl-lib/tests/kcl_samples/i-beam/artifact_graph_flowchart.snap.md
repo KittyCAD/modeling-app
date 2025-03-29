@@ -9,7 +9,7 @@ flowchart LR
     7["Segment<br>[704, 726, 0]"]
   end
   1["Plane<br>[445, 463, 0]"]
-  8["Sweep Extrusion<br>[798, 826, 0]"]
+  8["Sweep Extrusion<br>[780, 808, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4

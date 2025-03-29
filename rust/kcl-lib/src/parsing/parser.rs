@@ -286,6 +286,11 @@ fn non_code_node(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
     alt((non_code_node_leading_whitespace, non_code_node_no_leading_whitespace)).parse_next(i)
 }
 
+fn outer_annotation(i: &mut TokenSlice) -> PResult<Node<Annotation>> {
+    peek((at_sign, open_paren)).parse_next(i)?;
+    annotation(i)
+}
+
 fn annotation(i: &mut TokenSlice) -> PResult<Node<Annotation>> {
     let at = at_sign.parse_next(i)?;
     let name = opt(binding_name).parse_next(i)?;
@@ -2902,13 +2907,17 @@ struct ParamDescription {
     arg_name: Token,
     type_: std::option::Option<Node<Type>>,
     default_value: Option<DefaultParamVal>,
+    attr: Option<Node<Annotation>>,
     comments: Option<Node<Vec<String>>>,
 }
 
 fn parameter(i: &mut TokenSlice) -> PResult<ParamDescription> {
-    let (_, comments, found_at_sign, arg_name, question_mark, _, type_, _ws, default_literal) = (
+    let (_, comments, _, attr, _, found_at_sign, arg_name, question_mark, _, type_, _ws, default_literal) = (
         opt(whitespace),
         opt(comments),
+        opt(whitespace),
+        opt(outer_annotation),
+        opt(whitespace),
         opt(at_sign),
         any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")"),
         opt(question_mark),
@@ -2933,6 +2942,7 @@ fn parameter(i: &mut TokenSlice) -> PResult<ParamDescription> {
                 return Err(ErrMode::Backtrack(ContextError::from(e)));
             }
         },
+        attr,
         comments,
     })
 }
@@ -2954,12 +2964,16 @@ fn parameters(i: &mut TokenSlice) -> PResult<Vec<Parameter>> {
                  arg_name,
                  type_,
                  default_value,
+                 attr,
                  comments,
              }| {
                 let mut identifier = Node::<Identifier>::try_from(arg_name)?;
                 if let Some(comments) = comments {
                     identifier.comment_start = comments.start;
                     identifier.pre_comments = comments.inner;
+                }
+                if let Some(attr) = attr {
+                    identifier.outer_attrs.push(attr);
                 }
 
                 Ok(Parameter {

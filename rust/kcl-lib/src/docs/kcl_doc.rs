@@ -508,6 +508,7 @@ pub struct ArgData {
     pub ty: Option<String>,
     /// If the argument is required.
     pub kind: ArgKind,
+    pub override_in_snippet: Option<bool>,
     /// Additional information that could be used instead of the type's description.
     /// This is helpful if the type is really basic, like "number" -- that won't tell the user much about
     /// how this argument is meant to be used.
@@ -528,6 +529,7 @@ impl ArgData {
             name: arg.identifier.name.clone(),
             ty: arg.type_.as_ref().map(|t| t.to_string()),
             docs: None,
+            override_in_snippet: None,
             kind: if arg.labeled {
                 ArgKind::Labelled(arg.optional())
             } else {
@@ -535,26 +537,54 @@ impl ArgData {
             },
         };
 
+        for attr in &arg.identifier.outer_attrs {
+            if let Annotation {
+                name: None,
+                properties: Some(props),
+                ..
+            } = &attr.inner
+            {
+                for p in props {
+                    match &*p.key.name {
+                        "include_in_snippet" => {
+                            if let Some(b) = p.value.literal_bool() {
+                                result.override_in_snippet = Some(b);
+                            } else {
+                                panic!(
+                                    "Invalid value for `include_in_snippet`, expected bool literal, found {:?}",
+                                    p.value
+                                );
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        }
+
         result.with_comments(&arg.identifier.pre_comments);
         result
     }
 
     pub fn get_autocomplete_snippet(&self, index: usize) -> Option<(usize, String)> {
+        match self.override_in_snippet {
+            Some(false) => return None,
+            None if !self.kind.required() => return None,
+            _ => {}
+        }
+
         let label = if self.kind == ArgKind::Special {
             String::new()
         } else {
             format!("{} = ", self.name)
         };
         match self.ty.as_deref() {
-            Some(s) if ["Sketch", "Solid", "Plane | Face", "Sketch | Plane | Face"].contains(&s) => {
-                Some((index, format!("{label}${{{}:{}}}", index, "%")))
-            }
-            Some("number") if self.kind.required() => Some((index, format!(r#"{label}${{{}:3.14}}"#, index))),
-            Some("Point2d") if self.kind.required() => Some((
+            Some(s) if s.starts_with("number") => Some((index, format!(r#"{label}${{{}:3.14}}"#, index))),
+            Some("Point2d") => Some((
                 index + 1,
                 format!(r#"{label}[${{{}:3.14}}, ${{{}:3.14}}]"#, index, index + 1),
             )),
-            Some("Point3d") if self.kind.required() => Some((
+            Some("Point3d") => Some((
                 index + 2,
                 format!(
                     r#"{label}[${{{}:3.14}}, ${{{}:3.14}}, ${{{}:3.14}}]"#,
@@ -563,8 +593,10 @@ impl ArgData {
                     index + 2
                 ),
             )),
-            Some("string") if self.kind.required() => Some((index, format!(r#"{label}${{{}:"string"}}"#, index))),
-            Some("bool") if self.kind.required() => Some((index, format!(r#"{label}${{{}:false}}"#, index))),
+            Some("Axis2d | Edge") | Some("Axis3d | Edge") => Some((index, format!(r#"{label}${{{}:X}}"#, index))),
+
+            Some("string") => Some((index, format!(r#"{label}${{{}:"string"}}"#, index))),
+            Some("bool") => Some((index, format!(r#"{label}${{{}:false}}"#, index))),
             _ => None,
         }
     }

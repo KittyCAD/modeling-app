@@ -3469,7 +3469,7 @@ segAng(rectangleSegmentA002),
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
 
-      const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360, axis = 'X')`
+      const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360, axis = X)`
       expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
     })
     test('revolve surface around edge from an extruded solid2d', async ({

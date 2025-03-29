@@ -13,10 +13,7 @@ import {
   SetAngleLengthModal,
   createSetAngleLengthModal,
 } from '../SetAngleLengthModal'
-import {
-  createName,
-  createVariableDeclaration,
-} from '../../lang/modifyAst'
+import { createName, createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'

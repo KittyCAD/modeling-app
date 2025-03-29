@@ -54,7 +54,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Create a pipe using a sweep.
 ///
 /// // Create a path for the sweep.
-/// sweepPath = startSketchOn('XZ')
+/// sweepPath = startSketchOn(XZ)
 ///     |> startProfileAt([0.05, 0.05], %)
 ///     |> line(end = [0, 7])
 ///     |> tangentialArc({
@@ -69,13 +69,13 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
-/// pipeHole = startSketchOn('XY')
+/// pipeHole = startSketchOn(XY)
 ///     |> circle(
 ///         center = [0, 0],
 ///         radius = 1.5,
 ///     )
 ///
-/// sweepSketch = startSketchOn('XY')
+/// sweepSketch = startSketchOn(XY)
 ///     |> circle(
 ///         center = [0, 0],
 ///         radius = 2,
@@ -94,12 +94,12 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     revolutions = 4,
 ///     length = 10,
 ///     radius = 5,
-///     axis = 'Z',
+///     axis = Z,
 ///  )
 ///
 ///
 /// // Create a spring by sweeping around the helix path.
-/// springSketch = startSketchOn('YZ')
+/// springSketch = startSketchOn(YZ)
 ///     |> circle( center = [0, 0], radius = 1)
 ///     |> sweep(path = helixPath)
 /// ```
@@ -107,7 +107,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```
 /// // Sweep two sketches along the same path.
 ///
-/// sketch001 = startSketchOn('XY')
+/// sketch001 = startSketchOn(XY)
 /// rectangleSketch = startProfileAt([-200, 23.86], sketch001)
 ///     |> angledLine([0, 73.47], %, $rectangleSegmentA001)
 ///     |> angledLine([
@@ -123,7 +123,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
 ///
-/// sketch002 = startSketchOn('YZ')
+/// sketch002 = startSketchOn(YZ)
 /// sweepPath = startProfileAt([0, 0], sketch002)
 ///     |> yLine(length = 231.81)
 ///     |> tangentialArc({
@@ -137,7 +137,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```
 /// // Sectionally sweep one sketch along the path
 ///
-/// sketch001 = startSketchOn('XY')
+/// sketch001 = startSketchOn(XY)
 /// circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
 ///
 /// sketch002 = startSketchOn('YZ')

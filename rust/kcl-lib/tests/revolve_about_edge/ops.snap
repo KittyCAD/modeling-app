@@ -100,6 +100,14 @@ description: Operations executed revolve_about_edge.kcl
     "type": "UserDefinedFunctionReturn"
   },
   {
+    "type": "UserDefinedFunctionCall",
+    "name": "revolve",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
     "labeledArgs": {
       "angle": {
         "value": {
@@ -126,9 +134,11 @@ description: Operations executed revolve_about_edge.kcl
         "sourceRange": []
       }
     },
-    "name": "revolve",
-    "sourceRange": [],
-    "type": "StdLibCall",
+    "sourceRange": []
+  },
+  {
+    "type": "KclStdLibCall",
+    "name": "",
     "unlabeledArg": {
       "value": {
         "type": "Sketch",
@@ -137,6 +147,36 @@ description: Operations executed revolve_about_edge.kcl
         }
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {
+      "angle": {
+        "value": {
+          "type": "Number",
+          "value": 90.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "axis": {
+        "value": {
+          "type": "TagIdentifier",
+          "value": "rectangleSegmentB001",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   }
 ]

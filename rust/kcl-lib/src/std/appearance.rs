@@ -75,7 +75,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// This will work on any solid, including extruded solids, revolved solids, and shelled solids.
 /// ```no_run
 /// // Add color to an extruded solid.
-/// exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(endAbsolute = [10, 0])
 ///   |> line(endAbsolute = [0, 10])
@@ -89,9 +89,9 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 ///
 /// ```no_run
 /// // Add color to a revolved solid.
-/// sketch001 = startSketchOn('XY')
+/// sketch001 = startSketchOn(XY)
 ///     |> circle( center = [15, 0], radius = 5 )
-///     |> revolve( angle = 360, axis = 'y')
+///     |> revolve( angle = 360, axis = Y)
 ///     |> appearance(
 ///         color = '#ff0000',
 ///         metalness = 90,
@@ -102,7 +102,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// ```no_run
 /// // Add color to different solids.
 /// fn cube(center) {
-///    return startSketchOn('XY')
+///    return startSketchOn(XY)
 ///    |> startProfileAt([center[0] - 10, center[1] - 10], %)
 ///    |> line(endAbsolute = [center[0] + 10, center[1] - 10])
 ///     |> line(endAbsolute = [center[0] + 10, center[1] + 10])
@@ -122,7 +122,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// ```no_run
 /// // You can set the appearance before or after you shell it will yield the same result.
 /// // This example shows setting the appearance _after_ the shell.
-/// firstSketch = startSketchOn('XY')
+/// firstSketch = startSketchOn(XY)
 ///     |> startProfileAt([-12, 12], %)
 ///     |> line(end = [24, 0])
 ///     |> line(end = [0, -24])
@@ -145,7 +145,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// ```no_run
 /// // You can set the appearance before or after you shell it will yield the same result.
 /// // This example shows setting the appearance _before_ the shell.
-/// firstSketch = startSketchOn('XY')
+/// firstSketch = startSketchOn(XY)
 ///     |> startProfileAt([-12, 12], %)
 ///     |> line(end = [24, 0])
 ///     |> line(end = [0, -24])
@@ -168,7 +168,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// ```no_run
 /// // Setting the appearance of a 3D pattern can be done _before_ or _after_ the pattern.
 /// // This example shows _before_ the pattern.
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [0, 2])
 ///   |> line(end = [3, 1])
@@ -191,7 +191,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// ```no_run
 /// // Setting the appearance of a 3D pattern can be done _before_ or _after_ the pattern.
 /// // This example shows _after_ the pattern.
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [0, 2])
 ///   |> line(end = [3, 1])
@@ -213,7 +213,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 ///
 /// ```no_run
 /// // Color the result of a 2D pattern that was extruded.
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([.5, 25], %)
 ///   |> line(end = [0, 5])
 ///   |> line(end = [-1, 0])
@@ -238,7 +238,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// // Color the result of a sweep.
 ///
 /// // Create a path for the sweep.
-/// sweepPath = startSketchOn('XZ')
+/// sweepPath = startSketchOn(XZ)
 ///     |> startProfileAt([0.05, 0.05], %)
 ///     |> line(end = [0, 7])
 ///     |> tangentialArc({
@@ -252,13 +252,13 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 ///     }, %)
 ///     |> line(end = [0, 7])
 ///
-/// pipeHole = startSketchOn('XY')
+/// pipeHole = startSketchOn(XY)
 ///     |> circle(
 ///         center = [0, 0],
 ///         radius = 1.5,
 ///     )
 ///
-/// sweepSketch = startSketchOn('XY')
+/// sweepSketch = startSketchOn(XY)
 ///     |> circle(
 ///         center = [0, 0],
 ///         radius = 2,

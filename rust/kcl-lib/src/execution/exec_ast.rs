@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
-use super::kcl_value::TypeDef;
+use super::{kcl_value::TypeDef, types::PrimitiveType};
 use crate::{
     engine::ExecutionKind,
     errors::{KclError, KclErrorDetails},
@@ -1031,6 +1031,15 @@ impl Node<UnaryExpression> {
         }
 
         let value = &self.argument.get_result(exec_state, ctx).await?;
+        let err = || {
+            KclError::Semantic(KclErrorDetails {
+                message: format!(
+                    "You can only negate numbers, planes, or lines, but this is a {}",
+                    value.human_friendly_type()
+                ),
+                source_ranges: vec![self.into()],
+            })
+        };
         match value {
             KclValue::Number { value, ty, .. } => {
                 let meta = vec![Metadata {
@@ -1052,13 +1061,63 @@ impl Node<UnaryExpression> {
                 plane.id = exec_state.next_uuid();
                 Ok(KclValue::Plane { value: plane })
             }
-            _ => Err(KclError::Semantic(KclErrorDetails {
-                message: format!(
-                    "You can only negate numbers or planes, but this is a {}",
-                    value.human_friendly_type()
-                ),
-                source_ranges: vec![self.into()],
-            })),
+            KclValue::Object { value: values, meta } => {
+                // Special-case for negating line-like objects.
+                let Some(direction) = values.get("direction") else {
+                    return Err(err());
+                };
+
+                let direction = match direction {
+                    KclValue::MixedArray { value: values, meta } => {
+                        let values = values
+                            .iter()
+                            .map(|v| match v {
+                                KclValue::Number { value, ty, meta } => Ok(KclValue::Number {
+                                    value: *value * -1.0,
+                                    ty: ty.clone(),
+                                    meta: meta.clone(),
+                                }),
+                                _ => Err(err()),
+                            })
+                            .collect::<Result<Vec<_>, _>>()?;
+
+                        KclValue::MixedArray {
+                            value: values,
+                            meta: meta.clone(),
+                        }
+                    }
+                    KclValue::HomArray {
+                        value: values,
+                        ty: ty @ RuntimeType::Primitive(PrimitiveType::Number(_)),
+                    } => {
+                        let values = values
+                            .iter()
+                            .map(|v| match v {
+                                KclValue::Number { value, ty, meta } => Ok(KclValue::Number {
+                                    value: *value * -1.0,
+                                    ty: ty.clone(),
+                                    meta: meta.clone(),
+                                }),
+                                _ => Err(err()),
+                            })
+                            .collect::<Result<Vec<_>, _>>()?;
+
+                        KclValue::HomArray {
+                            value: values,
+                            ty: ty.clone(),
+                        }
+                    }
+                    _ => return Err(err()),
+                };
+
+                let mut value = values.clone();
+                value.insert("direction".to_owned(), direction);
+                Ok(KclValue::Object {
+                    value,
+                    meta: meta.clone(),
+                })
+            }
+            _ => Err(err()),
         }
     }
 }
@@ -2145,6 +2204,27 @@ impl FunctionSource {
                     }
                 }
 
+                let op = if props.include_in_feature_tree {
+                    let op_labeled_args = args
+                        .kw_args
+                        .labeled
+                        .iter()
+                        .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
+                        .collect();
+                    Some(Operation::KclStdLibCall {
+                        // TODO
+                        name: String::new(),
+                        unlabeled_arg: args
+                            .unlabeled_kw_arg_unconverted()
+                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
+                        labeled_args: op_labeled_args,
+                        source_range: callsite,
+                        is_error: false,
+                    })
+                } else {
+                    None
+                };
+
                 // Attempt to call the function.
                 exec_state.mut_stack().push_new_env_for_rust_call();
                 let mut result = {
@@ -2152,7 +2232,15 @@ impl FunctionSource {
                     let result = func(exec_state, args).await;
                     exec_state.mut_stack().pop_env();
 
-                    // TODO support recording op into the feature tree
+                    if let Some(mut op) = op {
+                        op.set_std_lib_call_is_error(result.is_err());
+                        // Track call operation.  We do this after the call
+                        // since things like patternTransform may call user code
+                        // before running, and we will likely want to use the
+                        // return value. The call takes ownership of the args,
+                        // so we need to build the op before the call.
+                        exec_state.global.operations.push(op);
+                    }
                     result
                 }?;
 

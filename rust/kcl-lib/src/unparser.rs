@@ -1235,7 +1235,7 @@ insideRevolve = startSketchOn(XZ)
   |> line([0, -thickness], %)
   |> line([-overHangLength, 0], %)
   |> close()
-  |> revolve({ axis: 'y' }, %)
+  |> revolve({ axis = Y }, %)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
 sphere = startSketchOn(XZ)
@@ -1250,7 +1250,7 @@ sphere = startSketchOn(XZ)
        radius = sphereDia / 2 - 0.05
      }, %)
   |> close()
-  |> revolve({ axis: 'x' }, %)
+  |> revolve({ axis = X }, %)
   |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
@@ -1274,7 +1274,7 @@ outsideRevolve = startSketchOn(XZ)
   |> line([0, thickness], %)
   |> line([overHangLength - thickness, 0], %)
   |> close()
-  |> revolve({ axis: 'y' }, %)"#;
+  |> revolve({ axis = Y }, %)"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
@@ -1301,7 +1301,7 @@ insideRevolve = startSketchOn(XZ)
   |> line([0, -thickness], %)
   |> line([-overHangLength, 0], %)
   |> close()
-  |> revolve({ axis = 'y' }, %)
+  |> revolve({ axis = Y }, %)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
 sphere = startSketchOn(XZ)
@@ -1316,7 +1316,7 @@ sphere = startSketchOn(XZ)
        radius = sphereDia / 2 - 0.05
      }, %)
   |> close()
-  |> revolve({ axis = 'x' }, %)
+  |> revolve({ axis = X }, %)
   |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
@@ -1340,7 +1340,7 @@ outsideRevolve = startSketchOn(XZ)
   |> line([0, thickness], %)
   |> line([overHangLength - thickness, 0], %)
   |> close()
-  |> revolve({ axis = 'y' }, %)
+  |> revolve({ axis = Y }, %)
 "#
         );
     }
@@ -1613,9 +1613,9 @@ fn bracketSketch = (w, d, t) => {
   s = startSketchOn({
          plane: {
   origin: { x = 0, y = length / 2 + thk, z = 0 },
-  x_axis: { x = 1, y = 0, z = 0 },
-  y_axis: { x = 0, y = 0, z = 1 },
-  z_axis: { x = 0, y = 1, z = 0 }
+  x_axis = { x = 1, y = 0, z = 0 },
+  y_axis = { x = 0, y = 0, z = 1 },
+  z_axis = { x = 0, y = 1, z = 0 }
 }
        })
     |> startProfileAt([-w / 2 - t, d + t], %)
@@ -1645,9 +1645,9 @@ bracket_body = bracketSketch(width, depth, thk)
 tabs_r = startSketchOn({
        plane: {
   origin: { x = 0, y = 0, z = depth + thk },
-  x_axis: { x = 1, y = 0, z = 0 },
-  y_axis: { x = 0, y = 1, z = 0 },
-  z_axis: { x = 0, y = 0, z = 1 }
+  x_axis = { x = 1, y = 0, z = 0 },
+  y_axis = { x = 0, y = 1, z = 0 },
+  z_axis = { x = 0, y = 0, z = 1 }
 }
      })
   |> startProfileAt([width / 2 + thk, length / 2 + thk], %)
@@ -2528,9 +2528,9 @@ fn f() {
 sketch002 = startSketchOn({
        plane: {
     origin: { x = 1, y = 2, z = 3 },
-    x_axis: { x = 4, y = 5, z = 6 },
-    y_axis: { x = 7, y = 8, z = 9 },
-    z_axis: { x = 10, y = 11, z = 12 }
+    x_axis = { x = 4, y = 5, z = 6 },
+    y_axis = { x = 7, y = 8, z = 9 },
+    z_axis = { x = 10, y = 11, z = 12 }
        }
   })
 "#;

@@ -154,6 +154,22 @@ impl Args {
         })
     }
 
+    pub(crate) fn get_kw_arg_opt_typed<T>(
+        &self,
+        label: &str,
+        ty: &RuntimeType,
+        exec_state: &mut ExecState,
+    ) -> Result<Option<T>, KclError>
+    where
+        T: for<'a> FromKclValue<'a>,
+    {
+        if self.kw_args.labeled.get(label).is_none() {
+            return Ok(None);
+        };
+
+        self.get_kw_arg_typed(label, ty, exec_state).map(Some)
+    }
+
     /// Get a keyword argument. If not set, returns Err.
     pub(crate) fn get_kw_arg<'a, T>(&'a self, label: &str) -> Result<T, KclError>
     where
@@ -673,37 +689,6 @@ impl Args {
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
         FromArgs::from_args(self, 0)
-    }
-
-    pub(crate) fn get_data_and_sketches<'a, T>(
-        &'a self,
-        exec_state: &mut ExecState,
-    ) -> Result<(T, Vec<Sketch>), KclError>
-    where
-        T: serde::de::DeserializeOwned + FromArgs<'a>,
-    {
-        let data: T = FromArgs::from_args(self, 0)?;
-        let Some(arg1) = self.args.get(1) else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected one or more sketches for second argument".to_owned(),
-                source_ranges: vec![self.source_range],
-            }));
-        };
-        let sarg = arg1
-            .value
-            .coerce(&RuntimeType::sketches(), exec_state)
-            .ok_or(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected one or more sketches for second argument, found {}",
-                    arg1.value.human_friendly_type()
-                ),
-                source_ranges: vec![self.source_range],
-            }))?;
-        let sketches = match sarg {
-            KclValue::HomArray { value, .. } => value.iter().map(|v| v.as_sketch().unwrap().clone()).collect(),
-            _ => unreachable!(),
-        };
-        Ok((data, sketches))
     }
 
     pub(crate) fn get_data_and_sketch_and_tag<'a, T>(
@@ -1583,50 +1568,6 @@ impl<'a> FromKclValue<'a> for super::sketch::SketchData {
     }
 }
 
-impl<'a> FromKclValue<'a> for super::axis_or_reference::AxisAndOrigin2d {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        // Case 1: predefined planes.
-        if let Some(s) = arg.as_str() {
-            return match s {
-                "X" | "x" => Some(Self::X),
-                "Y" | "y" => Some(Self::Y),
-                "-X" | "-x" => Some(Self::NegX),
-                "-Y" | "-y" => Some(Self::NegY),
-                _ => None,
-            };
-        }
-        // Case 2: custom planes.
-        let obj = arg.as_object()?;
-        let_field_of!(obj, custom, &KclObjectFields);
-        let_field_of!(custom, origin);
-        let_field_of!(custom, axis);
-        Some(Self::Custom { axis, origin })
-    }
-}
-
-impl<'a> FromKclValue<'a> for super::axis_or_reference::AxisAndOrigin3d {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        // Case 1: predefined planes.
-        if let Some(s) = arg.as_str() {
-            return match s {
-                "X" | "x" => Some(Self::X),
-                "Y" | "y" => Some(Self::Y),
-                "Z" | "z" => Some(Self::Z),
-                "-X" | "-x" => Some(Self::NegX),
-                "-Y" | "-y" => Some(Self::NegY),
-                "-Z" | "-z" => Some(Self::NegZ),
-                _ => None,
-            };
-        }
-        // Case 2: custom planes.
-        let obj = arg.as_object()?;
-        let_field_of!(obj, custom, &KclObjectFields);
-        let_field_of!(custom, origin);
-        let_field_of!(custom, axis);
-        Some(Self::Custom { axis, origin })
-    }
-}
-
 impl<'a> FromKclValue<'a> for super::fillet::EdgeReference {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let id = arg.as_uuid().map(Self::Uuid);
@@ -1637,25 +1578,27 @@ impl<'a> FromKclValue<'a> for super::fillet::EdgeReference {
 
 impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis2dOrEdgeReference {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let case1 = super::axis_or_reference::AxisAndOrigin2d::from_kcl_val;
+        let case1 = |arg: &KclValue| {
+            let obj = arg.as_object()?;
+            let_field_of!(obj, direction);
+            let_field_of!(obj, origin);
+            Some(Self::Axis { direction, origin })
+        };
         let case2 = super::fillet::EdgeReference::from_kcl_val;
-        case1(arg).map(Self::Axis).or_else(|| case2(arg).map(Self::Edge))
+        case1(arg).or_else(|| case2(arg).map(Self::Edge))
     }
 }
 
 impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis3dOrEdgeReference {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let case1 = super::axis_or_reference::AxisAndOrigin3d::from_kcl_val;
+        let case1 = |arg: &KclValue| {
+            let obj = arg.as_object()?;
+            let_field_of!(obj, direction);
+            let_field_of!(obj, origin);
+            Some(Self::Axis { direction, origin })
+        };
         let case2 = super::fillet::EdgeReference::from_kcl_val;
-        case1(arg).map(Self::Axis).or_else(|| case2(arg).map(Self::Edge))
-    }
-}
-
-impl<'a> FromKclValue<'a> for super::mirror::Mirror2dData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, axis);
-        Some(Self { axis })
+        case1(arg).or_else(|| case2(arg).map(Self::Edge))
     }
 }
 

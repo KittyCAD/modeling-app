@@ -61,7 +61,7 @@ const prepareToEditExtrude: PrepareToEditCallback =
     if (
       !artifact ||
       !('pathId' in artifact) ||
-      operation.type !== 'StdLibCall'
+      (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall')
     ) {
       return baseCommand
     }
@@ -144,7 +144,7 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
     groupId: 'modeling',
   }
   if (
-    operation.type !== 'StdLibCall' ||
+    (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
     !operation.labeledArgs ||
     (!isChamfer && !isFillet)
   ) {
@@ -255,7 +255,7 @@ const prepareToEditShell: PrepareToEditCallback =
     }
 
     if (
-      operation.type !== 'StdLibCall' ||
+      (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
       !operation.labeledArgs ||
       !operation.unlabeledArg ||
       operation.unlabeledArg.value.type !== 'Solid' ||
@@ -368,7 +368,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
     groupId: 'modeling',
   }
   if (
-    operation.type !== 'StdLibCall' ||
+    (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
     !operation.labeledArgs ||
     !operation.unlabeledArg ||
     !('offset' in operation.labeledArgs) ||
@@ -442,7 +442,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
     groupId: 'modeling',
   }
   if (
-    operation.type !== 'StdLibCall' ||
+    (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
     !operation.labeledArgs ||
     !operation.unlabeledArg ||
     !('sectional' in operation.labeledArgs) ||
@@ -450,7 +450,11 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
   ) {
     return baseCommand
   }
-  if (!artifact || !('pathId' in artifact) || operation.type !== 'StdLibCall') {
+  if (
+    !artifact ||
+    !('pathId' in artifact) ||
+    (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall')
+  ) {
     return baseCommand
   }
 
@@ -575,7 +579,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
     name: 'Helix',
     groupId: 'modeling',
   }
-  if (operation.type !== 'StdLibCall' || !operation.labeledArgs) {
+  if (operation.type !== 'KclStdLibCall' || !operation.labeledArgs) {
     return { reason: 'Wrong operation type or arguments' }
   }
 
@@ -918,6 +922,8 @@ export function getOperationLabel(op: Operation): string {
   switch (op.type) {
     case 'StdLibCall':
       return stdLibMap[op.name]?.label ?? op.name
+    case 'KclStdLibCall':
+      return stdLibMap[op.name]?.label ?? op.name
     case 'UserDefinedFunctionCall':
       return op.name ?? 'Anonymous custom function'
     case 'UserDefinedFunctionReturn':
@@ -931,6 +937,8 @@ export function getOperationLabel(op: Operation): string {
 export function getOperationIcon(op: Operation): CustomIconName {
   switch (op.type) {
     case 'StdLibCall':
+      return stdLibMap[op.name]?.icon ?? 'questionMark'
+    case 'KclStdLibCall':
       return stdLibMap[op.name]?.icon ?? 'questionMark'
     default:
       return 'make-variable'
@@ -1026,7 +1034,7 @@ export async function enterEditFlow({
   operation,
   artifact,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  if (operation.type !== 'StdLibCall') {
+  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
     return new Error(
       'Feature tree editing not yet supported for user-defined functions. Please edit in the code editor.'
     )
@@ -1065,7 +1073,7 @@ export async function enterAppearanceFlow({
   operation,
   artifact,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  if (operation.type !== 'StdLibCall') {
+  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
     return new Error(
       'Appearance setting not yet supported for user-defined functions. Please edit in the code editor.'
     )
