@@ -222,7 +222,7 @@
 //!                       +-------------^--------------+
 //!                                     |
 //!                                     | shared, immutable OR
-//!                                     | uniquely owned immutable reference
+//!                                     | uniquely owned mutable reference
 //!                           +---------+---------+
 //!                           |      Stack 42     |
 //!                           |-------------------|
