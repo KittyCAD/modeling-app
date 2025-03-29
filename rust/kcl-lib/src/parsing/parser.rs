@@ -2333,21 +2333,6 @@ fn nameable_identifier(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
         ));
     }
 
-    if let Some(suggestion) = super::deprecation(&result.name, DeprecationKind::Const) {
-        ParseContext::warn(
-            CompilationError::err(
-                result.as_source_range(),
-                format!("Using `{}` is deprecated, prefer using `{}`.", result.name, suggestion),
-            )
-            .with_suggestion(
-                format!("Replace `{}` with `{}`", result.name, suggestion),
-                suggestion,
-                None,
-                Tag::Deprecated,
-            ),
-        );
-    }
-
     Ok(result)
 }
 
@@ -2366,8 +2351,7 @@ fn name(i: &mut TokenSlice) -> PResult<Node<Name>> {
     let name = idents.pop().unwrap();
     let end = name.end;
     let module_id = name.module_id;
-
-    Ok(Node::new(
+    let result = Node::new(
         Name {
             name,
             path: idents,
@@ -2377,7 +2361,24 @@ fn name(i: &mut TokenSlice) -> PResult<Node<Name>> {
         start,
         end,
         module_id,
-    ))
+    );
+
+    if let Some(suggestion) = super::deprecation(&result.to_string(), DeprecationKind::Const) {
+        ParseContext::warn(
+            CompilationError::err(
+                result.as_source_range(),
+                format!("Using `{result}` is deprecated, prefer using `{suggestion}`."),
+            )
+            .with_suggestion(
+                format!("Replace `{result}` with `{suggestion}`"),
+                suggestion,
+                None,
+                Tag::Deprecated,
+            ),
+        );
+    }
+
+    Ok(result)
 }
 
 impl TryFrom<Token> for Node<TagDeclarator> {
