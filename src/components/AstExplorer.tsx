@@ -1,5 +1,5 @@
 import { useModelingContext } from 'hooks/useModelingContext'
-import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
+import { editorManager, kclManager } from 'lib/singletons'
 import { getNodeFromPath } from 'lang/queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { useEffect, useRef, useState } from 'react'
@@ -135,12 +135,10 @@ function DisplayObj({
         const range = topLevelRange(obj?.start || 0, obj.end || 0)
         const idInfo = codeToIdSelections(
           [{ codeRef: codeRefFromRange(range, kclManager.ast) }],
-          engineCommandManager.artifactGraph,
-          engineCommandManager.artifactIndex
+          kclManager.artifactGraph,
+          kclManager.artifactIndex
         )[0]
-        const artifact = engineCommandManager.artifactGraph.get(
-          idInfo?.id || ''
-        )
+        const artifact = kclManager.artifactGraph.get(idInfo?.id || '')
         if (!artifact) return
         send({
           type: 'Set selection',
