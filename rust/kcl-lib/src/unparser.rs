@@ -1,5 +1,8 @@
 use std::fmt::Write;
 
+#[cfg(feature = "cli")]
+use clap::ValueEnum;
+
 use crate::parsing::{
     ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
@@ -864,7 +867,30 @@ impl Parameter {
     }
 }
 
-/// Collect all the kcl files in a directory, recursively.
+lazy_static::lazy_static! {
+
+    pub static ref IMPORT_FILE_EXTENSIONS: Vec<String> = {
+        let mut import_file_extensions = vec!["stp".to_string(), "glb".to_string(), "fbxb".to_string()];
+        #[cfg(feature = "cli")]
+        let named_extensions = kittycad::types::FileImportFormat::value_variants()
+            .iter()
+            .map(|x| format!("{}", x))
+            .collect::<Vec<String>>();
+        #[cfg(not(feature = "cli"))]
+        let named_extensions = vec![]; // We don't really need this outside of the CLI.
+        // Add all the default import formats.
+        import_file_extensions.extend_from_slice(&named_extensions);
+        import_file_extensions
+    };
+
+    pub static ref RELEVANT_EXTENSIONS: Vec<String> = {
+        let mut relevant_extensions = IMPORT_FILE_EXTENSIONS.clone();
+        relevant_extensions.push("kcl".to_string());
+        relevant_extensions
+    };
+}
+
+/// Collect all the kcl (and other relevant) files in a directory, recursively.
 #[cfg(not(target_arch = "wasm32"))]
 #[async_recursion::async_recursion]
 pub async fn walk_dir(dir: &std::path::PathBuf) -> Result<Vec<std::path::PathBuf>, anyhow::Error> {
@@ -881,7 +907,10 @@ pub async fn walk_dir(dir: &std::path::PathBuf) -> Result<Vec<std::path::PathBuf
 
         if path.is_dir() {
             files.extend(walk_dir(&path).await?);
-        } else if path.extension().is_some_and(|ext| ext == "kcl") {
+        } else if path
+            .extension()
+            .is_some_and(|ext| RELEVANT_EXTENSIONS.contains(&ext.to_string_lossy().to_string()))
+        {
             files.push(path);
         }
     }
@@ -901,6 +930,8 @@ pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -
 
     let futures = files
         .into_iter()
+        .filter(|file| file.extension().is_some_and(|ext| ext == "kcl")) // We only care about kcl
+        // files here.
         .map(|file| {
             let options = options.clone();
             tokio::spawn(async move {
