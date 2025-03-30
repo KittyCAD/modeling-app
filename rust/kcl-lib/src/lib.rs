@@ -93,7 +93,7 @@ pub use lsp::{
     kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},
 };
 pub use modules::ModuleId;
-pub use parsing::ast::{modify::modify_ast_for_sketch, types::FormatOptions};
+pub use parsing::ast::types::FormatOptions;
 pub use settings::types::{project::ProjectConfiguration, Configuration, UnitLength};
 pub use source_range::SourceRange;
 #[cfg(not(target_arch = "wasm32"))]

@@ -618,7 +618,7 @@ impl ExecutorContext {
                     if reapply_settings
                         && self
                             .engine
-                            .reapply_settings(&self.settings, Default::default())
+                            .reapply_settings(&self.settings, Default::default(), old_state.id_generator())
                             .await
                             .is_err()
                     {
@@ -636,7 +636,7 @@ impl ExecutorContext {
                 CacheResult::NoAction(true) => {
                     if self
                         .engine
-                        .reapply_settings(&self.settings, Default::default())
+                        .reapply_settings(&self.settings, Default::default(), old_state.id_generator())
                         .await
                         .is_ok()
                     {
@@ -737,7 +737,7 @@ impl ExecutorContext {
 
         // Re-apply the settings, in case the cache was busted.
         self.engine
-            .reapply_settings(&self.settings, Default::default())
+            .reapply_settings(&self.settings, Default::default(), exec_state.id_generator())
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
