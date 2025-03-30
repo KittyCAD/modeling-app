@@ -1,4 +1,4 @@
-import { Models } from '@kittycad/lib'
+import { Models, ml, Client } from '@kittycad/lib'
 import { VITE_KC_API_BASE_URL } from 'env'
 import crossPlatformFetch from './crossPlatformFetch'
 import { err, reportRejection } from './trap'
@@ -12,6 +12,9 @@ import { uuidv4 } from './utils'
 import { diffLines } from 'diff'
 import { Transaction, EditorSelection, SelectionRange } from '@codemirror/state'
 import { modelingMachineEvent } from 'editor/manager'
+import { getCookie, TOKEN_PERSIST_KEY } from 'machines/authMachine'
+import { COOKIE_NAME } from './constants'
+import { TextToCadMultiFileIteration_type } from '@kittycad/lib/dist/types/src/models'
 
 function sourceIndexToLineColumn(
   code: string,
@@ -48,29 +51,43 @@ export async function submitPromptToEditToQueue({
   projectName: string
   token?: string
   artifactGraph: ArtifactGraph
-}): Promise<Models['TextToCadIteration_type'] | Error> {
+}) {
+  const _token =
+    token && token !== ''
+      ? token
+      : getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
+
+  const client = new Client(_token)
+
   // If no selection, use whole file
   if (selections === null) {
-    const body: Models['TextToCadIterationBody_type'] = {
-      original_source_code: code,
-      prompt,
-      source_ranges: [], // Empty ranges indicates whole file
-      project_name:
-        projectName !== '' && projectName !== 'browser'
-          ? projectName
-          : undefined,
-      kcl_version: kclManager.kclVersion,
-    }
-    return submitToApi(body, token)
+    const codeBlob = new Blob([code], { type: 'text/plain' })
+    return ml.create_text_to_cad_multi_file_iteration({
+      client,
+      body: {
+        source_ranges: [],
+        project_name:
+          projectName !== '' && projectName !== 'browser'
+            ? projectName
+            : undefined,
+        kcl_version: kclManager.kclVersion,
+      },
+      files: [
+        {
+          name: 'myFile.kcl',
+          data: codeBlob,
+        },
+      ],
+    })
   }
 
   // Handle manual code selections and artifact selections differently
-  const ranges: Models['TextToCadIterationBody_type']['source_ranges'] =
+  const ranges: Models['SourceRangePrompt_type'][] =
     selections.graphSelections.flatMap((selection) => {
       const artifact = selection.artifact
 
       // For artifact selections, add context
-      const prompts: Models['TextToCadIterationBody_type']['source_ranges'] = []
+      const prompts: Models['SourceRangePrompt_type'][] = []
 
       if (artifact?.type === 'cap') {
         prompts.push({
@@ -84,6 +101,7 @@ If you need to operate on this cap, for example for sketching on the face, you c
 When they made this selection they main have intended this surface directly or meant something more general like the sweep body.
 See later source ranges for more context.`,
           range: convertAppRangeToApiRange(selection.codeRef.range, code),
+          file: 'myFile.kcl',
         })
         let sweep = getArtifactOfTypes(
           { key: artifact.sweepId, types: ['sweep'] },
@@ -93,6 +111,7 @@ See later source ranges for more context.`,
           prompts.push({
             prompt: `This is the sweep's source range from the user's main selection of the end cap.`,
             range: convertAppRangeToApiRange(sweep.codeRef.range, code),
+            file: 'myFile.kcl',
           })
         }
       }
@@ -102,6 +121,7 @@ See later source ranges for more context.`,
 The source range though is for the original segment before it was extruded, you can add a tag to that segment in order to refer to this wall, for example "startSketchOn(someSweepVariable, segmentTag)"
 But it's also worth bearing in mind that the user may have intended to select the sweep itself, not this individual wall, see later source ranges for more context. about the sweep`,
           range: convertAppRangeToApiRange(selection.codeRef.range, code),
+          file: 'myFile.kcl',
         })
         let sweep = getArtifactOfTypes(
           { key: artifact.sweepId, types: ['sweep'] },
@@ -111,6 +131,7 @@ But it's also worth bearing in mind that the user may have intended to select th
           prompts.push({
             prompt: `This is the sweep's source range from the user's main selection of the end cap.`,
             range: convertAppRangeToApiRange(sweep.codeRef.range, code),
+            file: 'myFile.kcl',
           })
         }
       }
@@ -127,6 +148,7 @@ and then use the function ${
           }
 See later source ranges for more context. about the sweep`,
           range: convertAppRangeToApiRange(selection.codeRef.range, code),
+          file: 'myFile.kcl',
         })
         let sweep = getArtifactOfTypes(
           { key: artifact.sweepId, types: ['sweep'] },
@@ -136,6 +158,7 @@ See later source ranges for more context. about the sweep`,
           prompts.push({
             prompt: `This is the sweep's source range from the user's main selection of the end cap.`,
             range: convertAppRangeToApiRange(sweep.codeRef.range, code),
+            file: 'myFile.kcl',
           })
         }
       }
@@ -144,6 +167,7 @@ See later source ranges for more context. about the sweep`,
           prompts.push({
             prompt: `This selection is of a segment, likely an individual part of a profile. Segments are often "constrained" by the use of variables and relationships with other segments. Adding tags to segments helps refer to their length, angle or other properties`,
             range: convertAppRangeToApiRange(selection.codeRef.range, code),
+            file: 'myFile.kcl',
           })
         } else {
           prompts.push({
@@ -152,6 +176,7 @@ Because it now refers to an edge the way to refer to this edge is to add a tag t
 i.e. \`fillet( radius = someInteger, tags = [newTag])\` will work in the case of filleting this edge
 See later source ranges for more context. about the sweep`,
             range: convertAppRangeToApiRange(selection.codeRef.range, code),
+            file: 'myFile.kcl',
           })
           let path = getArtifactOfTypes(
             { key: artifact.pathId, types: ['path'] },
@@ -166,6 +191,7 @@ See later source ranges for more context. about the sweep`,
               prompts.push({
                 prompt: `This is the sweep's source range from the user's main selection of the edge.`,
                 range: convertAppRangeToApiRange(sweep.codeRef.range, code),
+                file: 'myFile.kcl',
               })
             }
           }
@@ -177,56 +203,37 @@ See later source ranges for more context. about the sweep`,
         prompts.push({
           prompt: '',
           range: convertAppRangeToApiRange(selection.codeRef.range, code),
+          file: 'myFile.kcl',
         })
       }
       return prompts
     })
-
-  const body: Models['TextToCadIterationBody_type'] = {
-    original_source_code: code,
-    prompt,
-    source_ranges: ranges,
-    project_name:
-      projectName !== '' && projectName !== 'browser' ? projectName : undefined,
-    kcl_version: kclManager.kclVersion,
-  }
-
-  return submitToApi(body, token)
-}
-
-// Helper function to handle API submission
-async function submitToApi(
-  body: Models['TextToCadIterationBody_type'],
-  token?: string
-): Promise<Models['TextToCadIteration_type'] | Error> {
-  const url = VITE_KC_API_BASE_URL + '/ml/text-to-cad/iteration'
-  const data: Models['TextToCadIteration_type'] | Error =
-    await crossPlatformFetch(
-      url,
+  const codeBlob = new Blob([code], { type: 'text/plain' })
+  return ml.create_text_to_cad_multi_file_iteration({
+    client,
+    body: {
+      source_ranges: ranges,
+      project_name:
+        projectName !== '' && projectName !== 'browser'
+          ? projectName
+          : undefined,
+      kcl_version: kclManager.kclVersion,
+    },
+    files: [
       {
-        method: 'POST',
-        body: JSON.stringify(body),
+        name: 'myFile.kcl',
+        data: codeBlob,
       },
-      token
-    )
-
-  // Make sure we have an id.
-  if (data instanceof Error) {
-    return data
-  }
-
-  if (!data.id) {
-    return new Error('No id returned from Text-to-CAD API')
-  }
-  return data
+    ],
+  })
 }
 
 export async function getPromptToEditResult(
   id: string,
   token?: string
-): Promise<Models['TextToCadIteration_type'] | Error> {
+): Promise<Models['TextToCadMultiFileIteration_type'] | Error> {
   const url = VITE_KC_API_BASE_URL + '/async/operations/' + id
-  const data: Models['TextToCadIteration_type'] | Error =
+  const data: Models['TextToCadMultiFileIteration_type'] | Error =
     await crossPlatformFetch(
       url,
       {
@@ -252,44 +259,65 @@ export async function doPromptEdit({
   token?: string
   projectName: string
   artifactGraph: ArtifactGraph
-}): Promise<Models['TextToCadIteration_type'] | Error> {
+}): Promise<Models['TextToCadMultiFileIteration_type'] | Error> {
   const toastId = toast.loading('Submitting to Text-to-CAD API...')
-  const submitResult = await submitPromptToEditToQueue({
-    prompt,
-    selections,
-    code,
-    token,
-    artifactGraph,
-    projectName,
-  })
-  if (err(submitResult)) return submitResult
 
-  const textToCadComplete = new Promise<Models['TextToCadIteration_type']>(
-    (resolve, reject) => {
-      ;(async () => {
-        const MAX_CHECK_TIMEOUT = 3 * 60_000
-        const CHECK_DELAY = 200
+  const _token =
+    token && token !== ''
+      ? token
+      : getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
 
-        let timeElapsed = 0
+  let submitResult
 
-        while (timeElapsed < MAX_CHECK_TIMEOUT) {
-          const check = await getPromptToEditResult(submitResult.id, token)
-          if (check instanceof Error || check.status === 'failed') {
-            reject(check)
-            return
-          } else if (check.status === 'completed') {
-            resolve(check)
-            return
-          }
+    // work around for @kittycad/lib not really being built for the browser
+  ;(window as any).process = {
+    env: {
+      ZOO_API_TOKEN: token,
+      ZOO_HOST: VITE_KC_API_BASE_URL,
+    },
+  }
+  try {
+    submitResult = await submitPromptToEditToQueue({
+      prompt,
+      selections,
+      code,
+      token,
+      artifactGraph,
+      projectName,
+    })
+  } catch (e: any) {
+    return new Error(e.message)
+  }
+  if ('error_code' in submitResult) {
+    return new Error(submitResult.message)
+  }
 
-          await new Promise((r) => setTimeout(r, CHECK_DELAY))
-          timeElapsed += CHECK_DELAY
+  const textToCadComplete = new Promise<
+    Models['TextToCadMultiFileIteration_type']
+  >((resolve, reject) => {
+    ;(async () => {
+      const MAX_CHECK_TIMEOUT = 3 * 60_000
+      const CHECK_DELAY = 200
+
+      let timeElapsed = 0
+
+      while (timeElapsed < MAX_CHECK_TIMEOUT) {
+        const check = await getPromptToEditResult(submitResult.id, token)
+        if (check instanceof Error || check.status === 'failed') {
+          reject(check)
+          return
+        } else if (check.status === 'completed') {
+          resolve(check)
+          return
         }
 
-        reject(new Error('Text-to-CAD API timed out'))
-      })().catch(reportRejection)
-    }
-  )
+        await new Promise((r) => setTimeout(r, CHECK_DELAY))
+        timeElapsed += CHECK_DELAY
+      }
+
+      reject(new Error('Text-to-CAD API timed out'))
+    })().catch(reportRejection)
+  })
 
   try {
     const result = await textToCadComplete
@@ -332,7 +360,13 @@ export async function promptToEditFlow({
   })
   if (err(result)) return Promise.reject(result)
   const oldCode = codeManager.code
-  const { code: newCode } = result
+  // TODO remove once endpoint isn't returning fake data.
+  const outputs: TextToCadMultiFileIteration_type['outputs'] = {}
+  Object.entries(result.outputs).forEach(([key, value]) => {
+    outputs[key] = value + '\n// yoyo a comment'
+  })
+
+  const newCode = result.outputs['myFile.kcl']
   codeManager.updateCodeEditor(newCode)
   const diff = reBuildNewCodeWithRanges(oldCode, newCode)
   const ranges: SelectionRange[] = diff.insertRanges.map((range) =>

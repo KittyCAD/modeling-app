@@ -6,7 +6,7 @@ import { PATHS } from 'lib/paths'
 import toast from 'react-hot-toast'
 import {
   TextToCad_type,
-  TextToCadIteration_type,
+  TextToCadMultiFileIteration_type,
 } from '@kittycad/lib/dist/types/src/models'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
@@ -461,7 +461,7 @@ export function ToastPromptToEditCadSuccess({
 }: {
   toastId: string
   oldCode: string
-  data: TextToCadIteration_type
+  data: TextToCadMultiFileIteration_type
   token?: string
 }) {
   const modelId = data.id

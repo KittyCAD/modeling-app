@@ -202,7 +202,7 @@ async function getUser(input: { token?: string }) {
   }
 }
 
-function getCookie(cname: string): string | null {
+export function getCookie(cname: string): string | null {
   if (isDesktop()) {
     return null
   }
