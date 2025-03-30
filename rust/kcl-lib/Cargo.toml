@@ -1,7 +1,7 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.2.55"
+version = "0.2.56"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
@@ -104,7 +104,7 @@ tower-lsp = { workspace = true, features = ["proposed", "default"] }
 
 [features]
 default = ["engine"]
-cli = ["dep:clap"]
+cli = ["dep:clap", "kittycad/clap"]
 dhat-heap = ["dep:dhat"]
 # For the lsp server, when run with stdout for rpc we want to disable println.
 # This is used for editor extensions that use the lsp server.
