@@ -867,7 +867,7 @@ impl Parameter {
 /// Collect all the kcl files in a directory, recursively.
 #[cfg(not(target_arch = "wasm32"))]
 #[async_recursion::async_recursion]
-pub(crate) async fn walk_dir(dir: &std::path::PathBuf) -> Result<Vec<std::path::PathBuf>, anyhow::Error> {
+pub async fn walk_dir(dir: &std::path::PathBuf) -> Result<Vec<std::path::PathBuf>, anyhow::Error> {
     // Make sure we actually have a directory.
     if !dir.is_dir() {
         anyhow::bail!("`{}` is not a directory", dir.display());
