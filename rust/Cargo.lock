@@ -1780,7 +1780,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.55"
+version = "0.1.56"
 dependencies = [
  "anyhow",
  "clap",
@@ -1791,7 +1791,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.1.55"
+version = "0.1.56"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -1810,7 +1810,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.55"
+version = "0.1.56"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1819,7 +1819,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.55"
+version = "0.2.56"
 dependencies = [
  "anyhow",
  "clap",
@@ -1840,7 +1840,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.55"
+version = "0.1.56"
 dependencies = [
  "anyhow",
  "clap",
@@ -1860,7 +1860,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.55"
+version = "0.2.56"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -1928,7 +1928,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.55"
+version = "0.3.56"
 dependencies = [
  "anyhow",
  "kcl-lib",
@@ -1943,7 +1943,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.55"
+version = "0.1.56"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -1956,7 +1956,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.55"
+version = "0.1.56"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1970,7 +1970,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.55"
+version = "0.1.56"
 dependencies = [
  "bson",
  "console_error_panic_hook",
@@ -1996,9 +1996,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.3.33"
+version = "0.3.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f6f65645cc07a8f43c34584e4979bf4da16c047cce50c4715fa9381227574d5"
+checksum = "0ca789947f28a03db46df7551664262d94baad8e60cebd106a8db800239905ef"
 dependencies = [
  "anyhow",
  "async-trait",
