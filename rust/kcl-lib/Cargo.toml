@@ -153,8 +153,3 @@ harness = false
 name = "executor"
 path = "e2e/executor/main.rs"
 required-features = ["engine"]
-
-[[test]]
-name = "modify"
-path = "e2e/modify/main.rs"
-required-features = ["engine"]
