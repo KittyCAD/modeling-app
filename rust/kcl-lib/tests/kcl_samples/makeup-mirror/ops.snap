@@ -1280,7 +1280,7 @@ description: Operations executed makeup-mirror.kcl
     "name": "mirrorFn",
     "functionSourceRange": [
       1389,
-      2106,
+      2151,
       0
     ],
     "unlabeledArg": null,
