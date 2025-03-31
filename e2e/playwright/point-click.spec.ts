@@ -581,6 +581,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
     editor,
     toolbar,
     scene,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
 
@@ -600,8 +601,6 @@ openSketch = startSketchOn(XY)
     }, initialCode)
 
     await homePage.goToModelingScene()
-    await u.waitForPageLoad()
-    await page.waitForTimeout(1000)
 
     const pointInsideCircle = {
       x: viewPortSize.width * 0.63,
@@ -631,8 +630,11 @@ openSketch = startSketchOn(XY)
     }
 
     await test.step(`Double-click on the closed sketch`, async () => {
+      await scene.settled(cmdBar)
       await moveToCircle()
+      await page.waitForTimeout(1000)
       await dblClickCircle()
+      await page.waitForTimeout(1000)
       await expect(toolbar.exitSketchBtn).toBeVisible()
       await editor.expectState({
         activeLines: [`|>circle(center=[8,5],radius=2)`],
@@ -1268,8 +1270,6 @@ openSketch = startSketchOn(XY)
           await page.keyboard.insertText('1')
           await cmdBar.progressCmdBar()
           await page.keyboard.insertText('100')
-          await cmdBar.progressCmdBar()
-          await page.waitForTimeout(1000)
           await cmdBar.expectState({
             stage: 'review',
             headerArguments: {
@@ -1283,6 +1283,7 @@ openSketch = startSketchOn(XY)
             commandName: 'Helix',
           })
           await cmdBar.progressCmdBar()
+          await page.waitForTimeout(1000)
         })
 
         await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
