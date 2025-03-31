@@ -176,6 +176,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         )
         .await?;
 
+        // Reset to the default units.  Modules assume the engine starts in the
+        // default state.
+        self.set_units(Default::default(), source_range, id_generator).await?;
+
         // Flush the batch queue, so clear is run right away.
         // Otherwise the hooks below won't work.
         self.flush_batch(false, source_range).await?;
@@ -255,9 +259,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Set the edge visibility.
         self.set_edge_visibility(settings.highlight_edges, source_range, id_generator)
             .await?;
-
-        // Change the units.
-        self.set_units(settings.units, source_range, id_generator).await?;
 
         // Send the command to show the grid.
         self.modify_grid(!settings.show_grid, source_range, id_generator)

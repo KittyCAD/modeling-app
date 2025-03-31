@@ -32,26 +32,30 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await page.keyboard.press('/')
     await page.keyboard.up('ControlOrMeta')
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn(XY)
+    await expect(page.locator('.cm-content')).toHaveText(
+      `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
-  // |> close()`)
+  // |> close()`.replaceAll('\n', '')
+    )
 
     // uncomment the code
     await page.keyboard.down('ControlOrMeta')
     await page.keyboard.press('/')
     await page.keyboard.up('ControlOrMeta')
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn(XY)
+    await expect(page.locator('.cm-content')).toHaveText(
+      `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
-  |> close()`)
+  |> close()`.replaceAll('\n', '')
+    )
   })
 
   test('ensure we use the cache, and do not re-execute', async ({
@@ -178,13 +182,15 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await page.locator('#code-pane button:first-child').click()
     await page.locator('button:has-text("Format code")').click()
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn(XY)
+    await expect(page.locator('.cm-content')).toHaveText(
+      `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
-  |> close()`)
+  |> close()`.replaceAll('\n', '')
+    )
   })
 
   test('if you click the format button it formats your code and executes so lints are still there', async ({
@@ -227,13 +233,15 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch_001 = startSketchOn(XY)
+    await expect(page.locator('.cm-content')).toHaveText(
+      `@settings(defaultLengthUnit = in)
+sketch_001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
-  |> close()`)
+  |> close()`.replaceAll('\n', '')
+    )
 
     // error in guter
     await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
@@ -471,6 +479,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
   test('if you write kcl with lint errors you get lints', async ({
     page,
     homePage,
+    scene,
   }) => {
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1000, height: 500 })
@@ -490,10 +499,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await page.keyboard.press('ArrowLeft')
     await page.keyboard.press('ArrowRight')
 
-    // FIXME: lsp errors do not propagate to the frontend until engine is connected and code is executed
-    // This timeout is to wait for engine connection. LSP and code execution errors should be handled differently
-    // LSP can emit errors as fast as it waits and show them in the editor
-    await page.waitForTimeout(10000)
+    await scene.waitForExecutionDone()
 
     // error in guter
     await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
@@ -815,10 +821,12 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
       // there shouldn't be any auto complete options for 'lin' in the comment
       await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
-      await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn(XZ)
+      await expect(page.locator('.cm-content')).toHaveText(
+        `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
         |> startProfileAt([3.14, 12], %)
-        |> xLine(%, length = 5) // lin`)
+        |> xLine(%, length = 5) // lin`.replaceAll('\n', '')
+      )
 
       // expect there to be no KCL errors
       await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
@@ -888,10 +896,12 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
       // there shouldn't be any auto complete options for 'lin' in the comment
       await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
-      await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn(XZ)
+      await expect(page.locator('.cm-content')).toHaveText(
+        `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
         |> startProfileAt([3.14, 12], %)
-        |> xLine(%, length = 5) // lin`)
+        |> xLine(%, length = 5) // lin`.replaceAll('\n', '')
+      )
     })
   })
   test('Can undo a click and point extrude with ctrl+z', async ({

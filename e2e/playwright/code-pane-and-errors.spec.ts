@@ -251,11 +251,11 @@ test(
       ])
       await Promise.all([
         fsp.copyFile(
-          executorInputPath('router-template-slate.kcl'),
+          executorInputPath('cylinder-inches.kcl'),
           join(routerTemplateDir, 'main.kcl')
         ),
         fsp.copyFile(
-          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
           join(bracketDir, 'main.kcl')
         ),
       ])

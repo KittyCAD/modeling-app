@@ -255,7 +255,7 @@ test.describe(`Testing gizmo, fixture-based`, () => {
     await context.addInitScript(() => {
       localStorage.setItem(
         'persistCode',
-        `
+        `@settings(defaultLengthUnit = in)
         const sketch002 = startSketchOn(XZ)
           |> startProfileAt([-108.83, -57.48], %)
           |> angledLine([0, 105.13], %, $rectangleSegmentA001)
