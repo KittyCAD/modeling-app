@@ -348,7 +348,7 @@ const extrudeDefaultPlane = async (
             theme: 'dark',
           },
           project: {
-            default_project_name: 'project-$nnn',
+            default_project_name: 'untitled',
           },
           text_editor: {
             text_wrapping: true,

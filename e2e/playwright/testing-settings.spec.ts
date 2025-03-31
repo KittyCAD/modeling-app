@@ -52,7 +52,7 @@ test.describe('Testing settings', () => {
     expect(storedSettings.settings?.modeling?.mouse_controls).toBe('zoo')
     expect(storedSettings.settings?.app?.project_directory).toBe('')
     expect(storedSettings.settings?.project?.default_project_name).toBe(
-      'project-$nnn'
+      'untitled'
     )
   })
 
