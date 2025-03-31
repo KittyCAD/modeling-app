@@ -30,6 +30,7 @@ import { commandBarActor } from 'machines/commandBarMachine'
 import { useToken } from 'machines/appMachine'
 import { useSettings } from 'machines/appMachine'
 import { rustContext } from 'lib/singletons'
+import toast from 'react-hot-toast'
 maybeWriteToDisk()
   .then(() => {})
   .catch(() => {})
@@ -97,6 +98,10 @@ export function App() {
       splitKey: '|',
     }
   )
+
+  useHotkeyWrapper(['mod + s'], () => {
+    toast.success('Your work is auto-saved in real-time')
+  })
 
   const paneOpacity = [onboardingPaths.CAMERA, onboardingPaths.STREAMING].some(
     (p) => p === onboardingStatus.current
