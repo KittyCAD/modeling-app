@@ -52,6 +52,7 @@
       "no-throw-literal": "off", // Use @typescript-eslint/only-throw-error instead.
       "@typescript-eslint/only-throw-error": "error",
       "@typescript-eslint/prefer-as-const": "warn",
+      "@typescript-eslint/prefer-namespace-keyword": "error",
       "jsx-a11y/click-events-have-key-events": "off",
       "jsx-a11y/no-autofocus": "off",
       "jsx-a11y/no-noninteractive-element-interactions": "off",
