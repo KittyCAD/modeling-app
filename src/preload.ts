@@ -163,7 +163,7 @@ const listMachines = async (
   })
 }
 
-const getMachineApiIp = async (): Promise<String | null> =>
+const getMachineApiIp = async (): Promise<string | null> =>
   ipcRenderer.invoke('find_machine_api')
 
 const getArgvParsed = () => {
