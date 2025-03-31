@@ -1279,6 +1279,27 @@ mod pattern_circular_in_module {
         super::execute(TEST_NAME, true).await
     }
 }
+mod pattern_linear_in_module {
+    const TEST_NAME: &str = "pattern_linear_in_module";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod tangential_arc {
     const TEST_NAME: &str = "tangential_arc";
 
