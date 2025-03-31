@@ -14,6 +14,7 @@ import { useFileContext } from 'hooks/useFileContext'
 import { useLspContext } from 'components/LspProvider'
 import { reportRejection } from 'lib/trap'
 import { useSettings } from 'machines/appMachine'
+import { isKclEmptyOrOnlySettings } from 'lang/wasm'
 
 /**
  * Show either a welcome screen or a warning screen
@@ -21,7 +22,7 @@ import { useSettings } from 'machines/appMachine'
  */
 export default function OnboardingIntroduction() {
   const [shouldShowWarning, setShouldShowWarning] = useState(
-    codeManager.code !== '' && codeManager.code !== bracket
+    !isKclEmptyOrOnlySettings(codeManager.code) && codeManager.code !== bracket
   )
 
   return shouldShowWarning ? (

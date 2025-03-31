@@ -1172,7 +1172,7 @@ fn find_examples(text: &str, filename: &str) -> Vec<(String, String)> {
 
 async fn run_example(text: &str) -> Result<()> {
     let program = crate::Program::parse_no_errs(text)?;
-    let ctx = ExecutorContext::new_with_default_client(crate::UnitLength::Mm).await?;
+    let ctx = ExecutorContext::new_with_default_client().await?;
     let mut exec_state = crate::execution::ExecState::new(&ctx);
     ctx.run(&program, &mut exec_state).await?;
     Ok(())

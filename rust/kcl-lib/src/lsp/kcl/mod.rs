@@ -812,56 +812,6 @@ impl Backend {
         Ok(())
     }
 
-    pub async fn update_units(
-        &self,
-        params: custom_notifications::UpdateUnitsParams,
-    ) -> RpcResult<Option<custom_notifications::UpdateUnitsResponse>> {
-        {
-            let mut ctx = self.executor_ctx.write().await;
-            // Borrow the executor context mutably.
-            let Some(ref mut executor_ctx) = *ctx else {
-                self.client
-                    .log_message(MessageType::ERROR, "no executor context set to update units for")
-                    .await;
-                return Ok(None);
-            };
-
-            self.client
-                .log_message(MessageType::INFO, format!("update units: {:?}", params))
-                .await;
-
-            if executor_ctx.settings.units == params.units
-                && !self.has_diagnostics(params.text_document.uri.as_ref()).await
-            {
-                // Return early the units are the same.
-                return Ok(None);
-            }
-
-            // Set the engine units.
-            executor_ctx.update_units(params.units);
-        }
-        // Lock is dropped here since nested.
-        // This is IMPORTANT.
-
-        let new_params = TextDocumentItem {
-            uri: params.text_document.uri.clone(),
-            text: std::mem::take(&mut params.text.to_string()),
-            version: Default::default(),
-            language_id: Default::default(),
-        };
-
-        // Force re-execution.
-        self.inner_on_change(new_params, true).await;
-
-        // Check if we have diagnostics.
-        // If we do we return early, since we failed in some way.
-        if self.has_diagnostics(params.text_document.uri.as_ref()).await {
-            return Ok(None);
-        }
-
-        Ok(Some(custom_notifications::UpdateUnitsResponse {}))
-    }
-
     pub async fn update_can_execute(
         &self,
         params: custom_notifications::UpdateCanExecuteParams,
