@@ -2501,8 +2501,6 @@ import 'a.kcl'
 
             let mut set = JoinSet::new();
             for module in modules {
-                eprintln!("{:?}", universe.get(&module));
-
                 let program = universe.get(&module).unwrap().clone();
                 let module = module.clone();
                 let mut exec_state = exec_state.clone();
