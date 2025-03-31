@@ -29,7 +29,7 @@ use crate::{
         args::{Arg, KwArgs},
         FunctionKind,
     },
-    CompilationError,
+    CompilationError, ExecutorSettings,
 };
 
 enum StatementKind<'a> {
@@ -2489,7 +2489,10 @@ import 'a.kcl'
             )),
             fs: Arc::new(crate::fs::FileManager::new()),
             stdlib: Arc::new(RwLock::new(crate::std::StdLib::new())),
-            settings: Default::default(),
+            settings: ExecutorSettings {
+                project_directory: Some("src/execution/_test/load_all_modules".parse().unwrap()),
+                ..Default::default()
+            },
             context_type: ContextType::Mock,
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
