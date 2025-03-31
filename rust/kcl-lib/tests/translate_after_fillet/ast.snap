@@ -2097,54 +2097,65 @@ description: Result of parsing translate_after_fillet.kcl
                   "label": {
                     "commentStart": 1597,
                     "end": 0,
-                    "name": "translate",
+                    "name": "x",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 1601,
+                    "end": 0,
+                    "raw": "10",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 10.0,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 1605,
+                    "end": 0,
+                    "name": "y",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
                     "commentStart": 1609,
-                    "elements": [
-                      {
-                        "commentStart": 1610,
-                        "end": 0,
-                        "raw": "10",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 10.0,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "commentStart": 1614,
-                        "end": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "commentStart": 1617,
-                        "end": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      }
-                    ],
                     "end": 0,
+                    "raw": "0",
                     "start": 0,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 1612,
+                    "end": 0,
+                    "name": "z",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 1616,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
                   }
                 }
               ],
@@ -2177,7 +2188,7 @@ description: Result of parsing translate_after_fillet.kcl
             "nonCodeNodes": {
               "1": [
                 {
-                  "commentStart": 1620,
+                  "commentStart": 1618,
                   "end": 0,
                   "start": 0,
                   "type": "NonCodeNode",

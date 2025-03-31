@@ -145,7 +145,7 @@ export type SaveSettingsPayload = RecursiveSettingsPayloads<typeof settings>
 
 /**
  * Annotation names for default units are defined on rust side in
- * src/wasm-lib/kcl/src/execution/annotations.rs
+ * rust/kcl-lib/src/execution/annotations.rs
  */
 export interface KclSettingsAnnotation {
   defaultLengthUnit?: UnitLength_type

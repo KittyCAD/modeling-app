@@ -118,7 +118,7 @@ export function modifyAstWithEdgeTreatmentAndTag(
   const astResult = insertParametersIntoAst(clonedAst, parameters)
   if (err(astResult)) return astResult
 
-  const artifactGraph = dependencies.engineCommandManager.artifactGraph
+  const artifactGraph = dependencies.kclManager.artifactGraph
 
   // Step 1: modify ast with tags and group them by extrude nodes (bodies)
   const extrudeToTagsMap: Map<

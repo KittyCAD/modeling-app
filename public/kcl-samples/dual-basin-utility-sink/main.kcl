@@ -1,6 +1,7 @@
 // Dual-Basin Utility Sink
 // A stainless steel sink unit with dual rectangular basins and six under-counter storage compartments.
 
+// set units
 @settings(defaultLengthUnit = mm)
 
 // globals
@@ -12,7 +13,7 @@ profileThickness = 13
 metalThickness = 2
 
 blockCount = 3
-blockWidth = (tableWidth-profileThickness) / 3
+blockWidth = (tableWidth - profileThickness) / 3
 blockHeight = tableHeight - metalThickness - 0.5
 blockDepth = tableDepth - profileThickness
 
@@ -27,9 +28,9 @@ legHeight = blockHeight - profileThickness
 legCount = blockCount + 1
 
 legBody = startProfileAt([0, 0], floorPlane)
-  |> yLine(length=profileThickness)
-  |> xLine(length=profileThickness)
-  |> yLine(length=-profileThickness)
+  |> yLine(length = profileThickness)
+  |> xLine(length = profileThickness)
+  |> yLine(length = -profileThickness)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(axis = [1, 0], instances = legCount, distance = blockWidth)
@@ -42,9 +43,9 @@ lowerBeltLengthX = blockWidth - profileThickness
 
 lowerBeltPlane = startSketchOn(offsetPlane(XY, offset = lowerBeltHeightAboveTheFloor))
 lowerBeltBodyX = startProfileAt([profileThickness, 0], lowerBeltPlane)
-  |> yLine(length=profileThickness)
-  |> xLine(length=lowerBeltLengthX)
-  |> yLine(length=-profileThickness)
+  |> yLine(length = profileThickness)
+  |> xLine(length = lowerBeltLengthX)
+  |> yLine(length = -profileThickness)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(axis = [1, 0], instances = blockCount, distance = blockWidth)
@@ -53,12 +54,12 @@ lowerBeltBodyX = startProfileAt([profileThickness, 0], lowerBeltPlane)
 
 lowerBeltLengthY = blockDepth - profileThickness
 lowerBeltBodyY = startProfileAt([0, profileThickness], lowerBeltPlane)
-  |> yLine(length=lowerBeltLengthY)
-  |> xLine(length=profileThickness)
-  |> yLine(length=-lowerBeltLengthY)
+  |> yLine(length = lowerBeltLengthY)
+  |> xLine(length = profileThickness)
+  |> yLine(length = -lowerBeltLengthY)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d(axis = [1, 0], instances = 2, distance = tableWidth-profileThickness)
+  |> patternLinear2d(axis = [1, 0], instances = 2, distance = tableWidth - profileThickness)
   |> extrude(length = profileThickness)
 
 // pillars
@@ -67,9 +68,9 @@ pillarPlane = startSketchOn(offsetPlane(XY, offset = pillarHeightAboveTheFloor))
 pillarTotalHeight = blockHeight - profileThickness - pillarHeightAboveTheFloor
 
 pillarBody = startProfileAt([blockSubdivisionWidth, 0], pillarPlane)
-  |> yLine(length=profileThickness)
-  |> xLine(length=profileThickness)
-  |> yLine(length=-profileThickness)
+  |> yLine(length = profileThickness)
+  |> xLine(length = profileThickness)
+  |> yLine(length = -profileThickness)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(axis = [1, 0], instances = blockCount, distance = blockWidth)
@@ -80,9 +81,9 @@ pillarBody = startProfileAt([blockSubdivisionWidth, 0], pillarPlane)
 upperBeltPlane = startSketchOn(offsetPlane(XY, offset = blockHeight))
 
 upperBeltBodyX = startProfileAt([0, 0], upperBeltPlane)
-  |> yLine(length=profileThickness)
-  |> xLine(length=tableWidth)
-  |> yLine(length=-profileThickness)
+  |> yLine(length = profileThickness)
+  |> xLine(length = tableWidth)
+  |> yLine(length = -profileThickness)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(axis = [0, 1], instances = 2, distance = blockDepth)
@@ -90,20 +91,20 @@ upperBeltBodyX = startProfileAt([0, 0], upperBeltPlane)
 
 upperBeltLengthY = blockDepth - profileThickness
 upperBeltBodyY = startProfileAt([0, profileThickness], upperBeltPlane)
-  |> yLine(length=upperBeltLengthY)
-  |> xLine(length=profileThickness)
-  |> yLine(length=-upperBeltLengthY)
+  |> yLine(length = upperBeltLengthY)
+  |> xLine(length = profileThickness)
+  |> yLine(length = -upperBeltLengthY)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d(axis = [1, 0], instances = 2, distance = tableWidth-profileThickness)
+  |> patternLinear2d(axis = [1, 0], instances = 2, distance = tableWidth - profileThickness)
   |> extrude(length = -profileThickness)
 
 // sink
 tableTopPlane = startSketchOn(offsetPlane(XY, offset = tableHeight))
 tableTopBody = startProfileAt([0, 0], tableTopPlane)
-  |> yLine(length=tableDepth)
-  |> xLine(length=tableWidth)
-  |> yLine(length=-tableDepth)
+  |> yLine(length = tableDepth)
+  |> xLine(length = tableWidth)
+  |> yLine(length = -tableDepth)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> extrude(length = -metalThickness)
@@ -114,59 +115,62 @@ sinkLength = 250
 sinkDepth = 200
 sinkOffsetFront = 40
 sinkOffsetLeft = 350
-sinkSpacing = tableWidth - sinkWidth - sinkOffsetLeft*2
+sinkSpacing = tableWidth - sinkWidth - (sinkOffsetLeft * 2)
 
 sinkPlaneOutside = startSketchOn(tableTopBody, 'START')
 sinkBodyOutside = startProfileAt([-sinkOffsetLeft, sinkOffsetFront], sinkPlaneOutside)
-  |> yLine(length=sinkLength)
-  |> xLine(length=-sinkWidth)
-  |> yLine(length=-sinkLength)
+  |> yLine(length = sinkLength)
+  |> xLine(length = -sinkWidth)
+  |> yLine(length = -sinkLength)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(axis = [-1, 0], instances = sinkCount, distance = sinkSpacing)
   |> extrude(length = sinkDepth)
 
 sinkPlaneInside = startSketchOn(tableTopBody, 'END')
-sinkBodyInside = startProfileAt([sinkOffsetLeft+metalThickness, sinkOffsetFront+metalThickness], sinkPlaneInside)
-  |> yLine(length=sinkLength-metalThickness*2)
-  |> xLine(length=sinkWidth-metalThickness*2)
-  |> yLine(length=-sinkLength+metalThickness*2)
+sinkBodyInside = startProfileAt([
+       sinkOffsetLeft + metalThickness,
+       sinkOffsetFront + metalThickness
+     ], sinkPlaneInside)
+  |> yLine(length = sinkLength - (metalThickness * 2))
+  |> xLine(length = sinkWidth - (metalThickness * 2))
+  |> yLine(length = -sinkLength + metalThickness * 2)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(axis = [1, 0], instances = sinkCount, distance = sinkSpacing)
   |> extrude(length = -sinkDepth)
-  
+
 // door panels
 doorGap = 2
-doorWidth = blockSubdivisionWidth - profileThickness - doorGap*2
-doorStart = profileThickness+doorGap
+doorWidth = blockSubdivisionWidth - profileThickness - (doorGap * 2)
+doorStart = profileThickness + doorGap
 doorHeightAboveTheFloor = pillarHeightAboveTheFloor + doorGap
 doorHeight = blockHeight - doorHeightAboveTheFloor - profileThickness - doorGap
 doorCount = blockCount * blockSubdivisionCount
 
 doorPlane = startSketchOn(offsetPlane(XY, offset = doorHeightAboveTheFloor))
 doorBody = startProfileAt([doorStart, 0], doorPlane)
-  |> yLine(length=profileThickness)
-  |> xLine(length=doorWidth)
-  |> yLine(length=-profileThickness)
+  |> yLine(length = profileThickness)
+  |> xLine(length = doorWidth)
+  |> yLine(length = -profileThickness)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(axis = [1, 0], instances = doorCount, distance = blockSubdivisionWidth)
   |> extrude(length = doorHeight)
 
 // side panels
-panelWidth = blockDepth - profileThickness - doorGap*2
+panelWidth = blockDepth - profileThickness - (doorGap * 2)
 panelCount = doorCount + 1
 panelSpacing = tableWidth - profileThickness
 panelBody = startProfileAt([0, doorStart], doorPlane)
-  |> yLine(length=panelWidth)
-  |> xLine(length=profileThickness)
-  |> yLine(length=-panelWidth)
+  |> yLine(length = panelWidth)
+  |> xLine(length = profileThickness)
+  |> yLine(length = -panelWidth)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(axis = [1, 0], instances = 2, distance = panelSpacing)
   |> extrude(length = doorHeight)
-  
+
 // handle
 handleDepth = 40
 handleWidth = 120
@@ -179,22 +183,25 @@ handleLengthSegmentB = handleWidth - (handleFillet * 2)
 handlePlane = startSketchOn(offsetPlane(XY, offset = handleHeightAboveTheFloor))
 
 handleProfilePath = startProfileAt([0 + handleOffset, 0], handlePlane)
-  |> yLine(length=-handleLengthSegmentA)
+  |> yLine(length = -handleLengthSegmentA)
   |> tangentialArcTo([
        handleFillet + handleOffset,
        -handleDepth
      ], %)
-  |> xLine(length=handleLengthSegmentB)
+  |> xLine(length = handleLengthSegmentB)
   |> tangentialArcTo([
        handleOffset + handleWidth,
        -handleLengthSegmentA
      ], %)
-  |> yLine(length=handleLengthSegmentA)
+  |> yLine(length = handleLengthSegmentA)
 handleSectionPlane = startSketchOn(XZ)
 handleProfileSection = circle(
   handleSectionPlane,
-  center = [handleOffset, handleHeightAboveTheFloor],
-  radius = 2)
-  
+  center = [
+    handleOffset,
+    handleHeightAboveTheFloor
+  ],
+  radius = 2,
+)
 handleBody = sweep(handleProfileSection, path = handleProfilePath)
   |> patternLinear3d(axis = [1, 0, 0], instances = doorCount, distance = blockSubdivisionWidth)

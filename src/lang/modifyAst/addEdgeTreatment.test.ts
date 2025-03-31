@@ -139,7 +139,7 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
 
   // executeAst and artifactGraph
   await kclManager.executeAst({ ast })
-  const artifactGraph = engineCommandManager.artifactGraph
+  const artifactGraph = kclManager.artifactGraph
 
   // find artifact
   const maybeArtifact = [...artifactGraph].find(([, artifact]) => {
@@ -348,7 +348,7 @@ const runModifyAstCloneWithEdgeTreatmentAndTag = async (
 
   // executeAst
   await kclManager.executeAst({ ast })
-  const artifactGraph = engineCommandManager.artifactGraph
+  const artifactGraph = kclManager.artifactGraph
 
   const selection: Selections = {
     graphSelections: segmentRanges.map((segmentRange) => {
@@ -390,7 +390,7 @@ const runDeleteEdgeTreatmentTest = async (
 
   // update artifact graph
   await kclManager.executeAst({ ast })
-  const artifactGraph = engineCommandManager.artifactGraph
+  const artifactGraph = kclManager.artifactGraph
 
   // define snippet range
   const edgeTreatmentRange = topLevelRange(

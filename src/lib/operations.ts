@@ -8,7 +8,7 @@ import {
   getWallCodeRef,
 } from 'lang/std/artifactGraph'
 import { Operation } from '@rust/kcl-lib/bindings/Operation'
-import { codeManager, engineCommandManager, kclManager } from './singletons'
+import { codeManager, kclManager, rustContext } from './singletons'
 import { err } from './trap'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { sourceRangeFromRust } from 'lang/wasm'
@@ -20,7 +20,6 @@ import {
 } from './commandBarConfigs/modelingCommandConfig'
 import { isDefaultPlaneStr } from './planes'
 import { Selection, Selections } from './selections'
-import { rustContext } from './singletons'
 import { KclExpression } from './commandTypes'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
@@ -73,7 +72,7 @@ const prepareToEditExtrude: PrepareToEditCallback =
         key: artifact.pathId,
         types: ['path'],
       },
-      engineCommandManager.artifactGraph
+      kclManager.artifactGraph
     )
     if (
       err(pathArtifact) ||
@@ -86,7 +85,7 @@ const prepareToEditExtrude: PrepareToEditCallback =
         key: pathArtifact.solid2dId,
         types: ['solid2d'],
       },
-      engineCommandManager.artifactGraph
+      kclManager.artifactGraph
     )
     if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2d') {
       return baseCommand
@@ -157,7 +156,7 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
       key: artifact.consumedEdgeId,
       types: ['segment', 'sweepEdge'],
     },
-    engineCommandManager.artifactGraph
+    kclManager.artifactGraph
   )
   if (err(edgeArtifact)) {
     return { reason: "Couldn't find edge artifact" }
@@ -165,7 +164,7 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
 
   let edgeCodeRef = getEdgeCutConsumedCodeRef(
     artifact,
-    engineCommandManager.artifactGraph
+    kclManager.artifactGraph
   )
   if (err(edgeCodeRef)) {
     return { reason: "Couldn't find edge coderef" }
@@ -272,16 +271,13 @@ const prepareToEditShell: PrepareToEditCallback =
     // that we can query in another loop later
     const sweepId = operation.unlabeledArg.value.value.artifactId
     const candidates: Map<string, Selection> = new Map()
-    for (const artifact of engineCommandManager.artifactGraph.values()) {
+    for (const artifact of kclManager.artifactGraph.values()) {
       if (
         artifact.type === 'cap' &&
         artifact.sweepId === sweepId &&
         artifact.subType
       ) {
-        const codeRef = getCapCodeRef(
-          artifact,
-          engineCommandManager.artifactGraph
-        )
+        const codeRef = getCapCodeRef(artifact, kclManager.artifactGraph)
         if (err(codeRef)) {
           return baseCommand
         }
@@ -297,7 +293,7 @@ const prepareToEditShell: PrepareToEditCallback =
       ) {
         const segArtifact = getArtifactOfTypes(
           { key: artifact.segId, types: ['segment'] },
-          engineCommandManager.artifactGraph
+          kclManager.artifactGraph
         )
         if (err(segArtifact)) {
           return baseCommand
@@ -461,7 +457,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
       key: artifact.pathId,
       types: ['path'],
     },
-    engineCommandManager.artifactGraph
+    kclManager.artifactGraph
   )
 
   if (
@@ -477,7 +473,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
       key: pathArtifact.solid2dId,
       types: ['solid2d'],
     },
-    engineCommandManager.artifactGraph
+    kclManager.artifactGraph
   )
 
   if (err(targetArtifact) || targetArtifact.type !== 'solid2d') {
@@ -508,7 +504,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
       key: operation.labeledArgs.path.value.value.artifactId,
       types: ['path'],
     },
-    engineCommandManager.artifactGraph
+    kclManager.artifactGraph
   )
 
   if (err(trajectoryPathArtifact) || trajectoryPathArtifact.type !== 'path') {
@@ -520,7 +516,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
       key: trajectoryPathArtifact.segIds[0],
       types: ['segment'],
     },
-    engineCommandManager.artifactGraph
+    kclManager.artifactGraph
   )
 
   if (err(trajectoryArtifact) || trajectoryArtifact.type !== 'segment') {
@@ -607,7 +603,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
           key: axisValue.artifact_id,
           types: ['segment'],
         },
-        engineCommandManager.artifactGraph
+        kclManager.artifactGraph
       )
       if (err(artifact)) {
         return { reason: "Couldn't find related edge artifact" }
@@ -630,16 +626,13 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
           key: axisValue.value,
           types: ['sweepEdge'],
         },
-        engineCommandManager.artifactGraph
+        kclManager.artifactGraph
       )
       if (err(artifact)) {
         return { reason: "Couldn't find related edge artifact" }
       }
 
-      const codeRef = getSweepEdgeCodeRef(
-        artifact,
-        engineCommandManager.artifactGraph
-      )
+      const codeRef = getSweepEdgeCodeRef(artifact, kclManager.artifactGraph)
       if (err(codeRef)) {
         return { reason: "Couldn't find related edge code ref" }
       }
@@ -667,7 +660,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
     }
 
     const sweepId = operation.labeledArgs.cylinder.value.value.artifactId
-    const wallArtifact = [...engineCommandManager.artifactGraph.values()].find(
+    const wallArtifact = [...kclManager.artifactGraph.values()].find(
       (p) => p.type === 'wall' && p.sweepId === sweepId
     )
     if (!wallArtifact || wallArtifact.type !== 'wall') {
@@ -676,10 +669,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
       }
     }
 
-    const wallCodeRef = getWallCodeRef(
-      wallArtifact,
-      engineCommandManager.artifactGraph
-    )
+    const wallCodeRef = getWallCodeRef(wallArtifact, kclManager.artifactGraph)
     if (err(wallCodeRef)) {
       return {
         reason: "Cylinder arg found doesn't point to a valid sweep code ref",
@@ -834,7 +824,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
       key: artifact.pathId,
       types: ['path'],
     },
-    engineCommandManager.artifactGraph
+    kclManager.artifactGraph
   )
   if (
     err(pathArtifact) ||
@@ -849,7 +839,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
       key: pathArtifact.solid2dId,
       types: ['solid2d'],
     },
-    engineCommandManager.artifactGraph
+    kclManager.artifactGraph
   )
   if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2d') {
     return { reason: "Couldn't find related solid2d artifact" }
@@ -886,7 +876,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
         key: axisValue.artifact_id,
         types: ['segment'],
       },
-      engineCommandManager.artifactGraph
+      kclManager.artifactGraph
     )
     if (err(artifact)) {
       return { reason: "Couldn't find related edge artifact" }
@@ -909,16 +899,13 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
         key: axisValue.value,
         types: ['sweepEdge'],
       },
-      engineCommandManager.artifactGraph
+      kclManager.artifactGraph
     )
     if (err(artifact)) {
       return { reason: "Couldn't find related edge artifact" }
     }
 
-    const codeRef = getSweepEdgeCodeRef(
-      artifact,
-      engineCommandManager.artifactGraph
-    )
+    const codeRef = getSweepEdgeCodeRef(artifact, kclManager.artifactGraph)
     if (err(codeRef)) {
       return { reason: "Couldn't find related edge code ref" }
     }

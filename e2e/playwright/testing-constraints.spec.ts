@@ -4,7 +4,6 @@ import {
   getUtils,
   TEST_COLORS,
   pollEditorLinesSelectedLength,
-  executorInputPath,
   orRunWhenFullSuiteEnabled,
 } from './test-utils'
 import { XOR } from 'lib/utils'
@@ -81,7 +80,8 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `yo = 79
+        `@settings(defaultLengthUnit = in)
+  yo = 79
   part001 = startSketchOn(XZ)
     |> startProfileAt([-7.54, -26.74], %)
     |> line(end = [74.36, 130.4], tag = $seg01)
@@ -145,7 +145,8 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+      yo = 5
       part001 = startSketchOn(XZ)
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4], tag = $seg01)
@@ -277,7 +278,8 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+      yo = 5
       part001 = startSketchOn(XZ)
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4])
@@ -387,7 +389,8 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+      yo = 5
       part001 = startSketchOn(XZ)
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4])
@@ -486,13 +489,13 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         testName: 'Add variable, selecting axis',
         addVariable: true,
         axisSelect: true,
-        value: 'QUARTER_TURN - angle001',
+        value: 'turns::QUARTER_TURN - angle001',
       },
       {
         testName: 'No variable, selecting axis',
         addVariable: false,
         axisSelect: true,
-        value: 'QUARTER_TURN - 7',
+        value: 'turns::QUARTER_TURN - 7',
       },
     ] as const
     for (const { testName, addVariable, value, axisSelect } of cases) {
@@ -500,7 +503,8 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+      yo = 5
       part001 = startSketchOn(XZ)
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4])
@@ -602,7 +606,8 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+      yo = 5
       part001 = startSketchOn(XZ)
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4])
@@ -688,7 +693,8 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+yo = 5
 part001 = startSketchOn(XZ)
   |> startProfileAt([-7.54, -26.74], %)
   |> line(end = [74.36, 130.4])
@@ -768,7 +774,8 @@ part002 = startSketchOn(XZ)
         await page.addInitScript(async (customCode) => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+      yo = 5
       part001 = startSketchOn(XZ)
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4])
@@ -869,7 +876,8 @@ part002 = startSketchOn(XZ)
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+      yo = 5
       part001 = startSketchOn(XZ)
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4])
@@ -935,12 +943,12 @@ part002 = startSketchOn(XZ)
   test.describe('Axis & segment - no modal constraints', () => {
     const cases = [
       {
-        codeAfter: `|> line(endAbsolute = [154.9, ZERO])`,
+        codeAfter: `|> line(endAbsolute = [154.9, turns::ZERO])`,
         axisClick: { x: 950, y: 250 },
         constraintName: 'Snap To X',
       },
       {
-        codeAfter: `|> line(endAbsolute = [ZERO, 61.34])`,
+        codeAfter: `|> line(endAbsolute = [turns::ZERO, 61.34])`,
         axisClick: { x: 600, y: 150 },
         constraintName: 'Snap To Y',
       },
@@ -950,7 +958,8 @@ part002 = startSketchOn(XZ)
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+      yo = 5
       part001 = startSketchOn(XZ)
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4])
@@ -1117,9 +1126,19 @@ test.describe('Electron constraint tests', () => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = path.join(dir, 'test-sample')
         await fsp.mkdir(bracketDir, { recursive: true })
-        await fsp.copyFile(
-          executorInputPath('angled_line.kcl'),
-          path.join(bracketDir, 'main.kcl')
+        await fsp.writeFile(
+          path.join(bracketDir, 'main.kcl'),
+          `@settings(defaultLengthUnit = in)
+          const part001 = startSketchOn(XY)
+            |> startProfileAt([4.83, 12.56], %)
+            |> line(end = [15.1, 2.48])
+            |> line(end = [3.15, -9.85], tag = $seg01)
+            |> line(end = [-15.17, -4.1])
+            |> angledLine([segAng(seg01), 12.35], %)
+            |> line(end = [-13.02, 10.03])
+            |> close()
+            |> extrude(length = 4)`,
+          'utf-8'
         )
       })
 
