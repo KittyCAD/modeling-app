@@ -110,12 +110,7 @@ impl ExecutorContext {
         let old_units = exec_state.length_unit();
         let original_execution = self.engine.replace_execution_kind(exec_kind).await;
 
-        let mut local_state = ModuleState::new(
-            &self.settings,
-            path.std_path(),
-            exec_state.stack().memory.clone(),
-            Some(module_id),
-        );
+        let mut local_state = ModuleState::new(path.std_path(), exec_state.stack().memory.clone(), Some(module_id));
         if !preserve_mem {
             std::mem::swap(&mut exec_state.mod_local, &mut local_state);
         }

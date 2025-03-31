@@ -1010,20 +1010,17 @@ mod test {
         let std = walk_prelude();
         for d in std {
             for (i, eg) in d.examples().enumerate() {
-                let result =
-                    match crate::test_server::execute_and_snapshot(eg, crate::settings::types::UnitLength::Mm, None)
-                        .await
-                    {
-                        Err(crate::errors::ExecError::Kcl(e)) => {
-                            return Err(miette::Report::new(crate::errors::Report {
-                                error: e.error,
-                                filename: format!("{}{i}", d.name()),
-                                kcl_source: eg.to_string(),
-                            }));
-                        }
-                        Err(other_err) => panic!("{}", other_err),
-                        Ok(img) => img,
-                    };
+                let result = match crate::test_server::execute_and_snapshot(eg, None).await {
+                    Err(crate::errors::ExecError::Kcl(e)) => {
+                        return Err(miette::Report::new(crate::errors::Report {
+                            error: e.error,
+                            filename: format!("{}{i}", d.name()),
+                            kcl_source: eg.to_string(),
+                        }));
+                    }
+                    Err(other_err) => panic!("{}", other_err),
+                    Ok(img) => img,
+                };
                 twenty_twenty::assert_image(
                     format!("tests/outputs/serial_test_example_{}{i}.png", d.example_name()),
                     &result,
