@@ -1617,7 +1617,7 @@ profile002 = startProfileAt([117.2, 56.08], sketch001)
   test(
     `snapToProfile start only works for current profile`,
     { tag: ['@skipWin'] },
-    async ({ context, page, scene, toolbar, editor, homePage }) => {
+    async ({ context, page, scene, toolbar, editor, homePage, cmdBar }) => {
       // We seed the scene with a single offset plane
       await context.addInitScript(() => {
         localStorage.setItem(
@@ -1633,6 +1633,8 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       })
 
       await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
       ).not.toBeDisabled()
@@ -1654,9 +1656,13 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       const codeFromTangentialArc = `  |> tangentialArcTo([39.49, 88.22], %)`
       await test.step('check that tangential tool does not snap to other profile starts', async () => {
         await toolbar.tangentialArcBtn.click()
+        await page.waitForTimeout(1000)
         await endOfLowerSegMove()
+        await page.waitForTimeout(1000)
         await endOfLowerSegClick()
+        await page.waitForTimeout(1000)
         await profileStartOfHigherSegClick()
+        await page.waitForTimeout(1000)
         await editor.expectEditor.toContain(codeFromTangentialArc)
         await editor.expectEditor.not.toContain(
           `[profileStartX(%), profileStartY(%)]`
@@ -2245,8 +2251,9 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
 
       await test.step('enter sketch and setup', async () => {
         await moveToClearToolBarPopover()
+        await page.waitForTimeout(1000)
         await pointOnSegment({ shouldDbClick: true })
-        await page.waitForTimeout(600)
+        await page.waitForTimeout(2000)
 
         await toolbar.lineBtn.click()
         await page.waitForTimeout(100)
