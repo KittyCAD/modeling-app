@@ -129,6 +129,7 @@ import { closestPointOnRay } from '../lib/utils2d'
 import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
 import { updateModelingState } from 'lang/modelingWorkflows'
 import { EXECUTION_TYPE_MOCK } from 'lib/constants'
+import { mutateAstWithTagForSketchSegment } from '../lang/modifyAst/addEdgeTreatment'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -1023,7 +1024,7 @@ export class SceneEntities {
         } else if (intersection2d) {
           const lastSegment = sketch.paths.slice(-1)[0] || sketch.start
 
-          let { snappedPoint } = this.getSnappedDragPoint(
+          let { snappedPoint, snappedToTangent } = this.getSnappedDragPoint(
             intersection2d,
             args.intersects,
             args.mouseEvent
@@ -1053,6 +1054,23 @@ export class SceneEntities {
             segmentName === 'tangentialArcTo'
           ) {
             resolvedFunctionName = 'tangentialArcTo'
+          } else if (snappedToTangent) {
+            // Generate tag for previous arc segment and use it for the angle of angledLine:
+            //   |> tangentialArcTo([5, -10], %, $arc001)
+            //   |> angledLine({ angle = tangentToEnd(arc001), length = 12 }, %)
+
+            const previousSegmentPathToNode = getNodePathFromSourceRange(
+              modifiedAst,
+              sourceRangeFromRust(lastSegment.__geoMeta.sourceRange)
+            )
+            const taggedAstResult = mutateAstWithTagForSketchSegment(
+              modifiedAst,
+              previousSegmentPathToNode
+            )
+            if (trap(taggedAstResult)) return Promise.reject(taggedAstResult)
+
+            modifiedAst = taggedAstResult.modifiedAst
+            resolvedFunctionName = 'angledLine'
           } else if (isHorizontal) {
             // If the angle between is 0 or 180 degrees (+/- the snapping angle), make the line an xLine
             resolvedFunctionName = 'xLine'
@@ -1065,7 +1083,7 @@ export class SceneEntities {
           }
 
           const tmp = addNewSketchLn({
-            node: kclManager.ast,
+            node: modifiedAst,
             variables: kclManager.variables,
             input: {
               type: 'straight-segment',
@@ -2661,6 +2679,7 @@ export class SceneEntities {
 
     return {
       isSnapped: !!(intersectsYAxis || intersectsXAxis || snappedToTangent),
+      snappedToTangent,
       snappedPoint,
     }
   }

@@ -310,7 +310,7 @@ export function getPathToExtrudeForSegmentSelection(
 export function mutateAstWithTagForSketchSegment(
   astClone: Node<Program>,
   pathToSegmentNode: PathToNode
-): { modifiedAst: Program; tag: string } | Error {
+): { modifiedAst: Node<Program>; tag: string } | Error {
   const segmentNode = getNodeFromPath<CallExpression | CallExpressionKw>(
     astClone,
     pathToSegmentNode,
