@@ -3952,7 +3952,7 @@ export const modelingMachine = setup({
         'enter sketching mode',
       ],
 
-      exit: ['sketch exit execute'],
+      exit: ['execute'],
       on: {
         'Select default plane': {
           target: 'animating to plane',
