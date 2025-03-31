@@ -10,6 +10,7 @@ use convert_case::Casing;
 use handlebars::Renderable;
 use indexmap::IndexMap;
 use itertools::Itertools;
+use schemars::schema::SingleOrVec;
 use serde_json::json;
 use tokio::task::JoinSet;
 
@@ -949,6 +950,19 @@ fn recurse_and_create_references(
                 "Failed to get object schema, should have not been a primitive"
             ));
         };
+
+        // If this is a primitive just use the primitive.
+        if to.subschemas.is_none()
+            && to.object.is_none()
+            && to.array.is_none()
+            && to.reference.is_none()
+            && o.array.is_none()
+            && reference != "SourceRange"
+        {
+            return Ok(t.clone());
+        }
+
+        // Otherwise append the metadata to our reference.
         if let Some(metadata) = obj.metadata.as_mut() {
             if metadata.description.is_none() {
                 metadata.description = to.metadata.as_ref().and_then(|m| m.description.clone());
@@ -1049,6 +1063,13 @@ fn recurse_and_create_references(
             for item in one_of {
                 let new_item = recurse_and_create_references(name, item, types)?;
                 *item = new_item;
+            }
+        }
+
+        if subschema.one_of.is_none() && subschema.all_of.is_none() && subschema.any_of.is_none() && obj.array.is_none()
+        {
+            if let Some(SingleOrVec::Single(_)) = &o.instance_type {
+                return Ok(schema.clone());
             }
         }
     }

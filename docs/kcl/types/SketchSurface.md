@@ -25,7 +25,7 @@ A sketch type.
 |----------|------|-------------|----------|
 | `type` |enum: `plane`|  | No |
 | `id` |[`string`](/docs/kcl/types/string)| The id of the plane. | No |
-| `artifactId` |[`ArtifactId`](/docs/kcl/types/ArtifactId)| The artifact ID. | No |
+| `artifactId` |[`string`](/docs/kcl/types/string)| The artifact ID. | No |
 | `value` |[`PlaneType`](/docs/kcl/types/PlaneType)| Type for a plane. | No |
 | `origin` |[`Point3d`](/docs/kcl/types/Point3d)| Origin of the plane. | No |
 | `xAxis` |[`Point3d`](/docs/kcl/types/Point3d)| What should the plane's X axis be? | No |
@@ -49,7 +49,7 @@ A face.
 |----------|------|-------------|----------|
 | `type` |enum: `face`|  | No |
 | `id` |[`string`](/docs/kcl/types/string)| The id of the face. | No |
-| `artifactId` |[`ArtifactId`](/docs/kcl/types/ArtifactId)| The artifact ID. | No |
+| `artifactId` |[`string`](/docs/kcl/types/string)| The artifact ID. | No |
 | `value` |[`string`](/docs/kcl/types/string)| The tag of the face. | No |
 | `xAxis` |[`Point3d`](/docs/kcl/types/Point3d)| What should the face's X axis be? | No |
 | `yAxis` |[`Point3d`](/docs/kcl/types/Point3d)| What should the face's Y axis be? | No |
