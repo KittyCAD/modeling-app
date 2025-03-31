@@ -24,8 +24,19 @@ use crate::{
 const TYPES_DIR: &str = "../../docs/kcl/types";
 const LANG_TOPICS: [&str; 5] = ["Types", "Modules", "Settings", "Known Issues", "Constants"];
 // These types are declared in std.
-const DECLARED_TYPES: [&str; 11] = [
-    "number", "string", "tag", "bool", "Sketch", "Solid", "Plane", "Helix", "Face", "Point2d", "Point3d",
+const DECLARED_TYPES: [&str; 12] = [
+    "number",
+    "string",
+    "tag",
+    "bool",
+    "Sketch",
+    "Solid",
+    "Plane",
+    "Helix",
+    "Face",
+    "Point2d",
+    "Point3d",
+    "SourceRange",
 ];
 
 fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
@@ -728,7 +739,7 @@ fn add_to_types(
         if let Some(items) = &array.items {
             match items {
                 schemars::schema::SingleOrVec::Single(item) => {
-                    if is_primitive(item)?.is_some() && name != "SourceRange" {
+                    if is_primitive(item)?.is_some() {
                         return Ok(());
                     }
                     return add_to_types(name.trim_start_matches('[').trim_end_matches(']'), item, types);
@@ -957,7 +968,6 @@ fn recurse_and_create_references(
             && to.array.is_none()
             && to.reference.is_none()
             && o.array.is_none()
-            && reference != "SourceRange"
         {
             return Ok(t.clone());
         }
