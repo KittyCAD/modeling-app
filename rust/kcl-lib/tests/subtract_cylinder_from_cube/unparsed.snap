@@ -1,0 +1,20 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing subtract_cylinder_from_cube.kcl
+---
+fn cube(center) {
+  return startSketchOn(XY)
+    |> startProfileAt([center[0] - 10, center[1] - 10], %)
+    |> line(endAbsolute = [center[0] + 10, center[1] - 10])
+    |> line(endAbsolute = [center[0] + 10, center[1] + 10])
+    |> line(endAbsolute = [center[0] - 10, center[1] + 10])
+    |> close()
+    |> extrude(length = 10)
+}
+
+part001 = cube([0, 0])
+part002 = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 2)
+  |> extrude(length = 10)
+
+fullPart = subtract([part001], tools = [part002])

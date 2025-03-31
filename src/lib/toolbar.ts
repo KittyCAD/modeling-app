@@ -102,27 +102,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/extrude' }],
       },
       {
-        id: 'revolve',
-        onClick: () =>
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Revolve', groupId: 'modeling' },
-          }),
-        icon: 'revolve',
-        status: 'available',
-        title: 'Revolve',
-        hotkey: 'R',
-        description:
-          'Create a 3D body by rotating a sketch region about an axis.',
-        links: [
-          { label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/revolve' },
-          {
-            label: 'KCL example',
-            url: 'https://zoo.dev/docs/kcl-samples/ball-bearing',
-          },
-        ],
-      },
-      {
         id: 'sweep',
         onClick: () =>
           commandBarActor.send({
@@ -159,6 +138,27 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           {
             label: 'KCL docs',
             url: 'https://zoo.dev/docs/kcl/loft',
+          },
+        ],
+      },
+      {
+        id: 'revolve',
+        onClick: () =>
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Revolve', groupId: 'modeling' },
+          }),
+        icon: 'revolve',
+        status: 'available',
+        title: 'Revolve',
+        hotkey: 'R',
+        description:
+          'Create a 3D body by rotating a sketch region about an axis.',
+        links: [
+          { label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/revolve' },
+          {
+            label: 'KCL example',
+            url: 'https://zoo.dev/docs/kcl-samples/ball-bearing',
           },
         ],
       },
@@ -209,9 +209,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'boolean-union',
-          onClick: () => console.error('Boolean union not yet implemented'),
+          onClick: () =>
+            commandBarActor.send({
+              type: 'Find and select command',
+              data: { name: 'Boolean Union', groupId: 'modeling' },
+            }),
           icon: 'booleanUnion',
-          status: 'unavailable',
+          status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'unavailable',
           title: 'Union',
           hotkey: 'Shift + B U',
           description: 'Combine two or more solids into a single solid.',
@@ -224,9 +228,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         },
         {
           id: 'boolean-subtract',
-          onClick: () => console.error('Boolean subtract not yet implemented'),
+          onClick: () =>
+            commandBarActor.send({
+              type: 'Find and select command',
+              data: { name: 'Boolean Subtract', groupId: 'modeling' },
+            }),
           icon: 'booleanSubtract',
-          status: 'unavailable',
+          status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'unavailable',
           title: 'Subtract',
           hotkey: 'Shift + B S',
           description: 'Subtract one solid from another.',
@@ -239,9 +247,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         },
         {
           id: 'boolean-intersect',
-          onClick: () => console.error('Boolean intersect not yet implemented'),
+          onClick: () =>
+            commandBarActor.send({
+              type: 'Find and select command',
+              data: { name: 'Boolean Intersect', groupId: 'modeling' },
+            }),
           icon: 'booleanIntersect',
-          status: 'unavailable',
+          status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'unavailable',
           title: 'Intersect',
           hotkey: 'Shift + B I',
           description: 'Create a solid from the intersection of two solids.',
@@ -295,7 +307,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         },
         hotkey: 'H',
         icon: 'helix',
-        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
+        status: 'available',
         title: 'Helix',
         description: 'Create a helix or spiral in 3D about an axis.',
         links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/helix' }],

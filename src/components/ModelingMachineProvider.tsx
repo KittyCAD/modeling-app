@@ -566,7 +566,7 @@ export const ModelingMachineProvider = ({
             // See if the selection is "close enough" to be coerced to the plane later
             const maybePlane = getPlaneFromArtifact(
               selectionRanges.graphSelections[0].artifact,
-              engineCommandManager.artifactGraph
+              kclManager.artifactGraph
             )
             return !err(maybePlane)
           }
@@ -579,7 +579,7 @@ export const ModelingMachineProvider = ({
             return false
           }
           return !!isCursorInSketchCommandRange(
-            engineCommandManager.artifactGraph,
+            kclManager.artifactGraph,
             selectionRanges
           )
         },
@@ -841,7 +841,7 @@ export const ModelingMachineProvider = ({
             const artifact = selectionRanges.graphSelections[0].artifact
             const plane = getPlaneFromArtifact(
               artifact,
-              engineCommandManager.artifactGraph
+              kclManager.artifactGraph
             )
             if (err(plane)) return Promise.reject(plane)
             // if the user selected a segment, make sure we enter the right sketch as there can be multiple on a plane
@@ -917,14 +917,13 @@ export const ModelingMachineProvider = ({
               info?.sketchDetails?.faceId || ''
             )
 
-            const sketchArtifact =
-              engineCommandManager.artifactGraph.get(mainPath)
+            const sketchArtifact = kclManager.artifactGraph.get(mainPath)
             if (sketchArtifact?.type !== 'path')
               return Promise.reject(new Error('No sketch artifact'))
             const sketchPaths = getPathsFromArtifact({
-              artifact: engineCommandManager.artifactGraph.get(plane.id),
+              artifact: kclManager.artifactGraph.get(plane.id),
               sketchPathToNode: sketchArtifact?.codeRef?.pathToNode,
-              artifactGraph: engineCommandManager.artifactGraph,
+              artifactGraph: kclManager.artifactGraph,
               ast: kclManager.ast,
             })
             if (err(sketchPaths)) return Promise.reject(sketchPaths)
@@ -1431,7 +1430,6 @@ export const ModelingMachineProvider = ({
             parsed = pResult.program
 
             if (trap(parsed)) return Promise.reject(parsed)
-            parsed = parsed as Node<Program>
             if (!result.pathToReplaced)
               return Promise.reject(new Error('No path to replaced node'))
             const {
@@ -1744,7 +1742,7 @@ export const ModelingMachineProvider = ({
             prompt: input.prompt,
             selections: input.selection,
             token,
-            artifactGraph: engineCommandManager.artifactGraph,
+            artifactGraph: kclManager.artifactGraph,
             projectName: context.project.name,
           })
         }),

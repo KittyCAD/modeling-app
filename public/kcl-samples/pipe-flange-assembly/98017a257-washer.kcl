@@ -1,5 +1,5 @@
 // 98017A257 Washer
-// washer for the screws in the pipe flange assembly. 
+// washer for the screws in the pipe flange assembly.
 
 // set units
 @settings(defaultLengthUnit = in)

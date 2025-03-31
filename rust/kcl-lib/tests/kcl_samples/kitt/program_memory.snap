@@ -14178,7 +14178,7 @@ description: Variables in memory after executing kitt.kcl
         }
       },
       "height": 0.5,
-      "startCapId": "[uuid]",
+      "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
@@ -16216,7 +16216,7 @@ description: Variables in memory after executing kitt.kcl
         }
       },
       "height": 0.5,
-      "startCapId": "[uuid]",
+      "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"

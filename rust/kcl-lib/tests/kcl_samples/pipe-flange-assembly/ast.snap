@@ -382,102 +382,113 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 781,
                     "end": 0,
-                    "name": "translate",
+                    "name": "x",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 793,
-                    "elements": [
-                      {
-                        "commentStart": 802,
+                    "commentStart": 785,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 788,
+                    "end": 0,
+                    "name": "y",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 792,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 795,
+                    "end": 0,
+                    "name": "z",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 799,
+                    "end": 0,
+                    "left": {
+                      "commentStart": 799,
+                      "end": 0,
+                      "left": {
+                        "abs_path": false,
+                        "commentStart": 799,
                         "end": 0,
-                        "raw": "0",
+                        "name": {
+                          "commentStart": 799,
+                          "end": 0,
+                          "name": "flangeBackHeight",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "operator": "*",
+                      "right": {
+                        "commentStart": 818,
+                        "end": 0,
+                        "raw": "2",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
-                          "value": 0.0,
+                          "value": 2.0,
                           "suffix": "None"
                         }
                       },
-                      {
-                        "commentStart": 812,
-                        "end": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      },
-                      {
+                      "start": 0,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    "operator": "+",
+                    "right": {
+                      "abs_path": false,
+                      "commentStart": 822,
+                      "end": 0,
+                      "name": {
                         "commentStart": 822,
                         "end": 0,
-                        "left": {
-                          "commentStart": 822,
-                          "end": 0,
-                          "left": {
-                            "abs_path": false,
-                            "commentStart": 822,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 822,
-                              "end": 0,
-                              "name": "flangeBackHeight",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
-                          "operator": "*",
-                          "right": {
-                            "commentStart": 841,
-                            "end": 0,
-                            "raw": "2",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 2.0,
-                              "suffix": "None"
-                            }
-                          },
-                          "start": 0,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        },
-                        "operator": "+",
-                        "right": {
-                          "abs_path": false,
-                          "commentStart": 845,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 845,
-                            "end": 0,
-                            "name": "gasketThickness",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
+                        "name": "gasketThickness",
                         "start": 0,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
-                      }
-                    ],
-                    "end": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
                     "start": 0,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
                   }
                 }
               ],
@@ -510,7 +521,7 @@ description: Result of parsing pipe-flange-assembly.kcl
             "nonCodeNodes": {
               "2": [
                 {
-                  "commentStart": 868,
+                  "commentStart": 838,
                   "end": 0,
                   "start": 0,
                   "type": "NonCodeNode",
@@ -533,7 +544,7 @@ description: Result of parsing pipe-flange-assembly.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 906,
+        "commentStart": 876,
         "end": 0,
         "expression": {
           "body": [
@@ -541,10 +552,10 @@ description: Result of parsing pipe-flange-assembly.kcl
               "arguments": [],
               "callee": {
                 "abs_path": false,
-                "commentStart": 906,
+                "commentStart": 876,
                 "end": 0,
                 "name": {
-                  "commentStart": 906,
+                  "commentStart": 876,
                   "end": 0,
                   "name": "gasket",
                   "start": 0,
@@ -554,7 +565,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 906,
+              "commentStart": 876,
               "end": 0,
               "start": 0,
               "type": "CallExpression",
@@ -565,101 +576,112 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 930,
+                    "commentStart": 900,
                     "end": 0,
-                    "name": "translate",
+                    "name": "x",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 942,
-                    "elements": [
-                      {
-                        "commentStart": 951,
-                        "end": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "commentStart": 961,
-                        "end": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "commentStart": 971,
-                        "end": 0,
-                        "left": {
-                          "argument": {
-                            "abs_path": false,
-                            "commentStart": 972,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 972,
-                              "end": 0,
-                              "name": "flangeBackHeight",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
-                          "commentStart": 971,
-                          "end": 0,
-                          "operator": "-",
-                          "start": 0,
-                          "type": "UnaryExpression",
-                          "type": "UnaryExpression"
-                        },
-                        "operator": "-",
-                        "right": {
-                          "abs_path": false,
-                          "commentStart": 991,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 991,
-                            "end": 0,
-                            "name": "gasketThickness",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "start": 0,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
-                      }
-                    ],
+                    "commentStart": 904,
                     "end": 0,
+                    "raw": "0",
                     "start": 0,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 907,
+                    "end": 0,
+                    "name": "y",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 911,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 914,
+                    "end": 0,
+                    "name": "z",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 918,
+                    "end": 0,
+                    "left": {
+                      "argument": {
+                        "abs_path": false,
+                        "commentStart": 919,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 919,
+                          "end": 0,
+                          "name": "flangeBackHeight",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "commentStart": 918,
+                      "end": 0,
+                      "operator": "-",
+                      "start": 0,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    },
+                    "operator": "-",
+                    "right": {
+                      "abs_path": false,
+                      "commentStart": 938,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 938,
+                        "end": 0,
+                        "name": "gasketThickness",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
                   }
                 }
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 920,
+                "commentStart": 890,
                 "end": 0,
                 "name": {
-                  "commentStart": 920,
+                  "commentStart": 890,
                   "end": 0,
                   "name": "translate",
                   "start": 0,
@@ -669,7 +691,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 920,
+              "commentStart": 890,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
@@ -677,13 +699,13 @@ description: Result of parsing pipe-flange-assembly.kcl
               "unlabeled": null
             }
           ],
-          "commentStart": 906,
+          "commentStart": 876,
           "end": 0,
           "nonCodeMeta": {
             "nonCodeNodes": {
               "1": [
                 {
-                  "commentStart": 1014,
+                  "commentStart": 954,
                   "end": 0,
                   "start": 0,
                   "type": "NonCodeNode",
@@ -706,7 +728,7 @@ description: Result of parsing pipe-flange-assembly.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 1063,
+        "commentStart": 1003,
         "end": 0,
         "expression": {
           "body": [
@@ -714,10 +736,10 @@ description: Result of parsing pipe-flange-assembly.kcl
               "arguments": [],
               "callee": {
                 "abs_path": false,
-                "commentStart": 1063,
+                "commentStart": 1003,
                 "end": 0,
                 "name": {
-                  "commentStart": 1063,
+                  "commentStart": 1003,
                   "end": 0,
                   "name": "washer",
                   "start": 0,
@@ -727,7 +749,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 1063,
+              "commentStart": 1003,
               "end": 0,
               "start": 0,
               "type": "CallExpression",
@@ -738,93 +760,104 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1087,
+                    "commentStart": 1027,
                     "end": 0,
-                    "name": "translate",
+                    "name": "x",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1099,
-                    "elements": [
-                      {
-                        "commentStart": 1108,
-                        "end": 0,
-                        "left": {
-                          "abs_path": false,
-                          "commentStart": 1108,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 1108,
-                            "end": 0,
-                            "name": "mountingHolePlacementDiameter",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "operator": "/",
-                        "right": {
-                          "commentStart": 1140,
-                          "end": 0,
-                          "raw": "2",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 2.0,
-                            "suffix": "None"
-                          }
-                        },
-                        "start": 0,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
-                      },
-                      {
-                        "commentStart": 1150,
-                        "end": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "abs_path": false,
-                        "commentStart": 1160,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 1160,
-                          "end": 0,
-                          "name": "flangeBaseThickness",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
-                    ],
+                    "commentStart": 1031,
                     "end": 0,
+                    "left": {
+                      "abs_path": false,
+                      "commentStart": 1031,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 1031,
+                        "end": 0,
+                        "name": "mountingHolePlacementDiameter",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "operator": "/",
+                    "right": {
+                      "commentStart": 1063,
+                      "end": 0,
+                      "raw": "2",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 2.0,
+                        "suffix": "None"
+                      }
+                    },
                     "start": 0,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 1066,
+                    "end": 0,
+                    "name": "y",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 1070,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 1073,
+                    "end": 0,
+                    "name": "z",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "abs_path": false,
+                    "commentStart": 1077,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 1077,
+                      "end": 0,
+                      "name": "flangeBaseThickness",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   }
                 }
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 1077,
+                "commentStart": 1017,
                 "end": 0,
                 "name": {
-                  "commentStart": 1077,
+                  "commentStart": 1017,
                   "end": 0,
                   "name": "translate",
                   "start": 0,
@@ -834,7 +867,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 1077,
+              "commentStart": 1017,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
@@ -846,14 +879,14 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1229,
+                    "commentStart": 1139,
                     "end": 0,
                     "name": "instances",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1241,
+                    "commentStart": 1151,
                     "end": 0,
                     "raw": "4",
                     "start": 0,
@@ -868,17 +901,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1251,
+                    "commentStart": 1161,
                     "end": 0,
                     "name": "axis",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1258,
+                    "commentStart": 1168,
                     "elements": [
                       {
-                        "commentStart": 1259,
+                        "commentStart": 1169,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -890,7 +923,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                         }
                       },
                       {
-                        "commentStart": 1262,
+                        "commentStart": 1172,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -902,7 +935,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                         }
                       },
                       {
-                        "commentStart": 1265,
+                        "commentStart": 1175,
                         "end": 0,
                         "raw": "1",
                         "start": 0,
@@ -923,17 +956,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1276,
+                    "commentStart": 1186,
                     "end": 0,
                     "name": "center",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1285,
+                    "commentStart": 1195,
                     "elements": [
                       {
-                        "commentStart": 1286,
+                        "commentStart": 1196,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -945,7 +978,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                         }
                       },
                       {
-                        "commentStart": 1289,
+                        "commentStart": 1199,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -957,7 +990,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                         }
                       },
                       {
-                        "commentStart": 1292,
+                        "commentStart": 1202,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -978,14 +1011,14 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1303,
+                    "commentStart": 1213,
                     "end": 0,
                     "name": "arcDegrees",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1316,
+                    "commentStart": 1226,
                     "end": 0,
                     "raw": "360",
                     "start": 0,
@@ -1000,14 +1033,14 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1328,
+                    "commentStart": 1238,
                     "end": 0,
                     "name": "rotateDuplicates",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1347,
+                    "commentStart": 1257,
                     "end": 0,
                     "raw": "false",
                     "start": 0,
@@ -1019,10 +1052,10 @@ description: Result of parsing pipe-flange-assembly.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 1193,
+                "commentStart": 1103,
                 "end": 0,
                 "name": {
-                  "commentStart": 1193,
+                  "commentStart": 1103,
                   "end": 0,
                   "name": "patternCircular3d",
                   "start": 0,
@@ -1032,13 +1065,13 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 1193,
+              "commentStart": 1103,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
-                "commentStart": 1219,
+                "commentStart": 1129,
                 "end": 0,
                 "start": 0,
                 "type": "PipeSubstitution",
@@ -1050,14 +1083,14 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1400,
+                    "commentStart": 1310,
                     "end": 0,
                     "name": "instances",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1412,
+                    "commentStart": 1322,
                     "end": 0,
                     "raw": "2",
                     "start": 0,
@@ -1072,7 +1105,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1422,
+                    "commentStart": 1332,
                     "end": 0,
                     "name": "distance",
                     "start": 0,
@@ -1080,23 +1113,23 @@ description: Result of parsing pipe-flange-assembly.kcl
                   },
                   "arg": {
                     "argument": {
-                      "commentStart": 1435,
+                      "commentStart": 1345,
                       "end": 0,
                       "left": {
-                        "commentStart": 1435,
+                        "commentStart": 1345,
                         "end": 0,
                         "left": {
-                          "commentStart": 1435,
+                          "commentStart": 1345,
                           "end": 0,
                           "left": {
-                            "commentStart": 1435,
+                            "commentStart": 1345,
                             "end": 0,
                             "left": {
                               "abs_path": false,
-                              "commentStart": 1435,
+                              "commentStart": 1345,
                               "end": 0,
                               "name": {
-                                "commentStart": 1435,
+                                "commentStart": 1345,
                                 "end": 0,
                                 "name": "flangeBaseThickness",
                                 "start": 0,
@@ -1109,7 +1142,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                             },
                             "operator": "*",
                             "right": {
-                              "commentStart": 1457,
+                              "commentStart": 1367,
                               "end": 0,
                               "raw": "2",
                               "start": 0,
@@ -1126,14 +1159,14 @@ description: Result of parsing pipe-flange-assembly.kcl
                           },
                           "operator": "+",
                           "right": {
-                            "commentStart": 1461,
+                            "commentStart": 1371,
                             "end": 0,
                             "left": {
                               "abs_path": false,
-                              "commentStart": 1461,
+                              "commentStart": 1371,
                               "end": 0,
                               "name": {
-                                "commentStart": 1461,
+                                "commentStart": 1371,
                                 "end": 0,
                                 "name": "flangeBackHeight",
                                 "start": 0,
@@ -1146,7 +1179,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                             },
                             "operator": "*",
                             "right": {
-                              "commentStart": 1480,
+                              "commentStart": 1390,
                               "end": 0,
                               "raw": "2",
                               "start": 0,
@@ -1168,10 +1201,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                         "operator": "+",
                         "right": {
                           "abs_path": false,
-                          "commentStart": 1484,
+                          "commentStart": 1394,
                           "end": 0,
                           "name": {
-                            "commentStart": 1484,
+                            "commentStart": 1394,
                             "end": 0,
                             "name": "gasketThickness",
                             "start": 0,
@@ -1189,10 +1222,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                       "operator": "+",
                       "right": {
                         "abs_path": false,
-                        "commentStart": 1502,
+                        "commentStart": 1412,
                         "end": 0,
                         "name": {
-                          "commentStart": 1502,
+                          "commentStart": 1412,
                           "end": 0,
                           "name": "washerThickness",
                           "start": 0,
@@ -1207,7 +1240,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
-                    "commentStart": 1433,
+                    "commentStart": 1343,
                     "end": 0,
                     "operator": "-",
                     "start": 0,
@@ -1218,17 +1251,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1527,
+                    "commentStart": 1437,
                     "end": 0,
                     "name": "axis",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1534,
+                    "commentStart": 1444,
                     "elements": [
                       {
-                        "commentStart": 1535,
+                        "commentStart": 1445,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -1240,7 +1273,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                         }
                       },
                       {
-                        "commentStart": 1538,
+                        "commentStart": 1448,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -1252,7 +1285,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                         }
                       },
                       {
-                        "commentStart": 1541,
+                        "commentStart": 1451,
                         "end": 0,
                         "raw": "1",
                         "start": 0,
@@ -1273,10 +1306,10 @@ description: Result of parsing pipe-flange-assembly.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 1366,
+                "commentStart": 1276,
                 "end": 0,
                 "name": {
-                  "commentStart": 1366,
+                  "commentStart": 1276,
                   "end": 0,
                   "name": "patternLinear3d",
                   "start": 0,
@@ -1286,13 +1319,13 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 1366,
+              "commentStart": 1276,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
-                "commentStart": 1390,
+                "commentStart": 1300,
                 "end": 0,
                 "start": 0,
                 "type": "PipeSubstitution",
@@ -1300,13 +1333,13 @@ description: Result of parsing pipe-flange-assembly.kcl
               }
             }
           ],
-          "commentStart": 1063,
+          "commentStart": 1003,
           "end": 0,
           "nonCodeMeta": {
             "nonCodeNodes": {
               "3": [
                 {
-                  "commentStart": 1551,
+                  "commentStart": 1461,
                   "end": 0,
                   "start": 0,
                   "type": "NonCodeNode",
@@ -1329,7 +1362,7 @@ description: Result of parsing pipe-flange-assembly.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 1573,
+        "commentStart": 1483,
         "end": 0,
         "expression": {
           "body": [
@@ -1337,10 +1370,10 @@ description: Result of parsing pipe-flange-assembly.kcl
               "arguments": [],
               "callee": {
                 "abs_path": false,
-                "commentStart": 1573,
+                "commentStart": 1483,
                 "end": 0,
                 "name": {
-                  "commentStart": 1573,
+                  "commentStart": 1483,
                   "end": 0,
                   "name": "bolt",
                   "start": 0,
@@ -1350,7 +1383,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 1573,
+              "commentStart": 1483,
               "end": 0,
               "start": 0,
               "type": "CallExpression",
@@ -1361,117 +1394,128 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1595,
+                    "commentStart": 1505,
                     "end": 0,
-                    "name": "translate",
+                    "name": "x",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1607,
-                    "elements": [
-                      {
-                        "commentStart": 1616,
-                        "end": 0,
-                        "left": {
-                          "abs_path": false,
-                          "commentStart": 1616,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 1616,
-                            "end": 0,
-                            "name": "mountingHolePlacementDiameter",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "operator": "/",
-                        "right": {
-                          "commentStart": 1648,
-                          "end": 0,
-                          "raw": "2",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 2.0,
-                            "suffix": "None"
-                          }
-                        },
-                        "start": 0,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
-                      },
-                      {
-                        "commentStart": 1658,
-                        "end": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "commentStart": 1668,
-                        "end": 0,
-                        "left": {
-                          "abs_path": false,
-                          "commentStart": 1668,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 1668,
-                            "end": 0,
-                            "name": "flangeBaseThickness",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "operator": "+",
-                        "right": {
-                          "abs_path": false,
-                          "commentStart": 1690,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 1690,
-                            "end": 0,
-                            "name": "washerThickness",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "start": 0,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
-                      }
-                    ],
+                    "commentStart": 1509,
                     "end": 0,
+                    "left": {
+                      "abs_path": false,
+                      "commentStart": 1509,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 1509,
+                        "end": 0,
+                        "name": "mountingHolePlacementDiameter",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "operator": "/",
+                    "right": {
+                      "commentStart": 1541,
+                      "end": 0,
+                      "raw": "2",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 2.0,
+                        "suffix": "None"
+                      }
+                    },
                     "start": 0,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 1544,
+                    "end": 0,
+                    "name": "y",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 1548,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 1551,
+                    "end": 0,
+                    "name": "z",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 1555,
+                    "end": 0,
+                    "left": {
+                      "abs_path": false,
+                      "commentStart": 1555,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 1555,
+                        "end": 0,
+                        "name": "flangeBaseThickness",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "operator": "+",
+                    "right": {
+                      "abs_path": false,
+                      "commentStart": 1577,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 1577,
+                        "end": 0,
+                        "name": "washerThickness",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
                   }
                 }
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 1585,
+                "commentStart": 1495,
                 "end": 0,
                 "name": {
-                  "commentStart": 1585,
+                  "commentStart": 1495,
                   "end": 0,
                   "name": "translate",
                   "start": 0,
@@ -1481,7 +1525,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 1585,
+              "commentStart": 1495,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
@@ -1493,14 +1537,14 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1726,
+                    "commentStart": 1606,
                     "end": 0,
                     "name": "roll",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1733,
+                    "commentStart": 1613,
                     "end": 0,
                     "raw": "90",
                     "start": 0,
@@ -1515,14 +1559,14 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1737,
+                    "commentStart": 1617,
                     "end": 0,
                     "name": "pitch",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1745,
+                    "commentStart": 1625,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -1537,14 +1581,14 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1748,
+                    "commentStart": 1628,
                     "end": 0,
                     "name": "yaw",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1754,
+                    "commentStart": 1634,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -1559,10 +1603,10 @@ description: Result of parsing pipe-flange-assembly.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 1719,
+                "commentStart": 1599,
                 "end": 0,
                 "name": {
-                  "commentStart": 1719,
+                  "commentStart": 1599,
                   "end": 0,
                   "name": "rotate",
                   "start": 0,
@@ -1572,7 +1616,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 1719,
+              "commentStart": 1599,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
@@ -1584,14 +1628,14 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1798,
+                    "commentStart": 1678,
                     "end": 0,
                     "name": "instances",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1810,
+                    "commentStart": 1690,
                     "end": 0,
                     "raw": "4",
                     "start": 0,
@@ -1606,17 +1650,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1820,
+                    "commentStart": 1700,
                     "end": 0,
                     "name": "axis",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1827,
+                    "commentStart": 1707,
                     "elements": [
                       {
-                        "commentStart": 1828,
+                        "commentStart": 1708,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -1628,7 +1672,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                         }
                       },
                       {
-                        "commentStart": 1831,
+                        "commentStart": 1711,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -1640,7 +1684,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                         }
                       },
                       {
-                        "commentStart": 1834,
+                        "commentStart": 1714,
                         "end": 0,
                         "raw": "1",
                         "start": 0,
@@ -1661,17 +1705,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1845,
+                    "commentStart": 1725,
                     "end": 0,
                     "name": "center",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1854,
+                    "commentStart": 1734,
                     "elements": [
                       {
-                        "commentStart": 1855,
+                        "commentStart": 1735,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -1683,7 +1727,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                         }
                       },
                       {
-                        "commentStart": 1858,
+                        "commentStart": 1738,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -1695,7 +1739,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                         }
                       },
                       {
-                        "commentStart": 1861,
+                        "commentStart": 1741,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -1716,14 +1760,14 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1872,
+                    "commentStart": 1752,
                     "end": 0,
                     "name": "arcDegrees",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1885,
+                    "commentStart": 1765,
                     "end": 0,
                     "raw": "360",
                     "start": 0,
@@ -1738,14 +1782,14 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1897,
+                    "commentStart": 1777,
                     "end": 0,
                     "name": "rotateDuplicates",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1916,
+                    "commentStart": 1796,
                     "end": 0,
                     "raw": "false",
                     "start": 0,
@@ -1757,10 +1801,10 @@ description: Result of parsing pipe-flange-assembly.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 1762,
+                "commentStart": 1642,
                 "end": 0,
                 "name": {
-                  "commentStart": 1762,
+                  "commentStart": 1642,
                   "end": 0,
                   "name": "patternCircular3d",
                   "start": 0,
@@ -1770,13 +1814,13 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 1762,
+              "commentStart": 1642,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
-                "commentStart": 1788,
+                "commentStart": 1668,
                 "end": 0,
                 "start": 0,
                 "type": "PipeSubstitution",
@@ -1784,13 +1828,13 @@ description: Result of parsing pipe-flange-assembly.kcl
               }
             }
           ],
-          "commentStart": 1573,
+          "commentStart": 1483,
           "end": 0,
           "nonCodeMeta": {
             "nonCodeNodes": {
               "3": [
                 {
-                  "commentStart": 1929,
+                  "commentStart": 1809,
                   "end": 0,
                   "start": 0,
                   "type": "NonCodeNode",
@@ -1813,7 +1857,7 @@ description: Result of parsing pipe-flange-assembly.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 1954,
+        "commentStart": 1834,
         "end": 0,
         "expression": {
           "body": [
@@ -1821,10 +1865,10 @@ description: Result of parsing pipe-flange-assembly.kcl
               "arguments": [],
               "callee": {
                 "abs_path": false,
-                "commentStart": 1954,
+                "commentStart": 1834,
                 "end": 0,
                 "name": {
-                  "commentStart": 1954,
+                  "commentStart": 1834,
                   "end": 0,
                   "name": "hexNut",
                   "start": 0,
@@ -1834,7 +1878,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 1954,
+              "commentStart": 1834,
               "end": 0,
               "start": 0,
               "type": "CallExpression",
@@ -1845,142 +1889,104 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1978,
+                    "commentStart": 1858,
                     "end": 0,
-                    "name": "translate",
+                    "name": "x",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1990,
-                    "elements": [
-                      {
-                        "commentStart": 1999,
+                    "commentStart": 1862,
+                    "end": 0,
+                    "left": {
+                      "abs_path": false,
+                      "commentStart": 1862,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 1862,
+                        "end": 0,
+                        "name": "mountingHolePlacementDiameter",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "operator": "/",
+                    "right": {
+                      "commentStart": 1894,
+                      "end": 0,
+                      "raw": "2",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 2.0,
+                        "suffix": "None"
+                      }
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 1897,
+                    "end": 0,
+                    "name": "y",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 1901,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 1904,
+                    "end": 0,
+                    "name": "z",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "argument": {
+                      "commentStart": 1910,
+                      "end": 0,
+                      "left": {
+                        "commentStart": 1910,
                         "end": 0,
                         "left": {
-                          "abs_path": false,
-                          "commentStart": 1999,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 1999,
-                            "end": 0,
-                            "name": "mountingHolePlacementDiameter",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "operator": "/",
-                        "right": {
-                          "commentStart": 2031,
-                          "end": 0,
-                          "raw": "2",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 2.0,
-                            "suffix": "None"
-                          }
-                        },
-                        "start": 0,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
-                      },
-                      {
-                        "commentStart": 2041,
-                        "end": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "argument": {
-                          "commentStart": 2053,
+                          "commentStart": 1910,
                           "end": 0,
                           "left": {
-                            "commentStart": 2053,
+                            "commentStart": 1910,
                             "end": 0,
                             "left": {
-                              "commentStart": 2053,
+                              "commentStart": 1910,
                               "end": 0,
                               "left": {
-                                "commentStart": 2053,
-                                "end": 0,
-                                "left": {
-                                  "commentStart": 2053,
-                                  "end": 0,
-                                  "left": {
-                                    "abs_path": false,
-                                    "commentStart": 2053,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 2053,
-                                      "end": 0,
-                                      "name": "flangeBackHeight",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  "operator": "*",
-                                  "right": {
-                                    "commentStart": 2072,
-                                    "end": 0,
-                                    "raw": "2",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 2.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  "start": 0,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                },
-                                "operator": "+",
-                                "right": {
-                                  "abs_path": false,
-                                  "commentStart": 2076,
-                                  "end": 0,
-                                  "name": {
-                                    "commentStart": 2076,
-                                    "end": 0,
-                                    "name": "gasketThickness",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "path": [],
-                                  "start": 0,
-                                  "type": "Name",
-                                  "type": "Name"
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              },
-                              "operator": "+",
-                              "right": {
                                 "abs_path": false,
-                                "commentStart": 2094,
+                                "commentStart": 1910,
                                 "end": 0,
                                 "name": {
-                                  "commentStart": 2094,
+                                  "commentStart": 1910,
                                   "end": 0,
-                                  "name": "flangeBaseThickness",
+                                  "name": "flangeBackHeight",
                                   "start": 0,
                                   "type": "Identifier"
                                 },
@@ -1989,6 +1995,19 @@ description: Result of parsing pipe-flange-assembly.kcl
                                 "type": "Name",
                                 "type": "Name"
                               },
+                              "operator": "*",
+                              "right": {
+                                "commentStart": 1929,
+                                "end": 0,
+                                "raw": "2",
+                                "start": 0,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 2.0,
+                                  "suffix": "None"
+                                }
+                              },
                               "start": 0,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
@@ -1996,12 +2015,12 @@ description: Result of parsing pipe-flange-assembly.kcl
                             "operator": "+",
                             "right": {
                               "abs_path": false,
-                              "commentStart": 2116,
+                              "commentStart": 1933,
                               "end": 0,
                               "name": {
-                                "commentStart": 2116,
+                                "commentStart": 1933,
                                 "end": 0,
-                                "name": "washerThickness",
+                                "name": "gasketThickness",
                                 "start": 0,
                                 "type": "Identifier"
                               },
@@ -2017,12 +2036,12 @@ description: Result of parsing pipe-flange-assembly.kcl
                           "operator": "+",
                           "right": {
                             "abs_path": false,
-                            "commentStart": 2134,
+                            "commentStart": 1951,
                             "end": 0,
                             "name": {
-                              "commentStart": 2134,
+                              "commentStart": 1951,
                               "end": 0,
-                              "name": "hexNutThickness",
+                              "name": "flangeBaseThickness",
                               "start": 0,
                               "type": "Identifier"
                             },
@@ -2035,27 +2054,63 @@ description: Result of parsing pipe-flange-assembly.kcl
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
-                        "commentStart": 2051,
-                        "end": 0,
-                        "operator": "-",
+                        "operator": "+",
+                        "right": {
+                          "abs_path": false,
+                          "commentStart": 1973,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 1973,
+                            "end": 0,
+                            "name": "washerThickness",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        },
                         "start": 0,
-                        "type": "UnaryExpression",
-                        "type": "UnaryExpression"
-                      }
-                    ],
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      },
+                      "operator": "+",
+                      "right": {
+                        "abs_path": false,
+                        "commentStart": 1991,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 1991,
+                          "end": 0,
+                          "name": "hexNutThickness",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "start": 0,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    "commentStart": 1908,
                     "end": 0,
+                    "operator": "-",
                     "start": 0,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
+                    "type": "UnaryExpression",
+                    "type": "UnaryExpression"
                   }
                 }
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 1968,
+                "commentStart": 1848,
                 "end": 0,
                 "name": {
-                  "commentStart": 1968,
+                  "commentStart": 1848,
                   "end": 0,
                   "name": "translate",
                   "start": 0,
@@ -2065,7 +2120,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 1968,
+              "commentStart": 1848,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
@@ -2077,14 +2132,14 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 2200,
+                    "commentStart": 2050,
                     "end": 0,
                     "name": "instances",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 2212,
+                    "commentStart": 2062,
                     "end": 0,
                     "raw": "4",
                     "start": 0,
@@ -2099,17 +2154,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 2222,
+                    "commentStart": 2072,
                     "end": 0,
                     "name": "axis",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 2229,
+                    "commentStart": 2079,
                     "elements": [
                       {
-                        "commentStart": 2230,
+                        "commentStart": 2080,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -2121,7 +2176,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                         }
                       },
                       {
-                        "commentStart": 2233,
+                        "commentStart": 2083,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -2133,7 +2188,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                         }
                       },
                       {
-                        "commentStart": 2236,
+                        "commentStart": 2086,
                         "end": 0,
                         "raw": "1",
                         "start": 0,
@@ -2154,17 +2209,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 2247,
+                    "commentStart": 2097,
                     "end": 0,
                     "name": "center",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 2256,
+                    "commentStart": 2106,
                     "elements": [
                       {
-                        "commentStart": 2257,
+                        "commentStart": 2107,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -2176,7 +2231,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                         }
                       },
                       {
-                        "commentStart": 2260,
+                        "commentStart": 2110,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -2188,7 +2243,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                         }
                       },
                       {
-                        "commentStart": 2263,
+                        "commentStart": 2113,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -2209,14 +2264,14 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 2274,
+                    "commentStart": 2124,
                     "end": 0,
                     "name": "arcDegrees",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 2287,
+                    "commentStart": 2137,
                     "end": 0,
                     "raw": "360",
                     "start": 0,
@@ -2231,14 +2286,14 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 2299,
+                    "commentStart": 2149,
                     "end": 0,
                     "name": "rotateDuplicates",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 2318,
+                    "commentStart": 2168,
                     "end": 0,
                     "raw": "false",
                     "start": 0,
@@ -2250,10 +2305,10 @@ description: Result of parsing pipe-flange-assembly.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 2164,
+                "commentStart": 2014,
                 "end": 0,
                 "name": {
-                  "commentStart": 2164,
+                  "commentStart": 2014,
                   "end": 0,
                   "name": "patternCircular3d",
                   "start": 0,
@@ -2263,13 +2318,13 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 2164,
+              "commentStart": 2014,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
-                "commentStart": 2190,
+                "commentStart": 2040,
                 "end": 0,
                 "start": 0,
                 "type": "PipeSubstitution",
@@ -2277,13 +2332,13 @@ description: Result of parsing pipe-flange-assembly.kcl
               }
             }
           ],
-          "commentStart": 1954,
+          "commentStart": 1834,
           "end": 0,
           "nonCodeMeta": {
             "nonCodeNodes": {
               "2": [
                 {
-                  "commentStart": 2331,
+                  "commentStart": 2181,
                   "end": 0,
                   "start": 0,
                   "type": "NonCodeNode",
@@ -2306,7 +2361,7 @@ description: Result of parsing pipe-flange-assembly.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 2362,
+        "commentStart": 2212,
         "end": 0,
         "expression": {
           "body": [
@@ -2314,10 +2369,10 @@ description: Result of parsing pipe-flange-assembly.kcl
               "arguments": [],
               "callee": {
                 "abs_path": false,
-                "commentStart": 2362,
+                "commentStart": 2212,
                 "end": 0,
                 "name": {
-                  "commentStart": 2362,
+                  "commentStart": 2212,
                   "end": 0,
                   "name": "pipe",
                   "start": 0,
@@ -2327,7 +2382,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 2362,
+              "commentStart": 2212,
               "end": 0,
               "start": 0,
               "type": "CallExpression",
@@ -2338,7 +2393,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 2399,
+                    "commentStart": 2249,
                     "end": 0,
                     "name": "roll",
                     "start": 0,
@@ -2346,7 +2401,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   },
                   "arg": {
                     "argument": {
-                      "commentStart": 2407,
+                      "commentStart": 2257,
                       "end": 0,
                       "raw": "90",
                       "start": 0,
@@ -2357,7 +2412,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                         "suffix": "None"
                       }
                     },
-                    "commentStart": 2406,
+                    "commentStart": 2256,
                     "end": 0,
                     "operator": "-",
                     "start": 0,
@@ -2368,14 +2423,14 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 2418,
+                    "commentStart": 2268,
                     "end": 0,
                     "name": "pitch",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 2426,
+                    "commentStart": 2276,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -2390,14 +2445,14 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 2436,
+                    "commentStart": 2286,
                     "end": 0,
                     "name": "yaw",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 2442,
+                    "commentStart": 2292,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -2412,10 +2467,10 @@ description: Result of parsing pipe-flange-assembly.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 2374,
+                "commentStart": 2224,
                 "end": 0,
                 "name": {
-                  "commentStart": 2374,
+                  "commentStart": 2224,
                   "end": 0,
                   "name": "rotate",
                   "start": 0,
@@ -2425,13 +2480,13 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 2374,
+              "commentStart": 2224,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
-                "commentStart": 2389,
+                "commentStart": 2239,
                 "end": 0,
                 "start": 0,
                 "type": "PipeSubstitution",
@@ -2443,117 +2498,128 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 2485,
+                    "commentStart": 2335,
                     "end": 0,
-                    "name": "translate",
+                    "name": "x",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 2497,
-                    "elements": [
-                      {
-                        "commentStart": 2508,
-                        "end": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "commentStart": 2520,
-                        "end": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "commentStart": 2532,
-                        "end": 0,
-                        "left": {
-                          "commentStart": 2532,
-                          "end": 0,
-                          "left": {
-                            "abs_path": false,
-                            "commentStart": 2532,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 2532,
-                              "end": 0,
-                              "name": "flangeBaseThickness",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
-                          "operator": "+",
-                          "right": {
-                            "abs_path": false,
-                            "commentStart": 2554,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 2554,
-                              "end": 0,
-                              "name": "flangeFrontHeight",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
-                          "start": 0,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        },
-                        "operator": "-",
-                        "right": {
-                          "commentStart": 2574,
-                          "end": 0,
-                          "raw": "0.5",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.5,
-                            "suffix": "None"
-                          }
-                        },
-                        "start": 0,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
-                      }
-                    ],
+                    "commentStart": 2339,
                     "end": 0,
+                    "raw": "0",
                     "start": 0,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
                   }
                 },
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 2595,
+                    "commentStart": 2349,
+                    "end": 0,
+                    "name": "y",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 2353,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 2363,
+                    "end": 0,
+                    "name": "z",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 2367,
+                    "end": 0,
+                    "left": {
+                      "commentStart": 2367,
+                      "end": 0,
+                      "left": {
+                        "abs_path": false,
+                        "commentStart": 2367,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 2367,
+                          "end": 0,
+                          "name": "flangeBaseThickness",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "operator": "+",
+                      "right": {
+                        "abs_path": false,
+                        "commentStart": 2389,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 2389,
+                          "end": 0,
+                          "name": "flangeFrontHeight",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "start": 0,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    "operator": "-",
+                    "right": {
+                      "commentStart": 2409,
+                      "end": 0,
+                      "raw": "0.5",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.5,
+                        "suffix": "None"
+                      }
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 2421,
                     "end": 0,
                     "name": "global",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 2604,
+                    "commentStart": 2430,
                     "end": 0,
                     "raw": "true",
                     "start": 0,
@@ -2565,10 +2631,10 @@ description: Result of parsing pipe-flange-assembly.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 2457,
+                "commentStart": 2307,
                 "end": 0,
                 "name": {
-                  "commentStart": 2457,
+                  "commentStart": 2307,
                   "end": 0,
                   "name": "translate",
                   "start": 0,
@@ -2578,13 +2644,13 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 2457,
+              "commentStart": 2307,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
-                "commentStart": 2475,
+                "commentStart": 2325,
                 "end": 0,
                 "start": 0,
                 "type": "PipeSubstitution",
@@ -2592,7 +2658,7 @@ description: Result of parsing pipe-flange-assembly.kcl
               }
             }
           ],
-          "commentStart": 2362,
+          "commentStart": 2212,
           "end": 0,
           "start": 0,
           "type": "PipeExpression",
@@ -2603,7 +2669,7 @@ description: Result of parsing pipe-flange-assembly.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 2616,
+        "commentStart": 2442,
         "end": 0,
         "expression": {
           "body": [
@@ -2611,10 +2677,10 @@ description: Result of parsing pipe-flange-assembly.kcl
               "arguments": [],
               "callee": {
                 "abs_path": false,
-                "commentStart": 2618,
+                "commentStart": 2444,
                 "end": 0,
                 "name": {
-                  "commentStart": 2618,
+                  "commentStart": 2444,
                   "end": 0,
                   "name": "pipe",
                   "start": 0,
@@ -2624,7 +2690,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 2618,
+              "commentStart": 2444,
               "end": 0,
               "start": 0,
               "type": "CallExpression",
@@ -2635,14 +2701,14 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 2655,
+                    "commentStart": 2481,
                     "end": 0,
                     "name": "roll",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 2662,
+                    "commentStart": 2488,
                     "end": 0,
                     "raw": "90",
                     "start": 0,
@@ -2657,14 +2723,14 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 2673,
+                    "commentStart": 2499,
                     "end": 0,
                     "name": "pitch",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 2681,
+                    "commentStart": 2507,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -2679,14 +2745,14 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 2691,
+                    "commentStart": 2517,
                     "end": 0,
                     "name": "yaw",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 2697,
+                    "commentStart": 2523,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -2701,10 +2767,10 @@ description: Result of parsing pipe-flange-assembly.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 2630,
+                "commentStart": 2456,
                 "end": 0,
                 "name": {
-                  "commentStart": 2630,
+                  "commentStart": 2456,
                   "end": 0,
                   "name": "rotate",
                   "start": 0,
@@ -2714,13 +2780,13 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 2630,
+              "commentStart": 2456,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
-                "commentStart": 2645,
+                "commentStart": 2471,
                 "end": 0,
                 "start": 0,
                 "type": "PipeSubstitution",
@@ -2732,118 +2798,80 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 2740,
+                    "commentStart": 2566,
                     "end": 0,
-                    "name": "translate",
+                    "name": "x",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 2752,
-                    "elements": [
-                      {
-                        "commentStart": 2763,
+                    "commentStart": 2570,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 2580,
+                    "end": 0,
+                    "name": "y",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 2584,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 2594,
+                    "end": 0,
+                    "name": "z",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "argument": {
+                      "commentStart": 2600,
+                      "end": 0,
+                      "left": {
+                        "commentStart": 2600,
                         "end": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "commentStart": 2775,
-                        "end": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "argument": {
-                          "commentStart": 2789,
+                        "left": {
+                          "commentStart": 2600,
                           "end": 0,
                           "left": {
-                            "commentStart": 2789,
+                            "commentStart": 2600,
                             "end": 0,
                             "left": {
-                              "commentStart": 2789,
+                              "commentStart": 2600,
                               "end": 0,
                               "left": {
-                                "commentStart": 2789,
-                                "end": 0,
-                                "left": {
-                                  "commentStart": 2789,
-                                  "end": 0,
-                                  "left": {
-                                    "abs_path": false,
-                                    "commentStart": 2789,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 2789,
-                                      "end": 0,
-                                      "name": "flangeBackHeight",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  "operator": "*",
-                                  "right": {
-                                    "commentStart": 2808,
-                                    "end": 0,
-                                    "raw": "2",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 2.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  "start": 0,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                },
-                                "operator": "+",
-                                "right": {
-                                  "abs_path": false,
-                                  "commentStart": 2812,
-                                  "end": 0,
-                                  "name": {
-                                    "commentStart": 2812,
-                                    "end": 0,
-                                    "name": "gasketThickness",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "path": [],
-                                  "start": 0,
-                                  "type": "Name",
-                                  "type": "Name"
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              },
-                              "operator": "+",
-                              "right": {
                                 "abs_path": false,
-                                "commentStart": 2830,
+                                "commentStart": 2600,
                                 "end": 0,
                                 "name": {
-                                  "commentStart": 2830,
+                                  "commentStart": 2600,
                                   "end": 0,
-                                  "name": "flangeBaseThickness",
+                                  "name": "flangeBackHeight",
                                   "start": 0,
                                   "type": "Identifier"
                                 },
@@ -2852,6 +2880,19 @@ description: Result of parsing pipe-flange-assembly.kcl
                                 "type": "Name",
                                 "type": "Name"
                               },
+                              "operator": "*",
+                              "right": {
+                                "commentStart": 2619,
+                                "end": 0,
+                                "raw": "2",
+                                "start": 0,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 2.0,
+                                  "suffix": "None"
+                                }
+                              },
                               "start": 0,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
@@ -2859,12 +2900,12 @@ description: Result of parsing pipe-flange-assembly.kcl
                             "operator": "+",
                             "right": {
                               "abs_path": false,
-                              "commentStart": 2852,
+                              "commentStart": 2623,
                               "end": 0,
                               "name": {
-                                "commentStart": 2852,
+                                "commentStart": 2623,
                                 "end": 0,
-                                "name": "flangeFrontHeight",
+                                "name": "gasketThickness",
                                 "start": 0,
                                 "type": "Identifier"
                               },
@@ -2877,48 +2918,84 @@ description: Result of parsing pipe-flange-assembly.kcl
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "operator": "-",
+                          "operator": "+",
                           "right": {
-                            "commentStart": 2872,
+                            "abs_path": false,
+                            "commentStart": 2641,
                             "end": 0,
-                            "raw": "0.5",
+                            "name": {
+                              "commentStart": 2641,
+                              "end": 0,
+                              "name": "flangeBaseThickness",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 0.5,
-                              "suffix": "None"
-                            }
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
-                        "commentStart": 2787,
-                        "end": 0,
-                        "operator": "-",
+                        "operator": "+",
+                        "right": {
+                          "abs_path": false,
+                          "commentStart": 2663,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 2663,
+                            "end": 0,
+                            "name": "flangeFrontHeight",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        },
                         "start": 0,
-                        "type": "UnaryExpression",
-                        "type": "UnaryExpression"
-                      }
-                    ],
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      },
+                      "operator": "-",
+                      "right": {
+                        "commentStart": 2683,
+                        "end": 0,
+                        "raw": "0.5",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.5,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 0,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    "commentStart": 2598,
                     "end": 0,
+                    "operator": "-",
                     "start": 0,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
+                    "type": "UnaryExpression",
+                    "type": "UnaryExpression"
                   }
                 },
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 2894,
+                    "commentStart": 2696,
                     "end": 0,
                     "name": "global",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 2903,
+                    "commentStart": 2705,
                     "end": 0,
                     "raw": "true",
                     "start": 0,
@@ -2930,10 +3007,10 @@ description: Result of parsing pipe-flange-assembly.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 2712,
+                "commentStart": 2538,
                 "end": 0,
                 "name": {
-                  "commentStart": 2712,
+                  "commentStart": 2538,
                   "end": 0,
                   "name": "translate",
                   "start": 0,
@@ -2943,13 +3020,13 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 2712,
+              "commentStart": 2538,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
-                "commentStart": 2730,
+                "commentStart": 2556,
                 "end": 0,
                 "start": 0,
                 "type": "PipeSubstitution",
@@ -2957,7 +3034,7 @@ description: Result of parsing pipe-flange-assembly.kcl
               }
             }
           ],
-          "commentStart": 2618,
+          "commentStart": 2444,
           "end": 0,
           "start": 0,
           "type": "PipeExpression",
@@ -3027,7 +3104,7 @@ description: Result of parsing pipe-flange-assembly.kcl
       "nonCodeNodes": {
         "13": [
           {
-            "commentStart": 2616,
+            "commentStart": 2442,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

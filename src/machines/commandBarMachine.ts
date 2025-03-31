@@ -366,6 +366,7 @@ export const commandBarMachine = setup({
                 !(argConfig.inputType === 'kcl' || argConfig.skip)
               const hasInvalidKclValue =
                 argConfig.inputType === 'kcl' &&
+                isRequired &&
                 !(argValue as Partial<KclCommandValue> | undefined)?.valueAst
               const hasInvalidOptionsValue =
                 isRequired &&
