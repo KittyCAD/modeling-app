@@ -128,9 +128,10 @@ function CommandBarSelectionInput({
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
     arg.selectionFilter && kclManager.setSelectionFilter(arg.selectionFilter)
-    toSync(() => {
-      return kclManager.defaultSelectionFilter(selection)
-    }, reportRejection)()
+    // TODO: We shouldn't use async here.
+    return toSync(async () => {
+      await kclManager.defaultSelectionFilter(selection)
+    }, reportRejection)
   }, [arg.selectionFilter])
 
   return (
