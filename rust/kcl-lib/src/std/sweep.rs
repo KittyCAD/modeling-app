@@ -191,7 +191,7 @@ async fn inner_sweep(
                 target: sketch.id.into(),
                 trajectory,
                 sectional: sectional.unwrap_or(false),
-                tolerance: LengthUnit(tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
+                tolerance: LengthUnit(tolerance.unwrap_or_else(|| default_tolerance(&exec_state.length_unit().into()))),
             }),
         )
         .await?;
