@@ -3536,7 +3536,6 @@ extrude001 = extrude(sketch001, length = 50)
 sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
   |> circle(center = [-11.34, 10.0], radius = 8.69)
 `
-      page.on('console', console.log)
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
       }, initialCode)
@@ -3556,7 +3555,6 @@ sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
 
-      // const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360, axis = getOppositeEdge(rectangleSegmentA001)) `
       const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360, axis = rectangleSegmentA001)`
       await editor.expectEditor.toContain(newCodeToFind)
 
@@ -3579,6 +3577,10 @@ sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
         stage: 'arguments',
       })
       await page.keyboard.insertText(newAngle)
+      await page.getByRole('button', { name: 'Create new variable' }).click()
+      await expect(page.getByPlaceholder('Variable name')).toHaveValue(
+        'angle001'
+      )
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
@@ -3589,10 +3591,10 @@ sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
       })
       await cmdBar.progressCmdBar()
       await toolbar.closePane('feature-tree')
+      await editor.expectEditor.toContain('angle001 = ' + newAngle)
       await editor.expectEditor.toContain(
-        newCodeToFind.replace('angle = 360', 'angle = ' + newAngle)
+        newCodeToFind.replace('angle = 360', 'angle = angle001')
       )
-      await page.waitForTimeout(30000)
     })
     test('revolve sketch circle around line segment from startProfileAt sketch', async ({
       context,
