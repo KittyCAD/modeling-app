@@ -693,7 +693,7 @@ fn cleanup_type_links<'a>(output: &str, types: impl Iterator<Item = &'a String>)
     // TODO handle union types generically rather than special casing them.
     cleaned_output = cleaned_output.replace(
         "`Sketch | Plane | Face`",
-        "[`Sketch`](/docs/kcl/types/Sketch) OR [`Plane`](/docs/kcl/types/Face) OR [`Plane`](/docs/kcl/types/Face)",
+        "[`Sketch`](/docs/kcl/types/Sketch) OR [`Plane`](/docs/kcl/types/Plane) OR [`Face`](/docs/kcl/types/Face)",
     );
 
     cleanup_static_links(&cleaned_output)
