@@ -890,7 +890,6 @@ test.describe('Testing settings', () => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
-    await scene.settled(cmdBar)
 
     // Constants and locators
     const resizeHandle = page.locator('.sidebar-resize-handles > div.block')
@@ -902,6 +901,7 @@ test.describe('Testing settings', () => {
 
     async function setShowDebugPanelTo(value: 'On' | 'Off') {
       await commandsButton.click()
+      await debugPaneOption.scrollIntoViewIfNeeded()
       await debugPaneOption.click()
       await page.getByRole('option', { name: value }).click()
       await expect(
