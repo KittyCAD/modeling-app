@@ -100,14 +100,14 @@ import {
 } from 'lang/std/engineConnection'
 import { submitAndAwaitTextToKcl } from 'lib/textToCad'
 import { useFileContext } from 'hooks/useFileContext'
-import { platform, uuidv4 } from 'lib/utils'
+import { isNonNullable, platform, uuidv4 } from 'lib/utils'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   getFaceCodeRef,
   getPathsFromArtifact,
   getPlaneFromArtifact,
 } from 'lang/std/artifactGraph'
-import { promptToEditFlow } from 'lib/promptToEdit'
+import { FileMeta, promptToEditFlow } from 'lib/promptToEdit'
 import { kclEditorActor } from 'machines/kclEditorMachine'
 import { commandBarActor } from 'machines/commandBarMachine'
 import { useToken } from 'machines/appMachine'
@@ -121,6 +121,8 @@ import { exportSave } from 'lib/exportSave'
 import { Plane } from '@rust/kcl-lib/bindings/Plane'
 import { updateModelingState } from 'lang/modelingWorkflows'
 import { EXECUTION_TYPE_MOCK } from 'lib/constants'
+import { isDesktop } from 'lib/isDesktop'
+import { FileEntry } from 'lib/project'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -1737,13 +1739,91 @@ export const ModelingMachineProvider = ({
           }
         ),
         'submit-prompt-edit': fromPromise(async ({ input }) => {
+          let projectFiles: FileMeta[] = [
+            {
+              type: 'kcl',
+              relPath: 'main.kcl',
+              absPath: 'main.kcl',
+              fileContents: codeManager.code,
+              execStateFileNamesIndex: 0,
+            },
+          ]
+          const execStateNameToIndexMap: { [fileName: string]: number } = {}
+          Object.entries(kclManager.execState.filenames).forEach(
+            ([index, val]) => {
+              if (val?.type === 'Local') {
+                execStateNameToIndexMap[val.value] = Number(index)
+              }
+            }
+          )
+          let basePath = ''
+          if (isDesktop() && context?.project?.children) {
+            basePath = context?.selectedDirectory?.path
+            const filePromises: Promise<FileMeta | null>[] = []
+            let uploadSize = 0
+            const recursivelyPushFilePromises = (files: FileEntry[]) => {
+              // mutates filePromises declared above, so this function definition should stay here
+              // if pulled out, it would need to be refactored.
+              for (const file of files) {
+                if (file.children !== null) {
+                  // is directory
+                  recursivelyPushFilePromises(file.children)
+                  continue
+                }
+                const absPath = file.path
+                const relPath = window.electron.path.relative(basePath, absPath)
+                const filePromise = window.electron
+                  .readFile(absPath)
+                  .then((file): FileMeta => {
+                    uploadSize += file.byteLength
+                    const decoder = new TextDecoder('utf-8')
+                    const fileType = window.electron.path.extname(absPath)
+                    if (fileType === '.kcl') {
+                      return {
+                        type: 'kcl',
+                        absPath,
+                        relPath,
+                        fileContents: decoder.decode(file),
+                        execStateFileNamesIndex:
+                          execStateNameToIndexMap[absPath],
+                      }
+                    }
+                    const blob = new Blob([file], {
+                      type: 'application/octet-stream',
+                    })
+                    return {
+                      type: 'other',
+                      relPath,
+                      data: blob,
+                    }
+                  })
+                  .catch((e) => {
+                    console.error('error reading file', e)
+                    return null
+                  })
+
+                filePromises.push(filePromise)
+              }
+            }
+            recursivelyPushFilePromises(context?.project?.children)
+            projectFiles = (await Promise.all(filePromises)).filter(
+              isNonNullable
+            )
+            const MB20 = 2 ** 20 * 20
+            if (uploadSize > MB20) {
+              toast.error(
+                "You're project exceeds 20Mb, this will slow down Text-to-CAD\nPlease remove any unnecessary files"
+              )
+            }
+          }
           return await promptToEditFlow({
-            code: codeManager.code,
+            projectFiles,
             prompt: input.prompt,
             selections: input.selection,
             token,
             artifactGraph: kclManager.artifactGraph,
             projectName: context.project.name,
+            basePath,
           })
         }),
       },

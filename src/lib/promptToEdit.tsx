@@ -1,4 +1,4 @@
-import { Models } from '@kittycad/lib'
+import { Models, ml, Client } from '@kittycad/lib'
 import { VITE_KC_API_BASE_URL } from 'env'
 import crossPlatformFetch from './crossPlatformFetch'
 import { err, reportRejection } from './trap'
@@ -8,10 +8,35 @@ import { ArtifactGraph, SourceRange, topLevelRange } from 'lang/wasm'
 import toast from 'react-hot-toast'
 import { codeManager, editorManager, kclManager } from './singletons'
 import { ToastPromptToEditCadSuccess } from 'components/ToastTextToCad'
-import { uuidv4 } from './utils'
+import { KittyCadLibFile, uuidv4 } from './utils'
 import { diffLines } from 'diff'
 import { Transaction, EditorSelection, SelectionRange } from '@codemirror/state'
 import { modelingMachineEvent } from 'editor/manager'
+import { getCookie, TOKEN_PERSIST_KEY } from 'machines/authMachine'
+import { COOKIE_NAME } from './constants'
+import { TextToCadMultiFileIteration_type } from '@kittycad/lib/dist/types/src/models'
+import { isDesktop } from './isDesktop'
+import { openExternalBrowserIfDesktop } from './openWindow'
+import { ActionButton } from 'components/ActionButton'
+import { CustomIcon } from 'components/CustomIcon'
+
+export type FileMeta =
+  | {
+      type: 'kcl'
+      relPath: string
+      absPath: string
+      fileContents: string
+      execStateFileNamesIndex: number
+    }
+  | {
+      type: 'other'
+      relPath: string
+      data: Blob
+    }
+
+type KclFileMetaMap = {
+  [execStateFileNamesIndex: number]: Extract<FileMeta, { type: 'kcl' }>
+}
 
 function sourceIndexToLineColumn(
   code: string,
@@ -37,40 +62,70 @@ function convertAppRangeToApiRange(
 export async function submitPromptToEditToQueue({
   prompt,
   selections,
-  code,
+  projectFiles,
   token,
   artifactGraph,
   projectName,
 }: {
   prompt: string
   selections: Selections | null
-  code: string
+  projectFiles: FileMeta[]
   projectName: string
   token?: string
   artifactGraph: ArtifactGraph
-}): Promise<Models['TextToCadIteration_type'] | Error> {
+}) {
+  const _token =
+    token && token !== ''
+      ? token
+      : getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
+
+  const client = new Client(_token)
+
+  const kclFilesMap: KclFileMetaMap = {}
+  const endPointFiles: KittyCadLibFile[] = []
+  projectFiles.forEach((file) => {
+    let data: Blob
+    if (file.type === 'other') {
+      data = file.data
+    } else {
+      // file.type === 'kcl'
+      kclFilesMap[file.execStateFileNamesIndex] = file
+      data = new Blob([file.fileContents], { type: 'text/kcl' })
+    }
+    endPointFiles.push({
+      name: file.relPath,
+      data,
+    })
+  })
+
   // If no selection, use whole file
   if (selections === null) {
-    const body: Models['TextToCadIterationBody_type'] = {
-      original_source_code: code,
-      prompt,
-      source_ranges: [], // Empty ranges indicates whole file
-      project_name:
-        projectName !== '' && projectName !== 'browser'
-          ? projectName
-          : undefined,
-      kcl_version: kclManager.kclVersion,
-    }
-    return submitToApi(body, token)
+    return ml.create_text_to_cad_multi_file_iteration({
+      client,
+      body: {
+        prompt,
+        source_ranges: [],
+        project_name:
+          projectName !== '' && projectName !== 'browser'
+            ? projectName
+            : undefined,
+        kcl_version: kclManager.kclVersion,
+      },
+      files: endPointFiles,
+    })
   }
 
   // Handle manual code selections and artifact selections differently
-  const ranges: Models['TextToCadIterationBody_type']['source_ranges'] =
+  const ranges: Models['SourceRangePrompt_type'][] =
     selections.graphSelections.flatMap((selection) => {
       const artifact = selection.artifact
+      const execStateFileNamesIndex = selection?.codeRef?.range?.[2]
+      const file = kclFilesMap?.[execStateFileNamesIndex]
+      const code = file?.fileContents || ''
+      const filePath = file?.relPath || ''
 
       // For artifact selections, add context
-      const prompts: Models['TextToCadIterationBody_type']['source_ranges'] = []
+      const prompts: Models['SourceRangePrompt_type'][] = []
 
       if (artifact?.type === 'cap') {
         prompts.push({
@@ -84,6 +139,7 @@ If you need to operate on this cap, for example for sketching on the face, you c
 When they made this selection they main have intended this surface directly or meant something more general like the sweep body.
 See later source ranges for more context.`,
           range: convertAppRangeToApiRange(selection.codeRef.range, code),
+          file: filePath,
         })
         let sweep = getArtifactOfTypes(
           { key: artifact.sweepId, types: ['sweep'] },
@@ -93,6 +149,7 @@ See later source ranges for more context.`,
           prompts.push({
             prompt: `This is the sweep's source range from the user's main selection of the end cap.`,
             range: convertAppRangeToApiRange(sweep.codeRef.range, code),
+            file: filePath,
           })
         }
       }
@@ -102,6 +159,7 @@ See later source ranges for more context.`,
 The source range though is for the original segment before it was extruded, you can add a tag to that segment in order to refer to this wall, for example "startSketchOn(someSweepVariable, segmentTag)"
 But it's also worth bearing in mind that the user may have intended to select the sweep itself, not this individual wall, see later source ranges for more context. about the sweep`,
           range: convertAppRangeToApiRange(selection.codeRef.range, code),
+          file: filePath,
         })
         let sweep = getArtifactOfTypes(
           { key: artifact.sweepId, types: ['sweep'] },
@@ -111,6 +169,7 @@ But it's also worth bearing in mind that the user may have intended to select th
           prompts.push({
             prompt: `This is the sweep's source range from the user's main selection of the end cap.`,
             range: convertAppRangeToApiRange(sweep.codeRef.range, code),
+            file: filePath,
           })
         }
       }
@@ -127,6 +186,7 @@ and then use the function ${
           }
 See later source ranges for more context. about the sweep`,
           range: convertAppRangeToApiRange(selection.codeRef.range, code),
+          file: filePath,
         })
         let sweep = getArtifactOfTypes(
           { key: artifact.sweepId, types: ['sweep'] },
@@ -136,6 +196,7 @@ See later source ranges for more context. about the sweep`,
           prompts.push({
             prompt: `This is the sweep's source range from the user's main selection of the end cap.`,
             range: convertAppRangeToApiRange(sweep.codeRef.range, code),
+            file: filePath,
           })
         }
       }
@@ -144,6 +205,7 @@ See later source ranges for more context. about the sweep`,
           prompts.push({
             prompt: `This selection is of a segment, likely an individual part of a profile. Segments are often "constrained" by the use of variables and relationships with other segments. Adding tags to segments helps refer to their length, angle or other properties`,
             range: convertAppRangeToApiRange(selection.codeRef.range, code),
+            file: filePath,
           })
         } else {
           prompts.push({
@@ -152,6 +214,7 @@ Because it now refers to an edge the way to refer to this edge is to add a tag t
 i.e. \`fillet( radius = someInteger, tags = [newTag])\` will work in the case of filleting this edge
 See later source ranges for more context. about the sweep`,
             range: convertAppRangeToApiRange(selection.codeRef.range, code),
+            file: filePath,
           })
           let path = getArtifactOfTypes(
             { key: artifact.pathId, types: ['path'] },
@@ -166,6 +229,7 @@ See later source ranges for more context. about the sweep`,
               prompts.push({
                 prompt: `This is the sweep's source range from the user's main selection of the edge.`,
                 range: convertAppRangeToApiRange(sweep.codeRef.range, code),
+                file: filePath,
               })
             }
           }
@@ -177,56 +241,32 @@ See later source ranges for more context. about the sweep`,
         prompts.push({
           prompt: '',
           range: convertAppRangeToApiRange(selection.codeRef.range, code),
+          file: filePath,
         })
       }
       return prompts
     })
-
-  const body: Models['TextToCadIterationBody_type'] = {
-    original_source_code: code,
-    prompt,
-    source_ranges: ranges,
-    project_name:
-      projectName !== '' && projectName !== 'browser' ? projectName : undefined,
-    kcl_version: kclManager.kclVersion,
-  }
-
-  return submitToApi(body, token)
-}
-
-// Helper function to handle API submission
-async function submitToApi(
-  body: Models['TextToCadIterationBody_type'],
-  token?: string
-): Promise<Models['TextToCadIteration_type'] | Error> {
-  const url = VITE_KC_API_BASE_URL + '/ml/text-to-cad/iteration'
-  const data: Models['TextToCadIteration_type'] | Error =
-    await crossPlatformFetch(
-      url,
-      {
-        method: 'POST',
-        body: JSON.stringify(body),
-      },
-      token
-    )
-
-  // Make sure we have an id.
-  if (data instanceof Error) {
-    return data
-  }
-
-  if (!data.id) {
-    return new Error('No id returned from Text-to-CAD API')
-  }
-  return data
+  return ml.create_text_to_cad_multi_file_iteration({
+    client,
+    body: {
+      prompt,
+      source_ranges: ranges,
+      project_name:
+        projectName !== '' && projectName !== 'browser'
+          ? projectName
+          : undefined,
+      kcl_version: kclManager.kclVersion,
+    },
+    files: endPointFiles,
+  })
 }
 
 export async function getPromptToEditResult(
   id: string,
   token?: string
-): Promise<Models['TextToCadIteration_type'] | Error> {
+): Promise<Models['TextToCadMultiFileIteration_type'] | Error> {
   const url = VITE_KC_API_BASE_URL + '/async/operations/' + id
-  const data: Models['TextToCadIteration_type'] | Error =
+  const data: Models['TextToCadMultiFileIteration_type'] | Error =
     await crossPlatformFetch(
       url,
       {
@@ -241,55 +281,71 @@ export async function getPromptToEditResult(
 export async function doPromptEdit({
   prompt,
   selections,
-  code,
+  projectFiles,
   token,
   artifactGraph,
   projectName,
 }: {
   prompt: string
   selections: Selections
-  code: string
+  projectFiles: FileMeta[]
   token?: string
   projectName: string
   artifactGraph: ArtifactGraph
-}): Promise<Models['TextToCadIteration_type'] | Error> {
+}): Promise<Models['TextToCadMultiFileIteration_type'] | Error> {
   const toastId = toast.loading('Submitting to Text-to-CAD API...')
-  const submitResult = await submitPromptToEditToQueue({
-    prompt,
-    selections,
-    code,
-    token,
-    artifactGraph,
-    projectName,
-  })
-  if (err(submitResult)) return submitResult
 
-  const textToCadComplete = new Promise<Models['TextToCadIteration_type']>(
-    (resolve, reject) => {
-      ;(async () => {
-        const MAX_CHECK_TIMEOUT = 3 * 60_000
-        const CHECK_DELAY = 200
+  let submitResult
 
-        let timeElapsed = 0
+    // work around for @kittycad/lib not really being built for the browser
+  ;(window as any).process = {
+    env: {
+      ZOO_API_TOKEN: token,
+      ZOO_HOST: VITE_KC_API_BASE_URL,
+    },
+  }
+  try {
+    submitResult = await submitPromptToEditToQueue({
+      prompt,
+      selections,
+      projectFiles,
+      token,
+      artifactGraph,
+      projectName,
+    })
+  } catch (e: any) {
+    return new Error(e.message)
+  }
+  if ('error_code' in submitResult) {
+    return new Error(submitResult.message)
+  }
 
-        while (timeElapsed < MAX_CHECK_TIMEOUT) {
-          const check = await getPromptToEditResult(submitResult.id, token)
-          if (check instanceof Error || check.status === 'failed') {
-            reject(check)
-            return
-          } else if (check.status === 'completed') {
-            resolve(check)
-            return
-          }
+  const textToCadComplete = new Promise<
+    Models['TextToCadMultiFileIteration_type']
+  >((resolve, reject) => {
+    ;(async () => {
+      const MAX_CHECK_TIMEOUT = 3 * 60_000
+      const CHECK_DELAY = 200
 
-          await new Promise((r) => setTimeout(r, CHECK_DELAY))
-          timeElapsed += CHECK_DELAY
+      let timeElapsed = 0
+
+      while (timeElapsed < MAX_CHECK_TIMEOUT) {
+        const check = await getPromptToEditResult(submitResult.id, token)
+        if (check instanceof Error || check.status === 'failed') {
+          reject(check)
+          return
+        } else if (check.status === 'completed') {
+          resolve(check)
+          return
         }
 
-        reject(new Error('Text-to-CAD API timed out'))
-      })().catch(reportRejection)
-    }
-  )
+        await new Promise((r) => setTimeout(r, CHECK_DELAY))
+        timeElapsed += CHECK_DELAY
+      }
+
+      reject(new Error('Text-to-CAD API timed out'))
+    })().catch(reportRejection)
+  })
 
   try {
     const result = await textToCadComplete
@@ -310,42 +366,109 @@ export async function doPromptEdit({
 export async function promptToEditFlow({
   prompt,
   selections,
-  code,
+  projectFiles,
   token,
   artifactGraph,
   projectName,
+  basePath,
 }: {
   prompt: string
   selections: Selections
-  code: string
+  projectFiles: FileMeta[]
   token?: string
   artifactGraph: ArtifactGraph
   projectName: string
+  basePath: string
 }) {
   const result = await doPromptEdit({
     prompt,
     selections,
-    code,
+    projectFiles,
     token,
     artifactGraph,
     projectName,
   })
   if (err(result)) return Promise.reject(result)
-  const oldCode = codeManager.code
-  const { code: newCode } = result
-  codeManager.updateCodeEditor(newCode)
-  const diff = reBuildNewCodeWithRanges(oldCode, newCode)
-  const ranges: SelectionRange[] = diff.insertRanges.map((range) =>
-    EditorSelection.range(range[0], range[1])
-  )
-  editorManager?.editorView?.dispatch({
-    selection: EditorSelection.create(
-      ranges,
-      selections.graphSelections.length - 1
-    ),
-    annotations: [modelingMachineEvent, Transaction.addToHistory.of(false)],
+  const oldCodeWebAppOnly = codeManager.code
+  // TODO remove once endpoint isn't returning fake data.
+  const outputs: TextToCadMultiFileIteration_type['outputs'] = {}
+  Object.entries(result.outputs).forEach(([key, value]) => {
+    outputs[key] = value + '\n// yoyo a comment'
   })
-  await kclManager.executeCode()
+
+  if (!isDesktop() && Object.values(outputs).length > 1) {
+    const toastId = uuidv4()
+    toast.error(
+      (t) => (
+        <div className="flex flex-col gap-2">
+          <p>Multiple files were returned from Text-to-CAD.</p>
+          <p>You need to use the desktop app to support this.</p>
+          <div className="flex justify-between items-center mt-2">
+            <>
+              <a
+                href="https://zoo.dev/modeling-app/download"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-400 hover:text-blue-300 underline flex align-middle"
+                onClick={openExternalBrowserIfDesktop(
+                  'https://zoo.dev/modeling-app/download'
+                )}
+              >
+                <CustomIcon
+                  name="link"
+                  className="w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40"
+                />
+                Download Desktop App
+              </a>
+            </>
+            <ActionButton
+              Element="button"
+              iconStart={{
+                icon: 'close',
+              }}
+              name="Dismiss"
+              onClick={() => {
+                toast.dismiss(toastId)
+              }}
+            >
+              Dismiss
+            </ActionButton>
+          </div>
+        </div>
+      ),
+      {
+        id: toastId,
+        duration: Infinity,
+        icon: null,
+      }
+    )
+    return
+  }
+
+  if (isDesktop()) {
+    // write all of the outputs to disk
+    for (const [relativePath, fileContents] of Object.entries(outputs)) {
+      window.electron.writeFile(
+        window.electron.join(basePath, relativePath),
+        fileContents
+      )
+    }
+  } else {
+    const newCode = outputs['main.kcl']
+    codeManager.updateCodeEditor(newCode)
+    const diff = reBuildNewCodeWithRanges(oldCodeWebAppOnly, newCode)
+    const ranges: SelectionRange[] = diff.insertRanges.map((range) =>
+      EditorSelection.range(range[0], range[1])
+    )
+    editorManager?.editorView?.dispatch({
+      selection: EditorSelection.create(
+        ranges,
+        selections.graphSelections.length - 1
+      ),
+      annotations: [modelingMachineEvent, Transaction.addToHistory.of(false)],
+    })
+    await kclManager.executeCode()
+  }
   const toastId = uuidv4()
 
   toast.success(
@@ -354,7 +477,8 @@ export async function promptToEditFlow({
         toastId,
         data: result,
         token,
-        oldCode,
+        oldCodeWebAppOnly,
+        oldFiles: projectFiles,
       }),
     {
       id: toastId,
