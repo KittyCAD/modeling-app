@@ -1097,7 +1097,6 @@ openSketch = startSketchOn(XY)
           Mode: '',
           AngleStart: '',
           Revolutions: '',
-          Length: '',
           Radius: '',
           CounterClockWise: '',
         },
@@ -1194,14 +1193,14 @@ openSketch = startSketchOn(XY)
     {
       selectionType: 'segment',
       testPoint: { x: 513, y: 221 },
-      expectedOutput: `helix001 = helix(  axis = seg01,  radius = 1,  length = 100,  revolutions = 20,  angleStart = 0,  ccw = false,)`,
-      expectedEditedOutput: `helix001 = helix(  axis = seg01,  radius = 1,  length = 50,  revolutions = 20,  angleStart = 0,  ccw = false,)`,
+      expectedOutput: `helix001 = helix(  axis = seg01,  radius = 1,  revolutions = 20,  angleStart = 0,  ccw = false,)`,
+      expectedEditedOutput: `helix001 = helix(  axis = seg01,  radius = 5,  revolutions = 20,  angleStart = 0,  ccw = false,)`,
     },
     {
       selectionType: 'sweepEdge',
       testPoint: { x: 564, y: 364 },
-      expectedOutput: `helix001 = helix(  axis =   getOppositeEdge(seg01),  radius = 1,  length = 100,  revolutions = 20,  angleStart = 0,  ccw = false,)`,
-      expectedEditedOutput: `helix001 = helix(  axis =   getOppositeEdge(seg01),  radius = 1,  length = 50,  revolutions = 20,  angleStart = 0,  ccw = false,)`,
+      expectedOutput: `helix001 = helix(  axis =   getOppositeEdge(seg01),  radius = 1,  revolutions = 20,  angleStart = 0,  ccw = false,)`,
+      expectedEditedOutput: `helix001 = helix(  axis =   getOppositeEdge(seg01),  radius = 5,  revolutions = 20,  angleStart = 0,  ccw = false,)`,
     },
   ]
   helixCases.map(
@@ -1244,7 +1243,6 @@ openSketch = startSketchOn(XY)
               AngleStart: '',
               Mode: '',
               CounterClockWise: '',
-              Length: '',
               Radius: '',
               Revolutions: '',
             },
@@ -1261,8 +1259,6 @@ openSketch = startSketchOn(XY)
           await cmdBar.progressCmdBar()
           await page.keyboard.insertText('1')
           await cmdBar.progressCmdBar()
-          await page.keyboard.insertText('100')
-          await cmdBar.progressCmdBar()
           await cmdBar.expectState({
             stage: 'review',
             headerArguments: {
@@ -1271,7 +1267,6 @@ openSketch = startSketchOn(XY)
               AngleStart: '0',
               Revolutions: '20',
               Radius: '1',
-              Length: '100',
               CounterClockWise: '',
             },
             commandName: 'Helix',
@@ -1292,8 +1287,8 @@ openSketch = startSketchOn(XY)
             0
           )
           await operationButton.dblclick()
-          const initialInput = '100'
-          const newInput = '50'
+          const initialInput = '1'
+          const newInput = '5'
           await cmdBar.expectState({
             commandName: 'Helix',
             stage: 'arguments',
@@ -1302,13 +1297,14 @@ openSketch = startSketchOn(XY)
             headerArguments: {
               AngleStart: '0',
               Revolutions: '20',
-              Radius: '1',
-              Length: initialInput,
+              Radius: initialInput,
               CounterClockWise: '',
             },
             highlightedHeaderArg: 'CounterClockWise',
           })
-          await page.keyboard.press('Shift+Backspace')
+          await page
+            .getByRole('button', { name: 'radius', exact: false })
+            .click()
           await expect(cmdBar.currentArgumentInput).toBeVisible()
           await cmdBar.currentArgumentInput
             .locator('.cm-content')
@@ -1319,8 +1315,7 @@ openSketch = startSketchOn(XY)
             headerArguments: {
               AngleStart: '0',
               Revolutions: '20',
-              Radius: '1',
-              Length: newInput,
+              Radius: newInput,
               CounterClockWise: '',
             },
             commandName: 'Helix',
@@ -1391,7 +1386,6 @@ extrude001 = extrude(profile001, length = 100)
           Mode: '',
           AngleStart: '',
           Revolutions: '',
-          Length: '',
           Radius: '',
           CounterClockWise: '',
         },

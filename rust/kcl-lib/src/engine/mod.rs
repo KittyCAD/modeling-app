@@ -170,7 +170,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.clear_queues().await;
 
         self.batch_modeling_cmd(
-            uuid::Uuid::new_v4(),
+            id_generator.next_uuid(),
             source_range,
             &ModelingCmd::SceneClearAll(mcmd::SceneClearAll::default()),
         )
@@ -195,9 +195,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         &self,
         visible: bool,
         source_range: SourceRange,
+        id_generator: &mut IdGenerator,
     ) -> Result<(), crate::errors::KclError> {
         self.batch_modeling_cmd(
-            uuid::Uuid::new_v4(),
+            id_generator.next_uuid(),
             source_range,
             &ModelingCmd::from(mcmd::EdgeLinesVisible { hidden: !visible }),
         )
@@ -231,10 +232,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         &self,
         units: crate::UnitLength,
         source_range: SourceRange,
+        id_generator: &mut IdGenerator,
     ) -> Result<(), crate::errors::KclError> {
         // Before we even start executing the program, set the units.
         self.batch_modeling_cmd(
-            uuid::Uuid::new_v4(),
+            id_generator.next_uuid(),
             source_range,
             &ModelingCmd::from(mcmd::SetSceneUnits { unit: units.into() }),
         )
@@ -248,15 +250,18 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         &self,
         settings: &crate::ExecutorSettings,
         source_range: SourceRange,
+        id_generator: &mut IdGenerator,
     ) -> Result<(), crate::errors::KclError> {
         // Set the edge visibility.
-        self.set_edge_visibility(settings.highlight_edges, source_range).await?;
+        self.set_edge_visibility(settings.highlight_edges, source_range, id_generator)
+            .await?;
 
         // Change the units.
-        self.set_units(settings.units, source_range).await?;
+        self.set_units(settings.units, source_range, id_generator).await?;
 
         // Send the command to show the grid.
-        self.modify_grid(!settings.show_grid, source_range).await?;
+        self.modify_grid(!settings.show_grid, source_range, id_generator)
+            .await?;
 
         // We do not have commands for changing ssao on the fly.
 
@@ -502,6 +507,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         y_axis: Point3d,
         color: Option<Color>,
         source_range: SourceRange,
+        id_generator: &mut IdGenerator,
     ) -> Result<uuid::Uuid, KclError> {
         // Create new default planes.
         let default_size = 100.0;
@@ -524,7 +530,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         if let Some(color) = color {
             // Set the color.
             self.batch_modeling_cmd(
-                uuid::Uuid::new_v4(),
+                id_generator.next_uuid(),
                 source_range,
                 &ModelingCmd::from(mcmd::PlaneSetColor { color, plane_id }),
             )
@@ -615,7 +621,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         for (name, plane_id, x_axis, y_axis, color) in plane_settings {
             planes.insert(
                 name,
-                self.make_default_plane(plane_id, x_axis, y_axis, color, source_range)
+                self.make_default_plane(plane_id, x_axis, y_axis, color, source_range, id_generator)
                     .await?,
             );
         }
@@ -701,10 +707,15 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         }))
     }
 
-    async fn modify_grid(&self, hidden: bool, source_range: SourceRange) -> Result<(), KclError> {
+    async fn modify_grid(
+        &self,
+        hidden: bool,
+        source_range: SourceRange,
+        id_generator: &mut IdGenerator,
+    ) -> Result<(), KclError> {
         // Hide/show the grid.
         self.batch_modeling_cmd(
-            uuid::Uuid::new_v4(),
+            id_generator.next_uuid(),
             source_range,
             &ModelingCmd::from(mcmd::ObjectVisible {
                 hidden,
@@ -715,7 +726,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         // Hide/show the grid scale text.
         self.batch_modeling_cmd(
-            uuid::Uuid::new_v4(),
+            id_generator.next_uuid(),
             source_range,
             &ModelingCmd::from(mcmd::ObjectVisible {
                 hidden,

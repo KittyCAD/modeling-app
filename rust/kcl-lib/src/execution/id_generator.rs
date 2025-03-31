@@ -2,7 +2,7 @@
 
 use crate::execution::ModuleId;
 
-const NAMESPACE_KCL: uuid::Uuid = uuid::uuid!("efcd6508-4ce6-4a09-8317-e6a6994a3cd7");
+const NAMESPACE_KCL: uuid::Uuid = uuid::uuid!("8bda3118-75eb-58c7-a866-bef1dcb495e7");
 
 /// A generator for ArtifactIds that can be stable across executions.
 #[derive(Debug, Clone, Default, PartialEq)]

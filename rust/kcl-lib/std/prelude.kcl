@@ -5,6 +5,7 @@
 
 export import * from "std::math"
 export import * from "std::sketch"
+export import "std::turns"
 
 /// A number
 ///
@@ -244,11 +245,6 @@ export type Point2d = [number; 2]
 /// `Point3d` is an alias for a three-element array of [number](/docs/kcl/types/number)s. To write a value
 /// with type `Point3d`, use an array, e.g., `[0, 0, 0]` or `[5.0, 3.14, 6.8]`.
 export type Point3d = [number; 3]
-
-export ZERO = 0
-export QUARTER_TURN = 90deg
-export HALF_TURN = 180deg
-export THREE_QUARTER_TURN = 270deg
 
 export XY = {
   origin = { x = 0, y = 0, z = 0 },
