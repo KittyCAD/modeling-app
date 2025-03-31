@@ -1756,8 +1756,9 @@ export const ModelingMachineProvider = ({
               }
             }
           )
+          let basePath = ''
           if (isDesktop() && context?.project?.children) {
-            const basePath = context?.selectedDirectory?.path
+            basePath = context?.selectedDirectory?.path
             const filePromises: Promise<FileMeta | null>[] = []
             const recursivelyPushFilePromises = (files: FileEntry[]) => {
               // mutates filePromises declared above, so this function definition should stay here
@@ -1813,6 +1814,7 @@ export const ModelingMachineProvider = ({
             token,
             artifactGraph: kclManager.artifactGraph,
             projectName: context.project.name,
+            basePath,
           })
         }),
       },

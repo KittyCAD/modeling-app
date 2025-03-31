@@ -15,6 +15,10 @@ import { modelingMachineEvent } from 'editor/manager'
 import { getCookie, TOKEN_PERSIST_KEY } from 'machines/authMachine'
 import { COOKIE_NAME } from './constants'
 import { TextToCadMultiFileIteration_type } from '@kittycad/lib/dist/types/src/models'
+import { isDesktop } from './isDesktop'
+import { openExternalBrowserIfDesktop } from './openWindow'
+import { ActionButton } from 'components/ActionButton'
+import { CustomIcon } from 'components/CustomIcon'
 
 export type FileMeta =
   | {
@@ -355,6 +359,7 @@ export async function doPromptEdit({
     console.error('textToCadComplete', e)
   }
 
+  console.log('textToCadComplete', textToCadComplete)
   return textToCadComplete
 }
 
@@ -366,6 +371,7 @@ export async function promptToEditFlow({
   token,
   artifactGraph,
   projectName,
+  basePath,
 }: {
   prompt: string
   selections: Selections
@@ -373,6 +379,7 @@ export async function promptToEditFlow({
   token?: string
   artifactGraph: ArtifactGraph
   projectName: string
+  basePath: string
 }) {
   const result = await doPromptEdit({
     prompt,
@@ -383,27 +390,87 @@ export async function promptToEditFlow({
     projectName,
   })
   if (err(result)) return Promise.reject(result)
-  const oldCode = codeManager.code
+  const oldCodeWebAppOnly = codeManager.code
   // TODO remove once endpoint isn't returning fake data.
   const outputs: TextToCadMultiFileIteration_type['outputs'] = {}
   Object.entries(result.outputs).forEach(([key, value]) => {
     outputs[key] = value + '\n// yoyo a comment'
   })
 
-  const newCode = outputs['myFile.kcl']
-  codeManager.updateCodeEditor(newCode)
-  const diff = reBuildNewCodeWithRanges(oldCode, newCode)
-  const ranges: SelectionRange[] = diff.insertRanges.map((range) =>
-    EditorSelection.range(range[0], range[1])
-  )
-  editorManager?.editorView?.dispatch({
-    selection: EditorSelection.create(
-      ranges,
-      selections.graphSelections.length - 1
-    ),
-    annotations: [modelingMachineEvent, Transaction.addToHistory.of(false)],
-  })
-  await kclManager.executeCode()
+  if (!isDesktop() && Object.values(outputs).length > 1) {
+    const toastId = uuidv4()
+    toast.error(
+      (t) => (
+        <div className="flex flex-col gap-2">
+          <p>Multiple files were returned from Text-to-CAD.</p>
+          <p>You need to use the desktop app to support this.</p>
+          <div className="flex justify-between items-center mt-2">
+            <>
+              <a
+                href="https://zoo.dev/modeling-app/download"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-400 hover:text-blue-300 underline flex align-middle"
+                onClick={openExternalBrowserIfDesktop(
+                  'https://zoo.dev/modeling-app/download'
+                )}
+              >
+                <CustomIcon
+                  name="link"
+                  className="w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40"
+                />
+                Download Desktop App
+              </a>
+            </>
+            <ActionButton
+              Element="button"
+              iconStart={{
+                icon: 'close',
+              }}
+              name="Dismiss"
+              onClick={() => {
+                toast.dismiss(toastId)
+              }}
+            >
+              Dismiss
+            </ActionButton>
+          </div>
+        </div>
+      ),
+      {
+        id: toastId,
+        duration: Infinity,
+        icon: null,
+      }
+    )
+    return
+  }
+
+  console.log('outputs', outputs)
+  if (isDesktop()) {
+    // write all of the outputs to disk
+    for (const [relativePath, fileContents] of Object.entries(outputs)) {
+      window.electron.writeFile(
+        window.electron.join(basePath, relativePath),
+        fileContents
+      )
+    }
+  } else {
+    const newCode = outputs['main.kcl']
+    codeManager.updateCodeEditor(newCode)
+    const diff = reBuildNewCodeWithRanges(oldCodeWebAppOnly, newCode)
+    const ranges: SelectionRange[] = diff.insertRanges.map((range) =>
+      EditorSelection.range(range[0], range[1])
+    )
+    editorManager?.editorView?.dispatch({
+      selection: EditorSelection.create(
+        ranges,
+        selections.graphSelections.length - 1
+      ),
+      annotations: [modelingMachineEvent, Transaction.addToHistory.of(false)],
+    })
+    await kclManager.executeCode()
+  }
   const toastId = uuidv4()
 
   toast.success(
@@ -412,7 +479,8 @@ export async function promptToEditFlow({
         toastId,
         data: result,
         token,
-        oldCode,
+        oldCodeWebAppOnly,
+        oldFiles: projectFiles,
       }),
     {
       id: toastId,

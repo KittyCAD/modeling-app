@@ -34,6 +34,7 @@ import { fileMachine } from 'machines/fileMachine'
 import { reportRejection } from 'lib/trap'
 import { codeManager, kclManager } from 'lib/singletons'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
+import { FileMeta } from 'lib/promptToEdit'
 
 const CANVAS_SIZE = 128
 const PROMPT_TRUNCATE_LENGTH = 128
@@ -457,10 +458,12 @@ export function ToastPromptToEditCadSuccess({
   toastId,
   token,
   data,
-  oldCode,
+  oldCodeWebAppOnly: oldCode,
+  oldFiles,
 }: {
   toastId: string
-  oldCode: string
+  oldCodeWebAppOnly: string
+  oldFiles: FileMeta[]
   data: TextToCadMultiFileIteration_type
   token?: string
 }) {
@@ -494,8 +497,20 @@ export function ToastPromptToEditCadSuccess({
             name={'Reject'}
             onClick={() => {
               sendTelemetry(modelId, 'rejected', token).catch(reportRejection)
-              codeManager.updateCodeEditor(oldCode)
-              kclManager.executeCode().catch(reportRejection)
+              // revert to before the prompt-to-edit
+              if (isDesktop()) {
+                for (const file of oldFiles) {
+                  if (file.type !== 'kcl') {
+                    // only need to write the kcl files
+                    // as the endpoint would have never overwritten other file types
+                    continue
+                  }
+                  window.electron.writeFile(file.absPath, file.fileContents)
+                }
+              } else {
+                codeManager.updateCodeEditor(oldCode)
+                kclManager.executeCode().catch(reportRejection)
+              }
               toast.dismiss(toastId)
             }}
           >
