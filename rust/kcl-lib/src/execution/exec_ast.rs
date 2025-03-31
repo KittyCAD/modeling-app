@@ -2494,9 +2494,8 @@ import 'a.kcl'
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
 
-        eprintln!("{:?}", exec_ctxt);
+        exec_ctxt.prepare_mem(&mut exec_state).await.unwrap();
 
-        eprintln!("{:?}", universe);
         for modules in crate::walk::import_graph(&universe).unwrap().into_iter() {
             eprintln!("Spawning {:?}", modules);
 
