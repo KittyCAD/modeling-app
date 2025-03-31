@@ -39,7 +39,6 @@ use crate::{
     fs::FileManager,
     modules::{ModuleId, ModulePath},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
-    settings::types::UnitLength,
     source_range::SourceRange,
     std::StdLib,
     CompilationError, ExecError, ExecutionKind, KclErrorWithOutputs,
@@ -265,8 +264,6 @@ pub struct ExecutorContext {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct ExecutorSettings {
-    /// The project-default unit to use in modeling dimensions.
-    pub units: UnitLength,
     /// Highlight edges of 3D objects?
     pub highlight_edges: bool,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
@@ -287,7 +284,6 @@ pub struct ExecutorSettings {
 impl Default for ExecutorSettings {
     fn default() -> Self {
         Self {
-            units: Default::default(),
             highlight_edges: true,
             enable_ssao: false,
             show_grid: false,
@@ -301,7 +297,6 @@ impl Default for ExecutorSettings {
 impl From<crate::settings::types::Configuration> for ExecutorSettings {
     fn from(config: crate::settings::types::Configuration) -> Self {
         Self {
-            units: config.settings.modeling.base_unit,
             highlight_edges: config.settings.modeling.highlight_edges.into(),
             enable_ssao: config.settings.modeling.enable_ssao.into(),
             show_grid: config.settings.modeling.show_scale_grid,
@@ -315,7 +310,6 @@ impl From<crate::settings::types::Configuration> for ExecutorSettings {
 impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSettings {
     fn from(config: crate::settings::types::project::ProjectConfiguration) -> Self {
         Self {
-            units: config.settings.modeling.base_unit,
             highlight_edges: config.settings.modeling.highlight_edges.into(),
             enable_ssao: config.settings.modeling.enable_ssao.into(),
             show_grid: Default::default(),
@@ -329,7 +323,6 @@ impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSet
 impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
     fn from(modeling: crate::settings::types::ModelingSettings) -> Self {
         Self {
-            units: modeling.base_unit,
             highlight_edges: modeling.highlight_edges.into(),
             enable_ssao: modeling.enable_ssao.into(),
             show_grid: modeling.show_scale_grid,
@@ -343,7 +336,6 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
 impl From<crate::settings::types::project::ProjectModelingSettings> for ExecutorSettings {
     fn from(modeling: crate::settings::types::project::ProjectModelingSettings) -> Self {
         Self {
-            units: modeling.base_unit,
             highlight_edges: modeling.highlight_edges.into(),
             enable_ssao: modeling.enable_ssao.into(),
             show_grid: Default::default(),
@@ -476,26 +468,17 @@ impl ExecutorContext {
     /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
     /// variables.
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new_with_default_client(units: UnitLength) -> Result<Self> {
+    pub async fn new_with_default_client() -> Result<Self> {
         // Create the client.
-        let ctx = Self::new_with_client(
-            ExecutorSettings {
-                units,
-                ..Default::default()
-            },
-            None,
-            None,
-        )
-        .await?;
+        let ctx = Self::new_with_client(Default::default(), None, None).await?;
         Ok(ctx)
     }
 
     /// For executing unit tests.
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new_for_unit_test(units: UnitLength, engine_addr: Option<String>) -> Result<Self> {
+    pub async fn new_for_unit_test(engine_addr: Option<String>) -> Result<Self> {
         let ctx = ExecutorContext::new_with_client(
             ExecutorSettings {
-                units,
                 highlight_edges: true,
                 enable_ssao: false,
                 show_grid: false,
@@ -862,11 +845,6 @@ impl ExecutorContext {
         Ok(())
     }
 
-    /// Update the units for the executor.
-    pub(crate) fn update_units(&mut self, units: UnitLength) {
-        self.settings.units = units;
-    }
-
     /// Get a snapshot of the current scene.
     pub async fn prepare_snapshot(&self) -> std::result::Result<TakeSnapshot, ExecError> {
         // Zoom to fit.
@@ -1008,11 +986,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{
-        errors::{KclErrorDetails, Severity},
-        execution::memory::Stack,
-        ModuleId,
-    };
+    use crate::{errors::KclErrorDetails, execution::memory::Stack, ModuleId};
 
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
@@ -1616,34 +1590,6 @@ const inInches = 2.0 * inch()"#;
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_unit_suggest() {
-        let src = "foo = 42";
-        let program = crate::Program::parse_no_errs(src).unwrap();
-        let ctx = ExecutorContext {
-            engine: Arc::new(Box::new(
-                crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
-            )),
-            fs: Arc::new(crate::fs::FileManager::new()),
-            stdlib: Arc::new(crate::std::StdLib::new()),
-            settings: ExecutorSettings {
-                units: UnitLength::Ft,
-                ..Default::default()
-            },
-            context_type: ContextType::Mock,
-        };
-        let mut exec_state = ExecState::new(&ctx);
-        ctx.run(&program, &mut exec_state).await.unwrap();
-        let errs = exec_state.errors();
-        assert_eq!(errs.len(), 1, "{errs:?}");
-        let warn = &errs[0];
-        assert_eq!(warn.severity, Severity::Warning);
-        assert_eq!(
-            warn.apply_suggestion(src).unwrap(),
-            "@settings(defaultLengthUnit = ft)\nfoo = 42"
-        )
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
     async fn test_zero_param_fn() {
         let ast = r#"const sigmaAllow = 35000 // psi
 const leg1 = 5 // inches
@@ -1971,9 +1917,7 @@ let w = f() + f()
 )
 "#;
 
-        let ctx = crate::test_server::new_context(UnitLength::Mm, true, None)
-            .await
-            .unwrap();
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
 
         // Execute the program.
@@ -2026,9 +1970,7 @@ let w = f() + f()
 )
 "#;
 
-        let mut ctx = crate::test_server::new_context(UnitLength::Mm, true, None)
-            .await
-            .unwrap();
+        let mut ctx = crate::test_server::new_context(true, None).await.unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
 
         // Execute the program.
@@ -2066,7 +2008,7 @@ let w = f() + f()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_after_not_mock() {
-        let ctx = ExecutorContext::new_with_default_client(UnitLength::Mm).await.unwrap();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let program = crate::Program::parse_no_errs("x = 2").unwrap();
         let result = ctx.run_with_caching(program).await.unwrap();
         assert_eq!(result.variables.get("x").unwrap().as_f64().unwrap(), 2.0);

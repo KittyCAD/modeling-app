@@ -310,7 +310,9 @@ export async function expectPixelColor(
     .toBeTruthy()
     .catch((cause) => {
       throw new Error(
-        `ExpectPixelColor: expecting ${colour} got ${finalValue}`,
+        `ExpectPixelColor: point ${JSON.stringify(
+          coords
+        )} was expecting ${colour} but got ${finalValue}`,
         { cause }
       )
     })

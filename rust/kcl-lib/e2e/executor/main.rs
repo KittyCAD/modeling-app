@@ -2,7 +2,7 @@ mod cache;
 
 use kcl_lib::{
     test_server::{execute_and_export_step, execute_and_snapshot, execute_and_snapshot_no_auth},
-    ExecError, UnitLength,
+    ExecError,
 };
 
 /// The minimum permissible difference between asserted twenty-twenty images.
@@ -26,7 +26,7 @@ pub(crate) fn assert_out(test_name: &str, result: &image::DynamicImage) -> Strin
 async fn kcl_test_fillet_duplicate_tags() {
     let code = kcl_input!("fillet_duplicate_tags");
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
     let err = result.expect_err("Code should have failed due to the duplicate edges being filletted");
 
     let err = err.as_kcl_error().unwrap();
@@ -48,7 +48,7 @@ async fn kcl_test_execute_engine_error_return() {
   |> extrude(length = 4)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -61,7 +61,7 @@ async fn kcl_test_execute_i_shape() {
     // This is some code from lee that starts a pipe expression with a variable.
     let code = kcl_input!("i_shape");
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("i_shape", &result);
 }
 
@@ -70,7 +70,7 @@ async fn kcl_test_execute_i_shape() {
 async fn kcl_test_execute_pipes_on_pipes() {
     let code = kcl_input!("pipes_on_pipes");
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("pipes_on_pipes", &result);
 }
 
@@ -78,7 +78,7 @@ async fn kcl_test_execute_pipes_on_pipes() {
 async fn kcl_test_execute_cylinder() {
     let code = kcl_input!("cylinder");
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("cylinder", &result);
 }
 
@@ -86,7 +86,7 @@ async fn kcl_test_execute_cylinder() {
 async fn kcl_test_execute_kittycad_svg() {
     let code = kcl_input!("kittycad_svg");
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("kittycad_svg", &result);
 }
 
@@ -94,7 +94,7 @@ async fn kcl_test_execute_kittycad_svg() {
 async fn kcl_test_execute_lsystem() {
     let code = kcl_input!("lsystem");
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("lsystem", &result);
 }
 
@@ -102,7 +102,7 @@ async fn kcl_test_execute_lsystem() {
 async fn kcl_test_member_expression_sketch() {
     let code = kcl_input!("member_expression_sketch");
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("member_expression_sketch", &result);
 }
 
@@ -110,7 +110,7 @@ async fn kcl_test_member_expression_sketch() {
 async fn kcl_test_helix_defaults() {
     let code = kcl_input!("helix_defaults");
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("helix_defaults", &result);
 }
 
@@ -118,7 +118,7 @@ async fn kcl_test_helix_defaults() {
 async fn kcl_test_helix_defaults_negative_extrude() {
     let code = kcl_input!("helix_defaults_negative_extrude");
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("helix_defaults_negative_extrude", &result);
 }
 
@@ -126,7 +126,7 @@ async fn kcl_test_helix_defaults_negative_extrude() {
 async fn kcl_test_helix_with_length() {
     let code = kcl_input!("helix_with_length");
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("helix_with_length", &result);
 }
 
@@ -134,7 +134,7 @@ async fn kcl_test_helix_with_length() {
 async fn kcl_test_dimensions_match() {
     let code = kcl_input!("dimensions_match");
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("dimensions_match", &result);
 }
 
@@ -142,7 +142,7 @@ async fn kcl_test_dimensions_match() {
 async fn kcl_test_close_arc() {
     let code = kcl_input!("close_arc");
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("close_arc", &result);
 }
 
@@ -150,7 +150,7 @@ async fn kcl_test_close_arc() {
 async fn kcl_test_negative_args() {
     let code = kcl_input!("negative_args");
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("negative_args", &result);
 }
 
@@ -164,7 +164,7 @@ async fn kcl_test_basic_tangential_arc_with_point() {
     |> extrude(length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("tangential_arc_with_point", &result);
 }
 
@@ -178,7 +178,7 @@ async fn kcl_test_basic_tangential_arc_to() {
     |> extrude(length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("tangential_arc_to", &result);
 }
 
@@ -205,7 +205,7 @@ box(30, 43, 18, '-xy')
 let thing = box(-12, -15, 10, 'yz')
 box(-20, -5, 10, 'xy')"#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("different_planes_same_drawing", &result);
 }
 
@@ -263,7 +263,7 @@ part004 = startSketchOn(YZ)
   |> close()
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("lots_of_planes", &result);
 }
 
@@ -280,7 +280,7 @@ async fn kcl_test_holes() {
   |> extrude(length = 2)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("holes", &result);
 }
 
@@ -299,7 +299,7 @@ async fn optional_params() {
 
 thing = other_circle([2, 2], 20)
 "#;
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("optional_params", &result);
 }
 
@@ -335,7 +335,7 @@ part = roundedRectangle([0, 0], 20, 20, 4)
   |> extrude(length = 2)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("rounded_with_holes", &result);
 }
 
@@ -343,7 +343,7 @@ part = roundedRectangle([0, 0], 20, 20, 4)
 async fn kcl_test_top_level_expression() {
     let code = r#"startSketchOn(XY) |> circle(center = [0,0], radius= 22) |> extrude(length = 14)"#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("top_level_expression", &result);
 }
 
@@ -357,7 +357,7 @@ part =  startSketchOn(XY)
     |> extrude(length = 1)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("patterns_linear_basic_with_math", &result);
 }
 
@@ -369,7 +369,7 @@ async fn kcl_test_patterns_linear_basic() {
     |> extrude(length = 1)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("patterns_linear_basic", &result);
 }
 
@@ -385,7 +385,7 @@ async fn kcl_test_patterns_linear_basic_3d() {
     |> patternLinear3d(axis = [1, 0, 1], instances = 4, distance = 6)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("patterns_linear_basic_3d", &result);
 }
 
@@ -397,7 +397,7 @@ async fn kcl_test_patterns_linear_basic_negative_distance() {
     |> extrude(length = 1)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("patterns_linear_basic_negative_distance", &result);
 }
 
@@ -409,7 +409,7 @@ async fn kcl_test_patterns_linear_basic_negative_axis() {
     |> extrude(length = 1)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("patterns_linear_basic_negative_axis", &result);
 }
 
@@ -430,7 +430,7 @@ rectangle = startSketchOn(XY)
 
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("patterns_linear_basic_holes", &result);
 }
 
@@ -442,7 +442,7 @@ async fn kcl_test_patterns_circular_basic_2d() {
     |> extrude(length = 1)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("patterns_circular_basic_2d", &result);
 }
 
@@ -458,7 +458,7 @@ async fn kcl_test_patterns_circular_basic_3d() {
     |> patternCircular3d(axis = [0,0, 1], center = [-20, -20, -20], instances = 41, arcDegrees = 360, rotateDuplicates = false)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("patterns_circular_basic_3d", &result);
 }
 
@@ -474,7 +474,7 @@ async fn kcl_test_patterns_circular_3d_tilted_axis() {
     |> patternCircular3d(axis = [1,1,0], center = [10, 0, 10], instances = 11, arcDegrees = 360, rotateDuplicates = true)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("patterns_circular_3d_tilted_axis", &result);
 }
 
@@ -483,7 +483,7 @@ async fn kcl_test_import_file_doesnt_exist() {
     let code = r#"import 'thing.obj'
 model = cube"#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -496,7 +496,7 @@ async fn kcl_test_import_obj_with_mtl() {
     let code = r#"import 'e2e/executor/inputs/cube.obj'
 model = cube"#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("import_obj_with_mtl", &result);
 }
 
@@ -506,7 +506,7 @@ async fn kcl_test_import_obj_with_mtl_units() {
 import 'e2e/executor/inputs/cube.obj'
 model = cube"#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("import_obj_with_mtl_units", &result);
 }
 
@@ -515,7 +515,7 @@ async fn kcl_test_import_stl() {
     let code = r#"import 'e2e/executor/inputs/2-5-long-m8-chc-screw.stl' as screw
 model = screw"#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("import_stl", &result);
 }
 
@@ -524,7 +524,7 @@ async fn kcl_test_import_gltf_with_bin() {
     let code = r#"import 'e2e/executor/inputs/cube.gltf'
 model = cube"#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("import_gltf_with_bin", &result);
 }
 
@@ -533,7 +533,7 @@ async fn kcl_test_import_gltf_embedded() {
     let code = r#"import 'e2e/executor/inputs/cube-embedded.gltf' as cube
 model = cube"#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("import_gltf_embedded", &result);
 }
 
@@ -542,7 +542,7 @@ async fn kcl_test_import_glb() {
     let code = r#"import 'e2e/executor/inputs/cube.glb'
 model = cube"#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("import_glb", &result);
 }
 
@@ -551,7 +551,7 @@ async fn kcl_test_import_glb_no_assign() {
     let code = r#"import 'e2e/executor/inputs/cube.glb'
 cube"#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("import_glb_no_assign", &result);
 }
 
@@ -561,7 +561,7 @@ async fn kcl_test_import_ext_doesnt_match() {
 import 'e2e/executor/inputs/cube.gltf'
 model = cube"#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -586,14 +586,15 @@ async fn kcl_test_cube_mm() {
 myCube = cube([0,0], 10)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("cube_mm", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cube_cm() {
-    let code = r#"fn cube = (pos, scale) => {
-  sg = startSketchOn(XY)
+    let code = r#"@settings(defaultLengthUnit = cm)
+fn cube = (pos, scale) => {
+  sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
@@ -607,14 +608,15 @@ async fn kcl_test_cube_cm() {
 myCube = cube([0,0], 10)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Cm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("cube_cm", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cube_m() {
-    let code = r#"fn cube = (pos, scale) => {
-  sg = startSketchOn(XY)
+    let code = r#"@settings(defaultLengthUnit = m)
+fn cube = (pos, scale) => {
+  sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
@@ -628,14 +630,15 @@ async fn kcl_test_cube_m() {
 myCube = cube([0,0], 10)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::M, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("cube_m", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cube_in() {
-    let code = r#"fn cube = (pos, scale) => {
-  sg = startSketchOn(XY)
+    let code = r#"@settings(defaultLengthUnit = in)
+fn cube = (pos, scale) => {
+  sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
@@ -649,14 +652,15 @@ async fn kcl_test_cube_in() {
 myCube = cube([0,0], 10)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::In, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("cube_in", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cube_ft() {
-    let code = r#"fn cube = (pos, scale) => {
-  sg = startSketchOn(XY)
+    let code = r#"@settings(defaultLengthUnit = ft)
+fn cube = (pos, scale) => {
+  sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
@@ -670,14 +674,15 @@ async fn kcl_test_cube_ft() {
 myCube = cube([0,0], 10)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Ft, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("cube_ft", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cube_yd() {
-    let code = r#"fn cube = (pos, scale) => {
-  sg = startSketchOn(XY)
+    let code = r#"@settings(defaultLengthUnit = yd)
+fn cube = (pos, scale) => {
+  sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
@@ -691,7 +696,7 @@ async fn kcl_test_cube_yd() {
 myCube = cube([0,0], 10)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Yd, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("cube_yd", &result);
 }
 
@@ -719,7 +724,7 @@ part002 = startSketchOn(part001, part001.sketch.tags.here)
   |> extrude(length = 1)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
 
     let err = result.err().unwrap();
     let ExecError::Kcl(err) = err else {
@@ -763,7 +768,7 @@ part003 = startSketchOn(part002, "end")
   |> extrude(length = 5)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("sketch_on_face_of_face", &result);
 }
 
@@ -780,7 +785,7 @@ async fn kcl_test_stdlib_kcl_error_right_code_path() {
   |> extrude(length = 2)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
     let err = result.err().unwrap();
     let ExecError::Kcl(err) = err else {
         panic!("Expected KCL error, found {err}");
@@ -811,7 +816,7 @@ part002 = startSketchOn(part001, "end")
   |> extrude(length = 5)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("sketch_on_face_circle", &result);
 }
 
@@ -853,7 +858,7 @@ part = rectShape([0, 0], 20, 20)
      )
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
     let err = result.err().unwrap();
     let ExecError::Kcl(err) = err else {
         panic!("Expected KCL error, found {err}");
@@ -880,7 +885,7 @@ async fn kcl_test_simple_revolve() {
 
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("simple_revolve", &result);
 }
 
@@ -900,7 +905,7 @@ async fn kcl_test_simple_revolve_uppercase() {
 
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("simple_revolve_uppercase", &result);
 }
 
@@ -920,7 +925,7 @@ async fn kcl_test_simple_revolve_negative() {
 
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("simple_revolve_negative", &result);
 }
 
@@ -940,7 +945,7 @@ async fn kcl_test_revolve_bad_angle_low() {
 
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
 
     assert!(result.is_err());
     assert!(result
@@ -966,7 +971,7 @@ async fn kcl_test_revolve_bad_angle_high() {
 
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
 
     assert!(result.is_err());
     assert!(result
@@ -992,7 +997,7 @@ async fn kcl_test_simple_revolve_custom_angle() {
 
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("simple_revolve_custom_angle", &result);
 }
 
@@ -1012,7 +1017,7 @@ async fn kcl_test_simple_revolve_custom_axis() {
 
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("simple_revolve_custom_axis", &result);
 }
 
@@ -1036,7 +1041,7 @@ sketch001 = startSketchOn(box, "end")
 
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("revolve_on_edge", &result);
 }
 
@@ -1060,7 +1065,7 @@ sketch001 = startSketchOn(box, revolveAxis)
 
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
 
     result.unwrap_err();
     //this fails right now, but slightly differently, lets just say its enough for it to fail - mike
@@ -1088,7 +1093,7 @@ sketch001 = startSketchOn(box, "END")
     )
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("revolve_on_face_circle_edge", &result);
 }
 
@@ -1110,7 +1115,7 @@ sketch001 = startSketchOn(box, "END")
     )
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("revolve_on_face_circle", &result);
 }
 
@@ -1136,7 +1141,7 @@ sketch001 = startSketchOn(box, "end")
   )
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("revolve_on_face", &result);
 }
 
@@ -1150,7 +1155,7 @@ async fn kcl_test_basic_revolve_circle() {
     )
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("basic_revolve_circle", &result);
 }
 
@@ -1177,7 +1182,7 @@ part002 = startSketchOn(part001, 'end')
     |> extrude(length = 5)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("simple_revolve_sketch_on_edge", &result);
 }
 
@@ -1240,7 +1245,7 @@ plumbus1 = circle1
       )
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("plumbus_fillets", &result);
 }
 
@@ -1248,7 +1253,7 @@ plumbus1 = circle1
 async fn kcl_test_empty_file_is_ok() {
     let code = r#""#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
     result.unwrap();
 }
 
@@ -1278,7 +1283,7 @@ async fn kcl_test_member_expression_in_params() {
 capScrew([0, 0.5, 0], 50, 37.5, 50, 25)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("member_expression_in_params", &result);
 }
 
@@ -1323,7 +1328,7 @@ bracket = startSketchOn(XY)
      )
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
     result.unwrap();
 }
 
@@ -1343,7 +1348,7 @@ secondSketch = startSketchOn(part001, '')
   |> extrude(length = 20)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -1374,7 +1379,7 @@ extrusion = startSketchOn(XY)
   |> extrude(length = height)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -1407,7 +1412,7 @@ sketch001 = [profile001, profile002]
  extrude(sketch001, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("array_of_sketches", &result);
 }
 
@@ -1444,7 +1449,7 @@ pattn1 = patternLinear3d(
      )
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("pattern3d_array_of_extrudes", &result);
 }
 
@@ -1492,7 +1497,7 @@ baseExtrusion = extrude(sketch001, length = width)
  )
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("fillets_referencing_other_fillets", &result);
 }
 
@@ -1540,7 +1545,7 @@ baseExtrusion = extrude(sketch001, length = width)
    )
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("chamfers_referencing_other_chamfers", &result);
 }
 
@@ -1560,7 +1565,7 @@ async fn kcl_test_shell_with_tag() {
   )
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("shell_with_tag", &result);
 }
 
@@ -1591,7 +1596,7 @@ pattn1 = patternLinear3d(
 )
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("linear_pattern3d_filleted_sketch", &result);
 }
 
@@ -1618,7 +1623,7 @@ pattn2 = patternCircular3d(part001, axis = [0,0, 1], center = [-20, -20, -20], i
 
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("circular_pattern3d_filleted_sketch", &result);
 }
 
@@ -1644,7 +1649,7 @@ part001 = cube([0,0], 20)
 pattn2 = patternCircular3d(part001, axis = [0,0, 1], center = [-20, -20, -20], instances = 5, arcDegrees = 360, rotateDuplicates = false)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("circular_pattern3d_chamfered_sketch", &result);
 }
 
@@ -1671,7 +1676,7 @@ part001 = cube([0,0], 20)
 
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
     let err = result.err().unwrap();
     let ExecError::Kcl(err) = err else {
         panic!("Expected KCL error, found {err}");
@@ -1701,7 +1706,7 @@ async fn kcl_test_duplicate_tags_should_error() {
 let p = triangle(200)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -1712,49 +1717,49 @@ let p = triangle(200)
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_global_tags() {
     let code = kcl_input!("global-tags");
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("global_tags", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_extrude_inside_fn_with_tags() {
     let code = kcl_input!("extrude-inside-fn-with-tags");
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("extrude-inside-fn-with-tags", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_pattern_vase() {
     let code = kcl_input!("pattern_vase");
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("pattern_vase", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_scoped_tags() {
     let code = kcl_input!("scoped-tags");
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("scoped_tags", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_order_sketch_extrude_in_order() {
     let code = kcl_input!("order-sketch-extrude-in-order");
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("order-sketch-extrude-in-order", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_order_sketch_extrude_out_of_order() {
     let code = kcl_input!("order-sketch-extrude-out-of-order");
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("order-sketch-extrude-out-of-order", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_extrude_custom_plane() {
     let code = kcl_input!("extrude-custom-plane");
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
+    let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("extrude-custom-plane", &result);
 }
 
@@ -1776,7 +1781,7 @@ async fn kcl_test_arc_error_same_start_end() {
      )
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -1796,7 +1801,7 @@ async fn kcl_test_angled_line_to_x_90() {
 example = extrude(exampleSketch, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -1816,7 +1821,7 @@ async fn kcl_test_angled_line_to_x_270() {
 example = extrude(exampleSketch, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -1836,7 +1841,7 @@ async fn kcl_test_angled_line_to_y_0() {
 example = extrude(exampleSketch, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -1856,7 +1861,7 @@ async fn kcl_test_angled_line_to_y_180() {
 example = extrude(exampleSketch, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -1876,7 +1881,7 @@ async fn kcl_test_angled_line_of_x_length_90() {
 extrusion = extrude(sketch001, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -1896,7 +1901,7 @@ async fn kcl_test_angled_line_of_x_length_270() {
 extrusion = extrude(sketch001, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -1918,7 +1923,7 @@ async fn kcl_test_angled_line_of_y_length_0() {
 example = extrude(exampleSketch, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -1940,7 +1945,7 @@ async fn kcl_test_angled_line_of_y_length_180() {
 example = extrude(exampleSketch, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -1962,7 +1967,7 @@ async fn kcl_test_angled_line_of_y_length_negative_180() {
 example = extrude(exampleSketch, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -1979,7 +1984,7 @@ async fn kcl_test_error_inside_fn_also_has_source_range_of_call_site() {
 someFunction('INVALID')
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -2000,7 +2005,7 @@ async fn kcl_test_error_inside_fn_also_has_source_range_of_call_site_recursive()
 someFunction('INVALID')
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -2024,7 +2029,7 @@ async fn kcl_test_error_no_auth_websocket() {
   )
 "#;
 
-    let result = execute_and_snapshot_no_auth(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot_no_auth(code, None).await;
     assert!(result.is_err());
     assert!(result
         .err()
@@ -2050,9 +2055,7 @@ sketch000 = startSketchOn(XY)
     |> line(end = [0, innerDiameter / 2])
 "#;
 
-    let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default())
-        .await
-        .unwrap();
+    let ctx = kcl_lib::ExecutorContext::new_with_default_client().await.unwrap();
     let mut exec_state = kcl_lib::ExecState::new(&ctx);
     let program = kcl_lib::Program::parse_no_errs(code).unwrap();
     ctx.run(&program, &mut exec_state).await.unwrap();
@@ -2075,9 +2078,7 @@ async fn kcl_test_ensure_nothing_left_in_batch_multi_file() {
     // Change the current working directory to the test directory.
     std::env::set_current_dir(path.parent().unwrap()).unwrap();
 
-    let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default())
-        .await
-        .unwrap();
+    let ctx = kcl_lib::ExecutorContext::new_with_default_client().await.unwrap();
     let mut exec_state = kcl_lib::ExecState::new(&ctx);
     let program = kcl_lib::Program::parse_no_errs(&code).unwrap();
     ctx.run(&program, &mut exec_state).await.unwrap();
@@ -2095,7 +2096,7 @@ async fn kcl_test_better_type_names() {
   |> circle(center = [-95.51, -74.7], radius = 262.23)
   |> appearance(metalness = 0.9)
 "#;
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+    let result = execute_and_snapshot(code, None).await;
 
     let err = match result.err() {
         Some(x) => match x {
@@ -2114,7 +2115,7 @@ async fn kcl_test_exporting_step_file() {
     // This tests export like how we do it in cli and kcl.py.
     let code = kcl_input!("helix_defaults_negative_extrude");
 
-    let (_, _, files) = execute_and_export_step(code, UnitLength::Mm, None).await.unwrap();
+    let (_, _, files) = execute_and_export_step(code, None).await.unwrap();
     for file in files {
         expectorate::assert_contents(
             format!("e2e/executor/outputs/helix_defaults_negative_extrude_{}", file.name),

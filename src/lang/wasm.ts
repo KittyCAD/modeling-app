@@ -18,6 +18,7 @@ import {
   serialize_project_configuration,
   serialize_configuration,
   reloadModule,
+  is_kcl_empty_or_only_settings,
 } from 'lib/wasm_lib_wrapper'
 
 import { KCLError } from './errors'
@@ -55,6 +56,10 @@ import { UnitAngle as UnitAng } from '@rust/kcl-lib/bindings/UnitAngle'
 import { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import { isArray } from 'lib/utils'
+import {
+  DEFAULT_DEFAULT_ANGLE_UNIT,
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+} from 'lib/constants'
 
 export type { Artifact } from '@rust/kcl-lib/bindings/Artifact'
 export type { ArtifactCommand } from '@rust/kcl-lib/bindings/Artifact'
@@ -607,7 +612,27 @@ export function changeKclSettings(
 }
 
 /**
- * Convert a `UnitLength_type` to a `UnitLen`
+ * Returns true if the given KCL is empty or only contains settings that would
+ * be auto-generated.
+ */
+export function isKclEmptyOrOnlySettings(kcl: string): boolean {
+  if (kcl === '') {
+    // Fast path.
+    return true
+  }
+
+  try {
+    return is_kcl_empty_or_only_settings(kcl)
+  } catch (e) {
+    console.debug('Caught error checking if KCL is empty', e)
+    // If there's a parse error, it can't be empty or auto-generated.
+    return false
+  }
+}
+
+/**
+ * Convert a `UnitLength` (used in settings and modeling commands) to a
+ * `UnitLen` (used in execution).
  */
 export function unitLengthToUnitLen(input: UnitLength): UnitLen {
   switch (input) {
@@ -627,7 +652,8 @@ export function unitLengthToUnitLen(input: UnitLength): UnitLen {
 }
 
 /**
- * Convert `UnitLen` to `UnitLength_type`.
+ * Convert `UnitLen` (used in execution) to `UnitLength` (used in settings
+ * and modeling commands).
  */
 export function unitLenToUnitLength(input: UnitLen): UnitLength {
   switch (input.type) {
@@ -642,19 +668,33 @@ export function unitLenToUnitLength(input: UnitLen): UnitLength {
     case 'Inches':
       return 'in'
     default:
-      return 'mm'
+      return DEFAULT_DEFAULT_LENGTH_UNIT
   }
 }
 
 /**
- * Convert `UnitAngle` to `UnitAngle_type`.
+ * Convert a `UnitAngle` (used in modeling commands) to a `UnitAng` (used in
+ * execution).
+ */
+export function unitAngleToUnitAng(input: UnitAngle): UnitAng {
+  switch (input) {
+    case 'radians':
+      return { type: 'Radians' }
+    default:
+      return { type: 'Degrees' }
+  }
+}
+
+/**
+ * Convert `UnitAng` (used in execution) to `UnitAngle` (used in modeling
+ * commands).
  */
 export function unitAngToUnitAngle(input: UnitAng): UnitAngle {
   switch (input.type) {
     case 'Radians':
       return 'radians'
     default:
-      return 'degrees'
+      return DEFAULT_DEFAULT_ANGLE_UNIT
   }
 }
 
