@@ -1760,6 +1760,7 @@ export const ModelingMachineProvider = ({
           if (isDesktop() && context?.project?.children) {
             basePath = context?.selectedDirectory?.path
             const filePromises: Promise<FileMeta | null>[] = []
+            let uploadSize = 0
             const recursivelyPushFilePromises = (files: FileEntry[]) => {
               // mutates filePromises declared above, so this function definition should stay here
               // if pulled out, it would need to be refactored.
@@ -1774,6 +1775,7 @@ export const ModelingMachineProvider = ({
                 const filePromise = window.electron
                   .readFile(absPath)
                   .then((file): FileMeta => {
+                    uploadSize += file.byteLength
                     const decoder = new TextDecoder('utf-8')
                     const fileType = window.electron.path.extname(absPath)
                     if (fileType === '.kcl') {
@@ -1786,12 +1788,13 @@ export const ModelingMachineProvider = ({
                           execStateNameToIndexMap[absPath],
                       }
                     }
+                    const blob = new Blob([file], {
+                      type: 'application/octet-stream',
+                    })
                     return {
                       type: 'other',
                       relPath,
-                      data: new Blob([file], {
-                        type: 'application/octet-stream',
-                      }),
+                      data: blob,
                     }
                   })
                   .catch((e) => {
@@ -1806,6 +1809,12 @@ export const ModelingMachineProvider = ({
             projectFiles = (await Promise.all(filePromises)).filter(
               isNonNullable
             )
+            const MB20 = 2 ** 20 * 20
+            if (uploadSize > MB20) {
+              toast.error(
+                "You're project exceeds 20Mb, this will slow down Text-to-CAD\nPlease remove any unnecessary files"
+              )
+            }
           }
           return await promptToEditFlow({
             projectFiles,

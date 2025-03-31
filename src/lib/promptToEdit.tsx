@@ -359,7 +359,6 @@ export async function doPromptEdit({
     console.error('textToCadComplete', e)
   }
 
-  console.log('textToCadComplete', textToCadComplete)
   return textToCadComplete
 }
 
@@ -446,7 +445,6 @@ export async function promptToEditFlow({
     return
   }
 
-  console.log('outputs', outputs)
   if (isDesktop()) {
     // write all of the outputs to disk
     for (const [relativePath, fileContents] of Object.entries(outputs)) {

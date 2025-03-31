@@ -196,6 +196,8 @@ const IMPORT_FILE_EXTENSIONS = [
   'glb',
   'fbxb',
   'kcl',
+  'step',
+  'stl',
 ]
 
 const isRelevantFile = (filename: string): boolean =>
