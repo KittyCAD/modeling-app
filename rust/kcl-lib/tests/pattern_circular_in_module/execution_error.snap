@@ -1,0 +1,15 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing pattern_circular_in_module.kcl
+---
+KCL Semantic error
+
+  × semantic: Error loading imported file. Open it to view more details.
+  │ tests/pattern_circular_in_module/thing.kcl: EntityCircularPattern response
+  │ was not as expected: Modeling { modeling_response: Empty }
+   ╭─[1:1]
+ 1 │ import thing from "thing.kcl"
+   · ──────────────┬──────────────
+   ·               ╰── tests/pattern_circular_in_module/input.kcl
+ 2 │ 
+   ╰────
