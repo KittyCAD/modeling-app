@@ -1280,10 +1280,21 @@ async fn pattern_circular(
         )
         .await?;
 
-    let OkWebSocketResponseData::Modeling {
+    // The common case is borrowing from the response.  Instead of cloning,
+    // create a Vec to borrow from in mock mode.
+    let mut mock_ids = Vec::new();
+    let entity_ids = if let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::EntityCircularPattern(pattern_info),
     } = &resp
-    else {
+    {
+        &pattern_info.entity_ids
+    } else if args.ctx.no_engine_commands().await {
+        mock_ids.reserve(num_repetitions as usize);
+        for _ in 0..num_repetitions {
+            mock_ids.push(exec_state.next_uuid());
+        }
+        &mock_ids
+    } else {
         return Err(KclError::Engine(KclErrorDetails {
             message: format!("EntityCircularPattern response was not as expected: {:?}", resp),
             source_ranges: vec![args.source_range],
@@ -1293,18 +1304,18 @@ async fn pattern_circular(
     let geometries = match geometry {
         Geometry::Sketch(sketch) => {
             let mut geometries = vec![sketch.clone()];
-            for id in pattern_info.entity_ids.iter() {
+            for id in entity_ids.iter().copied() {
                 let mut new_sketch = sketch.clone();
-                new_sketch.id = *id;
+                new_sketch.id = id;
                 geometries.push(new_sketch);
             }
             Geometries::Sketches(geometries)
         }
         Geometry::Solid(solid) => {
             let mut geometries = vec![solid.clone()];
-            for id in pattern_info.entity_ids.iter() {
+            for id in entity_ids.iter().copied() {
                 let mut new_solid = solid.clone();
-                new_solid.id = *id;
+                new_solid.id = id;
                 geometries.push(new_solid);
             }
             Geometries::Solids(geometries)
