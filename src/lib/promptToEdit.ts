@@ -65,6 +65,7 @@ export async function submitPromptToEditToQueue({
     return ml.create_text_to_cad_multi_file_iteration({
       client,
       body: {
+        prompt,
         source_ranges: [],
         project_name:
           projectName !== '' && projectName !== 'browser'
@@ -212,6 +213,7 @@ See later source ranges for more context. about the sweep`,
   return ml.create_text_to_cad_multi_file_iteration({
     client,
     body: {
+      prompt,
       source_ranges: ranges,
       project_name:
         projectName !== '' && projectName !== 'browser'
@@ -261,11 +263,6 @@ export async function doPromptEdit({
   artifactGraph: ArtifactGraph
 }): Promise<Models['TextToCadMultiFileIteration_type'] | Error> {
   const toastId = toast.loading('Submitting to Text-to-CAD API...')
-
-  const _token =
-    token && token !== ''
-      ? token
-      : getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
 
   let submitResult
 
@@ -366,7 +363,7 @@ export async function promptToEditFlow({
     outputs[key] = value + '\n// yoyo a comment'
   })
 
-  const newCode = result.outputs['myFile.kcl']
+  const newCode = outputs['myFile.kcl']
   codeManager.updateCodeEditor(newCode)
   const diff = reBuildNewCodeWithRanges(oldCode, newCode)
   const ranges: SelectionRange[] = diff.insertRanges.map((range) =>

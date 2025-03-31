@@ -100,7 +100,12 @@ import {
 } from 'lang/std/engineConnection'
 import { submitAndAwaitTextToKcl } from 'lib/textToCad'
 import { useFileContext } from 'hooks/useFileContext'
-import { platform, uuidv4 } from 'lib/utils'
+import {
+  isNonNullable,
+  KittyCadLibFile,
+  platform,
+  uuidv4,
+} from 'lib/utils'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   getFaceCodeRef,
@@ -121,6 +126,8 @@ import { exportSave } from 'lib/exportSave'
 import { Plane } from '@rust/kcl-lib/bindings/Plane'
 import { updateModelingState } from 'lang/modelingWorkflows'
 import { EXECUTION_TYPE_MOCK } from 'lib/constants'
+import { isDesktop } from 'lib/isDesktop'
+import { FileEntry } from 'lib/project'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -1737,8 +1744,56 @@ export const ModelingMachineProvider = ({
           }
         ),
         'submit-prompt-edit': fromPromise(async ({ input }) => {
+          let projectFiles: KittyCadLibFile[] = [
+            {
+              name: 'myFile.kcl',
+              data: new Blob([codeManager.code], { type: 'text/plain' }),
+            },
+          ]
+          if (isDesktop() && context?.project?.children) {
+            const basePath = context?.selectedDirectory?.path
+            const filePromises: Promise<KittyCadLibFile | null>[] = []
+            const recursivelyPushFilePromises = (files: FileEntry[]) => {
+              // mutates filePromises declared above, so this function definition should stay here
+              // if pulled out, it would need to be refactored.
+              for (const file of files) {
+                if (file.children !== null) {
+                  // is directory
+                  recursivelyPushFilePromises(file.children)
+                  continue
+                }
+                const absPath = file.path
+                const relPath = window.electron.path.relative(basePath, absPath)
+                const filePromise = window.electron
+                  .readFile(absPath)
+                  .then((file) => {
+                    const fileType = window.electron.path.extname(absPath)
+                    // mimeType doesn't really matter, because it's our endpoint and are
+                    // just being written to disk, but we'll set it to something reasonable for kcl
+                    // and generic for everything else.
+                    let mimeType = 'application/octet-stream'
+                    if (fileType === '.kcl') {
+                      mimeType = 'text/plain'
+                    }
+                    return {
+                      name: relPath,
+                      data: new Blob([file], { type: mimeType }),
+                    }
+                  })
+                  .catch((e) => {
+                    console.error('error reading file', e)
+                    return null
+                  })
+
+                filePromises.push(filePromise)
+              }
+            }
+            recursivelyPushFilePromises(context?.project?.children)
+            projectFiles = (await Promise.all(filePromises)).filter(isNonNullable)
+          }
           return await promptToEditFlow({
             code: codeManager.code,
+            // projectFiles,
             prompt: input.prompt,
             selections: input.selection,
             token,

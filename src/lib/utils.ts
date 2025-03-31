@@ -5,6 +5,7 @@ import { isDesktop } from './isDesktop'
 import { AnyMachineSnapshot } from 'xstate'
 import { AsyncFn } from './types'
 import { Binary as BSONBinary } from 'bson'
+export type { File as KittyCadLibFile } from '@kittycad/lib/dist/types/src/models'
 
 export const uuidv4 = v4
 
