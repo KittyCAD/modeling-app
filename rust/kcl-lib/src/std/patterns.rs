@@ -381,6 +381,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
     args: &Args,
 ) -> Result<Vec<T>, KclError> {
     let id = exec_state.next_uuid();
+    let extra_instances = transforms.len();
 
     let resp = args
         .send_modeling_cmd(
@@ -393,10 +394,19 @@ async fn send_pattern_transform<T: GeometryTrait>(
         )
         .await?;
 
-    let OkWebSocketResponseData::Modeling {
+    let mut mock_ids = Vec::new();
+    let entity_ids = if let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::EntityLinearPatternTransform(pattern_info),
     } = &resp
-    else {
+    {
+        &pattern_info.entity_ids
+    } else if args.ctx.no_engine_commands().await {
+        mock_ids.reserve(extra_instances);
+        for _ in 0..extra_instances {
+            mock_ids.push(exec_state.next_uuid());
+        }
+        &mock_ids
+    } else {
         return Err(KclError::Engine(KclErrorDetails {
             message: format!("EntityLinearPattern response was not as expected: {:?}", resp),
             source_ranges: vec![args.source_range],
@@ -404,7 +414,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
     };
 
     let mut geometries = vec![solid.clone()];
-    for id in pattern_info.entity_ids.iter().copied() {
+    for id in entity_ids.iter().copied() {
         let mut new_solid = solid.clone();
         new_solid.set_id(id);
         geometries.push(new_solid);
