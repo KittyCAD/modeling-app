@@ -11,7 +11,7 @@ import type { WebContentSendPayload } from './menu/channels'
 
 const typeSafeIpcRendererOn = (
   channel: Channel,
-  listener: (event: IpcRendererEvent, ...args: any[]) => Promise<void> | any
+  listener: (event: IpcRendererEvent, ...args: any[]) => void
 ) => ipcRenderer.on(channel, listener)
 
 const resizeWindow = (width: number, height: number) =>
