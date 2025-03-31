@@ -67,11 +67,11 @@ part001 = startSketchOn(-XZ)
 |> xLine(endAbsolute = totalLen, tag = $seg03)
 |> yLine(length = -armThick, tag = $seg01)
 |> angledLineThatIntersects({
-      angle = HALF_TURN,
+      angle = turns::HALF_TURN,
       offset = -armThick,
       intersectTag = seg04
     }, %)
-|> angledLineToY([segAng(seg04) + 180, ZERO], %)
+|> angledLineToY([segAng(seg04) + 180, turns::ZERO], %)
 |> angledLineToY({
       angle = -bottomAng,
       to = -totalHeightHalf - armThick,
@@ -79,12 +79,12 @@ part001 = startSketchOn(-XZ)
 |> xLine(endAbsolute = segEndX(seg03) + 0)
 |> yLine(length = -segLen(seg01))
 |> angledLineThatIntersects({
-      angle = HALF_TURN,
+      angle = turns::HALF_TURN,
       offset = -armThick,
       intersectTag = seg02
     }, %)
 |> angledLineToY([segAng(seg02) + 180, -baseHeight], %)
-|> xLine(endAbsolute = ZERO)
+|> xLine(endAbsolute = turns::ZERO)
 |> close()
 |> extrude(length = 4)`
       )

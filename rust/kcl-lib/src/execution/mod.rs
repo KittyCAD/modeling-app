@@ -512,6 +512,18 @@ impl ExecutorContext {
             .await
     }
 
+    pub async fn bust_cache_and_reset_scene(&self) -> Result<ExecOutcome, KclErrorWithOutputs> {
+        cache::bust_cache().await;
+
+        // Execute an empty program to clear and reset the scene.
+        // We specifically want to be returned the objects after the scene is reset.
+        // Like the default planes so it is easier to just execute an empty program
+        // after the cache is busted.
+        let outcome = self.run_with_caching(crate::Program::empty()).await?;
+
+        Ok(outcome)
+    }
+
     async fn prepare_mem(&self, exec_state: &mut ExecState) -> Result<(), KclErrorWithOutputs> {
         self.eval_prelude(exec_state, SourceRange::synthetic())
             .await
@@ -530,7 +542,10 @@ impl ExecutorContext {
         let mut exec_state = ExecState::new(self);
         if use_prev_memory {
             match cache::read_old_memory().await {
-                Some(mem) => *exec_state.mut_stack() = mem,
+                Some(mem) => {
+                    *exec_state.mut_stack() = mem.0;
+                    exec_state.global.module_infos = mem.1;
+                }
                 None => self.prepare_mem(&mut exec_state).await?,
             }
         } else {
@@ -548,10 +563,11 @@ impl ExecutorContext {
         // memory, not to the exec_state which is not cached for mock execution.
 
         let mut mem = exec_state.stack().clone();
+        let module_infos = exec_state.global.module_infos.clone();
         let outcome = exec_state.to_mock_wasm_outcome(result.0).await;
 
         mem.squash_env(result.0);
-        cache::write_old_memory(mem).await;
+        cache::write_old_memory((mem, module_infos)).await;
 
         Ok(outcome)
     }
@@ -585,7 +601,7 @@ impl ExecutorContext {
                     if reapply_settings
                         && self
                             .engine
-                            .reapply_settings(&self.settings, Default::default())
+                            .reapply_settings(&self.settings, Default::default(), old_state.id_generator())
                             .await
                             .is_err()
                     {
@@ -603,7 +619,7 @@ impl ExecutorContext {
                 CacheResult::NoAction(true) => {
                     if self
                         .engine
-                        .reapply_settings(&self.settings, Default::default())
+                        .reapply_settings(&self.settings, Default::default(), old_state.id_generator())
                         .await
                         .is_ok()
                     {
@@ -704,7 +720,7 @@ impl ExecutorContext {
 
         // Re-apply the settings, in case the cache was busted.
         self.engine
-            .reapply_settings(&self.settings, Default::default())
+            .reapply_settings(&self.settings, Default::default(), exec_state.id_generator())
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
@@ -741,7 +757,7 @@ impl ExecutorContext {
         if !self.is_mock() {
             let mut mem = exec_state.stack().deep_clone();
             mem.restore_env(env_ref);
-            cache::write_old_memory(mem).await;
+            cache::write_old_memory((mem, exec_state.global.module_infos.clone())).await;
         }
         let session_data = self.engine.get_session_data().await;
         Ok((env_ref, session_data))

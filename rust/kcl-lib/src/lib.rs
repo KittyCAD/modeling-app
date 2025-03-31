@@ -93,11 +93,11 @@ pub use lsp::{
     kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},
 };
 pub use modules::ModuleId;
-pub use parsing::ast::{modify::modify_ast_for_sketch, types::FormatOptions};
+pub use parsing::ast::types::FormatOptions;
 pub use settings::types::{project::ProjectConfiguration, Configuration, UnitLength};
 pub use source_range::SourceRange;
 #[cfg(not(target_arch = "wasm32"))]
-pub use unparser::recast_dir;
+pub use unparser::{recast_dir, walk_dir};
 
 // Rather than make executor public and make lots of it pub(crate), just re-export into a new module.
 // Ideally we wouldn't export these things at all, they should only be used for testing.
@@ -214,6 +214,14 @@ impl Program {
 
     pub fn recast_with_options(&self, options: &FormatOptions) -> String {
         self.ast.recast(options, 0)
+    }
+
+    /// Create an empty program.
+    pub fn empty() -> Self {
+        Self {
+            ast: parsing::ast::types::Node::no_src(parsing::ast::types::Program::default()),
+            original_file_contents: String::new(),
+        }
     }
 }
 

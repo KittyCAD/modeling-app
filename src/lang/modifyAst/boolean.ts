@@ -42,11 +42,11 @@ export async function applySubtractFromTargetOperatorSelections(
   }
   const orderedChildrenTarget = findAllChildrenAndOrderByPlaceInCode(
     target.artifact,
-    dependencies.engineCommandManager.artifactGraph
+    dependencies.kclManager.artifactGraph
   )
   const orderedChildrenTool = findAllChildrenAndOrderByPlaceInCode(
     tool.artifact,
-    dependencies.engineCommandManager.artifactGraph
+    dependencies.kclManager.artifactGraph
   )
 
   const lastVarTarget = getLastVariable(orderedChildrenTarget, ast)
@@ -89,7 +89,7 @@ export async function applyUnionFromTargetOperatorSelections(
   const orderedChildrenEach = artifacts.map((artifact) =>
     findAllChildrenAndOrderByPlaceInCode(
       artifact,
-      dependencies.engineCommandManager.artifactGraph
+      dependencies.kclManager.artifactGraph
     )
   )
 
@@ -136,7 +136,7 @@ export async function applyIntersectFromTargetOperatorSelections(
   const orderedChildrenEach = artifacts.map((artifact) =>
     findAllChildrenAndOrderByPlaceInCode(
       artifact,
-      dependencies.engineCommandManager.artifactGraph
+      dependencies.kclManager.artifactGraph
     )
   )
 

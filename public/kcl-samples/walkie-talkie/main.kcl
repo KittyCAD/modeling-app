@@ -32,24 +32,25 @@ talkButton()
 
 // import the frequency knob
 knob()
-  |> translate(
-    x = width / 2 - 0.70,
-    y = -thickness / 2,
-    z = height / 2
-    )
+  |> translate(x = width / 2 - 0.70, y = -thickness / 2, z = height / 2)
 
 // import the buttons
 button()
-  |> translate(
-    x = -(screenWidth / 2 + tolerance),
-    y = -1,
-    z = screenYPosition
-    )
+  |> translate(x = -(screenWidth / 2 + tolerance), y = -1, z = screenYPosition)
 button()
+  |> translate(x = -(screenWidth / 2 + tolerance), y = -1, z = screenYPosition - buttonHeight - (tolerance * 2))
+button()
+  |> rotate(
+       %,
+       roll = 0,
+       pitch = 180,
+       yaw = 0,
+     )
   |> translate(
-       x = -(screenWidth / 2 + tolerance),
+       x = screenWidth / 2 + tolerance,
        y = -1,
-       z = screenYPosition - buttonHeight - (tolerance * 2)
+       z = screenYPosition - buttonHeight,
+       global = true,
      )
 button()
   |> rotate(
@@ -59,21 +60,8 @@ button()
        yaw = 0,
      )
   |> translate(
-        x = screenWidth / 2 + tolerance,
-        y = -1,
-        z = screenYPosition - buttonHeight,
-        global = true,
-     )
-button()
-  |> rotate(
-       %,
-       roll = 0,
-       pitch = 180,
-       yaw = 0,
-     )
-  |> translate(
-        x = screenWidth / 2 + tolerance,
-        y = -1,
-        z = screenYPosition - (buttonHeight * 2) - (tolerance * 2),
+       x = screenWidth / 2 + tolerance,
+       y = -1,
+       z = screenYPosition - (buttonHeight * 2) - (tolerance * 2),
        global = true,
      )

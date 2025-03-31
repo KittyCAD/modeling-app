@@ -114,6 +114,8 @@ async fn unparse_test(test: &Test) {
     let kcl_files = kcl_files.into_iter().filter(|f| f != &entry_point);
     let futures = kcl_files
         .into_iter()
+        .filter(|file| file.extension().is_some_and(|ext| ext == "kcl")) // We only care about kcl
+        // files here.
         .map(|file| {
             let snap_path = Path::new("..").join(&test.output_dir);
             tokio::spawn(async move {

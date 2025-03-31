@@ -1,4 +1,5 @@
 //! Run all the KCL samples in the `kcl_samples` directory.
+use std::panic::{catch_unwind, AssertUnwindSafe};
 use std::{
     fs,
     path::{Path, PathBuf},
@@ -35,9 +36,35 @@ fn parse(dir_name: &str, dir_path: &Path) {
 
 #[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples")]
 async fn unparse(dir_name: &str, dir_path: &Path) {
-    // TODO: turn this on when we fix the comments recasting.
-    // let t = test(dir_name, dir_path.join("main.kcl").to_str().unwrap().to_owned());
-    // super::unparse_test(&t).await;
+    let t = test(dir_name, dir_path.join("main.kcl").to_str().unwrap().to_owned());
+    unparse_test(&t).await;
+}
+
+/// This is different from the rest of the simulation tests because we want to write
+/// back out to the original file.
+async fn unparse_test(test: &Test) {
+    let kcl_files = crate::unparser::walk_dir(&test.input_dir).await.unwrap();
+    let futures = kcl_files
+        .into_iter()
+        .filter(|file| file.extension().is_some_and(|ext| ext == "kcl")) // We only care about kcl
+        // files here.
+        .map(|file| {
+            tokio::spawn(async move {
+                let contents = tokio::fs::read_to_string(&file).await.unwrap();
+                let program = crate::Program::parse_no_errs(&contents).unwrap();
+                let recast = program.recast_with_options(&Default::default());
+
+                catch_unwind(AssertUnwindSafe(|| {
+                    expectorate::assert_contents(&file, &recast.to_string());
+                }))
+            })
+        })
+        .collect::<Vec<_>>();
+
+    // Join all futures and await their completion.
+    for future in futures {
+        future.await.unwrap().unwrap();
+    }
 }
 
 #[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples")]
