@@ -816,9 +816,8 @@ fn generate_type(
     }
 
     let cleaned_schema = recurse_and_create_references(name, schema, types)?;
-    let new_schema = super::cleanup_number_tuples(&cleaned_schema);
 
-    let schemars::schema::Schema::Object(o) = new_schema else {
+    let schemars::schema::Schema::Object(o) = cleaned_schema else {
         return Err(anyhow::anyhow!(
             "Failed to get object schema, should have not been a primitive"
         ));
