@@ -816,7 +816,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
         async fn #test_name() -> miette::Result<()> {
             let code = #code_block;
             // Note, `crate` must be kcl_lib
-            let result = match crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm, None).await {
+            let result = match crate::test_server::execute_and_snapshot(code, None).await {
                 Err(crate::errors::ExecError::Kcl(e)) => {
                     return Err(miette::Report::new(crate::errors::Report {
                         error: e.error,

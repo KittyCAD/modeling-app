@@ -1016,6 +1016,8 @@ startSketchOn(XY)
         }
         _ => unreachable!(),
     }
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2318,78 +2320,8 @@ async fn kcl_test_kcl_lsp_on_change_update_memory() {
             }],
         })
         .await;
-}
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 10)]
-async fn kcl_test_kcl_lsp_update_units() {
-    let server = kcl_lsp_server(true).await.unwrap();
-
-    let same_text = r#"fn cube = (pos, scale) => {
-  sg = startSketchOn(XY)
-    |> startProfileAt(pos, %)
-    |> line(end = [0, scale])
-    |> line(end = [scale, 0])
-    |> line(end = [0, -scale])
-
-  return sg
-}
-part001 = cube([0,0], 20)
-    |> close()
-    |> extrude(length = 20)"#
-        .to_string();
-
-    // Send open file.
-    server
-        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
-            text_document: tower_lsp::lsp_types::TextDocumentItem {
-                uri: "file:///test.kcl".try_into().unwrap(),
-                language_id: "kcl".to_string(),
-                version: 1,
-                text: same_text.clone(),
-            },
-        })
-        .await;
-
-    // Get the tokens.
-    let tokens = server.token_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(tokens.as_slice().len(), 123);
-
-    // Get the ast.
-    let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(ast.ast.body.len(), 2);
-
-    // Send change file.
-    server
-        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
-            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
-                uri: "file:///test.kcl".try_into().unwrap(),
-                version: 1,
-            },
-            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
-                range: None,
-                range_length: None,
-                text: same_text.clone(),
-            }],
-        })
-        .await;
-
-    let units = server.executor_ctx.read().await.clone().unwrap().settings.units;
-    assert_eq!(units, crate::settings::types::UnitLength::Mm);
-
-    // Update the units.
-    server
-        .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
-            text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
-                uri: "file:///test.kcl".try_into().unwrap(),
-            },
-            units: crate::settings::types::UnitLength::M,
-            text: same_text.clone(),
-        })
-        .await
-        .unwrap();
-
-    let units = server.executor_ctx().await.clone().unwrap().settings.units;
-    assert_eq!(units, crate::settings::types::UnitLength::M);
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2506,6 +2438,8 @@ async fn kcl_test_kcl_lsp_diagnostics_on_execution_error() {
 
     // Get the diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2556,6 +2490,8 @@ async fn kcl_test_kcl_lsp_full_to_empty_file_updates_ast_and_memory() {
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
     assert_eq!(ast.ast, default_hashed);
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2642,6 +2578,8 @@ async fn kcl_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2717,141 +2655,8 @@ async fn kcl_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecute()
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
-}
 
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_reexecute_on_unit_change() {
-    let server = kcl_lsp_server(true).await.unwrap();
-
-    let code = r#"part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
-  |> line(end = [20, 0])
-  |> line(end = [0, 20])
-  |> line(end = [-20, 0])
-  |> close()
-  |> extrude(length = 3.14)"#;
-
-    // Send open file.
-    server
-        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
-            text_document: tower_lsp::lsp_types::TextDocumentItem {
-                uri: "file:///test.kcl".try_into().unwrap(),
-                language_id: "kcl".to_string(),
-                version: 1,
-                text: code.to_string(),
-            },
-        })
-        .await;
-
-    // Get the ast.
-    let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast.ast != Node::<Program>::default());
-
-    // Assure we have no diagnostics.
-    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
-
-    // Add some fake diagnostics.
-    server.diagnostics_map.insert(
-        "file:///test.kcl".to_string(),
-        vec![tower_lsp::lsp_types::Diagnostic {
-            range: tower_lsp::lsp_types::Range {
-                start: tower_lsp::lsp_types::Position { line: 0, character: 0 },
-                end: tower_lsp::lsp_types::Position { line: 0, character: 0 },
-            },
-            message: "fake diagnostic".to_string(),
-            severity: Some(tower_lsp::lsp_types::DiagnosticSeverity::ERROR),
-            code: None,
-            source: None,
-            related_information: None,
-            tags: None,
-            data: None,
-            code_description: None,
-        }],
-    );
-    // Assure we have one diagnostics.
-    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
-
-    let units = server.executor_ctx().await.clone().unwrap().settings.units;
-    assert_eq!(units, crate::settings::types::UnitLength::Mm);
-
-    // Update the units to the _same_ units.
-    server
-        .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
-            text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
-                uri: "file:///test.kcl".try_into().unwrap(),
-            },
-            units: crate::settings::types::UnitLength::Mm,
-            text: code.to_string(),
-        })
-        .await
-        .unwrap();
-
-    let units = server.executor_ctx().await.clone().unwrap().settings.units;
-    assert_eq!(units, crate::settings::types::UnitLength::Mm);
-
-    // Get the ast.
-    let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast.ast != Node::<Program>::default());
-
-    // Assure we have no diagnostics.
-    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecute_on_unit_change() {
-    let server = kcl_lsp_server(true).await.unwrap();
-
-    let code = r#"part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
-  |> line(end = [20, 0])
-  |> line(end = [0, 20])
-  |> line(end = [-20, 0])
-  |> close()
-  |> extrude(length = 3.14)"#;
-
-    // Send open file.
-    server
-        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
-            text_document: tower_lsp::lsp_types::TextDocumentItem {
-                uri: "file:///test.kcl".try_into().unwrap(),
-                language_id: "kcl".to_string(),
-                version: 1,
-                text: code.to_string(),
-            },
-        })
-        .await;
-
-    // Get the ast.
-    let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast.ast != Node::<Program>::default());
-
-    // Assure we have no diagnostics.
-    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
-
-    let units = server.executor_ctx().await.clone().unwrap().settings.units;
-    assert_eq!(units, crate::settings::types::UnitLength::Mm);
-
-    // Update the units to the _same_ units.
-    server
-        .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
-            text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
-                uri: "file:///test.kcl".try_into().unwrap(),
-            },
-            units: crate::settings::types::UnitLength::Mm,
-            text: code.to_string(),
-        })
-        .await
-        .unwrap();
-
-    let units = server.executor_ctx().await.clone().unwrap().settings.units;
-    assert_eq!(units, crate::settings::types::UnitLength::Mm);
-
-    // Get the ast.
-    let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast.ast != Node::<Program>::default());
-
-    // Assure we have no diagnostics.
-    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2885,23 +2690,6 @@ async fn kcl_test_kcl_lsp_cant_execute_set() {
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
 
-    // Update the units to the _same_ units.
-    let units = server.executor_ctx().await.clone().unwrap().settings.units;
-    assert_eq!(units, crate::settings::types::UnitLength::Mm);
-    server
-        .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
-            text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
-                uri: "file:///test.kcl".try_into().unwrap(),
-            },
-            units: crate::settings::types::UnitLength::Mm,
-            text: code.to_string(),
-        })
-        .await
-        .unwrap();
-
-    let units = server.executor_ctx().await.clone().unwrap().settings.units;
-    assert_eq!(units, crate::settings::types::UnitLength::Mm);
-
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
     assert!(ast.ast != Node::<Program>::default());
@@ -2917,23 +2705,6 @@ async fn kcl_test_kcl_lsp_cant_execute_set() {
         .await
         .unwrap();
     assert_eq!(server.can_execute().await, false);
-
-    // Update the units to the _same_ units.
-    let units = server.executor_ctx().await.clone().unwrap().settings.units;
-    assert_eq!(units, crate::settings::types::UnitLength::Mm);
-    server
-        .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
-            text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
-                uri: "file:///test.kcl".try_into().unwrap(),
-            },
-            units: crate::settings::types::UnitLength::Mm,
-            text: code.to_string(),
-        })
-        .await
-        .unwrap();
-
-    let units = server.executor_ctx().await.clone().unwrap().settings.units;
-    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     let mut default_hashed = Node::<Program>::default();
     default_hashed.compute_digest();
@@ -2952,29 +2723,14 @@ async fn kcl_test_kcl_lsp_cant_execute_set() {
         .unwrap();
     assert_eq!(server.can_execute().await, true);
 
-    // Update the units to the _same_ units.
-    let units = server.executor_ctx.read().await.clone().unwrap().settings.units;
-    assert_eq!(units, crate::settings::types::UnitLength::Mm);
-    server
-        .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
-            text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
-                uri: "file:///test.kcl".try_into().unwrap(),
-            },
-            units: crate::settings::types::UnitLength::Mm,
-            text: code.to_string(),
-        })
-        .await
-        .unwrap();
-
-    let units = server.executor_ctx.read().await.clone().unwrap().settings.units;
-    assert_eq!(units, crate::settings::types::UnitLength::Mm);
-
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
     assert!(ast.ast != Node::<Program>::default());
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -3243,6 +2999,8 @@ part001 = startSketchOn(XY)
 
     // Check the diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 2);
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -3310,6 +3068,8 @@ NEW_LINT = 1"#
 
     // Check the diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 2);
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -3377,6 +3137,8 @@ NEW_LINT = 1"#
 
     // Check the diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -3460,6 +3222,8 @@ NEW_LINT = 1"#
 
     // Check the diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -3551,6 +3315,8 @@ part001 = startSketchOn(XY)
 
     // Check the diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 2);
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -3649,4 +3415,6 @@ async fn kcl_test_kcl_lsp_multi_file_error() {
     } else {
         panic!("Expected diagnostics");
     }
+
+    server.executor_ctx().await.clone().unwrap().close().await;
 }

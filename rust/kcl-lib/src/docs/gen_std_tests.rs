@@ -339,9 +339,9 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
         }
 
         functions.entry(d.mod_name()).or_default().push(match d {
-            DocData::Fn(f) => (f.name.clone(), d.file_name()),
-            DocData::Const(c) => (c.name.clone(), d.file_name()),
-            DocData::Ty(t) => (t.name.clone(), d.file_name()),
+            DocData::Fn(f) => (f.preferred_name.clone(), d.file_name()),
+            DocData::Const(c) => (c.preferred_name.clone(), d.file_name()),
+            DocData::Ty(t) => (t.preferred_name.clone(), d.file_name()),
         });
 
         if let DocData::Const(c) = d {
@@ -1172,7 +1172,7 @@ fn find_examples(text: &str, filename: &str) -> Vec<(String, String)> {
 
 async fn run_example(text: &str) -> Result<()> {
     let program = crate::Program::parse_no_errs(text)?;
-    let ctx = ExecutorContext::new_with_default_client(crate::UnitLength::Mm).await?;
+    let ctx = ExecutorContext::new_with_default_client().await?;
     let mut exec_state = crate::execution::ExecState::new(&ctx);
     ctx.run(&program, &mut exec_state).await?;
     Ok(())

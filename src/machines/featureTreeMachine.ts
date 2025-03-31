@@ -5,7 +5,7 @@ import {
   enterEditFlow,
   EnterEditFlowProps,
 } from 'lib/operations'
-import { engineCommandManager, kclManager } from 'lib/singletons'
+import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 import toast from 'react-hot-toast'
 import { Operation } from '@rust/kcl-lib/bindings/Operation'
@@ -275,7 +275,7 @@ export const featureTreeMachine = setup({
               const artifact = context.targetSourceRange
                 ? getArtifactFromRange(
                     context.targetSourceRange,
-                    engineCommandManager.artifactGraph
+                    kclManager.artifactGraph
                   ) ?? undefined
                 : undefined
               return {
@@ -329,7 +329,7 @@ export const featureTreeMachine = setup({
               const artifact = context.targetSourceRange
                 ? getArtifactFromRange(
                     context.targetSourceRange,
-                    engineCommandManager.artifactGraph
+                    kclManager.artifactGraph
                   ) ?? undefined
                 : undefined
               return {
@@ -383,7 +383,7 @@ export const featureTreeMachine = setup({
               const artifact = context.targetSourceRange
                 ? getArtifactFromRange(
                     context.targetSourceRange,
-                    engineCommandManager.artifactGraph
+                    kclManager.artifactGraph
                   ) ?? undefined
                 : undefined
               return {

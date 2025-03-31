@@ -28,14 +28,21 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         ]),
         exec_state,
     )?;
-    let scale = args.get_kw_arg("scale")?;
+    let scale_x = args.get_kw_arg("x")?;
+    let scale_y = args.get_kw_arg("y")?;
+    let scale_z = args.get_kw_arg("z")?;
     let global = args.get_kw_arg_opt("global")?;
 
-    let objects = inner_scale(objects, scale, global, exec_state, args).await?;
+    let objects = inner_scale(objects, scale_x, scale_y, scale_z, global, exec_state, args).await?;
     Ok(objects.into())
 }
 
 /// Scale a solid or a sketch.
+///
+/// This is really useful for resizing parts. You can create a part and then scale it to the
+/// correct size.
+///
+/// For sketches, you can use this to scale a sketch and then loft it with another sketch.
 ///
 /// By default the transform is applied in local sketch axis, therefore the origin will not move.
 ///
@@ -78,7 +85,9 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> hole(pipeHole, %)
 ///     |> sweep(path = sweepPath)   
 ///     |> scale(
-///     scale = [1.0, 1.0, 2.5],
+///     x = 1.0,
+///     y = 1.0,
+///     z = 2.5,
 ///     )
 /// ```
 ///
@@ -89,7 +98,9 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// cube
 ///     |> scale(
-///     scale = [1.0, 1.0, 2.5],
+///     x = 1.0,
+///     y = 1.0,
+///     z = 2.5,
 ///     )
 /// ```
 ///
@@ -124,7 +135,7 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// parts = sweep([rectangleSketch, circleSketch], path = sweepPath)
 ///
 /// // Scale the sweep.
-/// scale(parts, scale = [1.0, 1.0, 0.5])
+/// scale(parts, x = 1.0, y = 1.0, z = 0.5)
 /// ```
 #[stdlib {
     name = "scale",
@@ -133,13 +144,17 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     unlabeled_first = true,
     args = {
         objects = {docs = "The solid, sketch, or set of solids or sketches to scale."},
-        scale = {docs = "The scale factor for the x, y, and z axes."},
+        x = {docs = "The scale factor for the x axis."},
+        y = {docs = "The scale factor for the y axis."},
+        z = {docs = "The scale factor for the z axis."},
         global = {docs = "If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move."}
     }
 }]
 async fn inner_scale(
     objects: SolidOrSketchOrImportedGeometry,
-    scale: [f64; 3],
+    x: f64,
+    y: f64,
+    z: f64,
     global: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
@@ -159,11 +174,7 @@ async fn inner_scale(
                 object_id,
                 transforms: vec![shared::ComponentTransform {
                     scale: Some(shared::TransformBy::<Point3d<f64>> {
-                        property: Point3d {
-                            x: scale[0],
-                            y: scale[1],
-                            z: scale[2],
-                        },
+                        property: Point3d { x, y, z },
                         set: false,
                         is_local: !global.unwrap_or(false),
                     }),
@@ -190,14 +201,22 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
         ]),
         exec_state,
     )?;
-    let translate = args.get_kw_arg("translate")?;
+    let translate_x = args.get_kw_arg("x")?;
+    let translate_y = args.get_kw_arg("y")?;
+    let translate_z = args.get_kw_arg("z")?;
     let global = args.get_kw_arg_opt("global")?;
 
-    let objects = inner_translate(objects, translate, global, exec_state, args).await?;
+    let objects = inner_translate(objects, translate_x, translate_y, translate_z, global, exec_state, args).await?;
     Ok(objects.into())
 }
 
 /// Move a solid or a sketch.
+///
+/// This is really useful for assembling parts together. You can create a part
+/// and then move it to the correct location.
+///
+/// Translate is really useful for sketches if you want to move a sketch
+/// and then rotate it using the `rotate` function to create a loft.
 ///
 /// ```no_run
 /// // Move a pipe.
@@ -232,7 +251,9 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///     |> hole(pipeHole, %)
 ///     |> sweep(path = sweepPath)   
 ///     |> translate(
-///     translate = [1.0, 1.0, 2.5],
+///         x = 1.0,
+///         y = 1.0,
+///         z = 2.5,
 ///     )
 /// ```
 ///
@@ -243,7 +264,9 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///
 /// cube
 ///     |> translate(
-///     translate = [1.0, 1.0, 2.5],
+///     x = 1.0,
+///     y = 1.0,
+///     z = 2.5,
 ///     )
 /// ```
 ///
@@ -278,7 +301,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// parts = sweep([rectangleSketch, circleSketch], path = sweepPath)
 ///
 /// // Move the sweeps.
-/// translate(parts, translate = [1.0, 1.0, 2.5])
+/// translate(parts, x = 1.0, y = 1.0, z = 2.5)
 /// ```
 ///
 /// ```no_run
@@ -301,7 +324,9 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///
 /// square(10)
 ///     |> translate(
-///         translate = [5, 5, 0],
+///         x = 5,
+///         y = 5,
+///         z = 0,
 ///     )
 ///     |> extrude(
 ///         length = 10,
@@ -324,7 +349,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// profile001 = square()
 ///
 /// profile002 = square()
-///     |> translate(translate = [0, 0, 20])
+///     |> translate(x = 0, y = 0, z = 20)
 ///     |> rotate(axis = [0, 0, 1.0], angle = 45)
 ///
 /// loft([profile001, profile002])
@@ -336,13 +361,17 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
     unlabeled_first = true,
     args = {
         objects = {docs = "The solid, sketch, or set of solids or sketches to move."},
-        translate = {docs = "The amount to move the solid or sketch in all three axes."},
+        x = {docs = "The amount to move the solid or sketch along the x axis."},
+        y = {docs = "The amount to move the solid or sketch along the y axis."},
+        z = {docs = "The amount to move the solid or sketch along the z axis."},
         global = {docs = "If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move."}
     }
 }]
 async fn inner_translate(
     objects: SolidOrSketchOrImportedGeometry,
-    translate: [f64; 3],
+    x: f64,
+    y: f64,
+    z: f64,
     global: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
@@ -363,9 +392,9 @@ async fn inner_translate(
                 transforms: vec![shared::ComponentTransform {
                     translate: Some(shared::TransformBy::<Point3d<LengthUnit>> {
                         property: shared::Point3d {
-                            x: LengthUnit(translate[0]),
-                            y: LengthUnit(translate[1]),
-                            z: LengthUnit(translate[2]),
+                            x: LengthUnit(x),
+                            y: LengthUnit(y),
+                            z: LengthUnit(z),
                         },
                         set: false,
                         is_local: !global.unwrap_or(false),
@@ -505,6 +534,11 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 }
 
 /// Rotate a solid or a sketch.
+///
+/// This is really useful for assembling parts together. You can create a part
+/// and then rotate it to the correct orientation.
+///
+/// For sketches, you can use this to rotate a sketch and then loft it with another sketch.
 ///
 /// ### Using Roll, Pitch, and Yaw
 ///
@@ -667,7 +701,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// profile001 = square()
 ///
 /// profile002 = square()
-///     |> translate(translate = [0, 0, 20])
+///     |> translate(x = 0, y = 0, z = 20)
 ///     |> rotate(axis = [0, 0, 1.0], angle = 45)
 ///
 /// loft([profile001, profile002])

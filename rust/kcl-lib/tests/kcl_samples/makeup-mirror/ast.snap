@@ -2366,21 +2366,21 @@ description: Result of parsing makeup-mirror.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1508,
+                                "commentStart": 1510,
                                 "end": 0,
                                 "name": "offset",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1517,
+                                "commentStart": 1519,
                                 "end": 0,
                                 "left": {
                                   "abs_path": false,
-                                  "commentStart": 1517,
+                                  "commentStart": 1519,
                                   "end": 0,
                                   "name": {
-                                    "commentStart": 1517,
+                                    "commentStart": 1519,
                                     "end": 0,
                                     "name": "offsetY",
                                     "start": 0,
@@ -2393,14 +2393,14 @@ description: Result of parsing makeup-mirror.kcl
                                 },
                                 "operator": "-",
                                 "right": {
-                                  "commentStart": 1528,
+                                  "commentStart": 1530,
                                   "end": 0,
                                   "left": {
                                     "abs_path": false,
-                                    "commentStart": 1528,
+                                    "commentStart": 1530,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 1528,
+                                      "commentStart": 1530,
                                       "end": 0,
                                       "name": "tiefe",
                                       "start": 0,
@@ -2413,7 +2413,7 @@ description: Result of parsing makeup-mirror.kcl
                                   },
                                   "operator": "/",
                                   "right": {
-                                    "commentStart": 1536,
+                                    "commentStart": 1538,
                                     "end": 0,
                                     "raw": "2",
                                     "start": 0,
@@ -2436,10 +2436,10 @@ description: Result of parsing makeup-mirror.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1489,
+                            "commentStart": 1491,
                             "end": 0,
                             "name": {
-                              "commentStart": 1489,
+                              "commentStart": 1491,
                               "end": 0,
                               "name": "offsetPlane",
                               "start": 0,
@@ -2449,17 +2449,17 @@ description: Result of parsing makeup-mirror.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1489,
+                          "commentStart": 1491,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "abs_path": false,
-                            "commentStart": 1501,
+                            "commentStart": 1503,
                             "end": 0,
                             "name": {
-                              "commentStart": 1501,
+                              "commentStart": 1503,
                               "end": 0,
                               "name": "plane",
                               "start": 0,
@@ -2503,12 +2503,12 @@ description: Result of parsing makeup-mirror.kcl
                   "type": "VariableDeclaration"
                 },
                 {
-                  "commentStart": 1543,
+                  "commentStart": 1545,
                   "declaration": {
-                    "commentStart": 1543,
+                    "commentStart": 1545,
                     "end": 0,
                     "id": {
-                      "commentStart": 1543,
+                      "commentStart": 1545,
                       "end": 0,
                       "name": "armBody",
                       "start": 0,
@@ -2521,21 +2521,21 @@ description: Result of parsing makeup-mirror.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1570,
+                                "commentStart": 1572,
                                 "end": 0,
                                 "name": "center",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1579,
+                                "commentStart": 1581,
                                 "elements": [
                                   {
                                     "abs_path": false,
-                                    "commentStart": 1580,
+                                    "commentStart": 1582,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 1580,
+                                      "commentStart": 1582,
                                       "end": 0,
                                       "name": "offsetX",
                                       "start": 0,
@@ -2548,10 +2548,10 @@ description: Result of parsing makeup-mirror.kcl
                                   },
                                   {
                                     "abs_path": false,
-                                    "commentStart": 1589,
+                                    "commentStart": 1591,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 1589,
+                                      "commentStart": 1591,
                                       "end": 0,
                                       "name": "altitude",
                                       "start": 0,
@@ -2572,7 +2572,7 @@ description: Result of parsing makeup-mirror.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1600,
+                                "commentStart": 1602,
                                 "end": 0,
                                 "name": "radius",
                                 "start": 0,
@@ -2580,10 +2580,10 @@ description: Result of parsing makeup-mirror.kcl
                               },
                               "arg": {
                                 "abs_path": false,
-                                "commentStart": 1609,
+                                "commentStart": 1611,
                                 "end": 0,
                                 "name": {
-                                  "commentStart": 1609,
+                                  "commentStart": 1611,
                                   "end": 0,
                                   "name": "radius",
                                   "start": 0,
@@ -2598,10 +2598,10 @@ description: Result of parsing makeup-mirror.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1553,
+                            "commentStart": 1555,
                             "end": 0,
                             "name": {
-                              "commentStart": 1553,
+                              "commentStart": 1555,
                               "end": 0,
                               "name": "circle",
                               "start": 0,
@@ -2611,17 +2611,17 @@ description: Result of parsing makeup-mirror.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1553,
+                          "commentStart": 1555,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "abs_path": false,
-                            "commentStart": 1560,
+                            "commentStart": 1562,
                             "end": 0,
                             "name": {
-                              "commentStart": 1560,
+                              "commentStart": 1562,
                               "end": 0,
                               "name": "armPlane",
                               "start": 0,
@@ -2638,7 +2638,7 @@ description: Result of parsing makeup-mirror.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1632,
+                                "commentStart": 1634,
                                 "end": 0,
                                 "name": "length",
                                 "start": 0,
@@ -2646,10 +2646,10 @@ description: Result of parsing makeup-mirror.kcl
                               },
                               "arg": {
                                 "abs_path": false,
-                                "commentStart": 1641,
+                                "commentStart": 1643,
                                 "end": 0,
                                 "name": {
-                                  "commentStart": 1641,
+                                  "commentStart": 1643,
                                   "end": 0,
                                   "name": "tiefe",
                                   "start": 0,
@@ -2664,10 +2664,10 @@ description: Result of parsing makeup-mirror.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1624,
+                            "commentStart": 1626,
                             "end": 0,
                             "name": {
-                              "commentStart": 1624,
+                              "commentStart": 1626,
                               "end": 0,
                               "name": "extrude",
                               "start": 0,
@@ -2677,7 +2677,7 @@ description: Result of parsing makeup-mirror.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1624,
+                          "commentStart": 1626,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -2685,7 +2685,7 @@ description: Result of parsing makeup-mirror.kcl
                           "unlabeled": null
                         }
                       ],
-                      "commentStart": 1553,
+                      "commentStart": 1555,
                       "end": 0,
                       "start": 0,
                       "type": "PipeExpression",
@@ -2701,12 +2701,12 @@ description: Result of parsing makeup-mirror.kcl
                   "type": "VariableDeclaration"
                 },
                 {
-                  "commentStart": 1647,
+                  "commentStart": 1649,
                   "declaration": {
-                    "commentStart": 1651,
+                    "commentStart": 1653,
                     "end": 0,
                     "id": {
-                      "commentStart": 1651,
+                      "commentStart": 1653,
                       "end": 0,
                       "name": "archBody",
                       "start": 0,
@@ -2717,17 +2717,17 @@ description: Result of parsing makeup-mirror.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 1677,
+                              "commentStart": 1679,
                               "elements": [
                                 {
-                                  "commentStart": 1678,
+                                  "commentStart": 1680,
                                   "end": 0,
                                   "left": {
                                     "abs_path": false,
-                                    "commentStart": 1678,
+                                    "commentStart": 1680,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 1678,
+                                      "commentStart": 1680,
                                       "end": 0,
                                       "name": "offsetX",
                                       "start": 0,
@@ -2741,10 +2741,10 @@ description: Result of parsing makeup-mirror.kcl
                                   "operator": "-",
                                   "right": {
                                     "abs_path": false,
-                                    "commentStart": 1686,
+                                    "commentStart": 1690,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 1686,
+                                      "commentStart": 1690,
                                       "end": 0,
                                       "name": "gestellR",
                                       "start": 0,
@@ -2761,10 +2761,10 @@ description: Result of parsing makeup-mirror.kcl
                                 },
                                 {
                                   "abs_path": false,
-                                  "commentStart": 1696,
+                                  "commentStart": 1700,
                                   "end": 0,
                                   "name": {
-                                    "commentStart": 1696,
+                                    "commentStart": 1700,
                                     "end": 0,
                                     "name": "altitude",
                                     "start": 0,
@@ -2783,10 +2783,10 @@ description: Result of parsing makeup-mirror.kcl
                             },
                             {
                               "abs_path": false,
-                              "commentStart": 1707,
+                              "commentStart": 1711,
                               "end": 0,
                               "name": {
-                                "commentStart": 1707,
+                                "commentStart": 1711,
                                 "end": 0,
                                 "name": "armPlane",
                                 "start": 0,
@@ -2800,10 +2800,10 @@ description: Result of parsing makeup-mirror.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1662,
+                            "commentStart": 1664,
                             "end": 0,
                             "name": {
-                              "commentStart": 1662,
+                              "commentStart": 1664,
                               "end": 0,
                               "name": "startProfileAt",
                               "start": 0,
@@ -2813,7 +2813,7 @@ description: Result of parsing makeup-mirror.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1662,
+                          "commentStart": 1664,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2824,7 +2824,7 @@ description: Result of parsing makeup-mirror.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1730,
+                                "commentStart": 1734,
                                 "end": 0,
                                 "name": "length",
                                 "start": 0,
@@ -2832,10 +2832,10 @@ description: Result of parsing makeup-mirror.kcl
                               },
                               "arg": {
                                 "abs_path": false,
-                                "commentStart": 1739,
+                                "commentStart": 1743,
                                 "end": 0,
                                 "name": {
-                                  "commentStart": 1739,
+                                  "commentStart": 1743,
                                   "end": 0,
                                   "name": "gestellD",
                                   "start": 0,
@@ -2850,10 +2850,10 @@ description: Result of parsing makeup-mirror.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1724,
+                            "commentStart": 1728,
                             "end": 0,
                             "name": {
-                              "commentStart": 1724,
+                              "commentStart": 1728,
                               "end": 0,
                               "name": "xLine",
                               "start": 0,
@@ -2863,7 +2863,7 @@ description: Result of parsing makeup-mirror.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1724,
+                          "commentStart": 1728,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -2873,14 +2873,14 @@ description: Result of parsing makeup-mirror.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 1762,
+                              "commentStart": 1766,
                               "end": 0,
                               "properties": [
                                 {
-                                  "commentStart": 1773,
+                                  "commentStart": 1777,
                                   "end": 0,
                                   "key": {
-                                    "commentStart": 1773,
+                                    "commentStart": 1777,
                                     "end": 0,
                                     "name": "interior",
                                     "start": 0,
@@ -2889,14 +2889,14 @@ description: Result of parsing makeup-mirror.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "commentStart": 1784,
+                                    "commentStart": 1788,
                                     "elements": [
                                       {
                                         "abs_path": false,
-                                        "commentStart": 1785,
+                                        "commentStart": 1789,
                                         "end": 0,
                                         "name": {
-                                          "commentStart": 1785,
+                                          "commentStart": 1789,
                                           "end": 0,
                                           "name": "offsetX",
                                           "start": 0,
@@ -2908,14 +2908,14 @@ description: Result of parsing makeup-mirror.kcl
                                         "type": "Name"
                                       },
                                       {
-                                        "commentStart": 1794,
+                                        "commentStart": 1798,
                                         "end": 0,
                                         "left": {
                                           "abs_path": false,
-                                          "commentStart": 1794,
+                                          "commentStart": 1798,
                                           "end": 0,
                                           "name": {
-                                            "commentStart": 1794,
+                                            "commentStart": 1798,
                                             "end": 0,
                                             "name": "altitude",
                                             "start": 0,
@@ -2929,10 +2929,10 @@ description: Result of parsing makeup-mirror.kcl
                                         "operator": "-",
                                         "right": {
                                           "abs_path": false,
-                                          "commentStart": 1803,
+                                          "commentStart": 1809,
                                           "end": 0,
                                           "name": {
-                                            "commentStart": 1803,
+                                            "commentStart": 1809,
                                             "end": 0,
                                             "name": "gestellR",
                                             "start": 0,
@@ -2955,10 +2955,10 @@ description: Result of parsing makeup-mirror.kcl
                                   }
                                 },
                                 {
-                                  "commentStart": 1823,
+                                  "commentStart": 1829,
                                   "end": 0,
                                   "key": {
-                                    "commentStart": 1823,
+                                    "commentStart": 1829,
                                     "end": 0,
                                     "name": "end",
                                     "start": 0,
@@ -2967,17 +2967,17 @@ description: Result of parsing makeup-mirror.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "commentStart": 1829,
+                                    "commentStart": 1835,
                                     "elements": [
                                       {
-                                        "commentStart": 1830,
+                                        "commentStart": 1836,
                                         "end": 0,
                                         "left": {
                                           "abs_path": false,
-                                          "commentStart": 1830,
+                                          "commentStart": 1836,
                                           "end": 0,
                                           "name": {
-                                            "commentStart": 1830,
+                                            "commentStart": 1836,
                                             "end": 0,
                                             "name": "offsetX",
                                             "start": 0,
@@ -2991,10 +2991,10 @@ description: Result of parsing makeup-mirror.kcl
                                         "operator": "+",
                                         "right": {
                                           "abs_path": false,
-                                          "commentStart": 1838,
+                                          "commentStart": 1846,
                                           "end": 0,
                                           "name": {
-                                            "commentStart": 1838,
+                                            "commentStart": 1846,
                                             "end": 0,
                                             "name": "gestellR",
                                             "start": 0,
@@ -3011,10 +3011,10 @@ description: Result of parsing makeup-mirror.kcl
                                       },
                                       {
                                         "abs_path": false,
-                                        "commentStart": 1848,
+                                        "commentStart": 1856,
                                         "end": 0,
                                         "name": {
-                                          "commentStart": 1848,
+                                          "commentStart": 1856,
                                           "end": 0,
                                           "name": "altitude",
                                           "start": 0,
@@ -3038,7 +3038,7 @@ description: Result of parsing makeup-mirror.kcl
                               "type": "ObjectExpression"
                             },
                             {
-                              "commentStart": 1868,
+                              "commentStart": 1876,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -3047,10 +3047,10 @@ description: Result of parsing makeup-mirror.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1756,
+                            "commentStart": 1760,
                             "end": 0,
                             "name": {
-                              "commentStart": 1756,
+                              "commentStart": 1760,
                               "end": 0,
                               "name": "arcTo",
                               "start": 0,
@@ -3060,7 +3060,7 @@ description: Result of parsing makeup-mirror.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1756,
+                          "commentStart": 1760,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3071,7 +3071,7 @@ description: Result of parsing makeup-mirror.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1884,
+                                "commentStart": 1892,
                                 "end": 0,
                                 "name": "length",
                                 "start": 0,
@@ -3079,10 +3079,10 @@ description: Result of parsing makeup-mirror.kcl
                               },
                               "arg": {
                                 "abs_path": false,
-                                "commentStart": 1893,
+                                "commentStart": 1901,
                                 "end": 0,
                                 "name": {
-                                  "commentStart": 1893,
+                                  "commentStart": 1901,
                                   "end": 0,
                                   "name": "gestellD",
                                   "start": 0,
@@ -3097,10 +3097,10 @@ description: Result of parsing makeup-mirror.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1878,
+                            "commentStart": 1886,
                             "end": 0,
                             "name": {
-                              "commentStart": 1878,
+                              "commentStart": 1886,
                               "end": 0,
                               "name": "xLine",
                               "start": 0,
@@ -3110,7 +3110,7 @@ description: Result of parsing makeup-mirror.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1878,
+                          "commentStart": 1886,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -3120,14 +3120,14 @@ description: Result of parsing makeup-mirror.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 1916,
+                              "commentStart": 1924,
                               "end": 0,
                               "properties": [
                                 {
-                                  "commentStart": 1927,
+                                  "commentStart": 1935,
                                   "end": 0,
                                   "key": {
-                                    "commentStart": 1927,
+                                    "commentStart": 1935,
                                     "end": 0,
                                     "name": "interior",
                                     "start": 0,
@@ -3136,14 +3136,14 @@ description: Result of parsing makeup-mirror.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "commentStart": 1938,
+                                    "commentStart": 1946,
                                     "elements": [
                                       {
                                         "abs_path": false,
-                                        "commentStart": 1939,
+                                        "commentStart": 1959,
                                         "end": 0,
                                         "name": {
-                                          "commentStart": 1939,
+                                          "commentStart": 1959,
                                           "end": 0,
                                           "name": "offsetX",
                                           "start": 0,
@@ -3155,17 +3155,17 @@ description: Result of parsing makeup-mirror.kcl
                                         "type": "Name"
                                       },
                                       {
-                                        "commentStart": 1948,
+                                        "commentStart": 1979,
                                         "end": 0,
                                         "left": {
-                                          "commentStart": 1948,
+                                          "commentStart": 1979,
                                           "end": 0,
                                           "left": {
                                             "abs_path": false,
-                                            "commentStart": 1948,
+                                            "commentStart": 1979,
                                             "end": 0,
                                             "name": {
-                                              "commentStart": 1948,
+                                              "commentStart": 1979,
                                               "end": 0,
                                               "name": "altitude",
                                               "start": 0,
@@ -3179,10 +3179,10 @@ description: Result of parsing makeup-mirror.kcl
                                           "operator": "-",
                                           "right": {
                                             "abs_path": false,
-                                            "commentStart": 1957,
+                                            "commentStart": 1990,
                                             "end": 0,
                                             "name": {
-                                              "commentStart": 1957,
+                                              "commentStart": 1990,
                                               "end": 0,
                                               "name": "gestellR",
                                               "start": 0,
@@ -3200,10 +3200,10 @@ description: Result of parsing makeup-mirror.kcl
                                         "operator": "-",
                                         "right": {
                                           "abs_path": false,
-                                          "commentStart": 1966,
+                                          "commentStart": 2001,
                                           "end": 0,
                                           "name": {
-                                            "commentStart": 1966,
+                                            "commentStart": 2001,
                                             "end": 0,
                                             "name": "gestellD",
                                             "start": 0,
@@ -3226,10 +3226,10 @@ description: Result of parsing makeup-mirror.kcl
                                   }
                                 },
                                 {
-                                  "commentStart": 1986,
+                                  "commentStart": 2031,
                                   "end": 0,
                                   "key": {
-                                    "commentStart": 1986,
+                                    "commentStart": 2031,
                                     "end": 0,
                                     "name": "end",
                                     "start": 0,
@@ -3238,12 +3238,12 @@ description: Result of parsing makeup-mirror.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "commentStart": 1992,
+                                    "commentStart": 2037,
                                     "elements": [
                                       {
                                         "arguments": [
                                           {
-                                            "commentStart": 2007,
+                                            "commentStart": 2052,
                                             "end": 0,
                                             "start": 0,
                                             "type": "PipeSubstitution",
@@ -3252,10 +3252,10 @@ description: Result of parsing makeup-mirror.kcl
                                         ],
                                         "callee": {
                                           "abs_path": false,
-                                          "commentStart": 1993,
+                                          "commentStart": 2038,
                                           "end": 0,
                                           "name": {
-                                            "commentStart": 1993,
+                                            "commentStart": 2038,
                                             "end": 0,
                                             "name": "profileStartX",
                                             "start": 0,
@@ -3265,7 +3265,7 @@ description: Result of parsing makeup-mirror.kcl
                                           "start": 0,
                                           "type": "Name"
                                         },
-                                        "commentStart": 1993,
+                                        "commentStart": 2038,
                                         "end": 0,
                                         "start": 0,
                                         "type": "CallExpression",
@@ -3274,7 +3274,7 @@ description: Result of parsing makeup-mirror.kcl
                                       {
                                         "arguments": [
                                           {
-                                            "commentStart": 2025,
+                                            "commentStart": 2070,
                                             "end": 0,
                                             "start": 0,
                                             "type": "PipeSubstitution",
@@ -3283,10 +3283,10 @@ description: Result of parsing makeup-mirror.kcl
                                         ],
                                         "callee": {
                                           "abs_path": false,
-                                          "commentStart": 2011,
+                                          "commentStart": 2056,
                                           "end": 0,
                                           "name": {
-                                            "commentStart": 2011,
+                                            "commentStart": 2056,
                                             "end": 0,
                                             "name": "profileStartY",
                                             "start": 0,
@@ -3296,7 +3296,7 @@ description: Result of parsing makeup-mirror.kcl
                                           "start": 0,
                                           "type": "Name"
                                         },
-                                        "commentStart": 2011,
+                                        "commentStart": 2056,
                                         "end": 0,
                                         "start": 0,
                                         "type": "CallExpression",
@@ -3315,7 +3315,7 @@ description: Result of parsing makeup-mirror.kcl
                               "type": "ObjectExpression"
                             },
                             {
-                              "commentStart": 2039,
+                              "commentStart": 2084,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -3324,10 +3324,10 @@ description: Result of parsing makeup-mirror.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1910,
+                            "commentStart": 1918,
                             "end": 0,
                             "name": {
-                              "commentStart": 1910,
+                              "commentStart": 1918,
                               "end": 0,
                               "name": "arcTo",
                               "start": 0,
@@ -3337,7 +3337,7 @@ description: Result of parsing makeup-mirror.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1910,
+                          "commentStart": 1918,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3347,10 +3347,10 @@ description: Result of parsing makeup-mirror.kcl
                           "arguments": [],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 2049,
+                            "commentStart": 2094,
                             "end": 0,
                             "name": {
-                              "commentStart": 2049,
+                              "commentStart": 2094,
                               "end": 0,
                               "name": "close",
                               "start": 0,
@@ -3360,7 +3360,7 @@ description: Result of parsing makeup-mirror.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 2049,
+                          "commentStart": 2094,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3371,7 +3371,7 @@ description: Result of parsing makeup-mirror.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 2072,
+                                "commentStart": 2117,
                                 "end": 0,
                                 "name": "length",
                                 "start": 0,
@@ -3379,10 +3379,10 @@ description: Result of parsing makeup-mirror.kcl
                               },
                               "arg": {
                                 "abs_path": false,
-                                "commentStart": 2081,
+                                "commentStart": 2126,
                                 "end": 0,
                                 "name": {
-                                  "commentStart": 2081,
+                                  "commentStart": 2126,
                                   "end": 0,
                                   "name": "tiefe",
                                   "start": 0,
@@ -3397,10 +3397,10 @@ description: Result of parsing makeup-mirror.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 2064,
+                            "commentStart": 2109,
                             "end": 0,
                             "name": {
-                              "commentStart": 2064,
+                              "commentStart": 2109,
                               "end": 0,
                               "name": "extrude",
                               "start": 0,
@@ -3410,7 +3410,7 @@ description: Result of parsing makeup-mirror.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 2064,
+                          "commentStart": 2109,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -3418,7 +3418,7 @@ description: Result of parsing makeup-mirror.kcl
                           "unlabeled": null
                         }
                       ],
-                      "commentStart": 1662,
+                      "commentStart": 1664,
                       "end": 0,
                       "start": 0,
                       "type": "PipeExpression",
@@ -3436,10 +3436,10 @@ description: Result of parsing makeup-mirror.kcl
                 {
                   "argument": {
                     "abs_path": false,
-                    "commentStart": 2097,
+                    "commentStart": 2142,
                     "end": 0,
                     "name": {
-                      "commentStart": 2097,
+                      "commentStart": 2142,
                       "end": 0,
                       "name": "armBody",
                       "start": 0,
@@ -3450,7 +3450,7 @@ description: Result of parsing makeup-mirror.kcl
                     "type": "Name",
                     "type": "Name"
                   },
-                  "commentStart": 2090,
+                  "commentStart": 2135,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
@@ -3463,7 +3463,7 @@ description: Result of parsing makeup-mirror.kcl
                 "nonCodeNodes": {
                   "1": [
                     {
-                      "commentStart": 1647,
+                      "commentStart": 1649,
                       "end": 0,
                       "start": 0,
                       "type": "NonCodeNode",
@@ -3580,12 +3580,12 @@ description: Result of parsing makeup-mirror.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 2106,
+        "commentStart": 2151,
         "declaration": {
-          "commentStart": 2108,
+          "commentStart": 2153,
           "end": 0,
           "id": {
-            "commentStart": 2108,
+            "commentStart": 2153,
             "end": 0,
             "name": "mirror",
             "start": 0,
@@ -3595,10 +3595,10 @@ description: Result of parsing makeup-mirror.kcl
             "arguments": [
               {
                 "abs_path": false,
-                "commentStart": 2126,
+                "commentStart": 2171,
                 "end": 0,
                 "name": {
-                  "commentStart": 2126,
+                  "commentStart": 2171,
                   "end": 0,
                   "name": "XZ",
                   "start": 0,
@@ -3611,10 +3611,10 @@ description: Result of parsing makeup-mirror.kcl
               },
               {
                 "abs_path": false,
-                "commentStart": 2130,
+                "commentStart": 2175,
                 "end": 0,
                 "name": {
-                  "commentStart": 2130,
+                  "commentStart": 2175,
                   "end": 0,
                   "name": "armLength",
                   "start": 0,
@@ -3627,10 +3627,10 @@ description: Result of parsing makeup-mirror.kcl
               },
               {
                 "abs_path": false,
-                "commentStart": 2141,
+                "commentStart": 2186,
                 "end": 0,
                 "name": {
-                  "commentStart": 2141,
+                  "commentStart": 2186,
                   "end": 0,
                   "name": "armLength",
                   "start": 0,
@@ -3642,26 +3642,26 @@ description: Result of parsing makeup-mirror.kcl
                 "type": "Name"
               },
               {
-                "commentStart": 2152,
+                "commentStart": 2197,
                 "end": 0,
                 "left": {
-                  "commentStart": 2152,
+                  "commentStart": 2197,
                   "end": 0,
                   "left": {
-                    "commentStart": 2152,
+                    "commentStart": 2197,
                     "end": 0,
                     "left": {
-                      "commentStart": 2152,
+                      "commentStart": 2197,
                       "end": 0,
                       "left": {
-                        "commentStart": 2152,
+                        "commentStart": 2197,
                         "end": 0,
                         "left": {
                           "abs_path": false,
-                          "commentStart": 2152,
+                          "commentStart": 2197,
                           "end": 0,
                           "name": {
-                            "commentStart": 2152,
+                            "commentStart": 2197,
                             "end": 0,
                             "name": "hingeHeight",
                             "start": 0,
@@ -3674,7 +3674,7 @@ description: Result of parsing makeup-mirror.kcl
                         },
                         "operator": "*",
                         "right": {
-                          "commentStart": 2166,
+                          "commentStart": 2211,
                           "end": 0,
                           "raw": "4",
                           "start": 0,
@@ -3691,14 +3691,14 @@ description: Result of parsing makeup-mirror.kcl
                       },
                       "operator": "+",
                       "right": {
-                        "commentStart": 2170,
+                        "commentStart": 2215,
                         "end": 0,
                         "left": {
                           "abs_path": false,
-                          "commentStart": 2170,
+                          "commentStart": 2215,
                           "end": 0,
                           "name": {
-                            "commentStart": 2170,
+                            "commentStart": 2215,
                             "end": 0,
                             "name": "hingeGap",
                             "start": 0,
@@ -3711,7 +3711,7 @@ description: Result of parsing makeup-mirror.kcl
                         },
                         "operator": "*",
                         "right": {
-                          "commentStart": 2181,
+                          "commentStart": 2226,
                           "end": 0,
                           "raw": "3",
                           "start": 0,
@@ -3733,10 +3733,10 @@ description: Result of parsing makeup-mirror.kcl
                     "operator": "+",
                     "right": {
                       "abs_path": false,
-                      "commentStart": 2185,
+                      "commentStart": 2230,
                       "end": 0,
                       "name": {
-                        "commentStart": 2185,
+                        "commentStart": 2230,
                         "end": 0,
                         "name": "mirrorRadius",
                         "start": 0,
@@ -3754,10 +3754,10 @@ description: Result of parsing makeup-mirror.kcl
                   "operator": "+",
                   "right": {
                     "abs_path": false,
-                    "commentStart": 2198,
+                    "commentStart": 2245,
                     "end": 0,
                     "name": {
-                      "commentStart": 2198,
+                      "commentStart": 2245,
                       "end": 0,
                       "name": "archToMirrorGap",
                       "start": 0,
@@ -3775,10 +3775,10 @@ description: Result of parsing makeup-mirror.kcl
                 "operator": "+",
                 "right": {
                   "abs_path": false,
-                  "commentStart": 2214,
+                  "commentStart": 2263,
                   "end": 0,
                   "name": {
-                    "commentStart": 2214,
+                    "commentStart": 2263,
                     "end": 0,
                     "name": "archThickness",
                     "start": 0,
@@ -3795,10 +3795,10 @@ description: Result of parsing makeup-mirror.kcl
               },
               {
                 "abs_path": false,
-                "commentStart": 2229,
+                "commentStart": 2278,
                 "end": 0,
                 "name": {
-                  "commentStart": 2229,
+                  "commentStart": 2278,
                   "end": 0,
                   "name": "mirrorRadius",
                   "start": 0,
@@ -3811,10 +3811,10 @@ description: Result of parsing makeup-mirror.kcl
               },
               {
                 "abs_path": false,
-                "commentStart": 2243,
+                "commentStart": 2292,
                 "end": 0,
                 "name": {
-                  "commentStart": 2243,
+                  "commentStart": 2292,
                   "end": 0,
                   "name": "mirrorThickness",
                   "start": 0,
@@ -3827,10 +3827,10 @@ description: Result of parsing makeup-mirror.kcl
               },
               {
                 "abs_path": false,
-                "commentStart": 2260,
+                "commentStart": 2309,
                 "end": 0,
                 "name": {
-                  "commentStart": 2260,
+                  "commentStart": 2309,
                   "end": 0,
                   "name": "archRadius",
                   "start": 0,
@@ -3843,10 +3843,10 @@ description: Result of parsing makeup-mirror.kcl
               },
               {
                 "abs_path": false,
-                "commentStart": 2272,
+                "commentStart": 2321,
                 "end": 0,
                 "name": {
-                  "commentStart": 2272,
+                  "commentStart": 2321,
                   "end": 0,
                   "name": "archThickness",
                   "start": 0,
@@ -3860,10 +3860,10 @@ description: Result of parsing makeup-mirror.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 2117,
+              "commentStart": 2162,
               "end": 0,
               "name": {
-                "commentStart": 2117,
+                "commentStart": 2162,
                 "end": 0,
                 "name": "mirrorFn",
                 "start": 0,
@@ -3873,7 +3873,7 @@ description: Result of parsing makeup-mirror.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 2117,
+            "commentStart": 2162,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -3992,7 +3992,7 @@ description: Result of parsing makeup-mirror.kcl
         ],
         "21": [
           {
-            "commentStart": 2106,
+            "commentStart": 2151,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
