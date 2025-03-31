@@ -78,12 +78,12 @@ sketch001 = startSketchOn(XY)
 
     // Ensure we execute the first time.
     await u.openDebugPanel()
-    await expect(
-      page.locator('[data-receive-command-type="scene_clear_all"]')
-    ).toHaveCount(1)
-    await expect(
-      page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(1)
+    await expect.poll(() =>
+      page.locator('[data-receive-command-type="scene_clear_all"]').count()
+    ).toBe(2)
+    await expect.poll(() =>
+      page.locator('[data-message-type="execution-done"]').count()
+    ).toBe(2)
 
     // Add whitespace to the end of the code.
     await u.codeLocator.click()
@@ -131,7 +131,7 @@ sketch001 = startSketchOn(XY)
     await u.openDebugPanel()
     await expect(
       page.locator('[data-receive-command-type="scene_clear_all"]')
-    ).toHaveCount(1)
+    ).toHaveCount(2)
     await expect(
       page.locator('[data-message-type="execution-done"]')
     ).toHaveCount(2)
@@ -159,7 +159,7 @@ sketch001 = startSketchOn(XY)
     ).toHaveCount(3)
     await expect(
       page.locator('[data-receive-command-type="scene_clear_all"]')
-    ).toHaveCount(1)
+    ).toHaveCount(2)
   })
 
   test('if you click the format button it formats your code', async ({

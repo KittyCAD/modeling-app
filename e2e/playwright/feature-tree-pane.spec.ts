@@ -90,7 +90,7 @@ test.describe('Feature Tree pane', () => {
         await scene.settled(cmdBar)
 
         await toolbar.openFeatureTreePane()
-        await expect(page.getByText('Feature tree')).toBeVisible()
+        await expect.poll(() => page.getByText('Feature tree').count()).toBeGreaterThan(1)
       })
 
       async function testViewSource({

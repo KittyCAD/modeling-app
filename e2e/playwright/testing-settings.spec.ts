@@ -866,6 +866,8 @@ test.describe('Testing settings', () => {
     page,
     homePage,
     tronApp,
+    scene,
+    cmdBar
   }) => {
     if (!tronApp) {
       fail()
@@ -887,6 +889,8 @@ test.describe('Testing settings', () => {
     })
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
 
     // Constants and locators
     const resizeHandle = page.locator('.sidebar-resize-handles > div.block')

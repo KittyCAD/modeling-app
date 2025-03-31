@@ -46,8 +46,6 @@ test.describe('Point and click for boolean workflows', () => {
         localStorage.setItem('persistCode', file)
       }, file)
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
-
       await scene.settled(cmdBar)
 
       // Test coordinates for selection - these might need adjustment based on actual scene layout

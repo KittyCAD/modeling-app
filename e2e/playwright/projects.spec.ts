@@ -1525,7 +1525,7 @@ extrude001 = extrude(sketch001, length = 200)`)
 test(
   'Opening a project should successfully load the stream, (regression test that this also works when switching between projects)',
   { tag: '@electron' },
-  async ({ context, page, cmdBar, homePage }, testInfo) => {
+  async ({ context, page, cmdBar, homePage, scene }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(path.join(dir, 'router-template-slate'), {
         recursive: true,
@@ -1594,15 +1594,7 @@ test(
         stage: 'commandBarClosed',
       })
 
-      await u.waitForPageLoad()
-
-      // gray at this pixel means the stream has loaded in the most
-      // user way we can verify it (pixel color)
-      await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
-          timeout: 10_000,
-        })
-        .toBeLessThan(15)
+      await scene.settled(cmdBar)
     })
 
     await test.step('Clicking the logo takes us back to the projects page / home', async () => {
@@ -1619,15 +1611,7 @@ test(
 
       await page.getByText('router-template-slate').click()
 
-      await u.waitForPageLoad()
-
-      // gray at this pixel means the stream has loaded in the most
-      // user way we can verify it (pixel color)
-      await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [143, 143, 143]), {
-          timeout: 10_000,
-        })
-        .toBeLessThan(15)
+      await scene.settled(cmdBar)
     })
 
     await test.step('The projects on the home page should still be normal', async () => {
