@@ -471,6 +471,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
   test('if you write kcl with lint errors you get lints', async ({
     page,
     homePage,
+    scene,
   }) => {
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1000, height: 500 })
@@ -490,10 +491,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await page.keyboard.press('ArrowLeft')
     await page.keyboard.press('ArrowRight')
 
-    // FIXME: lsp errors do not propagate to the frontend until engine is connected and code is executed
-    // This timeout is to wait for engine connection. LSP and code execution errors should be handled differently
-    // LSP can emit errors as fast as it waits and show them in the editor
-    await page.waitForTimeout(10000)
+    await scene.waitForExecutionDone()
 
     // error in guter
     await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
