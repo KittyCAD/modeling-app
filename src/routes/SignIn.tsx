@@ -38,7 +38,7 @@ const SignIn = () => {
   }?callbackUrl=${encodeURIComponent(
     typeof window !== 'undefined' && window.location.href.replace('signin', '')
   )}`
-  const kclSampleUrl = `${VITE_KC_SITE_BASE_URL}/docs/kcl-samples/car-wheel`
+  const kclSampleUrl = `${VITE_KC_SITE_BASE_URL}/docs/kcl-samples/car-wheel-assembly`
 
   const getThemeText = useCallback(
     (shouldContrast = true) =>
