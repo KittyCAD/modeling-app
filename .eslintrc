@@ -47,6 +47,9 @@
         "vars": "all",
         "args": "none"
       }],
+      "@typescript-eslint/no-unsafe-unary-minus": "error",
+      "no-throw-literal": "off", // Use @typescript-eslint/only-throw-error instead.
+      "@typescript-eslint/only-throw-error": "error",
       "@typescript-eslint/prefer-as-const": "warn",
       "jsx-a11y/click-events-have-key-events": "off",
       "jsx-a11y/no-autofocus": "off",
@@ -56,7 +59,7 @@
         {
           "name": "isNaN",
           "message": "Use Number.isNaN() instead."
-        },
+        }
       ],
       "no-restricted-syntax": [
         "error",
@@ -70,7 +73,7 @@
         "never"
       ],
       "react-hooks/exhaustive-deps": "off",
-      "suggest-no-throw/suggest-no-throw": "warn",
+      "suggest-no-throw/suggest-no-throw": "error"
     },
     "overrides": [
       {
@@ -90,7 +93,7 @@
           "plugin:testing-library/react"
         ],
         "rules": {
-          "suggest-no-throw/suggest-no-throw": "off",
+          "suggest-no-throw/suggest-no-throw": "off"
         }
       }
     ]
