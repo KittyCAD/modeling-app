@@ -17,7 +17,7 @@ const linuxPathArgv = [
   '/tmp/.mount_Zoo MogQS2hd/zoo-modeling-app',
   '--no-sandbox',
   '--allow-file-access-from-files',
-  '/home/pierremtb/Documents/zoo-modeling-app-projects/project-001/main.kcl',
+  '/home/pierremtb/Documents/zoo-design-studio-projects/project-001/main.kcl',
 ]
 
 const winDeepLinkArgv = [
@@ -34,7 +34,7 @@ const winNoPathArgv = [
 const winPathArgv = [
   'C:\\Program Files\\Zoo Design Studio\\Zoo Design Studio.exe',
   '--allow-file-access-from-files',
-  'C:\\Users\\pierr\\Documents\\zoo-modeling-app-projects\\deeplink\\main.kcl',
+  'C:\\Users\\pierr\\Documents\\zoo-design-studio-projects\\deeplink\\main.kcl',
 ]
 
 // macos doesn't uses the open-url scheme so is different so no macDeepLinkArgv
@@ -45,7 +45,7 @@ const macNoPathArgv = [
 
 const macPathArgv = [
   '/Applications/Zoo Design Studio.app/Contents/MacOS/Zoo Design Studio',
-  '/Users/pierremtb/Documents/zoo-modeling-app-projects/loft/main.kcl',
+  '/Users/pierremtb/Documents/zoo-design-studio-projects/loft/main.kcl',
 ]
 
 describe('getPathOrUrlFromArgs', () => {

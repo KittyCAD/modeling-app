@@ -19,7 +19,7 @@ export const BROWSER_FILE_NAME = 'main'
  * The default name of the project in Desktop.
  * This is prefixed by the Documents directory path.
  */
-export const PROJECT_FOLDER = 'zoo-modeling-app-projects'
+export const PROJECT_FOLDER = 'zoo-design-studio-projects'
 /**
  * File extension for Design Studio's files, which are written in kcl
  * @link - https://zoo.dev/docs/kcl
