@@ -43,9 +43,7 @@ export const ProjectCardRenameForm = forwardRef(
             }}
             className="!p-0"
           >
-            <Tooltip position="left" delay={1000}>
-              Rename project
-            </Tooltip>
+            <Tooltip position="left">Rename project</Tooltip>
           </ActionButton>
           <ActionButton
             Element="button"
@@ -57,9 +55,7 @@ export const ProjectCardRenameForm = forwardRef(
             className="!p-0"
             onClick={onDismiss}
           >
-            <Tooltip position="left" delay={1000}>
-              Cancel
-            </Tooltip>
+            <Tooltip position="left">Cancel</Tooltip>
           </ActionButton>
         </div>
       </form>

@@ -320,7 +320,7 @@ export function kclErrorsToDiagnostics(
     })
 }
 
-export function complilationErrorsToDiagnostics(
+export function compilationErrorsToDiagnostics(
   errors: CompilationError[]
 ): CodeMirrorDiagnostic[] {
   return errors

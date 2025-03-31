@@ -8,7 +8,7 @@ description: Operations executed exhaust-manifold.kcl
     "name": "primaryTube",
     "functionSourceRange": [
       329,
-      1587,
+      1531,
       0
     ],
     "unlabeledArg": null,
@@ -230,8 +230,8 @@ description: Operations executed exhaust-manifold.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -408,7 +408,7 @@ description: Operations executed exhaust-manifold.kcl
     "name": "primaryTube",
     "functionSourceRange": [
       329,
-      1587,
+      1531,
       0
     ],
     "unlabeledArg": null,
@@ -630,8 +630,8 @@ description: Operations executed exhaust-manifold.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -808,7 +808,7 @@ description: Operations executed exhaust-manifold.kcl
     "name": "primaryTube",
     "functionSourceRange": [
       329,
-      1587,
+      1531,
       0
     ],
     "unlabeledArg": null,
@@ -1030,8 +1030,8 @@ description: Operations executed exhaust-manifold.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -1208,7 +1208,7 @@ description: Operations executed exhaust-manifold.kcl
     "name": "primaryTube",
     "functionSourceRange": [
       329,
-      1587,
+      1531,
       0
     ],
     "unlabeledArg": null,
@@ -1430,8 +1430,8 @@ description: Operations executed exhaust-manifold.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -1607,8 +1607,8 @@ description: Operations executed exhaust-manifold.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }

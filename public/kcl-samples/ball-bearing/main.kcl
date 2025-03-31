@@ -17,21 +17,15 @@ chainThickness = sphereDia / 8
 linkDiameter = sphereDia / 4
 
 // Sketch the inside bearing piece
-insideWallSketch = startSketchOn(offsetPlane("XY", offset = -overallThickness / 2))
-  |> circle(
-       center = [0, 0],
-       radius = shaftDia / 2 + wallThickness
-     )
-  |> hole(circle(
-       center = [0, 0],
-       radius = shaftDia / 2
-     ), %)
+insideWallSketch = startSketchOn(offsetPlane(XY, offset = -overallThickness / 2))
+  |> circle(center = [0, 0], radius = shaftDia / 2 + wallThickness)
+  |> hole(circle(center = [0, 0], radius = shaftDia / 2), %)
 
 // Extrude the inside bearing piece
 insideWall = extrude(insideWallSketch, length = overallThickness)
 
 // Create the sketch of one of the balls
-ballsSketch = startSketchOn("XY")
+ballsSketch = startSketchOn(XY)
   |> startProfileAt([shaftDia / 2 + wallThickness, 0.001], %)
   |> arc({
        angleEnd = 0,
@@ -47,11 +41,11 @@ balls = revolve(ballsSketch, axis = "X")
        axis = [0, 0, 1],
        center = [0, 0, 0],
        instances = nBalls,
-       rotateDuplicates = true
+       rotateDuplicates = true,
      )
 
 // Create the sketch for the chain around the balls
-chainSketch = startSketchOn("XY")
+chainSketch = startSketchOn(XY)
   |> startProfileAt([
        shaftDia / 2 + wallThickness + sphereDia / 2 - (chainWidth / 2),
        0.125 * sin(toRadians(60))
@@ -72,17 +66,17 @@ chainHead = revolve(chainSketch, axis = "X")
        axis = [0, 0, 1],
        center = [0, 0, 0],
        instances = nBalls,
-       rotateDuplicates = true
+       rotateDuplicates = true,
      )
 
 // Create the sketch for the links in between the chains
-linkSketch = startSketchOn("XZ")
+linkSketch = startSketchOn(XZ)
   |> circle(
        center = [
          shaftDia / 2 + wallThickness + sphereDia / 2,
          0
        ],
-       radius = linkDiameter / 2
+       radius = linkDiameter / 2,
      )
 
 // Revolve the link sketch
@@ -92,19 +86,13 @@ linkRevolve = revolve(linkSketch, axis = 'Y', angle = 360 / nBalls)
        axis = [0, 0, 1],
        center = [0, 0, 0],
        instances = nBalls,
-       rotateDuplicates = true
+       rotateDuplicates = true,
      )
 
 // Create the sketch for the outside walls
-outsideWallSketch = startSketchOn(offsetPlane("XY", offset = -overallThickness / 2))
-  |> circle(
-       center = [0, 0],
-       radius = outsideDiameter / 2
-     )
-  |> hole(circle(
-       center = [0, 0],
-       radius = shaftDia / 2 + wallThickness + sphereDia
-     ), %)
+outsideWallSketch = startSketchOn(offsetPlane(XY, offset = -overallThickness / 2))
+  |> circle(center = [0, 0], radius = outsideDiameter / 2)
+  |> hole(circle(center = [0, 0], radius = shaftDia / 2 + wallThickness + sphereDia), %)
 
 outsideWall = extrude(outsideWallSketch, length = overallThickness)
 

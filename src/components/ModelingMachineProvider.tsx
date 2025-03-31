@@ -119,6 +119,8 @@ import { EXPORT_TOAST_MESSAGES, MAKE_TOAST_MESSAGES } from 'lib/constants'
 import { exportMake } from 'lib/exportMake'
 import { exportSave } from 'lib/exportSave'
 import { Plane } from '@rust/kcl-lib/bindings/Plane'
+import { updateModelingState } from 'lang/modelingWorkflows'
+import { EXECUTION_TYPE_MOCK } from 'lib/constants'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -148,7 +150,6 @@ export const ModelingMachineProvider = ({
       enableSSAO,
     },
   } = useSettings()
-  const previousAllowOrbitInSketchMode = useRef(allowOrbitInSketchMode.current)
   const navigate = useNavigate()
   const { context, send: fileMachineSend } = useFileContext()
   const { file } = useLoaderData() as IndexLoaderData
@@ -565,7 +566,7 @@ export const ModelingMachineProvider = ({
             // See if the selection is "close enough" to be coerced to the plane later
             const maybePlane = getPlaneFromArtifact(
               selectionRanges.graphSelections[0].artifact,
-              engineCommandManager.artifactGraph
+              kclManager.artifactGraph
             )
             return !err(maybePlane)
           }
@@ -578,7 +579,7 @@ export const ModelingMachineProvider = ({
             return false
           }
           return !!isCursorInSketchCommandRange(
-            engineCommandManager.artifactGraph,
+            kclManager.artifactGraph,
             selectionRanges
           )
         },
@@ -840,7 +841,7 @@ export const ModelingMachineProvider = ({
             const artifact = selectionRanges.graphSelections[0].artifact
             const plane = getPlaneFromArtifact(
               artifact,
-              engineCommandManager.artifactGraph
+              kclManager.artifactGraph
             )
             if (err(plane)) return Promise.reject(plane)
             // if the user selected a segment, make sure we enter the right sketch as there can be multiple on a plane
@@ -916,14 +917,13 @@ export const ModelingMachineProvider = ({
               info?.sketchDetails?.faceId || ''
             )
 
-            const sketchArtifact =
-              engineCommandManager.artifactGraph.get(mainPath)
+            const sketchArtifact = kclManager.artifactGraph.get(mainPath)
             if (sketchArtifact?.type !== 'path')
               return Promise.reject(new Error('No sketch artifact'))
             const sketchPaths = getPathsFromArtifact({
-              artifact: engineCommandManager.artifactGraph.get(plane.id),
+              artifact: kclManager.artifactGraph.get(plane.id),
               sketchPathToNode: sketchArtifact?.codeRef?.pathToNode,
-              artifactGraph: engineCommandManager.artifactGraph,
+              artifactGraph: kclManager.artifactGraph,
               ast: kclManager.ast,
             })
             if (err(sketchPaths)) return Promise.reject(sketchPaths)
@@ -1430,7 +1430,6 @@ export const ModelingMachineProvider = ({
             parsed = pResult.program
 
             if (trap(parsed)) return Promise.reject(parsed)
-            parsed = parsed as Node<Program>
             if (!result.pathToReplaced)
               return Promise.reject(new Error('No path to replaced node'))
             const {
@@ -1661,7 +1660,7 @@ export const ModelingMachineProvider = ({
               sketchDetails.sketchEntryNodePath
             )
             if (err(doesNeedSplitting)) return reject(doesNeedSplitting)
-            let moddedAst: Program = structuredClone(kclManager.ast)
+            let moddedAst: Node<Program> = structuredClone(kclManager.ast)
             let pathToProfile = sketchDetails.sketchEntryNodePath
             let updatedSketchNodePaths = sketchDetails.sketchNodePaths
             if (doesNeedSplitting) {
@@ -1723,8 +1722,11 @@ export const ModelingMachineProvider = ({
               indexToDelete >= 0 ||
               isLastInPipeThreePointArc
             ) {
-              await kclManager.executeAstMock(moddedAst)
-              await codeManager.updateEditorWithAstAndWriteToFile(moddedAst)
+              await updateModelingState(moddedAst, EXECUTION_TYPE_MOCK, {
+                kclManager,
+                editorManager,
+                codeManager,
+              })
             }
             return {
               updatedEntryNodePath: pathToProfile,
@@ -1740,7 +1742,7 @@ export const ModelingMachineProvider = ({
             prompt: input.prompt,
             selections: input.selection,
             token,
-            artifactGraph: engineCommandManager.artifactGraph,
+            artifactGraph: kclManager.artifactGraph,
             projectName: context.project.name,
           })
         }),
@@ -1841,14 +1843,6 @@ export const ModelingMachineProvider = ({
   }, [engineCommandManager.engineConnection, modelingSend])
 
   useEffect(() => {
-    // Only trigger this if the state actually changes, if it stays the same do not reload the camera
-    if (
-      previousAllowOrbitInSketchMode.current === allowOrbitInSketchMode.current
-    ) {
-      //no op
-      previousAllowOrbitInSketchMode.current = allowOrbitInSketchMode.current
-      return
-    }
     const inSketchMode = modelingState.matches('Sketch')
 
     // If you are in sketch mode and you disable the orbit, return back to the normal view to the target
@@ -1871,9 +1865,7 @@ export const ModelingMachineProvider = ({
     if (inSketchMode) {
       sceneInfra.camControls.enableRotate = allowOrbitInSketchMode.current
     }
-
-    previousAllowOrbitInSketchMode.current = allowOrbitInSketchMode.current
-  }, [allowOrbitInSketchMode])
+  }, [allowOrbitInSketchMode.current])
 
   // Allow using the delete key to delete solids. Backspace only on macOS as Windows and Linux have dedicated Delete
   // `navigator.platform` is deprecated, but the alternative `navigator.userAgentData.platform` is not reliable

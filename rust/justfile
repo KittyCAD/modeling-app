@@ -43,6 +43,10 @@ overwrite-sim-test test_name:
     EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --no-quiet -- tests::{{test_name}}::kcl_test_execute
     EXPECTORATE=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::{{test_name}}::test_after_engine
 
+# Regenerate all the simulation test output.
+redo-sim-tests:
+    EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests
+
 test:
     export RUST_BRACKTRACE="full" && cargo nextest run --workspace --no-fail-fast
 

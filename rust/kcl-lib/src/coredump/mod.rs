@@ -53,7 +53,7 @@ pub trait CoreDump: Clone {
             .meta()
             .create_debug_uploads(vec![kittycad::types::multipart::Attachment {
                 name: "".to_string(),
-                filename: Some(format!(r#"modeling-app/coredump-{coredump_id}-screenshot.png"#)),
+                filepath: Some(format!(r#"modeling-app/coredump-{coredump_id}-screenshot.png"#).into()),
                 content_type: Some("image/png".to_string()),
                 data,
             }])
@@ -101,7 +101,7 @@ pub trait CoreDump: Clone {
             .meta()
             .create_debug_uploads(vec![kittycad::types::multipart::Attachment {
                 name: "".to_string(),
-                filename: Some(format!(r#"modeling-app/coredump-{}.json"#, coredump_id)),
+                filepath: Some(format!(r#"modeling-app/coredump-{}.json"#, coredump_id).into()),
                 content_type: Some("application/json".to_string()),
                 data,
             }])

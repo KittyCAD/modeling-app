@@ -3,6 +3,18 @@ import fsSync from 'node:fs'
 import path from 'path'
 import { dialog, shell } from 'electron'
 import { MachinesListing } from 'components/MachineManagerProvider'
+import type { Channel } from 'src/menu/channels'
+import { Menu, WebContents } from 'electron'
+import { ZooLabel, ZooMenuEvents } from 'menu/roles'
+import type { MenuActionIPC } from 'menu/rules'
+import type { WebContentSendPayload } from 'menu/channels'
+
+// Extend the interface with additional custom properties
+declare module 'electron' {
+  interface Menu {
+    label?: ZooLabel
+  }
+}
 
 type EnvFn = (value?: string) => string
 
@@ -44,6 +56,9 @@ export interface IElectronAPI {
   rm: typeof fs.rm
   stat: (path: string) => ReturnType<fs.stat>
   statIsDirectory: (path: string) => Promise<boolean>
+  canReadWriteDirectory: (
+    path: string
+  ) => Promise<{ value: boolean; error: unknown }>
   path: typeof path
   mkdir: typeof fs.mkdir
   join: typeof path.join
@@ -91,6 +106,14 @@ export interface IElectronAPI {
   appCheckForUpdates: () => Promise<unknown>
   getArgvParsed: () => any
   getAppTestProperty: (propertyName: string) => any
+
+  // Helper functions to create application Menus
+  createHomePageMenu: () => Promise<any>
+  createModelingPageMenu: () => Promise<any>
+  createFallbackMenu: () => Promise<any>
+  enableMenu(menuId: string): Promise<any>
+  disableMenu(menuId: string): Promise<any>
+  menuOn: (callback: (payload: WebContentSendPayload) => void) => any
 }
 
 declare global {

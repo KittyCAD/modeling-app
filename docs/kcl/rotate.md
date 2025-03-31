@@ -6,6 +6,10 @@ layout: manual
 
 Rotate a solid or a sketch.
 
+This is really useful for assembling parts together. You can create a part and then rotate it to the correct orientation.
+
+For sketches, you can use this to rotate a sketch and then loft it with another sketch.
+
 ### Using Roll, Pitch, and Yaw
 
 When rotating a part in 3D space, "roll," "pitch," and "yaw" refer to the three rotational axes used to describe its orientation: roll is rotation around the longitudinal axis (front-to-back), pitch is rotation around the lateral axis (wing-to-wing), and yaw is rotation around the vertical axis (up-down); essentially, it's like tilting the part on its side (roll), tipping the nose up or down (pitch), and turning it left or right (yaw).
@@ -166,7 +170,7 @@ fn square() {
 profile001 = square()
 
 profile002 = square()
-  |> translate(translate = [0, 0, 20])
+  |> translate(x = 0, y = 0, z = 20)
   |> rotate(axis = [0, 0, 1.0], angle = 45)
 
 loft([profile001, profile002])

@@ -517,10 +517,7 @@ interface FileTreeProps {
   className?: string
   file?: IndexLoaderData['file']
   onNavigateToFile: (
-    focusableElement?:
-      | HTMLElement
-      | React.MutableRefObject<HTMLElement | null>
-      | undefined
+    focusableElement?: HTMLElement | React.MutableRefObject<HTMLElement | null>
   ) => void
 }
 
@@ -547,9 +544,7 @@ export const FileTreeMenu = ({
         className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
         onClick={onCreateFile}
       >
-        <Tooltip position="bottom-right" delay={750}>
-          Create file
-        </Tooltip>
+        <Tooltip position="bottom-right">Create file</Tooltip>
       </ActionButton>
 
       <ActionButton
@@ -563,9 +558,7 @@ export const FileTreeMenu = ({
         className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
         onClick={onCreateFolder}
       >
-        <Tooltip position="bottom-right" delay={750}>
-          Create folder
-        </Tooltip>
+        <Tooltip position="bottom-right">Create folder</Tooltip>
       </ActionButton>
     </>
   )

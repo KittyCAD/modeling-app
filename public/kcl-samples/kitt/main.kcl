@@ -20,7 +20,7 @@ kitBodyWidth = 26
 kitBodyHeight = 25
 kitBodyDepth = 18
 
-kitBody = startSketchOn('XZ')
+kitBody = startSketchOn(XZ)
   |> startProfileAt([-kitBodyWidth / 2, kitBodyElevation], %)
   |> line(end = [0, kitBodyHeight])
   |> line(end = [kitBodyWidth, 0], tag = $seg01)
@@ -159,7 +159,7 @@ kitShoeHeight = 3
 fn kitLeg(offsetFront, offsetSide) {
   kitShoeOffsetFront = kitShoeLength / 2 - (kitBodyDepth / 2) - offsetFront
 
-  kitFootPrint = startSketchOn('XY')
+  kitFootPrint = startSketchOn(XY)
     |> startProfileAt([offsetSide, kitShoeOffsetFront], %)
     |> line(end = [kitShoeWidth, 0])
     |> line(end = [0, -kitShoeLength])

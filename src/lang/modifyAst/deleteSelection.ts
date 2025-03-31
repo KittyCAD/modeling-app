@@ -3,12 +3,14 @@ import { getFaceDetails } from 'clientSideScene/sceneEntities'
 import { deleteFromSelection } from 'lang/modifyAst'
 import {
   codeManager,
-  engineCommandManager,
+  editorManager,
   kclManager,
   rustContext,
 } from 'lib/singletons'
 import { err } from 'lib/trap'
 import { executeAstMock } from 'lang/langHelpers'
+import { updateModelingState } from 'lang/modelingWorkflows'
+import { EXECUTION_TYPE_REAL } from 'lib/constants'
 
 export const deletionErrorMessage =
   'Unable to delete selection. Please edit manually in code pane.'
@@ -22,7 +24,7 @@ export async function deleteSelectionPromise(
     ast,
     selection,
     kclManager.variables,
-    engineCommandManager.artifactGraph,
+    kclManager.artifactGraph,
     getFaceDetails
   )
   if (err(modifiedAst)) {
@@ -36,7 +38,9 @@ export async function deleteSelectionPromise(
   if (testExecute.errors.length) {
     return new Error(deletionErrorMessage)
   }
-
-  await kclManager.updateAst(modifiedAst, true)
-  await codeManager.updateEditorWithAstAndWriteToFile(modifiedAst)
+  await updateModelingState(modifiedAst, EXECUTION_TYPE_REAL, {
+    kclManager,
+    editorManager,
+    codeManager,
+  })
 }

@@ -133,6 +133,13 @@ impl<T> Node<T> {
         })
     }
 
+    fn reset_source(&mut self) {
+        self.start = 0;
+        self.end = 0;
+        self.module_id = ModuleId::default();
+        self.comment_start = 0;
+    }
+
     pub fn as_source_range(&self) -> SourceRange {
         SourceRange::new(self.start, self.end, self.module_id)
     }
@@ -345,7 +352,10 @@ impl Node<Program> {
         let mut found = false;
         for node in &mut new_program.inner_attrs {
             if node.name() == Some(annotations::SETTINGS) {
-                *node = Node::no_src(Annotation::new_from_meta_settings(&settings));
+                node.inner = Annotation::new_from_meta_settings(&settings);
+                // Previous source range no longer makes sense, but we want to
+                // preserve other things like comments.
+                node.reset_source();
                 found = true;
                 break;
             }
@@ -1270,7 +1280,7 @@ pub enum NonCodeValue {
     /// An example of this is the following:
     /// ```no_run
     /// /* This is a
-    ///     block comment */
+    /// block comment */
     /// 1 + 1
     /// ```
     /// Now this is important. The block comment is attached to the next line.
@@ -1609,19 +1619,21 @@ impl ImportStatement {
             return Some(alias.name.clone());
         }
 
-        let mut parts = match &self.path {
-            ImportPath::Kcl { filename: s } | ImportPath::Foreign { path: s } => s.split('.'),
-            _ => return None,
-        };
-        let path = parts.next()?;
-        let _ext = parts.next()?;
-        let rest = parts.next();
+        match &self.path {
+            ImportPath::Kcl { filename: s } | ImportPath::Foreign { path: s } => {
+                let mut parts = s.split('.');
+                let path = parts.next()?;
+                let _ext = parts.next()?;
+                let rest = parts.next();
 
-        if rest.is_some() {
-            return None;
+                if rest.is_some() {
+                    return None;
+                }
+
+                path.rsplit(&['/', '\\']).next().map(str::to_owned)
+            }
+            ImportPath::Std { path } => path.last().cloned(),
         }
-
-        path.rsplit(&['/', '\\']).next().map(str::to_owned)
     }
 }
 
@@ -4140,6 +4152,50 @@ startSketchOn(XY)
             r#"@settings(defaultLengthUnit = mm)
 
 startSketchOn(XY)
+"#
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_change_meta_settings_preserves_comments() {
+        let code = r#"// Title
+
+// Set Units
+@settings(defaultLengthUnit = in)
+
+// Between
+
+// Above Code
+5
+"#;
+        let program = crate::parsing::top_level_parse(code).unwrap();
+
+        let new_program = program
+            .change_meta_settings(crate::execution::MetaSettings {
+                default_length_units: crate::execution::types::UnitLen::Cm,
+                ..Default::default()
+            })
+            .unwrap();
+
+        let result = new_program.meta_settings().unwrap();
+        assert!(result.is_some());
+        let meta_settings = result.unwrap();
+
+        assert_eq!(meta_settings.default_length_units, crate::execution::types::UnitLen::Cm);
+
+        let formatted = new_program.recast(&Default::default(), 0);
+
+        assert_eq!(
+            formatted,
+            r#"// Title
+
+// Set Units
+@settings(defaultLengthUnit = cm)
+
+// Between
+
+// Above Code
+5
 "#
         );
     }

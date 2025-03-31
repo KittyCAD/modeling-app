@@ -1,69 +1,49 @@
 // Car Wheel
 // A sports car wheel with a circular lug pattern and spokes.
 
-
 // Set units
 @settings(defaultLengthUnit = in)
-
 
 // Import Constants
 import lugCount, lugSpacing, offset, backSpacing, wheelWidth, wheelDiameter, spokeCount, spokeGap, spokeAngle, spokeThickness from "globals.kcl"
 
 // Create the wheel center
-lugBase = startSketchOn('XZ')
-  |> circle(
-       center = [0, 0],
-       radius = (lugSpacing + 1.5) / 2
-     )
-  |> hole(circle(
-       center = [0, 0],
-       radius = (lugSpacing - 1.5) / 2
-     ), %)
+lugBase = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = (lugSpacing + 1.5) / 2)
+  |> hole(circle(center = [0, 0], radius = (lugSpacing - 1.5) / 2), %)
   |> extrude(length = wheelWidth / 20)
 
 // Extend the wheel center and bore holes to accomidate the lug heads
 lugExtrusion = startSketchOn(lugBase, 'END')
-  |> circle(
-       center = [0, 0],
-       radius = (lugSpacing + 1.5) / 2
-     )
-  |> hole(circle(
-       center = [0, 0],
-       radius = (lugSpacing - 1.5) / 2
-     ), %)
+  |> circle(center = [0, 0], radius = (lugSpacing + 1.5) / 2)
+  |> hole(circle(center = [0, 0], radius = (lugSpacing - 1.5) / 2), %)
   |> extrude(length = wheelWidth / 10)
 
 // Create the circular pattern for the lugs
 lugClearance = startSketchOn(lugExtrusion, 'END')
-  |> circle(
-       center = [lugSpacing / 2, 0],
-       radius = 1.2 / 2
-     )
+  |> circle(center = [lugSpacing / 2, 0], radius = 1.2 / 2)
   |> patternCircular2d(
        arcDegrees = 360,
        center = [0, 0],
        instances = lugCount,
-       rotateDuplicates = true
+       rotateDuplicates = true,
      )
   |> extrude(length = -wheelWidth / 10)
 
 // Create the circular pattern for the lug holes
 lugHoles = startSketchOn(lugBase, 'END')
-  |> circle(
-       center = [lugSpacing / 2, 0],
-       radius = 16 * mm() / 2
-     )
+  |> circle(center = [lugSpacing / 2, 0], radius = 16 * mm() / 2)
   |> patternCircular2d(
        arcDegrees = 360,
        center = [0, 0],
        instances = lugCount,
-       rotateDuplicates = true
+       rotateDuplicates = true,
      )
   |> extrude(length = -wheelWidth / 20)
   |> appearance(color = "#ffffff", metalness = 0, roughness = 0)
 
 // Add detail to the wheel center by revolving curved edge profiles
-wheelCenterInner = startSketchOn('XY')
+wheelCenterInner = startSketchOn(XY)
   |> startProfileAt([(lugSpacing - 1.5) / 2, 0], %)
   |> yLine(length = -wheelWidth / 10 - (wheelWidth / 20))
   |> bezierCurve({
@@ -77,7 +57,7 @@ wheelCenterInner = startSketchOn('XY')
   |> revolve(axis = 'y')
   |> appearance(color = "#ffffff", metalness = 0, roughness = 0)
 
-wheelCenterOuter = startSketchOn('XY')
+wheelCenterOuter = startSketchOn(XY)
   |> startProfileAt([(lugSpacing + 1.5) / 2, 0], %)
   |> yLine(length = -wheelWidth / 10 - (wheelWidth / 20))
   |> bezierCurve({
@@ -145,7 +125,7 @@ fn spoke(spokeGap, spokeAngle, spokeThickness) {
          center = [0, -2000, 0],
          instances = spokeCount,
          arcDegrees = 360,
-         rotateDuplicates = true
+         rotateDuplicates = true,
        )
     |> appearance(color = "#ffffff", metalness = 0, roughness = 0)
   return spokePattern
@@ -155,7 +135,7 @@ spoke(spokeGap, spokeAngle, spokeThickness)
 spoke(-spokeGap, -spokeAngle, -spokeThickness)
 
 // Define and revolve wheel exterior
-startSketchOn('XY')
+startSketchOn(XY)
   |> startProfileAt([
        wheelDiameter / 2,
        -wheelWidth + backSpacing + offset

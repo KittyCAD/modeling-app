@@ -1,6 +1,6 @@
 import { useRef, useMemo, memo, useCallback, useState } from 'react'
 import { isCursorInSketchCommandRange } from 'lang/util'
-import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
+import { editorManager, kclManager } from 'lib/singletons'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
@@ -45,10 +45,10 @@ export function Toolbar({
     )
       return false
     return isCursorInSketchCommandRange(
-      engineCommandManager.artifactGraph,
+      kclManager.artifactGraph,
       context.selectionRanges
     )
-  }, [engineCommandManager.artifactGraph, context.selectionRanges])
+  }, [kclManager.artifactGraph, context.selectionRanges])
 
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
   const { overallState } = useNetworkContext()
@@ -405,7 +405,6 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
       position="bottom"
       wrapperClassName={'!p-4 !pointer-events-auto ' + wrapperClassName}
       contentClassName={contentClassName}
-      delay={0}
     >
       {children}
     </Tooltip>

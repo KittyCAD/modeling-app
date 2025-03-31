@@ -8,6 +8,12 @@
 
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import { KclManager } from 'lang/KclSingleton'
+import { ExecutionType } from 'lib/constants'
+import {
+  EXECUTION_TYPE_MOCK,
+  EXECUTION_TYPE_NONE,
+  EXECUTION_TYPE_REAL,
+} from 'lib/constants'
 import { PathToNode, Program, SourceRange } from 'lang/wasm'
 import EditorManager from 'editor/manager'
 import CodeManager from 'lang/codeManager'
@@ -32,12 +38,13 @@ import CodeManager from 'lang/codeManager'
  * regardless of geometric validity issues.
  *
  * @param ast - AST to commit
+ * @param executionType - How to execute the AST
  * @param dependencies - Required system components
  * @param options - Optional parameters for focus, zoom, etc.
  */
-
 export async function updateModelingState(
   ast: Node<Program>,
+  executionType: ExecutionType,
   dependencies: {
     kclManager: KclManager
     editorManager: EditorManager
@@ -55,6 +62,7 @@ export async function updateModelingState(
   // Step 1: Update AST without executing (prepare selections)
   const updatedAst = await dependencies.kclManager.updateAst(
     ast,
+    // false == mock execution. Is this what we want?
     false, // Execution handled separately for error resilience
     options
   )
@@ -69,14 +77,20 @@ export async function updateModelingState(
     dependencies.editorManager.selectRange(updatedAst.selections)
   }
 
-  // Step 4: Try to execute the new code in the engine
+  // Step 4: Try to execute the new code
   // and continue regardless of errors
   try {
-    await dependencies.kclManager.executeAst({
-      ast: updatedAst.newAst,
-      zoomToFit: options?.zoomToFit,
-      zoomOnRangeAndType: options?.zoomOnRangeAndType,
-    })
+    if (executionType === EXECUTION_TYPE_REAL) {
+      await dependencies.kclManager.executeAst({
+        ast: updatedAst.newAst,
+        zoomToFit: options?.zoomToFit,
+        zoomOnRangeAndType: options?.zoomOnRangeAndType,
+      })
+    } else if (executionType === EXECUTION_TYPE_MOCK) {
+      await dependencies.kclManager.executeAstMock(updatedAst.newAst)
+    } else if (executionType === EXECUTION_TYPE_NONE) {
+      // No execution.
+    }
   } catch (e) {
     console.error('Engine execution error (UI is still updated):', e)
   }
