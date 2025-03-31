@@ -16,7 +16,7 @@ import { TransformInfo } from 'lang/std/stdTypes'
 import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
 import { createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
-import { engineCommandManager, kclManager } from 'lib/singletons'
+import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 
@@ -45,7 +45,7 @@ export function intersectInfo({
     selectionRanges.graphSelections.length > 1 &&
     isLinesParallelAndConstrained(
       kclManager.ast,
-      engineCommandManager.artifactGraph,
+      kclManager.artifactGraph,
       kclManager.variables,
       selectionRanges.graphSelections[0],
       selectionRanges.graphSelections[1]

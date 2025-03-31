@@ -22,6 +22,7 @@ import { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionTyp
 import { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
+import { DEFAULT_DEFAULT_LENGTH_UNIT } from 'lib/constants'
 
 /**
  * A setting that can be set at the user or project level
@@ -300,8 +301,9 @@ export function createSettings() {
        * The default unit to use in modeling dimensions
        */
       defaultUnit: new Setting<BaseUnit>({
-        defaultValue: 'mm',
-        description: 'The default unit to use in modeling dimensions',
+        defaultValue: DEFAULT_DEFAULT_LENGTH_UNIT,
+        description:
+          'Set the default length unit setting value to give any new files.',
         validate: (v) => baseUnitsUnion.includes(v),
         commandConfig: {
           inputType: 'options',

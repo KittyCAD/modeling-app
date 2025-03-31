@@ -4,7 +4,6 @@
 // set units
 @settings(defaultLengthUnit = in)
 
-
 // import constants
 import boltDiameter, boltLength, boltHeadLength, boltHeadDiameter, boltHexDrive, boltHexFlatLength, boltThreadLength from "globals.kcl"
 
