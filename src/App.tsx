@@ -154,7 +154,6 @@ export function App() {
       <LowerRightControls coreDumpManager={coreDumpManager}>
         <UnitsMenu />
         <Gizmo />
-        <CameraProjectionToggle />
       </LowerRightControls>
     </div>
   )
