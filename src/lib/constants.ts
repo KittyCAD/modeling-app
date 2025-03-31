@@ -194,6 +194,3 @@ export type ExecutionType =
   | typeof EXECUTION_TYPE_REAL
   | typeof EXECUTION_TYPE_MOCK
   | typeof EXECUTION_TYPE_NONE
-
-/** localStorage key for auto-save reminder toast */
-export const HAS_SEEN_AUTO_SAVE_TOAST = 'has-seen-auto-save-toast'

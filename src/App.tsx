@@ -31,7 +31,6 @@ import { useToken } from 'machines/appMachine'
 import { useSettings } from 'machines/appMachine'
 import { rustContext } from 'lib/singletons'
 import toast from 'react-hot-toast'
-import { HAS_SEEN_AUTO_SAVE_TOAST } from 'lib/constants'
 maybeWriteToDisk()
   .then(() => {})
   .catch(() => {})
@@ -101,11 +100,7 @@ export function App() {
   )
 
   useHotkeyWrapper(['mod + s'], () => {
-    const hasSeenToast = window?.localStorage.getItem(HAS_SEEN_AUTO_SAVE_TOAST)
-    if (!hasSeenToast) {
-      toast.success('Your work is auto-saved in real-time')
-      window.localStorage.setItem(HAS_SEEN_AUTO_SAVE_TOAST, 'true')
-    }
+    toast.success('Your work is auto-saved in real-time')
   })
 
   const paneOpacity = [onboardingPaths.CAMERA, onboardingPaths.STREAMING].some(
