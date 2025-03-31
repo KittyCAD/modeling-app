@@ -83,6 +83,7 @@ export interface addCall extends ModifyAstBase {
   ) => CreatedSketchExprResult | Error
   referencedSegment?: Path
   spliceBetween?: boolean
+  angledLinePreviousArcTag?: string
 }
 
 interface updateArgs extends ModifyAstBase {

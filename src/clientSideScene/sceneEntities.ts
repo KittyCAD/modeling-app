@@ -1045,6 +1045,7 @@ export class SceneEntities {
             ANGLE_SNAP_THRESHOLD_DEGREES
 
           let resolvedFunctionName: ToolTip = 'line'
+          let angledLinePreviousArcTag = ''
 
           // This might need to become its own function if we want more
           // case-based logic for different segment types
@@ -1070,6 +1071,7 @@ export class SceneEntities {
             if (trap(taggedAstResult)) return Promise.reject(taggedAstResult)
 
             modifiedAst = taggedAstResult.modifiedAst
+            angledLinePreviousArcTag = taggedAstResult.tag
             resolvedFunctionName = 'angledLine'
           } else if (isHorizontal) {
             // If the angle between is 0 or 180 degrees (+/- the snapping angle), make the line an xLine
@@ -1092,6 +1094,7 @@ export class SceneEntities {
             },
             fnName: resolvedFunctionName,
             pathToNode: sketchEntryNodePath,
+            angledLinePreviousArcTag,
           })
           if (trap(tmp)) return Promise.reject(tmp)
           modifiedAst = tmp.modifiedAst

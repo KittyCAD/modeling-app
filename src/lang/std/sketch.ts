@@ -27,6 +27,7 @@ import {
 } from 'lang/std/sketchcombos'
 import { toolTips, ToolTip } from 'lang/langHelpers'
 import {
+  createLocalName,
   createPipeExpression,
   mutateKwArg,
   nonCodeMetaEmpty,
@@ -2172,7 +2173,13 @@ export const circleThreePoint: SketchLineHelperKw = {
   },
 }
 export const angledLine: SketchLineHelper = {
-  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
+  add: ({
+    node,
+    pathToNode,
+    segmentInput,
+    replaceExistingCallback,
+    angledLinePreviousArcTag,
+  }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { from, to } = segmentInput
     const _node = { ...node }
@@ -2181,7 +2188,11 @@ export const angledLine: SketchLineHelper = {
     if (err(_node1)) return _node1
     const { node: pipe } = _node1
 
-    const newAngleVal = createLiteral(roundOff(getAngle(from, to), 0))
+    const newAngleVal = angledLinePreviousArcTag
+      ? createCallExpression('tangentToEnd', [
+          createLocalName(angledLinePreviousArcTag),
+        ])
+      : createLiteral(roundOff(getAngle(from, to), 0))
     const newLengthVal = createLiteral(roundOff(getLength(from, to), 2))
     const newLine = createCallExpression('angledLine', [
       createArrayExpression([newAngleVal, newLengthVal]),
@@ -3138,6 +3149,7 @@ interface CreateLineFnCallArgs {
   fnName: ToolTip
   pathToNode: PathToNode
   spliceBetween?: boolean
+  angledLinePreviousArcTag?: string
 }
 
 export function addNewSketchLn({
@@ -3147,6 +3159,7 @@ export function addNewSketchLn({
   pathToNode,
   input: segmentInput,
   spliceBetween = false,
+  angledLinePreviousArcTag = '',
 }: CreateLineFnCallArgs):
   | {
       modifiedAst: Node<Program>
@@ -3176,6 +3189,7 @@ export function addNewSketchLn({
     pathToNode,
     segmentInput,
     spliceBetween,
+    angledLinePreviousArcTag,
   })
 }
 
