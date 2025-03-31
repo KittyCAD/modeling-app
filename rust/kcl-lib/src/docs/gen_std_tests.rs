@@ -24,19 +24,8 @@ use crate::{
 const TYPES_DIR: &str = "../../docs/kcl/types";
 const LANG_TOPICS: [&str; 5] = ["Types", "Modules", "Settings", "Known Issues", "Constants"];
 // These types are declared in std.
-const DECLARED_TYPES: [&str; 12] = [
-    "number",
-    "string",
-    "tag",
-    "bool",
-    "Sketch",
-    "Solid",
-    "Plane",
-    "Helix",
-    "Face",
-    "Point2d",
-    "Point3d",
-    "SourceRange",
+const DECLARED_TYPES: [&str; 11] = [
+    "number", "string", "tag", "bool", "Sketch", "Solid", "Plane", "Helix", "Face", "Point2d", "Point3d",
 ];
 
 fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
@@ -685,6 +674,7 @@ fn cleanup_type_links<'a>(output: &str, types: impl Iterator<Item = &'a String>)
     // TODO: This is a hack for the handlebars template being too complex.
     cleaned_output = cleaned_output.replace("`[, `number`, `number`]`", "`[number, number]`");
     cleaned_output = cleaned_output.replace("`[, `number`, `number`, `number`]`", "`[number, number, number]`");
+    cleaned_output = cleaned_output.replace("`[, `integer`, `integer`, `integer`]`", "`[integer, integer, integer]`");
 
     // Fix the links to the types.
     for type_name in types.map(|s| &**s).chain(DECLARED_TYPES) {
@@ -731,6 +721,11 @@ fn add_to_types(
             "Failed to get object schema, should have not been a primitive"
         ));
     };
+
+    if name == "SourceRange" {
+        types.insert(name.to_string(), schema.clone());
+        return Ok(());
+    }
 
     // If we have an array we want to generate the type markdown files for each item in the
     // array.
@@ -963,12 +958,7 @@ fn recurse_and_create_references(
         };
 
         // If this is a primitive just use the primitive.
-        if to.subschemas.is_none()
-            && to.object.is_none()
-            && to.array.is_none()
-            && to.reference.is_none()
-            && o.array.is_none()
-        {
+        if to.subschemas.is_none() && to.object.is_none() && to.reference.is_none() {
             return Ok(t.clone());
         }
 
