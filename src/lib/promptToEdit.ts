@@ -8,13 +8,31 @@ import { ArtifactGraph, SourceRange, topLevelRange } from 'lang/wasm'
 import toast from 'react-hot-toast'
 import { codeManager, editorManager, kclManager } from './singletons'
 import { ToastPromptToEditCadSuccess } from 'components/ToastTextToCad'
-import { uuidv4 } from './utils'
+import { KittyCadLibFile, uuidv4 } from './utils'
 import { diffLines } from 'diff'
 import { Transaction, EditorSelection, SelectionRange } from '@codemirror/state'
 import { modelingMachineEvent } from 'editor/manager'
 import { getCookie, TOKEN_PERSIST_KEY } from 'machines/authMachine'
 import { COOKIE_NAME } from './constants'
 import { TextToCadMultiFileIteration_type } from '@kittycad/lib/dist/types/src/models'
+
+export type FileMeta =
+  | {
+      type: 'kcl'
+      relPath: string
+      absPath: string
+      fileContents: string
+      execStateFileNamesIndex: number
+    }
+  | {
+      type: 'other'
+      relPath: string
+      data: Blob
+    }
+
+type KclFileMetaMap = {
+  [execStateFileNamesIndex: number]: Extract<FileMeta, { type: 'kcl' }>
+}
 
 function sourceIndexToLineColumn(
   code: string,
@@ -40,14 +58,14 @@ function convertAppRangeToApiRange(
 export async function submitPromptToEditToQueue({
   prompt,
   selections,
-  code,
+  projectFiles,
   token,
   artifactGraph,
   projectName,
 }: {
   prompt: string
   selections: Selections | null
-  code: string
+  projectFiles: FileMeta[]
   projectName: string
   token?: string
   artifactGraph: ArtifactGraph
@@ -59,9 +77,25 @@ export async function submitPromptToEditToQueue({
 
   const client = new Client(_token)
 
+  const kclFilesMap: KclFileMetaMap = {}
+  const endPointFiles: KittyCadLibFile[] = []
+  projectFiles.forEach((file) => {
+    let data: Blob
+    if (file.type === 'other') {
+      data = file.data
+    } else {
+      // file.type === 'kcl'
+      kclFilesMap[file.execStateFileNamesIndex] = file
+      data = new Blob([file.fileContents], { type: 'text/kcl' })
+    }
+    endPointFiles.push({
+      name: file.relPath,
+      data,
+    })
+  })
+
   // If no selection, use whole file
   if (selections === null) {
-    const codeBlob = new Blob([code], { type: 'text/plain' })
     return ml.create_text_to_cad_multi_file_iteration({
       client,
       body: {
@@ -73,12 +107,7 @@ export async function submitPromptToEditToQueue({
             : undefined,
         kcl_version: kclManager.kclVersion,
       },
-      files: [
-        {
-          name: 'myFile.kcl',
-          data: codeBlob,
-        },
-      ],
+      files: endPointFiles,
     })
   }
 
@@ -86,6 +115,10 @@ export async function submitPromptToEditToQueue({
   const ranges: Models['SourceRangePrompt_type'][] =
     selections.graphSelections.flatMap((selection) => {
       const artifact = selection.artifact
+      const execStateFileNamesIndex = selection?.codeRef?.range?.[2]
+      const file = kclFilesMap?.[execStateFileNamesIndex]
+      const code = file?.fileContents || ''
+      const filePath = file?.relPath || ''
 
       // For artifact selections, add context
       const prompts: Models['SourceRangePrompt_type'][] = []
@@ -102,7 +135,7 @@ If you need to operate on this cap, for example for sketching on the face, you c
 When they made this selection they main have intended this surface directly or meant something more general like the sweep body.
 See later source ranges for more context.`,
           range: convertAppRangeToApiRange(selection.codeRef.range, code),
-          file: 'myFile.kcl',
+          file: filePath,
         })
         let sweep = getArtifactOfTypes(
           { key: artifact.sweepId, types: ['sweep'] },
@@ -112,7 +145,7 @@ See later source ranges for more context.`,
           prompts.push({
             prompt: `This is the sweep's source range from the user's main selection of the end cap.`,
             range: convertAppRangeToApiRange(sweep.codeRef.range, code),
-            file: 'myFile.kcl',
+            file: filePath,
           })
         }
       }
@@ -122,7 +155,7 @@ See later source ranges for more context.`,
 The source range though is for the original segment before it was extruded, you can add a tag to that segment in order to refer to this wall, for example "startSketchOn(someSweepVariable, segmentTag)"
 But it's also worth bearing in mind that the user may have intended to select the sweep itself, not this individual wall, see later source ranges for more context. about the sweep`,
           range: convertAppRangeToApiRange(selection.codeRef.range, code),
-          file: 'myFile.kcl',
+          file: filePath,
         })
         let sweep = getArtifactOfTypes(
           { key: artifact.sweepId, types: ['sweep'] },
@@ -132,7 +165,7 @@ But it's also worth bearing in mind that the user may have intended to select th
           prompts.push({
             prompt: `This is the sweep's source range from the user's main selection of the end cap.`,
             range: convertAppRangeToApiRange(sweep.codeRef.range, code),
-            file: 'myFile.kcl',
+            file: filePath,
           })
         }
       }
@@ -149,7 +182,7 @@ and then use the function ${
           }
 See later source ranges for more context. about the sweep`,
           range: convertAppRangeToApiRange(selection.codeRef.range, code),
-          file: 'myFile.kcl',
+          file: filePath,
         })
         let sweep = getArtifactOfTypes(
           { key: artifact.sweepId, types: ['sweep'] },
@@ -159,7 +192,7 @@ See later source ranges for more context. about the sweep`,
           prompts.push({
             prompt: `This is the sweep's source range from the user's main selection of the end cap.`,
             range: convertAppRangeToApiRange(sweep.codeRef.range, code),
-            file: 'myFile.kcl',
+            file: filePath,
           })
         }
       }
@@ -168,7 +201,7 @@ See later source ranges for more context. about the sweep`,
           prompts.push({
             prompt: `This selection is of a segment, likely an individual part of a profile. Segments are often "constrained" by the use of variables and relationships with other segments. Adding tags to segments helps refer to their length, angle or other properties`,
             range: convertAppRangeToApiRange(selection.codeRef.range, code),
-            file: 'myFile.kcl',
+            file: filePath,
           })
         } else {
           prompts.push({
@@ -177,7 +210,7 @@ Because it now refers to an edge the way to refer to this edge is to add a tag t
 i.e. \`fillet( radius = someInteger, tags = [newTag])\` will work in the case of filleting this edge
 See later source ranges for more context. about the sweep`,
             range: convertAppRangeToApiRange(selection.codeRef.range, code),
-            file: 'myFile.kcl',
+            file: filePath,
           })
           let path = getArtifactOfTypes(
             { key: artifact.pathId, types: ['path'] },
@@ -192,7 +225,7 @@ See later source ranges for more context. about the sweep`,
               prompts.push({
                 prompt: `This is the sweep's source range from the user's main selection of the edge.`,
                 range: convertAppRangeToApiRange(sweep.codeRef.range, code),
-                file: 'myFile.kcl',
+                file: filePath,
               })
             }
           }
@@ -204,12 +237,11 @@ See later source ranges for more context. about the sweep`,
         prompts.push({
           prompt: '',
           range: convertAppRangeToApiRange(selection.codeRef.range, code),
-          file: 'myFile.kcl',
+          file: filePath,
         })
       }
       return prompts
     })
-  const codeBlob = new Blob([code], { type: 'text/plain' })
   return ml.create_text_to_cad_multi_file_iteration({
     client,
     body: {
@@ -221,12 +253,7 @@ See later source ranges for more context. about the sweep`,
           : undefined,
       kcl_version: kclManager.kclVersion,
     },
-    files: [
-      {
-        name: 'myFile.kcl',
-        data: codeBlob,
-      },
-    ],
+    files: endPointFiles,
   })
 }
 
@@ -250,14 +277,14 @@ export async function getPromptToEditResult(
 export async function doPromptEdit({
   prompt,
   selections,
-  code,
+  projectFiles,
   token,
   artifactGraph,
   projectName,
 }: {
   prompt: string
   selections: Selections
-  code: string
+  projectFiles: FileMeta[]
   token?: string
   projectName: string
   artifactGraph: ArtifactGraph
@@ -277,7 +304,7 @@ export async function doPromptEdit({
     submitResult = await submitPromptToEditToQueue({
       prompt,
       selections,
-      code,
+      projectFiles,
       token,
       artifactGraph,
       projectName,
@@ -335,14 +362,14 @@ export async function doPromptEdit({
 export async function promptToEditFlow({
   prompt,
   selections,
-  code,
+  projectFiles,
   token,
   artifactGraph,
   projectName,
 }: {
   prompt: string
   selections: Selections
-  code: string
+  projectFiles: FileMeta[]
   token?: string
   artifactGraph: ArtifactGraph
   projectName: string
@@ -350,7 +377,7 @@ export async function promptToEditFlow({
   const result = await doPromptEdit({
     prompt,
     selections,
-    code,
+    projectFiles,
     token,
     artifactGraph,
     projectName,

@@ -100,19 +100,14 @@ import {
 } from 'lang/std/engineConnection'
 import { submitAndAwaitTextToKcl } from 'lib/textToCad'
 import { useFileContext } from 'hooks/useFileContext'
-import {
-  isNonNullable,
-  KittyCadLibFile,
-  platform,
-  uuidv4,
-} from 'lib/utils'
+import { isNonNullable, platform, uuidv4 } from 'lib/utils'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   getFaceCodeRef,
   getPathsFromArtifact,
   getPlaneFromArtifact,
 } from 'lang/std/artifactGraph'
-import { promptToEditFlow } from 'lib/promptToEdit'
+import { FileMeta, promptToEditFlow } from 'lib/promptToEdit'
 import { kclEditorActor } from 'machines/kclEditorMachine'
 import { commandBarActor } from 'machines/commandBarMachine'
 import { useToken } from 'machines/appMachine'
@@ -1744,15 +1739,26 @@ export const ModelingMachineProvider = ({
           }
         ),
         'submit-prompt-edit': fromPromise(async ({ input }) => {
-          let projectFiles: KittyCadLibFile[] = [
+          let projectFiles: FileMeta[] = [
             {
-              name: 'myFile.kcl',
-              data: new Blob([codeManager.code], { type: 'text/plain' }),
+              type: 'kcl',
+              relPath: 'main.kcl',
+              absPath: 'main.kcl',
+              fileContents: codeManager.code,
+              execStateFileNamesIndex: 0,
             },
           ]
+          const execStateNameToIndexMap: { [fileName: string]: number } = {}
+          Object.entries(kclManager.execState.filenames).forEach(
+            ([index, val]) => {
+              if (val?.type === 'Local') {
+                execStateNameToIndexMap[val.value] = Number(index)
+              }
+            }
+          )
           if (isDesktop() && context?.project?.children) {
             const basePath = context?.selectedDirectory?.path
-            const filePromises: Promise<KittyCadLibFile | null>[] = []
+            const filePromises: Promise<FileMeta | null>[] = []
             const recursivelyPushFilePromises = (files: FileEntry[]) => {
               // mutates filePromises declared above, so this function definition should stay here
               // if pulled out, it would need to be refactored.
@@ -1766,18 +1772,25 @@ export const ModelingMachineProvider = ({
                 const relPath = window.electron.path.relative(basePath, absPath)
                 const filePromise = window.electron
                   .readFile(absPath)
-                  .then((file) => {
+                  .then((file): FileMeta => {
+                    const decoder = new TextDecoder('utf-8')
                     const fileType = window.electron.path.extname(absPath)
-                    // mimeType doesn't really matter, because it's our endpoint and are
-                    // just being written to disk, but we'll set it to something reasonable for kcl
-                    // and generic for everything else.
-                    let mimeType = 'application/octet-stream'
                     if (fileType === '.kcl') {
-                      mimeType = 'text/plain'
+                      return {
+                        type: 'kcl',
+                        absPath,
+                        relPath,
+                        fileContents: decoder.decode(file),
+                        execStateFileNamesIndex:
+                          execStateNameToIndexMap[absPath],
+                      }
                     }
                     return {
-                      name: relPath,
-                      data: new Blob([file], { type: mimeType }),
+                      type: 'other',
+                      relPath,
+                      data: new Blob([file], {
+                        type: 'application/octet-stream',
+                      }),
                     }
                   })
                   .catch((e) => {
@@ -1789,11 +1802,12 @@ export const ModelingMachineProvider = ({
               }
             }
             recursivelyPushFilePromises(context?.project?.children)
-            projectFiles = (await Promise.all(filePromises)).filter(isNonNullable)
+            projectFiles = (await Promise.all(filePromises)).filter(
+              isNonNullable
+            )
           }
           return await promptToEditFlow({
-            code: codeManager.code,
-            // projectFiles,
+            projectFiles,
             prompt: input.prompt,
             selections: input.selection,
             token,
