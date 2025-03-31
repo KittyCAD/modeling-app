@@ -102,10 +102,10 @@ export async function getEventForSelectWithPoint({
     }
   }
 
-  let _artifact = engineCommandManager.artifactGraph.get(data.entity_id)
+  let _artifact = kclManager.artifactGraph.get(data.entity_id)
   const codeRefs = getCodeRefsByArtifactId(
     data.entity_id,
-    engineCommandManager.artifactGraph
+    kclManager.artifactGraph
   )
   if (_artifact && codeRefs) {
     return {
@@ -140,15 +140,15 @@ export function getEventForSegmentSelection(
   // id does not match up with the artifact graph when in sketch mode, because mock executions
   // do not update the artifact graph, therefore we match up the pathToNode instead
   // we can reliably use `type === 'segment'` since it's in sketch mode and we're concerned with segments
-  const segWithMatchingPathToNode__Id = [
-    ...engineCommandManager.artifactGraph,
-  ].find((entry) => {
-    return (
-      entry[1].type === 'segment' &&
-      JSON.stringify(entry[1].codeRef.pathToNode) ===
-        JSON.stringify(group?.userData?.pathToNode)
-    )
-  })?.[0]
+  const segWithMatchingPathToNode__Id = [...kclManager.artifactGraph].find(
+    (entry) => {
+      return (
+        entry[1].type === 'segment' &&
+        JSON.stringify(entry[1].codeRef.pathToNode) ===
+          JSON.stringify(group?.userData?.pathToNode)
+      )
+    }
+  )?.[0]
 
   const id = segWithMatchingPathToNode__Id
 
@@ -172,7 +172,7 @@ export function getEventForSegmentSelection(
     }
   }
   if (!id || !group) return null
-  const artifact = engineCommandManager.artifactGraph.get(id)
+  const artifact = kclManager.artifactGraph.get(id)
   if (!artifact) return null
   const node = getNodeFromPath<Expr>(kclManager.ast, group.userData.pathToNode)
   if (err(node)) return null
@@ -208,10 +208,8 @@ export function handleSelectionBatch({
       selectionToEngine.push({
         id: artifact?.id,
         range:
-          getCodeRefsByArtifactId(
-            artifact.id,
-            engineCommandManager.artifactGraph
-          )?.[0].range || defaultSourceRange(),
+          getCodeRefsByArtifactId(artifact.id, kclManager.artifactGraph)?.[0]
+            .range || defaultSourceRange(),
       })
   })
   const engineEvents: Models['WebSocketRequest_type'][] =
@@ -291,7 +289,7 @@ export function processCodeMirrorRanges({
   const idBasedSelections: SelectionToEngine[] = codeToIdSelections(
     codeBasedSelections,
     artifactGraph,
-    engineCommandManager.artifactIndex
+    kclManager.artifactIndex
   )
   const selections: Selection[] = []
   for (const { id, range } of idBasedSelections) {
@@ -396,10 +394,7 @@ function resetAndSetEngineEntitySelectionCmds(
  */
 export function isSketchPipe(selectionRanges: Selections) {
   if (!isSingleCursorInPipe(selectionRanges, kclManager.ast)) return false
-  return isCursorInSketchCommandRange(
-    engineCommandManager.artifactGraph,
-    selectionRanges
-  )
+  return isCursorInSketchCommandRange(kclManager.artifactGraph, selectionRanges)
 }
 
 // This accounts for non-geometry selections under "other"
@@ -692,12 +687,9 @@ export function updateSelections(
       if (err(nodeMeta)) return undefined
       const node = nodeMeta.node
       let artifact: Artifact | null = null
-      for (const [id, a] of engineCommandManager.artifactGraph) {
+      for (const [id, a] of kclManager.artifactGraph) {
         if (previousSelection?.artifact?.type === a.type) {
-          const codeRefs = getCodeRefsByArtifactId(
-            id,
-            engineCommandManager.artifactGraph
-          )
+          const codeRefs = getCodeRefsByArtifactId(id, kclManager.artifactGraph)
           if (!codeRefs) continue
           if (
             JSON.stringify(codeRefs[0].pathToNode) ===

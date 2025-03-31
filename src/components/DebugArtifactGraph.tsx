@@ -1,13 +1,13 @@
 import { useMemo } from 'react'
-import { engineCommandManager } from 'lib/singletons'
+import { kclManager } from 'lib/singletons'
 import { expandPlane, PlaneArtifactRich } from 'lang/std/artifactGraph'
 import { ArtifactGraph } from 'lang/wasm'
 import { DebugDisplayArray, GenericObj } from './DebugDisplayObj'
 
 export function DebugArtifactGraph() {
   const artifactGraphTree = useMemo(() => {
-    return computeTree(engineCommandManager.artifactGraph)
-  }, [engineCommandManager.artifactGraph])
+    return computeTree(kclManager.artifactGraph)
+  }, [kclManager.artifactGraph])
 
   const filterKeys: string[] = ['codeRef', 'pathToNode']
   return (

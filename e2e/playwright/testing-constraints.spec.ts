@@ -486,13 +486,13 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         testName: 'Add variable, selecting axis',
         addVariable: true,
         axisSelect: true,
-        value: 'QUARTER_TURN - angle001',
+        value: 'turns::QUARTER_TURN - angle001',
       },
       {
         testName: 'No variable, selecting axis',
         addVariable: false,
         axisSelect: true,
-        value: 'QUARTER_TURN - 7',
+        value: 'turns::QUARTER_TURN - 7',
       },
     ] as const
     for (const { testName, addVariable, value, axisSelect } of cases) {
@@ -935,12 +935,12 @@ part002 = startSketchOn(XZ)
   test.describe('Axis & segment - no modal constraints', () => {
     const cases = [
       {
-        codeAfter: `|> line(endAbsolute = [154.9, ZERO])`,
+        codeAfter: `|> line(endAbsolute = [154.9, turns::ZERO])`,
         axisClick: { x: 950, y: 250 },
         constraintName: 'Snap To X',
       },
       {
-        codeAfter: `|> line(endAbsolute = [ZERO, 61.34])`,
+        codeAfter: `|> line(endAbsolute = [turns::ZERO, 61.34])`,
         axisClick: { x: 600, y: 150 },
         constraintName: 'Snap To Y',
       },
