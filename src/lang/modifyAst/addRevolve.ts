@@ -1,12 +1,6 @@
 import { err } from 'lib/trap'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
-import {
-  Program,
-  PathToNode,
-  Expr,
-  VariableDeclarator,
-  ArtifactGraph,
-} from 'lang/wasm'
+import { Program, PathToNode, Expr, VariableDeclarator } from 'lang/wasm'
 import { Selections } from 'lib/selections'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import {
@@ -27,8 +21,7 @@ import {
   mutateAstWithTagForSketchSegment,
   getEdgeTagCall,
 } from 'lang/modifyAst/addEdgeTreatment'
-import { Artifact, getPathsFromArtifact } from 'lang/std/artifactGraph'
-import { kclManager } from 'lib/singletons'
+import { getSafeInsertIndex } from 'lang/queryAst/getSafeInsertIndex'
 
 export function getAxisExpressionAndIndex(
   axisOrEdge: 'Axis' | 'Edge',
@@ -85,8 +78,6 @@ export function revolveSketch(
   axisOrEdge: 'Axis' | 'Edge',
   axis: string | undefined,
   edge: Selections | undefined,
-  artifactGraph: ArtifactGraph,
-  artifact?: Artifact,
   variableName?: string,
   insertIndex?: number
 ):
@@ -96,16 +87,7 @@ export function revolveSketch(
       pathToRevolveArg: PathToNode
     }
   | Error {
-  const orderedSketchNodePaths = getPathsFromArtifact({
-    artifact: artifact,
-    sketchPathToNode: pathToSketchNode,
-    artifactGraph,
-    ast: kclManager.ast,
-  })
-  if (err(orderedSketchNodePaths)) return orderedSketchNodePaths
   const clonedAst = structuredClone(ast)
-  const sketchNode = getNodeFromPath(clonedAst, pathToSketchNode)
-  if (err(sketchNode)) return sketchNode
   const sketchVariableDeclaratorNode = getNodeFromPath<VariableDeclarator>(
     clonedAst,
     pathToSketchNode,
@@ -121,7 +103,7 @@ export function revolveSketch(
     clonedAst
   )
   if (err(getAxisResult)) return getAxisResult
-  const { generatedAxis, axisIndexIfAxis } = getAxisResult
+  const { generatedAxis } = getAxisResult
   if (!generatedAxis) return new Error('Generated axis selection is missing.')
 
   const revolveCall = createCallExpressionStdLibKw(
@@ -136,26 +118,8 @@ export function revolveSketch(
     variableName ??
     findUniqueName(clonedAst, KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE)
   const variableDeclaration = createVariableDeclaration(name, revolveCall)
-  let bodyInsertIndex: number | undefined
-  const isEditing = insertIndex !== undefined
-  if (isEditing) {
-    bodyInsertIndex = insertIndex
-  } else {
-    const lastSketchNodePath =
-      orderedSketchNodePaths[orderedSketchNodePaths.length - 1]
-    let sketchIndexInBody = Number(lastSketchNodePath[1][0])
-    if (typeof sketchIndexInBody !== 'number') {
-      return new Error('expected sketchIndexInBody to be a number')
-    }
-
-    // If an axis was selected in KCL, find the max index to insert the revolve command
-    if (axisIndexIfAxis) {
-      sketchIndexInBody = Math.max(sketchIndexInBody, axisIndexIfAxis)
-    }
-
-    bodyInsertIndex = sketchIndexInBody + 1
-  }
-
+  const bodyInsertIndex =
+    insertIndex ?? getSafeInsertIndex(revolveCall, clonedAst)
   clonedAst.body.splice(bodyInsertIndex, 0, variableDeclaration)
   const argIndex = 0
   const pathToRevolveArg: PathToNode = [

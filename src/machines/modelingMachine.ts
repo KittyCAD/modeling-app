@@ -1839,8 +1839,6 @@ export const modelingMachine = setup({
         axisOrEdge,
         axis,
         edge,
-        kclManager.artifactGraph,
-        selection.graphSelections[0]?.artifact,
         variableName,
         insertIndex
       )
