@@ -1216,4 +1216,55 @@ sketch001 = startSketchOn(XZ)
       })
     }
   )
+
+  test('Rectangle tool panning with middle click', async ({
+    page,
+    homePage,
+    toolbar,
+    scene,
+    cmdBar,
+    editor,
+  }) => {
+    await page.setBodyDimensions({ width: 1200, height: 900 })
+    await homePage.goToModelingScene()
+
+    // wait until scene is ready to be interacted with
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
+
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
+
+    // select an axis plane
+    await page.mouse.click(700, 200)
+
+    // Needed as we don't yet have a way to get a signal from the engine that the camera has animated to the sketch plane
+    await page.waitForTimeout(1000)
+
+    const middleMousePan = async (
+      startX: number,
+      startY: number,
+      endX: number,
+      endY: number
+    ) => {
+      const initialCode = await editor.getCurrentCode()
+
+      await page.mouse.click(startX, startY, { button: 'middle' })
+      await page.mouse.move(endX, endY, {
+        steps: 10,
+      })
+
+      // We expect the code to be the same, middle mouse click should not modify the code, only do panning
+      await editor.expectEditor.toBe(initialCode)
+    }
+
+    await test.step(`Verify corner rectangle panning`, async () => {
+      await page.getByTestId('corner-rectangle').click()
+      await middleMousePan(800, 500, 900, 600)
+    })
+
+    await test.step(`Verify center rectangle panning`, async () => {
+      await toolbar.selectCenterRectangle()
+      await middleMousePan(800, 200, 900, 300)
+    })
+  })
 })

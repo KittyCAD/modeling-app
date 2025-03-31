@@ -3476,6 +3476,39 @@ segAng(rectangleSegmentA002),
 
       const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360, axis = 'X')`
       expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
+
+      // Edit flow
+      const newAngle = '90'
+      await toolbar.openPane('feature-tree')
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'Revolve',
+        0
+      )
+      await operationButton.dblclick({ button: 'left' })
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        currentArgKey: 'angle',
+        currentArgValue: '360',
+        headerArguments: {
+          Angle: '360',
+        },
+        highlightedHeaderArg: 'angle',
+        stage: 'arguments',
+      })
+      await page.keyboard.insertText(newAngle)
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Angle: newAngle,
+        },
+        commandName: 'Revolve',
+      })
+      await cmdBar.progressCmdBar()
+      await toolbar.closePane('feature-tree')
+      await editor.expectEditor.toContain(
+        newCodeToFind.replace('angle = 360', 'angle = ' + newAngle)
+      )
     })
     test('revolve surface around edge from an extruded solid2d', async ({
       context,
@@ -3486,26 +3519,22 @@ segAng(rectangleSegmentA002),
       toolbar,
       cmdBar,
     }) => {
-      const initialCode = `
-sketch001 = startSketchOn(XZ)
-|> startProfileAt([-102.57, 101.72], %)
-|> angledLine([0, 202.6], %, $rectangleSegmentA001)
-|> angledLine([
-segAng(rectangleSegmentA001) - 90,
-202.6
-], %, $rectangleSegmentB001)
-|> angledLine([
-segAng(rectangleSegmentA001),
--segLen(rectangleSegmentA001)
-], %, $rectangleSegmentC001)
-|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-|> close()
+      const initialCode = `sketch001 = startSketchOn(XZ)
+  |> startProfileAt([-102.57, 101.72], %)
+  |> angledLine([0, 202.6], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       202.6
+     ], %, $rectangleSegmentB001)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %, $rectangleSegmentC001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 extrude001 = extrude(sketch001, length = 50)
 sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
-|> circle(
-center = [-11.34, 10.0],
-radius = 8.69
-)
+  |> circle(center = [-11.34, 10.0], radius = 8.69)
 `
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
@@ -3523,9 +3552,49 @@ radius = 8.69
       const lineCodeToSelection = `|> angledLine([0, 202.6], %, $rectangleSegmentA001)`
       await page.getByText(lineCodeToSelection).click()
       await cmdBar.progressCmdBar()
+      await cmdBar.progressCmdBar()
+      await cmdBar.progressCmdBar()
 
-      const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360, axis = getOppositeEdge(rectangleSegmentA001)) `
-      expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
+      const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360, axis = rectangleSegmentA001)`
+      await editor.expectEditor.toContain(newCodeToFind)
+
+      // Edit flow
+      const newAngle = '180'
+      await toolbar.openPane('feature-tree')
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'Revolve',
+        0
+      )
+      await operationButton.dblclick({ button: 'left' })
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        currentArgKey: 'angle',
+        currentArgValue: '360',
+        headerArguments: {
+          Angle: '360',
+        },
+        highlightedHeaderArg: 'angle',
+        stage: 'arguments',
+      })
+      await page.keyboard.insertText(newAngle)
+      await page.getByRole('button', { name: 'Create new variable' }).click()
+      await expect(page.getByPlaceholder('Variable name')).toHaveValue(
+        'angle001'
+      )
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Angle: newAngle,
+        },
+        commandName: 'Revolve',
+      })
+      await cmdBar.progressCmdBar()
+      await toolbar.closePane('feature-tree')
+      await editor.expectEditor.toContain('angle001 = ' + newAngle)
+      await editor.expectEditor.toContain(
+        newCodeToFind.replace('angle = 360', 'angle = angle001')
+      )
     })
     test('revolve sketch circle around line segment from startProfileAt sketch', async ({
       context,
@@ -3536,26 +3605,22 @@ radius = 8.69
       toolbar,
       cmdBar,
     }) => {
-      const initialCode = `
-    sketch002 = startSketchOn(XY)
-      |> startProfileAt([-2.02, 1.79], %)
-      |> xLine(length = 2.6)
-    sketch001 = startSketchOn('-XY')
-      |> startProfileAt([-0.48, 1.25], %)
-      |> angledLine([0, 2.38], %, $rectangleSegmentA001)
-      |> angledLine([segAng(rectangleSegmentA001) - 90, 2.4], %, $rectangleSegmentB001)
-      |> angledLine([
-        segAng(rectangleSegmentA001),
-          -segLen(rectangleSegmentA001)
-      ], %, $rectangleSegmentC001)
-      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-      |> close()
-    extrude001 = extrude(sketch001, length = 5)
-    sketch003 = startSketchOn(extrude001, 'START')
-      |> circle(
-        center = [-0.69, 0.56],
-        radius = 0.28
-      )
+      const initialCode = `sketch002 = startSketchOn(XY)
+  |> startProfileAt([-2.02, 1.79], %)
+  |> xLine(length = 2.6)
+sketch001 = startSketchOn(-XY)
+  |> startProfileAt([-0.48, 1.25], %)
+  |> angledLine([0, 2.38], %, $rectangleSegmentA001)
+  |> angledLine([segAng(rectangleSegmentA001) - 90, 2.4], %, $rectangleSegmentB001)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %, $rectangleSegmentC001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = 5)
+sketch003 = startSketchOn(extrude001, 'START')
+  |> circle(center = [-0.69, 0.56], radius = 0.28)
 `
 
       await context.addInitScript((initialCode) => {
@@ -3574,9 +3639,44 @@ radius = 8.69
       const lineCodeToSelection = `|> xLine(length = 2.6)`
       await page.getByText(lineCodeToSelection).click()
       await cmdBar.progressCmdBar()
+      await cmdBar.progressCmdBar()
+      await cmdBar.progressCmdBar()
 
       const newCodeToFind = `revolve001 = revolve(sketch003, angle = 360, axis = seg01)`
       expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
+
+      // Edit flow
+      const newAngle = '270'
+      await toolbar.openPane('feature-tree')
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'Revolve',
+        0
+      )
+      await operationButton.dblclick({ button: 'left' })
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        currentArgKey: 'angle',
+        currentArgValue: '360',
+        headerArguments: {
+          Angle: '360',
+        },
+        highlightedHeaderArg: 'angle',
+        stage: 'arguments',
+      })
+      await page.keyboard.insertText(newAngle)
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Angle: newAngle,
+        },
+        commandName: 'Revolve',
+      })
+      await cmdBar.progressCmdBar()
+      await toolbar.closePane('feature-tree')
+      await editor.expectEditor.toContain(
+        newCodeToFind.replace('angle = 360', 'angle = ' + newAngle)
+      )
     })
   })
 
