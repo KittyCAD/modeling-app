@@ -14,7 +14,7 @@ import {
   EXECUTION_TYPE_NONE,
   EXECUTION_TYPE_REAL,
 } from 'lib/constants'
-import { PathToNode, Program, SourceRange } from 'lang/wasm'
+import { PathToNode, Program } from 'lang/wasm'
 import EditorManager from 'editor/manager'
 import CodeManager from 'lang/codeManager'
 
@@ -52,11 +52,6 @@ export async function updateModelingState(
   },
   options?: {
     focusPath?: Array<PathToNode>
-    zoomToFit?: boolean
-    zoomOnRangeAndType?: {
-      range: SourceRange
-      type: string
-    }
   }
 ): Promise<void> {
   // Step 1: Update AST without executing (prepare selections)
@@ -83,8 +78,6 @@ export async function updateModelingState(
     if (executionType === EXECUTION_TYPE_REAL) {
       await dependencies.kclManager.executeAst({
         ast: updatedAst.newAst,
-        zoomToFit: options?.zoomToFit,
-        zoomOnRangeAndType: options?.zoomOnRangeAndType,
       })
     } else if (executionType === EXECUTION_TYPE_MOCK) {
       await dependencies.kclManager.executeAstMock(updatedAst.newAst)

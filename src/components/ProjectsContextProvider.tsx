@@ -130,7 +130,7 @@ const ProjectsContextWeb = ({ children }: { children: React.ReactNode }) => {
           if (err(codeToWrite)) return Promise.reject(codeToWrite)
           codeManager.updateCodeStateEditor(codeToWrite)
           await codeManager.writeToFile()
-          await kclManager.executeCode(true)
+          await kclManager.executeCode()
 
           return {
             message: 'File overwritten successfully',

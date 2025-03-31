@@ -47,12 +47,7 @@ import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
 
 interface ExecuteArgs {
   ast?: Node<Program>
-  zoomToFit?: boolean
   executionId?: number
-  zoomOnRangeAndType?: {
-    range: SourceRange
-    type: string
-  }
 }
 
 export class KclManager {
@@ -424,27 +419,6 @@ export class KclManager {
     if (!isInterrupted) {
       this.addDiagnostics(await lintAst({ ast: ast }))
       await setSelectionFilterToDefault(this.engineCommandManager)
-
-      if (args.zoomToFit) {
-        let zoomObjectId: string | undefined = ''
-        if (args.zoomOnRangeAndType) {
-          zoomObjectId = this.mapRangeToObjectId(
-            args.zoomOnRangeAndType.range,
-            args.zoomOnRangeAndType.type
-          )
-        }
-
-        await this.engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'zoom_to_fit',
-            object_ids: zoomObjectId ? [zoomObjectId] : [], // leave empty to zoom to all objects
-            padding: 0.1, // padding around the objects
-            animated: false, // don't animate the zoom for now
-          },
-        })
-      }
     }
 
     this.isExecuting = false
@@ -549,7 +523,7 @@ export class KclManager {
       this._cancelTokens.set(key, true)
     })
   }
-  async executeCode(zoomToFit?: boolean): Promise<void> {
+  async executeCode(): Promise<void> {
     const ast = await this.safeParse(codeManager.code)
 
     if (!ast) {
@@ -559,36 +533,10 @@ export class KclManager {
       return
     }
 
-    zoomToFit = this.tryToZoomToFitOnCodeUpdate(ast, zoomToFit)
-
     this.ast = { ...ast }
-    return this.executeAst({ zoomToFit })
+    return this.executeAst()
   }
-  /**
-   * This will override the zoom to fit to zoom into the model if the previous AST was empty.
-   * Workflows this improves,
-   *  When someone comments the entire file then uncomments the entire file it zooms to the model
-   *  When someone CTRL+A and deletes the code then adds the code back it zooms to the model
-   *  When someone CTRL+A and copies new code into the editor it zooms to the model
-   */
-  tryToZoomToFitOnCodeUpdate(
-    ast: Node<Program>,
-    zoomToFit: boolean | undefined
-  ) {
-    const isAstEmpty = this._isAstEmpty(this._ast)
-    const isRequestedAstEmpty = this._isAstEmpty(ast)
 
-    // If the AST went from empty to not empty or
-    // If the user has all of the content selected and they copy new code in
-    if (
-      (isAstEmpty && !isRequestedAstEmpty) ||
-      editorManager.isAllTextSelected
-    ) {
-      return true
-    }
-
-    return zoomToFit
-  }
   async format() {
     const originalCode = codeManager.code
     const ast = await this.safeParse(originalCode)
@@ -622,11 +570,6 @@ export class KclManager {
     execute: boolean,
     optionalParams?: {
       focusPath?: Array<PathToNode>
-      zoomToFit?: boolean
-      zoomOnRangeAndType?: {
-        range: SourceRange
-        type: string
-      }
     }
   ): Promise<{
     newAst: Node<Program>
@@ -676,8 +619,6 @@ export class KclManager {
     if (execute) {
       await this.executeAst({
         ast: astWithUpdatedSource,
-        zoomToFit: optionalParams?.zoomToFit,
-        zoomOnRangeAndType: optionalParams?.zoomOnRangeAndType,
       })
     } else {
       // When we don't re-execute, we still want to update the program

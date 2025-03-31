@@ -21,6 +21,7 @@ import { getArtifactOfTypes } from 'lang/std/artifactGraph'
 import { ViewControlContextMenu } from './ViewControlMenu'
 import { useCommandBarState } from 'machines/commandBarMachine'
 import { useSettings } from 'machines/appMachine'
+import { uuidv4 } from 'lib/utils'
 
 enum StreamState {
   Playing = 'playing',
@@ -61,11 +62,23 @@ export const Stream = () => {
    */
   function executeCodeAndPlayStream() {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    kclManager.executeCode(true).then(async () => {
+    kclManager.executeCode().then(async () => {
       await videoRef.current?.play().catch((e) => {
         console.warn('Video playing was prevented', e, videoRef.current)
       })
       setStreamState(StreamState.Playing)
+
+      // Only call zoom_to_fit once when the stream starts to center the scene.
+      await engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'zoom_to_fit',
+          object_ids: [], // leave empty to zoom to all objects
+          padding: 0.2, // padding around the objects
+          animated: false, // don't animate the zoom for now
+        },
+      })
     })
   }
 

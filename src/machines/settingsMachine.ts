@@ -254,7 +254,7 @@ export const settingsMachine = setup({
 
         if (shouldExecute) {
           // Unit changes requires a re-exec of code
-          kclManager.executeCode(true).catch(reportRejection)
+          kclManager.executeCode().catch(reportRejection)
         } else {
           // For any future logging we'd like to do
           // console.log(
