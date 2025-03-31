@@ -11,7 +11,8 @@ test.describe('Testing in-app sample loading', () => {
    * Note this test implicitly depends on the KCL sample "a-parametric-bearing-pillow-block",
    * its title, and its units settings. https://github.com/KittyCAD/kcl-samples/blob/main/a-parametric-bearing-pillow-block/main.kcl
    */
-  test('Web: should overwrite current code, cannot create new file', async ({
+  // We have no more web tests
+  test.skip('Web: should overwrite current code, cannot create new file', async ({
     editor,
     context,
     page,
