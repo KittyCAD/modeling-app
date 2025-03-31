@@ -2195,7 +2195,10 @@ export const angledLine: SketchLineHelper = {
       : createLiteral(roundOff(getAngle(from, to), 0))
     const newLengthVal = createLiteral(roundOff(getLength(from, to), 2))
     const newLine = createCallExpression('angledLine', [
-      createArrayExpression([newAngleVal, newLengthVal]),
+      createObjectExpression({
+        angle: newAngleVal,
+        length: newLengthVal,
+      }),
       createPipeSubstitution(),
     ])
 
