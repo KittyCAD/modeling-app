@@ -175,8 +175,11 @@ export const FileMachineProvider = ({
             commandBarActor.send({ type: 'Close' })
             navigate(
               `..${PATHS.FILE}/${encodeURIComponent(
+                // TODO: Should this be context.selectedDirectory.path?
+                // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
                 context.selectedDirectory +
                   window.electron.path.sep +
+                  // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
                   event.output.name
               )}`
             )
