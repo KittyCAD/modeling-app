@@ -3,6 +3,7 @@ name = "kcl-python-bindings"
 version = "0.3.57"
 edition = "2021"
 repository = "https://github.com/kittycad/modeling-app"
+exclude = ["tests/*", "files/*", "venv/*"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
