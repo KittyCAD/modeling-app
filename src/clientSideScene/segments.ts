@@ -215,7 +215,6 @@ class StraightSegment implements SegmentUtils {
       const snapLine = createLine({
         from: [0, 0],
         to: [0, 0],
-        scale: 1,
         color: 0xcccccc,
       })
       snapLine.name = STRAIGHT_SEGMENT_SNAP_LINE
@@ -1044,21 +1043,18 @@ class ArcSegment implements SegmentUtils {
     const centerToFromLine = createLine({
       from: center,
       to: from,
-      scale,
       color: grey, // Light gray color for the line
     })
     centerToFromLine.name = ARC_CENTER_TO_FROM
     const centerToToLine = createLine({
       from: center,
       to,
-      scale,
       color: grey, // Light gray color for the line
     })
     centerToToLine.name = ARC_CENTER_TO_TO
     const angleReferenceLine = createLine({
       from: [center[0] + (ANGLE_INDICATOR_RADIUS - 2) * scale, center[1]],
       to: [center[0] + (ANGLE_INDICATOR_RADIUS + 2) * scale, center[1]],
-      scale,
       color: grey, // Light gray color for the line
     })
     angleReferenceLine.name = ARC_ANGLE_REFERENCE_LINE
@@ -1996,12 +1992,10 @@ export function dashedStraight(
 function createLine({
   from,
   to,
-  scale,
   color,
 }: {
   from: [number, number]
   to: [number, number]
-  scale: number
   color: number
 }): Line {
   // Implementation for creating a line
