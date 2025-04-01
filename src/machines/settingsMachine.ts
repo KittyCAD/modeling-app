@@ -1,23 +1,14 @@
+import decamelize from 'decamelize'
 import {
-  AnyActorRef,
-  assign,
-  enqueueActions,
-  fromCallback,
-  fromPromise,
-  sendTo,
-  setup,
-} from 'xstate'
+  createSettingsCommand,
+  settingsWithCommandConfigs,
+} from 'lib/commandBarConfigs/settingsCommandConfig'
+import { Command } from 'lib/commandTypes'
+import { Project } from 'lib/project'
 import {
-  Themes,
-  darkModeMatcher,
-  getOppositeTheme,
-  getSystemTheme,
-  setThemeClass,
-} from 'lib/theme'
-import {
+  SettingsType,
   createSettings,
   settings,
-  SettingsType,
 } from 'lib/settings/initialSettings'
 import {
   BaseUnit,
@@ -34,7 +25,6 @@ import {
   saveSettings,
   setSettingsAtLevel,
 } from 'lib/settings/settingsUtils'
-import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import {
   codeManager,
   engineCommandManager,
@@ -42,15 +32,27 @@ import {
   sceneEntitiesManager,
   sceneInfra,
 } from 'lib/singletons'
-import toast from 'react-hot-toast'
-import decamelize from 'decamelize'
-import { reportRejection } from 'lib/trap'
-import { Project } from 'lib/project'
 import {
-  createSettingsCommand,
-  settingsWithCommandConfigs,
-} from 'lib/commandBarConfigs/settingsCommandConfig'
-import { Command } from 'lib/commandTypes'
+  Themes,
+  darkModeMatcher,
+  getOppositeTheme,
+  getSystemTheme,
+  setThemeClass,
+} from 'lib/theme'
+import { reportRejection } from 'lib/trap'
+import toast from 'react-hot-toast'
+import {
+  AnyActorRef,
+  assign,
+  enqueueActions,
+  fromCallback,
+  fromPromise,
+  sendTo,
+  setup,
+} from 'xstate'
+
+import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
+
 import { commandBarActor } from './commandBarMachine'
 
 type SettingsMachineContext = SettingsType & {
@@ -206,7 +208,7 @@ export const settingsMachine = setup({
       if (!('data' in event)) return
       const eventParts = event.type.replace(/^set./, '').split('.') as [
         keyof typeof settings,
-        string
+        string,
       ]
       const truncatedNewValue = event.data.value?.toString().slice(0, 28)
       const message =

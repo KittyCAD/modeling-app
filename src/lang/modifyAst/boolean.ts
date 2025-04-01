@@ -1,7 +1,6 @@
-import { Node } from '@rust/kcl-lib/bindings/Node'
 import EditorManager from 'editor/manager'
-import CodeManager from 'lang/codeManager'
 import { KclManager } from 'lang/KclSingleton'
+import CodeManager from 'lang/codeManager'
 import { updateModelingState } from 'lang/modelingWorkflows'
 import {
   createArrayExpression,
@@ -25,6 +24,8 @@ import { EXECUTION_TYPE_REAL } from 'lib/constants'
 import { Selection, Selections } from 'lib/selections'
 import { err } from 'lib/trap'
 import { isArray } from 'lib/utils'
+
+import { Node } from '@rust/kcl-lib/bindings/Node'
 
 export async function applySubtractFromTargetOperatorSelections(
   target: Selection,

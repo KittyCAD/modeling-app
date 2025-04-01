@@ -1,50 +1,52 @@
 import { ToolTip } from 'lang/langHelpers'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { Selection, Selections } from 'lib/selections'
+import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
+import { Reason, err } from 'lib/trap'
+
+import { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpression'
+import { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
+import { Node } from '@rust/kcl-lib/bindings/Node'
+import { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
+
+import { getAngle, isArray } from '../lib/utils'
+import { createLocalName, splitPathAtLastIndex } from './modifyAst'
+import { codeRefFromRange } from './std/artifactGraph'
+import { ARG_TAG, getArgForEnd, getFirstArg } from './std/sketch'
+import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
+import {
+  getConstraintLevelFromSourceRange,
+  getConstraintType,
+} from './std/sketchcombos'
+import { findKwArg } from './util'
 import {
   ArrayExpression,
+  ArtifactGraph,
   BinaryExpression,
   CallExpression,
   CallExpressionKw,
   Expr,
   ExpressionStatement,
+  Identifier,
   ObjectExpression,
   ObjectProperty,
   PathToNode,
   PipeExpression,
   Program,
   ReturnStatement,
-  sketchFromKclValue,
-  sketchFromKclValueOptional,
   SourceRange,
   SyntaxType,
-  topLevelRange,
   VariableDeclaration,
   VariableDeclarator,
-  recast,
-  ArtifactGraph,
-  kclSettings,
-  unitLenToUnitLength,
-  unitAngToUnitAngle,
   VariableMap,
-  Identifier,
+  kclSettings,
+  recast,
+  sketchFromKclValue,
+  sketchFromKclValueOptional,
+  topLevelRange,
+  unitAngToUnitAngle,
+  unitLenToUnitLength,
 } from './wasm'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { createLocalName, splitPathAtLastIndex } from './modifyAst'
-import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
-import { getAngle, isArray } from '../lib/utils'
-import { ARG_TAG, getArgForEnd, getFirstArg } from './std/sketch'
-import {
-  getConstraintLevelFromSourceRange,
-  getConstraintType,
-} from './std/sketchcombos'
-import { err, Reason } from 'lib/trap'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { findKwArg } from './util'
-import { codeRefFromRange } from './std/artifactGraph'
-import { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpression'
-import { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
-import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
-import { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
 
 export const LABELED_ARG_FIELD = 'LabeledArg -> Arg'
 export const UNLABELED_ARG = 'unlabeled first arg'

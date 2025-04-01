@@ -1,11 +1,11 @@
-import { app, Menu, BrowserWindow } from 'electron'
-import { projectFileRole } from 'menu/fileRole'
+import { BrowserWindow, Menu, app } from 'electron'
 import { projectEditRole } from 'menu/editRole'
+import { projectFileRole } from 'menu/fileRole'
 import { helpRole } from 'menu/helpRole'
-import { projectViewRole } from 'menu/viewRole'
-
-import os from 'node:os'
 import { ZooMenuItemConstructorOptions } from 'menu/roles'
+import { projectViewRole } from 'menu/viewRole'
+import os from 'node:os'
+
 const isMac = os.platform() === 'darwin'
 
 // Default electron menu.

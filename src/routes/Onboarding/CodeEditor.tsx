@@ -1,5 +1,6 @@
-import { kbdClasses, OnboardingButtons, useDemoCode } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
+
+import { OnboardingButtons, kbdClasses, useDemoCode } from '.'
 
 export default function OnboardingCodeEditor() {
   useDemoCode()

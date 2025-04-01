@@ -1,8 +1,8 @@
 import type * as LSP from 'vscode-languageserver-protocol'
 
+import { LanguageServerPlugin } from '../plugin/lsp'
 import { FromServer, IntoServer } from './codec'
 import Client from './jsonrpc'
-import { LanguageServerPlugin } from '../plugin/lsp'
 
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/
 
@@ -12,15 +12,15 @@ interface LSPRequestMap {
   'textDocument/hover': [LSP.HoverParams, LSP.Hover]
   'textDocument/completion': [
     LSP.CompletionParams,
-    LSP.CompletionItem[] | LSP.CompletionList | null
+    LSP.CompletionItem[] | LSP.CompletionList | null,
   ]
   'textDocument/semanticTokens/full': [
     LSP.SemanticTokensParams,
-    LSP.SemanticTokens
+    LSP.SemanticTokens,
   ]
   'textDocument/formatting': [
     LSP.DocumentFormattingParams,
-    LSP.TextEdit[] | null
+    LSP.TextEdit[] | null,
   ]
   'textDocument/foldingRange': [LSP.FoldingRangeParams, LSP.FoldingRange[]]
 }

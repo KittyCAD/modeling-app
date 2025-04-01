@@ -1,33 +1,35 @@
 import {
+  Completion,
   closeBrackets,
   closeBracketsKeymap,
-  Completion,
   completionKeymap,
   completionStatus,
 } from '@codemirror/autocomplete'
-import { EditorView, keymap, ViewUpdate } from '@codemirror/view'
+import { EditorView, ViewUpdate, keymap } from '@codemirror/view'
+import { useSelector } from '@xstate/react'
 import { CustomIcon } from 'components/CustomIcon'
+import { useCodeMirror } from 'components/ModelingSidebar/ModelingPanes/CodeEditor'
+import { Spinner } from 'components/Spinner'
+import { createLocalName, createVariableDeclaration } from 'lang/modifyAst'
+import { getNodeFromPath } from 'lang/queryAst'
+import { SourceRange, VariableDeclarator, isPathToNode } from 'lang/wasm'
 import { CommandArgument, KclCommandValue } from 'lib/commandTypes'
+import { kclManager } from 'lib/singletons'
 import { getSystemTheme } from 'lib/theme'
+import { err } from 'lib/trap'
 import { useCalculateKclExpression } from 'lib/useCalculateKclExpression'
 import { roundOff } from 'lib/utils'
 import { varMentions } from 'lib/varCompletionExtension'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
-import styles from './CommandBarKclInput.module.css'
-import { createLocalName, createVariableDeclaration } from 'lang/modifyAst'
-import { useCodeMirror } from 'components/ModelingSidebar/ModelingPanes/CodeEditor'
-import { useSelector } from '@xstate/react'
-import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
 import { useSettings } from 'machines/appMachine'
+import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useHotkeys } from 'react-hotkeys-hook'
 import { AnyStateMachine, SnapshotFrom } from 'xstate'
-import { kclManager } from 'lib/singletons'
-import { getNodeFromPath } from 'lang/queryAst'
-import { isPathToNode, SourceRange, VariableDeclarator } from 'lang/wasm'
+
 import { Node } from '@rust/kcl-lib/bindings/Node'
-import { err } from 'lib/trap'
-import { Spinner } from 'components/Spinner'
+
+import styles from './CommandBarKclInput.module.css'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>

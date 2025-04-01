@@ -1,32 +1,33 @@
+import { ToolTip } from 'lang/langHelpers'
+import { findKwArg } from 'lang/util'
+import { Selection, Selections } from 'lib/selections'
+import { err } from 'lib/trap'
+
+import { enginelessExecutor } from '../../lib/testHelpers'
 import {
-  assertParse,
   Expr,
-  recast,
-  initPromise,
   Program,
+  assertParse,
+  initPromise,
+  recast,
   topLevelRange,
 } from '../wasm'
-import {
-  getConstraintType,
-  getTransformInfos,
-  transformAstSketchLines,
-  transformSecondarySketchLinesTagFirst,
-  ConstraintType,
-  ConstraintLevel,
-  getConstraintLevelFromSourceRange,
-} from './sketchcombos'
-import { ToolTip } from 'lang/langHelpers'
-import { Selections, Selection } from 'lib/selections'
-import { err } from 'lib/trap'
-import { enginelessExecutor } from '../../lib/testHelpers'
 import { codeRefFromRange } from './artifactGraph'
-import { findKwArg } from 'lang/util'
 import {
   ARG_END,
   ARG_END_ABSOLUTE,
   getArgForEnd,
   isAbsoluteLine,
 } from './sketch'
+import {
+  ConstraintLevel,
+  ConstraintType,
+  getConstraintLevelFromSourceRange,
+  getConstraintType,
+  getTransformInfos,
+  transformAstSketchLines,
+  transformSecondarySketchLinesTagFirst,
+} from './sketchcombos'
 
 beforeAll(async () => {
   await initPromise

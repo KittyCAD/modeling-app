@@ -1,4 +1,5 @@
 import { assertParse, initPromise } from 'lang/wasm'
+
 import { getTagDeclaratorsInProgram } from './getTagDeclaratorsInProgram'
 
 function tagDeclaratorWithIndex(

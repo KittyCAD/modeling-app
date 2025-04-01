@@ -1,9 +1,9 @@
-import { trap } from 'lib/trap'
-import { useState, useEffect } from 'react'
 import { ensureProjectDirectoryExists, listProjects } from 'lib/desktop'
-import { loadAndValidateSettings } from 'lib/settings/settingsUtils'
-import { Project } from 'lib/project'
 import { isDesktop } from 'lib/isDesktop'
+import { Project } from 'lib/project'
+import { loadAndValidateSettings } from 'lib/settings/settingsUtils'
+import { trap } from 'lib/trap'
+import { useEffect, useState } from 'react'
 
 // Gotcha: This should be ported to the ProjectMachine and keep track of
 // projectDirs and projectPaths in the context when it internally calls listProjects

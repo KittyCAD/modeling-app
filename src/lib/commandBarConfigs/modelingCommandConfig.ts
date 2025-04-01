@@ -1,30 +1,31 @@
 import { Models } from '@kittycad/lib'
 import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
+import { DEV } from 'env'
+import { getNodeFromPath } from 'lang/queryAst'
+import { getVariableDeclaration } from 'lang/queryAst/getVariableDeclaration'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { transformAstSketchLines } from 'lang/std/sketchcombos'
 import {
-  isPathToNode,
   PathToNode,
   SourceRange,
   VariableDeclarator,
+  isPathToNode,
 } from 'lang/wasm'
-import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
-import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE } from 'lib/constants'
+import { KclCommandValue, StateMachineCommandSetConfig } from 'lib/commandTypes'
+import { KCL_DEFAULT_DEGREE, KCL_DEFAULT_LENGTH } from 'lib/constants'
 import { components } from 'lib/machine-api'
 import { Selections } from 'lib/selections'
 import { codeManager, kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
-import { modelingMachine, SketchTool } from 'machines/modelingMachine'
+import { SketchTool, modelingMachine } from 'machines/modelingMachine'
+import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
+
 import {
   loftValidator,
   revolveAxisValidator,
   shellValidator,
   sweepValidator,
 } from './validators'
-import { getVariableDeclaration } from 'lang/queryAst/getVariableDeclaration'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { getNodeFromPath } from 'lang/queryAst'
-import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
-import { DEV } from 'env'
 
 type OutputFormat = Models['OutputFormat3d_type']
 type OutputTypeKey = OutputFormat['type']

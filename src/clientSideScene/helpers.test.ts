@@ -1,4 +1,5 @@
 import { Quaternion } from 'three'
+
 import { isQuaternionVertical } from './helpers'
 
 describe('isQuaternionVertical', () => {

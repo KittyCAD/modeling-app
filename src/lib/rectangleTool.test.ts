@@ -1,14 +1,15 @@
-import { expect } from 'vitest'
-import {
-  recast,
-  assertParse,
-  topLevelRange,
-  VariableDeclaration,
-  initPromise,
-} from 'lang/wasm'
-import { updateCenterRectangleSketch } from './rectangleTool'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { getNodeFromPath } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import {
+  VariableDeclaration,
+  assertParse,
+  initPromise,
+  recast,
+  topLevelRange,
+} from 'lang/wasm'
+import { expect } from 'vitest'
+
+import { updateCenterRectangleSketch } from './rectangleTool'
 import { trap } from './trap'
 
 beforeAll(async () => {

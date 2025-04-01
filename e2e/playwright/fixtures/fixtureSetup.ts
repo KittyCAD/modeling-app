@@ -1,28 +1,27 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-
+import * as TOML from '@iarna/toml'
 import type {
   BrowserContext,
   ElectronApplication,
-  TestInfo,
   Page,
+  TestInfo,
 } from '@playwright/test'
-
 import { _electron as electron } from '@playwright/test'
-
-import * as TOML from '@iarna/toml'
-import { TEST_SETTINGS } from '../storageStates'
-import { SETTINGS_FILE_NAME } from 'lib/constants'
-import { getUtils, setup } from '../test-utils'
 import fsp from 'fs/promises'
+import { SETTINGS_FILE_NAME } from 'lib/constants'
+import { DeepPartial } from 'lib/types'
 import fs from 'node:fs'
 import path from 'path'
+
+import { Settings } from '@rust/kcl-lib/bindings/Settings'
+
+import { TEST_SETTINGS } from '../storageStates'
+import { getUtils, setup } from '../test-utils'
 import { CmdBarFixture } from './cmdBarFixture'
 import { EditorFixture } from './editorFixture'
-import { ToolbarFixture } from './toolbarFixture'
-import { SceneFixture } from './sceneFixture'
 import { HomePageFixture } from './homePageFixture'
-import { DeepPartial } from 'lib/types'
-import { Settings } from '@rust/kcl-lib/bindings/Settings'
+import { SceneFixture } from './sceneFixture'
+import { ToolbarFixture } from './toolbarFixture'
 
 export class AuthenticatedApp {
   public readonly page: Page

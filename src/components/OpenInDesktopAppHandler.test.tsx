@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+
 import { OpenInDesktopAppHandler } from './OpenInDesktopAppHandler'
 
 /**

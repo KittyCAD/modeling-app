@@ -1,25 +1,27 @@
+import { EngineCommandManager } from 'lang/std/engineConnection'
+import { fileSystemManager } from 'lang/std/fileSystemManager'
 import {
-  errFromErrWithOutputs,
   ExecState,
+  errFromErrWithOutputs,
   execStateFromRust,
   initPromise,
   mockExecStateFromRust,
 } from 'lang/wasm'
-import { getModule, ModuleType } from 'lib/wasm_lib_wrapper'
-import { fileSystemManager } from 'lang/std/fileSystemManager'
-import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import { DefaultPlaneStr, defaultPlaneStrToKey } from 'lib/planes'
+import { err } from 'lib/trap'
 import { DeepPartial } from 'lib/types'
+import { ModuleType, getModule } from 'lib/wasm_lib_wrapper'
+import toast from 'react-hot-toast'
+
+import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
+import { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
+import { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import { Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
-import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
-import { DefaultPlaneStr, defaultPlaneStrToKey } from 'lib/planes'
-import { err } from 'lib/trap'
-import { EngineCommandManager } from 'lang/std/engineConnection'
-import { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
+
 import ModelingAppFile from './modelingAppFile'
-import toast from 'react-hot-toast'
-import { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 
 export default class RustContext {
   private wasmInitFailed: boolean = true

@@ -1,13 +1,14 @@
-import { CommandLog, EngineCommandManager } from 'lang/std/engineConnection'
-import { WebrtcStats } from '@rust/kcl-lib/bindings/WebrtcStats'
-import { OsInfo } from '@rust/kcl-lib/bindings/OsInfo'
-import { isDesktop } from 'lib/isDesktop'
-import { APP_VERSION } from 'routes/Settings'
-import { UAParser } from 'ua-parser-js'
-import screenshot from 'lib/screenshot'
 import { VITE_KC_API_BASE_URL } from 'env'
 import CodeManager from 'lang/codeManager'
+import { CommandLog, EngineCommandManager } from 'lang/std/engineConnection'
+import { isDesktop } from 'lib/isDesktop'
 import RustContext from 'lib/rustContext'
+import screenshot from 'lib/screenshot'
+import { APP_VERSION } from 'routes/Settings'
+import { UAParser } from 'ua-parser-js'
+
+import { OsInfo } from '@rust/kcl-lib/bindings/OsInfo'
+import { WebrtcStats } from '@rust/kcl-lib/bindings/WebrtcStats'
 
 /* eslint-disable suggest-no-throw/suggest-no-throw --
  * All the throws in CoreDumpManager are intentional and should be caught and handled properly

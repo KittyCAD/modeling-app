@@ -2,7 +2,7 @@ import { PathValue, Paths } from './types'
 
 export function setPropertyByPath<
   T extends { [key: string]: any },
-  P extends Paths<T, 4>
+  P extends Paths<T, 4>,
 >(obj: T, path: P, value: PathValue<T, P>) {
   if (typeof path === 'string') {
     const pList = path.split('.')
@@ -25,7 +25,7 @@ export function setPropertyByPath<
 
 export function getPropertyByPath<
   T extends { [key: string]: any },
-  P extends Paths<T, 4>
+  P extends Paths<T, 4>,
 >(obj: T, path: P): unknown {
   if (typeof path === 'string') {
     return path.split('.').reduce((accumulator, currentValue) => {

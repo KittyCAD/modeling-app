@@ -1,5 +1,6 @@
 import { traverse } from 'lang/queryAst'
 import { Expr, Name, Program } from 'lang/wasm'
+
 import { Node } from '@rust/kcl-lib/bindings/Node'
 
 /**

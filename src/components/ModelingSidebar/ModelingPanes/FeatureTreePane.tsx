@@ -14,15 +14,16 @@ import {
   stdLibMap,
 } from 'lib/operations'
 import { editorManager, kclManager } from 'lib/singletons'
-import { ComponentProps, useEffect, useMemo, useRef, useState } from 'react'
-import { Operation } from '@rust/kcl-lib/bindings/Operation'
-import { Actor, Prop } from 'xstate'
 import { featureTreeMachine } from 'machines/featureTreeMachine'
 import {
   editorIsMountedSelector,
   kclEditorActor,
   selectionEventSelector,
 } from 'machines/kclEditorMachine'
+import { ComponentProps, useEffect, useMemo, useRef, useState } from 'react'
+import { Actor, Prop } from 'xstate'
+
+import { Operation } from '@rust/kcl-lib/bindings/Operation'
 
 export const FeatureTreePane = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
