@@ -483,7 +483,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "z": 0.0
           },
           "xAxis": {
-            "x": -1.0,
+            "x": 1.0,
             "y": 0.0,
             "z": 0.0
           },

@@ -185,7 +185,7 @@ description: Variables in memory after executing i-beam.kcl
             "z": 0.0
           },
           "xAxis": {
-            "x": -1.0,
+            "x": 1.0,
             "y": 0.0,
             "z": 0.0
           },
