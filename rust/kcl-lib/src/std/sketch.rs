@@ -176,10 +176,7 @@ async fn inner_involute_circular(
     let from = sketch.current_pen_position()?;
     let mut end: KPoint3d<f64> = Default::default(); // ADAM: TODO impl this below.
     let theta = f64::sqrt(end_radius * end_radius - start_radius * start_radius) / start_radius;
-    let (mut x, y) = involute_curve(start_radius, theta);
-    // end.x = (x * f64::cos(angle) - y * f64::sin(angle)).into();
-    // y += from.y;
-    // end.y = (x * f64::sin(angle) + y * f64::cos(angle)).into();
+    let (x, y) = involute_curve(start_radius, theta);
 
     end.x = x * angle.to_radians().cos() - y * angle.to_radians().sin();
     end.y = x * angle.to_radians().sin() + y * angle.to_radians().cos();
