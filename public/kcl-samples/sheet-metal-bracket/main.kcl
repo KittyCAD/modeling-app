@@ -4,72 +4,142 @@
 // Set Units
 @settings(defaultLengthUnit = in)
 
-// Define constants such as sheet metal thickness, bend radius, flange length, bolt diameter size, etc.
-thickness = 0.090
-bendRad = 0.08
-outsideBendRad = bendRad + thickness
-flangeLength = 0.5
-hatHeight = 3
-hatWidth = 5
-boltSize = 0.25
-flangeWidth = 1.5
+// Input bolt pattern dimensions to mount the bracket
+mountingBoltDiameter = 1 / 4
+mountingBoltPatternX = 7
+mountingBoltPatternY = 4
 
-// Sketch and extrude the base shape and fillet the inside and outside edges.
-baseExtrusion = startSketchOn(-XZ)
-  |> startProfileAt([0, 0], %)
-  |> line(end = [0, thickness], tag = $e1)
-  |> line(end = [flangeLength, 0], tag = $e2)
-  |> line(end = [0, hatHeight], tag = $e3)
-  |> line(end = [hatWidth, 0], tag = $e4)
-  |> line(end = [0, -hatHeight], tag = $e5)
-  |> line(end = [flangeLength, 0], tag = $e6)
-  |> line(end = [0, -thickness], tag = $e7)
-  |> line(end = [-flangeLength - thickness, 0], tag = $e8)
-  |> line(end = [0, hatHeight], tag = $e9)
-  |> line(end = [-hatWidth + 2 * thickness, 0], tag = $e10)
-  |> line(end = [0, -hatHeight], tag = $e11)
-  |> close(tag = $e12)
-  |> extrude(length = hatWidth)
-  |> fillet(radius = bendRad, tags = [getNextAdjacentEdge(e2)])
-  |> fillet(radius = outsideBendRad, tags = [getNextAdjacentEdge(e3)])
-  |> fillet(radius = outsideBendRad, tags = [getNextAdjacentEdge(e4)])
-  |> fillet(radius = bendRad, tags = [getNextAdjacentEdge(e5)])
-  |> fillet(radius = outsideBendRad, tags = [getNextAdjacentEdge(e8)])
-  |> fillet(radius = bendRad, tags = [getNextAdjacentEdge(e9)])
-  |> fillet(radius = bendRad, tags = [getNextAdjacentEdge(e10)])
-  |> fillet(radius = outsideBendRad, tags = [getNextAdjacentEdge(e11)])
+// Input bolt pattern dimensions to mount a component to the bracket
+componentBoltDiameter = 3 / 16
+componentBoltPatternX = 2
+componentBoltPatternY = 3
 
-// Define the flanges and place the bolt holes
-flange1 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
-  |> line(end = [0, hatWidth])
-  |> line(end = [flangeWidth, 0], tag = $e13)
-  |> line(end = [0, -hatWidth], tag = $e14)
+// Define bracket constants such as sheet metal thickness, bend radius, flange length, etc.
+hatHeight = 2.5
+bendAngle = 75
+thickness = 0.125
+interiorBendRadius = 0.125
+
+// Calculate Remaining Parameters
+exteriorBendRadius = interiorBendRadius + thickness
+overhang = 3 * mountingBoltDiameter
+flangeLength = 6 * mountingBoltDiameter
+flangeExtrusion = if mountingBoltPatternY > componentBoltPatternY {
+  mountingBoltPatternY + overhang * 2
+} else {
+  componentBoltPatternY + overhang * 2
+}
+
+// Draw the extrusion profile of the sheet metal bracket
+bracketProfile = startSketchOn(XZ)
+  |> startProfileAt([
+       -mountingBoltPatternX / 2 - overhang,
+       0
+     ], %)
+  |> xLine(length = flangeLength)
+  |> tangentialArc({
+       radius = exteriorBendRadius,
+       offset = bendAngle
+     }, %)
+  |> angledLineToY([bendAngle, hatHeight - thickness], %, $seg01)
+  |> tangentialArc({
+       radius = interiorBendRadius,
+       offset = -bendAngle
+     }, %)
+  |> xLine(endAbsolute = 0, tag = $seg02)
+  |> xLine(length = segLen(seg02))
+  |> tangentialArc({
+       radius = interiorBendRadius,
+       offset = -bendAngle
+     }, %)
+  |> angledLine([-bendAngle, segLen(seg01)], %)
+  |> tangentialArc({
+       radius = exteriorBendRadius,
+       offset = bendAngle
+     }, %)
+  |> xLine(length = flangeLength)
+  |> yLine(length = thickness, tag = $seg03)
+  |> xLine(length = -flangeLength, tag = $seg04)
+  |> tangentialArc({
+       radius = interiorBendRadius,
+       offset = -bendAngle
+     }, %)
+  |> angledLine([180 - bendAngle, segLen(seg01)], %)
+  |> tangentialArc({
+       radius = exteriorBendRadius,
+       offset = bendAngle
+     }, %)
+  |> xLine(endAbsolute = 0, tag = $seg05)
+  |> xLine(length = -segLen(seg05))
+  |> tangentialArc({
+       radius = exteriorBendRadius,
+       offset = bendAngle
+     }, %)
+  |> angledLine([bendAngle - 180, segLen(seg01)], %)
+  |> tangentialArc({
+       radius = interiorBendRadius,
+       offset = -bendAngle
+     }, %)
+  |> xLine(length = -flangeLength, tag = $seg06)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg07)
   |> close()
-  |> hole(circle(center = [0.75, 1], radius = boltSize), %)
-  |> hole(circle(center = [0.75, 4], radius = boltSize), %)
-  |> extrude(length = thickness)
+  |> extrude(length = flangeExtrusion)
   |> fillet(
-       radius = 0.5,
+       radius = flangeLength / 3,
        tags = [
-         getNextAdjacentEdge(e13),
-         getNextAdjacentEdge(e14)
+         seg03,
+         getOppositeEdge(seg03),
+         seg07,
+         getOppositeEdge(seg07)
        ],
      )
 
-flange2 = startSketchOn(XY)
-  |> startProfileAt([-6, 0], %)
-  |> line(end = [0, hatWidth])
-  |> line(end = [-flangeWidth, 0], tag = $e15)
-  |> line(end = [0, -hatWidth], tag = $e16)
-  |> close()
-  |> hole(circle(center = [-6.75, 1], radius = boltSize), %)
-  |> hole(circle(center = [-6.75, 4], radius = boltSize), %)
-  |> extrude(length = thickness)
-  |> fillet(
-       radius = 0.25,
-       tags = [
-         getNextAdjacentEdge(e15),
-         getNextAdjacentEdge(e16)
-       ],
+// Cut the bolt pattern in the left base flange
+leftFlangeBoltPattern = startSketchOn(bracketProfile, seg04)
+  |> circle(center = [-mountingBoltPatternX / 2, overhang], radius = mountingBoltDiameter / 2)
+  |> patternLinear2d(
+       %,
+       instances = 2,
+       distance = mountingBoltPatternY,
+       axis = [0, 1],
      )
+  |> extrude(length = -thickness)
+
+// Cut the bolt pattern in the right base flange
+rightFlangeBoltPattern = startSketchOn(bracketProfile, seg06)
+  |> circle(center = [mountingBoltPatternX / 2, overhang], radius = mountingBoltDiameter / 2)
+  |> patternLinear2d(
+       %,
+       instances = 2,
+       distance = mountingBoltPatternY,
+       axis = [0, 1],
+     )
+  |> extrude(length = -thickness)
+
+// Provision the top flange with holes to mount an object
+topFlangeBoltPattern = startSketchOn(bracketProfile, seg05)
+  |> circle(
+       center = [
+         -componentBoltPatternX / 2,
+         -componentBoltPatternY / 2 + flangeExtrusion / 2
+       ],
+       radius = componentBoltDiameter / 2,
+     )
+  |> patternLinear2d(
+       %,
+       instances = 2,
+       distance = componentBoltPatternX,
+       axis = [1, 0],
+     )
+  |> patternLinear2d(
+       %,
+       instances = 2,
+       distance = componentBoltPatternY,
+       axis = [0, 1],
+     )
+  |> extrude(length = -thickness)
+
+// Place a hole at the center of the component bolt pattern to reduce mass
+centeredHole = startSketchOn(bracketProfile, seg05)
+  |> circle(center = [0, flangeExtrusion / 2], radius = 0.75)
+  |> extrude(length = -thickness)

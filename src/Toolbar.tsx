@@ -1,28 +1,28 @@
-import { useRef, useMemo, memo, useCallback, useState } from 'react'
-import { isCursorInSketchCommandRange } from 'lang/util'
-import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
+import { useAppState } from 'AppState'
+import { ActionButton } from 'components/ActionButton'
+import { ActionButtonDropdown } from 'components/ActionButtonDropdown'
+import { CustomIcon } from 'components/CustomIcon'
+import Tooltip from 'components/Tooltip'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
-import { ActionButton } from 'components/ActionButton'
 import { useKclContext } from 'lang/KclProvider'
-import { ActionButtonDropdown } from 'components/ActionButtonDropdown'
-import { useHotkeys } from 'react-hotkeys-hook'
-import Tooltip from 'components/Tooltip'
-import { useAppState } from 'AppState'
-import { CustomIcon } from 'components/CustomIcon'
+import { isCursorInFunctionDefinition } from 'lang/queryAst'
+import { isCursorInSketchCommandRange } from 'lang/util'
+import { isDesktop } from 'lib/isDesktop'
+import { openExternalBrowserIfDesktop } from 'lib/openWindow'
+import { editorManager, kclManager } from 'lib/singletons'
 import {
-  toolbarConfig,
   ToolbarItem,
   ToolbarItemCallbackProps,
   ToolbarItemResolved,
   ToolbarModeName,
+  toolbarConfig,
 } from 'lib/toolbar'
-import { isDesktop } from 'lib/isDesktop'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import { isCursorInFunctionDefinition } from 'lang/queryAst'
-import { commandBarActor } from 'machines/commandBarMachine'
 import { isArray } from 'lib/utils'
+import { commandBarActor } from 'machines/commandBarMachine'
+import { memo, useCallback, useMemo, useRef, useState } from 'react'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 export function Toolbar({
   className = '',
@@ -45,10 +45,10 @@ export function Toolbar({
     )
       return false
     return isCursorInSketchCommandRange(
-      engineCommandManager.artifactGraph,
+      kclManager.artifactGraph,
       context.selectionRanges
     )
-  }, [engineCommandManager.artifactGraph, context.selectionRanges])
+  }, [kclManager.artifactGraph, context.selectionRanges])
 
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
   const { overallState } = useNetworkContext()

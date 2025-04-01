@@ -1,8 +1,8 @@
 import {
+  orRunWhenFullSuiteEnabled,
   runningOnLinux,
   runningOnMac,
   runningOnWindows,
-  orRunWhenFullSuiteEnabled,
 } from './test-utils'
 
 describe('platform detection utilities', () => {

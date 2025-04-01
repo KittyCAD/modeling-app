@@ -1,24 +1,26 @@
 import { toolTips } from 'lang/langHelpers'
-import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
+import { TransformInfo } from 'lang/std/stdTypes'
 import { Selections } from 'lib/selections'
+import { kclManager } from 'lib/singletons'
+import { err } from 'lib/trap'
+
+import { Node } from '@rust/kcl-lib/bindings/Node'
+
+import { createVariableDeclaration } from '../../lang/modifyAst'
 import {
   getNodeFromPath,
   isLinesParallelAndConstrained,
 } from '../../lang/queryAst'
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
-  transformSecondarySketchLinesTagFirst,
-  getTransformInfos,
   PathToNodeMap,
+  getTransformInfos,
   isExprBinaryPart,
+  transformSecondarySketchLinesTagFirst,
 } from '../../lang/std/sketchcombos'
-import { TransformInfo } from 'lang/std/stdTypes'
-import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
-import { createVariableDeclaration } from '../../lang/modifyAst'
+import { Expr, Program, VariableDeclarator } from '../../lang/wasm'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
-import { engineCommandManager, kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
-import { Node } from '@rust/kcl-lib/bindings/Node'
+import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 
@@ -45,7 +47,7 @@ export function intersectInfo({
     selectionRanges.graphSelections.length > 1 &&
     isLinesParallelAndConstrained(
       kclManager.ast,
-      engineCommandManager.artifactGraph,
+      kclManager.artifactGraph,
       kclManager.variables,
       selectionRanges.graphSelections[0],
       selectionRanges.graphSelections[1]

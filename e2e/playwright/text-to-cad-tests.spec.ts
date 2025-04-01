@@ -1,12 +1,13 @@
 import { Page } from '@playwright/test'
-import { test, expect } from './zoo-test'
+import fs from 'fs'
+import { join } from 'path'
+
 import {
-  getUtils,
   createProject,
+  getUtils,
   orRunWhenFullSuiteEnabled,
 } from './test-utils'
-import { join } from 'path'
-import fs from 'fs'
+import { expect, test } from './zoo-test'
 
 test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
   test('basic lego happy case', async ({ page, homePage }) => {

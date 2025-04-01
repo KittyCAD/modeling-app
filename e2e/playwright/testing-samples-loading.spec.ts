@@ -1,9 +1,10 @@
-import { test, expect } from './zoo-test'
-import { getUtils } from './test-utils'
-import { bracket } from 'lib/exampleKcl'
 import * as fsp from 'fs/promises'
-import { join } from 'path'
 import { FILE_EXT } from 'lib/constants'
+import { bracket } from 'lib/exampleKcl'
+import { join } from 'path'
+
+import { getUtils } from './test-utils'
+import { expect, test } from './zoo-test'
 
 test.describe('Testing in-app sample loading', () => {
   /**
@@ -46,7 +47,7 @@ test.describe('Testing in-app sample loading', () => {
       page.getByRole('option', {
         name,
       })
-    const warningText = page.getByText('Overwrite current file and units?')
+    const warningText = page.getByText('Overwrite current file with sample?')
     const confirmButton = page.getByRole('button', { name: 'Submit command' })
 
     await test.step(`Precondition: check the initial code`, async () => {
@@ -110,11 +111,9 @@ test.describe('Testing in-app sample loading', () => {
       const commandMethodOption = page.getByRole('option', {
         name: 'Overwrite',
       })
-      const newFileWarning = page.getByText(
-        'Create a new file, overwrite project units?'
-      )
+      const newFileWarning = page.getByText('Create a new file from sample?')
       const overwriteWarning = page.getByText(
-        'Overwrite current file and units?'
+        'Overwrite current file with sample?'
       )
       const confirmButton = page.getByRole('button', { name: 'Submit command' })
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')

@@ -1,11 +1,10 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-
 import { test as playwrightTestFn } from '@playwright/test'
 
 import {
-  fixturesBasedOnProcessEnvPlatform,
-  Fixtures,
   ElectronZoo,
+  Fixtures,
+  fixturesBasedOnProcessEnvPlatform,
 } from './fixtures/fixtureSetup'
 
 export { expect } from '@playwright/test'

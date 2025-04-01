@@ -1,11 +1,10 @@
-import { test, expect } from './zoo-test'
-
 import {
   doExport,
   getUtils,
   makeTemplate,
   orRunWhenFullSuiteEnabled,
 } from './test-utils'
+import { expect, test } from './zoo-test'
 
 test('Units menu', async ({ page, homePage }) => {
   test.fixme(orRunWhenFullSuiteEnabled())
@@ -67,11 +66,11 @@ part001 = startSketchOn(-XZ)
 |> xLine(endAbsolute = totalLen, tag = $seg03)
 |> yLine(length = -armThick, tag = $seg01)
 |> angledLineThatIntersects({
-      angle = HALF_TURN,
+      angle = turns::HALF_TURN,
       offset = -armThick,
       intersectTag = seg04
     }, %)
-|> angledLineToY([segAng(seg04) + 180, ZERO], %)
+|> angledLineToY([segAng(seg04) + 180, turns::ZERO], %)
 |> angledLineToY({
       angle = -bottomAng,
       to = -totalHeightHalf - armThick,
@@ -79,12 +78,12 @@ part001 = startSketchOn(-XZ)
 |> xLine(endAbsolute = segEndX(seg03) + 0)
 |> yLine(length = -segLen(seg01))
 |> angledLineThatIntersects({
-      angle = HALF_TURN,
+      angle = turns::HALF_TURN,
       offset = -armThick,
       intersectTag = seg02
     }, %)
 |> angledLineToY([segAng(seg02) + 180, -baseHeight], %)
-|> xLine(endAbsolute = ZERO)
+|> xLine(endAbsolute = turns::ZERO)
 |> close()
 |> extrude(length = 4)`
       )
@@ -483,7 +482,8 @@ test('Sketch on face', async ({ page, homePage, scene, cmdBar, toolbar }) => {
   await page.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
-      `sketch001 = startSketchOn(XZ)
+      `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
 |> startProfileAt([3.29, 7.86], %)
 |> line(end = [2.48, 2.44])
 |> line(end = [2.66, 1.17])

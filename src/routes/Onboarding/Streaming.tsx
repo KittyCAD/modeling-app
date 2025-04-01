@@ -1,5 +1,6 @@
-import { OnboardingButtons } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
+
+import { OnboardingButtons } from '.'
 
 export default function Streaming() {
   return (

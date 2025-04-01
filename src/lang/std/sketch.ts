@@ -1,31 +1,73 @@
+import { ToolTip, toolTips } from 'lang/langHelpers'
 import {
-  Path,
-  Sketch,
-  SourceRange,
-  PathToNode,
-  Program,
-  PipeExpression,
-  CallExpression,
-  CallExpressionKw,
-  VariableDeclarator,
-  Expr,
-  VariableDeclaration,
-  sketchFromKclValue,
-  topLevelRange,
-  VariableMap,
-} from 'lang/wasm'
+  createArrayExpression,
+  createCallExpression,
+  createCallExpressionStdLibKw,
+  createLabeledArg,
+  createLiteral,
+  createObjectExpression,
+  createPipeSubstitution,
+  createTagDeclarator,
+  findUniqueName,
+  mutateArrExp,
+  mutateObjExpProp,
+} from 'lang/modifyAst'
 import {
   ARG_INDEX_FIELD,
+  LABELED_ARG_FIELD,
   getNodeFromPath,
   getNodeFromPathCurry,
-  LABELED_ARG_FIELD,
 } from 'lang/queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   isLiteralArrayOrStatic,
   isNotLiteralArrayOrStatic,
 } from 'lang/std/sketchcombos'
-import { toolTips, ToolTip } from 'lang/langHelpers'
+import {
+  AddTagInfo,
+  ArrayItemInput,
+  ConstrainInfo,
+  CreatedSketchExprResult,
+  InputArgKeys,
+  ObjectPropertyInput,
+  RawArgs,
+  SegmentInputs,
+  SimplifiedArgDetails,
+  SingleValueInput,
+  SketchLineHelper,
+  SketchLineHelperKw,
+} from 'lang/std/stdTypes'
+import {
+  findKwArg,
+  findKwArgAny,
+  findKwArgAnyIndex,
+  findKwArgWithIndex,
+} from 'lang/util'
+import {
+  CallExpression,
+  CallExpressionKw,
+  Expr,
+  Path,
+  PathToNode,
+  PipeExpression,
+  Program,
+  Sketch,
+  SourceRange,
+  VariableDeclaration,
+  VariableDeclarator,
+  VariableMap,
+  sketchFromKclValue,
+  topLevelRange,
+} from 'lang/wasm'
+import { err } from 'lib/trap'
+import { getAngle, getLength, isArray, roundOff } from 'lib/utils'
+import { EdgeCutInfo } from 'machines/modelingMachine'
+import { perpendicularDistance } from 'sketch-helpers'
+
+import { Name } from '@rust/kcl-lib/bindings/Name'
+import { Node } from '@rust/kcl-lib/bindings/Node'
+import { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
+
 import {
   createPipeExpression,
   mutateKwArg,
@@ -33,48 +75,6 @@ import {
   removeKwArgs,
   splitPathAtPipeExpression,
 } from '../modifyAst'
-
-import {
-  SketchLineHelper,
-  ConstrainInfo,
-  ArrayItemInput,
-  ObjectPropertyInput,
-  SingleValueInput,
-  AddTagInfo,
-  SegmentInputs,
-  SimplifiedArgDetails,
-  RawArgs,
-  CreatedSketchExprResult,
-  SketchLineHelperKw,
-  InputArgKeys,
-} from 'lang/std/stdTypes'
-
-import {
-  createLiteral,
-  createTagDeclarator,
-  createCallExpression,
-  createCallExpressionStdLibKw,
-  createArrayExpression,
-  createLabeledArg,
-  createPipeSubstitution,
-  createObjectExpression,
-  mutateArrExp,
-  mutateObjExpProp,
-  findUniqueName,
-} from 'lang/modifyAst'
-import { roundOff, getLength, getAngle, isArray } from 'lib/utils'
-import { err } from 'lib/trap'
-import { perpendicularDistance } from 'sketch-helpers'
-import { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
-import { EdgeCutInfo } from 'machines/modelingMachine'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import {
-  findKwArg,
-  findKwArgWithIndex,
-  findKwArgAny,
-  findKwArgAnyIndex,
-} from 'lang/util'
-import { Name } from '@rust/kcl-lib/bindings/Name'
 
 export const ARG_TAG = 'tag'
 export const ARG_END = 'end'
@@ -158,10 +158,10 @@ const constrainInfo = (
     g === 'singleValue'
       ? { type: 'singleValue' }
       : typeof g === 'number'
-      ? { type: 'arrayItem', index: g }
-      : typeof g === 'string'
-      ? { type: 'objectProperty', key: g }
-      : undefined,
+        ? { type: 'arrayItem', index: g }
+        : typeof g === 'string'
+          ? { type: 'objectProperty', key: g }
+          : undefined,
   pathToNode: e,
   stdLibFnName: f,
 })
@@ -178,7 +178,7 @@ const commonConstraintInfoHelper = (
     {
       arrayInput?: 0 | 1
       objInput?: ObjectPropertyInput<any>['key']
-    }
+    },
   ],
   code: string,
   pathToNode: PathToNode,
@@ -3459,10 +3459,11 @@ function isAngleLiteral(lineArugement: Expr): boolean {
   return lineArugement?.type === 'ArrayExpression'
     ? isLiteralArrayOrStatic(lineArugement.elements[0])
     : lineArugement?.type === 'ObjectExpression'
-    ? isLiteralArrayOrStatic(
-        lineArugement.properties.find(({ key }) => key.name === 'angle')?.value
-      )
-    : false
+      ? isLiteralArrayOrStatic(
+          lineArugement.properties.find(({ key }) => key.name === 'angle')
+            ?.value
+        )
+      : false
 }
 
 type addTagFn = (

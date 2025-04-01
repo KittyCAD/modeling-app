@@ -4,8 +4,9 @@ import EditorManager from 'editor/manager'
 import { KclManager } from 'lang/KclSingleton'
 import CodeManager from 'lang/codeManager'
 import { EngineCommandManager } from 'lang/std/engineConnection'
-import { uuidv4 } from './utils'
 import RustContext from 'lib/rustContext'
+
+import { uuidv4 } from './utils'
 
 export const codeManager = new CodeManager()
 

@@ -1,16 +1,17 @@
+import { useMenuListener } from 'hooks/useMenu'
 import { coreDump } from 'lang/wasm'
 import { CoreDumpManager } from 'lib/coredump'
-import { CustomIcon } from './CustomIcon'
 import { codeManager, engineCommandManager } from 'lib/singletons'
-import React, { useMemo } from 'react'
-import toast from 'react-hot-toast'
-import Tooltip from './Tooltip'
+import { rustContext } from 'lib/singletons'
 import { reportRejection } from 'lib/trap'
 import { toSync } from 'lib/utils'
 import { useToken } from 'machines/appMachine'
-import { rustContext } from 'lib/singletons'
+import React, { useMemo } from 'react'
+import toast from 'react-hot-toast'
+
 import type { WebContentSendPayload } from '../menu/channels'
-import { useMenuListener } from 'hooks/useMenu'
+import { CustomIcon } from './CustomIcon'
+import Tooltip from './Tooltip'
 
 export const RefreshButton = ({ children }: React.PropsWithChildren) => {
   const token = useToken()

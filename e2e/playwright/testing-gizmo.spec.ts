@@ -1,7 +1,8 @@
-import { test, expect } from './zoo-test'
-import { getUtils } from './test-utils'
 import { uuidv4 } from 'lib/utils'
+
 import { TEST_CODE_GIZMO } from './storageStates'
+import { getUtils } from './test-utils'
+import { expect, test } from './zoo-test'
 
 test.describe('Testing Gizmo', { tag: ['@skipWin'] }, () => {
   const cases = [
@@ -255,7 +256,7 @@ test.describe(`Testing gizmo, fixture-based`, () => {
     await context.addInitScript(() => {
       localStorage.setItem(
         'persistCode',
-        `
+        `@settings(defaultLengthUnit = in)
         const sketch002 = startSketchOn(XZ)
           |> startProfileAt([-108.83, -57.48], %)
           |> angledLine([0, 105.13], %, $rectangleSegmentA001)

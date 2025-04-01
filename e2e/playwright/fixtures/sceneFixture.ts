@@ -1,15 +1,16 @@
-import type { Page, Locator } from '@playwright/test'
-import { expect } from '../zoo-test'
+import type { Locator, Page } from '@playwright/test'
 import { isArray, uuidv4 } from 'lib/utils'
-import { CmdBarFixture } from './cmdBarFixture'
+
 import {
   closeDebugPanel,
   doAndWaitForImageDiff,
   getPixelRGBs,
+  getUtils,
   openAndClearDebugPanel,
   sendCustomCmd,
-  getUtils,
 } from '../test-utils'
+import { expect } from '../zoo-test'
+import { CmdBarFixture } from './cmdBarFixture'
 
 type MouseParams = {
   pixelDiff?: number
@@ -310,7 +311,9 @@ export async function expectPixelColor(
     .toBeTruthy()
     .catch((cause) => {
       throw new Error(
-        `ExpectPixelColor: expecting ${colour} got ${finalValue}`,
+        `ExpectPixelColor: point ${JSON.stringify(
+          coords
+        )} was expecting ${colour} but got ${finalValue}`,
         { cause }
       )
     })

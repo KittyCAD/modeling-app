@@ -1,12 +1,13 @@
-import { Toolbar } from '../Toolbar'
-import UserSidebarMenu from 'components/UserSidebarMenu'
-import { type IndexLoaderData } from 'lib/types'
-import ProjectSidebarMenu from './ProjectSidebarMenu'
-import styles from './AppHeader.module.css'
 import { RefreshButton } from 'components/RefreshButton'
-import { CommandBarOpenButton } from './CommandBarOpenButton'
+import UserSidebarMenu from 'components/UserSidebarMenu'
 import { isDesktop } from 'lib/isDesktop'
+import { type IndexLoaderData } from 'lib/types'
 import { useUser } from 'machines/appMachine'
+
+import { Toolbar } from '../Toolbar'
+import styles from './AppHeader.module.css'
+import { CommandBarOpenButton } from './CommandBarOpenButton'
+import ProjectSidebarMenu from './ProjectSidebarMenu'
 
 interface AppHeaderProps extends React.PropsWithChildren {
   showToolbar?: boolean

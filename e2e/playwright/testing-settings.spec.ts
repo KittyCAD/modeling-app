@@ -1,24 +1,26 @@
-import { test, expect } from './zoo-test'
 import * as fsp from 'fs/promises'
-import { join } from 'path'
-import {
-  getUtils,
-  executorInputPath,
-  createProject,
-  tomlToSettings,
-  TEST_COLORS,
-  orRunWhenFullSuiteEnabled,
-} from './test-utils'
+import { PROJECT_SETTINGS_FILE_NAME, SETTINGS_FILE_NAME } from 'lib/constants'
 import { SettingsLevel } from 'lib/settings/settingsTypes'
-import { SETTINGS_FILE_NAME, PROJECT_SETTINGS_FILE_NAME } from 'lib/constants'
-import {
-  TEST_SETTINGS_KEY,
-  TEST_SETTINGS_CORRUPTED,
-  TEST_SETTINGS,
-  TEST_SETTINGS_DEFAULT_THEME,
-} from './storageStates'
 import { DeepPartial } from 'lib/types'
+import { join } from 'path'
+
 import { Settings } from '@rust/kcl-lib/bindings/Settings'
+
+import {
+  TEST_SETTINGS,
+  TEST_SETTINGS_CORRUPTED,
+  TEST_SETTINGS_DEFAULT_THEME,
+  TEST_SETTINGS_KEY,
+} from './storageStates'
+import {
+  TEST_COLORS,
+  createProject,
+  executorInputPath,
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+  tomlToSettings,
+} from './test-utils'
+import { expect, test } from './zoo-test'
 
 test.describe('Testing settings', () => {
   test('Stored settings are validated and fall back to defaults', async ({
@@ -271,7 +273,7 @@ test.describe('Testing settings', () => {
           const bracketDir = join(dir, projectName)
           await fsp.mkdir(bracketDir, { recursive: true })
           await fsp.copyFile(
-            executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+            executorInputPath('cylinder-inches.kcl'),
             join(bracketDir, 'main.kcl')
           )
         }
@@ -699,19 +701,19 @@ test.describe('Testing settings', () => {
           name: 'Current units are: ',
         })
         await gizmo.click()
-        const button = page.getByRole('button', {
+        const button = page.locator('ul').getByRole('button', {
           name: copy,
           exact: true,
         })
         await button.click()
         const toastMessage = page.getByText(
-          `Set default unit to "${unitOfMeasure}" for this project`
+          `Updated per-file units to ${unitOfMeasure}`
         )
         await expect(toastMessage).toBeVisible()
       }
 
-      await changeUnitOfMeasureInGizmo('in', 'Inches')
       await changeUnitOfMeasureInGizmo('ft', 'Feet')
+      await changeUnitOfMeasureInGizmo('in', 'Inches')
       await changeUnitOfMeasureInGizmo('yd', 'Yards')
       await changeUnitOfMeasureInGizmo('mm', 'Millimeters')
       await changeUnitOfMeasureInGizmo('cm', 'Centimeters')
@@ -951,9 +953,9 @@ test.describe('Testing settings', () => {
       )
     })
 
-    await test.step(`Initial units from settings`, async () => {
+    await test.step(`Initial units from settings are ignored`, async () => {
       await homePage.openProject('project-000')
-      await expect(unitsIndicator).toHaveText('Current units are: in')
+      await expect(unitsIndicator).toHaveText('Current units are: mm')
     })
 
     await test.step(`Manually write inline settings`, async () => {

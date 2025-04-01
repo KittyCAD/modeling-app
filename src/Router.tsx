@@ -1,46 +1,47 @@
-import { App } from './App'
-import {
-  createBrowserRouter,
-  createHashRouter,
-  Outlet,
-  redirect,
-  RouterProvider,
-} from 'react-router-dom'
-import { ErrorPage } from './components/ErrorPage'
-import { Settings } from './routes/Settings'
-import { Telemetry } from './routes/Telemetry'
-import Onboarding, { onboardingRoutes } from './routes/Onboarding'
-import SignIn from './routes/SignIn'
-import { Auth } from './Auth'
-import { isDesktop } from './lib/isDesktop'
-import Home from './routes/Home'
-import { NetworkContext } from './hooks/useNetworkContext'
-import { useNetworkStatus } from './hooks/useNetworkStatus'
-import makeUrlPathRelative from './lib/makeUrlPathRelative'
-import DownloadAppBanner from 'components/DownloadAppBanner'
-import { WasmErrBanner } from 'components/WasmErrBanner'
+import { AppStateProvider } from 'AppState'
 import { CommandBar } from 'components/CommandBar/CommandBar'
-import ModelingMachineProvider from 'components/ModelingMachineProvider'
+import DownloadAppBanner from 'components/DownloadAppBanner'
 import FileMachineProvider from 'components/FileMachineProvider'
-import { MachineManagerProvider } from 'components/MachineManagerProvider'
-import { PATHS } from 'lib/paths'
-import { fileLoader, homeLoader, telemetryLoader } from 'lib/routeLoaders'
 import LspProvider from 'components/LspProvider'
+import { MachineManagerProvider } from 'components/MachineManagerProvider'
+import ModelingMachineProvider from 'components/ModelingMachineProvider'
+import { OpenInDesktopAppHandler } from 'components/OpenInDesktopAppHandler'
+import { ProjectsContextProvider } from 'components/ProjectsContextProvider'
+import { RouteProvider } from 'components/RouteProvider'
+import { WasmErrBanner } from 'components/WasmErrBanner'
 import { KclContextProvider } from 'lang/KclProvider'
+import { coreDump } from 'lang/wasm'
 import { ASK_TO_OPEN_QUERY_PARAM, BROWSER_PROJECT_NAME } from 'lib/constants'
 import { CoreDumpManager } from 'lib/coredump'
-import { codeManager, engineCommandManager } from 'lib/singletons'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
-import toast from 'react-hot-toast'
-import { coreDump } from 'lang/wasm'
-import { useMemo } from 'react'
-import { AppStateProvider } from 'AppState'
-import { reportRejection } from 'lib/trap'
-import { RouteProvider } from 'components/RouteProvider'
-import { ProjectsContextProvider } from 'components/ProjectsContextProvider'
-import { useToken } from 'machines/appMachine'
-import { OpenInDesktopAppHandler } from 'components/OpenInDesktopAppHandler'
+import { PATHS } from 'lib/paths'
+import { fileLoader, homeLoader, telemetryLoader } from 'lib/routeLoaders'
+import { codeManager, engineCommandManager } from 'lib/singletons'
 import { rustContext } from 'lib/singletons'
+import { reportRejection } from 'lib/trap'
+import { useToken } from 'machines/appMachine'
+import { useMemo } from 'react'
+import toast from 'react-hot-toast'
+import {
+  Outlet,
+  RouterProvider,
+  createBrowserRouter,
+  createHashRouter,
+  redirect,
+} from 'react-router-dom'
+
+import { App } from './App'
+import { Auth } from './Auth'
+import { ErrorPage } from './components/ErrorPage'
+import { NetworkContext } from './hooks/useNetworkContext'
+import { useNetworkStatus } from './hooks/useNetworkStatus'
+import { isDesktop } from './lib/isDesktop'
+import makeUrlPathRelative from './lib/makeUrlPathRelative'
+import Home from './routes/Home'
+import Onboarding, { onboardingRoutes } from './routes/Onboarding'
+import { Settings } from './routes/Settings'
+import SignIn from './routes/SignIn'
+import { Telemetry } from './routes/Telemetry'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 

@@ -1,4 +1,4 @@
-import { test, expect } from './zoo-test'
+import { expect, test } from './zoo-test'
 
 test.describe('Electron app header tests', () => {
   test(

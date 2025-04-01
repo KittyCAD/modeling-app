@@ -1,26 +1,25 @@
 import { toolTips } from 'lang/langHelpers'
-import { Program, Expr } from '../../lang/wasm'
+import { TransformInfo } from 'lang/std/stdTypes'
 import { Selections } from 'lib/selections'
+import { kclManager } from 'lib/singletons'
+import { err } from 'lib/trap'
+
+import { Node } from '@rust/kcl-lib/bindings/Node'
+
+import { createName, createVariableDeclaration } from '../../lang/modifyAst'
 import { getNodeFromPath } from '../../lang/queryAst'
 import {
-  getTransformInfos,
-  transformAstSketchLines,
   PathToNodeMap,
+  getTransformInfos,
   isExprBinaryPart,
+  transformAstSketchLines,
 } from '../../lang/std/sketchcombos'
-import { TransformInfo } from 'lang/std/stdTypes'
+import { Expr, Program } from '../../lang/wasm'
+import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import {
   SetAngleLengthModal,
   createSetAngleLengthModal,
 } from '../SetAngleLengthModal'
-import {
-  createLocalName,
-  createVariableDeclaration,
-} from '../../lang/modifyAst'
-import { removeDoubleNegatives } from '../AvailableVarsHelpers'
-import { kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
-import { Node } from '@rust/kcl-lib/bindings/Node'
 
 const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
 
@@ -42,8 +41,8 @@ export function absDistanceInfo({
     constraint === 'xAbs' || constraint === 'yAbs'
       ? constraint
       : constraint === 'snapToYAxis'
-      ? 'xAbs'
-      : 'yAbs'
+        ? 'xAbs'
+        : 'yAbs'
   const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode, [
       'CallExpression',
@@ -169,7 +168,7 @@ export function applyConstraintAxisAlign({
   if (err(info)) return info
   const transformInfos = info.transforms
 
-  let finalValue = createLocalName('ZERO')
+  let finalValue = createName(['turns'], 'ZERO')
 
   return transformAstSketchLines({
     ast: structuredClone(kclManager.ast),

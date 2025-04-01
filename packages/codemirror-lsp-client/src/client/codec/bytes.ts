@@ -1,4 +1,4 @@
-import { encoder, decoder } from '../codec'
+import { decoder, encoder } from '../codec'
 
 export default class Bytes {
   static encode(input: string): Uint8Array {
@@ -10,7 +10,7 @@ export default class Bytes {
   }
 
   static append<
-    T extends { length: number; set(arr: T, offset: number): void }
+    T extends { length: number; set(arr: T, offset: number): void },
   >(constructor: { new (length: number): T }, ...arrays: T[]) {
     let totalLength = 0
     for (const arr of arrays) {

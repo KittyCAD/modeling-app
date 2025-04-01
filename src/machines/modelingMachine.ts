@@ -1,3 +1,77 @@
+import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
+import { orthoScale, quaternionFromUpNForward } from 'clientSideScene/helpers'
+import { DRAFT_DASHED_LINE } from 'clientSideScene/sceneEntities'
+import { DRAFT_POINT } from 'clientSideScene/sceneInfra'
+import { createProfileStartHandle } from 'clientSideScene/segments'
+import { MachineManager } from 'components/MachineManagerProvider'
+import { ModelingMachineContext } from 'components/ModelingMachineProvider'
+import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
+import {
+  applyConstraintEqualAngle,
+  equalAngleInfo,
+} from 'components/Toolbar/EqualAngle'
+import {
+  applyConstraintEqualLength,
+  setEqualLengthInfo,
+} from 'components/Toolbar/EqualLength'
+import {
+  applyConstraintHorzVert,
+  horzVertInfo,
+} from 'components/Toolbar/HorzVert'
+import { intersectInfo } from 'components/Toolbar/Intersect'
+import {
+  applyRemoveConstrainingValues,
+  removeConstrainingValuesInfo,
+} from 'components/Toolbar/RemoveConstrainingValues'
+import {
+  absDistanceInfo,
+  applyConstraintAxisAlign,
+} from 'components/Toolbar/SetAbsDistance'
+import { angleBetweenInfo } from 'components/Toolbar/SetAngleBetween'
+import {
+  applyConstraintHorzVertAlign,
+  horzVertDistanceInfo,
+} from 'components/Toolbar/SetHorzVertDistance'
+import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
+import { updateModelingState } from 'lang/modelingWorkflows'
+import {
+  addHelix,
+  addOffsetPlane,
+  addShell,
+  addSweep,
+  createLiteral,
+  createLocalName,
+  deleteNodeInExtrudePipe,
+  extrudeSketch,
+  insertNamedConstant,
+  loftSketches,
+} from 'lang/modifyAst'
+import {
+  ChamferParameters,
+  EdgeTreatmentType,
+  FilletParameters,
+  applyEdgeTreatmentToSelection,
+  getPathToExtrudeForSegmentSelection,
+  mutateAstWithTagForSketchSegment,
+} from 'lang/modifyAst/addEdgeTreatment'
+import {
+  getAxisExpressionAndIndex,
+  revolveSketch,
+} from 'lang/modifyAst/addRevolve'
+import {
+  applyIntersectFromTargetOperatorSelections,
+  applySubtractFromTargetOperatorSelections,
+  applyUnionFromTargetOperatorSelections,
+} from 'lang/modifyAst/boolean'
+import {
+  deleteSelectionPromise,
+  deletionErrorMessage,
+} from 'lang/modifyAst/deleteSelection'
+import { setAppearance } from 'lang/modifyAst/setAppearance'
+import { isNodeSafeToReplacePath, stringifyPathToNode } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import { getPathsFromPlaneArtifact } from 'lang/std/artifactGraph'
+import { Coords2d } from 'lang/std/sketch'
 import {
   CallExpression,
   CallExpressionKw,
@@ -12,107 +86,35 @@ import {
   resultIsOk,
   sketchFromKclValue,
 } from 'lang/wasm'
+import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConfig'
+import { KclCommandValue } from 'lib/commandTypes'
+import { EXECUTION_TYPE_REAL } from 'lib/constants'
+import { DefaultPlaneStr } from 'lib/planes'
 import {
   Axis,
   DefaultPlaneSelection,
-  Selections,
   Selection,
+  Selections,
   updateSelections,
 } from 'lib/selections'
-import { assign, fromPromise, setup } from 'xstate'
-import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
-import { isNodeSafeToReplacePath, stringifyPathToNode } from 'lang/queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
-  kclManager,
-  sceneInfra,
-  sceneEntitiesManager,
-  engineCommandManager,
-  editorManager,
   codeManager,
+  editorManager,
+  engineCommandManager,
+  kclManager,
+  sceneEntitiesManager,
+  sceneInfra,
 } from 'lib/singletons'
-import {
-  horzVertInfo,
-  applyConstraintHorzVert,
-} from 'components/Toolbar/HorzVert'
-import {
-  applyConstraintHorzVertAlign,
-  horzVertDistanceInfo,
-} from 'components/Toolbar/SetHorzVertDistance'
-import { angleBetweenInfo } from 'components/Toolbar/SetAngleBetween'
-import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
-import {
-  applyConstraintEqualLength,
-  setEqualLengthInfo,
-} from 'components/Toolbar/EqualLength'
-import {
-  getAxisExpressionAndIndex,
-  revolveSketch,
-} from 'lang/modifyAst/addRevolve'
-import {
-  addHelix,
-  addOffsetPlane,
-  addShell,
-  addSweep,
-  createLiteral,
-  createLocalName,
-  deleteNodeInExtrudePipe,
-  extrudeSketch,
-  insertNamedConstant,
-  loftSketches,
-} from 'lang/modifyAst'
-import {
-  applyEdgeTreatmentToSelection,
-  ChamferParameters,
-  EdgeTreatmentType,
-  FilletParameters,
-  getPathToExtrudeForSegmentSelection,
-  mutateAstWithTagForSketchSegment,
-} from 'lang/modifyAst/addEdgeTreatment'
-import { getNodeFromPath } from '../lang/queryAst'
-import {
-  applyConstraintEqualAngle,
-  equalAngleInfo,
-} from 'components/Toolbar/EqualAngle'
-import {
-  applyRemoveConstrainingValues,
-  removeConstrainingValuesInfo,
-} from 'components/Toolbar/RemoveConstrainingValues'
-import { intersectInfo } from 'components/Toolbar/Intersect'
-import {
-  absDistanceInfo,
-  applyConstraintAxisAlign,
-} from 'components/Toolbar/SetAbsDistance'
-import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConfig'
-import { err, reportRejection, trap } from 'lib/trap'
-import { DefaultPlaneStr } from 'lib/planes'
-import { isArray, uuidv4 } from 'lib/utils'
-import { Coords2d } from 'lang/std/sketch'
-import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
-import toast from 'react-hot-toast'
 import { ToolbarModeName } from 'lib/toolbar'
-import { orthoScale, quaternionFromUpNForward } from 'clientSideScene/helpers'
+import { err, reportRejection, trap } from 'lib/trap'
+import { isArray, uuidv4 } from 'lib/utils'
+import toast from 'react-hot-toast'
 import { Mesh, Vector2, Vector3 } from 'three'
-import { MachineManager } from 'components/MachineManagerProvider'
-import { KclCommandValue } from 'lib/commandTypes'
-import { ModelingMachineContext } from 'components/ModelingMachineProvider'
-import {
-  deleteSelectionPromise,
-  deletionErrorMessage,
-} from 'lang/modifyAst/deleteSelection'
-import { getPathsFromPlaneArtifact } from 'lang/std/artifactGraph'
-import { createProfileStartHandle } from 'clientSideScene/segments'
-import { DRAFT_POINT } from 'clientSideScene/sceneInfra'
-import { setAppearance } from 'lang/modifyAst/setAppearance'
-import { DRAFT_DASHED_LINE } from 'clientSideScene/sceneEntities'
+import { assign, fromPromise, setup } from 'xstate'
+
 import { Node } from '@rust/kcl-lib/bindings/Node'
-import { updateModelingState } from 'lang/modelingWorkflows'
-import { EXECUTION_TYPE_REAL } from 'lib/constants'
-import {
-  applyIntersectFromTargetOperatorSelections,
-  applySubtractFromTargetOperatorSelections,
-  applyUnionFromTargetOperatorSelections,
-} from 'lang/modifyAst/boolean'
+
+import { getNodeFromPath } from '../lang/queryAst'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -735,62 +737,6 @@ export const modelingMachine = setup({
         sketchDetails: event.output,
       }
     }),
-    'AST revolve': ({ context: { store }, event }) => {
-      if (event.type !== 'Revolve') return
-      ;(async () => {
-        if (!event.data) return
-        const { selection, angle, axis, edge, axisOrEdge } = event.data
-        let ast = kclManager.ast
-        if (
-          'variableName' in angle &&
-          angle.variableName &&
-          angle.insertIndex !== undefined
-        ) {
-          const newBody = [...ast.body]
-          newBody.splice(angle.insertIndex, 0, angle.variableDeclarationAst)
-          ast.body = newBody
-        }
-
-        // This is the selection of the sketch that will be revolved
-        const pathToNode = getNodePathFromSourceRange(
-          ast,
-          selection.graphSelections[0]?.codeRef.range
-        )
-
-        const revolveSketchRes = revolveSketch(
-          ast,
-          pathToNode,
-          'variableName' in angle
-            ? angle.variableIdentifierAst
-            : angle.valueAst,
-          axisOrEdge,
-          axis,
-          edge,
-          engineCommandManager.artifactGraph,
-          selection.graphSelections[0]?.artifact
-        )
-        if (trap(revolveSketchRes)) return
-        const { modifiedAst, pathToRevolveArg } = revolveSketchRes
-
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          {
-            kclManager,
-            editorManager,
-            codeManager,
-          },
-          {
-            focusPath: [pathToRevolveArg],
-            zoomToFit: true,
-            zoomOnRangeAndType: {
-              range: selection.graphSelections[0]?.codeRef.range,
-              type: 'path',
-            },
-          }
-        )
-      })().catch(reportRejection)
-    },
     'set selection filter to curves only': () => {
       ;(async () => {
         await engineCommandManager.sendSceneCommand({
@@ -1123,9 +1069,7 @@ export const modelingMachine = setup({
     }),
     're-eval nodePaths': assign(({ context: { sketchDetails } }) => {
       if (!sketchDetails) return {}
-      const planeArtifact = [
-        ...engineCommandManager.artifactGraph.values(),
-      ].find(
+      const planeArtifact = [...kclManager.artifactGraph.values()].find(
         (artifact) =>
           artifact.type === 'plane' &&
           stringifyPathToNode(artifact.codeRef.pathToNode) ===
@@ -1134,7 +1078,7 @@ export const modelingMachine = setup({
       if (planeArtifact?.type !== 'plane') return {}
       const newPaths = getPathsFromPlaneArtifact(
         planeArtifact,
-        engineCommandManager.artifactGraph,
+        kclManager.artifactGraph,
         kclManager.ast
       )
       return {
@@ -1165,8 +1109,8 @@ export const modelingMachine = setup({
             currentTool === 'tangentialArc'
               ? { type: 'Continue existing profile', data }
               : currentTool === 'arc'
-              ? { type: 'Add start point', data }
-              : { type: 'Add start point', data }
+                ? { type: 'Add start point', data }
+                : { type: 'Add start point', data }
           ),
       })
     },
@@ -1794,7 +1738,7 @@ export const modelingMachine = setup({
         node: ast,
         pathToNode,
         artifact: selection.graphSelections[0].artifact,
-        artifactGraph: engineCommandManager.artifactGraph,
+        artifactGraph: kclManager.artifactGraph,
         distance:
           'variableName' in distance
             ? distance.variableIdentifierAst
@@ -1831,6 +1775,87 @@ export const modelingMachine = setup({
         },
         {
           focusPath: [pathToExtrudeArg],
+          zoomToFit: true,
+          zoomOnRangeAndType: {
+            range: selection.graphSelections[0]?.codeRef.range,
+            type: 'path',
+          },
+        }
+      )
+    }),
+    revolveAstMod: fromPromise<
+      unknown,
+      ModelingCommandSchema['Revolve'] | undefined
+    >(async ({ input }) => {
+      if (!input) return new Error('No input provided')
+      const { nodeToEdit, selection, angle, axis, edge, axisOrEdge } = input
+      let ast = kclManager.ast
+      let variableName: string | undefined = undefined
+      let insertIndex: number | undefined = undefined
+
+      // If this is an edit flow, first we're going to remove the old extrusion
+      if (nodeToEdit && typeof nodeToEdit[1][0] === 'number') {
+        // Extract the plane name from the node to edit
+        const nameNode = getNodeFromPath<VariableDeclaration>(
+          ast,
+          nodeToEdit,
+          'VariableDeclaration'
+        )
+        if (err(nameNode)) {
+          console.error('Error extracting plane name')
+        } else {
+          variableName = nameNode.node.declaration.id.name
+        }
+
+        // Removing the old extrusion statement
+        const newBody = [...ast.body]
+        newBody.splice(nodeToEdit[1][0], 1)
+        ast.body = newBody
+        insertIndex = nodeToEdit[1][0]
+      }
+
+      if (
+        'variableName' in angle &&
+        angle.variableName &&
+        angle.insertIndex !== undefined
+      ) {
+        const newBody = [...ast.body]
+        newBody.splice(angle.insertIndex, 0, angle.variableDeclarationAst)
+        ast.body = newBody
+        if (insertIndex) {
+          // if editing need to offset that new var
+          insertIndex += 1
+        }
+      }
+
+      // This is the selection of the sketch that will be revolved
+      const pathToNode = getNodePathFromSourceRange(
+        ast,
+        selection.graphSelections[0]?.codeRef.range
+      )
+
+      const revolveSketchRes = revolveSketch(
+        ast,
+        pathToNode,
+        'variableName' in angle ? angle.variableIdentifierAst : angle.valueAst,
+        axisOrEdge,
+        axis,
+        edge,
+        variableName,
+        insertIndex
+      )
+      if (trap(revolveSketchRes)) return
+      const { modifiedAst, pathToRevolveArg } = revolveSketchRes
+      await updateModelingState(
+        modifiedAst,
+        EXECUTION_TYPE_REAL,
+        {
+          kclManager,
+          editorManager,
+          codeManager,
+        },
+        {
+          focusPath: [pathToRevolveArg],
           zoomToFit: true,
           zoomOnRangeAndType: {
             range: selection.graphSelections[0]?.codeRef.range,
@@ -1987,7 +2012,7 @@ export const modelingMachine = setup({
           const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
             clonedAstForGetExtrude,
             cylinder.graphSelections[0],
-            engineCommandManager.artifactGraph
+            kclManager.artifactGraph
           )
           if (err(extrudeLookupResult)) {
             return extrudeLookupResult
@@ -2249,7 +2274,7 @@ export const modelingMachine = setup({
           const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
             clonedAstForGetExtrude,
             graphSelection,
-            engineCommandManager.artifactGraph
+            kclManager.artifactGraph
           )
           if (err(extrudeLookupResult)) {
             return new Error(
@@ -2769,9 +2794,8 @@ export const modelingMachine = setup({
         },
 
         Revolve: {
-          target: 'idle',
-          actions: ['AST revolve'],
-          reenter: false,
+          target: 'Applying revolve',
+          reenter: true,
         },
 
         Sweep: {
@@ -4015,6 +4039,22 @@ export const modelingMachine = setup({
         id: 'extrudeAstMod',
         input: ({ event }) => {
           if (event.type !== 'Extrude') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying revolve': {
+      invoke: {
+        src: 'revolveAstMod',
+        id: 'revolveAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Revolve') return undefined
           return event.data
         },
         onDone: ['idle'],

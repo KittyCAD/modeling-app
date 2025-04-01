@@ -1,21 +1,22 @@
-import { test, expect } from './zoo-test'
+import { Models } from '@kittycad/lib'
+import { spawn } from 'child_process'
+import fsp from 'fs/promises'
+import JSZip from 'jszip'
+import { KCL_DEFAULT_LENGTH } from 'lib/constants'
+import path from 'path'
+
+import { CmdBarFixture } from './fixtures/cmdBarFixture'
+import { SceneFixture } from './fixtures/sceneFixture'
 import { secrets } from './secrets'
+import { TEST_SETTINGS, TEST_SETTINGS_KEY } from './storageStates'
 import {
   Paths,
   doExport,
   getUtils,
-  settingsToToml,
   orRunWhenFullSuiteEnabled,
+  settingsToToml,
 } from './test-utils'
-import { Models } from '@kittycad/lib'
-import fsp from 'fs/promises'
-import { spawn } from 'child_process'
-import { KCL_DEFAULT_LENGTH } from 'lib/constants'
-import JSZip from 'jszip'
-import path from 'path'
-import { TEST_SETTINGS, TEST_SETTINGS_KEY } from './storageStates'
-import { SceneFixture } from './fixtures/sceneFixture'
-import { CmdBarFixture } from './fixtures/cmdBarFixture'
+import { expect, test } from './zoo-test'
 
 test.beforeEach(async ({ page, context }) => {
   // Make the user avatar image always 404
@@ -76,11 +77,11 @@ part001 = startSketchOn(-XZ)
   |> xLine(endAbsolute = totalLen, tag = $seg03)
   |> yLine(length = -armThick, tag = $seg01)
   |> angledLineThatIntersects({
-        angle = HALF_TURN,
+        angle = turns::HALF_TURN,
         offset = -armThick,
         intersectTag = seg04
       }, %)
-  |> angledLineToY([segAng(seg04, %) + 180, ZERO], %)
+  |> angledLineToY([segAng(seg04, %) + 180, turns::ZERO], %)
   |> angledLineToY({
         angle = -bottomAng,
         to = -totalHeightHalf - armThick,
@@ -88,12 +89,12 @@ part001 = startSketchOn(-XZ)
   |> xLine(length = endAbsolute = segEndX(seg03) + 0)
   |> yLine(length = -segLen(seg01, %))
   |> angledLineThatIntersects({
-        angle = HALF_TURN,
+        angle = turns::HALF_TURN,
         offset = -armThick,
         intersectTag = seg02
       }, %)
   |> angledLineToY([segAng(seg02, %) + 180, -baseHeight], %)
-  |> xLine(endAbsolute = ZERO)
+  |> xLine(endAbsolute = turns::ZERO)
   |> close()
   |> extrude(length = 4)`
       )

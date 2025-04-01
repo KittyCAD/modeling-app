@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useSelector } from '@xstate/react'
 import { CommandArgument } from 'lib/commandTypes'
 import {
   Selections,
   canSubmitSelectionArg,
   getSelectionCountByType,
 } from 'lib/selections'
-import { useSelector } from '@xstate/react'
-import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
 import { kclManager } from 'lib/singletons'
+import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 const selectionSelector = (snapshot: any) => snapshot?.context.selectionRanges
 

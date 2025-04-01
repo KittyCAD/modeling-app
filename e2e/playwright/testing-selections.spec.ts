@@ -1,9 +1,9 @@
-import { test, expect } from './zoo-test'
-
-import { commonPoints, getUtils, orRunWhenFullSuiteEnabled } from './test-utils'
 import { Coords2d } from 'lang/std/sketch'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import { uuidv4 } from 'lib/utils'
+
+import { commonPoints, getUtils, orRunWhenFullSuiteEnabled } from './test-utils'
+import { expect, test } from './zoo-test'
 
 test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
   test.setTimeout(90_000)
@@ -68,20 +68,20 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
     await u.closeDebugPanel()
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)`
+      `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)`
     )
 
     await page.waitForTimeout(100)
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
+      .toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
     |> xLine(length = ${commonPoints.num1})`)
 
     await page.waitForTimeout(100)
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
+      .toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
       commonPoints.startAt
     }, sketch001)
     |> xLine(length = ${commonPoints.num1})
@@ -89,7 +89,7 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
     await page.waitForTimeout(100)
     await page.mouse.click(startXPx, 500 - PUR * 20)
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
+      .toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
       commonPoints.startAt
     }, sketch001)
     |> xLine(length = ${commonPoints.num1})
@@ -260,7 +260,8 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn(XZ)
+        `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([-79.26, 95.04], %)
   |> line(end = [112.54, 127.64], tag = $seg02)
   |> line(end = [170.36, -121.61], tag = $seg01)
@@ -528,7 +529,8 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
     await page.addInitScript(async (KCL_DEFAULT_LENGTH) => {
       localStorage.setItem(
         'persistCode',
-        `part001 = startSketchOn(XZ)
+        `@settings(defaultLengthUnit = in)
+part001 = startSketchOn(XZ)
   |> startProfileAt([20, 0], %)
   |> line(end = [7.13, 4 + 0])
   |> angledLine({ angle = 3 + 0, length = 3.14 + 0 }, %)
@@ -747,7 +749,8 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
     await page.waitForTimeout(200)
 
     await u.removeCurrentCode()
-    await u.codeLocator.fill(`sketch001 = startSketchOn(XZ)
+    await u.codeLocator.fill(`@settings(defaultLengthUnit = in)
+    sketch001 = startSketchOn(XZ)
     |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
     |> angledLine([0, 268.43], %, $rectangleSegmentA001)
     |> angledLine([
@@ -965,7 +968,8 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
       async ({ cases }) => {
         localStorage.setItem(
           'persistCode',
-          `yo = 79
+          `@settings(defaultLengthUnit = in)
+  yo = 79
   part001 = startSketchOn(XZ)
     |> startProfileAt([-7.54, -26.74], %)
     |> ${cases[0].expectedCode}
@@ -1020,7 +1024,8 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn(XZ)
+        `@settings(defaultLengthUnit = in)
+  sketch001 = startSketchOn(XZ)
     |> startProfileAt([-79.26, 95.04], %)
     |> line(end = [112.54, 127.64])
     |> line(end = [170.36, -121.61], tag = $seg01)
@@ -1253,7 +1258,7 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
     await page.mouse.click(700, 200)
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)`
+      `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)`
     )
 
     await page.waitForTimeout(600)

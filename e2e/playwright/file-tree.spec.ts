@@ -1,6 +1,8 @@
-import { test, expect } from './zoo-test'
-import * as fsp from 'fs/promises'
 import * as fs from 'fs'
+import * as fsp from 'fs/promises'
+import { FILE_EXT } from 'lib/constants'
+import { join } from 'path'
+
 import {
   createProject,
   executorInputPath,
@@ -8,8 +10,7 @@ import {
   orRunWhenFullSuiteEnabled,
   runningOnWindows,
 } from './test-utils'
-import { join } from 'path'
-import { FILE_EXT } from 'lib/constants'
+import { expect, test } from './zoo-test'
 
 test.describe('integrations tests', () => {
   test(

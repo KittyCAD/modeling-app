@@ -1,14 +1,15 @@
 import { Dialog, Transition } from '@headlessui/react'
+import { useCalculateKclExpression } from 'lib/useCalculateKclExpression'
 import { Fragment, useState } from 'react'
 import { type InstanceProps, create } from 'react-modal-promise'
+
 import { Expr } from '../lang/wasm'
 import {
   AvailableVars,
-  addToInputHelper,
   CalcResult,
   CreateNewVariable,
+  addToInputHelper,
 } from './AvailableVarsHelpers'
-import { useCalculateKclExpression } from 'lib/useCalculateKclExpression'
 
 type ModalResolve = {
   value: string

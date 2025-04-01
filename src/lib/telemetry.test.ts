@@ -1,8 +1,8 @@
 import {
-  columnWidth,
   MaxWidth,
-  printHeader,
+  columnWidth,
   printDivider,
+  printHeader,
   printRow,
 } from 'lib/telemetry'
 

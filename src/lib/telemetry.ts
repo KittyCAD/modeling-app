@@ -1,5 +1,6 @@
+import { writeRawTelemetryFile, writeTelemetryFile } from 'lib/desktop'
 import { PerformanceMark, getMarks } from 'lib/performance'
-import { writeTelemetryFile, writeRawTelemetryFile } from 'lib/desktop'
+
 let args: any = null
 
 // Get the longest width of values or column name

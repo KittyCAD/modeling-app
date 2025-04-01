@@ -1,28 +1,29 @@
-import { useEffect, useRef } from 'react'
+import { getFaceDetails } from 'clientSideScene/sceneEntities'
+import { getNodeFromPath } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import {
+  SegmentArtifact,
+  getArtifactOfTypes,
+  getCapCodeRef,
+  getCodeRefsByArtifactId,
+  getSweepFromSuspectedSweepSurface,
+  getWallCodeRef,
+} from 'lang/std/artifactGraph'
+import { CallExpression, CallExpressionKw, defaultSourceRange } from 'lang/wasm'
+import { DefaultPlaneStr } from 'lib/planes'
+import { getEventForSelectWithPoint } from 'lib/selections'
 import {
   editorManager,
   engineCommandManager,
   kclManager,
   sceneInfra,
 } from 'lib/singletons'
-import { useModelingContext } from './useModelingContext'
-import { getEventForSelectWithPoint } from 'lib/selections'
-import {
-  getCapCodeRef,
-  getSweepFromSuspectedSweepSurface,
-  getWallCodeRef,
-  getCodeRefsByArtifactId,
-  getArtifactOfTypes,
-  SegmentArtifact,
-} from 'lang/std/artifactGraph'
-import { err, reportRejection } from 'lib/trap'
-import { getFaceDetails } from 'clientSideScene/sceneEntities'
-import { DefaultPlaneStr } from 'lib/planes'
-import { getNodeFromPath } from 'lang/queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { CallExpression, CallExpressionKw, defaultSourceRange } from 'lang/wasm'
-import { EdgeCutInfo, ExtrudeFacePlane } from 'machines/modelingMachine'
 import { rustContext } from 'lib/singletons'
+import { err, reportRejection } from 'lib/trap'
+import { EdgeCutInfo, ExtrudeFacePlane } from 'machines/modelingMachine'
+import { useEffect, useRef } from 'react'
+
+import { useModelingContext } from './useModelingContext'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
@@ -39,7 +40,7 @@ export function useEngineConnectionSubscriptions() {
         if (data?.entity_id) {
           const codeRefs = getCodeRefsByArtifactId(
             data.entity_id,
-            engineCommandManager.artifactGraph
+            kclManager.artifactGraph
           )
           if (codeRefs) {
             editorManager.setHighlightRange(codeRefs.map(({ range }) => range))
@@ -140,8 +141,7 @@ export function useEngineConnectionSubscriptions() {
                 })
                 return
               }
-              const artifact =
-                engineCommandManager.artifactGraph.get(planeOrFaceId)
+              const artifact = kclManager.artifactGraph.get(planeOrFaceId)
 
               if (artifact?.type === 'plane') {
                 const planeInfo = await getFaceDetails(planeOrFaceId)
@@ -166,7 +166,7 @@ export function useEngineConnectionSubscriptions() {
                     ].map((num) => num / sceneInfra._baseUnitMultiplier) as [
                       number,
                       number,
-                      number
+                      number,
                     ],
                     planeId: planeOrFaceId,
                     pathToNode: artifact.codeRef.pathToNode,
@@ -179,7 +179,7 @@ export function useEngineConnectionSubscriptions() {
               const faceId = planeOrFaceId
               const extrusion = getSweepFromSuspectedSweepSurface(
                 faceId,
-                engineCommandManager.artifactGraph
+                kclManager.artifactGraph
               )
 
               if (
@@ -193,10 +193,10 @@ export function useEngineConnectionSubscriptions() {
 
               const codeRef =
                 artifact.type === 'cap'
-                  ? getCapCodeRef(artifact, engineCommandManager.artifactGraph)
+                  ? getCapCodeRef(artifact, kclManager.artifactGraph)
                   : artifact.type === 'wall'
-                  ? getWallCodeRef(artifact, engineCommandManager.artifactGraph)
-                  : artifact.codeRef
+                    ? getWallCodeRef(artifact, kclManager.artifactGraph)
+                    : artifact.codeRef
 
               const faceInfo = await getFaceDetails(faceId)
               if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
@@ -221,7 +221,7 @@ export function useEngineConnectionSubscriptions() {
                       key: artifact.consumedEdgeId,
                       types: ['segment', 'sweepEdge'],
                     },
-                    engineCommandManager.artifactGraph
+                    kclManager.artifactGraph
                   )
                   if (err(consumedArtifact)) return null
                   if (consumedArtifact.type === 'segment') {
@@ -232,7 +232,7 @@ export function useEngineConnectionSubscriptions() {
                   } else {
                     const segment = getArtifactOfTypes(
                       { key: consumedArtifact.segId, types: ['segment'] },
-                      engineCommandManager.artifactGraph
+                      kclManager.artifactGraph
                     )
                     if (err(segment)) return null
                     chamferInfo = {
@@ -276,11 +276,11 @@ export function useEngineConnectionSubscriptions() {
               const _faceInfo: ExtrudeFacePlane['faceInfo'] = edgeCutMeta
                 ? edgeCutMeta
                 : artifact.type === 'cap'
-                ? {
-                    type: 'cap',
-                    subType: artifact.subType,
-                  }
-                : { type: 'wall' }
+                  ? {
+                      type: 'cap',
+                      subType: artifact.subType,
+                    }
+                  : { type: 'wall' }
 
               const extrudePathToNode = !err(extrusion)
                 ? getNodePathFromSourceRange(

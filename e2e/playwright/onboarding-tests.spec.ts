@@ -1,22 +1,23 @@
-import { test, expect } from './zoo-test'
-import { join } from 'path'
 import fsp from 'fs/promises'
-import {
-  getUtils,
-  executorInputPath,
-  createProject,
-  settingsToToml,
-  orRunWhenFullSuiteEnabled,
-} from './test-utils'
 import { bracket } from 'lib/exampleKcl'
+import { join } from 'path'
 import { onboardingPaths } from 'routes/Onboarding/paths'
+
+import { expectPixelColor } from './fixtures/sceneFixture'
 import {
   TEST_SETTINGS_KEY,
-  TEST_SETTINGS_ONBOARDING_START,
   TEST_SETTINGS_ONBOARDING_EXPORT,
+  TEST_SETTINGS_ONBOARDING_START,
   TEST_SETTINGS_ONBOARDING_USER_MENU,
 } from './storageStates'
-import { expectPixelColor } from './fixtures/sceneFixture'
+import {
+  createProject,
+  executorInputPath,
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+  settingsToToml,
+} from './test-utils'
+import { expect, test } from './zoo-test'
 
 // Because our default test settings have the onboardingStatus set to 'dismissed',
 // we must set it to empty for the tests where we want to see the onboarding immediately.
@@ -230,9 +231,9 @@ test.describe('Onboarding tests', () => {
 
     // Override beforeEach test setup
     await context.addInitScript(
-      async ({ settingsKey, settings }) => {
+      async ({ settingsKey, settings, code }) => {
         // Give some initial code, so we can test that it's cleared
-        localStorage.setItem('persistCode', originalCode)
+        localStorage.setItem('persistCode', code)
         localStorage.setItem(settingsKey, settings)
       },
       {
@@ -240,6 +241,7 @@ test.describe('Onboarding tests', () => {
         settings: settingsToToml({
           settings: TEST_SETTINGS_ONBOARDING_EXPORT,
         }),
+        code: originalCode,
       }
     )
 

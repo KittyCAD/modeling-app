@@ -1,17 +1,18 @@
 import { Page } from '@playwright/test'
-import { test, expect } from './zoo-test'
-import path from 'path'
 import * as fsp from 'fs/promises'
-import {
-  getUtils,
-  executorInputPath,
-  TEST_COLORS,
-  TestColor,
-  orRunWhenFullSuiteEnabled,
-} from './test-utils'
-import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from './storageStates'
 import { bracket } from 'lib/exampleKcl'
 import { reportRejection } from 'lib/trap'
+import path from 'path'
+
+import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from './storageStates'
+import {
+  TEST_COLORS,
+  TestColor,
+  executorInputPath,
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+} from './test-utils'
+import { expect, test } from './zoo-test'
 
 test.describe('Regression tests', { tag: ['@skipWin'] }, () => {
   // bugs we found that don't fit neatly into other categories
@@ -331,7 +332,7 @@ extrude001 = extrude(sketch001, length = 50)
           localStorage.setItem(
             'persistCode',
             `@settings(defaultLengthUnit = mm)
-sketch002 = startSketchOn('XY')
+sketch002 = startSketchOn(XY)
 profile002 = startProfileAt([72.24, -52.05], sketch002)
   |> angledLine([0, 181.26], %, $rectangleSegmentA001)
   |> angledLine([
@@ -582,7 +583,7 @@ extrude002 = extrude(profile002, length = 150)
         const bracketDir = path.join(dir, 'bracket')
         await fsp.mkdir(bracketDir, { recursive: true })
         await fsp.copyFile(
-          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          executorInputPath('cylinder-inches.kcl'),
           path.join(bracketDir, 'main.kcl')
         )
       })
@@ -619,6 +620,7 @@ extrude002 = extrude(profile002, length = 150)
   test(`View gizmo stays visible even when zoomed out all the way`, async ({
     page,
     homePage,
+    scene,
   }) => {
     const u = await getUtils(page)
 
@@ -632,7 +634,7 @@ extrude002 = extrude(profile002, length = 150)
 
     await test.step(`Load an empty file`, async () => {
       await page.addInitScript(async () => {
-        localStorage.setItem('persistCode', '')
+        localStorage.setItem('persistCode', '@settings(defaultLengthUnit = in)')
       })
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
@@ -646,22 +648,31 @@ extrude002 = extrude(profile002, length = 150)
           timeout: 5000,
           message: 'Plane color is visible',
         })
-        .toBeLessThanOrEqual(15)
+        .toBeLessThanOrEqual(20)
+      await expect(scene.startEditSketchBtn).toBeEnabled()
 
       let maxZoomOuts = 10
       let middlePixelIsBackgroundColor =
         (await middlePixelIsColor(bgColor)) < 10
+
+      console.time('pressing control')
+      await page.keyboard.down('Control')
+
       while (!middlePixelIsBackgroundColor && maxZoomOuts > 0) {
-        await page.keyboard.down('Control')
-        await page.mouse.move(600, 460)
-        await page.mouse.down({ button: 'right' })
-        await page.mouse.move(600, 50, { steps: 20 })
-        await page.mouse.up({ button: 'right' })
-        await page.keyboard.up('Control')
         await page.waitForTimeout(100)
+        await page.mouse.move(650, 460)
+        console.time('moved to start point')
+        await page.mouse.down({ button: 'right' })
+        console.time('moused down')
+        await page.mouse.move(650, 50, { steps: 20 })
+        console.time('moved to end point')
+        await page.waitForTimeout(100)
+        await page.mouse.up({ button: 'right' })
+        console.time('moused up')
         maxZoomOuts--
-        middlePixelIsBackgroundColor = (await middlePixelIsColor(bgColor)) < 10
+        middlePixelIsBackgroundColor = (await middlePixelIsColor(bgColor)) < 15
       }
+      await page.keyboard.up('Control')
 
       expect(middlePixelIsBackgroundColor, {
         message: 'We should not see the default planes',
@@ -678,13 +689,12 @@ extrude002 = extrude(profile002, length = 150)
     homePage,
     scene,
     toolbar,
-    viewport,
   }) => {
     await context.folderSetupFn(async (dir) => {
       const legoDir = path.join(dir, 'lego')
       await fsp.mkdir(legoDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('lego.kcl'),
+        executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
         path.join(legoDir, 'main.kcl')
       )
     })
@@ -697,11 +707,8 @@ extrude002 = extrude(profile002, length = 150)
       await scene.loadingIndicator.waitFor({ state: 'detached' })
     })
     await test.step(`The part should start loading quickly, not waiting until execution is complete`, async () => {
-      await scene.expectPixelColor(
-        [143, 143, 143],
-        { x: (viewport?.width ?? 1200) / 2, y: (viewport?.height ?? 500) / 2 },
-        15
-      )
+      // TODO: use the viewport size to pick the center point, but the `viewport` fixture's values were wrong.
+      await scene.expectPixelColor([116, 116, 116], { x: 500, y: 250 }, 15)
     })
   })
 

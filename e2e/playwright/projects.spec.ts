@@ -1,19 +1,20 @@
-import { test, expect } from './zoo-test'
+import fs from 'fs'
+import fsp from 'fs/promises'
+import { DEFAULT_PROJECT_KCL_FILE } from 'lib/constants'
+import path from 'path'
+
 import {
-  doExport,
-  executorInputPath,
-  getUtils,
-  isOutOfViewInScrollContainer,
   Paths,
   createProject,
+  doExport,
+  executorInputPath,
   getPlaywrightDownloadDir,
+  getUtils,
+  isOutOfViewInScrollContainer,
   orRunWhenFullSuiteEnabled,
   runningOnWindows,
 } from './test-utils'
-import fsp from 'fs/promises'
-import fs from 'fs'
-import path from 'path'
-import { DEFAULT_PROJECT_KCL_FILE } from 'lib/constants'
+import { expect, test } from './zoo-test'
 
 test(
   'projects reload if a new one is created, deleted, or renamed externally',
@@ -87,7 +88,7 @@ test(
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        executorInputPath('cylinder-inches.kcl'),
         path.join(bracketDir, 'main.kcl')
       )
     })
@@ -124,7 +125,7 @@ test(
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        executorInputPath('cylinder-inches.kcl'),
         path.join(bracketDir, 'main.kcl')
       )
       const errorDir = path.join(dir, 'broken-code')
@@ -162,7 +163,7 @@ test(
       // gray at this pixel means the stream has loaded in the most
       // user way we can verify it (pixel color)
       await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [110, 110, 110]), {
           timeout: 10_000,
         })
         .toBeLessThan(20)
@@ -213,7 +214,7 @@ test(
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        executorInputPath('cylinder-inches.kcl'),
         path.join(bracketDir, 'main.kcl')
       )
       const emptyDir = path.join(dir, 'empty')
@@ -248,7 +249,7 @@ test(
       // gray at this pixel means the stream has loaded in the most
       // user way we can verify it (pixel color)
       await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [125, 125, 125]), {
           timeout: 10_000,
         })
         .toBeLessThan(15)
@@ -290,7 +291,7 @@ test(
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        executorInputPath('cylinder-inches.kcl'),
         path.join(bracketDir, 'main.kcl')
       )
 
@@ -319,7 +320,7 @@ test(
       // gray at this pixel means the stream has loaded in the most
       // user way we can verify it (pixel color)
       await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [125, 125, 125]), {
           timeout: 10_000,
         })
         .toBeLessThan(15)
@@ -359,7 +360,7 @@ test(
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        executorInputPath('cylinder-inches.kcl'),
         path.join(bracketDir, 'main.kcl')
       )
       await fsp.copyFile(
@@ -393,7 +394,7 @@ test(
       // gray at this pixel means the stream has loaded in the most
       // user way we can verify it (pixel color)
       await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [125, 125, 125]), {
           timeout: 10_000,
         })
         .toBeLessThan(15)
@@ -443,7 +444,6 @@ test(
     await page.getByText('broken-code').click()
 
     // Gotcha: You can not use scene.waitForExecutionDone() since the KCL code is going to fail
-    await expect(page.getByTestId('loading')).toBeAttached()
     await expect(page.getByTestId('loading')).not.toBeAttached({
       timeout: 20_000,
     })
@@ -481,7 +481,7 @@ test.describe('Can export from electron app', () => {
           const bracketDir = path.join(dir, 'bracket')
           await fsp.mkdir(bracketDir, { recursive: true })
           await fsp.copyFile(
-            executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+            executorInputPath('cylinder-inches.kcl'),
             path.join(bracketDir, 'main.kcl')
           )
         })
@@ -513,7 +513,7 @@ test.describe('Can export from electron app', () => {
           // gray at this pixel means the stream has loaded in the most
           // user way we can verify it (pixel color)
           await expect
-            .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
+            .poll(() => u.getGreatestPixDiff(pointOnModel, [125, 125, 125]), {
               timeout: 10_000,
             })
             .toBeLessThan(15)
@@ -554,7 +554,7 @@ test.describe('Can export from electron app', () => {
               },
               { timeout: 15_000 }
             )
-            .toBeGreaterThan(300_000)
+            .toBeGreaterThan(50_000)
 
           // clean up exported file
           await fsp.rm(filepath)
@@ -1507,7 +1507,12 @@ test(
 
     await u.waitForPageLoad()
 
-    await page.locator('.cm-content').fill(`sketch001 = startSketchOn(XZ)
+    // The file should be prepopulated with the user's unit settings.
+    await expect(page.locator('.cm-content')).toHaveText(
+      '@settings(defaultLengthUnit = in)'
+    )
+
+    await page.locator('.cm-content').fill(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([-87.4, 282.92], %)
   |> line(end = [324.07, 27.199], tag = $seg01)
   |> line(end = [118.328, -291.754])

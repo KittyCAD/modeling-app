@@ -1,9 +1,9 @@
 import { Models } from '@kittycad/lib'
-import { engineCommandManager } from 'lib/singletons'
+import { ApiError_type } from '@kittycad/lib/dist/types/src/models'
+import { Selections } from 'lib/selections'
+import { engineCommandManager, kclManager } from 'lib/singletons'
 import { uuidv4 } from 'lib/utils'
 import { CommandBarContext } from 'machines/commandBarMachine'
-import { Selections } from 'lib/selections'
-import { ApiError_type } from '@kittycad/lib/dist/types/src/models'
 
 export const disableDryRunWithRetry = async (numberOfRetries = 3) => {
   for (let tries = 0; tries < numberOfRetries; tries++) {
@@ -188,7 +188,7 @@ export const shellValidator = async ({
   // So we're listing out the sweeps as if they were solids and taking the first one, just like in Rust for Shell:
   // https://github.com/KittyCAD/modeling-app/blob/e61fff115b9fa94aaace6307b1842cc15d41655e/src/wasm-lib/kcl/src/std/shell.rs#L237-L238
   // TODO: This is one cheap way to make sketch-on-face supported now but will likely fail multiple solids
-  const object_id = engineCommandManager.artifactGraph
+  const object_id = kclManager.artifactGraph
     .values()
     .find((v) => v.type === 'sweep')?.pathId
 

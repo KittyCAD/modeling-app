@@ -1,11 +1,12 @@
-import { test, expect } from './zoo-test'
+import fsp from 'fs/promises'
 import path from 'path'
+
 import {
-  getUtils,
   executorInputPath,
   getPlaywrightDownloadDir,
+  getUtils,
 } from './test-utils'
-import fsp from 'fs/promises'
+import { expect, test } from './zoo-test'
 
 test(
   'export works on the first try',
@@ -20,11 +21,11 @@ test(
       await Promise.all([fsp.mkdir(bracketDir, { recursive: true })])
       await Promise.all([
         fsp.copyFile(
-          executorInputPath('router-template-slate.kcl'),
+          executorInputPath('cylinder-inches.kcl'),
           path.join(bracketDir, 'other.kcl')
         ),
         fsp.copyFile(
-          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
           path.join(bracketDir, 'main.kcl')
         ),
       ])
@@ -107,7 +108,7 @@ test(
             },
             { timeout: 15_000 }
           )
-          .toBeGreaterThan(300_000)
+          .toBeGreaterThan(30_000)
       })
     })
 
@@ -187,7 +188,7 @@ test(
             },
             { timeout: 15_000 }
           )
-          .toBeGreaterThan(70_000)
+          .toBeGreaterThan(50_000)
       })
     })
   }

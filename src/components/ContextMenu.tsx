@@ -1,5 +1,4 @@
-import toast from 'react-hot-toast'
-import { ActionIcon, ActionIconProps } from './ActionIcon'
+import { Dialog } from '@headlessui/react'
 import {
   RefObject,
   useCallback,
@@ -8,8 +7,10 @@ import {
   useRef,
   useState,
 } from 'react'
+import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { Dialog } from '@headlessui/react'
+
+import { ActionIcon, ActionIconProps } from './ActionIcon'
 
 export interface ContextMenuProps
   extends Omit<React.HTMLAttributes<HTMLUListElement>, 'children'> {

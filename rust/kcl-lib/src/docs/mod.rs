@@ -660,69 +660,6 @@ pub fn get_description_string_from_schema(schema: &schemars::schema::RootSchema)
     None
 }
 
-pub fn cleanup_number_tuples_root(mut schema: schemars::schema::RootSchema) -> schemars::schema::RootSchema {
-    cleanup_number_tuples_object(&mut schema.schema);
-    schema
-}
-
-fn cleanup_number_tuples_object(o: &mut schemars::schema::SchemaObject) {
-    if let Some(object) = &mut o.object {
-        for (_, value) in object.properties.iter_mut() {
-            *value = cleanup_number_tuples(value);
-        }
-    }
-
-    if let Some(array) = &mut o.array {
-        if let Some(items) = &mut array.items {
-            match items {
-                schemars::schema::SingleOrVec::Single(_) => {
-                    // Do nothing since its only a single item.
-                }
-                schemars::schema::SingleOrVec::Vec(items) => {
-                    if items.len() == 2 {
-                        // Get the second item and see if its a NumericType.
-
-                        if let Some(schemars::schema::Schema::Object(obj)) = items.get(1) {
-                            if let Some(reference) = &obj.reference {
-                                if reference == "#/components/schemas/NumericType" {
-                                    // Get the first item.
-                                    if let Some(schemars::schema::Schema::Object(obj2)) = items.first() {
-                                        let mut obj2 = obj2.clone();
-                                        obj2.metadata = o.metadata.clone();
-                                        // Replace the array with the first item.
-                                        *o = obj2;
-                                    }
-                                }
-                            } else if NUMERIC_TYPE_SCHEMA.object == obj.object {
-                                if let Some(schemars::schema::Schema::Object(obj2)) = items.first() {
-                                    let mut obj2 = obj2.clone();
-                                    obj2.metadata = o.metadata.clone();
-                                    // Replace the array with the first item.
-                                    *o = obj2;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-/// Some numbers will be tuples of 2 where the second type is always "NumericType". We want to
-/// replace these with the first item in the array and not have an array as it messes
-/// with the docs generation which assumes if there is a tuple that you give 2 values not one
-/// in the form of an array.
-fn cleanup_number_tuples(schema: &schemars::schema::Schema) -> schemars::schema::Schema {
-    let mut schema = schema.clone();
-
-    if let schemars::schema::Schema::Object(o) = &mut schema {
-        cleanup_number_tuples_object(o);
-    }
-
-    schema
-}
-
 pub fn is_primitive(schema: &schemars::schema::Schema) -> Result<Option<Primitive>> {
     match schema {
         schemars::schema::Schema::Object(o) => {
@@ -1141,7 +1078,7 @@ mod tests {
         let snippet = scale_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(
             snippet,
-            r#"scale(${0:%}, scale = [${1:3.14}, ${2:3.14}, ${3:3.14}])${}"#
+            r#"scale(${0:%}, x = ${1:3.14}, y = ${2:3.14}, z = ${3:3.14})${}"#
         );
     }
 
@@ -1152,7 +1089,7 @@ mod tests {
         let snippet = translate_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(
             snippet,
-            r#"translate(${0:%}, translate = [${1:3.14}, ${2:3.14}, ${3:3.14}])${}"#
+            r#"translate(${0:%}, x = ${1:3.14}, y = ${2:3.14}, z = ${3:3.14})${}"#
         );
     }
 

@@ -66,7 +66,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
         }));
     }
 
-    let result = inner_appearance(solids, data.color, data.metalness, data.roughness, args).await?;
+    let result = inner_appearance(solids, data.color, data.metalness, data.roughness, exec_state, args).await?;
     Ok(result.into())
 }
 
@@ -287,6 +287,7 @@ async fn inner_appearance(
     color: String,
     metalness: Option<f64>,
     roughness: Option<f64>,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     for solid in &solids {
@@ -306,7 +307,7 @@ async fn inner_appearance(
         };
 
         args.batch_modeling_cmd(
-            uuid::Uuid::new_v4(),
+            exec_state.next_uuid(),
             ModelingCmd::from(mcmd::ObjectSetMaterialParamsPbr {
                 object_id: solid.id,
                 color,

@@ -1,26 +1,27 @@
-import { MouseEventHandler, useEffect, useRef, useState } from 'react'
-import Loading from './Loading'
+import { useAppStream } from 'AppState'
+import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
-import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
-import { btnName } from 'lib/cameraControls'
-import { sendSelectEventToEngine } from 'lib/selections'
-import { kclManager, engineCommandManager, sceneInfra } from 'lib/singletons'
-import { useAppStream } from 'AppState'
+import { getArtifactOfTypes } from 'lang/std/artifactGraph'
 import {
+  DisconnectingType,
   EngineCommandManagerEvents,
   EngineConnectionStateType,
-  DisconnectingType,
 } from 'lang/std/engineConnection'
-import { useRouteLoaderData } from 'react-router-dom'
+import { btnName } from 'lib/cameraControls'
 import { PATHS } from 'lib/paths'
-import { IndexLoaderData } from 'lib/types'
+import { sendSelectEventToEngine } from 'lib/selections'
+import { engineCommandManager, kclManager, sceneInfra } from 'lib/singletons'
 import { err, reportRejection } from 'lib/trap'
-import { getArtifactOfTypes } from 'lang/std/artifactGraph'
-import { ViewControlContextMenu } from './ViewControlMenu'
-import { useCommandBarState } from 'machines/commandBarMachine'
+import { IndexLoaderData } from 'lib/types'
 import { useSettings } from 'machines/appMachine'
+import { useCommandBarState } from 'machines/commandBarMachine'
+import { MouseEventHandler, useEffect, useRef, useState } from 'react'
+import { useRouteLoaderData } from 'react-router-dom'
+
+import Loading from './Loading'
+import { ViewControlContextMenu } from './ViewControlMenu'
 
 enum StreamState {
   Playing = 'playing',
@@ -304,7 +305,7 @@ export const Stream = () => {
         }
         const path = getArtifactOfTypes(
           { key: entity_id, types: ['path', 'solid2d', 'segment', 'helix'] },
-          engineCommandManager.artifactGraph
+          kclManager.artifactGraph
         )
         if (err(path)) {
           return path

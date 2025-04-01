@@ -13,16 +13,17 @@ import {
   getOperationLabel,
   stdLibMap,
 } from 'lib/operations'
-import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
-import { ComponentProps, useEffect, useMemo, useRef, useState } from 'react'
-import { Operation } from '@rust/kcl-lib/bindings/Operation'
-import { Actor, Prop } from 'xstate'
+import { editorManager, kclManager } from 'lib/singletons'
 import { featureTreeMachine } from 'machines/featureTreeMachine'
 import {
   editorIsMountedSelector,
   kclEditorActor,
   selectionEventSelector,
 } from 'machines/kclEditorMachine'
+import { ComponentProps, useEffect, useMemo, useRef, useState } from 'react'
+import { Actor, Prop } from 'xstate'
+
+import { Operation } from '@rust/kcl-lib/bindings/Operation'
 
 export const FeatureTreePane = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
@@ -58,7 +59,7 @@ export const FeatureTreePane = () => {
           const artifact = context.targetSourceRange
             ? getArtifactFromRange(
                 context.targetSourceRange,
-                engineCommandManager.artifactGraph
+                kclManager.artifactGraph
               )
             : null
 

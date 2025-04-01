@@ -1,4 +1,5 @@
-import { create, InstanceProps } from 'react-modal-promise'
+import { InstanceProps, create } from 'react-modal-promise'
+
 import { ActionButton } from './ActionButton'
 
 type ModalResolve = {

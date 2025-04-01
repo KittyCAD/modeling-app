@@ -1,20 +1,21 @@
-import { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
-import { CompilationError } from '@rust/kcl-lib/bindings/CompilationError'
 import { Diagnostic as CodeMirrorDiagnostic } from '@codemirror/lint'
-import { posToOffset } from '@kittycad/codemirror-lsp-client'
-import { Diagnostic as LspDiagnostic } from 'vscode-languageserver-protocol'
 import { Text } from '@codemirror/state'
+import { posToOffset } from '@kittycad/codemirror-lsp-client'
 import { EditorView } from 'codemirror'
 import {
   ArtifactCommand,
   ArtifactGraph,
+  SourceRange,
   defaultArtifactGraph,
   isTopLevelModule,
-  SourceRange,
 } from 'lang/wasm'
-import { Operation } from '@rust/kcl-lib/bindings/Operation'
-import { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
+import { Diagnostic as LspDiagnostic } from 'vscode-languageserver-protocol'
+
+import { CompilationError } from '@rust/kcl-lib/bindings/CompilationError'
 import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
+import { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
+import { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
+import { Operation } from '@rust/kcl-lib/bindings/Operation'
 
 type ExtractKind<T> = T extends { kind: infer K } ? K : never
 export class KCLError extends Error {

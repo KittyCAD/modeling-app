@@ -4,39 +4,38 @@ import type {
   CompletionResult,
 } from '@codemirror/autocomplete'
 import { completeFromList, snippetCompletion } from '@codemirror/autocomplete'
+import { linter } from '@codemirror/lint'
 import {
+  Annotation,
+  Extension,
   Facet,
   StateEffect,
-  Extension,
   Transaction,
-  Annotation,
 } from '@codemirror/state'
 import type {
-  ViewUpdate,
-  PluginValue,
   PluginSpec,
+  PluginValue,
   ViewPlugin,
+  ViewUpdate,
 } from '@codemirror/view'
 import { EditorView, Tooltip } from '@codemirror/view'
-import { linter } from '@codemirror/lint'
-
 import type { PublishDiagnosticsParams } from 'vscode-languageserver-protocol'
 import type * as LSP from 'vscode-languageserver-protocol'
 import {
-  DiagnosticSeverity,
   CompletionTriggerKind,
+  DiagnosticSeverity,
 } from 'vscode-languageserver-protocol'
 import { URI } from 'vscode-uri'
 
 import { LanguageServerClient } from '../client'
 import { CompletionItemKindMap } from './autocomplete'
-import { addToken, SemanticToken } from './semantic-tokens'
-import { posToOffset, formatMarkdownContents } from './util'
 import lspAutocompleteExt from './autocomplete'
-import lspHoverExt from './hover'
 import lspFormatExt from './format'
+import lspHoverExt from './hover'
 import lspIndentExt from './indent'
+import { SemanticToken, addToken } from './semantic-tokens'
 import lspSemanticTokensExt from './semantic-tokens'
+import { formatMarkdownContents, posToOffset } from './util'
 
 const useLast = (values: readonly any[]) => values.reduce((_, v) => v, '')
 export const docPathFacet = Facet.define<string, string>({
@@ -98,7 +97,10 @@ export class LanguageServerPlugin implements PluginValue {
   // document.
   private sendScheduled: number | null = null
 
-  constructor(options: LanguageServerOptions, private view: EditorView) {
+  constructor(
+    options: LanguageServerOptions,
+    private view: EditorView
+  ) {
     this.client = options.client
     this.documentVersion = 0
 

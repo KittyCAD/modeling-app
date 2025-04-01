@@ -1,13 +1,14 @@
-import { test, expect } from './zoo-test'
-import {
-  orRunWhenFullSuiteEnabled,
-  getUtils,
-  executorInputPath,
-} from './test-utils'
-import { join } from 'path'
-import { bracket } from 'lib/exampleKcl'
-import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from './storageStates'
 import fsp from 'fs/promises'
+import { bracket } from 'lib/exampleKcl'
+import { join } from 'path'
+
+import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from './storageStates'
+import {
+  executorInputPath,
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+} from './test-utils'
+import { expect, test } from './zoo-test'
 
 test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
   test('Typing KCL errors induces a badge on the code pane button', async ({
@@ -251,11 +252,11 @@ test(
       ])
       await Promise.all([
         fsp.copyFile(
-          executorInputPath('router-template-slate.kcl'),
+          executorInputPath('cylinder-inches.kcl'),
           join(routerTemplateDir, 'main.kcl')
         ),
         fsp.copyFile(
-          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
           join(bracketDir, 'main.kcl')
         ),
       ])

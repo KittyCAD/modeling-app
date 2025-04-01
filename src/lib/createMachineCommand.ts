@@ -1,11 +1,13 @@
+import { DEV } from 'env'
+import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
 import {
+  Actor,
   AnyStateMachine,
   ContextFrom,
   EventFrom,
-  Actor,
   StateFrom,
 } from 'xstate'
-import { isDesktop } from './isDesktop'
+
 import {
   Command,
   CommandArgument,
@@ -14,12 +16,11 @@ import {
   StateMachineCommandSetConfig,
   StateMachineCommandSetSchema,
 } from './commandTypes'
-import { DEV } from 'env'
-import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
+import { isDesktop } from './isDesktop'
 
 interface CreateMachineCommandProps<
   T extends AnyStateMachine,
-  S extends StateMachineCommandSetSchema<T>
+  S extends StateMachineCommandSetSchema<T>,
 > {
   type: EventFrom<T>['type']
   groupId: T['id']
@@ -34,7 +35,7 @@ interface CreateMachineCommandProps<
 // from a more terse Command Bar Meta definition.
 export function createMachineCommand<
   T extends AnyStateMachine,
-  S extends StateMachineCommandSetSchema<T>
+  S extends StateMachineCommandSetSchema<T>,
 >({
   groupId,
   type,
@@ -132,7 +133,7 @@ export function createMachineCommand<
 function buildCommandArguments<
   T extends AnyStateMachine,
   S extends StateMachineCommandSetSchema<T>,
-  CommandName extends EventFrom<T>['type'] = EventFrom<T>['type']
+  CommandName extends EventFrom<T>['type'] = EventFrom<T>['type'],
 >(
   state: StateFrom<T>,
   args: CommandConfig<T, CommandName, S>['args'],
@@ -151,7 +152,7 @@ function buildCommandArguments<
 
 export function buildCommandArgument<
   T extends AnyStateMachine,
-  O extends StateMachineCommandSetSchema<T> = StateMachineCommandSetSchema<T>
+  O extends StateMachineCommandSetSchema<T> = StateMachineCommandSetSchema<T>,
 >(
   arg: CommandArgumentConfig<O, T>,
   context: ContextFrom<T>,

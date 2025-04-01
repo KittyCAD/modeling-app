@@ -1,14 +1,19 @@
-import { err } from 'lib/trap'
 import { Models } from '@kittycad/lib'
-import { Project, FileEntry } from 'lib/project'
-
+import { newKclFile } from 'lang/project'
 import {
   defaultAppSettings,
   initPromise,
   parseAppSettings,
   parseProjectSettings,
 } from 'lang/wasm'
+import { FileEntry, Project } from 'lib/project'
+import { err } from 'lib/trap'
+
+import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+
 import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
   PROJECT_FOLDER,
   PROJECT_IMAGE_NAME,
@@ -19,8 +24,6 @@ import {
   TOKEN_FILE_NAME,
 } from './constants'
 import { DeepPartial } from './types'
-import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
-import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 
 export async function renameProjectDirectory(
   projectPath: string,
@@ -113,7 +116,15 @@ export async function createNewProjectDirectory(
   }
 
   const projectFile = window.electron.path.join(projectDir, PROJECT_ENTRYPOINT)
-  await window.electron.writeFile(projectFile, initialCode ?? '')
+  // When initialCode is present, we're loading existing code.  If it's not
+  // present, we're creating a new project, and we want to incorporate the
+  // user's settings.
+  const codeToWrite = newKclFile(
+    initialCode,
+    configuration?.settings?.modeling?.base_unit ?? DEFAULT_DEFAULT_LENGTH_UNIT
+  )
+  if (err(codeToWrite)) return Promise.reject(codeToWrite)
+  await window.electron.writeFile(projectFile, codeToWrite)
   const metadata = await window.electron.stat(projectFile)
 
   return {

@@ -1,8 +1,9 @@
-import usePlatform from 'hooks/usePlatform'
-import { OnboardingButtons, kbdClasses } from '.'
-import { onboardingPaths } from 'routes/Onboarding/paths'
-import { hotkeyDisplay } from 'lib/hotkeyWrapper'
 import { COMMAND_PALETTE_HOTKEY } from 'components/CommandBar/CommandBar'
+import usePlatform from 'hooks/usePlatform'
+import { hotkeyDisplay } from 'lib/hotkeyWrapper'
+import { onboardingPaths } from 'routes/Onboarding/paths'
+
+import { OnboardingButtons, kbdClasses } from '.'
 
 export default function CmdK() {
   const platformName = usePlatform()
