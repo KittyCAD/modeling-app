@@ -340,7 +340,7 @@ export const constrainLengthValidator = async ({
     angleOrLength: 'setLength',
   })
   if (err(angleLength)) {
-    return "Couldn't retrieve the info on the selected segement. Check the KCL code"
+    return "Couldn't retrieve the info on the selected segment. Check the KCL code"
   }
 
   const { transforms } = angleLength
@@ -352,7 +352,7 @@ export const constrainLengthValidator = async ({
     referenceSegName: '',
   })
   if (err(sketched) || !sketched.valueUsedInTransform) {
-    return "Couldn't retrieve the length of the selected segement. Check the KCL code"
+    return "Couldn't retrieve the length of the selected segment. Check the KCL code"
   }
 
   // Set the default value and return successfully
