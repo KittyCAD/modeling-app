@@ -167,8 +167,6 @@ async fn inner_fillet(
                 radius: LengthUnit(radius),
                 tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
                 cut_type: CutType::Fillet,
-                // We make this a none so that we can remove it in the future.
-                face_id: None,
             }),
         )
         .await?;
