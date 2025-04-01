@@ -2560,6 +2560,7 @@ export c = a + 2
             }
             drop(results_send);
 
+            eprintln!("Collecting results");
             while let Some((module_name, module_result)) = results_recv.recv().await {
                 eprintln!("Got result for {}", module_name);
                 eprintln!("{:?}", module_result);
