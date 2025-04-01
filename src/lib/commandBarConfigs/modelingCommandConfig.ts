@@ -15,6 +15,7 @@ import { codeManager, kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 import { modelingMachine, SketchTool } from 'machines/modelingMachine'
 import {
+  constrainLengthValidator,
   loftValidator,
   revolveAxisValidator,
   shellValidator,
@@ -874,33 +875,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: false,
         required: true,
         skip: true,
+        validation: constrainLengthValidator,
       },
       length: {
         inputType: 'kcl',
         required: true,
         createVariable: 'byDefault',
-        defaultValue(_, machineContext) {
-          const selectionRanges = machineContext?.selectionRanges
-          if (!selectionRanges) return KCL_DEFAULT_LENGTH
-          const angleLength = angleLengthInfo({
-            selectionRanges,
-            angleOrLength: 'setLength',
-          })
-          if (err(angleLength)) return KCL_DEFAULT_LENGTH
-          const { transforms } = angleLength
-
-          // QUESTION: is it okay to reference kclManager here? will its state be up to date?
-          const sketched = transformAstSketchLines({
-            ast: structuredClone(kclManager.ast),
-            selectionRanges,
-            transformInfos: transforms,
-            memVars: kclManager.variables,
-            referenceSegName: '',
-          })
-          if (err(sketched)) return KCL_DEFAULT_LENGTH
-          const { valueUsedInTransform } = sketched
-          return valueUsedInTransform?.toString() || KCL_DEFAULT_LENGTH
-        },
       },
     },
   },

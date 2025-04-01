@@ -1715,9 +1715,9 @@ function createLengthIndicator({
       data: {
         name: 'Constrain length',
         groupId: 'modeling',
-        argDefaultValues: {
-          selection,
-        },
+        // Here we're not sending selection as argDefaultValues as we want
+        // the validation flow to get triggered with skip: true on the
+        // selection sent above
       },
     })
   }

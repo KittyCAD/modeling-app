@@ -4,6 +4,13 @@ import { uuidv4 } from 'lib/utils'
 import { CommandBarContext } from 'machines/commandBarMachine'
 import { Selections } from 'lib/selections'
 import { ApiError_type } from '@kittycad/lib/dist/types/src/models'
+import { getNodeFromPath } from 'lang/queryAst'
+import { Expr } from 'lang/wasm'
+import { err } from 'lib/trap'
+import { KclCommandValue } from 'lib/commandTypes'
+import { stringToKclExpression } from 'lib/kclHelpers'
+import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
+import { transformAstSketchLines } from 'lang/std/sketchcombos'
 
 export const disableDryRunWithRetry = async (numberOfRetries = 3) => {
   for (let tries = 0; tries < numberOfRetries; tries++) {
@@ -285,4 +292,73 @@ export const sweepValidator = async ({
 
   const reason = parseEngineErrorMessage(result) || 'unknown'
   return `Unable to sweep with the current selection. Reason: ${reason}`
+}
+
+export const constrainLengthValidator = async ({
+  context,
+  data,
+}: {
+  context: CommandBarContext
+  data: { selection: Selections }
+}): Promise<boolean | string> => {
+  console.log('context', context)
+  console.log('data', data)
+
+  const { selection } = data
+  if (
+    !(
+      selection.graphSelections &&
+      selection.graphSelections[0] &&
+      selection.graphSelections[0].codeRef
+    )
+  ) {
+    return 'Unable to find a valid selection'
+  }
+
+  const graphSelection = selection.graphSelections[0]
+  const node = getNodeFromPath<Expr>(
+    kclManager.ast,
+    graphSelection.codeRef.pathToNode,
+    ['CallExpressionKw']
+  )
+  if (err(node)) {
+    return 'Unable to find the segment node related to the selection'
+  }
+
+  const canBeConstrained =
+    node.node.type === 'CallExpressionKw' &&
+    node.node.arguments[0] &&
+    node.node.arguments[0].label.name !== 'endAbsolute'
+
+  if (!canBeConstrained) {
+    return "This type of segment can't be constrained. Check the KCL code"
+  }
+
+  // Get the default value for the length argument
+  const angleLength = angleLengthInfo({
+    selectionRanges: selection,
+    angleOrLength: 'setLength',
+  })
+  if (err(angleLength)) {
+    return "Couldn't retrieve the info on the selected segement. Check the KCL code"
+  }
+
+  const { transforms } = angleLength
+  const sketched = transformAstSketchLines({
+    ast: structuredClone(kclManager.ast),
+    selectionRanges: selection,
+    transformInfos: transforms,
+    memVars: kclManager.variables,
+    referenceSegName: '',
+  })
+  if (err(sketched) || !sketched.valueUsedInTransform) {
+    return "Couldn't retrieve the length of the selected segement. Check the KCL code"
+  }
+
+  // Set the default value and return successfully
+  context.argumentsToSubmit['length'] = {
+    valueText: sketched.valueUsedInTransform.toString(),
+  }
+
+  return true
 }
