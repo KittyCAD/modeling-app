@@ -4,12 +4,12 @@
 // Set Units
 @settings(defaultLengthUnit = in)
 
-// Imput bolt pattern dimensions to mount the bracket
+// Input bolt pattern dimensions to mount the bracket
 mountingBoltDiameter = 1 / 4
 mountingBoltPatternX = 7
 mountingBoltPatternY = 4
 
-// Imput bolt pattern dimensions to mount a component to the bracket
+// Input bolt pattern dimensions to mount a component to the bracket
 componentBoltDiameter = 3 / 16
 componentBoltPatternX = 2
 componentBoltPatternY = 3
