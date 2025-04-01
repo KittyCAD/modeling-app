@@ -1,9 +1,10 @@
-import { ActorRefFrom, createActor, setup, spawnChild } from 'xstate'
-import { authMachine } from './authMachine'
 import { useSelector } from '@xstate/react'
+import { createSettings } from 'lib/settings/initialSettings'
+import { ActorRefFrom, createActor, setup, spawnChild } from 'xstate'
+
+import { authMachine } from './authMachine'
 import { ACTOR_IDS } from './machineConstants'
 import { settingsMachine } from './settingsMachine'
-import { createSettings } from 'lib/settings/initialSettings'
 
 const { AUTH, SETTINGS } = ACTOR_IDS
 const appMachineActors = {

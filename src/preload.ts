@@ -1,11 +1,12 @@
-import { ipcRenderer, contextBridge, IpcRendererEvent } from 'electron'
-import path from 'path'
+import chokidar from 'chokidar'
+import { MachinesListing } from 'components/MachineManagerProvider'
+import { IpcRendererEvent, contextBridge, ipcRenderer } from 'electron'
+import fsSync from 'node:fs'
 import fs from 'node:fs/promises'
 import os from 'node:os'
-import fsSync from 'node:fs'
+import path from 'path'
+
 import packageJson from '../package.json'
-import { MachinesListing } from 'components/MachineManagerProvider'
-import chokidar from 'chokidar'
 import type { Channel } from './channels'
 import type { WebContentSendPayload } from './menu/channels'
 

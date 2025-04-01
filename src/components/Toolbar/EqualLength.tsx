@@ -1,17 +1,19 @@
 import { toolTips } from 'lang/langHelpers'
+import { TransformInfo } from 'lang/std/stdTypes'
 import { Selections } from 'lib/selections'
-import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
+import { kclManager } from 'lib/singletons'
+import { err } from 'lib/trap'
+
+import { Node } from '@rust/kcl-lib/bindings/Node'
+
 import { getNodeFromPath } from '../../lang/queryAst'
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
-  transformSecondarySketchLinesTagFirst,
-  getTransformInfos,
   PathToNodeMap,
+  getTransformInfos,
+  transformSecondarySketchLinesTagFirst,
 } from '../../lang/std/sketchcombos'
-import { TransformInfo } from 'lang/std/stdTypes'
-import { kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
-import { Node } from '@rust/kcl-lib/bindings/Node'
+import { Expr, Program, VariableDeclarator } from '../../lang/wasm'
 
 export function setEqualLengthInfo({
   selectionRanges,

@@ -1,3 +1,40 @@
+import EditorManager from 'editor/manager'
+import { KclManager } from 'lang/KclSingleton'
+import CodeManager from 'lang/codeManager'
+import { updateModelingState } from 'lang/modelingWorkflows'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import { Artifact, getSweepArtifactFromSelection } from 'lang/std/artifactGraph'
+import { EngineCommandManager } from 'lang/std/engineConnection'
+import { findKwArg } from 'lang/util'
+import { KclCommandValue } from 'lib/commandTypes'
+import { EXECUTION_TYPE_REAL } from 'lib/constants'
+import { Selection, Selections } from 'lib/selections'
+import { err } from 'lib/trap'
+import { isArray } from 'lib/utils'
+
+import { Name } from '@rust/kcl-lib/bindings/Name'
+import { Node } from '@rust/kcl-lib/bindings/Node'
+
+import {
+  createArrayExpression,
+  createCallExpressionStdLib,
+  createCallExpressionStdLibKw,
+  createLabeledArg,
+  createLocalName,
+  createPipeExpression,
+} from '../modifyAst'
+import {
+  getNodeFromPath,
+  hasSketchPipeBeenExtruded,
+  traverse,
+} from '../queryAst'
+import {
+  ARG_TAG,
+  addTagForSketchOnFace,
+  getTagFromCallExpression,
+  sketchLineHelperMap,
+  sketchLineHelperMapKw,
+} from '../std/sketch'
 import {
   ArtifactGraph,
   CallExpression,
@@ -10,41 +47,6 @@ import {
   VariableDeclaration,
   VariableDeclarator,
 } from '../wasm'
-import {
-  createCallExpressionStdLib,
-  createArrayExpression,
-  createLocalName,
-  createPipeExpression,
-  createCallExpressionStdLibKw,
-  createLabeledArg,
-} from '../modifyAst'
-import {
-  getNodeFromPath,
-  hasSketchPipeBeenExtruded,
-  traverse,
-} from '../queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import {
-  addTagForSketchOnFace,
-  ARG_TAG,
-  getTagFromCallExpression,
-  sketchLineHelperMap,
-  sketchLineHelperMapKw,
-} from '../std/sketch'
-import { err } from 'lib/trap'
-import { Selection, Selections } from 'lib/selections'
-import { KclCommandValue } from 'lib/commandTypes'
-import { isArray } from 'lib/utils'
-import { Artifact, getSweepArtifactFromSelection } from 'lang/std/artifactGraph'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { findKwArg } from 'lang/util'
-import { KclManager } from 'lang/KclSingleton'
-import { EXECUTION_TYPE_REAL } from 'lib/constants'
-import { EngineCommandManager } from 'lang/std/engineConnection'
-import EditorManager from 'editor/manager'
-import CodeManager from 'lang/codeManager'
-import { updateModelingState } from 'lang/modelingWorkflows'
-import { Name } from '@rust/kcl-lib/bindings/Name'
 
 // Edge Treatment Types
 export enum EdgeTreatmentType {

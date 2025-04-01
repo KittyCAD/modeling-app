@@ -1,6 +1,7 @@
 import { APP_NAME } from 'lib/constants'
-import { OnboardingButtons } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
+
+import { OnboardingButtons } from '.'
 
 export default function Export() {
   return (

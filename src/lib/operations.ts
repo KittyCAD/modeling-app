@@ -1,4 +1,5 @@
 import { CustomIconName } from 'components/CustomIcon'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   Artifact,
   getArtifactOfTypes,
@@ -7,20 +8,21 @@ import {
   getSweepEdgeCodeRef,
   getWallCodeRef,
 } from 'lang/std/artifactGraph'
-import { Operation } from '@rust/kcl-lib/bindings/Operation'
-import { codeManager, kclManager, rustContext } from './singletons'
-import { err } from './trap'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { sourceRangeFromRust } from 'lang/wasm'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
-import { stringToKclExpression } from './kclHelpers'
+
+import { Operation } from '@rust/kcl-lib/bindings/Operation'
+
 import {
   HelixModes,
   ModelingCommandSchema,
 } from './commandBarConfigs/modelingCommandConfig'
+import { KclExpression } from './commandTypes'
+import { stringToKclExpression } from './kclHelpers'
 import { isDefaultPlaneStr } from './planes'
 import { Selection, Selections } from './selections'
-import { KclExpression } from './commandTypes'
+import { codeManager, kclManager, rustContext } from './singletons'
+import { err } from './trap'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'

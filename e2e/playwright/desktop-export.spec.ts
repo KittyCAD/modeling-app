@@ -1,11 +1,12 @@
-import { test, expect } from './zoo-test'
+import fsp from 'fs/promises'
 import path from 'path'
+
 import {
-  getUtils,
   executorInputPath,
   getPlaywrightDownloadDir,
+  getUtils,
 } from './test-utils'
-import fsp from 'fs/promises'
+import { expect, test } from './zoo-test'
 
 test(
   'export works on the first try',

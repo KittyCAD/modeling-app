@@ -1,11 +1,11 @@
-import react from '@vitejs/plugin-react'
-import viteTsconfigPaths from 'vite-tsconfig-paths'
-import eslint from '@nabla/vite-plugin-eslint'
-import { defineConfig, configDefaults } from 'vitest/config'
-import version from 'vite-plugin-package-version'
-import topLevelAwait from 'vite-plugin-top-level-await'
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
+import eslint from '@nabla/vite-plugin-eslint'
+import react from '@vitejs/plugin-react'
+import version from 'vite-plugin-package-version'
+import topLevelAwait from 'vite-plugin-top-level-await'
+import viteTsconfigPaths from 'vite-tsconfig-paths'
+import { configDefaults, defineConfig } from 'vitest/config'
 
 const config = defineConfig({
   server: {

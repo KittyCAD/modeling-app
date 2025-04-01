@@ -1,40 +1,41 @@
 // Some of the following was taken from bits and pieces of the vite-typescript
 // template that ElectronJS provides.
-import dotenv from 'dotenv'
-import {
-  app,
-  BrowserWindow,
-  ipcMain,
-  dialog,
-  shell,
-  nativeTheme,
-  desktopCapturer,
-  systemPreferences,
-  Menu,
-  screen,
-} from 'electron'
-import path from 'path'
-import { Issuer } from 'openid-client'
-import { Bonjour, Service } from 'bonjour-service'
 // @ts-ignore: TS1343
 import * as kittycad from '@kittycad/lib/import'
+import { Bonjour, Service } from 'bonjour-service'
+import dotenv from 'dotenv'
+import {
+  BrowserWindow,
+  Menu,
+  app,
+  desktopCapturer,
+  dialog,
+  ipcMain,
+  nativeTheme,
+  screen,
+  shell,
+  systemPreferences,
+} from 'electron'
 import electronUpdater, { type AppUpdater } from 'electron-updater'
-import getCurrentProjectFile from 'lib/getCurrentProjectFile'
-import os from 'node:os'
-import { reportRejection } from 'lib/trap'
 import { ZOO_STUDIO_PROTOCOL } from 'lib/constants'
+import getCurrentProjectFile from 'lib/getCurrentProjectFile'
+import { reportRejection } from 'lib/trap'
+import os from 'node:os'
+import { Issuer } from 'openid-client'
+import path from 'path'
+
+import * as packageJSON from '../package.json'
 import {
   argvFromYargs,
   getPathOrUrlFromArgs,
   parseCLIArgs,
 } from './commandLineArgs'
-import * as packageJSON from '../package.json'
 import {
   buildAndSetMenuForFallback,
   buildAndSetMenuForModelingPage,
   buildAndSetMenuForProjectPage,
-  enableMenu,
   disableMenu,
+  enableMenu,
 } from './menu'
 
 let mainWindow: BrowserWindow | null = null
@@ -369,10 +370,7 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
 ipcMain.handle('kittycad', (event, data) => {
   return data.access
     .split('.')
-    .reduce(
-      (obj: any, prop: any) => obj[prop],
-      kittycad
-    )(data.args)
+    .reduce((obj: any, prop: any) => obj[prop], kittycad)(data.args)
 })
 
 // Used to find other devices on the local network, e.g. 3D printers, CNC machines, etc.

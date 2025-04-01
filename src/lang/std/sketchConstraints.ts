@@ -1,21 +1,23 @@
-import { getNodeFromPath } from 'lang/queryAst'
 import { ToolTip, toolTips } from 'lang/langHelpers'
+import { getNodeFromPath } from 'lang/queryAst'
+import { findKwArgAny } from 'lang/util'
+import { err } from 'lib/trap'
+
 import { Node } from '@rust/kcl-lib/bindings/Node'
+
 import {
-  Program,
-  VariableDeclarator,
   CallExpression,
-  Sketch,
-  SourceRange,
+  CallExpressionKw,
+  Expr,
+  LabeledArg,
   Path,
   PathToNode,
-  Expr,
+  Program,
+  Sketch,
+  SourceRange,
+  VariableDeclarator,
   topLevelRange,
-  LabeledArg,
-  CallExpressionKw,
 } from '../wasm'
-import { err } from 'lib/trap'
-import { findKwArgAny } from 'lang/util'
 import { DETERMINING_ARGS } from './sketch'
 
 export function getSketchSegmentFromPathToNode(

@@ -1,45 +1,47 @@
+import { EditorSelection, SelectionRange } from '@codemirror/state'
 import { Models } from '@kittycad/lib'
+import {
+  SEGMENT_BODIES_PLUS_PROFILE_START,
+  getParentGroup,
+} from 'clientSideScene/sceneEntities'
+import { AXIS_GROUP, X_AXIS } from 'clientSideScene/sceneInfra'
+import { getNodeFromPath, isSingleCursorInPipe } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import {
+  Artifact,
+  ArtifactId,
+  CodeRef,
+  getCodeRefsByArtifactId,
+} from 'lang/std/artifactGraph'
+import { PathToNodeMap } from 'lang/std/sketchcombos'
+import { isCursorInSketchCommandRange } from 'lang/util'
+import {
+  ArtifactGraph,
+  CallExpression,
+  CallExpressionKw,
+  Expr,
+  SourceRange,
+  defaultSourceRange,
+  topLevelRange,
+} from 'lang/wasm'
+import { Program } from 'lang/wasm'
 import {
   codeManager,
   engineCommandManager,
   kclManager,
   sceneEntitiesManager,
 } from 'lib/singletons'
-import {
-  CallExpression,
-  SourceRange,
-  Expr,
-  defaultSourceRange,
-  topLevelRange,
-  ArtifactGraph,
-  CallExpressionKw,
-} from 'lang/wasm'
-import { ModelingMachineEvent } from 'machines/modelingMachine'
-import { isNonNullable, uuidv4 } from 'lib/utils'
-import { EditorSelection, SelectionRange } from '@codemirror/state'
-import { getNormalisedCoordinates, isOverlap } from 'lib/utils'
-import { isCursorInSketchCommandRange } from 'lang/util'
-import { Program } from 'lang/wasm'
-import { getNodeFromPath, isSingleCursorInPipe } from 'lang/queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { CommandArgument } from './commandTypes'
-import {
-  getParentGroup,
-  SEGMENT_BODIES_PLUS_PROFILE_START,
-} from 'clientSideScene/sceneEntities'
-import { Mesh, Object3D, Object3DEventMap } from 'three'
-import { AXIS_GROUP, X_AXIS } from 'clientSideScene/sceneInfra'
-import { PathToNodeMap } from 'lang/std/sketchcombos'
 import { err } from 'lib/trap'
-import {
-  Artifact,
-  CodeRef,
-  getCodeRefsByArtifactId,
-  ArtifactId,
-} from 'lang/std/artifactGraph'
+import { isNonNullable, uuidv4 } from 'lib/utils'
+import { getNormalisedCoordinates, isOverlap } from 'lib/utils'
+import { ModelingMachineEvent } from 'machines/modelingMachine'
+import { Mesh, Object3D, Object3DEventMap } from 'three'
+
 import { Node } from '@rust/kcl-lib/bindings/Node'
-import { DefaultPlaneStr } from './planes'
+
 import { ArtifactEntry, ArtifactIndex } from './artifactIndex'
+import { CommandArgument } from './commandTypes'
+import { DefaultPlaneStr } from './planes'
 import { rustContext } from './singletons'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'

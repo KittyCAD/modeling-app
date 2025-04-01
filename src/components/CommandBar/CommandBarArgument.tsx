@@ -1,12 +1,13 @@
+import { CommandArgument } from 'lib/commandTypes'
+import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
+
 import CommandArgOptionInput from './CommandArgOptionInput'
 import CommandBarBasicInput from './CommandBarBasicInput'
-import CommandBarSelectionInput from './CommandBarSelectionInput'
-import CommandBarSelectionMixedInput from './CommandBarSelectionMixedInput'
-import { CommandArgument } from 'lib/commandTypes'
 import CommandBarHeader from './CommandBarHeader'
 import CommandBarKclInput from './CommandBarKclInput'
+import CommandBarSelectionInput from './CommandBarSelectionInput'
+import CommandBarSelectionMixedInput from './CommandBarSelectionMixedInput'
 import CommandBarTextareaInput from './CommandBarTextareaInput'
-import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
 
 function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
   const commandBarState = useCommandBarState()

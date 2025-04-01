@@ -1,32 +1,32 @@
-import type * as LSP from 'vscode-languageserver-protocol'
-import React, { createContext, useMemo, useContext, useState } from 'react'
+import { LanguageSupport } from '@codemirror/language'
+import { Extension } from '@codemirror/state'
 import {
-  LanguageServerClient,
   FromServer,
   IntoServer,
-  LspWorkerEventType,
+  LanguageServerClient,
   LanguageServerPlugin,
+  LspWorkerEventType,
 } from '@kittycad/codemirror-lsp-client'
-import { TEST, VITE_KC_API_BASE_URL } from 'env'
-import { kcl } from 'editor/plugins/lsp/kcl/language'
 import { copilotPlugin } from 'editor/plugins/lsp/copilot'
-import { Extension } from '@codemirror/state'
-import { LanguageSupport } from '@codemirror/language'
-import { useNavigate } from 'react-router-dom'
-import { PATHS } from 'lib/paths'
-import { FileEntry } from 'lib/project'
-import Worker from 'editor/plugins/lsp/worker.ts?worker'
+import { kcl } from 'editor/plugins/lsp/kcl/language'
 import {
-  KclWorkerOptions,
   CopilotWorkerOptions,
+  KclWorkerOptions,
   LspWorker,
 } from 'editor/plugins/lsp/types'
+import Worker from 'editor/plugins/lsp/worker.ts?worker'
+import { TEST, VITE_KC_API_BASE_URL } from 'env'
 import { wasmUrl } from 'lang/wasm'
 import { PROJECT_ENTRYPOINT } from 'lib/constants'
-import { err } from 'lib/trap'
 import { isDesktop } from 'lib/isDesktop'
+import { PATHS } from 'lib/paths'
+import { FileEntry } from 'lib/project'
 import { codeManager } from 'lib/singletons'
+import { err } from 'lib/trap'
 import { useToken } from 'machines/appMachine'
+import React, { createContext, useContext, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import type * as LSP from 'vscode-languageserver-protocol'
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []

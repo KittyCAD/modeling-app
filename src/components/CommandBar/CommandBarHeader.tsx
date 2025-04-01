@@ -1,12 +1,13 @@
-import { CustomIcon } from '../CustomIcon'
-import React, { useMemo, useState } from 'react'
-import { ActionButton } from '../ActionButton'
-import { Selections, getSelectionTypeDisplayText } from 'lib/selections'
-import { useHotkeys } from 'react-hotkeys-hook'
-import { KclCommandValue, KclExpressionWithVariable } from 'lib/commandTypes'
 import Tooltip from 'components/Tooltip'
+import { KclCommandValue, KclExpressionWithVariable } from 'lib/commandTypes'
+import { Selections, getSelectionTypeDisplayText } from 'lib/selections'
 import { roundOff } from 'lib/utils'
 import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
+import React, { useMemo, useState } from 'react'
+import { useHotkeys } from 'react-hotkeys-hook'
+
+import { ActionButton } from '../ActionButton'
+import { CustomIcon } from '../CustomIcon'
 
 function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
   const commandBarState = useCommandBarState()

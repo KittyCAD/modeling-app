@@ -1,13 +1,14 @@
 import { Page } from '@playwright/test'
-import { test, expect } from './zoo-test'
+
+import { HomePageFixture } from './fixtures/homePageFixture'
 import {
-  getUtils,
+  PERSIST_MODELING_CONTEXT,
   TEST_COLORS,
   commonPoints,
-  PERSIST_MODELING_CONTEXT,
+  getUtils,
   orRunWhenFullSuiteEnabled,
 } from './test-utils'
-import { HomePageFixture } from './fixtures/homePageFixture'
+import { expect, test } from './zoo-test'
 
 test.setTimeout(120000)
 

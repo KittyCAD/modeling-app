@@ -4,18 +4,19 @@ import {
   ToastTextToCadSuccess,
 } from 'components/ToastTextToCad'
 import { VITE_KC_API_BASE_URL } from 'env'
-import toast from 'react-hot-toast'
-import { FILE_EXT } from './constants'
-import { ContextFrom, EventFrom } from 'xstate'
-import { fileMachine } from 'machines/fileMachine'
-import { NavigateFunction } from 'react-router-dom'
-import crossPlatformFetch from './crossPlatformFetch'
 import { isDesktop } from 'lib/isDesktop'
-import { Themes } from './theme'
+import { fileMachine } from 'machines/fileMachine'
+import toast from 'react-hot-toast'
+import { NavigateFunction } from 'react-router-dom'
+import { ContextFrom, EventFrom } from 'xstate'
+
+import { FILE_EXT } from './constants'
+import crossPlatformFetch from './crossPlatformFetch'
 import { getNextFileName } from './desktopFS'
+import { kclManager } from './singletons'
+import { Themes } from './theme'
 import { reportRejection } from './trap'
 import { toSync } from './utils'
-import { kclManager } from './singletons'
 
 async function submitTextToCadPrompt(
   prompt: string,

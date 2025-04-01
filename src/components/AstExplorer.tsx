@@ -1,13 +1,13 @@
 import { useModelingContext } from 'hooks/useModelingContext'
-import { editorManager, kclManager } from 'lib/singletons'
 import { getNodeFromPath } from 'lang/queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { useEffect, useRef, useState } from 'react'
-import { trap } from 'lib/trap'
-import { codeToIdSelections } from 'lib/selections'
 import { codeRefFromRange } from 'lang/std/artifactGraph'
 import { defaultSourceRange, topLevelRange } from 'lang/wasm'
+import { codeToIdSelections } from 'lib/selections'
+import { editorManager, kclManager } from 'lib/singletons'
+import { trap } from 'lib/trap'
 import { isArray } from 'lib/utils'
+import { useEffect, useRef, useState } from 'react'
 
 export function AstExplorer() {
   const { context } = useModelingContext()

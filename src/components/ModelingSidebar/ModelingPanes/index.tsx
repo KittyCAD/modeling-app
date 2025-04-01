@@ -1,25 +1,26 @@
 import { IconDefinition, faBugSlash } from '@fortawesome/free-solid-svg-icons'
-import { KclEditorMenu } from 'components/ModelingSidebar/ModelingPanes/KclEditorMenu'
 import { CustomIconName } from 'components/CustomIcon'
-import { KclEditorPane } from 'components/ModelingSidebar/ModelingPanes/KclEditorPane'
-import { ModelingPaneHeader } from 'components/ModelingSidebar/ModelingPane'
-import { MouseEventHandler, ReactNode } from 'react'
-import { MemoryPane, MemoryPaneMenu } from './MemoryPane'
-import { LogsPane } from './LoggingPanes'
-import { DebugPane } from './DebugPane'
 import {
   FileTreeInner,
   FileTreeMenu,
   FileTreeRoot,
   useFileTreeOperations,
 } from 'components/FileTree'
+import { ModelingPaneHeader } from 'components/ModelingSidebar/ModelingPane'
+import { KclEditorMenu } from 'components/ModelingSidebar/ModelingPanes/KclEditorMenu'
+import { KclEditorPane } from 'components/ModelingSidebar/ModelingPanes/KclEditorPane'
 import { useKclContext } from 'lang/KclProvider'
-import { editorManager } from 'lib/singletons'
-import { ContextFrom } from 'xstate'
-import { settingsMachine } from 'machines/settingsMachine'
-import { FeatureTreePane } from './FeatureTreePane'
 import { kclErrorsByFilename } from 'lang/errors'
+import { editorManager } from 'lib/singletons'
+import { settingsMachine } from 'machines/settingsMachine'
+import { MouseEventHandler, ReactNode } from 'react'
+import { ContextFrom } from 'xstate'
+
+import { DebugPane } from './DebugPane'
 import { FeatureTreeMenu } from './FeatureTreeMenu'
+import { FeatureTreePane } from './FeatureTreePane'
+import { LogsPane } from './LoggingPanes'
+import { MemoryPane, MemoryPaneMenu } from './MemoryPane'
 
 export type SidebarType =
   | 'code'

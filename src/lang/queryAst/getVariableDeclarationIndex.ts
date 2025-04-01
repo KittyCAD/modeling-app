@@ -1,5 +1,6 @@
-import { Node } from '@rust/kcl-lib/bindings/Node'
 import { Program } from 'lang/wasm'
+
+import { Node } from '@rust/kcl-lib/bindings/Node'
 
 /**
  * Given a program and a variable name, return the index of the variable declaration

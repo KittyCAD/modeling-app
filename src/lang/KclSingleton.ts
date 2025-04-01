@@ -1,49 +1,50 @@
+import { Diagnostic } from '@codemirror/lint'
+import {
+  EntityType_type,
+  ModelingCmdReq_type,
+} from '@kittycad/lib/dist/types/src/models'
 import { executeAst, executeAstMock, lintAst } from 'lang/langHelpers'
-import { handleSelectionBatch, Selections } from 'lib/selections'
+import {
+  ArtifactGraph,
+  ExecState,
+  KclValue,
+  PathToNode,
+  Program,
+  SourceRange,
+  VariableMap,
+  emptyExecState,
+  getKclVersion,
+  initPromise,
+  jsAppSettings,
+  parse,
+  recast,
+  topLevelRange,
+} from 'lang/wasm'
+import { buildArtifactIndex } from 'lib/artifactIndex'
+import { ArtifactIndex } from 'lib/artifactIndex'
+import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
+import { markOnce } from 'lib/performance'
+import { Selections, handleSelectionBatch } from 'lib/selections'
+import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
+import {
+  codeManager,
+  editorManager,
+  rustContext,
+  sceneInfra,
+} from 'lib/singletons'
+import { err, reportRejection } from 'lib/trap'
+import { deferExecution, isOverlap, uuidv4 } from 'lib/utils'
+
+import { Node } from '@rust/kcl-lib/bindings/Node'
+import { Operation } from '@rust/kcl-lib/bindings/Operation'
+
 import {
   KCLError,
   compilationErrorsToDiagnostics,
   kclErrorsToDiagnostics,
 } from './errors'
-import { uuidv4, isOverlap, deferExecution } from 'lib/utils'
-import { EngineCommandManager } from './std/engineConnection'
-import { err, reportRejection } from 'lib/trap'
-import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
-import { buildArtifactIndex } from 'lib/artifactIndex'
-import { ArtifactIndex } from 'lib/artifactIndex'
-
-import {
-  emptyExecState,
-  ExecState,
-  getKclVersion,
-  initPromise,
-  jsAppSettings,
-  KclValue,
-  parse,
-  PathToNode,
-  Program,
-  recast,
-  SourceRange,
-  topLevelRange,
-  VariableMap,
-  ArtifactGraph,
-} from 'lang/wasm'
 import { getNodeFromPath, getSettingsAnnotation } from './queryAst'
-import {
-  codeManager,
-  editorManager,
-  sceneInfra,
-  rustContext,
-} from 'lib/singletons'
-import { Diagnostic } from '@codemirror/lint'
-import { markOnce } from 'lib/performance'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import {
-  EntityType_type,
-  ModelingCmdReq_type,
-} from '@kittycad/lib/dist/types/src/models'
-import { Operation } from '@rust/kcl-lib/bindings/Operation'
-import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
+import { EngineCommandManager } from './std/engineConnection'
 
 interface ExecuteArgs {
   ast?: Node<Program>

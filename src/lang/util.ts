@@ -1,18 +1,19 @@
+import { filterArtifacts, getFaceCodeRef } from 'lang/std/artifactGraph'
 import { Selections } from 'lib/selections'
+import { isArray, isOverlap } from 'lib/utils'
+
 import {
-  PathToNode,
-  CallExpression,
-  Literal,
   ArrayExpression,
-  BinaryExpression,
   ArtifactGraph,
+  BinaryExpression,
+  CallExpression,
   CallExpressionKw,
   Expr,
+  Literal,
   LiteralValue,
   NumericSuffix,
+  PathToNode,
 } from './wasm'
-import { filterArtifacts, getFaceCodeRef } from 'lang/std/artifactGraph'
-import { isArray, isOverlap } from 'lib/utils'
 
 /**
  * Updates pathToNode body indices to account for the insertion of an expression
@@ -81,12 +82,12 @@ export function isCursorInSketchCommandRange(
     firstEntry?.type === 'segment'
       ? firstEntry.pathId
       : ((firstEntry?.type === 'plane' ||
-          firstEntry?.type === 'cap' ||
-          firstEntry?.type === 'wall') &&
-          firstEntry.pathIds?.length) ||
-        false
-      ? firstEntry.pathIds[0]
-      : false
+            firstEntry?.type === 'cap' ||
+            firstEntry?.type === 'wall') &&
+            firstEntry.pathIds?.length) ||
+          false
+        ? firstEntry.pathIds[0]
+        : false
 
   return parentId
     ? parentId

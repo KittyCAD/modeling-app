@@ -1,70 +1,18 @@
 import { useMachine, useSelector } from '@xstate/react'
-import React, {
-  createContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useContext,
-} from 'react'
-import {
-  Actor,
-  ContextFrom,
-  Prop,
-  SnapshotFrom,
-  StateFrom,
-  assign,
-  fromPromise,
-} from 'xstate'
-import {
-  getPersistedContext,
-  modelingMachine,
-  modelingMachineDefaultContext,
-} from 'machines/modelingMachine'
-import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
-import {
-  isCursorInSketchCommandRange,
-  updateSketchDetailsNodePaths,
-} from 'lang/util'
-import {
-  kclManager,
-  sceneInfra,
-  engineCommandManager,
-  codeManager,
-  editorManager,
-  sceneEntitiesManager,
-  rustContext,
-} from 'lib/singletons'
-import {
-  MachineManager,
-  MachineManagerContext,
-} from 'components/MachineManagerProvider'
-import { useHotkeys } from 'react-hotkeys-hook'
-import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
-import {
-  angleBetweenInfo,
-  applyConstraintAngleBetween,
-} from './Toolbar/SetAngleBetween'
-import {
-  applyConstraintAngleLength,
-  applyConstraintLength,
-} from './Toolbar/setAngleLength'
-import {
-  handleSelectionBatch,
-  Selections,
-  updateSelections,
-} from 'lib/selections'
-import { applyConstraintIntersect } from './Toolbar/Intersect'
-import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
-import useStateMachineCommands from 'hooks/useStateMachineCommands'
-import {
-  ModelingCommandSchema,
-  modelingMachineCommandConfig,
-} from 'lib/commandBarConfigs/modelingCommandConfig'
+import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import {
   SEGMENT_BODIES,
   getParentGroup,
   getSketchOrientationDetails,
 } from 'clientSideScene/sceneEntities'
+import {
+  MachineManager,
+  MachineManagerContext,
+} from 'components/MachineManagerProvider'
+import { useFileContext } from 'hooks/useFileContext'
+import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
+import useStateMachineCommands from 'hooks/useStateMachineCommands'
+import { updateModelingState } from 'lang/modelingWorkflows'
 import {
   insertNamedConstant,
   replaceValueAtNodePath,
@@ -73,6 +21,27 @@ import {
   splitPipedProfile,
   startSketchOnDefault,
 } from 'lang/modifyAst'
+import {
+  artifactIsPlaneWithPaths,
+  doesSketchPipeNeedSplitting,
+  getNodeFromPath,
+  isCursorInFunctionDefinition,
+  traverse,
+} from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import {
+  getFaceCodeRef,
+  getPathsFromArtifact,
+  getPlaneFromArtifact,
+} from 'lang/std/artifactGraph'
+import {
+  EngineConnectionEvents,
+  EngineConnectionStateType,
+} from 'lang/std/engineConnection'
+import {
+  isCursorInSketchCommandRange,
+  updateSketchDetailsNodePaths,
+} from 'lang/util'
 import {
   KclValue,
   PathToNode,
@@ -84,43 +53,76 @@ import {
   resultIsOk,
 } from 'lang/wasm'
 import {
-  artifactIsPlaneWithPaths,
-  doesSketchPipeNeedSplitting,
-  getNodeFromPath,
-  isCursorInFunctionDefinition,
-  traverse,
-} from 'lang/queryAst'
-import toast from 'react-hot-toast'
-import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
-import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
-import { err, reportRejection, trap, reject } from 'lib/trap'
-import {
-  EngineConnectionStateType,
-  EngineConnectionEvents,
-} from 'lang/std/engineConnection'
-import { submitAndAwaitTextToKcl } from 'lib/textToCad'
-import { useFileContext } from 'hooks/useFileContext'
-import { platform, uuidv4 } from 'lib/utils'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import {
-  getFaceCodeRef,
-  getPathsFromArtifact,
-  getPlaneFromArtifact,
-} from 'lang/std/artifactGraph'
-import { promptToEditFlow } from 'lib/promptToEdit'
-import { kclEditorActor } from 'machines/kclEditorMachine'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { useToken } from 'machines/appMachine'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { useSettings } from 'machines/appMachine'
-import { IndexLoaderData } from 'lib/types'
-import { OutputFormat3d, Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
+  ModelingCommandSchema,
+  modelingMachineCommandConfig,
+} from 'lib/commandBarConfigs/modelingCommandConfig'
 import { EXPORT_TOAST_MESSAGES, MAKE_TOAST_MESSAGES } from 'lib/constants'
+import { EXECUTION_TYPE_MOCK } from 'lib/constants'
 import { exportMake } from 'lib/exportMake'
 import { exportSave } from 'lib/exportSave'
+import { promptToEditFlow } from 'lib/promptToEdit'
+import {
+  Selections,
+  handleSelectionBatch,
+  updateSelections,
+} from 'lib/selections'
+import {
+  codeManager,
+  editorManager,
+  engineCommandManager,
+  kclManager,
+  rustContext,
+  sceneEntitiesManager,
+  sceneInfra,
+} from 'lib/singletons'
+import { submitAndAwaitTextToKcl } from 'lib/textToCad'
+import { err, reject, reportRejection, trap } from 'lib/trap'
+import { IndexLoaderData } from 'lib/types'
+import { platform, uuidv4 } from 'lib/utils'
+import { useToken } from 'machines/appMachine'
+import { useSettings } from 'machines/appMachine'
+import { commandBarActor } from 'machines/commandBarMachine'
+import { kclEditorActor } from 'machines/kclEditorMachine'
+import {
+  getPersistedContext,
+  modelingMachine,
+  modelingMachineDefaultContext,
+} from 'machines/modelingMachine'
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react'
+import toast from 'react-hot-toast'
+import { useHotkeys } from 'react-hotkeys-hook'
+import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
+import {
+  Actor,
+  ContextFrom,
+  Prop,
+  SnapshotFrom,
+  StateFrom,
+  assign,
+  fromPromise,
+} from 'xstate'
+
+import { OutputFormat3d, Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import { Plane } from '@rust/kcl-lib/bindings/Plane'
-import { updateModelingState } from 'lang/modelingWorkflows'
-import { EXECUTION_TYPE_MOCK } from 'lib/constants'
+
+import { applyConstraintIntersect } from './Toolbar/Intersect'
+import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
+import {
+  angleBetweenInfo,
+  applyConstraintAngleBetween,
+} from './Toolbar/SetAngleBetween'
+import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
+import {
+  applyConstraintAngleLength,
+  applyConstraintLength,
+} from './Toolbar/setAngleLength'
 
 export const ModelingMachineContext = createContext(
   {} as {

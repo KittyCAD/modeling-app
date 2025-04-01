@@ -1,21 +1,22 @@
+import { err } from 'lib/trap'
+
+import { enginelessExecutor } from '../../lib/testHelpers'
 import {
-  assertParse,
   Sketch,
-  recast,
-  initPromise,
-  sketchFromKclValue,
   SourceRange,
+  assertParse,
+  initPromise,
+  recast,
+  sketchFromKclValue,
   topLevelRange,
 } from '../wasm'
+import { codeRefFromRange } from './artifactGraph'
+import { getSketchSegmentFromSourceRange } from './sketchConstraints'
 import {
   ConstraintType,
   getTransformInfos,
   transformAstSketchLines,
 } from './sketchcombos'
-import { getSketchSegmentFromSourceRange } from './sketchConstraints'
-import { enginelessExecutor } from '../../lib/testHelpers'
-import { err } from 'lib/trap'
-import { codeRefFromRange } from './artifactGraph'
 
 beforeAll(async () => {
   await initPromise

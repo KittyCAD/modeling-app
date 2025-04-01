@@ -1,4 +1,5 @@
 import { expect } from 'vitest'
+
 import { base64ToString, stringToBase64 } from './base64'
 
 describe('base64 encoding', () => {

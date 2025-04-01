@@ -1,5 +1,5 @@
 import { Extension, Prec } from '@codemirror/state'
-import { EditorView, keymap, KeyBinding, ViewPlugin } from '@codemirror/view'
+import { EditorView, KeyBinding, ViewPlugin, keymap } from '@codemirror/view'
 
 import { LanguageServerPlugin } from './lsp'
 

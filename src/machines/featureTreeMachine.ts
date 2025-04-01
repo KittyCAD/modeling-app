@@ -1,21 +1,23 @@
-import { Artifact, getArtifactFromRange } from 'lang/std/artifactGraph'
-import { SourceRange } from 'lang/wasm'
-import {
-  enterAppearanceFlow,
-  enterEditFlow,
-  EnterEditFlowProps,
-} from 'lib/operations'
-import { kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
-import toast from 'react-hot-toast'
-import { Operation } from '@rust/kcl-lib/bindings/Operation'
-import { assign, fromPromise, setup } from 'xstate'
-import { commandBarActor } from './commandBarMachine'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   deleteSelectionPromise,
   deletionErrorMessage,
 } from 'lang/modifyAst/deleteSelection'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import { Artifact, getArtifactFromRange } from 'lang/std/artifactGraph'
+import { SourceRange } from 'lang/wasm'
+import {
+  EnterEditFlowProps,
+  enterAppearanceFlow,
+  enterEditFlow,
+} from 'lib/operations'
+import { kclManager } from 'lib/singletons'
+import { err } from 'lib/trap'
+import toast from 'react-hot-toast'
+import { assign, fromPromise, setup } from 'xstate'
+
+import { Operation } from '@rust/kcl-lib/bindings/Operation'
+
+import { commandBarActor } from './commandBarMachine'
 
 type FeatureTreeEvent =
   | {
@@ -273,10 +275,10 @@ export const featureTreeMachine = setup({
             src: 'prepareEditCommand',
             input: ({ context }) => {
               const artifact = context.targetSourceRange
-                ? getArtifactFromRange(
+                ? (getArtifactFromRange(
                     context.targetSourceRange,
                     kclManager.artifactGraph
-                  ) ?? undefined
+                  ) ?? undefined)
                 : undefined
               return {
                 // currentOperation is guaranteed to be defined here
@@ -327,10 +329,10 @@ export const featureTreeMachine = setup({
             src: 'prepareAppearanceCommand',
             input: ({ context }) => {
               const artifact = context.targetSourceRange
-                ? getArtifactFromRange(
+                ? (getArtifactFromRange(
                     context.targetSourceRange,
                     kclManager.artifactGraph
-                  ) ?? undefined
+                  ) ?? undefined)
                 : undefined
               return {
                 // currentOperation is guaranteed to be defined here
@@ -381,10 +383,10 @@ export const featureTreeMachine = setup({
             src: 'sendDeleteCommand',
             input: ({ context }) => {
               const artifact = context.targetSourceRange
-                ? getArtifactFromRange(
+                ? (getArtifactFromRange(
                     context.targetSourceRange,
                     kclManager.artifactGraph
-                  ) ?? undefined
+                  ) ?? undefined)
                 : undefined
               return {
                 artifact,

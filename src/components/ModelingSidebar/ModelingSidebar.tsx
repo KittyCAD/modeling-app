@@ -1,26 +1,27 @@
+import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
+import { ActionIcon } from 'components/ActionIcon'
+import { CustomIconName } from 'components/CustomIcon'
+import { MachineManagerContext } from 'components/MachineManagerProvider'
+import Tooltip from 'components/Tooltip'
+import { useModelingContext } from 'hooks/useModelingContext'
+import { useKclContext } from 'lang/KclProvider'
+import { SIDEBAR_BUTTON_SUFFIX } from 'lib/constants'
+import { isDesktop } from 'lib/isDesktop'
+import { useSettings } from 'machines/appMachine'
+import { commandBarActor } from 'machines/commandBarMachine'
 import { Resizable } from 're-resizable'
 import {
   MouseEventHandler,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
-  useContext,
 } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { SidebarAction, SidebarType, sidebarPanes } from './ModelingPanes'
-import Tooltip from 'components/Tooltip'
-import { ActionIcon } from 'components/ActionIcon'
-import { ModelingPane } from './ModelingPane'
-import { isDesktop } from 'lib/isDesktop'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { CustomIconName } from 'components/CustomIcon'
-import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
-import { useKclContext } from 'lang/KclProvider'
-import { MachineManagerContext } from 'components/MachineManagerProvider'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { SIDEBAR_BUTTON_SUFFIX } from 'lib/constants'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { useSettings } from 'machines/appMachine'
+
+import { ModelingPane } from './ModelingPane'
+import { SidebarAction, SidebarType, sidebarPanes } from './ModelingPanes'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -113,17 +114,20 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   )
 
   const paneBadgeMap: Record<SidebarType, BadgeInfoComputed> = useMemo(() => {
-    return filteredPanes.reduce((acc, pane) => {
-      if (pane.showBadge) {
-        acc[pane.id] = {
-          value: pane.showBadge.value(paneCallbackProps),
-          onClick: pane.showBadge.onClick,
-          className: pane.showBadge.className,
-          title: pane.showBadge.title,
+    return filteredPanes.reduce(
+      (acc, pane) => {
+        if (pane.showBadge) {
+          acc[pane.id] = {
+            value: pane.showBadge.value(paneCallbackProps),
+            onClick: pane.showBadge.onClick,
+            className: pane.showBadge.className,
+            title: pane.showBadge.title,
+          }
         }
-      }
-      return acc
-    }, {} as Record<SidebarType, BadgeInfoComputed>)
+        return acc
+      },
+      {} as Record<SidebarType, BadgeInfoComputed>
+    )
   }, [paneCallbackProps])
 
   // Clear any hidden panes from the `openPanes` array

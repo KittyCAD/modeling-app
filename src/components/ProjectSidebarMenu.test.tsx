@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react'
-import { BrowserRouter } from 'react-router-dom'
-import ProjectSidebarMenu from './ProjectSidebarMenu'
 import { Project } from 'lib/project'
+import { BrowserRouter } from 'react-router-dom'
+
+import ProjectSidebarMenu from './ProjectSidebarMenu'
 
 const now = new Date()
 const projectWellFormed = {
