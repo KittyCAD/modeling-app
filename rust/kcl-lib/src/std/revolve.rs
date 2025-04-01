@@ -5,11 +5,12 @@ use kcl_derive_docs::stdlib;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, ModelingCmd};
 use kittycad_modeling_cmds::{self as kcmc};
 
+use super::DEFAULT_TOLERANCE;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{types::RuntimeType, ExecState, KclValue, Sketch, Solid},
     parsing::ast::types::TagNode,
-    std::{axis_or_reference::Axis2dOrEdgeReference, extrude::do_post_extrude, fillet::default_tolerance, Args},
+    std::{axis_or_reference::Axis2dOrEdgeReference, extrude::do_post_extrude, Args},
 };
 
 /// Revolve a sketch or set of sketches around an axis.
@@ -273,9 +274,7 @@ async fn inner_revolve(
                         target: sketch.id.into(),
                         axis,
                         origin,
-                        tolerance: LengthUnit(
-                            tolerance.unwrap_or_else(|| default_tolerance(&exec_state.length_unit().into())),
-                        ),
+                        tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
                         axis_is_2d: true,
                     }),
                 )
@@ -289,9 +288,7 @@ async fn inner_revolve(
                         angle,
                         target: sketch.id.into(),
                         edge_id,
-                        tolerance: LengthUnit(
-                            tolerance.unwrap_or_else(|| default_tolerance(&exec_state.length_unit().into())),
-                        ),
+                        tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
                     }),
                 )
                 .await?;

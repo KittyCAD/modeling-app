@@ -274,11 +274,17 @@ export const parse = (code: string | Error): ParseResult | Error => {
   }
 }
 
-// Parse and throw an exception if there are any errors (probably not suitable for use outside of testing).
-export const assertParse = (code: string): Node<Program> => {
+/**
+ * Parse and throw an exception if there are any errors (probably not suitable for use outside of testing).
+ */
+export function assertParse(code: string): Node<Program> {
   const result = parse(code)
   // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-  if (err(result) || !resultIsOk(result)) throw result
+  if (err(result)) throw result
+  if (!resultIsOk(result)) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error('parse result contains errors', { cause: result })
+  }
   return result.program
 }
 
@@ -565,8 +571,8 @@ export function base64Decode(base64: string): ArrayBuffer | Error {
     const decoded = base64_decode(base64)
     return new Uint8Array(decoded).buffer
   } catch (e) {
-    console.error('Caught error decoding base64 string: ' + e)
-    return new Error('Caught error decoding base64 string: ' + e)
+    console.error('Caught error decoding base64 string', e)
+    return new Error('Caught error decoding base64 string', { cause: e })
   }
 }
 

@@ -8,6 +8,7 @@ use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+use super::DEFAULT_TOLERANCE;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -15,7 +16,6 @@ use crate::{
         EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, Solid, TagIdentifier,
     },
     parsing::ast::types::TagNode,
-    settings::types::UnitLength,
     std::Args,
     SourceRange,
 };
@@ -165,10 +165,8 @@ async fn inner_fillet(
                 edge_id,
                 object_id: solid.id,
                 radius: LengthUnit(radius),
-                tolerance: LengthUnit(tolerance.unwrap_or_else(|| default_tolerance(&exec_state.length_unit().into()))),
+                tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
                 cut_type: CutType::Fillet,
-                // We make this a none so that we can remove it in the future.
-                face_id: None,
             }),
         )
         .await?;
@@ -193,17 +191,6 @@ async fn inner_fillet(
     }
 
     Ok(solid)
-}
-
-pub(crate) fn default_tolerance(units: &UnitLength) -> f64 {
-    match units {
-        UnitLength::Mm => 0.0000001,
-        UnitLength::Cm => 0.0000001,
-        UnitLength::In => 0.0000001,
-        UnitLength::Ft => 0.0001,
-        UnitLength::Yd => 0.001,
-        UnitLength::M => 0.001,
-    }
 }
 
 #[cfg(test)]
