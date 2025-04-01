@@ -26,4 +26,4 @@ include-package-data = false
 
 [tool.setuptools.packages.find]
 include = ["src*"]
-exclude = ["files*", "tests*", "venv*"]
+exclude = ["files*", "tests*", "venv*", "target*"]
