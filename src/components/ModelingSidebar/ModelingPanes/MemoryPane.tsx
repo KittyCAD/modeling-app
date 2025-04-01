@@ -1,18 +1,18 @@
-import toast from 'react-hot-toast'
-import ReactJson from 'react-json-view'
-import { useMemo } from 'react'
-import {
-  Path,
-  ExtrudeSurface,
-  sketchFromKclValueOptional,
-  VariableMap,
-} from 'lang/wasm'
-import { useKclContext } from 'lang/KclProvider'
-import { useResolvedTheme } from 'hooks/useResolvedTheme'
 import { ActionButton } from 'components/ActionButton'
-import { Reason, trap } from 'lib/trap'
 import Tooltip from 'components/Tooltip'
 import { useModelingContext } from 'hooks/useModelingContext'
+import { useResolvedTheme } from 'hooks/useResolvedTheme'
+import { useKclContext } from 'lang/KclProvider'
+import {
+  ExtrudeSurface,
+  Path,
+  VariableMap,
+  sketchFromKclValueOptional,
+} from 'lang/wasm'
+import { Reason, trap } from 'lib/trap'
+import { useMemo } from 'react'
+import toast from 'react-hot-toast'
+import ReactJson from 'react-json-view'
 
 export const MemoryPaneMenu = () => {
   const { variables } = useKclContext()

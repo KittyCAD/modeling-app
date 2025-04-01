@@ -1,6 +1,8 @@
-import { Command } from '../commandTypes'
 import { PATHS } from 'lib/paths'
-import { NavigateFunction, Location } from 'react-router-dom'
+import { Location, NavigateFunction } from 'react-router-dom'
+
+import { Command } from '../commandTypes'
+
 export function createRouteCommands(
   navigate: NavigateFunction,
   location: Location,

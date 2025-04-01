@@ -1,13 +1,15 @@
-import { onboardingPaths } from 'routes/Onboarding/paths'
-import { BROWSER_FILE_NAME, BROWSER_PROJECT_NAME, FILE_EXT } from './constants'
-import { isDesktop } from './isDesktop'
-import { readAppSettingsFile } from './desktop'
-import { readLocalStorageAppSettingsFile } from './settings/settingsUtils'
 import { err } from 'lib/trap'
-import { IS_PLAYWRIGHT_KEY } from '../../e2e/playwright/storageStates'
-import { DeepPartial } from './types'
-import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { PlatformPath } from 'path'
+import { onboardingPaths } from 'routes/Onboarding/paths'
+
+import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+
+import { IS_PLAYWRIGHT_KEY } from '../../e2e/playwright/storageStates'
+import { BROWSER_FILE_NAME, BROWSER_PROJECT_NAME, FILE_EXT } from './constants'
+import { readAppSettingsFile } from './desktop'
+import { isDesktop } from './isDesktop'
+import { readLocalStorageAppSettingsFile } from './settings/settingsUtils'
+import { DeepPartial } from './types'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {

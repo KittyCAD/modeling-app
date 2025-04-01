@@ -2,8 +2,7 @@
 // application, check it can make it to the project pane, and nothing more.
 // It also tests our test wrappers are working.
 // Additionally this serves as a nice minimal example.
-
-import { test, expect } from './zoo-test'
+import { expect, test } from './zoo-test'
 
 test.describe('Open the application', () => {
   test('see the project view', async ({ page, context }) => {

@@ -1,22 +1,23 @@
-import { assign, setup, fromPromise } from 'xstate'
 import { Models } from '@kittycad/lib'
-import withBaseURL from '../lib/withBaseURL'
-import { isDesktop } from 'lib/isDesktop'
 import {
+  DEV,
   VITE_KC_API_BASE_URL,
   VITE_KC_DEV_TOKEN,
   VITE_KC_SKIP_AUTH,
-  DEV,
 } from 'env'
+import { COOKIE_NAME } from 'lib/constants'
 import {
   getUser as getUserDesktop,
   readTokenFile,
   writeTokenFile,
 } from 'lib/desktop'
-import { COOKIE_NAME } from 'lib/constants'
+import { isDesktop } from 'lib/isDesktop'
 import { markOnce } from 'lib/performance'
-import { ACTOR_IDS } from './machineConstants'
+import { assign, fromPromise, setup } from 'xstate'
+
+import withBaseURL from '../lib/withBaseURL'
 import withBaseUrl from '../lib/withBaseURL'
+import { ACTOR_IDS } from './machineConstants'
 
 const SKIP_AUTH = VITE_KC_SKIP_AUTH === 'true' && DEV
 

@@ -1,7 +1,8 @@
 import { Dialog } from '@headlessui/react'
-import { ActionButton } from './ActionButton'
-import { useState } from 'react'
 import { useSettings } from 'machines/appMachine'
+import { useState } from 'react'
+
+import { ActionButton } from './ActionButton'
 
 const DownloadAppBanner = () => {
   const settings = useSettings()

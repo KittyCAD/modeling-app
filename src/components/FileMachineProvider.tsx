@@ -1,19 +1,7 @@
 import { useMachine } from '@xstate/react'
-import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
-import { type IndexLoaderData } from 'lib/types'
-import { BROWSER_PATH, PATHS } from 'lib/paths'
-import React, { createContext, useEffect, useMemo } from 'react'
-import { toast } from 'react-hot-toast'
-import {
-  Actor,
-  AnyStateMachine,
-  ContextFrom,
-  Prop,
-  StateFrom,
-  fromPromise,
-} from 'xstate'
-import { fileMachine } from 'machines/fileMachine'
-import { isDesktop } from 'lib/isDesktop'
+import { newKclFile } from 'lang/project'
+import { createNamedViewsCommand } from 'lib/commandBarConfigs/namedViewsConfig'
+import { createRouteCommands } from 'lib/commandBarConfigs/routeCommandConfig'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_FILE_NAME,
@@ -22,20 +10,32 @@ import {
 } from 'lib/constants'
 import { getProjectInfo } from 'lib/desktop'
 import { getNextDirName, getNextFileName } from 'lib/desktopFS'
-import { kclCommands } from 'lib/kclCommands'
-import { codeManager, kclManager } from 'lib/singletons'
 import {
-  getKclSamplesManifest,
   KclSamplesManifestItem,
+  getKclSamplesManifest,
 } from 'lib/getKclSamplesManifest'
+import { isDesktop } from 'lib/isDesktop'
+import { kclCommands } from 'lib/kclCommands'
+import { BROWSER_PATH, PATHS } from 'lib/paths'
 import { markOnce } from 'lib/performance'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { useSettings } from 'machines/appMachine'
-import { createRouteCommands } from 'lib/commandBarConfigs/routeCommandConfig'
-import { useToken } from 'machines/appMachine'
-import { createNamedViewsCommand } from 'lib/commandBarConfigs/namedViewsConfig'
+import { codeManager, kclManager } from 'lib/singletons'
 import { err, reportRejection } from 'lib/trap'
-import { newKclFile } from 'lang/project'
+import { type IndexLoaderData } from 'lib/types'
+import { useSettings } from 'machines/appMachine'
+import { useToken } from 'machines/appMachine'
+import { commandBarActor } from 'machines/commandBarMachine'
+import { fileMachine } from 'machines/fileMachine'
+import React, { createContext, useEffect, useMemo } from 'react'
+import { toast } from 'react-hot-toast'
+import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
+import {
+  Actor,
+  AnyStateMachine,
+  ContextFrom,
+  Prop,
+  StateFrom,
+  fromPromise,
+} from 'xstate'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -175,8 +175,11 @@ export const FileMachineProvider = ({
             commandBarActor.send({ type: 'Close' })
             navigate(
               `..${PATHS.FILE}/${encodeURIComponent(
+                // TODO: Should this be context.selectedDirectory.path?
+                // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
                 context.selectedDirectory +
                   window.electron.path.sep +
+                  // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
                   event.output.name
               )}`
             )

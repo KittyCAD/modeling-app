@@ -1,5 +1,4 @@
 import { getMarks } from 'lib/performance'
-
 import {
   printDeltaTotal,
   printInvocationCount,

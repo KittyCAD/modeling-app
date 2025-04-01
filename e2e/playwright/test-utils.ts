@@ -1,32 +1,34 @@
+import * as TOML from '@iarna/toml'
+import type { Models } from '@kittycad/lib'
 import {
-  expect,
   BrowserContext,
-  TestInfo,
   Locator,
   Page,
+  TestInfo,
+  expect,
 } from '@playwright/test'
-import { test } from './zoo-test'
-import { EngineCommand } from 'lang/std/artifactGraph'
 import fsp from 'fs/promises'
-import path from 'path'
-import pixelMatch from 'pixelmatch'
-import { PNG } from 'pngjs'
-import { Protocol } from 'playwright-core/types/protocol'
-import type { Models } from '@kittycad/lib'
+import { EngineCommand } from 'lang/std/artifactGraph'
+import { Configuration } from 'lang/wasm'
 import { COOKIE_NAME } from 'lib/constants'
-import { secrets } from './secrets'
-import {
-  TEST_SETTINGS_KEY,
-  TEST_SETTINGS,
-  IS_PLAYWRIGHT_KEY,
-} from './storageStates'
-import * as TOML from '@iarna/toml'
-import { isErrorWhitelisted } from './lib/console-error-whitelist'
-import { isArray } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
 import { DeepPartial } from 'lib/types'
-import { Configuration } from 'lang/wasm'
+import { isArray } from 'lib/utils'
+import path from 'path'
+import pixelMatch from 'pixelmatch'
+import { Protocol } from 'playwright-core/types/protocol'
+import { PNG } from 'pngjs'
+
 import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+
+import { isErrorWhitelisted } from './lib/console-error-whitelist'
+import { secrets } from './secrets'
+import {
+  IS_PLAYWRIGHT_KEY,
+  TEST_SETTINGS,
+  TEST_SETTINGS_KEY,
+} from './storageStates'
+import { test } from './zoo-test'
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
@@ -683,8 +685,8 @@ const _makeTemplate = (
           isArray(currentOptions)
             ? currentOptions[i]
             : typeof currentOptions === 'number'
-            ? currentOptions
-            : ''
+              ? currentOptions
+              : ''
         )
       )
     })

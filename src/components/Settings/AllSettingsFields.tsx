@@ -1,31 +1,32 @@
+import { useSelector } from '@xstate/react'
+import { ActionButton } from 'components/ActionButton'
+import { useLspContext } from 'components/LspProvider'
 import decamelize from 'decamelize'
+import { useDotDotSlash } from 'hooks/useDotDotSlash'
+import {
+  createAndOpenNewTutorialProject,
+  getSettingsFolderPaths,
+} from 'lib/desktopFS'
+import { isDesktop } from 'lib/isDesktop'
+import { openExternalBrowserIfDesktop } from 'lib/openWindow'
+import { PATHS } from 'lib/paths'
 import { Setting } from 'lib/settings/initialSettings'
 import { SetEventTypes, SettingsLevel } from 'lib/settings/settingsTypes'
 import {
   shouldHideSetting,
   shouldShowSettingInput,
 } from 'lib/settings/settingsUtils'
-import { Fragment } from 'react/jsx-runtime'
-import { SettingsSection } from './SettingsSection'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { isDesktop } from 'lib/isDesktop'
-import { ActionButton } from 'components/ActionButton'
-import { SettingsFieldInput } from './SettingsFieldInput'
-import toast from 'react-hot-toast'
-import { APP_VERSION, IS_NIGHTLY, getReleaseUrl } from 'routes/Settings'
-import { PATHS } from 'lib/paths'
-import {
-  createAndOpenNewTutorialProject,
-  getSettingsFolderPaths,
-} from 'lib/desktopFS'
-import { useDotDotSlash } from 'hooks/useDotDotSlash'
-import { ForwardedRef, forwardRef, useEffect, useMemo } from 'react'
-import { useLspContext } from 'components/LspProvider'
-import { toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
+import { toSync } from 'lib/utils'
 import { settingsActor, useSettings } from 'machines/appMachine'
-import { useSelector } from '@xstate/react'
+import { ForwardedRef, forwardRef, useEffect, useMemo } from 'react'
+import toast from 'react-hot-toast'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { Fragment } from 'react/jsx-runtime'
+import { APP_VERSION, IS_NIGHTLY, getReleaseUrl } from 'routes/Settings'
+
+import { SettingsFieldInput } from './SettingsFieldInput'
+import { SettingsSection } from './SettingsSection'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel

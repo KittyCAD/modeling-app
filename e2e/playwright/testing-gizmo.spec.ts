@@ -1,7 +1,8 @@
-import { test, expect } from './zoo-test'
-import { getUtils } from './test-utils'
 import { uuidv4 } from 'lib/utils'
+
 import { TEST_CODE_GIZMO } from './storageStates'
+import { getUtils } from './test-utils'
+import { expect, test } from './zoo-test'
 
 test.describe('Testing Gizmo', { tag: ['@skipWin'] }, () => {
   const cases = [

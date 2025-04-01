@@ -37,11 +37,11 @@ export class IntoServer
   implements AsyncGenerator<Uint8Array, never, void>
 {
   private worker: Worker | null = null
-  private type_: String | null = null
+  private type_: string | null = null
 
   private trace: boolean = false
 
-  constructor(type_?: String, worker?: Worker, trace?: boolean) {
+  constructor(type_?: string, worker?: Worker, trace?: boolean) {
     super()
     if (worker && type_) {
       this.worker = worker

@@ -1,5 +1,5 @@
-import { test, expect } from './zoo-test'
 import { getUtils } from './test-utils'
+import { expect, test } from './zoo-test'
 
 test.describe('Copilot ghost text', () => {
   // eslint-disable-next-line jest/valid-title

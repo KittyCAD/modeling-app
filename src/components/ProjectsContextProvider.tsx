@@ -1,39 +1,40 @@
 import { useMachine } from '@xstate/react'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 import { useProjectsLoader } from 'hooks/useProjectsLoader'
-import { projectsMachine } from 'machines/projectsMachine'
-import { createContext, useCallback, useEffect, useState } from 'react'
-import { Actor, AnyStateMachine, fromPromise, Prop, StateFrom } from 'xstate'
-import { useLspContext } from './LspProvider'
-import toast from 'react-hot-toast'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { PATHS } from 'lib/paths'
+import useStateMachineCommands from 'hooks/useStateMachineCommands'
+import { newKclFile } from 'lang/project'
+import { projectsCommandBarConfig } from 'lib/commandBarConfigs/projectsCommandConfig'
+import {
+  CREATE_FILE_URL_PARAM,
+  FILE_EXT,
+  PROJECT_ENTRYPOINT,
+} from 'lib/constants'
 import {
   createNewProjectDirectory,
   listProjects,
   renameProjectDirectory,
 } from 'lib/desktop'
 import {
-  getNextProjectIndex,
-  interpolateProjectNameWithIndex,
   doesProjectNameNeedInterpolated,
-  getUniqueProjectName,
   getNextFileName,
+  getNextProjectIndex,
+  getUniqueProjectName,
+  interpolateProjectNameWithIndex,
 } from 'lib/desktopFS'
-import useStateMachineCommands from 'hooks/useStateMachineCommands'
-import { projectsCommandBarConfig } from 'lib/commandBarConfigs/projectsCommandConfig'
 import { isDesktop } from 'lib/isDesktop'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { useSettings } from 'machines/appMachine'
-import {
-  CREATE_FILE_URL_PARAM,
-  FILE_EXT,
-  PROJECT_ENTRYPOINT,
-} from 'lib/constants'
-import { codeManager, kclManager } from 'lib/singletons'
+import { PATHS } from 'lib/paths'
 import { Project } from 'lib/project'
-import { newKclFile } from 'lang/project'
+import { codeManager, kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
+import { useSettings } from 'machines/appMachine'
+import { commandBarActor } from 'machines/commandBarMachine'
+import { projectsMachine } from 'machines/projectsMachine'
+import { createContext, useCallback, useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { Actor, AnyStateMachine, Prop, StateFrom, fromPromise } from 'xstate'
+
+import { useLspContext } from './LspProvider'
 
 type MachineContext<T extends AnyStateMachine> = {
   state?: StateFrom<T>
@@ -382,8 +383,8 @@ const ProjectsContextDesktop = ({
             input.method === 'newProject'
               ? PROJECT_ENTRYPOINT
               : input.name.endsWith(FILE_EXT)
-              ? input.name
-              : input.name + FILE_EXT
+                ? input.name
+                : input.name + FILE_EXT
           let message = 'File created successfully'
 
           const needsInterpolated = doesProjectNameNeedInterpolated(projectName)
