@@ -69,6 +69,14 @@
         {
           "selector": "CallExpression[callee.object.name='Array'][callee.property.name='isArray']",
           "message": "Use isArray() in lib/utils.ts instead of Array.isArray()."
+        },
+        {
+            "selector": "CallExpression[callee.object.name='TOML'][callee.property.name='stringify']",
+            "message": "Do not use TOML.stringify directly. Use the wrappers in test-utils instead like settingsToToml."
+        },
+        {
+            "selector": "CallExpression[callee.object.name='TOML'][callee.property.name='parse']",
+            "message": "Do not use TOML.parse directly. Use the wrappers in test-utils instead like tomlToSettings."
         }
       ],
       "semi": [
