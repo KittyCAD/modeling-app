@@ -112,17 +112,17 @@ export class CmdBarFixture {
    * and assumes we are past the `pickCommand` step.
    */
   progressCmdBar = async (shouldFuzzProgressMethod = true) => {
-      await this.page.waitForTimeout(2000)
-      const arrowButton = this.page.getByRole('button', {
-        name: 'arrow right Continue',
-      })
-      if (await arrowButton.isVisible()) {
-        await arrowButton.click()
-      } else {
-        await this.page
-          .getByRole('button', { name: 'checkmark Submit command' })
-          .click()
-      }
+    await this.page.waitForTimeout(2000)
+    const arrowButton = this.page.getByRole('button', {
+      name: 'arrow right Continue',
+    })
+    if (await arrowButton.isVisible()) {
+      await arrowButton.click()
+    } else {
+      await this.page
+        .getByRole('button', { name: 'checkmark Submit command' })
+        .click()
+    }
   }
 
   // Added data-testid to the command bar buttons
