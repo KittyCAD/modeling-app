@@ -571,8 +571,8 @@ export function base64Decode(base64: string): ArrayBuffer | Error {
     const decoded = base64_decode(base64)
     return new Uint8Array(decoded).buffer
   } catch (e) {
-    console.error('Caught error decoding base64 string: ' + e)
-    return new Error('Caught error decoding base64 string: ' + e)
+    console.error('Caught error decoding base64 string', e)
+    return new Error('Caught error decoding base64 string', { cause: e })
   }
 }
 
