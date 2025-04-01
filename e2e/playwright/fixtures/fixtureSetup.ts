@@ -8,7 +8,6 @@ import type {
 
 import { _electron as electron } from '@playwright/test'
 
-import * as TOML from '@iarna/toml'
 import { TEST_SETTINGS } from '../storageStates'
 import { SETTINGS_FILE_NAME } from 'lib/constants'
 import { getUtils, setup, settingsToToml } from '../test-utils'
