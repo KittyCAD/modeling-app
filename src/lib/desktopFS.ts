@@ -1,19 +1,18 @@
+import { isDesktop } from './isDesktop'
+import type { FileEntry } from 'lib/project'
 import {
   FILE_EXT,
   INDEX_IDENTIFIER,
   MAX_PADDING,
   ONBOARDING_PROJECT_NAME,
 } from 'lib/constants'
-import type { FileEntry } from 'lib/project'
-
+import { bracket } from './exampleKcl'
+import { PATHS } from './paths'
 import {
   createNewProjectDirectory,
   listProjects,
   readAppSettingsFile,
 } from './desktop'
-import { bracket } from './exampleKcl'
-import { isDesktop } from './isDesktop'
-import { PATHS } from './paths'
 
 export const isHidden = (fileOrDir: FileEntry) =>
   !!fileOrDir.name?.startsWith('.')

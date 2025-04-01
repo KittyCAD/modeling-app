@@ -1,8 +1,8 @@
 /// The method below uses the File System Access API when it's supported and
 // else falls back to the classic approach. In both cases the function saves
 // the file, but in case of where the File System Access API is supported, the
-import toast from 'react-hot-toast'
 
+import toast from 'react-hot-toast'
 import { EXPORT_TOAST_MESSAGES } from './constants'
 
 // user will get a file save dialog where they can choose where the file should be saved.

@@ -1,28 +1,28 @@
-import { useAppState } from 'AppState'
-import { ActionButton } from 'components/ActionButton'
-import { ActionButtonDropdown } from 'components/ActionButtonDropdown'
-import { CustomIcon } from 'components/CustomIcon'
-import Tooltip from 'components/Tooltip'
+import { useRef, useMemo, memo, useCallback, useState } from 'react'
+import { isCursorInSketchCommandRange } from 'lang/util'
+import { editorManager, kclManager } from 'lib/singletons'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
+import { ActionButton } from 'components/ActionButton'
 import { useKclContext } from 'lang/KclProvider'
-import { isCursorInFunctionDefinition } from 'lang/queryAst'
-import { isCursorInSketchCommandRange } from 'lang/util'
-import { isDesktop } from 'lib/isDesktop'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import { editorManager, kclManager } from 'lib/singletons'
+import { ActionButtonDropdown } from 'components/ActionButtonDropdown'
+import { useHotkeys } from 'react-hotkeys-hook'
+import Tooltip from 'components/Tooltip'
+import { useAppState } from 'AppState'
+import { CustomIcon } from 'components/CustomIcon'
 import {
+  toolbarConfig,
   ToolbarItem,
   ToolbarItemCallbackProps,
   ToolbarItemResolved,
   ToolbarModeName,
-  toolbarConfig,
 } from 'lib/toolbar'
-import { isArray } from 'lib/utils'
+import { isDesktop } from 'lib/isDesktop'
+import { openExternalBrowserIfDesktop } from 'lib/openWindow'
+import { isCursorInFunctionDefinition } from 'lang/queryAst'
 import { commandBarActor } from 'machines/commandBarMachine'
-import { memo, useCallback, useMemo, useRef, useState } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
+import { isArray } from 'lib/utils'
 
 export function Toolbar({
   className = '',

@@ -1,15 +1,14 @@
-import { type Locator, type Page, test } from '@playwright/test'
-import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
-import { SIDEBAR_BUTTON_SUFFIX } from 'lib/constants'
-import { ToolbarModeName } from 'lib/toolbar'
-
+import { type Page, type Locator, test } from '@playwright/test'
+import { expect } from '../zoo-test'
 import {
   checkIfPaneIsOpen,
   closePane,
   doAndWaitForImageDiff,
   openPane,
 } from '../test-utils'
-import { expect } from '../zoo-test'
+import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
+import { SIDEBAR_BUTTON_SUFFIX } from 'lib/constants'
+import { ToolbarModeName } from 'lib/toolbar'
 
 export class ToolbarFixture {
   public page: Page

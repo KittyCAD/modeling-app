@@ -1,11 +1,10 @@
 import { Page } from '@playwright/test'
+import { test, expect } from './zoo-test'
+import { HomePageFixture } from './fixtures/homePageFixture'
+import { getUtils } from './test-utils'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import { uuidv4 } from 'lib/utils'
-
-import { HomePageFixture } from './fixtures/homePageFixture'
 import { SceneFixture } from './fixtures/sceneFixture'
-import { getUtils } from './test-utils'
-import { expect, test } from './zoo-test'
 
 test.describe(
   'Can create sketches on all planes and their back sides',

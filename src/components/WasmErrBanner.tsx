@@ -1,8 +1,7 @@
 import { Dialog } from '@headlessui/react'
-import { useKclContext } from 'lang/KclProvider'
 import { useState } from 'react'
-
 import { ActionButton } from './ActionButton'
+import { useKclContext } from 'lang/KclProvider'
 
 export function WasmErrBanner() {
   const [isBannerDismissed, setBannerDismissed] = useState(false)

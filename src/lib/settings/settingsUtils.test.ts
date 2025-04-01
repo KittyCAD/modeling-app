@@ -1,14 +1,12 @@
 import { DeepPartial } from 'lib/types'
-
 import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-
-import { createSettings } from './initialSettings'
 import {
   configurationToSettingsPayload,
   getAllCurrentSettings,
   projectConfigurationToSettingsPayload,
   setSettingsAtLevel,
 } from './settingsUtils'
+import { createSettings } from './initialSettings'
 
 describe(`testing settings initialization`, () => {
   it(`sets settings at the 'user' level`, () => {

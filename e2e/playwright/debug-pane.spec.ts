@@ -1,5 +1,6 @@
+import { test, expect } from './zoo-test'
+
 import { getUtils } from './test-utils'
-import { expect, test } from './zoo-test'
 
 function countNewlines(input: string): number {
   let count = 0

@@ -1,8 +1,7 @@
-import { CamDebugSettings } from 'clientSideScene/ClientSideSceneComp'
 import { DebugArtifactGraph } from 'components/DebugArtifactGraph'
-
 import { AstExplorer } from '../../AstExplorer'
 import { EngineCommands } from '../../EngineCommands'
+import { CamDebugSettings } from 'clientSideScene/ClientSideSceneComp'
 
 export const DebugPane = () => {
   return (

@@ -1,9 +1,7 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-
-import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-
+import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { listProjects } from './desktop'
 import { DeepPartial } from './types'
+import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 
 // Mock the electron window global
 const mockElectron = {

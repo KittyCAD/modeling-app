@@ -1,6 +1,6 @@
 import { isDesktop } from 'lib/isDesktop'
 import { reportRejection } from 'lib/trap'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 type Path = string
 

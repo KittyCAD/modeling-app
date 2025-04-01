@@ -1,9 +1,9 @@
 import { Extension } from '@codemirror/state'
 import {
-  EditorView,
-  ViewPlugin,
   hoverTooltip,
   tooltips,
+  ViewPlugin,
+  EditorView,
 } from '@codemirror/view'
 
 import { LanguageServerPlugin } from './lsp'

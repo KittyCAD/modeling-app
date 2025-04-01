@@ -1,8 +1,7 @@
 import { promises as fs } from 'fs'
-import os from 'os'
 import path from 'path'
+import os from 'os'
 import { v4 as uuidv4 } from 'uuid'
-
 import getCurrentProjectFile from './getCurrentProjectFile'
 
 describe('getCurrentProjectFile', () => {

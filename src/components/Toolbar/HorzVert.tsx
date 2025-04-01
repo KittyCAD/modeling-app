@@ -1,18 +1,16 @@
 import { toolTips } from 'lang/langHelpers'
-import { TransformInfo } from 'lang/std/stdTypes'
 import { Selections } from 'lib/selections'
-import { kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
-
-import { Node } from '@rust/kcl-lib/bindings/Node'
-
+import { Program, Expr, VariableMap } from '../../lang/wasm'
 import { getNodeFromPath } from '../../lang/queryAst'
 import {
   PathToNodeMap,
   getTransformInfos,
   transformAstSketchLines,
 } from '../../lang/std/sketchcombos'
-import { Expr, Program, VariableMap } from '../../lang/wasm'
+import { TransformInfo } from 'lang/std/stdTypes'
+import { kclManager } from 'lib/singletons'
+import { err } from 'lib/trap'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 
 export function horzVertInfo(
   selectionRanges: Selections,
