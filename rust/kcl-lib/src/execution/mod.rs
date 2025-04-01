@@ -27,7 +27,6 @@ pub use memory::EnvironmentRef;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 pub use state::{ExecState, MetaSettings};
-use tokio::sync::RwLock;
 
 use crate::{
     engine::EngineManager,
@@ -256,7 +255,7 @@ pub enum ContextType {
 pub struct ExecutorContext {
     pub engine: Arc<Box<dyn EngineManager>>,
     pub fs: Arc<FileManager>,
-    pub stdlib: Arc<RwLock<StdLib>>,
+    pub stdlib: Arc<StdLib>,
     pub settings: ExecutorSettings,
     pub context_type: ContextType,
 }
@@ -394,7 +393,7 @@ impl ExecutorContext {
         Ok(Self {
             engine,
             fs: Arc::new(FileManager::new()),
-            stdlib: Arc::new(RwLock::new(StdLib::new())),
+            stdlib: Arc::new(StdLib::new()),
             settings,
             context_type: ContextType::Live,
         })
@@ -413,7 +412,7 @@ impl ExecutorContext {
                     .map_err(|e| format!("{:?}", e))?,
             )),
             fs: Arc::new(FileManager::new(fs_manager)),
-            stdlib: Arc::new(RwLock::new(StdLib::new())),
+            stdlib: Arc::new(StdLib::new()),
             settings,
             context_type: ContextType::Live,
         })
@@ -426,7 +425,7 @@ impl ExecutorContext {
                 crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
             )),
             fs: Arc::new(FileManager::new()),
-            stdlib: Arc::new(RwLock::new(StdLib::new())),
+            stdlib: Arc::new(StdLib::new()),
             settings: Default::default(),
             context_type: ContextType::Mock,
         }
@@ -444,7 +443,7 @@ impl ExecutorContext {
                     .map_err(|e| format!("{:?}", e))?,
             )),
             fs: Arc::new(FileManager::new(fs_manager)),
-            stdlib: Arc::new(RwLock::new(StdLib::new())),
+            stdlib: Arc::new(StdLib::new()),
             settings,
             context_type: ContextType::Mock,
         })
@@ -455,7 +454,7 @@ impl ExecutorContext {
         ExecutorContext {
             engine,
             fs: Arc::new(FileManager::new()),
-            stdlib: Arc::new(RwLock::new(StdLib::new())),
+            stdlib: Arc::new(StdLib::new()),
             settings: Default::default(),
             context_type: ContextType::MockCustomForwarded,
         }
@@ -973,7 +972,7 @@ pub(crate) async fn parse_execute(code: &str) -> Result<ExecTestResults, KclErro
             })?,
         )),
         fs: Arc::new(crate::fs::FileManager::new()),
-        stdlib: Arc::new(RwLock::new(crate::std::StdLib::new())),
+        stdlib: Arc::new(crate::std::StdLib::new()),
         settings: Default::default(),
         context_type: ContextType::Mock,
     };

@@ -1218,7 +1218,7 @@ impl Node<CallExpressionKw> {
             ctx.clone(),
             exec_state.mod_local.pipe_value.clone().map(|v| Arg::new(v, callsite)),
         );
-        match ctx.stdlib.read().await.get_either(fn_name) {
+        match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
                 if func.deprecated() {
                     exec_state.warn(CompilationError::err(
@@ -1370,7 +1370,7 @@ impl Node<CallExpression> {
         }
         let fn_args = fn_args; // remove mutability
 
-        match ctx.stdlib.read().await.get_either(fn_name) {
+        match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
                 if func.deprecated() {
                     exec_state.warn(CompilationError::err(
@@ -2229,7 +2229,7 @@ mod test {
         parsing::ast::types::{DefaultParamVal, Identifier, Parameter},
     };
     use std::sync::Arc;
-    use tokio::{io::AsyncWriteExt, sync::RwLock, task::JoinSet};
+    use tokio::{io::AsyncWriteExt, task::JoinSet};
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_assign_args_to_params() {
@@ -2348,7 +2348,7 @@ mod test {
                     crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
                 )),
                 fs: Arc::new(crate::fs::FileManager::new()),
-                stdlib: Arc::new(RwLock::new(crate::std::StdLib::new())),
+                stdlib: Arc::new(crate::std::StdLib::new()),
                 settings: Default::default(),
                 context_type: ContextType::Mock,
             };
@@ -2515,11 +2515,11 @@ export c = a + 2
                     .unwrap(),
             )),
             fs: Arc::new(crate::fs::FileManager::new()),
-            stdlib: Arc::new(RwLock::new(crate::std::StdLib::new())),
             settings: ExecutorSettings {
                 project_directory: Some(tmpdir.path().into()),
                 ..Default::default()
             },
+            stdlib: Arc::new(crate::std::StdLib::new()),
             context_type: ContextType::Mock,
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
