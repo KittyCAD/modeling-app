@@ -10,6 +10,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       test('File.Create project', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) fail()
           const newProject =
@@ -29,6 +30,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       test('File.Open project', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) fail()
           const openProject =
@@ -52,6 +54,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) fail()
           const userSettings = app.applicationMenu.getMenuItemById(
@@ -75,6 +78,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) fail()
           const keybindings = app.applicationMenu.getMenuItemById(
@@ -96,6 +100,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) fail()
           const menu = app.applicationMenu.getMenuItemById(
@@ -112,6 +117,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       test('File.Preferences.Theme', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) fail()
           const menu = app.applicationMenu.getMenuItemById(
@@ -136,6 +142,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) fail()
           const menu = app.applicationMenu.getMenuItemById(
@@ -152,6 +159,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       test('File.Preferences.Sign out', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) fail()
           const menu = app.applicationMenu.getMenuItemById('File.Sign out')
@@ -170,6 +178,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       test('Edit.Rename project', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) fail()
           const menu = app.applicationMenu.getMenuItemById(
@@ -188,6 +197,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       test('Edit.Delete project', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) fail()
           const menu = app.applicationMenu.getMenuItemById(
@@ -210,6 +220,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) fail()
           const menu = app.applicationMenu.getMenuItemById(
@@ -228,6 +239,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       test('View.Command Palette...', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) fail()
           const menu = app.applicationMenu.getMenuItemById(
@@ -245,6 +257,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       test('Help.Show all commands', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) fail()
           const menu = app.applicationMenu.getMenuItemById(
@@ -260,6 +273,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       test('Help.KCL code samples', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) fail()
           const menu = app.applicationMenu.getMenuItemById(
@@ -275,6 +289,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) fail()
           const menu = app.applicationMenu.getMenuItemById(
@@ -293,6 +308,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       test('Help.Reset onboarding', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) fail()
           const menu = app.applicationMenu.getMenuItemById(
