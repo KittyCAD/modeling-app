@@ -8,6 +8,7 @@ use anyhow::Result;
 use crate::{
     parsing::ast::types::{ImportPath, Node as AstNode, NodeRef, Program},
     walk::{Node, Visitable},
+    ExecutorContext,
 };
 
 /// Specific dependency between two modules. The 0th element of this tuple
@@ -123,6 +124,10 @@ pub(crate) fn import_dependencies(prog: NodeRef<Program>) -> Result<Vec<String>>
 
     let ret = ret.lock().unwrap().clone();
     Ok(ret)
+}
+
+pub(crate) async fn import_universe(ctx: &ExecutorContext) -> Result<HashMap<String, Program>> {
+    panic!("ASF");
 }
 
 #[cfg(test)]

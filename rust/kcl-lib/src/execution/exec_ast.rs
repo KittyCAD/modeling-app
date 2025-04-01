@@ -29,7 +29,7 @@ use crate::{
         args::{Arg, KwArgs},
         FunctionKind,
     },
-    CompilationError, ExecutorSettings,
+    CompilationError,
 };
 
 enum StatementKind<'a> {
@@ -2227,9 +2227,10 @@ mod test {
     use crate::{
         execution::{memory::Stack, parse_execute, ContextType},
         parsing::ast::types::{DefaultParamVal, Identifier, Parameter},
+        ExecutorSettings,
     };
     use std::sync::Arc;
-    use tokio::{io::AsyncWriteExt, task::JoinSet};
+    use tokio::io::AsyncWriteExt;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_assign_args_to_params() {
@@ -2449,34 +2450,39 @@ a = foo()
         let programa_kcl = r#"
 export a = 1
 "#;
-        let programa = crate::parsing::parse_str(&programa_kcl, ModuleId::default())
-            .parse_errs_as_err()
-            .unwrap();
-        universe.insert("a.kcl".to_owned(), programa);
-
         // program b.kcl
         let programb_kcl = r#"
 import a from 'a.kcl'
 
 export b = a + 1
 "#;
-        let programb = crate::parsing::parse_str(&programb_kcl, ModuleId::default())
-            .parse_errs_as_err()
-            .unwrap();
-        universe.insert("b.kcl".to_owned(), programb);
-
         // program c.kcl
         let programc_kcl = r#"
 import a from 'a.kcl'
 
 export c = a + 2
 "#;
-        let programc = crate::parsing::parse_str(&programc_kcl, ModuleId::default())
+
+        // program main.kcl
+        let main_kcl = r#"
+import b from 'b.kcl'
+import c from 'c.kcl'
+
+d = b + c
+"#;
+
+        let main = crate::parsing::parse_str(&main_kcl, ModuleId::default())
             .parse_errs_as_err()
             .unwrap();
-        universe.insert("c.kcl".to_owned(), programc);
 
         let tmpdir = tempdir::TempDir::new("zma_kcl_load_all_modules").unwrap();
+
+        tokio::fs::File::create(tmpdir.path().join("main.kcl"))
+            .await
+            .unwrap()
+            .write_all(main_kcl.as_bytes())
+            .await
+            .unwrap();
 
         tokio::fs::File::create(tmpdir.path().join("a.kcl"))
             .await
@@ -2498,9 +2504,6 @@ export c = a + 2
             .write_all(programc_kcl.as_bytes())
             .await
             .unwrap();
-
-        // ok we have all the "files" loaded, let's do a sort and concurrent
-        // run here.
 
         let exec_ctxt = ExecutorContext {
             engine: Arc::new(Box::new(
@@ -2524,49 +2527,15 @@ export c = a + 2
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
 
-        exec_ctxt.prepare_mem(&mut exec_state).await.unwrap();
-
-        for modules in crate::walk::import_graph(&universe).unwrap().into_iter() {
-            let mut set = JoinSet::new();
-            let (results_send, mut results_recv) = tokio::sync::mpsc::channel(1);
-
-            for module in modules {
-                let program = universe.get(&module).unwrap().clone();
-                let module = module.clone();
-                let mut exec_state = exec_state.clone();
-                let exec_ctxt = exec_ctxt.clone();
-                let results_send = results_send.clone();
-
-                set.spawn(async move {
-                    let module = module;
-                    let mut exec_state = exec_state;
-                    let exec_ctxt = exec_ctxt;
-                    let program = program;
-                    let results_send = results_send;
-
-                    let result = exec_ctxt
-                        .run(
-                            &crate::Program {
-                                ast: program.clone(),
-                                original_file_contents: "".to_owned(),
-                            },
-                            &mut exec_state,
-                        )
-                        .await
-                        .unwrap();
-
-                    results_send.send((module, result)).await.unwrap();
-                });
-            }
-            drop(results_send);
-
-            eprintln!("Collecting results");
-            while let Some((module_name, module_result)) = results_recv.recv().await {
-                eprintln!("Got result for {}", module_name);
-                eprintln!("{:?}", module_result);
-            }
-
-            set.join_all().await;
-        }
+        exec_ctxt
+            .run_concurrent(
+                &crate::Program {
+                    ast: main.clone(),
+                    original_file_contents: "".to_owned(),
+                },
+                &mut exec_state,
+            )
+            .await
+            .unwrap();
     }
 }

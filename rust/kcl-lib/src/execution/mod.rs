@@ -27,6 +27,7 @@ pub use memory::EnvironmentRef;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 pub use state::{ExecState, MetaSettings};
+use tokio::task::JoinSet;
 
 use crate::{
     engine::EngineManager,
@@ -719,6 +720,58 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         self.inner_run(program, exec_state, false).await
+    }
+
+    /// Perform the execution of a program using an (experimental!) concurrent
+    /// execution model. This has the same signature as [Self::run].
+    ///
+    /// For now -- do not use this unless you're willing to accept some
+    /// breakage.
+    ///
+    /// You can optionally pass in some initialization memory for partial
+    /// execution.
+    ///
+    /// To access non-fatal errors and warnings, extract them from the `ExecState`.
+    pub async fn run_concurrent(
+        &self,
+        program: &crate::Program,
+        exec_state: &mut ExecState,
+    ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
+        self.prepare_mem(exec_state).await.unwrap();
+
+        let universe = std::collections::HashMap::new(); // crate::walk::import_universe(&self).await.unwrap();
+
+        for modules in crate::walk::import_graph(&universe).unwrap().into_iter() {
+            let mut set = JoinSet::new();
+
+            for module in modules {
+                let program = universe.get(&module).unwrap().clone();
+                let module = module.clone();
+                let mut exec_state = exec_state.clone();
+                let exec_ctxt = self.clone();
+
+                set.spawn(async move {
+                    let module = module;
+                    let mut exec_state = exec_state;
+                    let exec_ctxt = exec_ctxt;
+                    let program = program;
+
+                    exec_ctxt
+                        .run(
+                            &crate::Program {
+                                ast: program.clone(),
+                                original_file_contents: "".to_owned(),
+                            },
+                            &mut exec_state,
+                        )
+                        .await
+                });
+            }
+
+            set.join_all().await;
+        }
+
+        self.run(&program, exec_state).await
     }
 
     /// Perform the execution of a program.  Accept all possible parameters and
