@@ -261,7 +261,7 @@ export class SceneInfra {
     return null
   }
 
-  hoveredObject: null | any = null
+  hoveredObject: null | Object3D<Object3DEventMap> = null
   raycaster = new Raycaster()
   planeRaycaster = new Raycaster()
   currentMouseVector = new Vector2()
@@ -487,11 +487,13 @@ export class SceneInfra {
       if (this.hoveredObject !== firstIntersectObject) {
         const hoveredObj = this.hoveredObject
         this.hoveredObject = null
-        await this.onMouseLeave({
-          selected: hoveredObj,
-          mouseEvent: mouseEvent,
-          intersectionPoint,
-        })
+        if (hoveredObj) {
+          await this.onMouseLeave({
+            selected: hoveredObj,
+            mouseEvent: mouseEvent,
+            intersectionPoint,
+          })
+        }
         this.hoveredObject = firstIntersectObject
         await this.onMouseEnter({
           selected: this.hoveredObject,

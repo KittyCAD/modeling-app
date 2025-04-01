@@ -591,6 +591,7 @@ class EngineConnection extends EventTarget {
    * did not establish.
    */
   connect(reconnecting?: boolean): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this
     return new Promise((resolve) => {
       if (this.isConnecting() || this.isReady()) {
