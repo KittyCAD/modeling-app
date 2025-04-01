@@ -26,11 +26,17 @@
       "@typescript-eslint/no-duplicate-enum-values": "error",
       "@typescript-eslint/no-duplicate-type-constituents": "error",
       "@typescript-eslint/no-empty-object-type": "error",
+      "@typescript-eslint/no-extra-non-null-assertion": "error",
       "@typescript-eslint/no-floating-promises": "error",
+      "@typescript-eslint/no-for-in-array": "error",
       "no-implied-eval": "off", // This is wrong; use the @typescript-eslint one instead.
       "@typescript-eslint/no-implied-eval": "error",
+      "@typescript-eslint/no-misused-new": "error",
       "@typescript-eslint/no-misused-promises": "error",
       "@typescript-eslint/no-namespace": "error",
+      "@typescript-eslint/no-non-null-asserted-optional-chain": "error",
+      "@typescript-eslint/no-redundant-type-constituents": "error",
+      "@typescript-eslint/no-this-alias": "warn",
       "@typescript-eslint/no-unnecessary-type-assertion": "error",
       "@typescript-eslint/no-unnecessary-type-constraint": "error",
       "no-unused-vars": "off", // This is wrong; use the @typescript-eslint one instead.
@@ -41,7 +47,13 @@
         "vars": "all",
         "args": "none"
       }],
+      "@typescript-eslint/no-unsafe-unary-minus": "error",
+      "@typescript-eslint/no-wrapper-object-types": "error",
+      "no-throw-literal": "off", // Use @typescript-eslint/only-throw-error instead.
+      "@typescript-eslint/only-throw-error": "error",
       "@typescript-eslint/prefer-as-const": "warn",
+      "@typescript-eslint/prefer-namespace-keyword": "error",
+      "@typescript-eslint/restrict-plus-operands": "error",
       "jsx-a11y/click-events-have-key-events": "off",
       "jsx-a11y/no-autofocus": "off",
       "jsx-a11y/no-noninteractive-element-interactions": "off",
@@ -50,7 +62,7 @@
         {
           "name": "isNaN",
           "message": "Use Number.isNaN() instead."
-        },
+        }
       ],
       "no-restricted-syntax": [
         "error",
@@ -64,7 +76,7 @@
         "never"
       ],
       "react-hooks/exhaustive-deps": "off",
-      "suggest-no-throw/suggest-no-throw": "warn",
+      "suggest-no-throw/suggest-no-throw": "error"
     },
     "overrides": [
       {
@@ -84,7 +96,7 @@
           "plugin:testing-library/react"
         ],
         "rules": {
-          "suggest-no-throw/suggest-no-throw": "off",
+          "suggest-no-throw/suggest-no-throw": "off"
         }
       }
     ]

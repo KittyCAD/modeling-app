@@ -124,6 +124,7 @@ export class ElectronZoo {
 
     // We need to expose this in order for some tests that require folder
     // creation and some code below.
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this
 
     const options = {
