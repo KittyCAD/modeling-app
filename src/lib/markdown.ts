@@ -1,4 +1,5 @@
 import { MarkedOptions, Renderer, unescape } from '@ts-stack/markdown'
+
 import { openExternalBrowserIfDesktop } from './openWindow'
 
 /**

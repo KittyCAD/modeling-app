@@ -1,14 +1,20 @@
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { useFileContext } from 'hooks/useFileContext'
-import { isDesktop } from 'lib/isDesktop'
-import { PATHS } from 'lib/paths'
-import toast from 'react-hot-toast'
 import {
-  TextToCad_type,
   TextToCadIteration_type,
+  TextToCad_type,
 } from '@kittycad/lib/dist/types/src/models'
+import { useFileContext } from 'hooks/useFileContext'
+import { base64Decode } from 'lang/wasm'
+import { isDesktop } from 'lib/isDesktop'
+import { openExternalBrowserIfDesktop } from 'lib/openWindow'
+import { PATHS } from 'lib/paths'
+import { codeManager, kclManager } from 'lib/singletons'
+import { sendTelemetry } from 'lib/textToCad'
+import { Themes } from 'lib/theme'
+import { reportRejection } from 'lib/trap'
+import { commandBarActor } from 'machines/commandBarMachine'
+import { fileMachine } from 'machines/fileMachine'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
 import {
   Box3,
   Color,
@@ -23,17 +29,12 @@ import {
   Vector3,
   WebGLRenderer,
 } from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
-import { base64Decode } from 'lang/wasm'
-import { sendTelemetry } from 'lib/textToCad'
-import { Themes } from 'lib/theme'
-import { ActionButton } from './ActionButton'
-import { commandBarActor } from 'machines/commandBarMachine'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { EventFrom } from 'xstate'
-import { fileMachine } from 'machines/fileMachine'
-import { reportRejection } from 'lib/trap'
-import { codeManager, kclManager } from 'lib/singletons'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
+
+import { ActionButton } from './ActionButton'
 
 const CANVAS_SIZE = 128
 const PROMPT_TRUNCATE_LENGTH = 128

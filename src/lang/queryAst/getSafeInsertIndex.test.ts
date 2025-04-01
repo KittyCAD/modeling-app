@@ -1,4 +1,5 @@
 import { assertParse, initPromise } from 'lang/wasm'
+
 import { getSafeInsertIndex } from './getSafeInsertIndex'
 
 beforeAll(async () => {

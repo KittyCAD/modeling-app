@@ -1,15 +1,16 @@
 import { Popover, Transition } from '@headlessui/react'
-import { ActionButton, ActionButtonProps } from './ActionButton'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { Fragment, useMemo, useState } from 'react'
-import { PATHS } from 'lib/paths'
 import { Models } from '@kittycad/lib'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
-import Tooltip from './Tooltip'
 import usePlatform from 'hooks/usePlatform'
 import { isDesktop } from 'lib/isDesktop'
-import { CustomIcon } from './CustomIcon'
+import { PATHS } from 'lib/paths'
 import { authActor } from 'machines/appMachine'
+import { Fragment, useMemo, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+
+import { ActionButton, ActionButtonProps } from './ActionButton'
+import { CustomIcon } from './CustomIcon'
+import Tooltip from './Tooltip'
 
 type User = Models['User_type']
 

@@ -1,5 +1,6 @@
-import { Options, useHotkeys } from 'react-hotkeys-hook'
 import { useEffect } from 'react'
+import { Options, useHotkeys } from 'react-hotkeys-hook'
+
 import { codeManager } from './singletons'
 import { Platform } from './utils'
 

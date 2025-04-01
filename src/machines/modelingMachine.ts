@@ -1,3 +1,77 @@
+import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
+import { orthoScale, quaternionFromUpNForward } from 'clientSideScene/helpers'
+import { DRAFT_DASHED_LINE } from 'clientSideScene/sceneEntities'
+import { DRAFT_POINT } from 'clientSideScene/sceneInfra'
+import { createProfileStartHandle } from 'clientSideScene/segments'
+import { MachineManager } from 'components/MachineManagerProvider'
+import { ModelingMachineContext } from 'components/ModelingMachineProvider'
+import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
+import {
+  applyConstraintEqualAngle,
+  equalAngleInfo,
+} from 'components/Toolbar/EqualAngle'
+import {
+  applyConstraintEqualLength,
+  setEqualLengthInfo,
+} from 'components/Toolbar/EqualLength'
+import {
+  applyConstraintHorzVert,
+  horzVertInfo,
+} from 'components/Toolbar/HorzVert'
+import { intersectInfo } from 'components/Toolbar/Intersect'
+import {
+  applyRemoveConstrainingValues,
+  removeConstrainingValuesInfo,
+} from 'components/Toolbar/RemoveConstrainingValues'
+import {
+  absDistanceInfo,
+  applyConstraintAxisAlign,
+} from 'components/Toolbar/SetAbsDistance'
+import { angleBetweenInfo } from 'components/Toolbar/SetAngleBetween'
+import {
+  applyConstraintHorzVertAlign,
+  horzVertDistanceInfo,
+} from 'components/Toolbar/SetHorzVertDistance'
+import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
+import { updateModelingState } from 'lang/modelingWorkflows'
+import {
+  addHelix,
+  addOffsetPlane,
+  addShell,
+  addSweep,
+  createLiteral,
+  createLocalName,
+  deleteNodeInExtrudePipe,
+  extrudeSketch,
+  insertNamedConstant,
+  loftSketches,
+} from 'lang/modifyAst'
+import {
+  ChamferParameters,
+  EdgeTreatmentType,
+  FilletParameters,
+  applyEdgeTreatmentToSelection,
+  getPathToExtrudeForSegmentSelection,
+  mutateAstWithTagForSketchSegment,
+} from 'lang/modifyAst/addEdgeTreatment'
+import {
+  getAxisExpressionAndIndex,
+  revolveSketch,
+} from 'lang/modifyAst/addRevolve'
+import {
+  applyIntersectFromTargetOperatorSelections,
+  applySubtractFromTargetOperatorSelections,
+  applyUnionFromTargetOperatorSelections,
+} from 'lang/modifyAst/boolean'
+import {
+  deleteSelectionPromise,
+  deletionErrorMessage,
+} from 'lang/modifyAst/deleteSelection'
+import { setAppearance } from 'lang/modifyAst/setAppearance'
+import { isNodeSafeToReplacePath, stringifyPathToNode } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import { getPathsFromPlaneArtifact } from 'lang/std/artifactGraph'
+import { Coords2d } from 'lang/std/sketch'
 import {
   CallExpression,
   CallExpressionKw,
@@ -12,107 +86,35 @@ import {
   resultIsOk,
   sketchFromKclValue,
 } from 'lang/wasm'
+import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConfig'
+import { KclCommandValue } from 'lib/commandTypes'
+import { EXECUTION_TYPE_REAL } from 'lib/constants'
+import { DefaultPlaneStr } from 'lib/planes'
 import {
   Axis,
   DefaultPlaneSelection,
-  Selections,
   Selection,
+  Selections,
   updateSelections,
 } from 'lib/selections'
-import { assign, fromPromise, setup } from 'xstate'
-import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
-import { isNodeSafeToReplacePath, stringifyPathToNode } from 'lang/queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
-  kclManager,
-  sceneInfra,
-  sceneEntitiesManager,
-  engineCommandManager,
-  editorManager,
   codeManager,
+  editorManager,
+  engineCommandManager,
+  kclManager,
+  sceneEntitiesManager,
+  sceneInfra,
 } from 'lib/singletons'
-import {
-  horzVertInfo,
-  applyConstraintHorzVert,
-} from 'components/Toolbar/HorzVert'
-import {
-  applyConstraintHorzVertAlign,
-  horzVertDistanceInfo,
-} from 'components/Toolbar/SetHorzVertDistance'
-import { angleBetweenInfo } from 'components/Toolbar/SetAngleBetween'
-import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
-import {
-  applyConstraintEqualLength,
-  setEqualLengthInfo,
-} from 'components/Toolbar/EqualLength'
-import {
-  getAxisExpressionAndIndex,
-  revolveSketch,
-} from 'lang/modifyAst/addRevolve'
-import {
-  addHelix,
-  addOffsetPlane,
-  addShell,
-  addSweep,
-  createLiteral,
-  createLocalName,
-  deleteNodeInExtrudePipe,
-  extrudeSketch,
-  insertNamedConstant,
-  loftSketches,
-} from 'lang/modifyAst'
-import {
-  applyEdgeTreatmentToSelection,
-  ChamferParameters,
-  EdgeTreatmentType,
-  FilletParameters,
-  getPathToExtrudeForSegmentSelection,
-  mutateAstWithTagForSketchSegment,
-} from 'lang/modifyAst/addEdgeTreatment'
-import { getNodeFromPath } from '../lang/queryAst'
-import {
-  applyConstraintEqualAngle,
-  equalAngleInfo,
-} from 'components/Toolbar/EqualAngle'
-import {
-  applyRemoveConstrainingValues,
-  removeConstrainingValuesInfo,
-} from 'components/Toolbar/RemoveConstrainingValues'
-import { intersectInfo } from 'components/Toolbar/Intersect'
-import {
-  absDistanceInfo,
-  applyConstraintAxisAlign,
-} from 'components/Toolbar/SetAbsDistance'
-import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConfig'
-import { err, reportRejection, trap } from 'lib/trap'
-import { DefaultPlaneStr } from 'lib/planes'
-import { isArray, uuidv4 } from 'lib/utils'
-import { Coords2d } from 'lang/std/sketch'
-import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
-import toast from 'react-hot-toast'
 import { ToolbarModeName } from 'lib/toolbar'
-import { orthoScale, quaternionFromUpNForward } from 'clientSideScene/helpers'
+import { err, reportRejection, trap } from 'lib/trap'
+import { isArray, uuidv4 } from 'lib/utils'
+import toast from 'react-hot-toast'
 import { Mesh, Vector2, Vector3 } from 'three'
-import { MachineManager } from 'components/MachineManagerProvider'
-import { KclCommandValue } from 'lib/commandTypes'
-import { ModelingMachineContext } from 'components/ModelingMachineProvider'
-import {
-  deleteSelectionPromise,
-  deletionErrorMessage,
-} from 'lang/modifyAst/deleteSelection'
-import { getPathsFromPlaneArtifact } from 'lang/std/artifactGraph'
-import { createProfileStartHandle } from 'clientSideScene/segments'
-import { DRAFT_POINT } from 'clientSideScene/sceneInfra'
-import { setAppearance } from 'lang/modifyAst/setAppearance'
-import { DRAFT_DASHED_LINE } from 'clientSideScene/sceneEntities'
+import { assign, fromPromise, setup } from 'xstate'
+
 import { Node } from '@rust/kcl-lib/bindings/Node'
-import { updateModelingState } from 'lang/modelingWorkflows'
-import { EXECUTION_TYPE_REAL } from 'lib/constants'
-import {
-  applyIntersectFromTargetOperatorSelections,
-  applySubtractFromTargetOperatorSelections,
-  applyUnionFromTargetOperatorSelections,
-} from 'lang/modifyAst/boolean'
+
+import { getNodeFromPath } from '../lang/queryAst'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -1108,8 +1110,8 @@ export const modelingMachine = setup({
             currentTool === 'tangentialArc'
               ? { type: 'Continue existing profile', data }
               : currentTool === 'arc'
-              ? { type: 'Add start point', data }
-              : { type: 'Add start point', data }
+                ? { type: 'Add start point', data }
+                : { type: 'Add start point', data }
           ),
       })
     },

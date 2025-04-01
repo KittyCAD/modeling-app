@@ -1,9 +1,9 @@
-import { Extension } from '@codemirror/state'
 import {
+  Completion,
   CompletionContext,
   autocompletion,
-  Completion,
 } from '@codemirror/autocomplete'
+import { Extension } from '@codemirror/state'
 
 /// Basically a fork of the `mentions` extension https://github.com/uiwjs/react-codemirror/blob/master/extensions/mentions/src/index.ts
 /// But it matches on any word, not just the `@` symbol

@@ -1,4 +1,5 @@
 import { ParseResult } from 'lang/wasm'
+
 import { getCalculatedKclExpressionValue } from './kclHelpers'
 
 describe('KCL expression calculations', () => {

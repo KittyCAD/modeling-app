@@ -1,14 +1,15 @@
+import { EntityType_type } from '@kittycad/lib/dist/types/src/models'
 import { CustomIconName } from 'components/CustomIcon'
+import { MachineManager } from 'components/MachineManagerProvider'
 import { AllMachines } from 'hooks/useStateMachineCommands'
-import { Actor, AnyStateMachine, ContextFrom, EventFrom } from 'xstate'
+import { Artifact } from 'lang/std/artifactGraph'
 import { Expr, Name, VariableDeclaration } from 'lang/wasm'
 import { commandBarMachine } from 'machines/commandBarMachine'
-import { ReactNode } from 'react'
-import { MachineManager } from 'components/MachineManagerProvider'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { Artifact } from 'lang/std/artifactGraph'
 import { CommandBarContext } from 'machines/commandBarMachine'
-import { EntityType_type } from '@kittycad/lib/dist/types/src/models'
+import { ReactNode } from 'react'
+import { Actor, AnyStateMachine, ContextFrom, EventFrom } from 'xstate'
+
+import { Node } from '@rust/kcl-lib/bindings/Node'
 
 type Icon = CustomIconName
 const _PLATFORMS = ['both', 'web', 'desktop'] as const
@@ -43,7 +44,7 @@ export type StateMachineCommandSetSchema<T extends AnyStateMachine> = Partial<{
 
 export type StateMachineCommandSet<
   T extends AllMachines,
-  Schema extends StateMachineCommandSetSchema<T>
+  Schema extends StateMachineCommandSetSchema<T>,
 > = Partial<{
   [EventType in EventFrom<T>['type']]: Command<
     T,
@@ -60,7 +61,7 @@ export type StateMachineCommandSet<
  */
 export type StateMachineCommandSetConfig<
   T extends AllMachines,
-  Schema extends StateMachineCommandSetSchema<T>
+  Schema extends StateMachineCommandSetSchema<T>,
 > = Partial<{
   [EventType in EventFrom<T>['type']]:
     | CommandConfig<T, EventFrom<T>['type'], Schema[EventType]>
@@ -70,7 +71,8 @@ export type StateMachineCommandSetConfig<
 export type Command<
   T extends AnyStateMachine = AnyStateMachine,
   CommandName extends EventFrom<T>['type'] = EventFrom<T>['type'],
-  CommandSchema extends StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName]
+  CommandSchema extends
+    StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName],
 > = {
   name: CommandName
   groupId: T['id']
@@ -96,7 +98,8 @@ export type Command<
 export type CommandConfig<
   T extends AnyStateMachine = AnyStateMachine,
   CommandName extends EventFrom<T>['type'] = EventFrom<T>['type'],
-  CommandSchema extends StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName]
+  CommandSchema extends
+    StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName],
 > = Omit<
   Command<T, CommandName, CommandSchema>,
   'name' | 'groupId' | 'onSubmit' | 'onCancel' | 'args' | 'needsReview'
@@ -113,7 +116,7 @@ export type CommandConfig<
 
 export type CommandArgumentConfig<
   OutputType,
-  C = ContextFrom<AnyStateMachine>
+  C = ContextFrom<AnyStateMachine>,
 > = {
   displayName?: string
   description?: string
@@ -239,7 +242,7 @@ export type CommandArgumentConfig<
 
 export type CommandArgument<
   OutputType,
-  T extends AnyStateMachine = AnyStateMachine
+  T extends AnyStateMachine = AnyStateMachine,
 > = {
   displayName?: string
   description?: string
@@ -360,7 +363,7 @@ export type CommandArgument<
 
 export type CommandArgumentWithName<
   OutputType,
-  T extends AnyStateMachine = AnyStateMachine
+  T extends AnyStateMachine = AnyStateMachine,
 > = CommandArgument<OutputType, T> & {
   name: string
 }

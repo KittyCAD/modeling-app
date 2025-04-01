@@ -1,96 +1,13 @@
-import {
-  BoxGeometry,
-  DoubleSide,
-  Group,
-  Intersection,
-  Mesh,
-  MeshBasicMaterial,
-  Object3D,
-  Object3DEventMap,
-  OrthographicCamera,
-  PerspectiveCamera,
-  PlaneGeometry,
-  Points,
-  Quaternion,
-  Vector2,
-  Vector3,
-  Shape,
-  LineCurve3,
-  ExtrudeGeometry,
-} from 'three'
-import {
-  ANGLE_SNAP_THRESHOLD_DEGREES,
-  ARROWHEAD,
-  AXIS_GROUP,
-  DRAFT_POINT,
-  DRAFT_POINT_GROUP,
-  getSceneScale,
-  INTERSECTION_PLANE_LAYER,
-  OnClickCallbackArgs,
-  OnMouseEnterLeaveArgs,
-  RAYCASTABLE_PLANE,
-  SKETCH_GROUP_SEGMENTS,
-  SKETCH_LAYER,
-  X_AXIS,
-  Y_AXIS,
-} from './sceneInfra'
-import { isQuaternionVertical, quaternionFromUpNForward } from './helpers'
-import {
-  CallExpression,
-  parse,
-  Path,
-  PathToNode,
-  PipeExpression,
-  Program,
-  recast,
-  Sketch,
-  VariableDeclaration,
-  VariableDeclarator,
-  sketchFromKclValue,
-  defaultSourceRange,
-  sourceRangeFromRust,
-  resultIsOk,
-  SourceRange,
-  topLevelRange,
-  CallExpressionKw,
-  VariableMap,
-  getTangentialArcToInfo,
-} from 'lang/wasm'
-import {
-  engineCommandManager,
-  kclManager,
-  sceneInfra,
-  codeManager,
-  editorManager,
-  rustContext,
-} from 'lib/singletons'
-import { getNodeFromPath } from 'lang/queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { executeAstMock, ToolTip } from 'lang/langHelpers'
-import {
-  createProfileStartHandle,
-  dashedStraight,
-  getTanPreviousPoint,
-  SegmentUtils,
-  segmentUtils,
-} from './segments'
-import {
-  addCallExpressionsToPipe,
-  addCloseToPipe,
-  addNewSketchLn,
-  ARG_END_ABSOLUTE,
-  changeSketchArguments,
-  Coords2d,
-  updateStartProfileAtArgs,
-} from 'lang/std/sketch'
-import { getAngle, getLength, isArray, isOverlap, roundOff } from 'lib/utils'
+import { Models } from '@kittycad/lib'
+import { ToolTip, executeAstMock } from 'lang/langHelpers'
+import { updateModelingState } from 'lang/modelingWorkflows'
 import {
   createArrayExpression,
   createCallExpressionStdLib,
-  createLocalName,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
+  createLocalName,
   createNodeFromExprSnippet,
   createPipeExpression,
   createPipeSubstitution,
@@ -100,9 +17,58 @@ import {
   insertNewStartProfileAt,
   updateSketchNodePathsWithInsertIndex,
 } from 'lang/modifyAst'
+import { getNodeFromPath } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import { codeRefFromRange, getArtifactFromRange } from 'lang/std/artifactGraph'
+import { EngineCommandManager } from 'lang/std/engineConnection'
+import {
+  ARG_END_ABSOLUTE,
+  Coords2d,
+  addCallExpressionsToPipe,
+  addCloseToPipe,
+  addNewSketchLn,
+  changeSketchArguments,
+  updateStartProfileAtArgs,
+} from 'lang/std/sketch'
+import { SegmentInputs } from 'lang/std/stdTypes'
+import {
+  CallExpression,
+  CallExpressionKw,
+  Path,
+  PathToNode,
+  PipeExpression,
+  Program,
+  Sketch,
+  SourceRange,
+  VariableDeclaration,
+  VariableDeclarator,
+  VariableMap,
+  defaultSourceRange,
+  parse,
+  recast,
+  resultIsOk,
+  sketchFromKclValue,
+  sourceRangeFromRust,
+  topLevelRange, getTangentialArcToInfo,
+} from 'lang/wasm'
+import { EXECUTION_TYPE_MOCK } from 'lib/constants'
+import {
+  getRectangleCallExpressions,
+  updateCenterRectangleSketch,
+  updateRectangleSketch,
+} from 'lib/rectangleTool'
 import { Selections, getEventForSegmentSelection } from 'lib/selections'
-import { createGridHelper, orthoScale, perspScale } from './helpers'
-import { Models } from '@kittycad/lib'
+import {
+  codeManager,
+  editorManager,
+  engineCommandManager,
+  kclManager,
+  rustContext,
+  sceneInfra,
+} from 'lib/singletons'
+import { Themes, getThemeColorForThreeJs } from 'lib/theme'
+import { err, reportRejection, trap } from 'lib/trap'
+import { getAngle, getLength, isArray, isOverlap, roundOff } from 'lib/utils'
 import { uuidv4 } from 'lib/utils'
 import {
   SegmentOverlayPayload,
@@ -110,26 +76,61 @@ import {
   SketchDetailsUpdate,
   SketchTool,
 } from 'machines/modelingMachine'
-import { EngineCommandManager } from 'lang/std/engineConnection'
-import {
-  getRectangleCallExpressions,
-  updateRectangleSketch,
-  updateCenterRectangleSketch,
-} from 'lib/rectangleTool'
-import { getThemeColorForThreeJs, Themes } from 'lib/theme'
-import { err, reportRejection, trap } from 'lib/trap'
-import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { Point3d } from '@rust/kcl-lib/bindings/Point3d'
-import { SegmentInputs } from 'lang/std/stdTypes'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { radToDeg } from 'three/src/math/MathUtils'
 import toast from 'react-hot-toast'
-import { getArtifactFromRange, codeRefFromRange } from 'lang/std/artifactGraph'
-import { closestPointOnRay } from '../lib/utils2d'
-import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
-import { updateModelingState } from 'lang/modelingWorkflows'
-import { EXECUTION_TYPE_MOCK } from 'lib/constants'
+
+import {
+  BoxGeometry,
+  DoubleSide,
+  ExtrudeGeometry,
+  Group,
+  Intersection,
+  LineCurve3,
+  Mesh,
+  MeshBasicMaterial,
+  Object3D,
+  Object3DEventMap,
+  OrthographicCamera,
+  PerspectiveCamera,
+  PlaneGeometry,
+  Points,
+  Quaternion,
+  Shape,
+  Vector2,
+  Vector3,
+} from 'three'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+import { radToDeg } from 'three/src/math/MathUtils'
+
+import { Node } from '@rust/kcl-lib/bindings/Node'
+import { Point3d } from '@rust/kcl-lib/bindings/Point3d'
+
+import { isQuaternionVertical, quaternionFromUpNForward } from './helpers'
+import { createGridHelper, orthoScale, perspScale } from './helpers'
+import {
+  ANGLE_SNAP_THRESHOLD_DEGREES,
+  ARROWHEAD,
+  AXIS_GROUP,
+  DRAFT_POINT,
+  DRAFT_POINT_GROUP,
+  INTERSECTION_PLANE_LAYER,
+  OnClickCallbackArgs,
+  OnMouseEnterLeaveArgs,
+  RAYCASTABLE_PLANE,
+  SKETCH_GROUP_SEGMENTS,
+  SKETCH_LAYER,
+  X_AXIS,
+  Y_AXIS,
+  getSceneScale,
+} from './sceneInfra'
+import {
+  SegmentUtils,
+  createProfileStartHandle,
+  dashedStraight,
+  segmentUtils, getTanPreviousPoint,
+} from './segments'
 import { mutateAstWithTagForSketchSegment } from '../lang/modifyAst/addEdgeTreatment'
+import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
+import { closestPointOnRay } from '../lib/utils2d'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 

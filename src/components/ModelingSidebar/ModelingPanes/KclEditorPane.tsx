@@ -1,56 +1,57 @@
-import { TEST } from 'env'
-import { Themes, getSystemTheme } from 'lib/theme'
-import { useEffect, useMemo, useRef } from 'react'
-import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
-import { lineHighlightField } from 'editor/highlightextension'
-import { onMouseDragMakeANewNumber, onMouseDragRegex } from 'lib/utils'
-import {
-  lineNumbers,
-  rectangularSelection,
-  highlightActiveLineGutter,
-  highlightSpecialChars,
-  highlightActiveLine,
-  keymap,
-  EditorView,
-  dropCursor,
-  drawSelection,
-} from '@codemirror/view'
-import {
-  indentWithTab,
-  defaultKeymap,
-  historyKeymap,
-  history,
-} from '@codemirror/commands'
-import { diagnosticCount, lintGutter, lintKeymap } from '@codemirror/lint'
-import {
-  foldGutter,
-  foldKeymap,
-  bracketMatching,
-  indentOnInput,
-  codeFolding,
-  syntaxHighlighting,
-  defaultHighlightStyle,
-} from '@codemirror/language'
-import interact from '@replit/codemirror-interact'
-import { kclManager, editorManager, codeManager } from 'lib/singletons'
-import { useHotkeys } from 'react-hotkeys-hook'
-import { useLspContext } from 'components/LspProvider'
-import { Prec, EditorState, Extension, Transaction } from '@codemirror/state'
 import {
   closeBrackets,
   closeBracketsKeymap,
   completionKeymap,
 } from '@codemirror/autocomplete'
-import CodeEditor from './CodeEditor'
+import {
+  defaultKeymap,
+  history,
+  historyKeymap,
+  indentWithTab,
+} from '@codemirror/commands'
+import {
+  bracketMatching,
+  codeFolding,
+  defaultHighlightStyle,
+  foldGutter,
+  foldKeymap,
+  indentOnInput,
+  syntaxHighlighting,
+} from '@codemirror/language'
+import { diagnosticCount, lintGutter, lintKeymap } from '@codemirror/lint'
+import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
+import { EditorState, Extension, Prec, Transaction } from '@codemirror/state'
+import {
+  EditorView,
+  drawSelection,
+  dropCursor,
+  highlightActiveLine,
+  highlightActiveLineGutter,
+  highlightSpecialChars,
+  keymap,
+  lineNumbers,
+  rectangularSelection,
+} from '@codemirror/view'
+import interact from '@replit/codemirror-interact'
+import { useSelector } from '@xstate/react'
+import { useLspContext } from 'components/LspProvider'
+import { lineHighlightField } from 'editor/highlightextension'
+import { modelingMachineEvent } from 'editor/manager'
+import { TEST } from 'env'
 import { codeManagerHistoryCompartment } from 'lang/codeManager'
+import { codeManager, editorManager, kclManager } from 'lib/singletons'
+import { Themes, getSystemTheme } from 'lib/theme'
+import { onMouseDragMakeANewNumber, onMouseDragRegex } from 'lib/utils'
+import { useSettings } from 'machines/appMachine'
 import {
   editorIsMountedSelector,
   kclEditorActor,
   selectionEventSelector,
 } from 'machines/kclEditorMachine'
-import { useSelector } from '@xstate/react'
-import { modelingMachineEvent } from 'editor/manager'
-import { useSettings } from 'machines/appMachine'
+import { useEffect, useMemo, useRef } from 'react'
+import { useHotkeys } from 'react-hotkeys-hook'
+
+import CodeEditor from './CodeEditor'
 
 export const editorShortcutMeta = {
   formatCode: {

@@ -1,17 +1,18 @@
 import { Page } from '@playwright/test'
-import { test, expect } from './zoo-test'
-import path from 'path'
 import * as fsp from 'fs/promises'
+import { bracket } from 'lib/exampleKcl'
+import { reportRejection } from 'lib/trap'
+import path from 'path'
+
+import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from './storageStates'
 import {
-  getUtils,
   TEST_COLORS,
   TestColor,
   executorInputPath,
+  getUtils,
   orRunWhenFullSuiteEnabled,
 } from './test-utils'
-import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from './storageStates'
-import { bracket } from 'lib/exampleKcl'
-import { reportRejection } from 'lib/trap'
+import { expect, test } from './zoo-test'
 
 test.describe('Regression tests', { tag: ['@skipWin'] }, () => {
   // bugs we found that don't fit neatly into other categories

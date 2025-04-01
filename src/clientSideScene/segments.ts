@@ -1,4 +1,18 @@
 import { Coords2d } from 'lang/std/sketch'
+import { SegmentInputs } from 'lang/std/stdTypes'
+import { PathToNode, Sketch, getTangentialArcToInfo } from 'lang/wasm'
+import { Selections } from 'lib/selections'
+import { sceneInfra } from 'lib/singletons'
+import { Themes, getThemeColorForThreeJs } from 'lib/theme'
+import { err } from 'lib/trap'
+import { isClockwise, normaliseAngle, roundOff } from 'lib/utils'
+import { getTangentPointFromPreviousArc } from 'lib/utils2d'
+import { commandBarActor } from 'machines/commandBarMachine'
+import {
+  SegmentOverlay,
+  SegmentOverlayPayload,
+  SegmentOverlays,
+} from 'machines/modelingMachine'
 import {
   BoxGeometry,
   BufferGeometry,
@@ -8,10 +22,10 @@ import {
   EllipseCurve,
   ExtrudeGeometry,
   Group,
-  LineCurve3,
-  LineBasicMaterial,
-  LineDashedMaterial,
   Line,
+  LineBasicMaterial,
+  LineCurve3,
+  LineDashedMaterial,
   Mesh,
   MeshBasicMaterial,
   NormalBufferAttributes,
@@ -23,10 +37,19 @@ import {
   Vector2,
   Vector3,
 } from 'three'
-import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { PathToNode, Sketch, getTangentialArcToInfo } from 'lang/wasm'
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
+
+import { calculate_circle_from_3_points } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+
 import {
+  ARC_ANGLE_END,
+  ARC_ANGLE_REFERENCE_LINE,
+  ARC_CENTER_TO_FROM,
+  ARC_CENTER_TO_TO,
+  ARC_SEGMENT,
+  ARC_SEGMENT_BODY,
+  ARC_SEGMENT_DASH,
   CIRCLE_CENTER_HANDLE,
   CIRCLE_SEGMENT,
   CIRCLE_SEGMENT_BODY,
@@ -49,43 +72,21 @@ import {
   TANGENTIAL_ARC_TO_SEGMENT,
   TANGENTIAL_ARC_TO_SEGMENT_BODY,
   TANGENTIAL_ARC_TO__SEGMENT_DASH,
-  ARC_SEGMENT,
-  ARC_SEGMENT_BODY,
-  ARC_SEGMENT_DASH,
-  ARC_ANGLE_END,
-  getParentGroup,
-  ARC_CENTER_TO_FROM,
-  ARC_CENTER_TO_TO,
-  ARC_ANGLE_REFERENCE_LINE,
+  THREE_POINT_ARC_HANDLE2,
+  THREE_POINT_ARC_HANDLE3,
   THREE_POINT_ARC_SEGMENT,
   THREE_POINT_ARC_SEGMENT_BODY,
   THREE_POINT_ARC_SEGMENT_DASH,
-  THREE_POINT_ARC_HANDLE2,
-  THREE_POINT_ARC_HANDLE3,
-  STRAIGHT_SEGMENT_SNAP_LINE,
+  getParentGroup, STRAIGHT_SEGMENT_SNAP_LINE,
 } from './sceneEntities'
-import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import {
   ARROWHEAD,
   DRAFT_POINT,
-  SceneInfra,
   SEGMENT_LENGTH_LABEL,
   SEGMENT_LENGTH_LABEL_OFFSET_PX,
   SEGMENT_LENGTH_LABEL_TEXT,
+  SceneInfra,
 } from './sceneInfra'
-import { Themes, getThemeColorForThreeJs } from 'lib/theme'
-import { isClockwise, normaliseAngle, roundOff } from 'lib/utils'
-import {
-  SegmentOverlay,
-  SegmentOverlayPayload,
-  SegmentOverlays,
-} from 'machines/modelingMachine'
-import { SegmentInputs } from 'lang/std/stdTypes'
-import { err } from 'lib/trap'
-import { sceneInfra } from 'lib/singletons'
-import { Selections } from 'lib/selections'
-import { calculate_circle_from_3_points } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
-import { commandBarActor } from 'machines/commandBarMachine'
 
 const ANGLE_INDICATOR_RADIUS = 30 // in px
 interface CreateSegmentArgs {

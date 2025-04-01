@@ -1,6 +1,7 @@
-import { assertParse, Program, recast, initPromise } from './wasm'
-import fs from 'node:fs'
 import { err } from 'lib/trap'
+import fs from 'node:fs'
+
+import { Program, assertParse, initPromise, recast } from './wasm'
 
 beforeAll(async () => {
   await initPromise

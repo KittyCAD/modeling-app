@@ -1,13 +1,13 @@
-import fs from 'node:fs/promises'
-import fsSync from 'node:fs'
-import path from 'path'
-import { dialog, shell } from 'electron'
 import { MachinesListing } from 'components/MachineManagerProvider'
-import type { Channel } from 'src/menu/channels'
+import { dialog, shell } from 'electron'
 import { Menu, WebContents } from 'electron'
+import type { WebContentSendPayload } from 'menu/channels'
 import { ZooLabel, ZooMenuEvents } from 'menu/roles'
 import type { MenuActionIPC } from 'menu/rules'
-import type { WebContentSendPayload } from 'menu/channels'
+import fsSync from 'node:fs'
+import fs from 'node:fs/promises'
+import path from 'path'
+import type { Channel } from 'src/menu/channels'
 
 // Extend the interface with additional custom properties
 declare module 'electron' {

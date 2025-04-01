@@ -1,31 +1,7 @@
-import {
-  assertParse,
-  recast,
-  initPromise,
-  PathToNode,
-  Program,
-  CallExpression,
-  PipeExpression,
-  VariableDeclarator,
-  SourceRange,
-  topLevelRange,
-  CallExpressionKw,
-} from '../wasm'
-import {
-  EdgeTreatmentType,
-  getPathToExtrudeForSegmentSelection,
-  hasValidEdgeTreatmentSelection,
-  isTagUsedInEdgeTreatment,
-  modifyAstWithEdgeTreatmentAndTag,
-  FilletParameters,
-  ChamferParameters,
-  EdgeTreatmentParameters,
-  deleteEdgeTreatment,
-} from './addEdgeTreatment'
-import { getNodeFromPath } from '../queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import { VITE_KC_DEV_TOKEN } from 'env'
 import { createLiteral } from 'lang/modifyAst'
-import { err } from 'lib/trap'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import { codeRefFromRange } from 'lang/std/artifactGraph'
 import { Selection, Selections } from 'lib/selections'
 import {
   codeManager,
@@ -33,9 +9,34 @@ import {
   engineCommandManager,
   kclManager,
 } from 'lib/singletons'
-import { VITE_KC_DEV_TOKEN } from 'env'
+import { err } from 'lib/trap'
 import { isOverlap } from 'lib/utils'
-import { codeRefFromRange } from 'lang/std/artifactGraph'
+
+import { getNodeFromPath } from '../queryAst'
+import {
+  CallExpression,
+  CallExpressionKw,
+  PathToNode,
+  PipeExpression,
+  Program,
+  SourceRange,
+  VariableDeclarator,
+  assertParse,
+  initPromise,
+  recast,
+  topLevelRange,
+} from '../wasm'
+import {
+  ChamferParameters,
+  EdgeTreatmentParameters,
+  EdgeTreatmentType,
+  FilletParameters,
+  deleteEdgeTreatment,
+  getPathToExtrudeForSegmentSelection,
+  hasValidEdgeTreatmentSelection,
+  isTagUsedInEdgeTreatment,
+  modifyAstWithEdgeTreatmentAndTag,
+} from './addEdgeTreatment'
 
 beforeAll(async () => {
   await initPromise

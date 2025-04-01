@@ -1,18 +1,20 @@
 import { ToolTip } from 'lang/langHelpers'
+
+import { Node } from '@rust/kcl-lib/bindings/Node'
+
 import {
-  Path,
-  SourceRange,
-  Program,
-  Expr,
-  PathToNode,
-  CallExpression,
-  Literal,
   BinaryPart,
+  CallExpression,
   CallExpressionKw,
+  Expr,
+  Literal,
+  Path,
+  PathToNode,
+  Program,
+  SourceRange,
   VariableMap,
 } from '../wasm'
 import { LineInputsType } from './sketchcombos'
-import { Node } from '@rust/kcl-lib/bindings/Node'
 
 export interface ModifyAstBase {
   node: Node<Program>

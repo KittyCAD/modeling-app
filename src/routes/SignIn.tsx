@@ -1,20 +1,21 @@
-import { ActionButton } from '../components/ActionButton'
-import { isDesktop } from '../lib/isDesktop'
-import { VITE_KC_SITE_BASE_URL, VITE_KC_API_BASE_URL } from '../env'
-import { Themes, getSystemTheme } from '../lib/theme'
-import { PATHS } from 'lib/paths'
-import { APP_NAME } from 'lib/constants'
-import { CSSProperties, useCallback, useState } from 'react'
-import { Logo } from 'components/Logo'
 import { CustomIcon } from 'components/CustomIcon'
-import { Link } from 'react-router-dom'
-import { APP_VERSION } from './Settings'
+import { Logo } from 'components/Logo'
+import { APP_NAME } from 'lib/constants'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import { toSync } from 'lib/utils'
+import { PATHS } from 'lib/paths'
 import { reportRejection } from 'lib/trap'
-import toast from 'react-hot-toast'
+import { toSync } from 'lib/utils'
 import { authActor } from 'machines/appMachine'
 import { useSettings } from 'machines/appMachine'
+import { CSSProperties, useCallback, useState } from 'react'
+import toast from 'react-hot-toast'
+import { Link } from 'react-router-dom'
+
+import { ActionButton } from '../components/ActionButton'
+import { VITE_KC_API_BASE_URL, VITE_KC_SITE_BASE_URL } from '../env'
+import { isDesktop } from '../lib/isDesktop'
+import { Themes, getSystemTheme } from '../lib/theme'
+import { APP_VERSION } from './Settings'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -48,8 +49,8 @@ const SignIn = () => {
           ? '-dark'
           : ''
         : shouldContrast
-        ? ''
-        : '-dark',
+          ? ''
+          : '-dark',
     [theme.current]
   )
 

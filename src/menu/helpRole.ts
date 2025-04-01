@@ -1,7 +1,8 @@
-import { shell, BrowserWindow } from 'electron'
-import { ZooMenuItemConstructorOptions } from './roles'
+import { BrowserWindow, shell } from 'electron'
 import { reportRejection } from 'lib/trap'
+
 import { typeSafeWebContentsSend } from './channels'
+import { ZooMenuItemConstructorOptions } from './roles'
 
 export const helpRole = (
   mainWindow: BrowserWindow

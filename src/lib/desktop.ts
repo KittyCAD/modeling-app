@@ -1,13 +1,17 @@
-import { err } from 'lib/trap'
 import { Models } from '@kittycad/lib'
-import { Project, FileEntry } from 'lib/project'
-
+import { newKclFile } from 'lang/project'
 import {
   defaultAppSettings,
   initPromise,
   parseAppSettings,
   parseProjectSettings,
 } from 'lang/wasm'
+import { FileEntry, Project } from 'lib/project'
+import { err } from 'lib/trap'
+
+import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
@@ -20,9 +24,6 @@ import {
   TOKEN_FILE_NAME,
 } from './constants'
 import { DeepPartial } from './types'
-import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
-import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import { newKclFile } from 'lang/project'
 
 export async function renameProjectDirectory(
   projectPath: string,
