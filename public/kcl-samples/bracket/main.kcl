@@ -18,12 +18,13 @@ wallMountingHoleDiameter = .625
 // Calculated parameters
 moment = shelfDepth * p // assume the force is applied at the end of the shelf
 thickness = sqrt(moment * fos * 6 / (sigmaAllow * width)) // required thickness for two brackets to hold up the shelf
-filletRadius = .25
-extFilletRadius = filletRadius + thickness
+bendRadius = 0.25
+extBendRadius = bendRadius + thickness
+filletRadius = .5
 shelfMountingHolePlacementOffset = shelfMountingHoleDiameter * 1.5
 wallMountingHolePlacementOffset = wallMountingHoleDiameter * 1.5
 
-// Add checks to ensure bracket is possible. These make sure that there is adequate distance between holes and edges. 
+// Add checks to ensure bracket is possible. These make sure that there is adequate distance between holes and edges.
 assertGreaterThanOrEq(wallMountLength, wallMountingHoleDiameter * 3, "Holes not possible. Either decrease hole diameter or increase wallMountLength")
 assertGreaterThanOrEq(shelfMountLength, shelfMountingHoleDiameter * 5.5, "wallMountLength must be longer for hole sizes to work. Either decrease mounting hole diameters or increase shelfMountLength")
 assertGreaterThanOrEq(width, shelfMountingHoleDiameter * 5.5, "Holes not possible. Either decrease hole diameter or increase width")
@@ -45,12 +46,12 @@ bracketBody = startSketchOn(XZ)
 shelfMountingHoles = startSketchOn(bracketBody, seg03)
   |> circle(
        center = [
-         -(filletRadius + shelfMountingHolePlacementOffset),
+         -(bendRadius + shelfMountingHolePlacementOffset),
          shelfMountingHolePlacementOffset
        ],
        radius = shelfMountingHoleDiameter / 2,
      )
-  |> patternLinear2d(instances = 2, distance = -(extFilletRadius + shelfMountingHolePlacementOffset) + shelfMountLength - shelfMountingHolePlacementOffset, axis = [-1, 0])
+  |> patternLinear2d(instances = 2, distance = -(extBendRadius + shelfMountingHolePlacementOffset) + shelfMountLength - shelfMountingHolePlacementOffset, axis = [-1, 0])
   |> patternLinear2d(instances = 2, distance = width - (shelfMountingHolePlacementOffset * 2), axis = [0, 1])
   |> extrude(%, length = -thickness - .01)
 
@@ -58,7 +59,7 @@ shelfMountingHoles = startSketchOn(bracketBody, seg03)
 wallMountingHoles = startSketchOn(bracketBody, seg04)
   |> circle(
        center = [
-         wallMountLength - wallMountingHolePlacementOffset - filletRadius,
+         wallMountLength - wallMountingHolePlacementOffset - bendRadius,
          wallMountingHolePlacementOffset
        ],
        radius = wallMountingHoleDiameter / 2,
@@ -66,15 +67,17 @@ wallMountingHoles = startSketchOn(bracketBody, seg04)
   |> patternLinear2d(instances = 2, distance = width - (wallMountingHolePlacementOffset * 2), axis = [0, 1])
   |> extrude(%, length = -thickness - 0.1)
 
-// Apply fillets
-fillet(bracketBody, radius = extFilletRadius, tags = [getNextAdjacentEdge(seg03)])
+// Apply bends
+fillet(bracketBody, radius = extBendRadius, tags = [getNextAdjacentEdge(seg03)])
+fillet(bracketBody, radius = bendRadius, tags = [getNextAdjacentEdge(seg06)])
+
+// Apply corner fillets
 fillet(
   bracketBody,
   radius = filletRadius,
   tags = [
     seg02,
     getOppositeEdge(seg02),
-    getNextAdjacentEdge(seg06),
     seg05,
     getOppositeEdge(seg05)
   ],
