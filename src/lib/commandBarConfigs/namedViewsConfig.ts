@@ -1,5 +1,7 @@
 import {
   CameraViewState_type,
+  Point3d_type,
+  Point4d_type,
   WorldCoordinateSystem_type,
 } from '@kittycad/lib/dist/types/src/models'
 import { engineCommandManager } from 'lib/singletons'
@@ -18,6 +20,31 @@ function isWorldCoordinateSystemType(
   return x === 'right_handed_up_z' || x === 'right_handed_up_y'
 }
 
+type Tuple3 = [number, number, number]
+type Tuple4 = [number, number, number, number]
+
+function point3DToNumberArray(value: Point3d_type): Tuple3 {
+  return [value.x, value.y, value.z]
+}
+function numberArrayToPoint3D(value: Tuple3): Point3d_type {
+  return {
+    x: value[0],
+    y: value[1],
+    z: value[2],
+  }
+}
+function point4DToNumberArray(value: Point4d_type): Tuple4 {
+  return [value.x, value.y, value.z, value.w]
+}
+function numberArrayToPoint4D(value: Tuple4): Point4d_type {
+  return {
+    x: value[0],
+    y: value[1],
+    z: value[2],
+    w: value[3],
+  }
+}
+
 function namedViewToCameraViewState(
   namedView: NamedView
 ): CameraViewState_type | Error {
@@ -34,8 +61,8 @@ function namedViewToCameraViewState(
     ortho_scale_factor: namedView.ortho_scale_factor,
     world_coord_system: worldCoordinateSystem,
     is_ortho: namedView.is_ortho,
-    pivot_position: namedView.pivot_position,
-    pivot_rotation: namedView.pivot_rotation,
+    pivot_position: numberArrayToPoint3D(namedView.pivot_position),
+    pivot_rotation: numberArrayToPoint4D(namedView.pivot_rotation),
   }
 
   return cameraViewState
@@ -45,29 +72,11 @@ function cameraViewStateToNamedView(
   name: string,
   cameraViewState: CameraViewState_type
 ): NamedView | Error {
-  let pivot_position: [number, number, number] | null = null
-  let pivot_rotation: [number, number, number, number] | null = null
+  let pivot_position: Tuple3 | null = null
+  let pivot_rotation: Tuple4 | null = null
 
-  if (cameraViewState.pivot_position.length === 3) {
-    pivot_position = [
-      cameraViewState.pivot_position[0],
-      cameraViewState.pivot_position[1],
-      cameraViewState.pivot_position[2],
-    ]
-  } else {
-    return new Error(`invalid pivot position ${cameraViewState.pivot_position}`)
-  }
-
-  if (cameraViewState.pivot_rotation.length === 4) {
-    pivot_rotation = [
-      cameraViewState.pivot_rotation[0],
-      cameraViewState.pivot_rotation[1],
-      cameraViewState.pivot_rotation[2],
-      cameraViewState.pivot_rotation[3],
-    ]
-  } else {
-    return new Error(`invalid pivot rotation ${cameraViewState.pivot_rotation}`)
-  }
+  pivot_position = point3DToNumberArray(cameraViewState.pivot_position)
+  pivot_rotation = point4DToNumberArray(cameraViewState.pivot_rotation)
 
   // Create a new named view
   const requestedView: NamedView = {
