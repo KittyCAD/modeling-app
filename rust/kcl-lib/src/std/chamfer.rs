@@ -138,8 +138,6 @@ async fn inner_chamfer(
                 radius: LengthUnit(length),
                 tolerance: LengthUnit(DEFAULT_TOLERANCE), // We can let the user set this in the future.
                 cut_type: CutType::Chamfer,
-                // We make this a none so that we can remove it in the future.
-                face_id: None,
             }),
         )
         .await?;
