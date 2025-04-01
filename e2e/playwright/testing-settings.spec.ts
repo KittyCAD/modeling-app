@@ -867,7 +867,7 @@ test.describe('Testing settings', () => {
     homePage,
     tronApp,
     scene,
-    cmdBar
+    cmdBar,
   }) => {
     if (!tronApp) {
       fail()

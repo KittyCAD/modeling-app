@@ -583,8 +583,6 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
     scene,
     cmdBar,
   }) => {
-    const u = await getUtils(page)
-
     const initialCode = `closedSketch = startSketchOn(XZ)
   |> circle(center = [8, 5], radius = 2)
 openSketch = startSketchOn(XY)
@@ -1031,7 +1029,9 @@ openSketch = startSketchOn(XY)
     })
     await test.step(`Go through the command bar flow`, async () => {
       await toolbar.offsetPlaneButton.click()
-      await expect.poll(() => page.getByText('Please select one').count()).toBe(1)
+      await expect
+        .poll(() => page.getByText('Please select one').count())
+        .toBe(1)
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'plane',
@@ -1256,7 +1256,9 @@ openSketch = startSketchOn(XY)
             commandName: 'Helix',
           })
           await cmdBar.selectOption({ name: 'Edge' }).click()
-          await expect.poll(() => page.getByText('Please select one').count()).toBe(1)
+          await expect
+            .poll(() => page.getByText('Please select one').count())
+            .toBe(1)
           await clickOnEdge()
           await page.waitForTimeout(1000)
           await cmdBar.progressCmdBar()
@@ -1540,7 +1542,9 @@ extrude001 = extrude(profile001, length = 100)
       if (!shouldPreselect) {
         await test.step(`Go through the command bar flow without preselected sketches`, async () => {
           await toolbar.loftButton.click()
-          await expect.poll(() => page.getByText('Please select one').count()).toBe(1)
+          await expect
+            .poll(() => page.getByText('Please select one').count())
+            .toBe(1)
           await cmdBar.expectState({
             stage: 'arguments',
             currentArgKey: 'selection',
@@ -1719,7 +1723,9 @@ sketch002 = startSketchOn(XZ)
 
       await test.step(`Go through the command bar flow`, async () => {
         await toolbar.sweepButton.click()
-        await expect.poll(() => page.getByText('Please select one').count()).toBe(1)
+        await expect
+          .poll(() => page.getByText('Please select one').count())
+          .toBe(1)
         await cmdBar.expectState({
           commandName: 'Sweep',
           currentArgKey: 'target',
@@ -1856,7 +1862,9 @@ sketch002 = startSketchOn(XZ)
 
     await test.step(`Go through the command bar flow and fail validation with a toast`, async () => {
       await toolbar.sweepButton.click()
-      await expect.poll(() => page.getByText('Please select one').count()).toBe(1)
+      await expect
+        .poll(() => page.getByText('Please select one').count())
+        .toBe(1)
       await cmdBar.expectState({
         commandName: 'Sweep',
         currentArgKey: 'target',
@@ -2073,7 +2081,9 @@ extrude001 = extrude(sketch001, length = -12)
     await test.step(`Open fillet UI without selecting edges`, async () => {
       await page.waitForTimeout(100)
       await toolbar.filletButton.click()
-      await expect.poll(() => page.getByText('Please select one').count()).toBe(1)
+      await expect
+        .poll(() => page.getByText('Please select one').count())
+        .toBe(1)
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'selection',
@@ -2669,7 +2679,9 @@ extrude001 = extrude(sketch001, length = -12)
     await test.step(`Open chamfer UI without selecting edges`, async () => {
       await page.waitForTimeout(100)
       await toolbar.chamferButton.click()
-      await expect.poll(() => page.getByText('Please select one').count()).toBe(1)
+      await expect
+        .poll(() => page.getByText('Please select one').count())
+        .toBe(1)
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'selection',
@@ -2979,7 +2991,9 @@ extrude001 = extrude(sketch001, length = 30)
       if (!shouldPreselect) {
         await test.step(`Go through the command bar flow without preselected faces`, async () => {
           await toolbar.shellButton.click()
-          await expect.poll(() => page.getByText('Please select one').count()).toBe(1)
+          await expect
+            .poll(() => page.getByText('Please select one').count())
+            .toBe(1)
           await cmdBar.expectState({
             stage: 'arguments',
             currentArgKey: 'selection',
@@ -3120,7 +3134,9 @@ extrude001 = extrude(sketch001, length = 40)
 
     await test.step(`Go through the command bar flow, selecting a wall and keeping default thickness`, async () => {
       await toolbar.shellButton.click()
-      await expect.poll(() => page.getByText('Please select one').count()).toBe(1)
+      await expect
+        .poll(() => page.getByText('Please select one').count())
+        .toBe(1)
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'selection',
@@ -3132,7 +3148,9 @@ extrude001 = extrude(sketch001, length = 40)
         highlightedHeaderArg: 'selection',
         commandName: 'Shell',
       })
-      await expect.poll(() => page.getByText('Please select one').count()).toBe(1)
+      await expect
+        .poll(() => page.getByText('Please select one').count())
+        .toBe(1)
       await clickOnCap()
       await page.keyboard.down('Shift')
       await clickOnWall()
@@ -3270,7 +3288,9 @@ extrude002 = extrude(sketch002, length = 50)
           highlightedHeaderArg: 'selection',
           commandName: 'Shell',
         })
-        await expect.poll(() => page.getByText('Please select one').count()).toBe(1)
+        await expect
+          .poll(() => page.getByText('Please select one').count())
+          .toBe(1)
         await clickOnCap()
         await page.waitForTimeout(1000)
         await cmdBar.progressCmdBar()
@@ -3425,7 +3445,9 @@ sweep001 = sweep(sketch001, path = sketch002)
 
     await test.step(`Go through the Shell flow and fail validation with a toast`, async () => {
       await toolbar.shellButton.click()
-      await expect.poll(() => page.getByText('Please select one').count()).toBe(1)
+      await expect
+        .poll(() => page.getByText('Please select one').count())
+        .toBe(1)
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'selection',

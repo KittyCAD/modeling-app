@@ -78,12 +78,14 @@ sketch001 = startSketchOn(XY)
 
     // Ensure we execute the first time.
     await u.openDebugPanel()
-    await expect.poll(() =>
-      page.locator('[data-receive-command-type="scene_clear_all"]').count()
-    ).toBe(2)
-    await expect.poll(() =>
-      page.locator('[data-message-type="execution-done"]').count()
-    ).toBe(2)
+    await expect
+      .poll(() =>
+        page.locator('[data-receive-command-type="scene_clear_all"]').count()
+      )
+      .toBe(2)
+    await expect
+      .poll(() => page.locator('[data-message-type="execution-done"]').count())
+      .toBe(2)
 
     // Add whitespace to the end of the code.
     await u.codeLocator.click()
@@ -501,7 +503,7 @@ sketch_001 = startSketchOn(XY)
     await page.keyboard.press('ArrowLeft')
     await page.keyboard.press('ArrowRight')
 
-    await scene.waitForExecutionDone()
+    await scene.connectionEstablished()
 
     // error in guter
     await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()

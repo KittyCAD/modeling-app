@@ -1554,12 +1554,9 @@ test(
         path.join(dir, 'bracket', 'main.kcl')
       )
     })
-    const u = await getUtils(page)
+
     await page.setBodyDimensions({ width: 1200, height: 500 })
-
     page.on('console', console.log)
-
-    const pointOnModel = { x: 630, y: 280 }
 
     await test.step('Opening the bracket project via command palette should load the stream', async () => {
       await homePage.expectState({
