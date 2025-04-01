@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-
 import type {
   BrowserContext,
   ElectronApplication,
@@ -287,24 +286,30 @@ export class ElectronZoo {
     let settingsOverridesToml = ''
 
     if (appSettings) {
-      settingsOverridesToml = TOML.stringify({
+      settingsOverridesToml = settingsToToml({
         settings: {
           ...TEST_SETTINGS,
           ...appSettings,
           app: {
             ...TEST_SETTINGS.app,
-            project_directory: this.projectDirName,
             ...appSettings.app,
+          },
+          project: {
+            ...TEST_SETTINGS.project,
+            directory: this.projectDirName,
           },
         },
       })
     } else {
-      settingsOverridesToml = TOML.stringify({
+      settingsOverridesToml = settingsToToml({
         settings: {
           ...TEST_SETTINGS,
           app: {
             ...TEST_SETTINGS.app,
-            project_directory: this.projectDirName,
+          },
+          project: {
+            ...TEST_SETTINGS.project,
+            directory: this.projectDirName,
           },
         },
       })
