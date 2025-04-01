@@ -1,12 +1,12 @@
-import { Page } from '@playwright/test'
-import { test, expect } from './zoo-test'
-import { EditorFixture } from './fixtures/editorFixture'
-import { SceneFixture } from './fixtures/sceneFixture'
-import { ToolbarFixture } from './fixtures/toolbarFixture'
+import type { Locator, Page } from '@playwright/test'
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { getUtils, orRunWhenFullSuiteEnabled } from './test-utils'
-import { Locator } from '@playwright/test'
+
+import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
+import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
+import { getUtils, orRunWhenFullSuiteEnabled } from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 

@@ -1,15 +1,16 @@
-import { PathToNode, Program } from 'lang/wasm'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { locateExtrudeDeclarator } from './addEdgeTreatment'
-import { err } from 'lib/trap'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
 import {
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
   createPipeExpression,
-} from 'lang/modifyAst'
-import { createPipeSubstitution } from 'lang/modifyAst'
-import { COMMAND_APPEARANCE_COLOR_DEFAULT } from 'lib/commandBarConfigs/modelingCommandConfig'
+  createPipeSubstitution,
+} from '@src/lang/modifyAst'
+import { locateExtrudeDeclarator } from '@src/lang/modifyAst/addEdgeTreatment'
+import type { PathToNode, Program } from '@src/lang/wasm'
+import { COMMAND_APPEARANCE_COLOR_DEFAULT } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import { err } from '@src/lib/trap'
 
 export function setAppearance({
   ast,

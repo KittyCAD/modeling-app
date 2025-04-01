@@ -1,68 +1,30 @@
-import { err, reportRejection, trap } from 'lib/trap'
-import { Selection } from 'lib/selections'
+import type { Models } from '@kittycad/lib'
+
+import type { BodyItem } from '@rust/kcl-lib/bindings/BodyItem'
+import type { Name } from '@rust/kcl-lib/bindings/Name'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
+
 import {
-  Program,
-  CallExpression,
-  LabeledArg,
-  CallExpressionKw,
-  PipeExpression,
-  VariableDeclaration,
-  VariableDeclarator,
-  Expr,
-  Literal,
-  LiteralValue,
-  PipeSubstitution,
-  Identifier,
-  ArrayExpression,
-  ObjectExpression,
-  UnaryExpression,
-  BinaryExpression,
-  PathToNode,
-  SourceRange,
-  isPathToNodeNumber,
-  parse,
-  formatNumber,
-  ArtifactGraph,
-  VariableMap,
-  KclValue,
-} from './wasm'
+  deleteEdgeTreatment,
+  locateExtrudeDeclarator,
+} from '@src/lang/modifyAst/addEdgeTreatment'
 import {
-  isNodeSafeToReplacePath,
-  findAllPreviousVariables,
-  findAllPreviousVariablesPath,
-  getNodeFromPath,
-  isNodeSafeToReplace,
-  traverse,
-  getBodyIndex,
-  isCallExprWithName,
   ARG_INDEX_FIELD,
   LABELED_ARG_FIELD,
   UNLABELED_ARG,
-} from './queryAst'
+  findAllPreviousVariables,
+  findAllPreviousVariablesPath,
+  getBodyIndex,
+  getNodeFromPath,
+  isCallExprWithName,
+  isNodeSafeToReplace,
+  isNodeSafeToReplacePath,
+  traverse,
+} from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
-  addTagForSketchOnFace,
-  ARG_TAG,
-  getConstraintInfo,
-  getConstraintInfoKw,
-} from './std/sketch'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import {
-  PathToNodeMap,
-  isLiteralArrayOrStatic,
-  removeSingleConstraint,
-  transformAstSketchLines,
-} from './std/sketchcombos'
-import { DefaultPlaneStr } from 'lib/planes'
-import { isArray, isOverlap, roundOff } from 'lib/utils'
-import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
-import { SimplifiedArgDetails } from './std/stdTypes'
-import { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
-import { Models } from '@kittycad/lib'
-import { ExtrudeFacePlane } from 'machines/modelingMachine'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { KclExpressionWithVariable } from 'lib/commandTypes'
-import {
-  Artifact,
   expandCap,
   expandPlane,
   expandWall,
@@ -70,14 +32,52 @@ import {
   getArtifactsOfTypes,
   getFaceCodeRef,
   getPathsFromArtifact,
-} from './std/artifactGraph'
-import { BodyItem } from '@rust/kcl-lib/bindings/BodyItem'
-import { findKwArg } from './util'
+} from '@src/lang/std/artifactGraph'
 import {
-  deleteEdgeTreatment,
-  locateExtrudeDeclarator,
-} from './modifyAst/addEdgeTreatment'
-import { Name } from '@rust/kcl-lib/bindings/Name'
+  ARG_TAG,
+  addTagForSketchOnFace,
+  getConstraintInfo,
+  getConstraintInfoKw,
+} from '@src/lang/std/sketch'
+import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
+import {
+  isLiteralArrayOrStatic,
+  removeSingleConstraint,
+  transformAstSketchLines,
+} from '@src/lang/std/sketchcombos'
+import type { SimplifiedArgDetails } from '@src/lang/std/stdTypes'
+import { findKwArg } from '@src/lang/util'
+import type {
+  ArrayExpression,
+  ArtifactGraph,
+  BinaryExpression,
+  CallExpression,
+  CallExpressionKw,
+  Expr,
+  Identifier,
+  KclValue,
+  LabeledArg,
+  Literal,
+  LiteralValue,
+  ObjectExpression,
+  PathToNode,
+  PipeExpression,
+  PipeSubstitution,
+  Program,
+  SourceRange,
+  UnaryExpression,
+  VariableDeclaration,
+  VariableDeclarator,
+  VariableMap,
+} from '@src/lang/wasm'
+import { formatNumber, isPathToNodeNumber, parse } from '@src/lang/wasm'
+import type { KclExpressionWithVariable } from '@src/lib/commandTypes'
+import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import type { DefaultPlaneStr } from '@src/lib/planes'
+import type { Selection } from '@src/lib/selections'
+import { err, reportRejection, trap } from '@src/lib/trap'
+import { isArray, isOverlap, roundOff } from '@src/lib/utils'
+import type { ExtrudeFacePlane } from '@src/machines/modelingMachine'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -493,8 +493,8 @@ export function addShell({
     insertIndex !== undefined
       ? insertIndex
       : modifiedAst.body.length
-      ? modifiedAst.body.length
-      : 0
+        ? modifiedAst.body.length
+        : 0
 
   if (modifiedAst.body.length) {
     modifiedAst.body.splice(insertAt, 0, variable)
@@ -553,8 +553,8 @@ export function addSweep({
     insertIndex !== undefined
       ? insertIndex
       : modifiedAst.body.length
-      ? modifiedAst.body.length
-      : 0
+        ? modifiedAst.body.length
+        : 0
 
   modifiedAst.body.length
     ? modifiedAst.body.splice(insertAt, 0, variable)
@@ -787,8 +787,8 @@ export function addOffsetPlane({
     insertIndex !== undefined
       ? insertIndex
       : modifiedAst.body.length
-      ? modifiedAst.body.length
-      : 0
+        ? modifiedAst.body.length
+        : 0
 
   modifiedAst.body.length
     ? modifiedAst.body.splice(insertAt, 0, newPlane)
@@ -866,8 +866,8 @@ export function addHelix({
     insertIndex !== undefined
       ? insertIndex
       : modifiedAst.body.length
-      ? modifiedAst.body.length
-      : 0
+        ? modifiedAst.body.length
+        : 0
 
   modifiedAst.body.length
     ? modifiedAst.body.splice(insertAt, 0, variable)
@@ -1284,7 +1284,7 @@ export function createUnaryExpression(
 export function createBinaryExpression([left, operator, right]: [
   BinaryExpression['left'],
   BinaryExpression['operator'],
-  BinaryExpression['right']
+  BinaryExpression['right'],
 ]): Node<BinaryExpression> {
   return {
     type: 'BinaryExpression',
@@ -1303,7 +1303,7 @@ export function createBinaryExpression([left, operator, right]: [
 
 export function createBinaryExpressionWithUnary([left, right]: [
   BinaryExpression['left'],
-  BinaryExpression['right']
+  BinaryExpression['right'],
 ]): Node<BinaryExpression> {
   if (right.type === 'UnaryExpression' && right.operator === '-')
     return createBinaryExpression([left, '-', right.argument])
@@ -1557,7 +1557,7 @@ export async function deleteFromSelection(
   variables: VariableMap,
   artifactGraph: ArtifactGraph,
   getFaceDetails: (id: string) => Promise<Models['FaceIsPlanar_type']> = () =>
-    ({} as any)
+    ({}) as any
 ): Promise<Node<Program> | Error> {
   const astClone = structuredClone(ast)
   let deletionArtifact = selection.artifact
@@ -1591,8 +1591,8 @@ export async function deleteFromSelection(
       deletionArtifact.type === 'plane'
         ? expandPlane(deletionArtifact, artifactGraph)
         : deletionArtifact.type === 'wall'
-        ? expandWall(deletionArtifact, artifactGraph)
-        : expandCap(deletionArtifact, artifactGraph)
+          ? expandWall(deletionArtifact, artifactGraph)
+          : expandCap(deletionArtifact, artifactGraph)
     for (const path of plane.paths.sort(
       (a, b) => b.codeRef.range?.[0] - a.codeRef.range?.[0]
     )) {
@@ -1732,12 +1732,12 @@ export async function deleteFromSelection(
             selection.artifact?.type === 'wall'
               ? selection.artifact
               : selection.artifact?.type === 'segment' &&
-                selection.artifact.surfaceId
-              ? getArtifactOfTypes(
-                  { key: selection.artifact.surfaceId, types: ['wall'] },
-                  artifactGraph
-                )
-              : null
+                  selection.artifact.surfaceId
+                ? getArtifactOfTypes(
+                    { key: selection.artifact.surfaceId, types: ['wall'] },
+                    artifactGraph
+                  )
+                : null
           if (err(wallArtifact)) return
           if (wallArtifact) {
             const sweep = getArtifactOfTypes(
@@ -1802,15 +1802,15 @@ export async function deleteFromSelection(
               variable.type === 'Sketch'
                 ? variable.value.artifactId
                 : variable.type === 'Face'
-                ? variable.value.artifactId
-                : ''
+                  ? variable.value.artifactId
+                  : ''
             if (!artifactId) return new Error('Sketch not on anything')
             const onId =
               variable.type === 'Sketch'
                 ? variable.value.on.id
                 : variable.type === 'Face'
-                ? variable.value.id
-                : ''
+                  ? variable.value.id
+                  : ''
             if (!onId) return new Error('Sketch not on anything')
             // Can't kick off multiple requests at once as getFaceDetails
             // is three engine calls in one and they conflict
@@ -1963,8 +1963,8 @@ export function getInsertIndex(
   const insertIndex = !sketchNodePaths.length
     ? Number(planeNodePath[1][0]) + 1
     : insertType === 'start'
-    ? minIndex
-    : maxIndex + 1
+      ? minIndex
+      : maxIndex + 1
   return insertIndex
 }
 

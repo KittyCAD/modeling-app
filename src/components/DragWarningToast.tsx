@@ -1,4 +1,4 @@
-import { MoveDesc } from 'machines/modelingMachine'
+import type { MoveDesc } from '@src/machines/modelingMachine'
 
 export const DragWarningToast = (moveDescs: MoveDesc[]) => {
   if (moveDescs.length === 1) {

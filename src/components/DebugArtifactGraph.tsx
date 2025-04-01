@@ -1,8 +1,11 @@
 import { useMemo } from 'react'
-import { kclManager } from 'lib/singletons'
-import { expandPlane, PlaneArtifactRich } from 'lang/std/artifactGraph'
-import { ArtifactGraph } from 'lang/wasm'
-import { DebugDisplayArray, GenericObj } from './DebugDisplayObj'
+
+import type { GenericObj } from '@src/components/DebugDisplayObj'
+import { DebugDisplayArray } from '@src/components/DebugDisplayObj'
+import type { PlaneArtifactRich } from '@src/lang/std/artifactGraph'
+import { expandPlane } from '@src/lang/std/artifactGraph'
+import type { ArtifactGraph } from '@src/lang/wasm'
+import { kclManager } from '@src/lib/singletons'
 
 export function DebugArtifactGraph() {
   const artifactGraphTree = useMemo(() => {

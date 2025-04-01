@@ -88,9 +88,9 @@
     "simpleserver:ci": "yarn pretest && http-server ./public --cors -p 3000 &",
     "simpleserver:bg": "yarn pretest && http-server ./public --cors -p 3000 &",
     "simpleserver:stop": "kill-port 3000",
-    "fmt": "prettier --write ./src *.ts *.json *.js ./e2e ./packages ./rust/kcl-language-server ./rust/kcl-lib/bindings ./rust/kcl-wasm-lib/pkg",
-    "fmt:generated": "prettier --write *.ts *.json *.js ./rust/kcl-lib/bindings ./rust/kcl-wasm-lib/pkg",
-    "fmt-check": "prettier --check ./src *.ts *.json *.js ./e2e ./packages ./rust/kcl-language-server",
+    "fmt": "prettier --write .eslintrc.json ./src *.ts *.json *.js ./e2e ./packages ./rust/kcl-language-server ./rust/kcl-lib/bindings ./rust/kcl-wasm-lib/pkg",
+    "fmt:generated": "prettier --write .eslintrc.json *.ts *.json *.js ./rust/kcl-lib/bindings ./rust/kcl-wasm-lib/pkg",
+    "fmt-check": "prettier --check .eslintrc.json ./src *.ts *.json *.js ./e2e ./packages ./rust/kcl-language-server",
     "fetch:wasm": "./scripts/get-latest-wasm-bundle.sh",
     "fetch:wasm:windows": "./scripts/get-latest-wasm-bundle.ps1",
     "fetch:samples": "rm -rf public/kcl-samples* && curl -L -o public/kcl-samples.zip https://github.com/KittyCAD/kcl-samples/archive/refs/heads/achalmers/kw-args-xylineto.zip && unzip -o public/kcl-samples.zip -d public && mv public/kcl-samples-* public/kcl-samples",
@@ -139,7 +139,20 @@
     "trailingComma": "es5",
     "tabWidth": 2,
     "semi": false,
-    "singleQuote": true
+    "singleQuote": true,
+    "importOrder": [
+      "<THIRD_PARTY_MODULES>",
+      "^@rust/(.*)$",
+      "^@e2e/(.*)$",
+      "^@src/(.*)$",
+      "^[./]"
+    ],
+    "importOrderSeparation": true,
+    "importOrderSortSpecifiers": true,
+    "plugins": [
+      "@trivago/prettier-plugin-sort-imports",
+      "prettier-plugin-organize-imports"
+    ]
   },
   "browserslist": {
     "production": [
@@ -167,6 +180,7 @@
     "@playwright/test": "^1.51.1",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^15.0.2",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/diff": "^7.0.2",
     "@types/electron": "^1.6.10",
     "@types/isomorphic-fetch": "^0.0.39",
@@ -208,7 +222,8 @@
     "pngjs": "^7.0.0",
     "postcss": "^8.4.43",
     "postinstall-postinstall": "^2.1.0",
-    "prettier": "^2.8.8",
+    "prettier": "^3.5.3",
+    "prettier-plugin-organize-imports": "^4.1.0",
     "setimmediate": "^1.0.5",
     "tailwindcss": "^3.4.17",
     "ts-node": "^10.0.0",

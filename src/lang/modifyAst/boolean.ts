@@ -1,8 +1,9 @@
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import EditorManager from 'editor/manager'
-import CodeManager from 'lang/codeManager'
-import { KclManager } from 'lang/KclSingleton'
-import { updateModelingState } from 'lang/modelingWorkflows'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import type EditorManager from '@src/editor/manager'
+import type { KclManager } from '@src/lang/KclSingleton'
+import type CodeManager from '@src/lang/codeManager'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   createArrayExpression,
   createCallExpressionStdLibKw,
@@ -10,21 +11,21 @@ import {
   createLocalName,
   createVariableDeclaration,
   findUniqueName,
-} from 'lang/modifyAst'
-import { getNodeFromPath } from 'lang/queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { getFaceCodeRef } from 'lang/std/artifactGraph'
-import { EngineCommandManager } from 'lang/std/engineConnection'
-import {
+} from '@src/lang/modifyAst'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { getFaceCodeRef } from '@src/lang/std/artifactGraph'
+import type { EngineCommandManager } from '@src/lang/std/engineConnection'
+import type {
   Artifact,
   ArtifactGraph,
   Program,
   VariableDeclaration,
-} from 'lang/wasm'
-import { EXECUTION_TYPE_REAL } from 'lib/constants'
-import { Selection, Selections } from 'lib/selections'
-import { err } from 'lib/trap'
-import { isArray } from 'lib/utils'
+} from '@src/lang/wasm'
+import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
+import type { Selection, Selections } from '@src/lib/selections'
+import { err } from '@src/lib/trap'
+import { isArray } from '@src/lib/utils'
 
 export async function applySubtractFromTargetOperatorSelections(
   target: Selection,

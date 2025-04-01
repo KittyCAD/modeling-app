@@ -1,5 +1,6 @@
-import { MouseControlType } from '@rust/kcl-lib/bindings/MouseControlType'
-import { platform } from './utils'
+import type { MouseControlType } from '@rust/kcl-lib/bindings/MouseControlType'
+
+import { platform } from '@src/lib/utils'
 
 const PLATFORM = platform()
 const META =

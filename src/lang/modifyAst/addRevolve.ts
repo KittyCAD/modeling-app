@@ -1,27 +1,33 @@
-import { err } from 'lib/trap'
-import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
-import { Program, PathToNode, Expr, VariableDeclarator } from 'lang/wasm'
-import { Selections } from 'lib/selections'
-import { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
 import {
-  createLiteral,
-  createLocalName,
-  findUniqueName,
-  createVariableDeclaration,
   createCallExpressionStdLibKw,
   createLabeledArg,
-} from 'lang/modifyAst'
+  createLiteral,
+  createLocalName,
+  createVariableDeclaration,
+  findUniqueName,
+} from '@src/lang/modifyAst'
+import {
+  getEdgeTagCall,
+  mutateAstWithTagForSketchSegment,
+} from '@src/lang/modifyAst/addEdgeTreatment'
 import {
   ARG_INDEX_FIELD,
-  getNodeFromPath,
   LABELED_ARG_FIELD,
-} from 'lang/queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import {
-  mutateAstWithTagForSketchSegment,
-  getEdgeTagCall,
-} from 'lang/modifyAst/addEdgeTreatment'
-import { getSafeInsertIndex } from 'lang/queryAst/getSafeInsertIndex'
+  getNodeFromPath,
+} from '@src/lang/queryAst'
+import { getSafeInsertIndex } from '@src/lang/queryAst/getSafeInsertIndex'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import type {
+  Expr,
+  PathToNode,
+  Program,
+  VariableDeclarator,
+} from '@src/lang/wasm'
+import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import type { Selections } from '@src/lib/selections'
+import { err } from '@src/lib/trap'
 
 export function getAxisExpressionAndIndex(
   axisOrEdge: 'Axis' | 'Edge',

@@ -1,10 +1,17 @@
 import { Combobox } from '@headlessui/react'
 import { useSelector } from '@xstate/react'
 import Fuse from 'fuse.js'
-import { CommandArgument, CommandArgumentOption } from 'lib/commandTypes'
-import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { AnyStateMachine, StateFrom } from 'xstate'
+import type { AnyStateMachine, StateFrom } from 'xstate'
+
+import type {
+  CommandArgument,
+  CommandArgumentOption,
+} from '@src/lib/commandTypes'
+import {
+  commandBarActor,
+  useCommandBarState,
+} from '@src/machines/commandBarMachine'
 
 const contextSelector = (snapshot: StateFrom<AnyStateMachine> | undefined) =>
   snapshot?.context

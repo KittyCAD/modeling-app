@@ -1,4 +1,4 @@
-import { Project, FileEntry } from 'lib/project'
+import type { FileEntry, Project } from '@src/lib/project'
 
 export type IndexLoaderData = {
   code: string | null
@@ -44,30 +44,30 @@ type Prev = [
   18,
   19,
   20,
-  ...0[]
+  ...0[],
 ]
 
 export type Paths<T, D extends number = 10> = [D] extends [never]
   ? never
   : T extends object
-  ? {
-      [K in keyof T]-?: K extends string | number
-        ? `${K}` | Join<K, Paths<T[K], Prev[D]>>
-        : never
-    }[keyof T]
-  : ''
+    ? {
+        [K in keyof T]-?: K extends string | number
+          ? `${K}` | Join<K, Paths<T[K], Prev[D]>>
+          : never
+      }[keyof T]
+    : ''
 
 type Idx<T, K> = K extends keyof T
   ? T[K]
   : number extends keyof T
-  ? K extends `${number}`
-    ? T[number]
+    ? K extends `${number}`
+      ? T[number]
+      : never
     : never
-  : never
 
 export type PathValue<
   T,
-  P extends Paths<T, 1>
+  P extends Paths<T, 1>,
 > = P extends `${infer Key}.${infer Rest}`
   ? Rest extends Paths<Idx<T, Key>, 1>
     ? PathValue<Idx<T, Key>, Rest>
@@ -77,8 +77,8 @@ export type PathValue<
 export type Leaves<T, D extends number = 10> = [D] extends [never]
   ? never
   : T extends object
-  ? { [K in keyof T]-?: Join<K, Leaves<T[K], Prev[D]>> }[keyof T]
-  : ''
+    ? { [K in keyof T]-?: Join<K, Leaves<T[K], Prev[D]>> }[keyof T]
+    : ''
 
 // Thanks to @micfan on StackOverflow for this utility type:
 // https://stackoverflow.com/a/57390160/22753272

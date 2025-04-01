@@ -1,32 +1,28 @@
-import {
-  assertParse,
-  Expr,
-  recast,
-  initPromise,
-  Program,
-  topLevelRange,
-} from '../wasm'
-import {
-  getConstraintType,
-  getTransformInfos,
-  transformAstSketchLines,
-  transformSecondarySketchLinesTagFirst,
-  ConstraintType,
-  ConstraintLevel,
-  getConstraintLevelFromSourceRange,
-} from './sketchcombos'
-import { ToolTip } from 'lang/langHelpers'
-import { Selections, Selection } from 'lib/selections'
-import { err } from 'lib/trap'
-import { enginelessExecutor } from '../../lib/testHelpers'
-import { codeRefFromRange } from './artifactGraph'
-import { findKwArg } from 'lang/util'
+import type { ToolTip } from '@src/lang/langHelpers'
+import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import {
   ARG_END,
   ARG_END_ABSOLUTE,
   getArgForEnd,
   isAbsoluteLine,
-} from './sketch'
+} from '@src/lang/std/sketch'
+import type {
+  ConstraintLevel,
+  ConstraintType,
+} from '@src/lang/std/sketchcombos'
+import {
+  getConstraintLevelFromSourceRange,
+  getConstraintType,
+  getTransformInfos,
+  transformAstSketchLines,
+  transformSecondarySketchLinesTagFirst,
+} from '@src/lang/std/sketchcombos'
+import { findKwArg } from '@src/lang/util'
+import type { Expr, Program } from '@src/lang/wasm'
+import { assertParse, initPromise, recast, topLevelRange } from '@src/lang/wasm'
+import type { Selection, Selections } from '@src/lib/selections'
+import { enginelessExecutor } from '@src/lib/testHelpers'
+import { err } from '@src/lib/trap'
 
 beforeAll(async () => {
   await initPromise

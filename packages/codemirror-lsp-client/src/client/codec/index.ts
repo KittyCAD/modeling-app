@@ -1,5 +1,5 @@
-import * as jsrpc from 'json-rpc-2.0'
-import * as vsrpc from 'vscode-jsonrpc'
+import type * as jsrpc from 'json-rpc-2.0'
+import type * as vsrpc from 'vscode-jsonrpc'
 
 import Bytes from './bytes'
 import StreamDemuxer from './demuxer'

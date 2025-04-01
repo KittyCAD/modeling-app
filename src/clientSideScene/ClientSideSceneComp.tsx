@@ -1,54 +1,65 @@
-import { useRef, useEffect, useState, useMemo, Fragment } from 'react'
-import { useModelingContext } from 'hooks/useModelingContext'
+import { Dialog, Popover, Transition } from '@headlessui/react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
+import type { InstanceProps } from 'react-modal-promise'
+import { create } from 'react-modal-promise'
 
-import { cameraMouseDragGuards } from 'lib/cameraControls'
-import { ARROWHEAD, DEBUG_SHOW_BOTH_SCENES } from './sceneInfra'
-import { ReactCameraProperties } from './CameraControls'
-import { throttle, toSync } from 'lib/utils'
-import {
-  sceneInfra,
-  kclManager,
-  codeManager,
-  editorManager,
-  sceneEntitiesManager,
-  engineCommandManager,
-  rustContext,
-} from 'lib/singletons'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import type { ReactCameraProperties } from '@src/clientSideScene/CameraControls'
 import {
   EXTRA_SEGMENT_HANDLE,
   PROFILE_START,
   getParentGroup,
-} from './sceneEntities'
-import { SegmentOverlay, SketchDetails } from 'machines/modelingMachine'
-import { findUsesOfTagInPipe, getNodeFromPath } from 'lang/queryAst'
+} from '@src/clientSideScene/sceneConstants'
 import {
-  CallExpression,
-  CallExpressionKw,
-  PathToNode,
-  Program,
-  Expr,
-  parse,
-  recast,
-  defaultSourceRange,
-  resultIsOk,
-  topLevelRange,
-} from 'lang/wasm'
-import { CustomIcon, CustomIconName } from 'components/CustomIcon'
-import { ConstrainInfo } from 'lang/std/stdTypes'
-import { getConstraintInfo, getConstraintInfoKw } from 'lang/std/sketch'
-import { Dialog, Popover, Transition } from '@headlessui/react'
-import toast from 'react-hot-toast'
-import { InstanceProps, create } from 'react-modal-promise'
-import { executeAstMock } from 'lang/langHelpers'
+  ARROWHEAD,
+  DEBUG_SHOW_BOTH_SCENES,
+} from '@src/clientSideScene/sceneInfra'
+import { ActionButton } from '@src/components/ActionButton'
+import type { CustomIconName } from '@src/components/CustomIcon'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { executeAstMock } from '@src/lang/langHelpers'
 import {
   deleteSegmentFromPipeExpression,
   removeSingleConstraintInfo,
-} from 'lang/modifyAst'
-import { ActionButton } from 'components/ActionButton'
-import { err, reportRejection, trap } from 'lib/trap'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { useSettings } from 'machines/appMachine'
+} from '@src/lang/modifyAst'
+import { findUsesOfTagInPipe, getNodeFromPath } from '@src/lang/queryAst'
+import { getConstraintInfo, getConstraintInfoKw } from '@src/lang/std/sketch'
+import type { ConstrainInfo } from '@src/lang/std/stdTypes'
+import type {
+  CallExpression,
+  CallExpressionKw,
+  Expr,
+  PathToNode,
+  Program,
+} from '@src/lang/wasm'
+import {
+  defaultSourceRange,
+  parse,
+  recast,
+  resultIsOk,
+  topLevelRange,
+} from '@src/lang/wasm'
+import { cameraMouseDragGuards } from '@src/lib/cameraControls'
+import {
+  codeManager,
+  editorManager,
+  engineCommandManager,
+  kclManager,
+  rustContext,
+  sceneEntitiesManager,
+  sceneInfra,
+} from '@src/lib/singletons'
+import { err, reportRejection, trap } from '@src/lib/trap'
+import { throttle, toSync } from '@src/lib/utils'
+import type { useSettings } from '@src/machines/appMachine'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import type {
+  SegmentOverlay,
+  SketchDetails,
+} from '@src/machines/modelingMachine'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -635,8 +646,8 @@ const ConstraintSymbol = ({
           implicitDesc
             ? 'bg-chalkboard-10 dark:bg-chalkboard-100 border-transparent border-0 rounded'
             : isConstrained
-            ? 'bg-chalkboard-10 dark:bg-chalkboard-90 dark:hover:bg-chalkboard-80 border-chalkboard-40 dark:border-chalkboard-70 rounded-sm'
-            : 'bg-primary/30 dark:bg-primary text-primary dark:text-chalkboard-10 dark:border-transparent group-hover:bg-primary/40 group-hover:border-primary/50 group-hover:brightness-125'
+              ? 'bg-chalkboard-10 dark:bg-chalkboard-90 dark:hover:bg-chalkboard-80 border-chalkboard-40 dark:border-chalkboard-70 rounded-sm'
+              : 'bg-primary/30 dark:bg-primary text-primary dark:text-chalkboard-10 dark:border-transparent group-hover:bg-primary/40 group-hover:border-primary/50 group-hover:brightness-125'
         } h-[26px] w-[26px] rounded-sm relative m-0 p-0`}
         onMouseEnter={() => {
           editorManager.setHighlightRange([range])

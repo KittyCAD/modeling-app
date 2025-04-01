@@ -1,3 +1,7 @@
+import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
+import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+
 import {
   defaultAppSettings,
   defaultProjectSettings,
@@ -6,25 +10,26 @@ import {
   parseProjectSettings,
   serializeConfiguration,
   serializeProjectConfiguration,
-} from 'lang/wasm'
-import { mouseControlsToCameraSystem } from 'lib/cameraControls'
-import { BROWSER_PROJECT_NAME } from 'lib/constants'
+} from '@src/lang/wasm'
+import { mouseControlsToCameraSystem } from '@src/lib/cameraControls'
+import { BROWSER_PROJECT_NAME } from '@src/lib/constants'
 import {
   getInitialDefaultDir,
   readAppSettingsFile,
   readProjectSettingsFile,
   writeAppSettingsFile,
   writeProjectSettingsFile,
-} from 'lib/desktop'
-import { isDesktop } from 'lib/isDesktop'
-import { Setting, createSettings, settings } from 'lib/settings/initialSettings'
-import { appThemeToTheme } from 'lib/theme'
-import { err } from 'lib/trap'
-import { DeepPartial } from 'lib/types'
-import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
-import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
-import { SaveSettingsPayload, SettingsLevel } from './settingsTypes'
+} from '@src/lib/desktop'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { Setting } from '@src/lib/settings/initialSettings'
+import { createSettings, settings } from '@src/lib/settings/initialSettings'
+import type {
+  SaveSettingsPayload,
+  SettingsLevel,
+} from '@src/lib/settings/settingsTypes'
+import { appThemeToTheme } from '@src/lib/theme'
+import { err } from '@src/lib/trap'
+import type { DeepPartial } from '@src/lib/types'
 
 /**
  * Convert from a rust settings struct into the JS settings struct.

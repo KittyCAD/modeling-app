@@ -1,26 +1,21 @@
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
-  changeSketchArguments,
-  addTagForSketchOnFace,
-  addNewSketchLn,
-  getYComponent,
-  getXComponent,
   addCloseToPipe,
+  addNewSketchLn,
+  addTagForSketchOnFace,
+  changeSketchArguments,
   getConstraintInfo,
   getConstraintInfoKw,
-} from './sketch'
-import {
-  assertParse,
-  recast,
-  initPromise,
-  CallExpression,
-  topLevelRange,
-  CallExpressionKw,
-} from '../wasm'
-import { getNodeFromPath } from '../queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { enginelessExecutor } from '../../lib/testHelpers'
-import { err } from 'lib/trap'
-import { Node } from '@rust/kcl-lib/bindings/Node'
+  getXComponent,
+  getYComponent,
+} from '@src/lang/std/sketch'
+import type { CallExpression, CallExpressionKw } from '@src/lang/wasm'
+import { assertParse, initPromise, recast, topLevelRange } from '@src/lang/wasm'
+import { enginelessExecutor } from '@src/lib/testHelpers'
+import { err } from '@src/lib/trap'
 
 const eachQuad: [number, [number, number]][] = [
   [-315, [1, 1]],
