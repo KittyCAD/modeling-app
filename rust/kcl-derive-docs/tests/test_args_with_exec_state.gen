@@ -106,7 +106,7 @@ impl crate::docs::StdLibFn for SomeFunction {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = inline_subschemas;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
-        let schema = crate::docs::cleanup_number_tuples_root(generator.root_schema_for::<i32>());
+        let schema = generator.root_schema_for::<i32>();
         Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
             type_: "i32".to_string(),

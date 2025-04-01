@@ -329,7 +329,7 @@ fn do_stdlib_inner(
         let camel_case_arg_name = to_camel_case(&arg_name);
         if ty_string != "ExecState" && ty_string != "Args" {
             let schema = quote! {
-                #docs_crate::cleanup_number_tuples_root(generator.root_schema_for::<#ty_ident>())
+                generator.root_schema_for::<#ty_ident>()
             };
             arg_types.push(quote! {
                 #docs_crate::StdLibFnArg {
@@ -394,7 +394,7 @@ fn do_stdlib_inner(
     let return_type = if !ret_ty_string.is_empty() || ret_ty_string != "()" {
         let ret_ty_string = rust_type_to_openapi_type(&ret_ty_string);
         quote! {
-            let schema = #docs_crate::cleanup_number_tuples_root(generator.root_schema_for::<#return_type_inner>());
+            let schema = generator.root_schema_for::<#return_type_inner>();
             Some(#docs_crate::StdLibFnArg {
                 name: "".to_string(),
                 type_: #ret_ty_string.to_string(),
