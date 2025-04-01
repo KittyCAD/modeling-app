@@ -110,7 +110,7 @@ description: Operations executed sheet-metal-bracket.kcl
       "tag": {
         "value": {
           "type": "TagIdentifier",
-          "value": "seg06",
+          "value": "seg04",
           "artifact_id": "[uuid]"
         },
         "sourceRange": []
@@ -129,13 +129,7 @@ description: Operations executed sheet-metal-bracket.kcl
       0,
       0
     ],
-    "unlabeledArg": {
-      "value": {
-        "type": "Face",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
+    "unlabeledArg": null,
     "labeledArgs": {
       "center": {
         "value": {
@@ -143,61 +137,7 @@ description: Operations executed sheet-metal-bracket.kcl
           "value": [
             {
               "type": "Number",
-              "value": 3.5,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 4.75,
-              "ty": {
-                "type": "Unknown"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 0.125,
-          "ty": {
-            "type": "Unknown"
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": {
-      "value": {
-        "type": "Face",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 3.5,
+              "value": -3.5,
               "ty": {
                 "type": "Unknown"
               }
@@ -286,7 +226,7 @@ description: Operations executed sheet-metal-bracket.kcl
       "tag": {
         "value": {
           "type": "TagIdentifier",
-          "value": "seg04",
+          "value": "seg06",
           "artifact_id": "[uuid]"
         },
         "sourceRange": []
@@ -305,13 +245,7 @@ description: Operations executed sheet-metal-bracket.kcl
       0,
       0
     ],
-    "unlabeledArg": {
-      "value": {
-        "type": "Face",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
+    "unlabeledArg": null,
     "labeledArgs": {
       "center": {
         "value": {
@@ -319,7 +253,7 @@ description: Operations executed sheet-metal-bracket.kcl
           "value": [
             {
               "type": "Number",
-              "value": -3.5,
+              "value": 3.5,
               "ty": {
                 "type": "Unknown"
               }
@@ -327,60 +261,6 @@ description: Operations executed sheet-metal-bracket.kcl
             {
               "type": "Number",
               "value": 0.75,
-              "ty": {
-                "type": "Unknown"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 0.125,
-          "ty": {
-            "type": "Unknown"
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": {
-      "value": {
-        "type": "Face",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": -3.5,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 4.75,
               "ty": {
                 "type": "Unknown"
               }
@@ -481,13 +361,7 @@ description: Operations executed sheet-metal-bracket.kcl
       0,
       0
     ],
-    "unlabeledArg": {
-      "value": {
-        "type": "Face",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
+    "unlabeledArg": null,
     "labeledArgs": {
       "center": {
         "value": {
@@ -495,7 +369,7 @@ description: Operations executed sheet-metal-bracket.kcl
           "value": [
             {
               "type": "Number",
-              "value": -0.5,
+              "value": -1.0,
               "ty": {
                 "type": "Unknown"
               }
@@ -528,166 +402,84 @@ description: Operations executed sheet-metal-bracket.kcl
     "type": "UserDefinedFunctionReturn"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": {
-      "value": {
-        "type": "Face",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
     "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": -0.5,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 4.25,
-              "ty": {
-                "type": "Unknown"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
+      "length": {
         "value": {
           "type": "Number",
-          "value": 0.09375,
+          "value": -0.125,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
       }
     },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Face",
-        "artifact_id": "[uuid]"
+        "type": "Array",
+        "value": [
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
       },
       "sourceRange": []
-    },
+    }
+  },
+  {
     "labeledArgs": {
-      "center": {
+      "data": {
         "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 0.5,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 1.25,
-              "ty": {
-                "type": "Unknown"
-              }
-            }
-          ]
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
         },
         "sourceRange": []
       },
-      "radius": {
+      "tag": {
         "value": {
-          "type": "Number",
-          "value": 0.09375,
-          "ty": {
-            "type": "Unknown"
-          }
+          "type": "TagIdentifier",
+          "value": "seg05",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
     },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": {
-      "value": {
-        "type": "Face",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 0.5,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 4.25,
-              "ty": {
-                "type": "Unknown"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 0.09375,
-          "ty": {
-            "type": "Unknown"
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "type": "UserDefinedFunctionCall",
@@ -697,13 +489,7 @@ description: Operations executed sheet-metal-bracket.kcl
       0,
       0
     ],
-    "unlabeledArg": {
-      "value": {
-        "type": "Face",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
+    "unlabeledArg": null,
     "labeledArgs": {
       "center": {
         "value": {
@@ -779,39 +565,10 @@ description: Operations executed sheet-metal-bracket.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
       },
       "sourceRange": []
     }
