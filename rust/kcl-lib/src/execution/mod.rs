@@ -739,7 +739,11 @@ impl ExecutorContext {
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         self.prepare_mem(exec_state).await.unwrap();
 
-        let universe = std::collections::HashMap::new(); // crate::walk::import_universe(&self).await.unwrap();
+        let mut universe = std::collections::HashMap::new();
+
+        crate::walk::import_universe(self, &program.ast, &mut universe)
+            .await
+            .unwrap();
 
         for modules in crate::walk::import_graph(&universe).unwrap().into_iter() {
             let mut set = JoinSet::new();

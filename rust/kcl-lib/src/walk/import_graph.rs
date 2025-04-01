@@ -6,9 +6,10 @@ use std::{
 use anyhow::Result;
 
 use crate::{
+    fs::FileSystem,
     parsing::ast::types::{ImportPath, Node as AstNode, NodeRef, Program},
     walk::{Node, Visitable},
-    ExecutorContext,
+    ExecutorContext, SourceRange,
 };
 
 /// Specific dependency between two modules. The 0th element of this tuple
@@ -126,8 +127,37 @@ pub(crate) fn import_dependencies(prog: NodeRef<Program>) -> Result<Vec<String>>
     Ok(ret)
 }
 
-pub(crate) async fn import_universe(ctx: &ExecutorContext) -> Result<HashMap<String, Program>> {
-    panic!("ASF");
+pub(crate) async fn import_universe<'prog>(
+    ctx: &ExecutorContext,
+    prog: NodeRef<'prog, Program>,
+    out: &mut HashMap<String, AstNode<Program>>,
+) -> Result<()> {
+    for module in import_dependencies(prog)? {
+        eprintln!("{:?}", module);
+
+        if out.contains_key(&module) {
+            continue;
+        }
+
+        // TODO: use open_module and find a way to pass attrs cleanly
+        let kcl = ctx
+            .fs
+            .read_to_string(
+                ctx.settings
+                    .project_directory
+                    .clone()
+                    .unwrap_or("".into())
+                    .join(&module),
+                SourceRange::default(),
+            )
+            .await?;
+        let program = crate::parsing::parse_str(&kcl, crate::ModuleId::default()).parse_errs_as_err()?;
+
+        out.insert(module.clone(), program.clone());
+        Box::pin(import_universe(ctx, &program, out)).await?;
+    }
+
+    Ok(())
 }
 
 #[cfg(test)]
