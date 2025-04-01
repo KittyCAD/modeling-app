@@ -1,16 +1,14 @@
+import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
+import { Command, CommandArgumentOption } from '../commandTypes'
+import toast from 'react-hot-toast'
+import { engineCommandManager } from 'lib/singletons'
+import { uuidv4 } from 'lib/utils'
+import { settingsActor, getSettings } from 'machines/appMachine'
+import { err, reportRejection } from 'lib/trap'
 import {
   CameraViewState_type,
   WorldCoordinateSystem_type,
 } from '@kittycad/lib/dist/types/src/models'
-import { engineCommandManager } from 'lib/singletons'
-import { err, reportRejection } from 'lib/trap'
-import { uuidv4 } from 'lib/utils'
-import { getSettings, settingsActor } from 'machines/appMachine'
-import toast from 'react-hot-toast'
-
-import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
-
-import { Command, CommandArgumentOption } from '../commandTypes'
 
 function isWorldCoordinateSystemType(
   x: string

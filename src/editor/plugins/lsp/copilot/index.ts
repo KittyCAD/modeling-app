@@ -1,17 +1,7 @@
 /// Thanks to the Cursor folks for their heavy lifting here.
 /// This has been heavily modified from their original implementation but we are
 /// still grateful.
-import { completionStatus } from '@codemirror/autocomplete'
 import { indentUnit } from '@codemirror/language'
-import {
-  Annotation,
-  EditorState,
-  Extension,
-  Prec,
-  StateEffect,
-  StateField,
-  Transaction,
-} from '@codemirror/state'
 import {
   Decoration,
   DecorationSet,
@@ -23,21 +13,30 @@ import {
   keymap,
 } from '@codemirror/view'
 import {
-  LanguageServerClient,
-  LanguageServerOptions,
-  docPathFacet,
-  languageId,
+  Annotation,
+  EditorState,
+  Extension,
+  Prec,
+  StateEffect,
+  StateField,
+  Transaction,
+} from '@codemirror/state'
+import { completionStatus } from '@codemirror/autocomplete'
+import {
   offsetToPos,
   posToOffset,
+  LanguageServerOptions,
+  LanguageServerClient,
+  docPathFacet,
+  languageId,
 } from '@kittycad/codemirror-lsp-client'
+import { deferExecution } from 'lib/utils'
+import { CopilotLspCompletionParams } from '@rust/kcl-lib/bindings/CopilotLspCompletionParams'
+import { CopilotCompletionResponse } from '@rust/kcl-lib/bindings/CopilotCompletionResponse'
+import { CopilotAcceptCompletionParams } from '@rust/kcl-lib/bindings/CopilotAcceptCompletionParams'
+import { CopilotRejectCompletionParams } from '@rust/kcl-lib/bindings/CopilotRejectCompletionParams'
 import { editorManager } from 'lib/singletons'
 import { reportRejection } from 'lib/trap'
-import { deferExecution } from 'lib/utils'
-
-import { CopilotAcceptCompletionParams } from '@rust/kcl-lib/bindings/CopilotAcceptCompletionParams'
-import { CopilotCompletionResponse } from '@rust/kcl-lib/bindings/CopilotCompletionResponse'
-import { CopilotLspCompletionParams } from '@rust/kcl-lib/bindings/CopilotLspCompletionParams'
-import { CopilotRejectCompletionParams } from '@rust/kcl-lib/bindings/CopilotRejectCompletionParams'
 
 const copilotPluginAnnotation = Annotation.define<boolean>()
 export const copilotPluginEvent = copilotPluginAnnotation.of(true)
@@ -206,10 +205,7 @@ export class CompletionRequester implements PluginValue {
   // document.
   private sendScheduledInput: number | null = null
 
-  constructor(
-    readonly view: EditorView,
-    client: LanguageServerClient
-  ) {
+  constructor(readonly view: EditorView, client: LanguageServerClient) {
     this.client = client
   }
 

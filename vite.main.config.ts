@@ -1,19 +1,18 @@
-// @ts-ignore: No types available
-import { lezer } from '@lezer/generator/rollup'
-import vitePluginEslint from '@nabla/vite-plugin-eslint'
-import viteJsPluginReact from '@vitejs/plugin-react'
 import type { ConfigEnv, UserConfig } from 'vite'
 import { defineConfig, mergeConfig } from 'vite'
-import vitePluginPackageVersion from 'vite-plugin-package-version'
-import viteTsconfigPaths from 'vite-tsconfig-paths'
 import { configDefaults } from 'vitest/config'
-
+import viteTsconfigPaths from 'vite-tsconfig-paths'
+import vitePluginEslint from '@nabla/vite-plugin-eslint'
+import vitePluginPackageVersion from 'vite-plugin-package-version'
 import {
-  external,
   getBuildConfig,
   getBuildDefine,
+  external,
   pluginHotRestart,
 } from './vite.base.config'
+import viteJsPluginReact from '@vitejs/plugin-react'
+// @ts-ignore: No types available
+import { lezer } from '@lezer/generator/rollup'
 
 // https://vitejs.dev/config
 export default defineConfig((env) => {

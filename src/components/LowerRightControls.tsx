@@ -1,19 +1,18 @@
+import { APP_VERSION, getReleaseUrl } from 'routes/Settings'
 import { CustomIcon } from 'components/CustomIcon'
-import { NetworkHealthIndicator } from 'components/NetworkHealthIndicator'
 import Tooltip from 'components/Tooltip'
+import { PATHS } from 'lib/paths'
+import { NetworkHealthIndicator } from 'components/NetworkHealthIndicator'
+import { HelpMenu } from './HelpMenu'
+import { Link, useLocation } from 'react-router-dom'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { coreDump } from 'lang/wasm'
+import toast from 'react-hot-toast'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow, { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import { PATHS } from 'lib/paths'
-import { reportRejection } from 'lib/trap'
-import toast from 'react-hot-toast'
-import { Link, useLocation } from 'react-router-dom'
-import { APP_VERSION, getReleaseUrl } from 'routes/Settings'
-
-import { HelpMenu } from './HelpMenu'
-import { ModelStateIndicator } from './ModelStateIndicator'
 import { NetworkMachineIndicator } from './NetworkMachineIndicator'
+import { ModelStateIndicator } from './ModelStateIndicator'
+import { reportRejection } from 'lib/trap'
 
 export function LowerRightControls({
   children,

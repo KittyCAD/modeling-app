@@ -1,15 +1,15 @@
 import { Page } from '@playwright/test'
-import { LineInputsType } from 'lang/std/sketchcombos'
-import { uuidv4 } from 'lib/utils'
+import { test, expect } from './zoo-test'
 
-import { EditorFixture } from './fixtures/editorFixture'
 import {
   deg,
   getUtils,
-  orRunWhenFullSuiteEnabled,
   wiggleMove,
+  orRunWhenFullSuiteEnabled,
 } from './test-utils'
-import { expect, test } from './zoo-test'
+import { LineInputsType } from 'lang/std/sketchcombos'
+import { uuidv4 } from 'lib/utils'
+import { EditorFixture } from './fixtures/editorFixture'
 
 test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
   test('Hover over a segment should show its overlay, hovering over the input overlays should show its popover, clicking the input overlay should constrain/unconstrain it:\nfor the following segments', () => {

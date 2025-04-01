@@ -1,8 +1,8 @@
-import { MAX_PADDING } from './constants'
 import {
   getNextProjectIndex,
   interpolateProjectNameWithIndex,
 } from './desktopFS'
+import { MAX_PADDING } from './constants'
 
 describe('Test project name utility functions', () => {
   it('interpolates a project name without an index', () => {

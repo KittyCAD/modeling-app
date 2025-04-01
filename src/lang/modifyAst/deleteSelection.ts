@@ -1,9 +1,6 @@
-import { getFaceDetails } from 'clientSideScene/sceneEntities'
-import { executeAstMock } from 'lang/langHelpers'
-import { updateModelingState } from 'lang/modelingWorkflows'
-import { deleteFromSelection } from 'lang/modifyAst'
-import { EXECUTION_TYPE_REAL } from 'lib/constants'
 import { Selection } from 'lib/selections'
+import { getFaceDetails } from 'clientSideScene/sceneEntities'
+import { deleteFromSelection } from 'lang/modifyAst'
 import {
   codeManager,
   editorManager,
@@ -11,6 +8,9 @@ import {
   rustContext,
 } from 'lib/singletons'
 import { err } from 'lib/trap'
+import { executeAstMock } from 'lang/langHelpers'
+import { updateModelingState } from 'lang/modelingWorkflows'
+import { EXECUTION_TYPE_REAL } from 'lib/constants'
 
 export const deletionErrorMessage =
   'Unable to delete selection. Please edit manually in code pane.'

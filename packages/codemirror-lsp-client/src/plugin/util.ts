@@ -1,7 +1,7 @@
 import { Text } from '@codemirror/state'
 import { Marked, MarkedOptions } from '@ts-stack/markdown'
-import type * as LSP from 'vscode-languageserver-protocol'
 
+import type * as LSP from 'vscode-languageserver-protocol'
 import { isArray } from '../lib/utils'
 
 // takes a function and executes it after the wait time, if the function is called again before the wait time is up, the timer is reset

@@ -1,11 +1,10 @@
 import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { type BaseUnit, baseUnitsUnion } from 'lib/settings/settingsTypes'
 import { ActionButton } from 'components/ActionButton'
 import { SettingsSection } from 'components/Settings/SettingsSection'
-import { type BaseUnit, baseUnitsUnion } from 'lib/settings/settingsTypes'
-import { settingsActor, useSettings } from 'machines/appMachine'
-import { onboardingPaths } from 'routes/Onboarding/paths'
-
 import { useDismiss, useNextClick } from '.'
+import { onboardingPaths } from 'routes/Onboarding/paths'
+import { settingsActor, useSettings } from 'machines/appMachine'
 
 export default function Units() {
   const dismiss = useDismiss()

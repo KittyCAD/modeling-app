@@ -1,6 +1,7 @@
 import { highlightingFor } from '@codemirror/language'
-import { Extension, StateEffect, StateField } from '@codemirror/state'
-import { Decoration, DecorationSet, EditorView } from '@codemirror/view'
+import { StateEffect, StateField, Extension } from '@codemirror/state'
+import { EditorView, Decoration, DecorationSet } from '@codemirror/view'
+
 import { Tag, tags } from '@lezer/highlight'
 
 import { lspSemanticTokensEvent } from './lsp'

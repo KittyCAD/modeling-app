@@ -1,5 +1,4 @@
 import * as path from 'path'
-
 const Mocha = require('mocha')
 const { glob } = require('glob')
 

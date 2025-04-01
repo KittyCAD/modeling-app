@@ -1,8 +1,8 @@
 /* eslint suggest-no-throw/suggest-no-throw: 0 */
-import { spawnSync } from 'child_process'
 import * as vscode from 'vscode'
 
 import type { Cmd, CtxInit } from './ctx'
+import { spawnSync } from 'child_process'
 
 export function serverVersion(ctx: CtxInit): Cmd {
   return async () => {

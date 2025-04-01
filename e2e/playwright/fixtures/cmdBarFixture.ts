@@ -1,5 +1,5 @@
-import type { Locator, Page, Request, Route } from '@playwright/test'
-import { TestInfo, expect } from '@playwright/test'
+import type { Page, Locator, Route, Request } from '@playwright/test'
+import { expect, TestInfo } from '@playwright/test'
 import * as fs from 'fs'
 import * as path from 'path'
 

@@ -1,5 +1,5 @@
+import { assign, createActor, setup, StateFrom } from 'xstate'
 import { EditorSelection } from '@codemirror/state'
-import { StateFrom, assign, createActor, setup } from 'xstate'
 
 type SelectionEvent = {
   codeMirrorSelection: EditorSelection

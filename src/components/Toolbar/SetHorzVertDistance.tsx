@@ -1,23 +1,21 @@
 import { toolTips } from 'lang/langHelpers'
-import { TransformInfo } from 'lang/std/stdTypes'
-import { Selections } from 'lib/selections'
-import { kclManager } from 'lib/singletons'
-import { cleanErrs, err } from 'lib/trap'
-
-import { Node } from '@rust/kcl-lib/bindings/Node'
-
-import { createLiteral, createVariableDeclaration } from '../../lang/modifyAst'
+import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
 import { getNodeFromPath } from '../../lang/queryAst'
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
-  PathToNodeMap,
-  getTransformInfos,
-  isExprBinaryPart,
   transformSecondarySketchLinesTagFirst,
+  getTransformInfos,
+  PathToNodeMap,
+  isExprBinaryPart,
 } from '../../lang/std/sketchcombos'
-import { Expr, Program, VariableDeclarator } from '../../lang/wasm'
-import { removeDoubleNegatives } from '../AvailableVarsHelpers'
+import { TransformInfo } from 'lang/std/stdTypes'
 import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
+import { createLiteral, createVariableDeclaration } from '../../lang/modifyAst'
+import { removeDoubleNegatives } from '../AvailableVarsHelpers'
+import { kclManager } from 'lib/singletons'
+import { Selections } from 'lib/selections'
+import { cleanErrs, err } from 'lib/trap'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 

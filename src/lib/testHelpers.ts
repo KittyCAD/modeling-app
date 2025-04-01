@@ -1,6 +1,5 @@
+import { Program, ExecState, jsAppSettings } from '../lang/wasm'
 import { Node } from '@rust/kcl-lib/bindings/Node'
-
-import { ExecState, Program, jsAppSettings } from '../lang/wasm'
 import { rustContext } from './singletons'
 
 export async function enginelessExecutor(

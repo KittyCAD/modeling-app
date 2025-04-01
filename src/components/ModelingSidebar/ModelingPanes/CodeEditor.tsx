@@ -1,20 +1,20 @@
+import React, {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  forwardRef,
+  useImperativeHandle,
+} from 'react'
 import {
   EditorState,
   EditorStateConfig,
   Extension,
   StateEffect,
 } from '@codemirror/state'
-import { oneDark } from '@codemirror/theme-one-dark'
 import { EditorView } from '@codemirror/view'
+import { oneDark } from '@codemirror/theme-one-dark'
 import { isArray } from 'lib/utils'
-import React, {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
 
 //reference: https://github.com/sachinraja/rodemirror/blob/main/src/use-first-render.ts
 const useFirstRender = () => {
