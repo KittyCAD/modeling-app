@@ -272,14 +272,6 @@ export const isErrorWhitelisted = (exception: Error) => {
       project: 'Google Chrome',
       foundInSpec: 'e2e/playwright/snapshot-tests.spec.ts',
     },
-    // TODO: fix this error in the code
-    {
-      name: 'ReferenceError',
-      message: 'createNewVariableCheckbox is not defined',
-      stack: '',
-      project: 'Google Chrome',
-      foundInSpec: 'e2e/playwright/testing-constraints.spec.ts',
-    },
     {
       name: 'Error',
       message: 'The "path" argument must be of type string. Received undefined',
