@@ -156,6 +156,7 @@ const FileTreeItem = ({
   onCreateFile,
   onCreateFolder,
   onCloneFileOrFolder,
+  onOpenInNewWindow,
   newTreeEntry,
   level = 0,
   treeSelection,
@@ -176,6 +177,7 @@ const FileTreeItem = ({
   onCreateFile: (name: string) => void
   onCreateFolder: (name: string) => void
   onCloneFileOrFolder: (path: string) => void
+  onOpenInNewWindow: (path: string) => void
   newTreeEntry: TreeEntry
   level?: number
   treeSelection: FileEntry | undefined
@@ -422,6 +424,7 @@ const FileTreeItem = ({
                         onCreateFile={onCreateFile}
                         onCreateFolder={onCreateFolder}
                         onCloneFileOrFolder={onCloneFileOrFolder}
+                        onOpenInNewWindow={onOpenInNewWindow}
                         newTreeEntry={newTreeEntry}
                         lastDirectoryClicked={lastDirectoryClicked}
                         onClickDirectory={onClickDirectory}
@@ -462,6 +465,7 @@ const FileTreeItem = ({
         onRename={addCurrentItemToRenaming}
         onDelete={() => setIsConfirmingDelete(true)}
         onClone={() => onCloneFileOrFolder(fileOrDir.path)}
+        onOpenInNewWindow={() => onOpenInNewWindow(fileOrDir.path)}
       />
     </div>
   )
@@ -472,6 +476,7 @@ interface FileTreeContextMenuProps {
   onRename: () => void
   onDelete: () => void
   onClone: () => void
+  onOpenInNewWindow: () => void
 }
 
 function FileTreeContextMenu({
@@ -479,6 +484,7 @@ function FileTreeContextMenu({
   onRename,
   onDelete,
   onClone,
+  onOpenInNewWindow,
 }: FileTreeContextMenuProps) {
   const platform = usePlatform()
   const metaKey = platform === 'macos' ? '⌘' : 'Ctrl'
@@ -507,6 +513,12 @@ function FileTreeContextMenu({
           hotkey=""
         >
           Clone
+        </ContextMenuItem>,
+        <ContextMenuItem
+          data-testid="context-menu-rename"
+          onClick={onOpenInNewWindow}
+        >
+          Open in new window
         </ContextMenuItem>,
       ]}
     />
@@ -619,11 +631,21 @@ export const useFileTreeOperations = () => {
     })
   }
 
+  function openInNewWindow(args: { path: string }) {
+    send({
+      type: 'Open file in new window',
+      data: {
+        name: args.path,
+      },
+    })
+  }
+
   return {
     createFile,
     createFolder,
     cloneFileOrDir,
     newTreeEntry,
+    openInNewWindow,
   }
 }
 
@@ -631,8 +653,13 @@ export const FileTree = ({
   className = '',
   onNavigateToFile: closePanel,
 }: FileTreeProps) => {
-  const { createFile, createFolder, cloneFileOrDir, newTreeEntry } =
-    useFileTreeOperations()
+  const {
+    createFile,
+    createFolder,
+    cloneFileOrDir,
+    openInNewWindow,
+    newTreeEntry,
+  } = useFileTreeOperations()
 
   return (
     <div className={className}>
@@ -649,6 +676,7 @@ export const FileTree = ({
         onCreateFile={(name: string) => createFile({ dryRun: false, name })}
         onCreateFolder={(name: string) => createFolder({ dryRun: false, name })}
         onCloneFileOrFolder={(path: string) => cloneFileOrDir({ path })}
+        onOpenInNewWindow={(path: string) => openInNewWindow({ path })}
       />
     </div>
   )
@@ -659,11 +687,13 @@ export const FileTreeInner = ({
   onCreateFile,
   onCreateFolder,
   onCloneFileOrFolder,
+  onOpenInNewWindow,
   newTreeEntry,
 }: {
   onCreateFile: (name: string) => void
   onCreateFolder: (name: string) => void
   onCloneFileOrFolder: (path: string) => void
+  onOpenInNewWindow: (path: string) => void
   newTreeEntry: TreeEntry
   onNavigateToFile?: () => void
 }) => {
@@ -775,6 +805,7 @@ export const FileTreeInner = ({
                 onCreateFile={onCreateFile}
                 onCreateFolder={onCreateFolder}
                 onCloneFileOrFolder={onCloneFileOrFolder}
+                onOpenInNewWindow={onOpenInNewWindow}
                 newTreeEntry={newTreeEntry}
                 onClickDirectory={onClickDirectory}
                 onNavigateToFile={onNavigateToFile_}

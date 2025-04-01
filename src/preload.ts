@@ -19,6 +19,7 @@ const resizeWindow = (width: number, height: number) =>
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
 const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
 const openExternal = (url: any) => ipcRenderer.invoke('shell.openExternal', url)
+const openInNewWindow = (url: any) => ipcRenderer.invoke('openInNewWindow', url)
 const takeElectronWindowScreenshot = ({
   width,
   height,
@@ -246,6 +247,7 @@ contextBridge.exposeInMainWorld('electron', {
   save,
   // opens the URL
   openExternal,
+  openInNewWindow,
   showInFolder,
   getPath,
   packageJson,
