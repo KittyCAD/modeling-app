@@ -35,6 +35,7 @@ interface StraightSegmentInput {
   type: 'straight-segment'
   from: [number, number]
   to: [number, number]
+  snap?: boolean
 }
 
 /** Inputs for arcs, excluding tangentialArcTo for reasons explain in

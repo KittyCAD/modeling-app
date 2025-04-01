@@ -62,6 +62,7 @@ import {
   THREE_POINT_ARC_SEGMENT_DASH,
   THREE_POINT_ARC_HANDLE2,
   THREE_POINT_ARC_HANDLE3,
+  STRAIGHT_SEGMENT_SNAP_LINE,
 } from './sceneEntities'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import {
@@ -210,7 +211,18 @@ class StraightSegment implements SegmentUtils {
       segmentGroup.add(lengthIndicatorGroup)
     }
 
-    segmentGroup.add(mesh, extraSegmentGroup)
+    if (isDraftSegment) {
+      const snapLine = createLine({
+        from: [0, 0],
+        to: [0, 0],
+        scale: 1,
+        color: 0xcccccc,
+      })
+      snapLine.name = STRAIGHT_SEGMENT_SNAP_LINE
+      segmentGroup.add(snapLine)
+      segmentGroup.add(mesh, extraSegmentGroup)
+    }
+
     let updateOverlaysCallback = this.update({
       prevSegment,
       input,
@@ -259,18 +271,37 @@ class StraightSegment implements SegmentUtils {
       isHandlesVisible = !shouldHideHover
     }
 
+    const dir = new Vector3()
+      .subVectors(
+        new Vector3(to[0], to[1], 0),
+        new Vector3(from[0], from[1], 0)
+      )
+      .normalize()
+
     if (arrowGroup) {
       arrowGroup.position.set(to[0], to[1], 0)
-
-      const dir = new Vector3()
-        .subVectors(
-          new Vector3(to[0], to[1], 0),
-          new Vector3(from[0], from[1], 0)
-        )
-        .normalize()
       arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
       arrowGroup.scale.set(scale, scale, scale)
       arrowGroup.visible = isHandlesVisible
+    }
+
+    const snapLine = group.getObjectByName(STRAIGHT_SEGMENT_SNAP_LINE) as Line
+    if (snapLine) {
+      snapLine.visible = !!input.snap
+      if (snapLine.visible) {
+        const snapLineFrom = to
+        const snapLineTo = new Vector3(to[0], to[1], 0).addScaledVector(
+          dir,
+          // Draw a large enough line that reaches the screen edge
+          // Cleaner way would be to draw in screen space
+          9999999 * scale
+        )
+        updateLine(snapLine, {
+          from: snapLineFrom,
+          to: [snapLineTo.x, snapLineTo.y],
+          scale,
+        })
+      }
     }
 
     const extraSegmentGroup = group.getObjectByName(EXTRA_SEGMENT_HANDLE)

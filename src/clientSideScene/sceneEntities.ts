@@ -142,6 +142,7 @@ export const DRAFT_DASHED_LINE = 'draft-dashed-line'
 export const STRAIGHT_SEGMENT = 'straight-segment'
 export const STRAIGHT_SEGMENT_BODY = 'straight-segment-body'
 export const STRAIGHT_SEGMENT_DASH = 'straight-segment-body-dashed'
+export const STRAIGHT_SEGMENT_SNAP_LINE = 'straight-segment-snap-line'
 export const TANGENTIAL_ARC_TO__SEGMENT_DASH =
   'tangential-arc-to-segment-body-dashed'
 export const TANGENTIAL_ARC_TO_SEGMENT = 'tangential-arc-to-segment'
@@ -2800,11 +2801,11 @@ export class SceneEntities {
       group.userData?.from?.[0],
       group.userData?.from?.[1],
     ]
-    const dragTo = this.getSnappedDragPoint(
+    const { snappedPoint: dragTo, snappedToTangent } = this.getSnappedDragPoint(
       intersection2d,
       intersects,
       mouseEvent
-    ).snappedPoint
+    )
     let modifiedAst = draftInfo ? draftInfo.truncatedAst : { ...kclManager.ast }
 
     const nodePathWithCorrectedIndexForTruncatedAst =
@@ -3031,7 +3032,8 @@ export class SceneEntities {
           varDecIndex,
           modifiedAst,
           orthoFactor,
-          sketch
+          sketch,
+          snappedToTangent
         )
 
         callBacks.push(
@@ -3042,7 +3044,8 @@ export class SceneEntities {
               varDecIndex,
               modifiedAst,
               orthoFactor,
-              sketch
+              sketch,
+              snappedToTangent
             )
           )
         )
@@ -3060,6 +3063,7 @@ export class SceneEntities {
    * @param modifiedAst
    * @param orthoFactor
    * @param sketch
+   * @param snappedToTangent if currently drawn draft segment is snapping to previous arc tangent
    */
   updateSegment = (
     segment: Path | Sketch['start'],
@@ -3067,7 +3071,8 @@ export class SceneEntities {
     varDecIndex: number,
     modifiedAst: Program,
     orthoFactor: number,
-    sketch: Sketch
+    sketch: Sketch,
+    snappedToTangent: boolean = false
   ): (() => SegmentOverlayPayload | null) => {
     const segPathToNode = getNodePathFromSourceRange(
       modifiedAst,
@@ -3091,6 +3096,7 @@ export class SceneEntities {
       type: 'straight-segment',
       from: segment.from,
       to: segment.to,
+      snap: snappedToTangent,
     }
     let update: SegmentUtils['update'] | null = null
     if (type === TANGENTIAL_ARC_TO_SEGMENT) {
