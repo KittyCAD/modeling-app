@@ -295,7 +295,7 @@ impl Plane {
                 id,
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
-                x_axis: Point3d::new(-1.0, 0.0, 0.0),
+                x_axis: Point3d::new(1.0, 0.0, 0.0),
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
                 z_axis: Point3d::new(0.0, 1.0, 0.0),
                 value: PlaneType::XZ,

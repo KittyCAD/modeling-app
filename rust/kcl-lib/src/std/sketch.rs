@@ -1164,21 +1164,30 @@ async fn make_sketch_plane_from_orientation(
     let hide = Some(true);
     match data {
         PlaneData::XY | PlaneData::NegXY | PlaneData::XZ | PlaneData::NegXZ | PlaneData::YZ | PlaneData::NegYZ => {
+            /*
+                NOTE(dr): The x_axis defined below isn't consistent with default plane definitions. PlaneData::Neg* variants
+                only negate the z axis, x and y axes are the same as PlaneData::*.
+
+                Defining the x_axis in this way causes `startOnSketch(-XZ)` and `startOnSketch(offsetPlane(-XY, offset = 0))`
+                to produce different results.
+            */
+
             // TODO: ignoring the default planes here since we already created them, breaks the
             // front end for the feature tree which is stupid and we should fix it.
-            let x_axis = match data {
-                PlaneData::NegXY => Point3d::new(-1.0, 0.0, 0.0),
-                PlaneData::NegXZ => Point3d::new(-1.0, 0.0, 0.0),
-                PlaneData::NegYZ => Point3d::new(0.0, -1.0, 0.0),
-                _ => plane.x_axis,
-            };
+            // let x_axis = match data {
+            //     PlaneData::NegXY => Point3d::new(-1.0, 0.0, 0.0),
+            //     PlaneData::NegXZ => Point3d::new(-1.0, 0.0, 0.0),
+            //     PlaneData::NegYZ => Point3d::new(0.0, -1.0, 0.0),
+            //     _ => plane.x_axis,
+            // };
             args.batch_modeling_cmd(
                 plane.id,
                 ModelingCmd::from(mcmd::MakePlane {
                     clobber,
                     origin: plane.origin.into(),
                     size,
-                    x_axis: x_axis.into(),
+                    // x_axis: x_axis.into(),
+                    x_axis: plane.x_axis.into(),
                     y_axis: plane.y_axis.into(),
                     hide,
                 }),
