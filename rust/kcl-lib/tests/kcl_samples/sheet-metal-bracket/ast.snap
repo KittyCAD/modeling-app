@@ -55,7 +55,7 @@ description: Result of parsing sheet-metal-bracket.kcl
         "end": 0,
         "kind": "const",
         "preComments": [
-          "// Imput bolt pattern dimensions to mount the bracket"
+          "// Input bolt pattern dimensions to mount the bracket"
         ],
         "start": 0,
         "type": "VariableDeclaration",
@@ -179,7 +179,7 @@ description: Result of parsing sheet-metal-bracket.kcl
         "preComments": [
           "",
           "",
-          "// Imput bolt pattern dimensions to mount a component to the bracket"
+          "// Input bolt pattern dimensions to mount a component to the bracket"
         ],
         "start": 0,
         "type": "VariableDeclaration",
