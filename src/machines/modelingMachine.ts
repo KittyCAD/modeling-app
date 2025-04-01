@@ -735,62 +735,6 @@ export const modelingMachine = setup({
         sketchDetails: event.output,
       }
     }),
-    'AST revolve': ({ context: { store }, event }) => {
-      if (event.type !== 'Revolve') return
-      ;(async () => {
-        if (!event.data) return
-        const { selection, angle, axis, edge, axisOrEdge } = event.data
-        let ast = kclManager.ast
-        if (
-          'variableName' in angle &&
-          angle.variableName &&
-          angle.insertIndex !== undefined
-        ) {
-          const newBody = [...ast.body]
-          newBody.splice(angle.insertIndex, 0, angle.variableDeclarationAst)
-          ast.body = newBody
-        }
-
-        // This is the selection of the sketch that will be revolved
-        const pathToNode = getNodePathFromSourceRange(
-          ast,
-          selection.graphSelections[0]?.codeRef.range
-        )
-
-        const revolveSketchRes = revolveSketch(
-          ast,
-          pathToNode,
-          'variableName' in angle
-            ? angle.variableIdentifierAst
-            : angle.valueAst,
-          axisOrEdge,
-          axis,
-          edge,
-          engineCommandManager.artifactGraph,
-          selection.graphSelections[0]?.artifact
-        )
-        if (trap(revolveSketchRes)) return
-        const { modifiedAst, pathToRevolveArg } = revolveSketchRes
-
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          {
-            kclManager,
-            editorManager,
-            codeManager,
-          },
-          {
-            focusPath: [pathToRevolveArg],
-            zoomToFit: true,
-            zoomOnRangeAndType: {
-              range: selection.graphSelections[0]?.codeRef.range,
-              type: 'path',
-            },
-          }
-        )
-      })().catch(reportRejection)
-    },
     'set selection filter to curves only': () => {
       ;(async () => {
         await engineCommandManager.sendSceneCommand({
@@ -1123,9 +1067,7 @@ export const modelingMachine = setup({
     }),
     're-eval nodePaths': assign(({ context: { sketchDetails } }) => {
       if (!sketchDetails) return {}
-      const planeArtifact = [
-        ...engineCommandManager.artifactGraph.values(),
-      ].find(
+      const planeArtifact = [...kclManager.artifactGraph.values()].find(
         (artifact) =>
           artifact.type === 'plane' &&
           stringifyPathToNode(artifact.codeRef.pathToNode) ===
@@ -1134,7 +1076,7 @@ export const modelingMachine = setup({
       if (planeArtifact?.type !== 'plane') return {}
       const newPaths = getPathsFromPlaneArtifact(
         planeArtifact,
-        engineCommandManager.artifactGraph,
+        kclManager.artifactGraph,
         kclManager.ast
       )
       return {
@@ -1794,7 +1736,7 @@ export const modelingMachine = setup({
         node: ast,
         pathToNode,
         artifact: selection.graphSelections[0].artifact,
-        artifactGraph: engineCommandManager.artifactGraph,
+        artifactGraph: kclManager.artifactGraph,
         distance:
           'variableName' in distance
             ? distance.variableIdentifierAst
@@ -1831,6 +1773,87 @@ export const modelingMachine = setup({
         },
         {
           focusPath: [pathToExtrudeArg],
+          zoomToFit: true,
+          zoomOnRangeAndType: {
+            range: selection.graphSelections[0]?.codeRef.range,
+            type: 'path',
+          },
+        }
+      )
+    }),
+    revolveAstMod: fromPromise<
+      unknown,
+      ModelingCommandSchema['Revolve'] | undefined
+    >(async ({ input }) => {
+      if (!input) return new Error('No input provided')
+      const { nodeToEdit, selection, angle, axis, edge, axisOrEdge } = input
+      let ast = kclManager.ast
+      let variableName: string | undefined = undefined
+      let insertIndex: number | undefined = undefined
+
+      // If this is an edit flow, first we're going to remove the old extrusion
+      if (nodeToEdit && typeof nodeToEdit[1][0] === 'number') {
+        // Extract the plane name from the node to edit
+        const nameNode = getNodeFromPath<VariableDeclaration>(
+          ast,
+          nodeToEdit,
+          'VariableDeclaration'
+        )
+        if (err(nameNode)) {
+          console.error('Error extracting plane name')
+        } else {
+          variableName = nameNode.node.declaration.id.name
+        }
+
+        // Removing the old extrusion statement
+        const newBody = [...ast.body]
+        newBody.splice(nodeToEdit[1][0], 1)
+        ast.body = newBody
+        insertIndex = nodeToEdit[1][0]
+      }
+
+      if (
+        'variableName' in angle &&
+        angle.variableName &&
+        angle.insertIndex !== undefined
+      ) {
+        const newBody = [...ast.body]
+        newBody.splice(angle.insertIndex, 0, angle.variableDeclarationAst)
+        ast.body = newBody
+        if (insertIndex) {
+          // if editing need to offset that new var
+          insertIndex += 1
+        }
+      }
+
+      // This is the selection of the sketch that will be revolved
+      const pathToNode = getNodePathFromSourceRange(
+        ast,
+        selection.graphSelections[0]?.codeRef.range
+      )
+
+      const revolveSketchRes = revolveSketch(
+        ast,
+        pathToNode,
+        'variableName' in angle ? angle.variableIdentifierAst : angle.valueAst,
+        axisOrEdge,
+        axis,
+        edge,
+        variableName,
+        insertIndex
+      )
+      if (trap(revolveSketchRes)) return
+      const { modifiedAst, pathToRevolveArg } = revolveSketchRes
+      await updateModelingState(
+        modifiedAst,
+        EXECUTION_TYPE_REAL,
+        {
+          kclManager,
+          editorManager,
+          codeManager,
+        },
+        {
+          focusPath: [pathToRevolveArg],
           zoomToFit: true,
           zoomOnRangeAndType: {
             range: selection.graphSelections[0]?.codeRef.range,
@@ -1987,7 +2010,7 @@ export const modelingMachine = setup({
           const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
             clonedAstForGetExtrude,
             cylinder.graphSelections[0],
-            engineCommandManager.artifactGraph
+            kclManager.artifactGraph
           )
           if (err(extrudeLookupResult)) {
             return extrudeLookupResult
@@ -2249,7 +2272,7 @@ export const modelingMachine = setup({
           const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
             clonedAstForGetExtrude,
             graphSelection,
-            engineCommandManager.artifactGraph
+            kclManager.artifactGraph
           )
           if (err(extrudeLookupResult)) {
             return new Error(
@@ -2769,9 +2792,8 @@ export const modelingMachine = setup({
         },
 
         Revolve: {
-          target: 'idle',
-          actions: ['AST revolve'],
-          reenter: false,
+          target: 'Applying revolve',
+          reenter: true,
         },
 
         Sweep: {
@@ -4015,6 +4037,22 @@ export const modelingMachine = setup({
         id: 'extrudeAstMod',
         input: ({ event }) => {
           if (event.type !== 'Extrude') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying revolve': {
+      invoke: {
+        src: 'revolveAstMod',
+        id: 'revolveAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Revolve') return undefined
           return event.data
         },
         onDone: ['idle'],

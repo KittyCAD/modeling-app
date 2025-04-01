@@ -5,17 +5,11 @@ layout: manual
 ---
 
 
-**Type:** `object`
+**Type:** [`number`](/docs/kcl/types/number) (`double`)
 
 
 
 
 
-## Properties
-
-| Property | Type | Description | Required |
-|----------|------|-------------|----------|
-| `n` |[`number`](/docs/kcl/types/number)|  | No |
-| `ty` |[`NumericType`](/docs/kcl/types/NumericType)|  | No |
 
 

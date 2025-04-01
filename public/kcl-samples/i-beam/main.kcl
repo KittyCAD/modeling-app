@@ -5,7 +5,7 @@
 @settings(defaultLengthUnit = in)
 
 // Define Beam Dimensions
-beamLength = 6*ft()
+beamLength = 6 * ft()
 beamHeight = 4
 flangeWidth = 2.663
 flangeThickness = 0.293
