@@ -44,12 +44,13 @@ import {
   VariableDeclarator,
   VariableMap,
   defaultSourceRange,
+  getTangentialArcToInfo,
   parse,
   recast,
   resultIsOk,
   sketchFromKclValue,
   sourceRangeFromRust,
-  topLevelRange, getTangentialArcToInfo,
+  topLevelRange,
 } from 'lang/wasm'
 import { EXECUTION_TYPE_MOCK } from 'lib/constants'
 import {
@@ -77,7 +78,7 @@ import {
   SketchTool,
 } from 'machines/modelingMachine'
 import toast from 'react-hot-toast'
-
+import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
 import {
   BoxGeometry,
   DoubleSide,
@@ -104,6 +105,8 @@ import { radToDeg } from 'three/src/math/MathUtils'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import { Point3d } from '@rust/kcl-lib/bindings/Point3d'
 
+import { mutateAstWithTagForSketchSegment } from '../lang/modifyAst/addEdgeTreatment'
+import { closestPointOnRay } from '../lib/utils2d'
 import { isQuaternionVertical, quaternionFromUpNForward } from './helpers'
 import { createGridHelper, orthoScale, perspScale } from './helpers'
 import {
@@ -126,11 +129,9 @@ import {
   SegmentUtils,
   createProfileStartHandle,
   dashedStraight,
-  segmentUtils, getTanPreviousPoint,
+  getTanPreviousPoint,
+  segmentUtils,
 } from './segments'
-import { mutateAstWithTagForSketchSegment } from '../lang/modifyAst/addEdgeTreatment'
-import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
-import { closestPointOnRay } from '../lib/utils2d'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -771,14 +772,14 @@ export class SceneEntities {
           segment.type === 'TangentialArcTo'
             ? segmentUtils.tangentialArcTo.init
             : segment.type === 'Circle'
-            ? segmentUtils.circle.init
-            : segment.type === 'Arc'
-            ? segmentUtils.arc.init
-            : segment.type === 'CircleThreePoint'
-            ? segmentUtils.circleThreePoint.init
-            : segment.type === 'ArcThreePoint'
-            ? segmentUtils.threePointArc.init
-            : segmentUtils.straight.init
+              ? segmentUtils.circle.init
+              : segment.type === 'Arc'
+                ? segmentUtils.arc.init
+                : segment.type === 'CircleThreePoint'
+                  ? segmentUtils.circleThreePoint.init
+                  : segment.type === 'ArcThreePoint'
+                    ? segmentUtils.threePointArc.init
+                    : segmentUtils.straight.init
         const input: SegmentInputs =
           segment.type === 'Circle'
             ? {
@@ -790,27 +791,27 @@ export class SceneEntities {
                 radius: segment.radius,
               }
             : segment.type === 'CircleThreePoint' ||
-              segment.type === 'ArcThreePoint'
-            ? {
-                type: 'circle-three-point-segment',
-                p1: segment.p1,
-                p2: segment.p2,
-                p3: segment.p3,
-              }
-            : segment.type === 'Arc'
-            ? {
-                type: 'arc-segment',
-                from: segment.from,
-                center: segment.center,
-                to: segment.to,
-                ccw: segment.ccw,
-                radius: segment.radius,
-              }
-            : {
-                type: 'straight-segment',
-                from: segment.from,
-                to: segment.to,
-              }
+                segment.type === 'ArcThreePoint'
+              ? {
+                  type: 'circle-three-point-segment',
+                  p1: segment.p1,
+                  p2: segment.p2,
+                  p3: segment.p3,
+                }
+              : segment.type === 'Arc'
+                ? {
+                    type: 'arc-segment',
+                    from: segment.from,
+                    center: segment.center,
+                    to: segment.to,
+                    ccw: segment.ccw,
+                    radius: segment.radius,
+                  }
+                : {
+                    type: 'straight-segment',
+                    from: segment.from,
+                    to: segment.to,
+                  }
         const startRange = _node1.node.start
         const endRange = _node1.node.end
         const sourceRange: SourceRange = [startRange, endRange, 0]

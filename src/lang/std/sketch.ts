@@ -24,7 +24,6 @@ import {
   isNotLiteralArrayOrStatic,
 } from 'lang/std/sketchcombos'
 import {
-  addCall,
   AddTagInfo,
   ArrayItemInput,
   ConstrainInfo,
@@ -37,6 +36,7 @@ import {
   SingleValueInput,
   SketchLineHelper,
   SketchLineHelperKw,
+  addCall,
 } from 'lang/std/stdTypes'
 import {
   findKwArg,
