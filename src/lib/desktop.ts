@@ -67,9 +67,7 @@ export async function renameProjectDirectory(
 export async function ensureProjectDirectoryExists(
   config: DeepPartial<Configuration>
 ): Promise<string | undefined> {
-  const projectDir =
-    config.settings?.app?.project_directory ||
-    config.settings?.project?.directory
+  const projectDir = config.settings?.project?.directory
   if (!projectDir) {
     console.error('projectDir is falsey', config)
     return Promise.reject(new Error('projectDir is falsey'))
@@ -588,8 +586,7 @@ export const readAppSettingsFile = async () => {
     }
 
     const hasProjectDirectorySetting =
-      parsedAppConfig.settings?.project?.directory ||
-      parsedAppConfig.settings?.app?.project_directory
+      parsedAppConfig.settings?.project?.directory
 
     if (hasProjectDirectorySetting) {
       return parsedAppConfig

@@ -39,7 +39,6 @@ export function mouseControlsToCameraSystem(
     // TODO: understand why the values come back without underscores and fix the root cause
     // @ts-ignore: TS2678
     case 'onshape':
-    case 'on_shape':
       return 'OnShape'
     case 'trackpad_friendly':
       return 'Trackpad Friendly'
@@ -52,7 +51,6 @@ export function mouseControlsToCameraSystem(
     // TODO: understand why the values come back without underscores and fix the root cause
     // @ts-ignore: TS2678
     case 'autocad':
-    case 'auto_cad':
       return 'AutoCAD'
     default:
       return undefined

@@ -345,7 +345,9 @@ const extrudeDefaultPlane = async (
           app: {
             onboarding_status: 'dismissed',
             show_debug_panel: true,
-            theme: 'dark',
+            appearance: {
+              theme: 'dark',
+            },
           },
           project: {
             default_project_name: 'project-$nnn',

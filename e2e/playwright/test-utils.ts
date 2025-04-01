@@ -903,15 +903,21 @@ export async function setup(
         settings: {
           ...TEST_SETTINGS,
           app: {
+            appearance: {
+              ...TEST_SETTINGS.app?.appearance,
+              theme: 'dark',
+            },
             ...TEST_SETTINGS.project,
-            project_directory: TEST_SETTINGS.app?.project_directory,
             onboarding_status: 'dismissed',
-            theme: 'dark',
+          },
+          project: {
+            ...TEST_SETTINGS.project,
+            directory: TEST_SETTINGS.project?.directory,
           },
         },
       }),
       IS_PLAYWRIGHT_KEY,
-      PLAYWRIGHT_TEST_DIR: TEST_SETTINGS.app?.project_directory || '',
+      PLAYWRIGHT_TEST_DIR: TEST_SETTINGS.project?.directory || '',
       PERSIST_MODELING_CONTEXT,
     }
   )
