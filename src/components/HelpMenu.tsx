@@ -1,17 +1,16 @@
 import { Popover } from '@headlessui/react'
-import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
-import { useMenuListener } from 'hooks/useMenu'
-import { createAndOpenNewTutorialProject } from 'lib/desktopFS'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
+import Tooltip from './Tooltip'
+import { CustomIcon } from './CustomIcon'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
+import { createAndOpenNewTutorialProject } from 'lib/desktopFS'
+import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
+import { useLspContext } from './LspProvider'
+import { openExternalBrowserIfDesktop } from 'lib/openWindow'
 import { reportRejection } from 'lib/trap'
 import { settingsActor } from 'machines/appMachine'
-import { useLocation, useNavigate } from 'react-router-dom'
-
 import type { WebContentSendPayload } from '../menu/channels'
-import { CustomIcon } from './CustomIcon'
-import { useLspContext } from './LspProvider'
-import Tooltip from './Tooltip'
+import { useMenuListener } from 'hooks/useMenu'
 
 const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />

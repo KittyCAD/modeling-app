@@ -1,9 +1,9 @@
+import { test, expect } from './zoo-test'
+
+import { commonPoints, getUtils, orRunWhenFullSuiteEnabled } from './test-utils'
 import { Coords2d } from 'lang/std/sketch'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import { uuidv4 } from 'lib/utils'
-
-import { commonPoints, getUtils, orRunWhenFullSuiteEnabled } from './test-utils'
-import { expect, test } from './zoo-test'
 
 test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
   test.setTimeout(90_000)

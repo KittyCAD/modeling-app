@@ -1,8 +1,7 @@
-import { Models } from '@kittycad/lib/dist/types/src'
-import { Stats } from 'fs'
-import * as fs from 'fs/promises'
 import * as path from 'path'
-
+import * as fs from 'fs/promises'
+import { Stats } from 'fs'
+import { Models } from '@kittycad/lib/dist/types/src'
 import { PROJECT_ENTRYPOINT } from './constants'
 
 // Create a const object with the values

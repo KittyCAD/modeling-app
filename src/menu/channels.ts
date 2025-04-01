@@ -1,5 +1,4 @@
 import { BrowserWindow } from 'electron'
-
 import type { Channel } from '../channels'
 
 // types for knowing what menu sends what webContent payload

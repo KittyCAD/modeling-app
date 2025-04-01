@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react'
-
 import {
   ConnectingType,
   ConnectingTypeGroup,
   DisconnectingType,
   EngineCommandManagerEvents,
   EngineConnectionEvents,
-  EngineConnectionState,
   EngineConnectionStateType,
+  EngineConnectionState,
   ErrorType,
   initialConnectingTypeGroupState,
 } from '../lang/std/engineConnection'
@@ -70,10 +69,10 @@ export function useNetworkStatus() {
       !internetConnected
         ? NetworkHealthState.Disconnected
         : hasIssues || hasIssues === undefined
-          ? NetworkHealthState.Issue
-          : pingPongHealth === 'TIMEOUT'
-            ? NetworkHealthState.Weak
-            : NetworkHealthState.Ok
+        ? NetworkHealthState.Issue
+        : pingPongHealth === 'TIMEOUT'
+        ? NetworkHealthState.Weak
+        : NetworkHealthState.Ok
     )
   }, [hasIssues, internetConnected, pingPongHealth])
 

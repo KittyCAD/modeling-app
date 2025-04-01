@@ -1,21 +1,20 @@
 import { toolTips } from 'lang/langHelpers'
-import { TransformInfo } from 'lang/std/stdTypes'
+import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
 import { Selections } from 'lib/selections'
-import { kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
-
-import { createVariableDeclaration } from '../../lang/modifyAst'
 import { getNodeFromPath } from '../../lang/queryAst'
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
-  PathToNodeMap,
-  getTransformInfos,
-  isExprBinaryPart,
   transformSecondarySketchLinesTagFirst,
+  getTransformInfos,
+  PathToNodeMap,
+  isExprBinaryPart,
 } from '../../lang/std/sketchcombos'
-import { Expr, Program, VariableDeclarator } from '../../lang/wasm'
-import { removeDoubleNegatives } from '../AvailableVarsHelpers'
+import { TransformInfo } from 'lang/std/stdTypes'
 import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
+import { createVariableDeclaration } from '../../lang/modifyAst'
+import { removeDoubleNegatives } from '../AvailableVarsHelpers'
+import { kclManager } from 'lib/singletons'
+import { err } from 'lib/trap'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 

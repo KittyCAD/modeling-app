@@ -10,16 +10,16 @@ import {
   createTagDeclarator,
   createUnaryExpression,
 } from 'lang/modifyAst'
-import { ARG_END_ABSOLUTE } from 'lang/std/sketch'
-import {
-  isArrayExpression,
-  isBinaryExpression,
-  isCallExpression,
-  isLiteral,
-  isLiteralValueNumber,
-} from 'lang/util'
 import { ArrayExpression, CallExpression, PipeExpression } from 'lang/wasm'
 import { roundOff } from 'lib/utils'
+import {
+  isCallExpression,
+  isArrayExpression,
+  isLiteral,
+  isBinaryExpression,
+  isLiteralValueNumber,
+} from 'lang/util'
+import { ARG_END_ABSOLUTE } from 'lang/std/sketch'
 
 /**
  * It does not create the startSketchOn and it does not create the startProfileAt.

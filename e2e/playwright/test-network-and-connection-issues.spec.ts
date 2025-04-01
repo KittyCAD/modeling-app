@@ -1,8 +1,7 @@
+import { test, expect } from './zoo-test'
+import { commonPoints, getUtils, orRunWhenFullSuiteEnabled } from './test-utils'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import { uuidv4 } from 'lib/utils'
-
-import { commonPoints, getUtils, orRunWhenFullSuiteEnabled } from './test-utils'
-import { expect, test } from './zoo-test'
 
 test.describe('Test network and connection issues', () => {
   test(

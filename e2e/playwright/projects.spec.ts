@@ -1,20 +1,19 @@
-import fs from 'fs'
-import fsp from 'fs/promises'
-import { DEFAULT_PROJECT_KCL_FILE } from 'lib/constants'
-import path from 'path'
-
+import { test, expect } from './zoo-test'
 import {
-  Paths,
-  createProject,
   doExport,
   executorInputPath,
-  getPlaywrightDownloadDir,
   getUtils,
   isOutOfViewInScrollContainer,
+  Paths,
+  createProject,
+  getPlaywrightDownloadDir,
   orRunWhenFullSuiteEnabled,
   runningOnWindows,
 } from './test-utils'
-import { expect, test } from './zoo-test'
+import fsp from 'fs/promises'
+import fs from 'fs'
+import path from 'path'
+import { DEFAULT_PROJECT_KCL_FILE } from 'lib/constants'
 
 test(
   'projects reload if a new one is created, deleted, or renamed externally',

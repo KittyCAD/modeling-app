@@ -1,8 +1,7 @@
 import usePlatform from 'hooks/usePlatform'
 import { hotkeyDisplay } from 'lib/hotkeyWrapper'
-import { commandBarActor } from 'machines/commandBarMachine'
-
 import { COMMAND_PALETTE_HOTKEY } from './CommandBar/CommandBar'
+import { commandBarActor } from 'machines/commandBarMachine'
 
 export function CommandBarOpenButton() {
   const platform = usePlatform()

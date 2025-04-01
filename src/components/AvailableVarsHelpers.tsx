@@ -1,10 +1,10 @@
+import { BinaryPart } from '../lang/wasm'
 import {
-  createLiteral,
   createLocalName,
+  createLiteral,
   createUnaryExpression,
 } from '../lang/modifyAst'
 import { PrevVariable } from '../lang/queryAst'
-import { BinaryPart } from '../lang/wasm'
 
 export const AvailableVars = ({
   onVarClick,

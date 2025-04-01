@@ -1,21 +1,20 @@
+import { SettingsLevel } from 'lib/settings/settingsTypes'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { useHotkeys } from 'react-hotkeys-hook'
+import { PATHS } from 'lib/paths'
+import { useDotDotSlash } from 'hooks/useDotDotSlash'
+import { Fragment, useEffect, useRef } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { CustomIcon } from 'components/CustomIcon'
-import { AllKeybindingsFields } from 'components/Settings/AllKeybindingsFields'
-import { AllSettingsFields } from 'components/Settings/AllSettingsFields'
-import { KeybindingsSectionsList } from 'components/Settings/KeybindingsSectionsList'
 import { SettingsSearchBar } from 'components/Settings/SettingsSearchBar'
-import { SettingsSectionsList } from 'components/Settings/SettingsSectionsList'
 import { SettingsTabs } from 'components/Settings/SettingsTabs'
-import { NODE_ENV } from 'env'
-import { useDotDotSlash } from 'hooks/useDotDotSlash'
+import { SettingsSectionsList } from 'components/Settings/SettingsSectionsList'
+import { AllSettingsFields } from 'components/Settings/AllSettingsFields'
+import { AllKeybindingsFields } from 'components/Settings/AllKeybindingsFields'
+import { KeybindingsSectionsList } from 'components/Settings/KeybindingsSectionsList'
 import { isDesktop } from 'lib/isDesktop'
-import { PATHS } from 'lib/paths'
-import { SettingsLevel } from 'lib/settings/settingsTypes'
-import { Fragment, useEffect, useRef } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-
 import { IS_PLAYWRIGHT_KEY } from '../../e2e/playwright/storageStates'
+import { NODE_ENV } from 'env'
 
 const isTestEnv = window?.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
 
@@ -23,9 +22,9 @@ export const APP_VERSION =
   isTestEnv && NODE_ENV === 'development'
     ? '11.22.33'
     : isDesktop()
-      ? // @ts-ignore
-        window.electron.packageJson.version
-      : 'main'
+    ? // @ts-ignore
+      window.electron.packageJson.version
+    : 'main'
 
 export const PACKAGE_NAME = isDesktop()
   ? window.electron.packageJson.name

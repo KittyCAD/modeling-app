@@ -1,13 +1,12 @@
-import { SettingsSection } from 'components/Settings/SettingsSection'
+import { OnboardingButtons, useDismiss, useNextClick } from '.'
+import { onboardingPaths } from 'routes/Onboarding/paths'
 import {
   CameraSystem,
   cameraMouseDragGuards,
   cameraSystems,
 } from 'lib/cameraControls'
+import { SettingsSection } from 'components/Settings/SettingsSection'
 import { settingsActor, useSettings } from 'machines/appMachine'
-import { onboardingPaths } from 'routes/Onboarding/paths'
-
-import { OnboardingButtons, useDismiss, useNextClick } from '.'
 
 export default function Units() {
   useDismiss()

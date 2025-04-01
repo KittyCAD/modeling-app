@@ -1,12 +1,11 @@
 import { Combobox } from '@headlessui/react'
 import Fuse from 'fuse.js'
 import { Command } from 'lib/commandTypes'
-import { sortCommands } from 'lib/commandUtils'
-import { getActorNextEvents } from 'lib/utils'
-import { commandBarActor } from 'machines/commandBarMachine'
 import { useEffect, useState } from 'react'
-
 import { CustomIcon } from './CustomIcon'
+import { getActorNextEvents } from 'lib/utils'
+import { sortCommands } from 'lib/commandUtils'
+import { commandBarActor } from 'machines/commandBarMachine'
 
 function CommandComboBox({
   options,

@@ -1,11 +1,11 @@
 import * as jsrpc from 'json-rpc-2.0'
 import * as LSP from 'vscode-languageserver-protocol'
 
-import { Codec, FromServer, IntoServer } from './codec'
 import {
   registerServerCapability,
   unregisterServerCapability,
 } from './server-capability-registration'
+import { Codec, FromServer, IntoServer } from './codec'
 
 const client_capabilities: LSP.ClientCapabilities = {
   textDocument: {

@@ -1,55 +1,54 @@
-import { Dialog, Popover, Transition } from '@headlessui/react'
-import { ActionButton } from 'components/ActionButton'
-import { CustomIcon, CustomIconName } from 'components/CustomIcon'
+import { useRef, useEffect, useState, useMemo, Fragment } from 'react'
 import { useModelingContext } from 'hooks/useModelingContext'
-import { executeAstMock } from 'lang/langHelpers'
-import {
-  deleteSegmentFromPipeExpression,
-  removeSingleConstraintInfo,
-} from 'lang/modifyAst'
-import { findUsesOfTagInPipe, getNodeFromPath } from 'lang/queryAst'
-import { getConstraintInfo, getConstraintInfoKw } from 'lang/std/sketch'
-import { ConstrainInfo } from 'lang/std/stdTypes'
-import {
-  CallExpression,
-  CallExpressionKw,
-  Expr,
-  PathToNode,
-  Program,
-  defaultSourceRange,
-  parse,
-  recast,
-  resultIsOk,
-  topLevelRange,
-} from 'lang/wasm'
+
 import { cameraMouseDragGuards } from 'lib/cameraControls'
+import { ARROWHEAD, DEBUG_SHOW_BOTH_SCENES } from './sceneInfra'
+import { ReactCameraProperties } from './CameraControls'
+import { throttle, toSync } from 'lib/utils'
 import {
+  sceneInfra,
+  kclManager,
   codeManager,
   editorManager,
-  engineCommandManager,
-  kclManager,
-  rustContext,
   sceneEntitiesManager,
-  sceneInfra,
+  engineCommandManager,
+  rustContext,
 } from 'lib/singletons'
-import { err, reportRejection, trap } from 'lib/trap'
-import { throttle, toSync } from 'lib/utils'
-import { useSettings } from 'machines/appMachine'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { SegmentOverlay, SketchDetails } from 'machines/modelingMachine'
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
-import toast from 'react-hot-toast'
-import { InstanceProps, create } from 'react-modal-promise'
-
-import { Node } from '@rust/kcl-lib/bindings/Node'
-
-import { ReactCameraProperties } from './CameraControls'
 import {
   EXTRA_SEGMENT_HANDLE,
   PROFILE_START,
   getParentGroup,
 } from './sceneEntities'
-import { ARROWHEAD, DEBUG_SHOW_BOTH_SCENES } from './sceneInfra'
+import { SegmentOverlay, SketchDetails } from 'machines/modelingMachine'
+import { findUsesOfTagInPipe, getNodeFromPath } from 'lang/queryAst'
+import {
+  CallExpression,
+  CallExpressionKw,
+  PathToNode,
+  Program,
+  Expr,
+  parse,
+  recast,
+  defaultSourceRange,
+  resultIsOk,
+  topLevelRange,
+} from 'lang/wasm'
+import { CustomIcon, CustomIconName } from 'components/CustomIcon'
+import { ConstrainInfo } from 'lang/std/stdTypes'
+import { getConstraintInfo, getConstraintInfoKw } from 'lang/std/sketch'
+import { Dialog, Popover, Transition } from '@headlessui/react'
+import toast from 'react-hot-toast'
+import { InstanceProps, create } from 'react-modal-promise'
+import { executeAstMock } from 'lang/langHelpers'
+import {
+  deleteSegmentFromPipeExpression,
+  removeSingleConstraintInfo,
+} from 'lang/modifyAst'
+import { ActionButton } from 'components/ActionButton'
+import { err, reportRejection, trap } from 'lib/trap'
+import { Node } from '@rust/kcl-lib/bindings/Node'
+import { commandBarActor } from 'machines/commandBarMachine'
+import { useSettings } from 'machines/appMachine'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -636,8 +635,8 @@ const ConstraintSymbol = ({
           implicitDesc
             ? 'bg-chalkboard-10 dark:bg-chalkboard-100 border-transparent border-0 rounded'
             : isConstrained
-              ? 'bg-chalkboard-10 dark:bg-chalkboard-90 dark:hover:bg-chalkboard-80 border-chalkboard-40 dark:border-chalkboard-70 rounded-sm'
-              : 'bg-primary/30 dark:bg-primary text-primary dark:text-chalkboard-10 dark:border-transparent group-hover:bg-primary/40 group-hover:border-primary/50 group-hover:brightness-125'
+            ? 'bg-chalkboard-10 dark:bg-chalkboard-90 dark:hover:bg-chalkboard-80 border-chalkboard-40 dark:border-chalkboard-70 rounded-sm'
+            : 'bg-primary/30 dark:bg-primary text-primary dark:text-chalkboard-10 dark:border-transparent group-hover:bg-primary/40 group-hover:border-primary/50 group-hover:brightness-125'
         } h-[26px] w-[26px] rounded-sm relative m-0 p-0`}
         onMouseEnter={() => {
           editorManager.setHighlightRange([range])

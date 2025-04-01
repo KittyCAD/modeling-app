@@ -1,22 +1,21 @@
-import { useAuthNavigation } from 'hooks/useAuthNavigation'
-import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
-import { getAppSettingsFilePath } from 'lib/desktop'
-import { isDesktop } from 'lib/isDesktop'
-import { PATHS } from 'lib/paths'
-import { markOnce } from 'lib/performance'
-import { loadAndValidateSettings } from 'lib/settings/settingsUtils'
-import { trap } from 'lib/trap'
-import { IndexLoaderData } from 'lib/types'
-import { useSettings } from 'machines/appMachine'
-import { settingsActor } from 'machines/appMachine'
-import { ReactNode, createContext, useEffect, useState } from 'react'
+import { useEffect, useState, createContext, ReactNode } from 'react'
 import {
+  useNavigation,
   useLocation,
   useNavigate,
-  useNavigation,
   useRouteLoaderData,
 } from 'react-router-dom'
-
+import { PATHS } from 'lib/paths'
+import { markOnce } from 'lib/performance'
+import { useAuthNavigation } from 'hooks/useAuthNavigation'
+import { useSettings } from 'machines/appMachine'
+import { IndexLoaderData } from 'lib/types'
+import { getAppSettingsFilePath } from 'lib/desktop'
+import { isDesktop } from 'lib/isDesktop'
+import { trap } from 'lib/trap'
+import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
+import { loadAndValidateSettings } from 'lib/settings/settingsUtils'
+import { settingsActor } from 'machines/appMachine'
 import { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 
 export const RouteProviderContext = createContext({})

@@ -1,6 +1,5 @@
-import { Program } from 'lang/wasm'
-
 import { Node } from '@rust/kcl-lib/bindings/Node'
+import { Program } from 'lang/wasm'
 
 /**
  * Given a program and a variable name, return the variable declaration

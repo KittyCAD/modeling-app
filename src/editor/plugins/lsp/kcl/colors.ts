@@ -1,14 +1,14 @@
-import { language, syntaxTree } from '@codemirror/language'
-import { Extension, Range, Text } from '@codemirror/state'
 import {
-  Decoration,
-  DecorationSet,
   EditorView,
-  ViewPlugin,
-  ViewUpdate,
   WidgetType,
+  ViewUpdate,
+  ViewPlugin,
+  DecorationSet,
+  Decoration,
 } from '@codemirror/view'
+import { Range, Extension, Text } from '@codemirror/state'
 import { NodeProp, Tree } from '@lezer/common'
+import { language, syntaxTree } from '@codemirror/language'
 import { isArray } from 'lib/utils'
 
 interface PickerState {

@@ -1,5 +1,5 @@
-import { Diagnostic } from '@codemirror/lint'
 import { editorManager } from 'lib/singletons'
+import { Diagnostic } from '@codemirror/lint'
 
 describe('EditorManager Class', () => {
   describe('makeUniqueDiagnostics', () => {

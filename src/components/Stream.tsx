@@ -1,27 +1,26 @@
-import { useAppStream } from 'AppState'
-import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
+import { MouseEventHandler, useEffect, useRef, useState } from 'react'
+import Loading from './Loading'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
-import { getArtifactOfTypes } from 'lang/std/artifactGraph'
+import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
+import { btnName } from 'lib/cameraControls'
+import { sendSelectEventToEngine } from 'lib/selections'
+import { kclManager, engineCommandManager, sceneInfra } from 'lib/singletons'
+import { useAppStream } from 'AppState'
 import {
-  DisconnectingType,
   EngineCommandManagerEvents,
   EngineConnectionStateType,
+  DisconnectingType,
 } from 'lang/std/engineConnection'
-import { btnName } from 'lib/cameraControls'
-import { PATHS } from 'lib/paths'
-import { sendSelectEventToEngine } from 'lib/selections'
-import { engineCommandManager, kclManager, sceneInfra } from 'lib/singletons'
-import { err, reportRejection } from 'lib/trap'
-import { IndexLoaderData } from 'lib/types'
-import { useSettings } from 'machines/appMachine'
-import { useCommandBarState } from 'machines/commandBarMachine'
-import { MouseEventHandler, useEffect, useRef, useState } from 'react'
 import { useRouteLoaderData } from 'react-router-dom'
-
-import Loading from './Loading'
+import { PATHS } from 'lib/paths'
+import { IndexLoaderData } from 'lib/types'
+import { err, reportRejection } from 'lib/trap'
+import { getArtifactOfTypes } from 'lang/std/artifactGraph'
 import { ViewControlContextMenu } from './ViewControlMenu'
+import { useCommandBarState } from 'machines/commandBarMachine'
+import { useSettings } from 'machines/appMachine'
 
 enum StreamState {
   Playing = 'playing',

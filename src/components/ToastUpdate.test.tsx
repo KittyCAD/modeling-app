@@ -1,6 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { vi } from 'vitest'
-
 import { ToastUpdate } from './ToastUpdate'
 
 describe('ToastUpdate tests', () => {

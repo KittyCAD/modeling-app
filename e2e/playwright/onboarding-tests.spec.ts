@@ -1,23 +1,22 @@
-import fsp from 'fs/promises'
-import { bracket } from 'lib/exampleKcl'
+import { test, expect } from './zoo-test'
 import { join } from 'path'
+import fsp from 'fs/promises'
+import {
+  getUtils,
+  executorInputPath,
+  createProject,
+  settingsToToml,
+  orRunWhenFullSuiteEnabled,
+} from './test-utils'
+import { bracket } from 'lib/exampleKcl'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-
-import { expectPixelColor } from './fixtures/sceneFixture'
 import {
   TEST_SETTINGS_KEY,
-  TEST_SETTINGS_ONBOARDING_EXPORT,
   TEST_SETTINGS_ONBOARDING_START,
+  TEST_SETTINGS_ONBOARDING_EXPORT,
   TEST_SETTINGS_ONBOARDING_USER_MENU,
 } from './storageStates'
-import {
-  createProject,
-  executorInputPath,
-  getUtils,
-  orRunWhenFullSuiteEnabled,
-  settingsToToml,
-} from './test-utils'
-import { expect, test } from './zoo-test'
+import { expectPixelColor } from './fixtures/sceneFixture'
 
 // Because our default test settings have the onboardingStatus set to 'dismissed',
 // we must set it to empty for the tests where we want to see the onboarding immediately.

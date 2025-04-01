@@ -1,9 +1,8 @@
 import { Menu } from '@headlessui/react'
-import { ActionIcon } from 'components/ActionIcon'
-import { commandBarActor } from 'machines/commandBarMachine'
 import { PropsWithChildren } from 'react'
-
+import { ActionIcon } from 'components/ActionIcon'
 import styles from './KclEditorMenu.module.css'
+import { commandBarActor } from 'machines/commandBarMachine'
 
 export const FeatureTreeMenu = ({ children }: PropsWithChildren) => {
   return (

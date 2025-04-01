@@ -1,5 +1,4 @@
 import { useAuthState } from 'machines/appMachine'
-
 import Loading from './components/Loading'
 
 // Wrapper around protected routes, used in src/Router.tsx

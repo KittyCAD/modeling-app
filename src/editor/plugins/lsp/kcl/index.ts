@@ -1,22 +1,20 @@
 import { Extension } from '@codemirror/state'
-import { PluginValue, ViewPlugin, ViewUpdate } from '@codemirror/view'
+import { ViewPlugin, PluginValue, ViewUpdate } from '@codemirror/view'
 import {
-  LanguageServerClient,
   LanguageServerOptions,
-  lspFormatCodeEvent,
+  LanguageServerClient,
   lspPlugin,
+  lspFormatCodeEvent,
 } from '@kittycad/codemirror-lsp-client'
-import { updateOutsideEditorEvent } from 'editor/manager'
-import { codeManagerUpdateEvent } from 'lang/codeManager'
-import { codeManager, editorManager, kclManager } from 'lib/singletons'
 import { deferExecution } from 'lib/utils'
-
-import { UpdateCanExecuteParams } from '@rust/kcl-lib/bindings/UpdateCanExecuteParams'
-import { UpdateCanExecuteResponse } from '@rust/kcl-lib/bindings/UpdateCanExecuteResponse'
+import { codeManager, editorManager, kclManager } from 'lib/singletons'
 import { UpdateUnitsParams } from '@rust/kcl-lib/bindings/UpdateUnitsParams'
+import { UpdateCanExecuteParams } from '@rust/kcl-lib/bindings/UpdateCanExecuteParams'
 import { UpdateUnitsResponse } from '@rust/kcl-lib/bindings/UpdateUnitsResponse'
-
+import { UpdateCanExecuteResponse } from '@rust/kcl-lib/bindings/UpdateCanExecuteResponse'
+import { codeManagerUpdateEvent } from 'lang/codeManager'
 import { copilotPluginEvent } from '../copilot'
+import { updateOutsideEditorEvent } from 'editor/manager'
 
 const changesDelay = 600
 

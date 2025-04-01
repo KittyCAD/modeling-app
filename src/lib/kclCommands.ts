@@ -1,24 +1,23 @@
-import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 import { CommandBarOverwriteWarning } from 'components/CommandBarOverwriteWarning'
-import {
-  changeKclSettings,
-  unitAngleToUnitAng,
-  unitLengthToUnitLen,
-} from 'lang/wasm'
-import toast from 'react-hot-toast'
-
 import { Command, CommandArgumentOption } from './commandTypes'
+import { codeManager, kclManager } from './singletons'
+import { isDesktop } from './isDesktop'
 import {
   DEFAULT_DEFAULT_ANGLE_UNIT,
   DEFAULT_DEFAULT_LENGTH_UNIT,
   FILE_EXT,
 } from './constants'
-import { isDesktop } from './isDesktop'
-import { copyFileShareLink } from './links'
-import { baseUnitsUnion } from './settings/settingsTypes'
-import { codeManager, kclManager } from './singletons'
+import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 import { err, reportRejection } from './trap'
 import { IndexLoaderData } from './types'
+import { copyFileShareLink } from './links'
+import { baseUnitsUnion } from './settings/settingsTypes'
+import toast from 'react-hot-toast'
+import {
+  changeKclSettings,
+  unitLengthToUnitLen,
+  unitAngleToUnitAng,
+} from 'lang/wasm'
 
 interface OnSubmitProps {
   sampleName: string

@@ -1,26 +1,25 @@
-import { Models } from '@kittycad/lib'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
+  Expr,
   Artifact,
   ArtifactGraph,
   ArtifactId,
-  CapArtifact,
-  EdgeCut,
-  Expr,
-  PathArtifact,
   PathToNode,
-  PlaneArtifact,
   Program,
+  SourceRange,
+  PathArtifact,
+  PlaneArtifact,
+  WallArtifact,
   SegmentArtifact,
   Solid2dArtifact as Solid2D,
-  SourceRange,
   SweepArtifact,
   SweepEdge,
-  WallArtifact,
+  CapArtifact,
+  EdgeCut,
 } from 'lang/wasm'
+import { Models } from '@kittycad/lib'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { Selection } from 'lib/selections'
 import { err } from 'lib/trap'
-
 import {
   Cap,
   Plane,

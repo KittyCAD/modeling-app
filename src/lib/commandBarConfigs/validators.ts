@@ -1,9 +1,9 @@
 import { Models } from '@kittycad/lib'
-import { ApiError_type } from '@kittycad/lib/dist/types/src/models'
-import { Selections } from 'lib/selections'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { uuidv4 } from 'lib/utils'
 import { CommandBarContext } from 'machines/commandBarMachine'
+import { Selections } from 'lib/selections'
+import { ApiError_type } from '@kittycad/lib/dist/types/src/models'
 
 export const disableDryRunWithRetry = async (numberOfRetries = 3) => {
   for (let tries = 0; tries < numberOfRetries; tries++) {

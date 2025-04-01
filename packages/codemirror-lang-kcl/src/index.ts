@@ -1,14 +1,14 @@
 // Base CodeMirror language support for kcl.
+
 import {
   LRLanguage,
   LanguageSupport,
+  indentNodeProp,
   continuedIndent,
   delimitedIndent,
-  foldInside,
   foldNodeProp,
-  indentNodeProp,
+  foldInside,
 } from '@codemirror/language'
-
 // @ts-ignore: No types available
 import { parser } from './kcl.grammar'
 

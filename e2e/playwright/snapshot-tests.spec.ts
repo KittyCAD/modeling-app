@@ -1,22 +1,21 @@
-import { Models } from '@kittycad/lib'
-import { spawn } from 'child_process'
-import fsp from 'fs/promises'
-import JSZip from 'jszip'
-import { KCL_DEFAULT_LENGTH } from 'lib/constants'
-import path from 'path'
-
-import { CmdBarFixture } from './fixtures/cmdBarFixture'
-import { SceneFixture } from './fixtures/sceneFixture'
+import { test, expect } from './zoo-test'
 import { secrets } from './secrets'
-import { TEST_SETTINGS, TEST_SETTINGS_KEY } from './storageStates'
 import {
   Paths,
   doExport,
   getUtils,
-  orRunWhenFullSuiteEnabled,
   settingsToToml,
+  orRunWhenFullSuiteEnabled,
 } from './test-utils'
-import { expect, test } from './zoo-test'
+import { Models } from '@kittycad/lib'
+import fsp from 'fs/promises'
+import { spawn } from 'child_process'
+import { KCL_DEFAULT_LENGTH } from 'lib/constants'
+import JSZip from 'jszip'
+import path from 'path'
+import { TEST_SETTINGS, TEST_SETTINGS_KEY } from './storageStates'
+import { SceneFixture } from './fixtures/sceneFixture'
+import { CmdBarFixture } from './fixtures/cmdBarFixture'
 
 test.beforeEach(async ({ page, context }) => {
   // Make the user avatar image always 404

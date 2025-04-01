@@ -1,18 +1,17 @@
-import { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
-
-import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from './queryAst'
 import {
   Expr,
   ExpressionStatement,
-  Identifier,
-  PathToNode,
-  Program,
+  VariableDeclaration,
   ReturnStatement,
   SourceRange,
-  VariableDeclaration,
+  PathToNode,
+  Program,
+  Identifier,
 } from './wasm'
+import { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
+import { Node } from '@rust/kcl-lib/bindings/Node'
+import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from './queryAst'
+import { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
 
 function moreNodePathFromSourceRange(
   node: Node<

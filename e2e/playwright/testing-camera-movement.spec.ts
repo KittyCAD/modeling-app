@@ -1,8 +1,7 @@
+import { test, expect } from './zoo-test'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import { uuidv4 } from 'lib/utils'
-
 import { getUtils, orRunWhenFullSuiteEnabled } from './test-utils'
-import { expect, test } from './zoo-test'
 
 test.describe('Testing Camera Movement', { tag: ['@skipWin'] }, () => {
   test('Can move camera reliably', async ({ page, context, homePage }) => {

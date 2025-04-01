@@ -1,8 +1,6 @@
-import { Expr, Program } from 'lang/wasm'
-
-import { Node } from '@rust/kcl-lib/bindings/Node'
-
 import { getIdentifiersInProgram } from './getIndentifiersInProgram'
+import { Program, Expr } from 'lang/wasm'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import { getTagDeclaratorsInProgram } from './getTagDeclaratorsInProgram'
 
 /**

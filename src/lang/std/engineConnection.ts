@@ -1,22 +1,22 @@
-import { Models } from '@kittycad/lib'
-import { BSON } from 'bson'
-import { MachineManager } from 'components/MachineManagerProvider'
+import { defaultSourceRange, SourceRange } from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from 'env'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { KclManager } from 'lang/KclSingleton'
-import { EngineCommand, ResponseMap } from 'lang/std/artifactGraph'
-import { SourceRange, defaultSourceRange } from 'lang/wasm'
-import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
-import { markOnce } from 'lib/performance'
-import { SettingsViaQueryString } from 'lib/settings/settingsTypes'
+import { Models } from '@kittycad/lib'
+import { uuidv4, binaryToUuid } from 'lib/utils'
+import { BSON } from 'bson'
 import {
   Themes,
-  darkModeMatcher,
-  getOppositeTheme,
   getThemeColorForEngine,
+  getOppositeTheme,
+  darkModeMatcher,
 } from 'lib/theme'
+import { EngineCommand, ResponseMap } from 'lang/std/artifactGraph'
+import { useModelingContext } from 'hooks/useModelingContext'
+import { SettingsViaQueryString } from 'lib/settings/settingsTypes'
+import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
+import { KclManager } from 'lang/KclSingleton'
 import { reportRejection } from 'lib/trap'
-import { binaryToUuid, uuidv4 } from 'lib/utils'
+import { markOnce } from 'lib/performance'
+import { MachineManager } from 'components/MachineManagerProvider'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 5_000
@@ -48,8 +48,8 @@ interface WebRTCClientMetrics extends ClientMetrics {
 type Value<T, U> = U extends undefined
   ? { type: T; value: U }
   : U extends void
-    ? { type: T }
-    : { type: T; value: U }
+  ? { type: T }
+  : { type: T; value: U }
 
 type State<T, U> = Value<T, U>
 
@@ -309,10 +309,8 @@ class EngineConnection extends EventTarget {
   private engineCommandManager: EngineCommandManager
 
   private pingPongSpan: { ping?: Date; pong?: Date }
-  private pingIntervalId: ReturnType<typeof setInterval> = setInterval(
-    () => {},
-    60_000
-  )
+  private pingIntervalId: ReturnType<typeof setInterval> = setInterval(() => {},
+  60_000)
   isUsingConnectionLite: boolean = false
 
   constructor({

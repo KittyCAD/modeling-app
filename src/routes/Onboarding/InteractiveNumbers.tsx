@@ -1,7 +1,6 @@
-import { bracketWidthConstantLine } from 'lib/exampleKcl'
-import { onboardingPaths } from 'routes/Onboarding/paths'
-
 import { OnboardingButtons, kbdClasses, useDemoCode } from '.'
+import { onboardingPaths } from 'routes/Onboarding/paths'
+import { bracketWidthConstantLine } from 'lib/exampleKcl'
 
 export default function OnboardingInteractiveNumbers() {
   useDemoCode()

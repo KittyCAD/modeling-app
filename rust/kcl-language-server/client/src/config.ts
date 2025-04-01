@@ -1,11 +1,10 @@
 /* eslint suggest-no-throw/suggest-no-throw: 0 */
+import * as Is from 'vscode-languageclient/lib/common/utils/is'
 import * as os from 'os'
 import * as path from 'path'
 import * as vscode from 'vscode'
-import * as Is from 'vscode-languageclient/lib/common/utils/is'
-
+import { log, type Env } from './util'
 import { expectNotUndefined, unwrapUndefinable } from './undefinable'
-import { type Env, log } from './util'
 
 export type RunnableEnvCfgItem = {
   mask?: string

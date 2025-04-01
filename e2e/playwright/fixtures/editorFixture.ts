@@ -1,9 +1,8 @@
-import type { Locator, Page } from '@playwright/test'
+import type { Page, Locator } from '@playwright/test'
 import { expect } from '@playwright/test'
-
 import {
-  checkIfPaneIsOpen,
   closePane,
+  checkIfPaneIsOpen,
   openPane,
   sansWhitespace,
 } from '../test-utils'

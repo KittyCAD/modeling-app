@@ -1,66 +1,65 @@
+import {
+  init,
+  parse_wasm,
+  recast_wasm,
+  format_number,
+  kcl_lint,
+  is_points_ccw,
+  get_tangential_arc_to_info,
+  get_kcl_version,
+  coredump,
+  default_app_settings,
+  parse_app_settings,
+  parse_project_settings,
+  default_project_settings,
+  base64_decode,
+  kcl_settings,
+  change_kcl_settings,
+  serialize_project_configuration,
+  serialize_configuration,
+  reloadModule,
+  is_kcl_empty_or_only_settings,
+} from 'lib/wasm_lib_wrapper'
+
+import { KCLError } from './errors'
+import { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
+import { Discovered } from '@rust/kcl-lib/bindings/Discovered'
+import { KclValue } from '@rust/kcl-lib/bindings/KclValue'
+import type { Program } from '@rust/kcl-lib/bindings/Program'
+import { Coords2d } from './std/sketch'
+import { CoreDumpInfo } from '@rust/kcl-lib/bindings/CoreDumpInfo'
+import { CoreDumpManager } from 'lib/coredump'
+import openWindow from 'lib/openWindow'
 import { TEST } from 'env'
+import { err, Reason } from 'lib/trap'
+import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import { DeepPartial } from 'lib/types'
+import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+import { Sketch } from '@rust/kcl-lib/bindings/Sketch'
+import { ExecOutcome as RustExecOutcome } from '@rust/kcl-lib/bindings/ExecOutcome'
+import { Node } from '@rust/kcl-lib/bindings/Node'
+import { CompilationError } from '@rust/kcl-lib/bindings/CompilationError'
+import { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
+import { getAllCurrentSettings } from 'lib/settings/settingsUtils'
+import { Operation } from '@rust/kcl-lib/bindings/Operation'
+import { KclErrorWithOutputs } from '@rust/kcl-lib/bindings/KclErrorWithOutputs'
+import { ArtifactId } from '@rust/kcl-lib/bindings/Artifact'
+import { ArtifactCommand } from '@rust/kcl-lib/bindings/Artifact'
+import { ArtifactGraph as RustArtifactGraph } from '@rust/kcl-lib/bindings/Artifact'
+import { Artifact } from './std/artifactGraph'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
+import { MetaSettings } from '@rust/kcl-lib/bindings/MetaSettings'
+import { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
+import { UnitLen } from '@rust/kcl-lib/bindings/UnitLen'
+import { UnitAngle as UnitAng } from '@rust/kcl-lib/bindings/UnitAngle'
+import { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
+import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
+import { isArray } from 'lib/utils'
 import {
   DEFAULT_DEFAULT_ANGLE_UNIT,
   DEFAULT_DEFAULT_LENGTH_UNIT,
 } from 'lib/constants'
-import { CoreDumpManager } from 'lib/coredump'
-import openWindow from 'lib/openWindow'
-import { getAllCurrentSettings } from 'lib/settings/settingsUtils'
-import { Reason, err } from 'lib/trap'
-import { DeepPartial } from 'lib/types'
-import { isArray } from 'lib/utils'
-import {
-  base64_decode,
-  change_kcl_settings,
-  coredump,
-  default_app_settings,
-  default_project_settings,
-  format_number,
-  get_kcl_version,
-  get_tangential_arc_to_info,
-  init,
-  is_kcl_empty_or_only_settings,
-  is_points_ccw,
-  kcl_lint,
-  kcl_settings,
-  parse_app_settings,
-  parse_project_settings,
-  parse_wasm,
-  recast_wasm,
-  reloadModule,
-  serialize_configuration,
-  serialize_project_configuration,
-} from 'lib/wasm_lib_wrapper'
-
-import { ArtifactId } from '@rust/kcl-lib/bindings/Artifact'
-import { ArtifactCommand } from '@rust/kcl-lib/bindings/Artifact'
-import { ArtifactGraph as RustArtifactGraph } from '@rust/kcl-lib/bindings/Artifact'
-import { CompilationError } from '@rust/kcl-lib/bindings/CompilationError'
-import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import { CoreDumpInfo } from '@rust/kcl-lib/bindings/CoreDumpInfo'
-import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
-import { Discovered } from '@rust/kcl-lib/bindings/Discovered'
-import { ExecOutcome as RustExecOutcome } from '@rust/kcl-lib/bindings/ExecOutcome'
-import { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
-import { KclErrorWithOutputs } from '@rust/kcl-lib/bindings/KclErrorWithOutputs'
-import { KclValue } from '@rust/kcl-lib/bindings/KclValue'
-import { MetaSettings } from '@rust/kcl-lib/bindings/MetaSettings'
-import { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
-import { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
-import { Operation } from '@rust/kcl-lib/bindings/Operation'
-import type { Program } from '@rust/kcl-lib/bindings/Program'
-import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
-import { Sketch } from '@rust/kcl-lib/bindings/Sketch'
-import { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
-import { UnitAngle as UnitAng } from '@rust/kcl-lib/bindings/UnitAngle'
-import { UnitLen } from '@rust/kcl-lib/bindings/UnitLen'
-
-import { KCLError } from './errors'
-import { Artifact } from './std/artifactGraph'
-import { Coords2d } from './std/sketch'
 
 export type { Artifact } from '@rust/kcl-lib/bindings/Artifact'
 export type { ArtifactCommand } from '@rust/kcl-lib/bindings/Artifact'

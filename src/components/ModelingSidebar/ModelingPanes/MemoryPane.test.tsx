@@ -1,6 +1,6 @@
-import { assertParse, initPromise } from '../../../lang/wasm'
-import { enginelessExecutor } from '../../../lib/testHelpers'
 import { processMemory } from './MemoryPane'
+import { enginelessExecutor } from '../../../lib/testHelpers'
+import { assertParse, initPromise } from '../../../lang/wasm'
 
 beforeAll(async () => {
   await initPromise

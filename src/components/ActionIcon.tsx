@@ -3,7 +3,6 @@ import {
   faCircleExclamation,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-
 import { CustomIcon, CustomIconName } from './CustomIcon'
 
 const iconSizes = {

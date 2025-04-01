@@ -1,11 +1,11 @@
 import { compareVec2Epsilon2 } from 'lang/std/sketch'
 import {
   GridHelper,
-  Group,
   LineBasicMaterial,
-  Mesh,
   OrthographicCamera,
   PerspectiveCamera,
+  Group,
+  Mesh,
   Quaternion,
   Vector3,
 } from 'three'

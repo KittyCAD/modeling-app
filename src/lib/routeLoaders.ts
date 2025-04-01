@@ -1,22 +1,21 @@
-import { fileSystemManager } from 'lang/std/fileSystemManager'
-import { normalizeLineEndings } from 'lib/codeEditor'
+import { LoaderFunction, redirect } from 'react-router-dom'
+import { FileLoaderData, HomeLoaderData, IndexLoaderData } from './types'
+import { getProjectMetaByRouteId, PATHS } from './paths'
+import { isDesktop } from './isDesktop'
+import { BROWSER_PATH } from 'lib/paths'
 import {
   BROWSER_FILE_NAME,
   BROWSER_PROJECT_NAME,
   FILE_EXT,
   PROJECT_ENTRYPOINT,
 } from 'lib/constants'
-import { BROWSER_PATH } from 'lib/paths'
-import { codeManager } from 'lib/singletons'
-import { settingsActor } from 'machines/appMachine'
-import { LoaderFunction, redirect } from 'react-router-dom'
-import { waitFor } from 'xstate'
-
-import { getProjectInfo } from './desktop'
-import { isDesktop } from './isDesktop'
-import { PATHS, getProjectMetaByRouteId } from './paths'
 import { loadAndValidateSettings } from './settings/settingsUtils'
-import { FileLoaderData, HomeLoaderData, IndexLoaderData } from './types'
+import { codeManager } from 'lib/singletons'
+import { fileSystemManager } from 'lang/std/fileSystemManager'
+import { getProjectInfo } from './desktop'
+import { normalizeLineEndings } from 'lib/codeEditor'
+import { settingsActor } from 'machines/appMachine'
+import { waitFor } from 'xstate'
 
 export const telemetryLoader: LoaderFunction = async ({
   params,

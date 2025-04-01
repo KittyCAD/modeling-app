@@ -1,7 +1,7 @@
 import { CommandLog } from 'lang/std/engineConnection'
 import { engineCommandManager } from 'lib/singletons'
 import { reportRejection } from 'lib/trap'
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export function useEngineCommands(): [CommandLog[], () => void] {
   const [engineCommands, setEngineCommands] = useState<CommandLog[]>(

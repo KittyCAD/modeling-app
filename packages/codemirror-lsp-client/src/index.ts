@@ -1,14 +1,14 @@
 import { foldService } from '@codemirror/language'
-import { EditorState, Extension } from '@codemirror/state'
+import { Extension, EditorState } from '@codemirror/state'
 import { ViewPlugin } from '@codemirror/view'
 
 import {
-  LanguageServerOptions,
+  docPathFacet,
   LanguageServerPlugin,
   LanguageServerPluginSpec,
-  docPathFacet,
   languageId,
   workspaceFolders,
+  LanguageServerOptions,
 } from './plugin/lsp'
 
 export type { LanguageServerClientOptions } from './client'

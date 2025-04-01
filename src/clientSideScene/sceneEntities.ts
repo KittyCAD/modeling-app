@@ -1,89 +1,8 @@
-import { Models } from '@kittycad/lib'
-import { ToolTip, executeAstMock } from 'lang/langHelpers'
-import { updateModelingState } from 'lang/modelingWorkflows'
-import {
-  createArrayExpression,
-  createCallExpressionStdLib,
-  createCallExpressionStdLibKw,
-  createLabeledArg,
-  createLiteral,
-  createLocalName,
-  createNodeFromExprSnippet,
-  createPipeExpression,
-  createPipeSubstitution,
-  createVariableDeclaration,
-  findUniqueName,
-  getInsertIndex,
-  insertNewStartProfileAt,
-  updateSketchNodePathsWithInsertIndex,
-} from 'lang/modifyAst'
-import { getNodeFromPath } from 'lang/queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { codeRefFromRange, getArtifactFromRange } from 'lang/std/artifactGraph'
-import { EngineCommandManager } from 'lang/std/engineConnection'
-import {
-  ARG_END_ABSOLUTE,
-  Coords2d,
-  addCallExpressionsToPipe,
-  addCloseToPipe,
-  addNewSketchLn,
-  changeSketchArguments,
-  updateStartProfileAtArgs,
-} from 'lang/std/sketch'
-import { SegmentInputs } from 'lang/std/stdTypes'
-import {
-  CallExpression,
-  CallExpressionKw,
-  Path,
-  PathToNode,
-  PipeExpression,
-  Program,
-  Sketch,
-  SourceRange,
-  VariableDeclaration,
-  VariableDeclarator,
-  VariableMap,
-  defaultSourceRange,
-  parse,
-  recast,
-  resultIsOk,
-  sketchFromKclValue,
-  sourceRangeFromRust,
-  topLevelRange,
-} from 'lang/wasm'
-import { EXECUTION_TYPE_MOCK } from 'lib/constants'
-import {
-  getRectangleCallExpressions,
-  updateCenterRectangleSketch,
-  updateRectangleSketch,
-} from 'lib/rectangleTool'
-import { Selections, getEventForSegmentSelection } from 'lib/selections'
-import {
-  codeManager,
-  editorManager,
-  engineCommandManager,
-  kclManager,
-  rustContext,
-  sceneInfra,
-} from 'lib/singletons'
-import { Themes, getThemeColorForThreeJs } from 'lib/theme'
-import { err, reportRejection, trap } from 'lib/trap'
-import { isArray, isOverlap, roundOff } from 'lib/utils'
-import { uuidv4 } from 'lib/utils'
-import {
-  SegmentOverlayPayload,
-  SketchDetails,
-  SketchDetailsUpdate,
-  SketchTool,
-} from 'machines/modelingMachine'
-import toast from 'react-hot-toast'
 import {
   BoxGeometry,
   DoubleSide,
-  ExtrudeGeometry,
   Group,
   Intersection,
-  LineCurve3,
   Mesh,
   MeshBasicMaterial,
   Object3D,
@@ -93,24 +12,19 @@ import {
   PlaneGeometry,
   Points,
   Quaternion,
-  Shape,
   Vector2,
   Vector3,
+  Shape,
+  LineCurve3,
+  ExtrudeGeometry,
 } from 'three'
-import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { radToDeg } from 'three/src/math/MathUtils'
-
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { Point3d } from '@rust/kcl-lib/bindings/Point3d'
-
-import { isQuaternionVertical, quaternionFromUpNForward } from './helpers'
-import { createGridHelper, orthoScale, perspScale } from './helpers'
 import {
   ANGLE_SNAP_THRESHOLD_DEGREES,
   ARROWHEAD,
   AXIS_GROUP,
   DRAFT_POINT,
   DRAFT_POINT_GROUP,
+  getSceneScale,
   INTERSECTION_PLANE_LAYER,
   OnClickCallbackArgs,
   OnMouseEnterLeaveArgs,
@@ -119,14 +33,98 @@ import {
   SKETCH_LAYER,
   X_AXIS,
   Y_AXIS,
-  getSceneScale,
 } from './sceneInfra'
+import { isQuaternionVertical, quaternionFromUpNForward } from './helpers'
 import {
-  SegmentUtils,
+  CallExpression,
+  parse,
+  Path,
+  PathToNode,
+  PipeExpression,
+  Program,
+  recast,
+  Sketch,
+  VariableDeclaration,
+  VariableDeclarator,
+  sketchFromKclValue,
+  defaultSourceRange,
+  sourceRangeFromRust,
+  resultIsOk,
+  SourceRange,
+  topLevelRange,
+  CallExpressionKw,
+  VariableMap,
+} from 'lang/wasm'
+import {
+  engineCommandManager,
+  kclManager,
+  sceneInfra,
+  codeManager,
+  editorManager,
+  rustContext,
+} from 'lib/singletons'
+import { getNodeFromPath } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import { executeAstMock, ToolTip } from 'lang/langHelpers'
+import {
   createProfileStartHandle,
   dashedStraight,
+  SegmentUtils,
   segmentUtils,
 } from './segments'
+import {
+  addCallExpressionsToPipe,
+  addCloseToPipe,
+  addNewSketchLn,
+  ARG_END_ABSOLUTE,
+  changeSketchArguments,
+  Coords2d,
+  updateStartProfileAtArgs,
+} from 'lang/std/sketch'
+import { isArray, isOverlap, roundOff } from 'lib/utils'
+import {
+  createArrayExpression,
+  createCallExpressionStdLib,
+  createLocalName,
+  createCallExpressionStdLibKw,
+  createLabeledArg,
+  createLiteral,
+  createNodeFromExprSnippet,
+  createPipeExpression,
+  createPipeSubstitution,
+  createVariableDeclaration,
+  findUniqueName,
+  getInsertIndex,
+  insertNewStartProfileAt,
+  updateSketchNodePathsWithInsertIndex,
+} from 'lang/modifyAst'
+import { Selections, getEventForSegmentSelection } from 'lib/selections'
+import { createGridHelper, orthoScale, perspScale } from './helpers'
+import { Models } from '@kittycad/lib'
+import { uuidv4 } from 'lib/utils'
+import {
+  SegmentOverlayPayload,
+  SketchDetails,
+  SketchDetailsUpdate,
+  SketchTool,
+} from 'machines/modelingMachine'
+import { EngineCommandManager } from 'lang/std/engineConnection'
+import {
+  getRectangleCallExpressions,
+  updateRectangleSketch,
+  updateCenterRectangleSketch,
+} from 'lib/rectangleTool'
+import { getThemeColorForThreeJs, Themes } from 'lib/theme'
+import { err, reportRejection, trap } from 'lib/trap'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+import { Point3d } from '@rust/kcl-lib/bindings/Point3d'
+import { SegmentInputs } from 'lang/std/stdTypes'
+import { Node } from '@rust/kcl-lib/bindings/Node'
+import { radToDeg } from 'three/src/math/MathUtils'
+import toast from 'react-hot-toast'
+import { getArtifactFromRange, codeRefFromRange } from 'lang/std/artifactGraph'
+import { updateModelingState } from 'lang/modelingWorkflows'
+import { EXECUTION_TYPE_MOCK } from 'lib/constants'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -760,14 +758,14 @@ export class SceneEntities {
           segment.type === 'TangentialArcTo'
             ? segmentUtils.tangentialArcTo.init
             : segment.type === 'Circle'
-              ? segmentUtils.circle.init
-              : segment.type === 'Arc'
-                ? segmentUtils.arc.init
-                : segment.type === 'CircleThreePoint'
-                  ? segmentUtils.circleThreePoint.init
-                  : segment.type === 'ArcThreePoint'
-                    ? segmentUtils.threePointArc.init
-                    : segmentUtils.straight.init
+            ? segmentUtils.circle.init
+            : segment.type === 'Arc'
+            ? segmentUtils.arc.init
+            : segment.type === 'CircleThreePoint'
+            ? segmentUtils.circleThreePoint.init
+            : segment.type === 'ArcThreePoint'
+            ? segmentUtils.threePointArc.init
+            : segmentUtils.straight.init
         const input: SegmentInputs =
           segment.type === 'Circle'
             ? {
@@ -779,27 +777,27 @@ export class SceneEntities {
                 radius: segment.radius,
               }
             : segment.type === 'CircleThreePoint' ||
-                segment.type === 'ArcThreePoint'
-              ? {
-                  type: 'circle-three-point-segment',
-                  p1: segment.p1,
-                  p2: segment.p2,
-                  p3: segment.p3,
-                }
-              : segment.type === 'Arc'
-                ? {
-                    type: 'arc-segment',
-                    from: segment.from,
-                    center: segment.center,
-                    to: segment.to,
-                    ccw: segment.ccw,
-                    radius: segment.radius,
-                  }
-                : {
-                    type: 'straight-segment',
-                    from: segment.from,
-                    to: segment.to,
-                  }
+              segment.type === 'ArcThreePoint'
+            ? {
+                type: 'circle-three-point-segment',
+                p1: segment.p1,
+                p2: segment.p2,
+                p3: segment.p3,
+              }
+            : segment.type === 'Arc'
+            ? {
+                type: 'arc-segment',
+                from: segment.from,
+                center: segment.center,
+                to: segment.to,
+                ccw: segment.ccw,
+                radius: segment.radius,
+              }
+            : {
+                type: 'straight-segment',
+                from: segment.from,
+                to: segment.to,
+              }
         const startRange = _node1.node.start
         const endRange = _node1.node.end
         const sourceRange: SourceRange = [startRange, endRange, 0]

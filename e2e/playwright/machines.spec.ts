@@ -1,8 +1,7 @@
-import fsp from 'fs/promises'
-import { join } from 'path'
-
+import { test, expect } from './zoo-test'
 import { executorInputPath } from './test-utils'
-import { expect, test } from './zoo-test'
+import { join } from 'path'
+import fsp from 'fs/promises'
 
 test(
   'When machine-api server not found butt is disabled and shows the reason',

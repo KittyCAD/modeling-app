@@ -1,13 +1,4 @@
-import { CustomIcon } from 'components/CustomIcon'
-import Tooltip from 'components/Tooltip'
-import {
-  CameraSystem,
-  cameraMouseDragGuards,
-  cameraSystems,
-} from 'lib/cameraControls'
 import { DEFAULT_PROJECT_NAME } from 'lib/constants'
-import { DEFAULT_DEFAULT_LENGTH_UNIT } from 'lib/constants'
-import { isDesktop } from 'lib/isDesktop'
 import {
   BaseUnit,
   SettingProps,
@@ -15,15 +6,23 @@ import {
   baseUnitsUnion,
 } from 'lib/settings/settingsTypes'
 import { Themes } from 'lib/theme'
-import { reportRejection } from 'lib/trap'
 import { isEnumMember } from 'lib/types'
-import { isArray, toSync } from 'lib/utils'
+import {
+  CameraSystem,
+  cameraMouseDragGuards,
+  cameraSystems,
+} from 'lib/cameraControls'
+import { isDesktop } from 'lib/isDesktop'
 import { useRef } from 'react'
-
-import { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
+import { CustomIcon } from 'components/CustomIcon'
+import Tooltip from 'components/Tooltip'
+import { isArray, toSync } from 'lib/utils'
+import { reportRejection } from 'lib/trap'
 import { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
-import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
+import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
+import { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
+import { DEFAULT_DEFAULT_LENGTH_UNIT } from 'lib/constants'
 
 /**
  * A setting that can be set at the user or project level
@@ -92,8 +91,8 @@ export class Setting<T = unknown> {
     return this._project !== undefined
       ? this._project
       : this._user !== undefined
-        ? this._user
-        : this._default
+      ? this._user
+      : this._default
   }
   /**
    * @param {SettingsLevel} level - The level to get the fallback for

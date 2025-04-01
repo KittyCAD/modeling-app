@@ -1,13 +1,12 @@
-import { Models } from '@kittycad/lib'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import UserSidebarMenu from './UserSidebarMenu'
 import {
   Route,
   RouterProvider,
   createMemoryRouter,
   createRoutesFromElements,
 } from 'react-router-dom'
-
-import UserSidebarMenu from './UserSidebarMenu'
+import { Models } from '@kittycad/lib'
 
 type User = Models['User_type']
 

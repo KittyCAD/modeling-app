@@ -1,10 +1,11 @@
+import { createContext, useEffect, useState } from 'react'
+
+import { engineCommandManager } from 'lib/singletons'
 import { isDesktop } from 'lib/isDesktop'
 import { components } from 'lib/machine-api'
-import { engineCommandManager } from 'lib/singletons'
 import { reportRejection } from 'lib/trap'
 import { toSync } from 'lib/utils'
 import { commandBarActor } from 'machines/commandBarMachine'
-import { createContext, useEffect, useState } from 'react'
 
 export type MachinesListing = Array<
   components['schemas']['MachineInfoResponse']

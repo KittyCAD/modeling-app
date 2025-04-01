@@ -1,16 +1,15 @@
-import { Diagnostic } from '@codemirror/lint'
-import { KCLError } from 'lang/errors'
 import {
-  ExecState,
   Program,
-  emptyExecState,
-  jsAppSettings,
   kclLint,
+  emptyExecState,
+  ExecState,
+  jsAppSettings,
 } from 'lang/wasm'
-import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from 'lib/constants'
-import RustContext from 'lib/rustContext'
-
+import { KCLError } from 'lang/errors'
+import { Diagnostic } from '@codemirror/lint'
 import { Node } from '@rust/kcl-lib/bindings/Node'
+import RustContext from 'lib/rustContext'
+import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from 'lib/constants'
 
 export type ToolTip =
   | 'lineTo'

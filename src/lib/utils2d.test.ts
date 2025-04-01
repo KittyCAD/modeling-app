@@ -1,5 +1,5 @@
 import { Coords2d } from 'lang/std/sketch'
-import { initPromise, isPointsCCW } from 'lang/wasm'
+import { isPointsCCW, initPromise } from 'lang/wasm'
 
 beforeAll(async () => {
   await initPromise

@@ -1,19 +1,17 @@
 import { toolTips } from 'lang/langHelpers'
-import { codeRefFromRange } from 'lang/std/artifactGraph'
-import { TransformInfo } from 'lang/std/stdTypes'
 import { Selection, Selections } from 'lib/selections'
-import { kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
-
-import { Node } from '@rust/kcl-lib/bindings/Node'
-
+import { PathToNode, Program, Expr, topLevelRange } from '../../lang/wasm'
 import { getNodeFromPath } from '../../lang/queryAst'
 import {
   PathToNodeMap,
   getRemoveConstraintsTransforms,
   transformAstSketchLines,
 } from '../../lang/std/sketchcombos'
-import { Expr, PathToNode, Program, topLevelRange } from '../../lang/wasm'
+import { TransformInfo } from 'lang/std/stdTypes'
+import { kclManager } from 'lib/singletons'
+import { err } from 'lib/trap'
+import { Node } from '@rust/kcl-lib/bindings/Node'
+import { codeRefFromRange } from 'lang/std/artifactGraph'
 
 export function removeConstrainingValuesInfo({
   selectionRanges,

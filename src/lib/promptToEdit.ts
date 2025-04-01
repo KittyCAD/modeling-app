@@ -1,18 +1,17 @@
-import { EditorSelection, SelectionRange, Transaction } from '@codemirror/state'
 import { Models } from '@kittycad/lib'
-import { ToastPromptToEditCadSuccess } from 'components/ToastTextToCad'
-import { diffLines } from 'diff'
-import { modelingMachineEvent } from 'editor/manager'
 import { VITE_KC_API_BASE_URL } from 'env'
+import crossPlatformFetch from './crossPlatformFetch'
+import { err, reportRejection } from './trap'
+import { Selections } from './selections'
 import { getArtifactOfTypes } from 'lang/std/artifactGraph'
 import { ArtifactGraph, SourceRange, topLevelRange } from 'lang/wasm'
 import toast from 'react-hot-toast'
-
-import crossPlatformFetch from './crossPlatformFetch'
-import { Selections } from './selections'
 import { codeManager, editorManager, kclManager } from './singletons'
-import { err, reportRejection } from './trap'
+import { ToastPromptToEditCadSuccess } from 'components/ToastTextToCad'
 import { uuidv4 } from './utils'
+import { diffLines } from 'diff'
+import { Transaction, EditorSelection, SelectionRange } from '@codemirror/state'
+import { modelingMachineEvent } from 'editor/manager'
 
 function sourceIndexToLineColumn(
   code: string,

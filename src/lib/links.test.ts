@@ -1,5 +1,4 @@
 import { VITE_KC_SITE_APP_URL } from 'env'
-
 import { createCreateFileUrl } from './links'
 
 describe(`link creation tests`, () => {

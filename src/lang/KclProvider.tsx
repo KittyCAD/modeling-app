@@ -1,11 +1,10 @@
-import { Diagnostic } from '@codemirror/lint'
-import { PATHS } from 'lib/paths'
-import { codeManager, kclManager } from 'lib/singletons'
-import { type IndexLoaderData } from 'lib/types'
 import { createContext, useContext, useEffect, useState } from 'react'
+import { type IndexLoaderData } from 'lib/types'
 import { useRouteLoaderData } from 'react-router-dom'
-
+import { codeManager, kclManager } from 'lib/singletons'
+import { Diagnostic } from '@codemirror/lint'
 import { KCLError } from './errors'
+import { PATHS } from 'lib/paths'
 
 const KclContext = createContext({
   code: codeManager?.code || '',
