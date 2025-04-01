@@ -1024,7 +1024,12 @@ export class SceneEntities {
         } else if (intersection2d) {
           const lastSegment = sketch.paths.slice(-1)[0] || sketch.start
 
-          let { snappedPoint, snappedToTangent } = this.getSnappedDragPoint(
+          let {
+            snappedPoint,
+            snappedToTangent,
+            intersectsXAxis,
+            intersectsYAxis,
+          } = this.getSnappedDragPoint(
             intersection2d,
             args.intersects,
             args.mouseEvent
@@ -1045,7 +1050,11 @@ export class SceneEntities {
             ANGLE_SNAP_THRESHOLD_DEGREES
 
           let resolvedFunctionName: ToolTip = 'line'
-          let angledLinePreviousArcTag = ''
+          const snaps = {
+            previousArcTag: '',
+            xAxis: !!intersectsXAxis,
+            yAxis: !!intersectsYAxis,
+          }
 
           // This might need to become its own function if we want more
           // case-based logic for different segment types
@@ -1071,7 +1080,7 @@ export class SceneEntities {
             if (trap(taggedAstResult)) return Promise.reject(taggedAstResult)
 
             modifiedAst = taggedAstResult.modifiedAst
-            angledLinePreviousArcTag = taggedAstResult.tag
+            snaps.previousArcTag = taggedAstResult.tag
             resolvedFunctionName = 'angledLine'
           } else if (isHorizontal) {
             // If the angle between is 0 or 180 degrees (+/- the snapping angle), make the line an xLine
@@ -1094,7 +1103,7 @@ export class SceneEntities {
             },
             fnName: resolvedFunctionName,
             pathToNode: sketchEntryNodePath,
-            angledLinePreviousArcTag,
+            snaps,
           })
           if (trap(tmp)) return Promise.reject(tmp)
           modifiedAst = tmp.modifiedAst
@@ -2684,6 +2693,8 @@ export class SceneEntities {
       isSnapped: !!(intersectsYAxis || intersectsXAxis || snappedToTangent),
       snappedToTangent,
       snappedPoint,
+      intersectsXAxis,
+      intersectsYAxis,
     }
   }
   positionDraftPoint({

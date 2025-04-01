@@ -48,6 +48,7 @@ import {
   CreatedSketchExprResult,
   SketchLineHelperKw,
   InputArgKeys,
+  addCall,
 } from 'lang/std/stdTypes'
 
 import {
@@ -2173,13 +2174,7 @@ export const circleThreePoint: SketchLineHelperKw = {
   },
 }
 export const angledLine: SketchLineHelper = {
-  add: ({
-    node,
-    pathToNode,
-    segmentInput,
-    replaceExistingCallback,
-    angledLinePreviousArcTag,
-  }) => {
+  add: ({ node, pathToNode, segmentInput, replaceExistingCallback, snaps }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { from, to } = segmentInput
     const _node = { ...node }
@@ -2188,9 +2183,10 @@ export const angledLine: SketchLineHelper = {
     if (err(_node1)) return _node1
     const { node: pipe } = _node1
 
-    const newAngleVal = angledLinePreviousArcTag
+    // Note: we could use snaps.xAxis/yAxis and angledLineToX/Y instead of angledLine
+    const newAngleVal = snaps?.previousArcTag
       ? createCallExpression('tangentToEnd', [
-          createLocalName(angledLinePreviousArcTag),
+          createLocalName(snaps?.previousArcTag),
         ])
       : createLiteral(roundOff(getAngle(from, to), 0))
     const newLengthVal = createLiteral(roundOff(getLength(from, to), 2))
@@ -2210,7 +2206,7 @@ export const angledLine: SketchLineHelper = {
           index: 0,
           key: 'angle',
           argType: 'angle',
-          expr: newAngleVal,
+          expr: newAngleVal, // TODO typescript error
         },
         {
           type: 'arrayOrObjItem',
@@ -3152,7 +3148,7 @@ interface CreateLineFnCallArgs {
   fnName: ToolTip
   pathToNode: PathToNode
   spliceBetween?: boolean
-  angledLinePreviousArcTag?: string
+  snaps?: addCall['snaps']
 }
 
 export function addNewSketchLn({
@@ -3162,7 +3158,7 @@ export function addNewSketchLn({
   pathToNode,
   input: segmentInput,
   spliceBetween = false,
-  angledLinePreviousArcTag = '',
+  snaps,
 }: CreateLineFnCallArgs):
   | {
       modifiedAst: Node<Program>
@@ -3192,7 +3188,7 @@ export function addNewSketchLn({
     pathToNode,
     segmentInput,
     spliceBetween,
-    angledLinePreviousArcTag,
+    snaps,
   })
 }
 

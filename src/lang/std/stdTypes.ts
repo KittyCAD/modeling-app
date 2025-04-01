@@ -84,6 +84,11 @@ export interface addCall extends ModifyAstBase {
   referencedSegment?: Path
   spliceBetween?: boolean
   angledLinePreviousArcTag?: string
+  snaps?: {
+    previousArcTag?: string
+    xAxis?: boolean
+    yAxis?: boolean
+  }
 }
 
 interface updateArgs extends ModifyAstBase {
