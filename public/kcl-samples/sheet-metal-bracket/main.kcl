@@ -11,14 +11,14 @@ mountingBoltPatternY = 4
 
 // Imput bolt pattern dimensions to mount a component to the bracket
 componentBoltDiameter = 3 / 16
-componentBoltPatternX = 1
+componentBoltPatternX = 2
 componentBoltPatternY = 3
 
 // Define bracket constants such as sheet metal thickness, bend radius, flange length, etc.
-hatHeight = 2
+hatHeight = 2.5
 bendAngle = 75
 thickness = 0.125
-interiorBendRadius = 0.09
+interiorBendRadius = 0.125
 
 // Calculate Remaining Parameters
 exteriorBendRadius = interiorBendRadius + thickness
@@ -31,7 +31,7 @@ flangeExtrusion = if mountingBoltPatternY > componentBoltPatternY {
 }
 
 // Draw the extrusion profile of the sheet metal bracket
-sketch001 = startSketchOn(XZ)
+bracketProfile = startSketchOn(XZ)
   |> startProfileAt([
        -mountingBoltPatternX / 2 - overhang,
        0
@@ -95,73 +95,51 @@ sketch001 = startSketchOn(XZ)
      )
 
 // Cut the bolt pattern in the left base flange
-sketch002 = startSketchOn(sketch001, seg06)
-profile001 = circle(
-  sketch002,
-  center = [
-    mountingBoltPatternX / 2,
-    overhang + mountingBoltPatternY
-  ],
-  radius = mountingBoltDiameter / 2,
-)
-profile002 = circle(sketch002, center = [mountingBoltPatternX / 2, overhang], radius = mountingBoltDiameter / 2)
-extrude002 = extrude([profile001, profile002], length = -thickness)
+leftFlangeBoltPattern = startSketchOn(bracketProfile, seg04)
+  |> circle(center = [-mountingBoltPatternX / 2, overhang], radius = mountingBoltDiameter / 2)
+  |> patternLinear2d(
+       %,
+       instances = 2,
+       distance = mountingBoltPatternY,
+       axis = [0, 1],
+     )
+  |> extrude(length = -thickness)
 
 // Cut the bolt pattern in the right base flange
-sketch003 = startSketchOn(sketch001, seg04)
-profile003 = circle(sketch003, center = [-mountingBoltPatternX / 2, overhang], radius = mountingBoltDiameter / 2)
-profile004 = circle(
-  sketch003,
-  center = [
-    -mountingBoltPatternX / 2,
-    overhang + mountingBoltPatternY
-  ],
-  radius = mountingBoltDiameter / 2,
-)
-extrude003 = extrude([profile003, profile004], length = -thickness)
+rightFlangeBoltPattern = startSketchOn(bracketProfile, seg06)
+  |> circle(center = [mountingBoltPatternX / 2, overhang], radius = mountingBoltDiameter / 2)
+  |> patternLinear2d(
+       %,
+       instances = 2,
+       distance = mountingBoltPatternY,
+       axis = [0, 1],
+     )
+  |> extrude(length = -thickness)
 
 // Provision the top flange with holes to mount an object
-sketch004 = startSketchOn(sketch001, seg05)
-profile005 = circle(
-  sketch004,
-  center = [
-    -componentBoltPatternX / 2,
-    -componentBoltPatternY / 2 + flangeExtrusion / 2
-  ],
-  radius = componentBoltDiameter / 2,
-)
-profile006 = circle(
-  sketch004,
-  center = [
-    -componentBoltPatternX / 2,
-    componentBoltPatternY / 2 + flangeExtrusion / 2
-  ],
-  radius = componentBoltDiameter / 2,
-)
-profile007 = circle(
-  sketch004,
-  center = [
-    componentBoltPatternX / 2,
-    -componentBoltPatternY / 2 + flangeExtrusion / 2
-  ],
-  radius = componentBoltDiameter / 2,
-)
-profile008 = circle(
-  sketch004,
-  center = [
-    componentBoltPatternX / 2,
-    componentBoltPatternY / 2 + flangeExtrusion / 2
-  ],
-  radius = componentBoltDiameter / 2,
-)
-profile009 = circle(sketch004, center = [0, flangeExtrusion / 2], radius = .75)
-extrude004 = extrude(
-  [
-    profile005,
-    profile006,
-    profile007,
-    profile008,
-    profile009
-  ],
-  length = -thickness,
-)
+topFlangeBoltPattern = startSketchOn(bracketProfile, seg05)
+  |> circle(
+       center = [
+         -componentBoltPatternX / 2,
+         -componentBoltPatternY / 2 + flangeExtrusion / 2
+       ],
+       radius = componentBoltDiameter / 2,
+     )
+  |> patternLinear2d(
+       %,
+       instances = 2,
+       distance = componentBoltPatternX,
+       axis = [1, 0],
+     )
+  |> patternLinear2d(
+       %,
+       instances = 2,
+       distance = componentBoltPatternY,
+       axis = [0, 1],
+     )
+  |> extrude(length = -thickness)
+
+// Place a hole at the center of the component bolt pattern to reduce mass
+centeredHole = startSketchOn(bracketProfile, seg05)
+  |> circle(center = [0, flangeExtrusion / 2], radius = 0.75)
+  |> extrude(length = -thickness)
