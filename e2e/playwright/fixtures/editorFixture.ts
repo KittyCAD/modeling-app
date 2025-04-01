@@ -81,6 +81,13 @@ export class EditorFixture {
   expectEditor = {
     toContain: this._expectEditorToContain(),
     not: { toContain: this._expectEditorToContain(true) },
+    toBe: async (code: string) => {
+      const currentCode = await this.getCurrentCode()
+      return expect(currentCode).toBe(code)
+    },
+  }
+  getCurrentCode = async () => {
+    return await this.codeContent.innerText()
   }
   snapshot = async (options?: { timeout?: number; name?: string }) => {
     const wasPaneOpen = await this.checkIfPaneIsOpen()

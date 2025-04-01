@@ -320,6 +320,7 @@ export function mutateAstWithTagForSketchSegment(
 
   // Check whether selection is a valid segment
   if (
+    !segmentNode.node.callee ||
     !(
       segmentNode.node.callee.name.name in sketchLineHelperMap ||
       segmentNode.node.callee.name.name in sketchLineHelperMapKw
