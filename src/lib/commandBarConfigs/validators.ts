@@ -7,8 +7,6 @@ import { ApiError_type } from '@kittycad/lib/dist/types/src/models'
 import { getNodeFromPath } from 'lang/queryAst'
 import { Expr } from 'lang/wasm'
 import { err } from 'lib/trap'
-import { KclCommandValue } from 'lib/commandTypes'
-import { stringToKclExpression } from 'lib/kclHelpers'
 import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
 import { transformAstSketchLines } from 'lang/std/sketchcombos'
 
@@ -325,6 +323,7 @@ export const constrainLengthValidator = async ({
     return 'Unable to find the segment node related to the selection'
   }
 
+  // TODO: revisit as this is likely insufficient
   const canBeConstrained =
     node.node.type === 'CallExpressionKw' &&
     node.node.arguments[0] &&

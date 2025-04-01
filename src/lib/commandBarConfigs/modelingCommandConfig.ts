@@ -1,6 +1,4 @@
 import { Models } from '@kittycad/lib'
-import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
-import { transformAstSketchLines } from 'lang/std/sketchcombos'
 import {
   isPathToNode,
   PathToNode,
