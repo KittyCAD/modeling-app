@@ -788,7 +788,7 @@ class EngineConnection extends EventTarget {
                   rtc_stun_rtt_sec: 0.0,
                 }
 
-                stats.forEach((report, _) => {
+                stats.forEach((report, id) => {
                   if (report.type === 'candidate-pair') {
                     if (report.state == 'succeeded') {
                       const rtt = report.currentRoundTripTime
@@ -801,8 +801,7 @@ class EngineConnection extends EventTarget {
                     // ID into it.  This raises the cardinality of collected metrics
                     // when/if we do.
                     // For now we just take one of the video tracks.
-
-                    if (report.id !== inboundVideoTrack.id) {
+                    if (report.trackIdentifier !== inboundVideoTrack.id) {
                       return
                     }
 
