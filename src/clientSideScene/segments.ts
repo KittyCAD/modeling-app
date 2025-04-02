@@ -1,4 +1,4 @@
-import { Coords2d } from 'lang/std/sketch'
+import type { NormalBufferAttributes, Texture } from 'three'
 import {
   BoxGeometry,
   BufferGeometry,
@@ -8,25 +8,33 @@ import {
   EllipseCurve,
   ExtrudeGeometry,
   Group,
-  LineCurve3,
-  LineBasicMaterial,
-  LineDashedMaterial,
   Line,
+  LineBasicMaterial,
+  LineCurve3,
+  LineDashedMaterial,
   Mesh,
   MeshBasicMaterial,
-  NormalBufferAttributes,
   Points,
   PointsMaterial,
   Shape,
   SphereGeometry,
-  Texture,
   Vector2,
   Vector3,
 } from 'three'
-import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { PathToNode, Sketch, getTangentialArcToInfo } from 'lang/wasm'
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
+
+import { calculate_circle_from_3_points } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+
+import type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
 import {
+  ARC_ANGLE_END,
+  ARC_ANGLE_REFERENCE_LINE,
+  ARC_CENTER_TO_FROM,
+  ARC_CENTER_TO_TO,
+  ARC_SEGMENT,
+  ARC_SEGMENT_BODY,
+  ARC_SEGMENT_DASH,
   CIRCLE_CENTER_HANDLE,
   CIRCLE_SEGMENT,
   CIRCLE_SEGMENT_BODY,
@@ -49,42 +57,39 @@ import {
   TANGENTIAL_ARC_TO_SEGMENT,
   TANGENTIAL_ARC_TO_SEGMENT_BODY,
   TANGENTIAL_ARC_TO__SEGMENT_DASH,
-  ARC_SEGMENT,
-  ARC_SEGMENT_BODY,
-  ARC_SEGMENT_DASH,
-  ARC_ANGLE_END,
-  getParentGroup,
-  ARC_CENTER_TO_FROM,
-  ARC_CENTER_TO_TO,
-  ARC_ANGLE_REFERENCE_LINE,
+  THREE_POINT_ARC_HANDLE2,
+  THREE_POINT_ARC_HANDLE3,
   THREE_POINT_ARC_SEGMENT,
   THREE_POINT_ARC_SEGMENT_BODY,
   THREE_POINT_ARC_SEGMENT_DASH,
-  THREE_POINT_ARC_HANDLE2,
-  THREE_POINT_ARC_HANDLE3,
-} from './sceneEntities'
-import { getTangentPointFromPreviousArc } from 'lib/utils2d'
+  getParentGroup,
+} from '@src/clientSideScene/sceneConstants'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import {
   ARROWHEAD,
   DRAFT_POINT,
-  SceneInfra,
   SEGMENT_LENGTH_LABEL,
   SEGMENT_LENGTH_LABEL_OFFSET_PX,
   SEGMENT_LENGTH_LABEL_TEXT,
-} from './sceneInfra'
-import { Themes, getThemeColorForThreeJs } from 'lib/theme'
-import { isClockwise, normaliseAngle, roundOff } from 'lib/utils'
-import {
+} from '@src/clientSideScene/sceneInfra'
+import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
+import type { Coords2d } from '@src/lang/std/sketch'
+import type { SegmentInputs } from '@src/lang/std/stdTypes'
+import type { PathToNode } from '@src/lang/wasm'
+import { getTangentialArcToInfo } from '@src/lang/wasm'
+import type { Selections } from '@src/lib/selections'
+import type { Themes } from '@src/lib/theme'
+import { getThemeColorForThreeJs } from '@src/lib/theme'
+import { err } from '@src/lib/trap'
+import { isClockwise, normaliseAngle, roundOff } from '@src/lib/utils'
+import { getTangentPointFromPreviousArc } from '@src/lib/utils2d'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import type {
   SegmentOverlay,
   SegmentOverlayPayload,
   SegmentOverlays,
-} from 'machines/modelingMachine'
-import { SegmentInputs } from 'lang/std/stdTypes'
-import { err } from 'lib/trap'
-import { sceneInfra } from 'lib/singletons'
-import { Selections } from 'lib/selections'
-import { calculate_circle_from_3_points } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
-import { commandBarActor } from 'machines/commandBarMachine'
+} from '@src/machines/modelingMachine'
+import toast from 'react-hot-toast'
 
 const ANGLE_INDICATOR_RADIUS = 30 // in px
 interface CreateSegmentArgs {
@@ -205,6 +210,7 @@ class StraightSegment implements SegmentUtils {
         from,
         to,
         scale,
+        sceneInfra,
       })
       segmentGroup.add(arrowGroup)
       segmentGroup.add(lengthIndicatorGroup)
@@ -572,6 +578,7 @@ class CircleSegment implements SegmentUtils {
       from: center,
       to: [center[0] + radius, center[1]],
       scale,
+      sceneInfra,
     })
 
     arcMesh.userData.type = meshType
@@ -1002,6 +1009,7 @@ class ArcSegment implements SegmentUtils {
       from: center,
       to: from,
       scale,
+      sceneInfra,
     })
 
     const grey = 0xaaaaaa
@@ -1037,7 +1045,7 @@ class ArcSegment implements SegmentUtils {
       endAngle,
       scale,
       color: grey, // Red color for the angle indicator
-    }) as Line
+    })
     angleIndicator.name = 'angleIndicator'
 
     // Create a new angle indicator for the end angle
@@ -1048,7 +1056,7 @@ class ArcSegment implements SegmentUtils {
       endAngle: (endAngle * Math.PI) / 180,
       scale,
       color: grey, // Green color for the end angle indicator
-    }) as Line
+    })
     endAngleIndicator.name = 'endAngleIndicator'
 
     // Create a length indicator for the end angle
@@ -1059,6 +1067,7 @@ class ArcSegment implements SegmentUtils {
         center[1] + Math.sin(endAngle) * radius,
       ],
       scale,
+      sceneInfra,
     })
     endAngleLengthIndicator.name = 'endAngleLengthIndicator'
 
@@ -1679,11 +1688,13 @@ function createLengthIndicator({
   to,
   scale,
   length = 0.1,
+  sceneInfra,
 }: {
   from: Coords2d
   to: Coords2d
   scale: number
   length?: number
+  sceneInfra: SceneInfra
 }) {
   const lengthIndicatorGroup = new Group()
   lengthIndicatorGroup.name = SEGMENT_LENGTH_LABEL
@@ -1701,6 +1712,7 @@ function createLengthIndicator({
       console.error('Unable to dimension segment when clicking the label.')
       return
     }
+
     sceneInfra.modelingSend({
       type: 'Set selection',
       data: {
@@ -1708,6 +1720,20 @@ function createLengthIndicator({
         selection: selection.graphSelections[0],
       },
     })
+
+    const canConstrainLength = angleLengthInfo({
+      selectionRanges: {
+        ...selection,
+        graphSelections: [selection.graphSelections[0]],
+      },
+      angleOrLength: 'setLength',
+    })
+    if (err(canConstrainLength) || !canConstrainLength.enabled) {
+      toast.error(
+        'Unable to constrain the length of this segment. Check the KCL code'
+      )
+      return
+    }
 
     // Command Bar
     commandBarActor.send({

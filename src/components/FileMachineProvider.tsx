@@ -1,42 +1,42 @@
 import { useMachine } from '@xstate/react'
-import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
-import { type IndexLoaderData } from 'lib/types'
-import { BROWSER_PATH, PATHS } from 'lib/paths'
 import React, { createContext, useEffect, useMemo } from 'react'
 import { toast } from 'react-hot-toast'
-import {
+import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
+import type {
   Actor,
   AnyStateMachine,
   ContextFrom,
   Prop,
   StateFrom,
-  fromPromise,
 } from 'xstate'
-import { fileMachine } from 'machines/fileMachine'
-import { isDesktop } from 'lib/isDesktop'
+import { fromPromise } from 'xstate'
+
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
+import { useMenuListener } from '@src/hooks/useMenu'
+import { newKclFile } from '@src/lang/project'
+import { createNamedViewsCommand } from '@src/lib/commandBarConfigs/namedViewsConfig'
+import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
 import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_FILE_NAME,
   DEFAULT_PROJECT_KCL_FILE,
   FILE_EXT,
-} from 'lib/constants'
-import { getProjectInfo } from 'lib/desktop'
-import { getNextDirName, getNextFileName } from 'lib/desktopFS'
-import { kclCommands } from 'lib/kclCommands'
-import { codeManager, kclManager } from 'lib/singletons'
-import {
-  getKclSamplesManifest,
-  KclSamplesManifestItem,
-} from 'lib/getKclSamplesManifest'
-import { markOnce } from 'lib/performance'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { settingsActor, useSettings } from 'machines/appMachine'
-import { createRouteCommands } from 'lib/commandBarConfigs/routeCommandConfig'
-import { useToken } from 'machines/appMachine'
-import { createNamedViewsCommand } from 'lib/commandBarConfigs/namedViewsConfig'
-import { reportRejection } from 'lib/trap'
-import { useMenuListener } from 'hooks/useMenu'
-import { modelingMenuCallbackMostActions } from 'menu/register'
-import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
+} from '@src/lib/constants'
+import { getProjectInfo } from '@src/lib/desktop'
+import { getNextDirName, getNextFileName } from '@src/lib/desktopFS'
+import type { KclSamplesManifestItem } from '@src/lib/getKclSamplesManifest'
+import { getKclSamplesManifest } from '@src/lib/getKclSamplesManifest'
+import { isDesktop } from '@src/lib/isDesktop'
+import { kclCommands } from '@src/lib/kclCommands'
+import { BROWSER_PATH, PATHS } from '@src/lib/paths'
+import { markOnce } from '@src/lib/performance'
+import { codeManager, kclManager } from '@src/lib/singletons'
+import { err, reportRejection } from '@src/lib/trap'
+import { type IndexLoaderData } from '@src/lib/types'
+import { useSettings, useToken } from '@src/machines/appMachine'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import { fileMachine } from '@src/machines/fileMachine'
+import { modelingMenuCallbackMostActions } from '@src/menu/register'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -62,6 +62,7 @@ export const FileMachineProvider = ({
   const [kclSamples, setKclSamples] = React.useState<KclSamplesManifestItem[]>(
     []
   )
+
   const filePath = useAbsoluteFilePath()
   // Only create the native file menus on desktop
   useEffect(() => {
@@ -183,8 +184,11 @@ export const FileMachineProvider = ({
             commandBarActor.send({ type: 'Close' })
             navigate(
               `..${PATHS.FILE}/${encodeURIComponent(
+                // TODO: Should this be context.selectedDirectory.path?
+                // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
                 context.selectedDirectory +
                   window.electron.path.sep +
+                  // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
                   event.output.name
               )}`
             )
@@ -247,7 +251,12 @@ export const FileMachineProvider = ({
                 createdPath
               )
             } else {
-              await window.electron.writeFile(createdPath, input.content ?? '')
+              const codeToWrite = newKclFile(
+                input.content,
+                settings.modeling.defaultUnit.current
+              )
+              if (err(codeToWrite)) return Promise.reject(codeToWrite)
+              await window.electron.writeFile(createdPath, codeToWrite)
             }
           }
 
@@ -276,7 +285,12 @@ export const FileMachineProvider = ({
             })
             createdName = name
             createdPath = path
-            await window.electron.writeFile(createdPath, input.content ?? '')
+            const codeToWrite = newKclFile(
+              input.content,
+              settings.modeling.defaultUnit.current
+            )
+            if (err(codeToWrite)) return Promise.reject(codeToWrite)
+            await window.electron.writeFile(createdPath, codeToWrite)
           }
 
           return {
@@ -367,10 +381,16 @@ export const FileMachineProvider = ({
           const hasKclEntries =
             entries.filter((e: string) => e.endsWith('.kcl')).length !== 0
           if (!hasKclEntries) {
-            await window.electron.writeFile(
-              window.electron.path.join(project.path, DEFAULT_PROJECT_KCL_FILE),
-              ''
+            const codeToWrite = newKclFile(
+              undefined,
+              settings.modeling.defaultUnit.current
             )
+            if (err(codeToWrite)) return Promise.reject(codeToWrite)
+            const path = window.electron.path.join(
+              project.path,
+              DEFAULT_PROJECT_KCL_FILE
+            )
+            await window.electron.writeFile(path, codeToWrite)
             // Refresh the route selected above because it's possible we're on
             // the same path on the navigate, which doesn't cause anything to
             // refresh, leaving a stale execution state.
@@ -420,7 +440,9 @@ export const FileMachineProvider = ({
         authToken: token ?? '',
         projectData,
         settings: {
-          defaultUnit: settings.modeling.defaultUnit.current ?? 'mm',
+          defaultUnit:
+            settings.modeling.defaultUnit.current ??
+            DEFAULT_DEFAULT_LENGTH_UNIT,
         },
         specialPropsForSampleCommand: {
           onSubmit: async (data) => {
@@ -435,18 +457,6 @@ export const FileMachineProvider = ({
                   name: data.sampleName,
                   content: data.code,
                   makeDir: false,
-                },
-              })
-            }
-
-            // Either way, we want to overwrite the defaultUnit project setting
-            // with the sample's setting.
-            if (data.sampleUnits) {
-              settingsActor.send({
-                type: 'set.modeling.defaultUnit',
-                data: {
-                  level: 'project',
-                  value: data.sampleUnits,
                 },
               })
             }

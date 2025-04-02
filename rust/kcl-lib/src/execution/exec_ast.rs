@@ -64,7 +64,11 @@ impl ExecutorContext {
                     let new_units = exec_state.length_unit();
                     if !self.engine.execution_kind().await.is_isolated() {
                         self.engine
-                            .set_units(new_units.into(), annotation.as_source_range())
+                            .set_units(
+                                new_units.into(),
+                                annotation.as_source_range(),
+                                exec_state.id_generator(),
+                            )
                             .await?;
                     }
                 } else {
@@ -106,12 +110,7 @@ impl ExecutorContext {
         let old_units = exec_state.length_unit();
         let original_execution = self.engine.replace_execution_kind(exec_kind).await;
 
-        let mut local_state = ModuleState::new(
-            &self.settings,
-            path.std_path(),
-            exec_state.stack().memory.clone(),
-            Some(module_id),
-        );
+        let mut local_state = ModuleState::new(path.std_path(), exec_state.stack().memory.clone(), Some(module_id));
         if !preserve_mem {
             std::mem::swap(&mut exec_state.mod_local, &mut local_state);
         }
@@ -143,7 +142,9 @@ impl ExecutorContext {
         // command and we'd need to flush the batch again.
         // This avoids that.
         if !exec_kind.is_isolated() && new_units != old_units && *path != ModulePath::Main {
-            self.engine.set_units(old_units.into(), Default::default()).await?;
+            self.engine
+                .set_units(old_units.into(), Default::default(), exec_state.id_generator())
+                .await?;
         }
         self.engine.replace_execution_kind(original_execution).await;
 
@@ -1174,7 +1175,7 @@ impl Node<CallExpressionKw> {
                     ));
                 }
 
-                let op = if func.feature_tree_operation() {
+                let op = if func.feature_tree_operation() && !ctx.is_isolated_execution().await {
                     let op_labeled_args = args
                         .kw_args
                         .labeled
@@ -1244,24 +1245,26 @@ impl Node<CallExpressionKw> {
                 // exec_state.
                 let func = fn_name.get_result(exec_state, ctx).await?.clone();
 
-                // Track call operation.
-                let op_labeled_args = args
-                    .kw_args
-                    .labeled
-                    .iter()
-                    .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
-                    .collect();
-                exec_state.global.operations.push(Operation::UserDefinedFunctionCall {
-                    name: Some(fn_name.to_string()),
-                    function_source_range: func.function_def_source_range().unwrap_or_default(),
-                    unlabeled_arg: args
+                if !ctx.is_isolated_execution().await {
+                    // Track call operation.
+                    let op_labeled_args = args
                         .kw_args
-                        .unlabeled
-                        .as_ref()
-                        .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
-                    labeled_args: op_labeled_args,
-                    source_range: callsite,
-                });
+                        .labeled
+                        .iter()
+                        .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
+                        .collect();
+                    exec_state.global.operations.push(Operation::UserDefinedFunctionCall {
+                        name: Some(fn_name.to_string()),
+                        function_source_range: func.function_def_source_range().unwrap_or_default(),
+                        unlabeled_arg: args
+                            .kw_args
+                            .unlabeled
+                            .as_ref()
+                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
+                        labeled_args: op_labeled_args,
+                        source_range: callsite,
+                    });
+                }
 
                 let Some(fn_src) = func.as_fn() else {
                     return Err(KclError::Semantic(KclErrorDetails {
@@ -1288,8 +1291,10 @@ impl Node<CallExpressionKw> {
                     })
                 })?;
 
-                // Track return operation.
-                exec_state.global.operations.push(Operation::UserDefinedFunctionReturn);
+                if !ctx.is_isolated_execution().await {
+                    // Track return operation.
+                    exec_state.global.operations.push(Operation::UserDefinedFunctionReturn);
+                }
 
                 Ok(result)
             }
@@ -1326,7 +1331,7 @@ impl Node<CallExpression> {
                     ));
                 }
 
-                let op = if func.feature_tree_operation() {
+                let op = if func.feature_tree_operation() && !ctx.is_isolated_execution().await {
                     let op_labeled_args = func
                         .args(false)
                         .iter()
@@ -1384,15 +1389,17 @@ impl Node<CallExpression> {
                 // exec_state.
                 let func = fn_name.get_result(exec_state, ctx).await?.clone();
 
-                // Track call operation.
-                exec_state.global.operations.push(Operation::UserDefinedFunctionCall {
-                    name: Some(fn_name.to_string()),
-                    function_source_range: func.function_def_source_range().unwrap_or_default(),
-                    unlabeled_arg: None,
-                    // TODO: Add the arguments for legacy positional parameters.
-                    labeled_args: Default::default(),
-                    source_range: callsite,
-                });
+                if !ctx.is_isolated_execution().await {
+                    // Track call operation.
+                    exec_state.global.operations.push(Operation::UserDefinedFunctionCall {
+                        name: Some(fn_name.to_string()),
+                        function_source_range: func.function_def_source_range().unwrap_or_default(),
+                        unlabeled_arg: None,
+                        // TODO: Add the arguments for legacy positional parameters.
+                        labeled_args: Default::default(),
+                        source_range: callsite,
+                    });
+                }
 
                 let Some(fn_src) = func.as_fn() else {
                     return Err(KclError::Semantic(KclErrorDetails {
@@ -1418,8 +1425,10 @@ impl Node<CallExpression> {
                     })
                 })?;
 
-                // Track return operation.
-                exec_state.global.operations.push(Operation::UserDefinedFunctionReturn);
+                if !ctx.is_isolated_execution().await {
+                    // Track return operation.
+                    exec_state.global.operations.push(Operation::UserDefinedFunctionReturn);
+                }
 
                 Ok(result)
             }

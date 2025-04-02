@@ -1,12 +1,13 @@
-import { app, Menu, BrowserWindow } from 'electron'
-import { projectFileRole, modelingFileRole } from 'menu/fileRole'
-import { projectEditRole, modelingEditRole } from 'menu/editRole'
-import { projectViewRole, modelingViewRole } from 'menu/viewRole'
-import { modelingDesignRole } from 'menu/designRole'
-import { helpRole } from 'menu/helpRole'
-
+import { modelingDesignRole } from '@src/menu/designRole'
+import { modelingEditRole, projectEditRole } from '@src/menu/editRole'
+import { modelingFileRole, projectFileRole } from '@src/menu/fileRole'
+import { helpRole } from '@src/menu/helpRole'
+import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
+import { modelingViewRole, projectViewRole } from '@src/menu/viewRole'
+import type { BrowserWindow } from 'electron'
+import { Menu, app } from 'electron'
 import os from 'node:os'
-import { ZooMenuItemConstructorOptions } from 'menu/roles'
+
 const isMac = os.platform() === 'darwin'
 
 /**

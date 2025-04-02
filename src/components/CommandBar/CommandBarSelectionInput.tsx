@@ -1,18 +1,22 @@
 import { useSelector } from '@xstate/react'
-import { Artifact } from 'lang/std/artifactGraph'
-import { CommandArgument } from 'lib/commandTypes'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import type { StateFrom } from 'xstate'
+
+import type { Artifact } from '@src/lang/std/artifactGraph'
+import type { CommandArgument } from '@src/lib/commandTypes'
 import {
   canSubmitSelectionArg,
   getSelectionCountByType,
   getSelectionTypeDisplayText,
-} from 'lib/selections'
-import { kclManager } from 'lib/singletons'
-import { reportRejection } from 'lib/trap'
-import { toSync } from 'lib/utils'
-import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
-import { modelingMachine } from 'machines/modelingMachine'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { StateFrom } from 'xstate'
+} from '@src/lib/selections'
+import { engineCommandManager, kclManager } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
+import { toSync } from '@src/lib/utils'
+import {
+  commandBarActor,
+  useCommandBarState,
+} from '@src/machines/commandBarMachine'
+import type { modelingMachine } from '@src/machines/modelingMachine'
 
 const semanticEntityNames: {
   [key: string]: Array<Artifact['type'] | 'defaultPlane'>
@@ -111,6 +115,23 @@ function CommandBarSelectionInput({
 
     onSubmit(selection)
   }
+
+  // Clear selection if needed
+  useEffect(() => {
+    arg.clearSelectionFirst &&
+      engineCommandManager.modelingSend({
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+        },
+      })
+  }, [arg.clearSelectionFirst])
+
+  // Set selection filter if needed, and reset it when the component unmounts
+  useEffect(() => {
+    arg.selectionFilter && kclManager.setSelectionFilter(arg.selectionFilter)
+    return () => kclManager.defaultSelectionFilter(selection)
+  }, [arg.selectionFilter])
 
   return (
     <form id="arg-form" onSubmit={handleSubmit}>

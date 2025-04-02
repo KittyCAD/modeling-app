@@ -1,32 +1,41 @@
+import type { Completion } from '@codemirror/autocomplete'
 import {
   closeBrackets,
   closeBracketsKeymap,
-  Completion,
   completionKeymap,
   completionStatus,
 } from '@codemirror/autocomplete'
-import { EditorView, keymap, ViewUpdate } from '@codemirror/view'
-import { CustomIcon } from 'components/CustomIcon'
-import { CommandArgument, KclCommandValue } from 'lib/commandTypes'
-import { getSystemTheme } from 'lib/theme'
-import { useCalculateKclExpression } from 'lib/useCalculateKclExpression'
-import { roundOff } from 'lib/utils'
-import { varMentions } from 'lib/varCompletionExtension'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
-import styles from './CommandBarKclInput.module.css'
-import { createLocalName, createVariableDeclaration } from 'lang/modifyAst'
-import { useCodeMirror } from 'components/ModelingSidebar/ModelingPanes/CodeEditor'
+import type { ViewUpdate } from '@codemirror/view'
+import { EditorView, keymap } from '@codemirror/view'
 import { useSelector } from '@xstate/react'
-import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
-import { useSettings } from 'machines/appMachine'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
-import { AnyStateMachine, SnapshotFrom } from 'xstate'
-import { kclManager } from 'lib/singletons'
-import { getNodeFromPath } from 'lang/queryAst'
-import { isPathToNode, SourceRange, VariableDeclarator } from 'lang/wasm'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { err } from 'lib/trap'
+import { useHotkeys } from 'react-hotkeys-hook'
+import type { AnyStateMachine, SnapshotFrom } from 'xstate'
+
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import { CustomIcon } from '@src/components/CustomIcon'
+import { useCodeMirror } from '@src/components/ModelingSidebar/ModelingPanes/CodeEditor'
+import { Spinner } from '@src/components/Spinner'
+import { createLocalName, createVariableDeclaration } from '@src/lang/create'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import type { SourceRange, VariableDeclarator } from '@src/lang/wasm'
+import { isPathToNode } from '@src/lang/wasm'
+import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
+import { kclManager } from '@src/lib/singletons'
+import { getSystemTheme } from '@src/lib/theme'
+import { err } from '@src/lib/trap'
+import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
+import { roundOff } from '@src/lib/utils'
+import { varMentions } from '@src/lib/varCompletionExtension'
+import { useSettings } from '@src/machines/appMachine'
+import {
+  commandBarActor,
+  useCommandBarState,
+} from '@src/machines/commandBarMachine'
+
+import styles from './CommandBarKclInput.module.css'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
@@ -115,6 +124,7 @@ function CommandBarKclInput({
     setNewVariableName,
     isNewVariableNameUnique,
     prevVariables,
+    isExecuting,
   } = useCalculateKclExpression({
     value,
     initialVariableName,
@@ -200,9 +210,11 @@ function CommandBarKclInput({
 
   useEffect(() => {
     setCanSubmit(
-      calcResult !== 'NAN' && (!createNewVariable || isNewVariableNameUnique)
+      calcResult !== 'NAN' &&
+        (!createNewVariable || isNewVariableNameUnique) &&
+        !isExecuting
     )
-  }, [calcResult, createNewVariable, isNewVariableNameUnique])
+  }, [calcResult, createNewVariable, isNewVariableNameUnique, isExecuting])
 
   function handleSubmit(e?: React.FormEvent<HTMLFormElement>) {
     e?.preventDefault()
@@ -268,9 +280,13 @@ function CommandBarKclInput({
               : 'text-succeed-80 dark:text-succeed-40'
           }
         >
-          {calcResult === 'NAN'
-            ? "Can't calculate"
-            : roundOff(Number(calcResult), 4)}
+          {isExecuting === true || !calcResult ? (
+            <Spinner className="text-inherit w-4 h-4" />
+          ) : calcResult === 'NAN' ? (
+            "Can't calculate"
+          ) : (
+            roundOff(Number(calcResult), 4)
+          )}
         </span>
       </label>
       {createNewVariable ? (

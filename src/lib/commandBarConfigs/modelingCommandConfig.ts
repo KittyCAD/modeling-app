@@ -1,28 +1,34 @@
-import { Models } from '@kittycad/lib'
-import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
-import { transformAstSketchLines } from 'lang/std/sketchcombos'
-import {
-  isPathToNode,
+import type { Models } from '@kittycad/lib'
+import { DEV } from '@src/env'
+
+import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
+import type {
   PathToNode,
   SourceRange,
   VariableDeclarator,
-} from 'lang/wasm'
-import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
-import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE } from 'lib/constants'
-import { components } from 'lib/machine-api'
-import { Selections } from 'lib/selections'
-import { codeManager, kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
-import { modelingMachine, SketchTool } from 'machines/modelingMachine'
+} from '@src/lang/wasm'
+import { isPathToNode } from '@src/lang/wasm'
 import {
   loftValidator,
   revolveAxisValidator,
   shellValidator,
   sweepValidator,
-} from './validators'
-import { getVariableDeclaration } from 'lang/queryAst/getVariableDeclaration'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { getNodeFromPath } from 'lang/queryAst'
+} from '@src/lib/commandBarConfigs/validators'
+import type {
+  KclCommandValue,
+  StateMachineCommandSetConfig,
+} from '@src/lib/commandTypes'
+import { KCL_DEFAULT_DEGREE, KCL_DEFAULT_LENGTH } from '@src/lib/constants'
+import type { components } from '@src/lib/machine-api'
+import type { Selections } from '@src/lib/selections'
+import { codeManager, kclManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
+import type { SketchTool, modelingMachine } from '@src/machines/modelingMachine'
+import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/Settings'
 
 type OutputFormat = Models['OutputFormat3d_type']
 type OutputTypeKey = OutputFormat['type']
@@ -41,7 +47,7 @@ export const COMMAND_APPEARANCE_COLOR_DEFAULT = 'default'
 export type HelixModes = 'Axis' | 'Edge' | 'Cylinder'
 
 export type ModelingCommandSchema = {
-  'Enter sketch': {}
+  'Enter sketch': { forceNewSketch?: boolean }
   Export: {
     type: OutputTypeKey
     storage?: StorageUnion
@@ -75,11 +81,15 @@ export type ModelingCommandSchema = {
     thickness: KclCommandValue
   }
   Revolve: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // Flow arg
+    axisOrEdge: 'Axis' | 'Edge'
+    // KCL stdlib arguments
     selection: Selections
     angle: KclCommandValue
-    axisOrEdge: 'Axis' | 'Edge'
-    axis: string
-    edge: Selections
+    axis: string | undefined
+    edge: Selections | undefined
   }
   Fillet: {
     // Enables editing workflow
@@ -146,10 +156,22 @@ export type ModelingCommandSchema = {
     prompt: string
     selection: Selections
   }
+  // TODO: {} means any non-nullish value. This is probably not what we want.
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   'Delete selection': {}
   Appearance: {
     nodeToEdit?: PathToNode
     color: string
+  }
+  'Boolean Subtract': {
+    target: Selections
+    tool: Selections
+  }
+  'Boolean Union': {
+    solids: Selections
+  }
+  'Boolean Intersect': {
+    solids: Selections
   }
 }
 
@@ -326,7 +348,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: (commandBarContext) => {
           return Object.values(
             commandBarContext.machineManager.machines || []
-          )[0] as components['schemas']['MachineInfoResponse']
+          )[0]
         },
       },
     },
@@ -458,6 +480,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'revolve',
     needsReview: true,
     args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
       selection: {
         inputType: 'selection',
         selectionTypes: ['solid2d', 'segment'],
@@ -486,6 +515,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'X Axis', isCurrent: true, value: 'X' },
           { name: 'Y Axis', isCurrent: false, value: 'Y' },
         ],
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       edge: {
         required: (commandContext) =>
@@ -502,6 +532,67 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_DEGREE,
         required: true,
+      },
+    },
+  },
+  'Boolean Subtract': {
+    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
+    description: 'Subtract one solid from another.',
+    icon: 'booleanSubtract',
+    needsReview: true,
+    args: {
+      target: {
+        inputType: 'selection',
+        selectionTypes: ['path'],
+        selectionFilter: ['object'],
+        multiple: false,
+        required: true,
+        skip: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      tool: {
+        clearSelectionFirst: true,
+        inputType: 'selection',
+        selectionTypes: ['path'],
+        selectionFilter: ['object'],
+        multiple: false,
+        required: true,
+        skip: false,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+    },
+  },
+  'Boolean Union': {
+    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
+    description: 'Union multiple solids into a single solid.',
+    icon: 'booleanUnion',
+    needsReview: true,
+    args: {
+      solids: {
+        inputType: 'selection',
+        selectionTypes: ['path'],
+        selectionFilter: ['object'],
+        multiple: true,
+        required: true,
+        skip: false,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+    },
+  },
+  'Boolean Intersect': {
+    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
+    description: 'Subtract one solid from another.',
+    icon: 'booleanIntersect',
+    needsReview: true,
+    args: {
+      solids: {
+        inputType: 'selectionMixed',
+        selectionTypes: ['path'],
+        selectionFilter: ['object'],
+        multiple: true,
+        required: true,
+        skip: false,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
     },
   },
@@ -606,9 +697,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: (commandContext) =>
-          !['Cylinder'].includes(
-            commandContext.argumentsToSubmit.mode as string
-          ),
+          ['Axis'].includes(commandContext.argumentsToSubmit.mode as string),
       },
       ccw: {
         inputType: 'options',
@@ -938,3 +1027,5 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
 }
+
+modelingMachineCommandConfig

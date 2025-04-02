@@ -1,5 +1,6 @@
-import { BrowserWindow } from 'electron'
-import type { Channel } from '../channels'
+import type { BrowserWindow } from 'electron'
+
+import type { Channel } from '@src/channels'
 
 // types for knowing what menu sends what webContent payload
 export type MenuLabels =

@@ -1,0 +1,7 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing pattern_circular_in_module.kcl
+---
+import thing from "thing.kcl"
+
+thing()

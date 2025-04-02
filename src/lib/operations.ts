@@ -1,27 +1,27 @@
-import { CustomIconName } from 'components/CustomIcon'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+
+import type { CustomIconName } from '@src/components/CustomIcon'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
-  Artifact,
   getArtifactOfTypes,
   getCapCodeRef,
   getEdgeCutConsumedCodeRef,
   getSweepEdgeCodeRef,
   getWallCodeRef,
-} from 'lang/std/artifactGraph'
-import { Operation } from '@rust/kcl-lib/bindings/Operation'
-import { codeManager, engineCommandManager, kclManager } from './singletons'
-import { err } from './trap'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { sourceRangeFromRust } from 'lang/wasm'
-import { CommandBarMachineEvent } from 'machines/commandBarMachine'
-import { stringToKclExpression } from './kclHelpers'
-import {
+} from '@src/lang/std/artifactGraph'
+import { sourceRangeFromRust } from '@src/lang/wasm'
+import type {
   HelixModes,
   ModelingCommandSchema,
-} from './commandBarConfigs/modelingCommandConfig'
-import { isDefaultPlaneStr } from './planes'
-import { Selection, Selections } from './selections'
-import { rustContext } from './singletons'
-import { KclExpression } from './commandTypes'
+} from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import type { KclExpression } from '@src/lib/commandTypes'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
+import { isDefaultPlaneStr } from '@src/lib/planes'
+import type { Selection, Selections } from '@src/lib/selections'
+import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
+import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -73,7 +73,7 @@ const prepareToEditExtrude: PrepareToEditCallback =
         key: artifact.pathId,
         types: ['path'],
       },
-      engineCommandManager.artifactGraph
+      kclManager.artifactGraph
     )
     if (
       err(pathArtifact) ||
@@ -86,7 +86,7 @@ const prepareToEditExtrude: PrepareToEditCallback =
         key: pathArtifact.solid2dId,
         types: ['solid2d'],
       },
-      engineCommandManager.artifactGraph
+      kclManager.artifactGraph
     )
     if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2d') {
       return baseCommand
@@ -157,7 +157,7 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
       key: artifact.consumedEdgeId,
       types: ['segment', 'sweepEdge'],
     },
-    engineCommandManager.artifactGraph
+    kclManager.artifactGraph
   )
   if (err(edgeArtifact)) {
     return { reason: "Couldn't find edge artifact" }
@@ -165,7 +165,7 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
 
   let edgeCodeRef = getEdgeCutConsumedCodeRef(
     artifact,
-    engineCommandManager.artifactGraph
+    kclManager.artifactGraph
   )
   if (err(edgeCodeRef)) {
     return { reason: "Couldn't find edge coderef" }
@@ -272,16 +272,13 @@ const prepareToEditShell: PrepareToEditCallback =
     // that we can query in another loop later
     const sweepId = operation.unlabeledArg.value.value.artifactId
     const candidates: Map<string, Selection> = new Map()
-    for (const artifact of engineCommandManager.artifactGraph.values()) {
+    for (const artifact of kclManager.artifactGraph.values()) {
       if (
         artifact.type === 'cap' &&
         artifact.sweepId === sweepId &&
         artifact.subType
       ) {
-        const codeRef = getCapCodeRef(
-          artifact,
-          engineCommandManager.artifactGraph
-        )
+        const codeRef = getCapCodeRef(artifact, kclManager.artifactGraph)
         if (err(codeRef)) {
           return baseCommand
         }
@@ -297,7 +294,7 @@ const prepareToEditShell: PrepareToEditCallback =
       ) {
         const segArtifact = getArtifactOfTypes(
           { key: artifact.segId, types: ['segment'] },
-          engineCommandManager.artifactGraph
+          kclManager.artifactGraph
         )
         if (err(segArtifact)) {
           return baseCommand
@@ -461,7 +458,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
       key: artifact.pathId,
       types: ['path'],
     },
-    engineCommandManager.artifactGraph
+    kclManager.artifactGraph
   )
 
   if (
@@ -477,7 +474,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
       key: pathArtifact.solid2dId,
       types: ['solid2d'],
     },
-    engineCommandManager.artifactGraph
+    kclManager.artifactGraph
   )
 
   if (err(targetArtifact) || targetArtifact.type !== 'solid2d') {
@@ -508,7 +505,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
       key: operation.labeledArgs.path.value.value.artifactId,
       types: ['path'],
     },
-    engineCommandManager.artifactGraph
+    kclManager.artifactGraph
   )
 
   if (err(trajectoryPathArtifact) || trajectoryPathArtifact.type !== 'path') {
@@ -520,7 +517,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
       key: trajectoryPathArtifact.segIds[0],
       types: ['segment'],
     },
-    engineCommandManager.artifactGraph
+    kclManager.artifactGraph
   )
 
   if (err(trajectoryArtifact) || trajectoryArtifact.type !== 'segment') {
@@ -607,7 +604,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
           key: axisValue.artifact_id,
           types: ['segment'],
         },
-        engineCommandManager.artifactGraph
+        kclManager.artifactGraph
       )
       if (err(artifact)) {
         return { reason: "Couldn't find related edge artifact" }
@@ -630,16 +627,13 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
           key: axisValue.value,
           types: ['sweepEdge'],
         },
-        engineCommandManager.artifactGraph
+        kclManager.artifactGraph
       )
       if (err(artifact)) {
         return { reason: "Couldn't find related edge artifact" }
       }
 
-      const codeRef = getSweepEdgeCodeRef(
-        artifact,
-        engineCommandManager.artifactGraph
-      )
+      const codeRef = getSweepEdgeCodeRef(artifact, kclManager.artifactGraph)
       if (err(codeRef)) {
         return { reason: "Couldn't find related edge code ref" }
       }
@@ -667,7 +661,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
     }
 
     const sweepId = operation.labeledArgs.cylinder.value.value.artifactId
-    const wallArtifact = [...engineCommandManager.artifactGraph.values()].find(
+    const wallArtifact = [...kclManager.artifactGraph.values()].find(
       (p) => p.type === 'wall' && p.sweepId === sweepId
     )
     if (!wallArtifact || wallArtifact.type !== 'wall') {
@@ -676,10 +670,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
       }
     }
 
-    const wallCodeRef = getWallCodeRef(
-      wallArtifact,
-      engineCommandManager.artifactGraph
-    )
+    const wallCodeRef = getWallCodeRef(wallArtifact, kclManager.artifactGraph)
     if (err(wallCodeRef)) {
       return {
         reason: "Cylinder arg found doesn't point to a valid sweep code ref",
@@ -757,7 +748,9 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
     } else {
       return { reason: "Couldn't find radius argument" }
     }
+  }
 
+  if (mode === 'Axis') {
     if ('length' in operation.labeledArgs && operation.labeledArgs.length) {
       const r = await stringToKclExpression(
         codeManager.code.slice(
@@ -808,6 +801,163 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   }
 }
 
+const prepareToEditRevolve: PrepareToEditCallback = async ({
+  operation,
+  artifact,
+}) => {
+  const baseCommand = {
+    name: 'Revolve',
+    groupId: 'modeling',
+  }
+  if (
+    !artifact ||
+    !('pathId' in artifact) ||
+    operation.type !== 'StdLibCall' ||
+    !operation.labeledArgs
+  ) {
+    return { reason: 'Wrong operation type or artifact' }
+  }
+
+  // We have to go a little roundabout to get from the original artifact
+  // to the solid2DId that we need to pass to the command.
+  const pathArtifact = getArtifactOfTypes(
+    {
+      key: artifact.pathId,
+      types: ['path'],
+    },
+    kclManager.artifactGraph
+  )
+  if (
+    err(pathArtifact) ||
+    pathArtifact.type !== 'path' ||
+    !pathArtifact.solid2dId
+  ) {
+    return { reason: "Couldn't find related path artifact" }
+  }
+
+  const solid2DArtifact = getArtifactOfTypes(
+    {
+      key: pathArtifact.solid2dId,
+      types: ['solid2d'],
+    },
+    kclManager.artifactGraph
+  )
+  if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2d') {
+    return { reason: "Couldn't find related solid2d artifact" }
+  }
+
+  const selection = {
+    graphSelections: [
+      {
+        artifact: solid2DArtifact,
+        codeRef: pathArtifact.codeRef,
+      },
+    ],
+    otherSelections: [],
+  }
+
+  // axis options string arg
+  if (!('axis' in operation.labeledArgs) || !operation.labeledArgs.axis) {
+    return { reason: "Couldn't find axis argument" }
+  }
+
+  const axisValue = operation.labeledArgs.axis.value
+  let axisOrEdge: 'Axis' | 'Edge' | undefined
+  let axis: string | undefined
+  let edge: Selections | undefined
+  if (axisValue.type === 'String') {
+    // default axis casee
+    axisOrEdge = 'Axis'
+    axis = axisValue.value
+  } else if (axisValue.type === 'TagIdentifier' && axisValue.artifact_id) {
+    // segment case
+    axisOrEdge = 'Edge'
+    const artifact = getArtifactOfTypes(
+      {
+        key: axisValue.artifact_id,
+        types: ['segment'],
+      },
+      kclManager.artifactGraph
+    )
+    if (err(artifact)) {
+      return { reason: "Couldn't find related edge artifact" }
+    }
+
+    edge = {
+      graphSelections: [
+        {
+          artifact,
+          codeRef: artifact.codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+  } else if (axisValue.type === 'Uuid') {
+    // sweepEdge case
+    axisOrEdge = 'Edge'
+    const artifact = getArtifactOfTypes(
+      {
+        key: axisValue.value,
+        types: ['sweepEdge'],
+      },
+      kclManager.artifactGraph
+    )
+    if (err(artifact)) {
+      return { reason: "Couldn't find related edge artifact" }
+    }
+
+    const codeRef = getSweepEdgeCodeRef(artifact, kclManager.artifactGraph)
+    if (err(codeRef)) {
+      return { reason: "Couldn't find related edge code ref" }
+    }
+
+    edge = {
+      graphSelections: [
+        {
+          artifact,
+          codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+  } else {
+    return { reason: 'The type of the axis argument is unsupported' }
+  }
+
+  // angle kcl arg
+  if (!('angle' in operation.labeledArgs) || !operation.labeledArgs.angle) {
+    return { reason: "Couldn't find angle argument" }
+  }
+  const angle = await stringToKclExpression(
+    codeManager.code.slice(
+      operation.labeledArgs.angle.sourceRange[0],
+      operation.labeledArgs.angle.sourceRange[1]
+    )
+  )
+  if (err(angle) || 'errors' in angle) {
+    return { reason: 'Error in angle argument retrieval' }
+  }
+
+  // Assemble the default argument values for the Offset Plane command,
+  // with `nodeToEdit` set, which will let the Offset Plane actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Revolve'] = {
+    axisOrEdge,
+    axis,
+    edge,
+    selection,
+    angle,
+    nodeToEdit: getNodePathFromSourceRange(
+      kclManager.ast,
+      sourceRangeFromRust(operation.sourceRange)
+    ),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
 /**
  * A map of standard library calls to their corresponding information
  * for use in the feature tree UI.
@@ -847,6 +997,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Import',
     icon: 'import',
   },
+  intersect: {
+    label: 'Intersect',
+    icon: 'booleanIntersect',
+  },
   loft: {
     label: 'Loft',
     icon: 'loft',
@@ -876,6 +1030,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   revolve: {
     label: 'Revolve',
     icon: 'revolve',
+    prepareToEdit: prepareToEditRevolve,
     supportsAppearance: true,
   },
   shell: {
@@ -903,11 +1058,19 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
       }
     },
   },
+  subtract: {
+    label: 'Subtract',
+    icon: 'booleanSubtract',
+  },
   sweep: {
     label: 'Sweep',
     icon: 'sweep',
     prepareToEdit: prepareToEditSweep,
     supportsAppearance: true,
+  },
+  union: {
+    label: 'Union',
+    icon: 'booleanUnion',
   },
 }
 

@@ -1,17 +1,19 @@
-import { commandBarActor } from 'machines/commandBarMachine'
-import type { WebContentSendPayload } from '../menu/channels'
-import { PATHS } from 'lib/paths'
-import { authActor } from 'machines/appMachine'
-import { copyFileShareLink } from 'lib/links'
-import { codeManager, engineCommandManager } from 'lib/singletons'
-import { settingsActor } from 'machines/appMachine'
-import { sceneInfra } from 'lib/singletons'
-import { AxisNames } from 'lib/constants'
-import { uuidv4 } from 'lib/utils'
-import { reportRejection } from 'lib/trap'
-import { NavigateFunction } from 'react-router-dom'
-import { Project } from 'lib/project'
-import { SettingsType } from 'lib/settings/initialSettings'
+import { AxisNames } from '@src/lib/constants'
+import { copyFileShareLink } from '@src/lib/links'
+import { PATHS } from '@src/lib/paths'
+import type { Project } from '@src/lib/project'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
+import {
+  codeManager,
+  engineCommandManager,
+  sceneInfra,
+} from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
+import { uuidv4 } from '@src/lib/utils'
+import { authActor, settingsActor } from '@src/machines/appMachine'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import type { WebContentSendPayload } from '@src/menu/channels'
+import type { NavigateFunction } from 'react-router-dom'
 
 export function modelingMenuCallbackMostActions(
   settings: SettingsType,

@@ -1,27 +1,29 @@
-import { DEFAULT_PROJECT_NAME } from 'lib/constants'
+import { useRef } from 'react'
+
+import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
+import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
+import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
+
+import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
+import type { CameraSystem } from '@src/lib/cameraControls'
+import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  DEFAULT_PROJECT_NAME,
+} from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import type {
   BaseUnit,
   SettingProps,
   SettingsLevel,
-  baseUnitsUnion,
-} from 'lib/settings/settingsTypes'
-import { Themes } from 'lib/theme'
-import { isEnumMember } from 'lib/types'
-import {
-  CameraSystem,
-  cameraMouseDragGuards,
-  cameraSystems,
-} from 'lib/cameraControls'
-import { isDesktop } from 'lib/isDesktop'
-import { useRef } from 'react'
-import { CustomIcon } from 'components/CustomIcon'
-import Tooltip from 'components/Tooltip'
-import { isArray, toSync } from 'lib/utils'
-import { reportRejection } from 'lib/trap'
-import { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
-import { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
-import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
-import { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
+} from '@src/lib/settings/settingsTypes'
+import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
+import { Themes } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import { isEnumMember } from '@src/lib/types'
+import { isArray, toSync } from '@src/lib/utils'
 
 /**
  * A setting that can be set at the user or project level
@@ -90,8 +92,8 @@ export class Setting<T = unknown> {
     return this._project !== undefined
       ? this._project
       : this._user !== undefined
-      ? this._user
-      : this._default
+        ? this._user
+        : this._default
   }
   /**
    * @param {SettingsLevel} level - The level to get the fallback for
@@ -300,9 +302,10 @@ export function createSettings() {
        * The default unit to use in modeling dimensions
        */
       defaultUnit: new Setting<BaseUnit>({
-        defaultValue: 'mm',
-        description: 'The default unit to use in modeling dimensions',
-        validate: (v) => baseUnitsUnion.includes(v as BaseUnit),
+        defaultValue: DEFAULT_DEFAULT_LENGTH_UNIT,
+        description:
+          'Set the default length unit setting value to give any new files.',
+        validate: (v) => baseUnitsUnion.includes(v),
         commandConfig: {
           inputType: 'options',
           defaultValueFromContext: (context) =>
@@ -332,7 +335,7 @@ export function createSettings() {
       mouseControls: new Setting<CameraSystem>({
         defaultValue: 'Zoo',
         description: 'The controls for how to navigate the 3D view',
-        validate: (v) => cameraSystems.includes(v as CameraSystem),
+        validate: (v) => cameraSystems.includes(v),
         hideOnLevel: 'project',
         commandConfig: {
           inputType: 'options',

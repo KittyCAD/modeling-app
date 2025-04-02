@@ -23,19 +23,15 @@ layout: manual
   * [`tag`](kcl/types/tag)
 * **std**
   * [`Face`](kcl/types/Face)
-  * [`HALF_TURN`](kcl/consts/std-HALF_TURN)
   * [`Helix`](kcl/types/Helix)
   * [`Plane`](kcl/types/Plane)
   * [`Point2d`](kcl/types/Point2d)
   * [`Point3d`](kcl/types/Point3d)
-  * [`QUARTER_TURN`](kcl/consts/std-QUARTER_TURN)
   * [`Sketch`](kcl/types/Sketch)
   * [`Solid`](kcl/types/Solid)
-  * [`THREE_QUARTER_TURN`](kcl/consts/std-THREE_QUARTER_TURN)
   * [`XY`](kcl/consts/std-XY)
   * [`XZ`](kcl/consts/std-XZ)
   * [`YZ`](kcl/consts/std-YZ)
-  * [`ZERO`](kcl/consts/std-ZERO)
   * [`abs`](kcl/abs)
   * [`acos`](kcl/acos)
   * [`angleToMatchLengthX`](kcl/angleToMatchLengthX)
@@ -146,3 +142,8 @@ layout: manual
   * [`tan`](kcl/std-math-tan)
 * **std::sketch**
   * [`circle`](kcl/std-sketch-circle)
+* **std::turns**
+  * [`turns::HALF_TURN`](kcl/consts/std-turns-HALF_TURN)
+  * [`turns::QUARTER_TURN`](kcl/consts/std-turns-QUARTER_TURN)
+  * [`turns::THREE_QUARTER_TURN`](kcl/consts/std-turns-THREE_QUARTER_TURN)
+  * [`turns::ZERO`](kcl/consts/std-turns-ZERO)

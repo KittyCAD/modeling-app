@@ -1,5 +1,5 @@
-import { assertParse, initPromise } from 'lang/wasm'
-import { getSafeInsertIndex } from './getSafeInsertIndex'
+import { getSafeInsertIndex } from '@src/lang/queryAst/getSafeInsertIndex'
+import { assertParse, initPromise } from '@src/lang/wasm'
 
 beforeAll(async () => {
   await initPromise

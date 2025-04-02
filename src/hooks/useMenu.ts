@@ -1,10 +1,11 @@
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { ToolbarModeName } from '@src/lib/toolbar'
+import { reportRejection } from '@src/lib/trap'
+import { useCommandBarState } from '@src/machines/commandBarMachine'
+import type { MenuLabels, WebContentSendPayload } from '@src/menu/channels'
 import { useEffect } from 'react'
-import type { WebContentSendPayload, MenuLabels } from '../menu/channels'
-import { isDesktop } from 'lib/isDesktop'
-import { ToolbarModeName } from 'lib/toolbar'
-import { reportRejection } from 'lib/trap'
-import { useCommandBarState } from 'machines/commandBarMachine'
-import { NetworkHealthState } from 'hooks/useNetworkStatus'
+
 export function useMenuListener(
   callback: (data: WebContentSendPayload) => void
 ) {

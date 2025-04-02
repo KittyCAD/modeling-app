@@ -1,70 +1,54 @@
 import { useMachine, useSelector } from '@xstate/react'
 import React, {
   createContext,
+  useContext,
   useEffect,
   useMemo,
   useRef,
-  useContext,
 } from 'react'
-import {
-  Actor,
-  ContextFrom,
-  Prop,
-  SnapshotFrom,
-  StateFrom,
-  assign,
-  fromPromise,
-} from 'xstate'
-import {
-  getPersistedContext,
-  modelingMachine,
-  modelingMachineDefaultContext,
-} from 'machines/modelingMachine'
-import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
-import {
-  isCursorInSketchCommandRange,
-  updateSketchDetailsNodePaths,
-} from 'lang/util'
-import {
-  kclManager,
-  sceneInfra,
-  engineCommandManager,
-  codeManager,
-  editorManager,
-  sceneEntitiesManager,
-  rustContext,
-} from 'lib/singletons'
-import {
-  MachineManager,
-  MachineManagerContext,
-} from 'components/MachineManagerProvider'
+import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
-import {
-  angleBetweenInfo,
-  applyConstraintAngleBetween,
-} from './Toolbar/SetAngleBetween'
-import {
-  applyConstraintAngleLength,
-  applyConstraintLength,
-} from './Toolbar/setAngleLength'
-import {
-  handleSelectionBatch,
-  Selections,
-  updateSelections,
-} from 'lib/selections'
-import { applyConstraintIntersect } from './Toolbar/Intersect'
-import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
-import useStateMachineCommands from 'hooks/useStateMachineCommands'
-import {
-  ModelingCommandSchema,
-  modelingMachineCommandConfig,
-} from 'lib/commandBarConfigs/modelingCommandConfig'
+import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
+import type { Actor, ContextFrom, Prop, SnapshotFrom, StateFrom } from 'xstate'
+import { assign, fromPromise } from 'xstate'
+
+import type {
+  OutputFormat3d,
+  Point3d,
+} from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Plane } from '@rust/kcl-lib/bindings/Plane'
+
+import { useAppState } from '@src/AppState'
+import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
 import {
   SEGMENT_BODIES,
   getParentGroup,
-  getSketchOrientationDetails,
-} from 'clientSideScene/sceneEntities'
+} from '@src/clientSideScene/sceneConstants'
+import type { MachineManager } from '@src/components/MachineManagerProvider'
+import { MachineManagerContext } from '@src/components/MachineManagerProvider'
+import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
+import { applyConstraintIntersect } from '@src/components/Toolbar/Intersect'
+import { applyConstraintAbsDistance } from '@src/components/Toolbar/SetAbsDistance'
+import {
+  angleBetweenInfo,
+  applyConstraintAngleBetween,
+} from '@src/components/Toolbar/SetAngleBetween'
+import { applyConstraintHorzVertDistance } from '@src/components/Toolbar/SetHorzVertDistance'
+import {
+  applyConstraintAngleLength,
+  applyConstraintLength,
+} from '@src/components/Toolbar/setAngleLength'
+import { useFileContext } from '@src/hooks/useFileContext'
+import {
+  useMenuListener,
+  useSketchModeMenuEnableDisable,
+} from '@src/hooks/useMenu'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { useSetupEngineManager } from '@src/hooks/useSetupEngineManager'
+import useStateMachineCommands from '@src/hooks/useStateMachineCommands'
+import { useKclContext } from '@src/lang/KclProvider'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   insertNamedConstant,
   replaceValueAtNodePath,
@@ -72,61 +56,70 @@ import {
   sketchOnOffsetPlane,
   splitPipedProfile,
   startSketchOnDefault,
-} from 'lang/modifyAst'
-import {
-  KclValue,
-  PathToNode,
-  PipeExpression,
-  Program,
-  VariableDeclaration,
-  parse,
-  recast,
-  resultIsOk,
-} from 'lang/wasm'
+} from '@src/lang/modifyAst'
 import {
   artifactIsPlaneWithPaths,
   doesSketchPipeNeedSplitting,
   getNodeFromPath,
   isCursorInFunctionDefinition,
   traverse,
-} from 'lang/queryAst'
-import toast from 'react-hot-toast'
-import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
-import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
-import { err, reportRejection, trap, reject } from 'lib/trap'
-import {
-  EngineConnectionStateType,
-  EngineConnectionEvents,
-} from 'lang/std/engineConnection'
-import { submitAndAwaitTextToKcl } from 'lib/textToCad'
-import { useFileContext } from 'hooks/useFileContext'
-import { platform, uuidv4 } from 'lib/utils'
-import { Node } from '@rust/kcl-lib/bindings/Node'
+} from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   getFaceCodeRef,
   getPathsFromArtifact,
   getPlaneFromArtifact,
-} from 'lang/std/artifactGraph'
-import { promptToEditFlow } from 'lib/promptToEdit'
-import { kclEditorActor } from 'machines/kclEditorMachine'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { useToken } from 'machines/appMachine'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { useSettings } from 'machines/appMachine'
-import { IndexLoaderData } from 'lib/types'
-import { OutputFormat3d, Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
-import { EXPORT_TOAST_MESSAGES, MAKE_TOAST_MESSAGES } from 'lib/constants'
-import { exportMake } from 'lib/exportMake'
-import { exportSave } from 'lib/exportSave'
-import { Plane } from '@rust/kcl-lib/bindings/Plane'
-import { updateModelingState } from 'lang/modelingWorkflows'
-import { EXECUTION_TYPE_MOCK } from 'lib/constants'
-import { useMenuListener, useSketchModeMenuEnableDisable } from 'hooks/useMenu'
-import type { WebContentSendPayload } from '../menu/channels'
-import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
-import { useKclContext } from 'lang/KclProvider'
-import { useNetworkContext } from 'hooks/useNetworkContext'
-import { useAppState } from 'AppState'
+} from '@src/lang/std/artifactGraph'
+import {
+  EngineConnectionEvents,
+  EngineConnectionStateType,
+} from '@src/lang/std/engineConnection'
+import {
+  isCursorInSketchCommandRange,
+  updateSketchDetailsNodePaths,
+} from '@src/lang/util'
+import type {
+  KclValue,
+  PathToNode,
+  PipeExpression,
+  Program,
+  VariableDeclaration,
+} from '@src/lang/wasm'
+import { parse, recast, resultIsOk } from '@src/lang/wasm'
+import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import {
+  EXECUTION_TYPE_MOCK,
+  EXPORT_TOAST_MESSAGES,
+  MAKE_TOAST_MESSAGES,
+} from '@src/lib/constants'
+import { exportMake } from '@src/lib/exportMake'
+import { exportSave } from '@src/lib/exportSave'
+import { promptToEditFlow } from '@src/lib/promptToEdit'
+import type { Selections } from '@src/lib/selections'
+import { handleSelectionBatch, updateSelections } from '@src/lib/selections'
+import {
+  codeManager,
+  editorManager,
+  engineCommandManager,
+  kclManager,
+  rustContext,
+  sceneEntitiesManager,
+  sceneInfra,
+} from '@src/lib/singletons'
+import { submitAndAwaitTextToKcl } from '@src/lib/textToCad'
+import { err, reject, reportRejection, trap } from '@src/lib/trap'
+import type { IndexLoaderData } from '@src/lib/types'
+import { platform, uuidv4 } from '@src/lib/utils'
+import { useSettings, useToken } from '@src/machines/appMachine'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import { kclEditorActor } from '@src/machines/kclEditorMachine'
+import {
+  getPersistedContext,
+  modelingMachine,
+  modelingMachineDefaultContext,
+} from '@src/machines/modelingMachine'
+import type { WebContentSendPayload } from '@src/menu/channels'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -572,7 +565,7 @@ export const ModelingMachineProvider = ({
             // See if the selection is "close enough" to be coerced to the plane later
             const maybePlane = getPlaneFromArtifact(
               selectionRanges.graphSelections[0].artifact,
-              engineCommandManager.artifactGraph
+              kclManager.artifactGraph
             )
             return !err(maybePlane)
           }
@@ -585,7 +578,7 @@ export const ModelingMachineProvider = ({
             return false
           }
           return !!isCursorInSketchCommandRange(
-            engineCommandManager.artifactGraph,
+            kclManager.artifactGraph,
             selectionRanges
           )
         },
@@ -847,7 +840,7 @@ export const ModelingMachineProvider = ({
             const artifact = selectionRanges.graphSelections[0].artifact
             const plane = getPlaneFromArtifact(
               artifact,
-              engineCommandManager.artifactGraph
+              kclManager.artifactGraph
             )
             if (err(plane)) return Promise.reject(plane)
             // if the user selected a segment, make sure we enter the right sketch as there can be multiple on a plane
@@ -917,20 +910,21 @@ export const ModelingMachineProvider = ({
               }
               return Promise.reject(new Error('No sketch'))
             }
-            const info = await getSketchOrientationDetails(sketch.value)
+            const info = await sceneEntitiesManager.getSketchOrientationDetails(
+              sketch.value
+            )
             await letEngineAnimateAndSyncCamAfter(
               engineCommandManager,
               info?.sketchDetails?.faceId || ''
             )
 
-            const sketchArtifact =
-              engineCommandManager.artifactGraph.get(mainPath)
+            const sketchArtifact = kclManager.artifactGraph.get(mainPath)
             if (sketchArtifact?.type !== 'path')
               return Promise.reject(new Error('No sketch artifact'))
             const sketchPaths = getPathsFromArtifact({
-              artifact: engineCommandManager.artifactGraph.get(plane.id),
+              artifact: kclManager.artifactGraph.get(plane.id),
               sketchPathToNode: sketchArtifact?.codeRef?.pathToNode,
-              artifactGraph: engineCommandManager.artifactGraph,
+              artifactGraph: kclManager.artifactGraph,
               ast: kclManager.ast,
             })
             if (err(sketchPaths)) return Promise.reject(sketchPaths)
@@ -1437,7 +1431,6 @@ export const ModelingMachineProvider = ({
             parsed = pResult.program
 
             if (trap(parsed)) return Promise.reject(parsed)
-            parsed = parsed as Node<Program>
             if (!result.pathToReplaced)
               return Promise.reject(new Error('No path to replaced node'))
             const {
@@ -1750,7 +1743,7 @@ export const ModelingMachineProvider = ({
             prompt: input.prompt,
             selections: input.selection,
             token,
-            artifactGraph: engineCommandManager.artifactGraph,
+            artifactGraph: kclManager.artifactGraph,
             projectName: context.project.name,
           })
         }),

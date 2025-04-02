@@ -1,6 +1,6 @@
 // Does not matter what labels belong to what type. I only split these into some internal types to easily parse
 // what labels should belong to what grouping
-import { Menu, MenuItemConstructorOptions } from 'electron'
+import type { Menu, MenuItemConstructorOptions } from 'electron'
 
 type HeaderLabel =
   | 'File'

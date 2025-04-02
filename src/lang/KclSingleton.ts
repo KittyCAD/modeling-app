@@ -1,46 +1,59 @@
-import { executeAst, executeAstMock, lintAst } from 'lang/langHelpers'
-import { handleSelectionBatch, Selections } from 'lib/selections'
-import {
-  KCLError,
-  compilationErrorsToDiagnostics,
-  kclErrorsToDiagnostics,
-} from './errors'
-import { uuidv4 } from 'lib/utils'
-import { EngineCommandManager } from './std/engineConnection'
-import { err, reportRejection } from 'lib/trap'
-import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
-
-import {
-  emptyExecState,
-  ExecState,
-  getKclVersion,
-  initPromise,
-  jsAppSettings,
-  KclValue,
-  parse,
-  PathToNode,
-  Program,
-  recast,
-  SourceRange,
-  topLevelRange,
-  VariableMap,
-} from 'lang/wasm'
-import { getNodeFromPath, getSettingsAnnotation } from './queryAst'
-import {
-  codeManager,
-  editorManager,
-  sceneInfra,
-  rustContext,
-} from 'lib/singletons'
-import { Diagnostic } from '@codemirror/lint'
-import { markOnce } from 'lib/performance'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import {
+import type { Diagnostic } from '@codemirror/lint'
+import type {
   EntityType_type,
   ModelingCmdReq_type,
 } from '@kittycad/lib/dist/types/src/models'
-import { Operation } from '@rust/kcl-lib/bindings/Operation'
-import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
+
+import type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+
+import type { KCLError } from '@src/lang/errors'
+import {
+  compilationErrorsToDiagnostics,
+  kclErrorsToDiagnostics,
+} from '@src/lang/errors'
+import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
+import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
+import type { EngineCommandManager } from '@src/lang/std/engineConnection'
+import { topLevelRange } from '@src/lang/util'
+import type {
+  ArtifactGraph,
+  ExecState,
+  PathToNode,
+  Program,
+  SourceRange,
+  VariableMap,
+} from '@src/lang/wasm'
+import {
+  emptyExecState,
+  getKclVersion,
+  initPromise,
+  parse,
+  recast,
+} from '@src/lang/wasm'
+import type { ArtifactIndex } from '@src/lib/artifactIndex'
+import { buildArtifactIndex } from '@src/lib/artifactIndex'
+import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
+} from '@src/lib/constants'
+import { markOnce } from '@src/lib/performance'
+import type { Selections } from '@src/lib/selections'
+import { handleSelectionBatch } from '@src/lib/selections'
+import type {
+  BaseUnit,
+  KclSettingsAnnotation,
+} from '@src/lib/settings/settingsTypes'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import {
+  codeManager,
+  editorManager,
+  rustContext,
+  sceneInfra,
+} from '@src/lib/singletons'
+import { err, reportRejection } from '@src/lib/trap'
+import { deferExecution, isOverlap, uuidv4 } from '@src/lib/utils'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -53,6 +66,14 @@ interface ExecuteArgs {
 }
 
 export class KclManager {
+  /**
+   * The artifactGraph is a client-side representation of the commands that have been sent
+   * see: src/lang/std/artifactGraph-README.md for a full explanation.
+   */
+  artifactGraph: ArtifactGraph = new Map()
+  artifactIndex: ArtifactIndex = []
+  defaultPlanesShown: boolean = false
+
   private _ast: Node<Program> = {
     body: [],
     shebang: null,
@@ -95,6 +116,7 @@ export class KclManager {
   private _diagnosticsCallback: (errors: Diagnostic[]) => void = () => {}
   private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
   private _executeCallback: () => void = () => {}
+  sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
 
   get ast() {
     return this._ast
@@ -289,6 +311,47 @@ export class KclManager {
     }
   }
 
+  private async updateArtifactGraph(
+    execStateArtifactGraph: ExecState['artifactGraph']
+  ) {
+    this.artifactGraph = execStateArtifactGraph
+    this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
+    if (this.artifactGraph.size) {
+      // TODO: we wanna remove this logic from xstate, it is racey
+      // This defer is bullshit but playwright wants it
+      // It was like this in engineConnection.ts already
+      deferExecution((a?: null) => {
+        this.engineCommandManager.modelingSend({
+          type: 'Artifact graph emptied',
+        })
+      }, 200)(null)
+    } else {
+      deferExecution((a?: null) => {
+        this.engineCommandManager.modelingSend({
+          type: 'Artifact graph populated',
+        })
+      }, 200)(null)
+    }
+  }
+
+  // Some "objects" have the same source range, such as sketch_mode_start and start_path.
+  // So when passing a range, we need to also specify the command type
+  private mapRangeToObjectId(
+    range: SourceRange,
+    commandTypeToTarget: string
+  ): string | undefined {
+    for (const [artifactId, artifact] of this.artifactGraph) {
+      if (
+        'codeRef' in artifact &&
+        artifact.codeRef &&
+        isOverlap(range, artifact.codeRef.range)
+      ) {
+        if (commandTypeToTarget === artifact.type) return artifactId
+      }
+    }
+    return undefined
+  }
+
   async safeParse(code: string): Promise<Node<Program> | null> {
     const result = parse(code)
     this.diagnostics = []
@@ -330,6 +393,7 @@ export class KclManager {
       }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
+      console.error(e)
       this.wasmInitFailed = true
     }
   }
@@ -370,12 +434,12 @@ export class KclManager {
     // Do not send send scene commands if the program was interrupted, go to clean up
     if (!isInterrupted) {
       this.addDiagnostics(await lintAst({ ast: ast }))
-      setSelectionFilterToDefault(this.engineCommandManager)
+      await setSelectionFilterToDefault(this.engineCommandManager)
 
       if (args.zoomToFit) {
         let zoomObjectId: string | undefined = ''
         if (args.zoomOnRangeAndType) {
-          zoomObjectId = this.engineCommandManager?.mapRangeToObjectId(
+          zoomObjectId = this.mapRangeToObjectId(
             args.zoomOnRangeAndType.range,
             args.zoomOnRangeAndType.type
           )
@@ -429,7 +493,7 @@ export class KclManager {
     }
     this.ast = { ...ast }
     // updateArtifactGraph relies on updated executeState/variables
-    this.engineCommandManager.updateArtifactGraph(execState.artifactGraph)
+    await this.updateArtifactGraph(execState.artifactGraph)
     this._executeCallback()
     if (!isInterrupted) {
       sceneInfra.modelingSend({ type: 'code edit during sketch' })
@@ -723,6 +787,9 @@ export class KclManager {
 
   set fileSettings(settings: KclSettingsAnnotation) {
     this._fileSettings = settings
+    this.sceneInfraBaseUnitMultiplierSetter(
+      settings?.defaultLengthUnit || DEFAULT_DEFAULT_LENGTH_UNIT
+    )
   }
 }
 
