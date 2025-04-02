@@ -1,12 +1,24 @@
-import { CommandBarOverwriteWarning } from 'components/CommandBarOverwriteWarning'
-import { Command, CommandArgumentOption } from './commandTypes'
-import { kclManager } from './singletons'
-import { isDesktop } from './isDesktop'
-import { FILE_EXT, PROJECT_SETTINGS_FILE_NAME } from './constants'
-import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
-import { parseProjectSettings } from 'lang/wasm'
-import { err, reportRejection } from './trap'
-import { projectConfigurationToSettingsPayload } from './settings/settingsUtils'
+import type { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
+import toast from 'react-hot-toast'
+
+import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
+import {
+  changeKclSettings,
+  unitAngleToUnitAng,
+  unitLengthToUnitLen,
+} from '@src/lang/wasm'
+import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
+import {
+  DEFAULT_DEFAULT_ANGLE_UNIT,
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  FILE_EXT,
+} from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import { copyFileShareLink } from '@src/lib/links'
+import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
+import { codeManager, kclManager } from '@src/lib/singletons'
+import { err, reportRejection } from '@src/lib/trap'
+import type { IndexLoaderData } from '@src/lib/types'
 
 interface OnSubmitProps {
   sampleName: string
@@ -15,11 +27,75 @@ interface OnSubmitProps {
   method: 'overwrite' | 'newFile'
 }
 
-export function kclCommands(
-  onSubmit: (p: OnSubmitProps) => Promise<void>,
-  providedOptions: CommandArgumentOption<string>[]
-): Command[] {
+interface KclCommandConfig {
+  // TODO: find a different approach that doesn't require
+  // special props for a single command
+  specialPropsForSampleCommand: {
+    onSubmit: (p: OnSubmitProps) => Promise<void>
+    providedOptions: CommandArgumentOption<string>[]
+  }
+  projectData: IndexLoaderData
+  authToken: string
+  settings: {
+    defaultUnit: UnitLength_type
+  }
+}
+
+export function kclCommands(commandProps: KclCommandConfig): Command[] {
   return [
+    {
+      name: 'set-file-units',
+      displayName: 'Set file units',
+      description:
+        'Set the length unit for all dimensions not given explicit units in the current file.',
+      needsReview: false,
+      groupId: 'code',
+      icon: 'code',
+      args: {
+        unit: {
+          required: true,
+          inputType: 'options',
+          defaultValue:
+            kclManager.fileSettings.defaultLengthUnit ||
+            DEFAULT_DEFAULT_LENGTH_UNIT,
+          options: () =>
+            Object.values(baseUnitsUnion).map((v) => {
+              return {
+                name: v,
+                value: v,
+                isCurrent: kclManager.fileSettings.defaultLengthUnit
+                  ? v === kclManager.fileSettings.defaultLengthUnit
+                  : v === DEFAULT_DEFAULT_LENGTH_UNIT,
+              }
+            }),
+        },
+      },
+      onSubmit: (data) => {
+        if (typeof data === 'object' && 'unit' in data) {
+          const newCode = changeKclSettings(codeManager.code, {
+            defaultLengthUnits: unitLengthToUnitLen(data.unit),
+            defaultAngleUnits: unitAngleToUnitAng(
+              kclManager.fileSettings.defaultAngleUnit ??
+                DEFAULT_DEFAULT_ANGLE_UNIT
+            ),
+          })
+          if (err(newCode)) {
+            toast.error(`Failed to set per-file units: ${newCode.message}`)
+          } else {
+            codeManager.updateCodeStateEditor(newCode)
+            Promise.all([codeManager.writeToFile(), kclManager.executeCode()])
+              .then(() => {
+                toast.success(`Updated per-file units to ${data.unit}`)
+              })
+              .catch(reportRejection)
+          }
+        } else {
+          toast.error(
+            'Failed to set per-file units: no value provided to submit function. This is a bug.'
+          )
+        }
+      },
+    },
     {
       name: 'format-code',
       displayName: 'Format Code',
@@ -38,62 +114,54 @@ export function kclCommands(
       needsReview: true,
       icon: 'code',
       reviewMessage: ({ argumentsToSubmit }) =>
-        argumentsToSubmit.method === 'newFile'
-          ? CommandBarOverwriteWarning({
-              heading: 'Create a new file, overwrite project units?',
-              message: `This will add the sample as a new file to your project, and replace your current project units with the sample's units.`,
-            })
-          : CommandBarOverwriteWarning({}),
+        CommandBarOverwriteWarning({
+          heading:
+            'method' in argumentsToSubmit &&
+            argumentsToSubmit.method === 'newFile'
+              ? 'Create a new file from sample?'
+              : 'Overwrite current file with sample?',
+          message:
+            'method' in argumentsToSubmit &&
+            argumentsToSubmit.method === 'newFile'
+              ? 'This will create a new file in the current project and open it.'
+              : 'This will erase your current file and load the sample part.',
+        }),
       groupId: 'code',
       onSubmit(data) {
         if (!data?.sample) {
           return
         }
-        const sampleCodeUrl = `https://raw.githubusercontent.com/KittyCAD/kcl-samples/main/${encodeURIComponent(
-          data.sample.replace(FILE_EXT, '')
-        )}/${encodeURIComponent(data.sample)}`
-        const sampleSettingsFileUrl = `https://raw.githubusercontent.com/KittyCAD/kcl-samples/main/${encodeURIComponent(
-          data.sample.replace(FILE_EXT, '')
-        )}/${PROJECT_SETTINGS_FILE_NAME}`
+        const pathParts = data.sample.split('/')
+        const projectPathPart = pathParts[0]
+        const primaryKclFile = pathParts[1]
+        // local only
+        const sampleCodeUrl =
+          (isDesktop() ? '.' : '') +
+          `/kcl-samples/${encodeURIComponent(
+            projectPathPart
+          )}/${encodeURIComponent(primaryKclFile)}`
 
-        Promise.all([fetch(sampleCodeUrl), fetch(sampleSettingsFileUrl)])
-          .then(
-            async ([
-              codeResponse,
-              settingsResponse,
-            ]): Promise<OnSubmitProps> => {
-              if (!(codeResponse.ok && settingsResponse.ok)) {
-                console.error(
-                  'Failed to fetch sample code:',
-                  codeResponse.statusText
-                )
-                return Promise.reject(new Error('Failed to fetch sample code'))
-              }
-              const code = await codeResponse.text()
-              const parsedProjectSettings = parseProjectSettings(
-                await settingsResponse.text()
+        fetch(sampleCodeUrl)
+          .then(async (codeResponse): Promise<OnSubmitProps> => {
+            if (!codeResponse.ok) {
+              console.error(
+                'Failed to fetch sample code:',
+                codeResponse.statusText
               )
-              let projectSettingsPayload: ReturnType<
-                typeof projectConfigurationToSettingsPayload
-              > = {}
-              if (!err(parsedProjectSettings)) {
-                projectSettingsPayload = projectConfigurationToSettingsPayload(
-                  parsedProjectSettings
-                )
-              }
-
-              return {
-                sampleName: data.sample,
-                code,
-                method: data.method,
-                sampleUnits:
-                  projectSettingsPayload.modeling?.defaultUnit || 'mm',
-              }
+              return Promise.reject(new Error('Failed to fetch sample code'))
             }
-          )
+            const code = await codeResponse.text()
+            return {
+              sampleName: data.sample.split('/')[0] + FILE_EXT,
+              code,
+              method: data.method,
+            }
+          })
           .then((props) => {
             if (props?.code) {
-              onSubmit(props).catch(reportError)
+              commandProps.specialPropsForSampleCommand
+                .onSubmit(props)
+                .catch(reportError)
             }
           })
           .catch(reportError)
@@ -135,8 +203,23 @@ export function kclCommands(
             }
             return value
           },
-          options: providedOptions,
+          options: commandProps.specialPropsForSampleCommand.providedOptions,
         },
+      },
+    },
+    {
+      name: 'share-file-link',
+      displayName: 'Share current part (via Zoo link)',
+      description: 'Create a link that contains a copy of the current file.',
+      groupId: 'code',
+      needsReview: false,
+      icon: 'link',
+      onSubmit: () => {
+        copyFileShareLink({
+          token: commandProps.authToken,
+          code: codeManager.code,
+          name: commandProps.projectData.project?.name || '',
+        }).catch(reportRejection)
       },
     },
   ]

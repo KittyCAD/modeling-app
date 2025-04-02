@@ -1,8 +1,9 @@
-import { test, expect } from './zoo-test'
-import { getUtils } from './test-utils'
+import { getUtils, orRunWhenFullSuiteEnabled } from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Test toggling perspective', () => {
-  test.fixme('via command palette and toggle', async ({ page, homePage }) => {
+  test('via command palette and toggle', async ({ page, homePage }) => {
+    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
 
     // Locators and constants

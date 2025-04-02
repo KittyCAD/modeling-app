@@ -1,0 +1,1053 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing array_elem_push.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "name": "arr",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 6,
+            "elements": [
+              {
+                "commentStart": 7,
+                "end": 0,
+                "raw": "1",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
+              },
+              {
+                "commentStart": 10,
+                "end": 0,
+                "raw": "2",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
+              },
+              {
+                "commentStart": 13,
+                "end": 0,
+                "raw": "3",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
+              }
+            ],
+            "end": 0,
+            "start": 0,
+            "type": "ArrayExpression",
+            "type": "ArrayExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 16,
+        "declaration": {
+          "commentStart": 16,
+          "end": 0,
+          "id": {
+            "commentStart": 16,
+            "end": 0,
+            "name": "new_arr1",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "abs_path": false,
+                "commentStart": 32,
+                "end": 0,
+                "name": {
+                  "commentStart": 32,
+                  "end": 0,
+                  "name": "arr",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
+              },
+              {
+                "commentStart": 37,
+                "end": 0,
+                "raw": "4",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 4.0,
+                  "suffix": "None"
+                }
+              }
+            ],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 27,
+              "end": 0,
+              "name": {
+                "commentStart": 27,
+                "end": 0,
+                "name": "push",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 27,
+            "end": 0,
+            "start": 0,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 40,
+        "declaration": {
+          "commentStart": 40,
+          "end": 0,
+          "id": {
+            "commentStart": 40,
+            "end": 0,
+            "name": "new_arr2",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "abs_path": false,
+                "commentStart": 56,
+                "end": 0,
+                "name": {
+                  "commentStart": 56,
+                  "end": 0,
+                  "name": "new_arr1",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
+              },
+              {
+                "commentStart": 66,
+                "end": 0,
+                "raw": "5",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 5.0,
+                  "suffix": "None"
+                }
+              }
+            ],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 51,
+              "end": 0,
+              "name": {
+                "commentStart": 51,
+                "end": 0,
+                "name": "push",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 51,
+            "end": 0,
+            "start": 0,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 69,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 81,
+              "computed": false,
+              "end": 0,
+              "object": {
+                "commentStart": 81,
+                "end": 0,
+                "name": "new_arr1",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "property": {
+                "commentStart": 90,
+                "end": 0,
+                "raw": "0",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 0.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 0,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
+            },
+            {
+              "commentStart": 94,
+              "end": 0,
+              "raw": "1",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 97,
+              "end": 0,
+              "raw": "0.00001",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.00001,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 106,
+              "end": 0,
+              "raw": "\"element 0 should not have changed\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "element 0 should not have changed"
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 69,
+            "end": 0,
+            "name": {
+              "commentStart": 69,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 69,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 143,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 155,
+              "computed": false,
+              "end": 0,
+              "object": {
+                "commentStart": 155,
+                "end": 0,
+                "name": "new_arr1",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "property": {
+                "commentStart": 164,
+                "end": 0,
+                "raw": "1",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 0,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
+            },
+            {
+              "commentStart": 168,
+              "end": 0,
+              "raw": "2",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 171,
+              "end": 0,
+              "raw": "0.00001",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.00001,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 180,
+              "end": 0,
+              "raw": "\"element 1 should not have changed\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "element 1 should not have changed"
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 143,
+            "end": 0,
+            "name": {
+              "commentStart": 143,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 143,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 217,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 229,
+              "computed": false,
+              "end": 0,
+              "object": {
+                "commentStart": 229,
+                "end": 0,
+                "name": "new_arr1",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "property": {
+                "commentStart": 238,
+                "end": 0,
+                "raw": "2",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 0,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
+            },
+            {
+              "commentStart": 242,
+              "end": 0,
+              "raw": "3",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 3.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 245,
+              "end": 0,
+              "raw": "0.00001",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.00001,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 254,
+              "end": 0,
+              "raw": "\"element 2 should not have changed\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "element 2 should not have changed"
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 217,
+            "end": 0,
+            "name": {
+              "commentStart": 217,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 217,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 291,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 303,
+              "computed": false,
+              "end": 0,
+              "object": {
+                "commentStart": 303,
+                "end": 0,
+                "name": "new_arr1",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "property": {
+                "commentStart": 312,
+                "end": 0,
+                "raw": "3",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 0,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
+            },
+            {
+              "commentStart": 316,
+              "end": 0,
+              "raw": "4",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 4.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 319,
+              "end": 0,
+              "raw": "0.00001",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.00001,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 328,
+              "end": 0,
+              "raw": "\"4 was added to the end of the array\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "4 was added to the end of the array"
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 291,
+            "end": 0,
+            "name": {
+              "commentStart": 291,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 291,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 367,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 379,
+              "computed": false,
+              "end": 0,
+              "object": {
+                "commentStart": 379,
+                "end": 0,
+                "name": "new_arr2",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "property": {
+                "commentStart": 388,
+                "end": 0,
+                "raw": "0",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 0.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 0,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
+            },
+            {
+              "commentStart": 392,
+              "end": 0,
+              "raw": "1",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 395,
+              "end": 0,
+              "raw": "0.00001",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.00001,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 404,
+              "end": 0,
+              "raw": "\"element 0 should not have changed\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "element 0 should not have changed"
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 367,
+            "end": 0,
+            "name": {
+              "commentStart": 367,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 367,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 441,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 453,
+              "computed": false,
+              "end": 0,
+              "object": {
+                "commentStart": 453,
+                "end": 0,
+                "name": "new_arr2",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "property": {
+                "commentStart": 462,
+                "end": 0,
+                "raw": "1",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 0,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
+            },
+            {
+              "commentStart": 466,
+              "end": 0,
+              "raw": "2",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 469,
+              "end": 0,
+              "raw": "0.00001",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.00001,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 478,
+              "end": 0,
+              "raw": "\"element 1 should not have changed\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "element 1 should not have changed"
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 441,
+            "end": 0,
+            "name": {
+              "commentStart": 441,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 441,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 515,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 527,
+              "computed": false,
+              "end": 0,
+              "object": {
+                "commentStart": 527,
+                "end": 0,
+                "name": "new_arr2",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "property": {
+                "commentStart": 536,
+                "end": 0,
+                "raw": "2",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 0,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
+            },
+            {
+              "commentStart": 540,
+              "end": 0,
+              "raw": "3",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 3.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 543,
+              "end": 0,
+              "raw": "0.00001",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.00001,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 552,
+              "end": 0,
+              "raw": "\"element 2 should not have changed\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "element 2 should not have changed"
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 515,
+            "end": 0,
+            "name": {
+              "commentStart": 515,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 515,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 589,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 601,
+              "computed": false,
+              "end": 0,
+              "object": {
+                "commentStart": 601,
+                "end": 0,
+                "name": "new_arr2",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "property": {
+                "commentStart": 610,
+                "end": 0,
+                "raw": "3",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 0,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
+            },
+            {
+              "commentStart": 614,
+              "end": 0,
+              "raw": "4",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 4.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 617,
+              "end": 0,
+              "raw": "0.00001",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.00001,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 626,
+              "end": 0,
+              "raw": "\"4 was added to the end of the array\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "4 was added to the end of the array"
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 589,
+            "end": 0,
+            "name": {
+              "commentStart": 589,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 589,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 665,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 677,
+              "computed": false,
+              "end": 0,
+              "object": {
+                "commentStart": 677,
+                "end": 0,
+                "name": "new_arr2",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "property": {
+                "commentStart": 686,
+                "end": 0,
+                "raw": "4",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 4.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 0,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
+            },
+            {
+              "commentStart": 690,
+              "end": 0,
+              "raw": "5",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 5.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 693,
+              "end": 0,
+              "raw": "0.00001",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.00001,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 702,
+              "end": 0,
+              "raw": "\"5 was added to the end of the array\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "5 was added to the end of the array"
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 665,
+            "end": 0,
+            "name": {
+              "commentStart": 665,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 665,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "start": 0
+  }
+}

@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test'
+import { platform } from 'os'
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -6,6 +7,7 @@ import { defineConfig, devices } from '@playwright/test'
 export default defineConfig({
   timeout: 120_000, // override the default 30s timeout
   testDir: './e2e/playwright',
+  testIgnore: '*.test.ts', // ignore unit tests
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -13,7 +15,7 @@ export default defineConfig({
   /* Do not retry */
   retries: 0,
   /* Different amount of parallelism on CI and local. */
-  workers: 8,
+  workers: platform() === 'win32' ? 1 : 2,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['dot'],
@@ -32,10 +34,9 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'Google Chrome',
+      name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
-        channel: 'chrome',
         contextOptions: {
           /* Chromium is the only one with these permission types */
           permissions: ['clipboard-write', 'clipboard-read'],

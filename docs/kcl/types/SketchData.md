@@ -11,7 +11,7 @@ Data for start sketch on. You can start a sketch on a plane or an solid.
 
 **This schema accepts any of the following:**
 
-Data for start sketch on. You can start a sketch on a plane or an solid.
+Orientation data that can be used to construct a plane, not a plane in itself.
 
 [`PlaneData`](/docs/kcl/types/PlaneData)
 
@@ -23,7 +23,6 @@ Data for start sketch on. You can start a sketch on a plane or an solid.
 
 
 ----
-Data for start sketch on. You can start a sketch on a plane or an solid.
 
 [`Plane`](/docs/kcl/types/Plane)
 
@@ -35,7 +34,6 @@ Data for start sketch on. You can start a sketch on a plane or an solid.
 
 
 ----
-Data for start sketch on. You can start a sketch on a plane or an solid.
 
 [`Solid`](/docs/kcl/types/Solid)
 

@@ -1,0 +1,8 @@
+part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line(end = [0, 10], tag = $thing)
+  |> line(end = [10, 0])
+  |> line(end = [0, -10], tag = $thing2)
+  |> close(tag = $thing3)
+  |> extrude(length = 10)
+  |> fillet(radius = 2, tags = [thing3, getOppositeEdge(thing3)])

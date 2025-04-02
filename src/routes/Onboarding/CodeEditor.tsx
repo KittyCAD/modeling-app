@@ -1,22 +1,19 @@
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
 import {
-  kbdClasses,
   OnboardingButtons,
+  kbdClasses,
   useDemoCode,
-  useDismiss,
-  useNextClick,
-} from '.'
-import { onboardingPaths } from 'routes/Onboarding/paths'
+} from '@src/routes/Onboarding/utils'
 
 export default function OnboardingCodeEditor() {
   useDemoCode()
-  const dismiss = useDismiss()
-  const next = useNextClick(onboardingPaths.PARAMETRIC_MODELING)
 
   return (
     <div className="fixed grid justify-end items-center inset-0 z-50 pointer-events-none">
       <div
         className={
-          'pointer-events-auto z-10 max-w-xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg h-[75vh] flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded'
+          'relative pointer-events-auto z-10 max-w-xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg h-[75vh] flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded'
         }
       >
         <section className="flex-1 overflow-y-auto">
@@ -73,12 +70,7 @@ export default function OnboardingCodeEditor() {
             pressing <kbd className={kbdClasses}>Shift + C</kbd>.
           </p>
         </section>
-        <OnboardingButtons
-          currentSlug={onboardingPaths.EDITOR}
-          dismiss={dismiss}
-          next={next}
-          nextText="Next: Parametric Modeling"
-        />
+        <OnboardingButtons currentSlug={onboardingPaths.EDITOR} />
       </div>
     </div>
   )

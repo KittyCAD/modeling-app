@@ -1,0 +1,355 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed ssi_pattern.kcl
+---
+[
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "String",
+          "value": "XZ"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 50.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "tag": {
+        "value": {
+          "type": "TagIdentifier",
+          "value": "seg01",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": -2.08,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 47.7,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 1.4,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": -40.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Array",
+        "value": [
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
+      },
+      "sourceRange": []
+    }
+  }
+]

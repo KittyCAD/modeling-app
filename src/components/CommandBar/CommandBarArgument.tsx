@@ -1,14 +1,18 @@
-import CommandArgOptionInput from './CommandArgOptionInput'
-import CommandBarBasicInput from './CommandBarBasicInput'
-import CommandBarSelectionInput from './CommandBarSelectionInput'
-import { CommandArgument } from 'lib/commandTypes'
-import { useCommandsContext } from 'hooks/useCommandsContext'
-import CommandBarHeader from './CommandBarHeader'
-import CommandBarKclInput from './CommandBarKclInput'
-import CommandBarTextareaInput from './CommandBarTextareaInput'
+import CommandArgOptionInput from '@src/components/CommandBar/CommandArgOptionInput'
+import CommandBarBasicInput from '@src/components/CommandBar/CommandBarBasicInput'
+import CommandBarHeader from '@src/components/CommandBar/CommandBarHeader'
+import CommandBarKclInput from '@src/components/CommandBar/CommandBarKclInput'
+import CommandBarSelectionInput from '@src/components/CommandBar/CommandBarSelectionInput'
+import CommandBarSelectionMixedInput from '@src/components/CommandBar/CommandBarSelectionMixedInput'
+import CommandBarTextareaInput from '@src/components/CommandBar/CommandBarTextareaInput'
+import type { CommandArgument } from '@src/lib/commandTypes'
+import {
+  commandBarActor,
+  useCommandBarState,
+} from '@src/machines/commandBarMachine'
 
 function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
-  const { commandBarState, commandBarSend } = useCommandsContext()
+  const commandBarState = useCommandBarState()
   const {
     context: { currentArgument },
   } = commandBarState
@@ -16,7 +20,7 @@ function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
   function onSubmit(data: unknown) {
     if (!currentArgument) return
 
-    commandBarSend({
+    commandBarActor.send({
       type: 'Submit argument',
       data: {
         [currentArgument.name]: data,
@@ -53,7 +57,7 @@ function ArgumentInput({
       return (
         <CommandArgOptionInput
           arg={arg}
-          argName={arg.name}
+          argName={arg.displayName || arg.name}
           stepBack={stepBack}
           onSubmit={onSubmit}
           placeholder="Select an option"
@@ -70,7 +74,7 @@ function ArgumentInput({
               { name: 'Off', value: false },
             ],
           }}
-          argName={arg.name}
+          argName={arg.displayName || arg.name}
           stepBack={stepBack}
           onSubmit={onSubmit}
           placeholder="Select an option"
@@ -79,6 +83,14 @@ function ArgumentInput({
     case 'selection':
       return (
         <CommandBarSelectionInput
+          arg={arg}
+          stepBack={stepBack}
+          onSubmit={onSubmit}
+        />
+      )
+    case 'selectionMixed':
+      return (
+        <CommandBarSelectionMixedInput
           arg={arg}
           stepBack={stepBack}
           onSubmit={onSubmit}

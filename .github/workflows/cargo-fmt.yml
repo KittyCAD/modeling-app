@@ -26,23 +26,20 @@ jobs:
   cargofmt:
     name: cargo fmt
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        dir: ['src/wasm-lib']
     steps:
       - uses: actions/checkout@v4
-      - name: Install latest rust
-        uses: actions-rs/toolchain@v1
+      - name: Use correct Rust toolchain
+        shell: bash
+        run: |
+          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
+      - name: Install rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-            toolchain: stable
-            override: true
-            components: rustfmt
-
-      - name: Rust Cache
-        uses: Swatinem/rust-cache@v2.6.1
+          cache-workspaces: rust
+          components: rustfmt
 
       - name: Run cargo fmt
         run: |
-          cd "${{ matrix.dir }}"
+          cd rust
           cargo fmt -- --check
         shell: bash

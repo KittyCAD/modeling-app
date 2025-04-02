@@ -1,10 +1,11 @@
-import react from '@vitejs/plugin-react'
-import viteTsconfigPaths from 'vite-tsconfig-paths'
-import eslint from '@nabla/vite-plugin-eslint'
-import { defineConfig, configDefaults } from 'vitest/config'
-import version from 'vite-plugin-package-version'
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
+import eslint from '@nabla/vite-plugin-eslint'
+import react from '@vitejs/plugin-react'
+import version from 'vite-plugin-package-version'
+import topLevelAwait from 'vite-plugin-top-level-await'
+import viteTsconfigPaths from 'vite-tsconfig-paths'
+import { configDefaults, defineConfig } from 'vitest/config'
 
 const config = defineConfig({
   server: {
@@ -34,7 +35,7 @@ const config = defineConfig({
     coverage: {
       provider: 'istanbul', // or 'v8'
     },
-    exclude: [...configDefaults.exclude, '**/e2e/**/*'],
+    exclude: [...configDefaults.exclude, '**/e2e/**/*.spec.*', 'rust'],
     deps: {
       optimizer: {
         web: {
@@ -47,7 +48,9 @@ const config = defineConfig({
     mockReset: true,
     reporters: process.env.GITHUB_ACTIONS
       ? ['dot', 'github-actions']
-      : ['verbose', 'hanging-process'],
+      : // Gotcha: 'hanging-process' is very noisey, turn off by default on localhost
+        // : ['verbose', 'hanging-process'],
+        ['verbose'],
     testTimeout: 1000,
     hookTimeout: 1000,
     teardownTimeout: 1000,
@@ -59,9 +62,25 @@ const config = defineConfig({
     alias: {
       '@kittycad/codemirror-lsp-client': '/packages/codemirror-lsp-client/src',
       '@kittycad/codemirror-lang-kcl': '/packages/codemirror-lang-kcl/src',
+      '@rust': '/rust',
+      '@e2e': '/e2e',
+      '@src': '/src',
+      '@root': '/',
     },
   },
-  plugins: [react(), viteTsconfigPaths(), eslint(), version(), lezer()],
+  plugins: [
+    react(),
+    viteTsconfigPaths(),
+    eslint(),
+    version(),
+    lezer(),
+    topLevelAwait({
+      // The export name of top-level await promise for each chunk module
+      promiseExportName: '__tla',
+      // The function to generate import names of top-level await promise in each chunk module
+      promiseImportName: (i) => `__tla_${i}`,
+    }),
+  ],
   worker: {
     plugins: () => [viteTsconfigPaths()],
   },

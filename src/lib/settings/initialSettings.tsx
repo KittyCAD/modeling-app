@@ -1,25 +1,29 @@
-import { DEFAULT_PROJECT_NAME } from 'lib/constants'
+import { useRef } from 'react'
+
+import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
+import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
+import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
+
+import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
+import type { CameraSystem } from '@src/lib/cameraControls'
+import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  DEFAULT_PROJECT_NAME,
+} from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import type {
   BaseUnit,
   SettingProps,
   SettingsLevel,
-  baseUnitsUnion,
-} from 'lib/settings/settingsTypes'
-import { Themes } from 'lib/theme'
-import { isEnumMember } from 'lib/types'
-import {
-  CameraSystem,
-  cameraMouseDragGuards,
-  cameraSystems,
-} from 'lib/cameraControls'
-import { isDesktop } from 'lib/isDesktop'
-import { useRef } from 'react'
-import { CustomIcon } from 'components/CustomIcon'
-import Tooltip from 'components/Tooltip'
-import { toSync } from 'lib/utils'
-import { reportRejection } from 'lib/trap'
-import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType'
-import { OnboardingStatus } from 'wasm-lib/kcl/bindings/OnboardingStatus'
+} from '@src/lib/settings/settingsTypes'
+import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
+import { Themes } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import { isEnumMember } from '@src/lib/types'
+import { isArray, toSync } from '@src/lib/utils'
 
 /**
  * A setting that can be set at the user or project level
@@ -88,8 +92,8 @@ export class Setting<T = unknown> {
     return this._project !== undefined
       ? this._project
       : this._user !== undefined
-      ? this._user
-      : this._default
+        ? this._user
+        : this._default
   }
   /**
    * @param {SettingsLevel} level - The level to get the fallback for
@@ -152,32 +156,54 @@ export function createSettings() {
         defaultValue: '264.5',
         description: 'The hue of the primary theme color for the app',
         validate: (v) => Number(v) >= 0 && Number(v) < 360,
-        Component: ({ value, updateValue }) => (
-          <div className="flex item-center gap-4 px-2 m-0 py-0">
-            <div
-              className="w-4 h-4 rounded-full bg-primary border border-solid border-chalkboard-100 dark:border-chalkboard-30"
-              style={{
-                backgroundColor: `oklch(var(--primary-lightness) var(--primary-chroma) ${value})`,
-              }}
-            />
-            <input
-              type="range"
-              onChange={(e) => updateValue(e.currentTarget.value)}
-              value={value}
-              min={0}
-              max={259}
-              step={1}
-              className="block flex-1"
-            />
-          </div>
-        ),
+        Component: ({ value, updateValue }) => {
+          const preview = (e: React.SyntheticEvent) =>
+            e.isTrusted &&
+            'value' in e.currentTarget &&
+            document.documentElement.style.setProperty(
+              `--primary-hue`,
+              String(e.currentTarget.value)
+            )
+          const save = (e: React.SyntheticEvent) =>
+            e.isTrusted &&
+            'value' in e.currentTarget &&
+            e.currentTarget.value &&
+            updateValue(String(e.currentTarget.value))
+          return (
+            <div className="flex item-center gap-4 px-2 m-0 py-0">
+              <div
+                className="w-4 h-4 rounded-full bg-primary border border-solid border-chalkboard-100 dark:border-chalkboard-30"
+                style={{
+                  backgroundColor: `oklch(var(--primary-lightness) var(--primary-chroma) var(--primary-hue))`,
+                }}
+              />
+              <input
+                type="range"
+                onInput={preview}
+                onMouseUp={save}
+                onKeyUp={save}
+                onPointerUp={save}
+                defaultValue={value}
+                min={0}
+                max={259}
+                step={1}
+                className="block flex-1"
+              />
+            </div>
+          )
+        },
       }),
-      enableSSAO: new Setting<boolean>({
-        defaultValue: true,
-        description:
-          'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled',
+      /**
+       * Whether to show the debug panel, which lets you see
+       * various states of the app to aid in development
+       */
+      showDebugPanel: new Setting<boolean>({
+        defaultValue: false,
+        description: 'Whether to show the debug panel, a development tool',
         validate: (v) => typeof v === 'boolean',
-        hideOnPlatform: 'both', //for now
+        commandConfig: {
+          inputType: 'boolean',
+        },
       }),
       /**
        * Stream resource saving behavior toggle
@@ -185,6 +211,14 @@ export function createSettings() {
       streamIdleMode: new Setting<boolean>({
         defaultValue: false,
         description: 'Toggle stream idling, saving bandwidth and battery',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+      allowOrbitInSketchMode: new Setting<boolean>({
+        defaultValue: false,
+        description: 'Toggle free camera while in sketch mode',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
@@ -231,7 +265,7 @@ export function createSettings() {
                   if (
                     inputRef.current &&
                     inputRefVal &&
-                    !Array.isArray(inputRefVal)
+                    !isArray(inputRefVal)
                   ) {
                     updateValue(inputRefVal)
                   } else {
@@ -254,6 +288,11 @@ export function createSettings() {
           )
         },
       }),
+      namedViews: new Setting<{ [key in string]: NamedView }>({
+        defaultValue: {},
+        validate: (v) => true,
+        hideOnLevel: 'user',
+      }),
     },
     /**
      * Settings that affect the behavior while modeling.
@@ -263,9 +302,10 @@ export function createSettings() {
        * The default unit to use in modeling dimensions
        */
       defaultUnit: new Setting<BaseUnit>({
-        defaultValue: 'mm',
-        description: 'The default unit to use in modeling dimensions',
-        validate: (v) => baseUnitsUnion.includes(v as BaseUnit),
+        defaultValue: DEFAULT_DEFAULT_LENGTH_UNIT,
+        description:
+          'Set the default length unit setting value to give any new files.',
+        validate: (v) => baseUnitsUnion.includes(v),
         commandConfig: {
           inputType: 'options',
           defaultValueFromContext: (context) =>
@@ -282,13 +322,20 @@ export function createSettings() {
             })),
         },
       }),
+      enableSSAO: new Setting<boolean>({
+        defaultValue: true,
+        description:
+          'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled',
+        validate: (v) => typeof v === 'boolean',
+        hideOnPlatform: 'both', //for now
+      }),
       /**
        * The controls for how to navigate the 3D view
        */
       mouseControls: new Setting<CameraSystem>({
         defaultValue: 'Zoo',
         description: 'The controls for how to navigate the 3D view',
-        validate: (v) => cameraSystems.includes(v as CameraSystem),
+        validate: (v) => cameraSystems.includes(v),
         hideOnLevel: 'project',
         commandConfig: {
           inputType: 'options',
@@ -373,6 +420,30 @@ export function createSettings() {
         },
       }),
       /**
+       * What methodology to use for orbiting the camera
+       */
+      cameraOrbit: new Setting<CameraOrbitType>({
+        defaultValue: 'spherical',
+        hideOnLevel: 'project',
+        description: 'What methodology to use for orbiting the camera',
+        validate: (v) => ['spherical', 'trackball'].includes(v),
+        commandConfig: {
+          inputType: 'options',
+          defaultValueFromContext: (context) =>
+            context.modeling.cameraOrbit.current,
+          options: (cmdContext, settingsContext) =>
+            (['spherical', 'trackball'] as const).map((v) => ({
+              name: v.charAt(0).toUpperCase() + v.slice(1),
+              value: v,
+              isCurrent:
+                settingsContext.modeling.cameraOrbit.shouldShowCurrentLabel(
+                  cmdContext.argumentsToSubmit.level as SettingsLevel,
+                  v
+                ),
+            })),
+        },
+      }),
+      /**
        * Whether to highlight edges of 3D objects
        */
       highlightEdges: new Setting<boolean>({
@@ -395,18 +466,6 @@ export function createSettings() {
           inputType: 'boolean',
         },
         hideOnLevel: 'project',
-      }),
-      /**
-       * Whether to show the debug panel, which lets you see
-       * various states of the app to aid in development
-       */
-      showDebugPanel: new Setting<boolean>({
-        defaultValue: false,
-        description: 'Whether to show the debug panel, a development tool',
-        validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
       }),
       /**
        * TODO: This setting is not yet implemented.
@@ -521,3 +580,4 @@ export function createSettings() {
 }
 
 export const settings = createSettings()
+export type SettingsType = ReturnType<typeof createSettings>

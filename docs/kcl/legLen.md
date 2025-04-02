@@ -9,7 +9,10 @@ Compute the length of the given leg.
 
 
 ```js
-legLen(hypotenuse: number, leg: number) -> number
+legLen(
+  hypotenuse: number,
+  leg: number,
+): number
 ```
 
 ### Tags
@@ -21,12 +24,12 @@ legLen(hypotenuse: number, leg: number) -> number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `hypotenuse` | `number` |  | Yes |
-| `leg` | `number` |  | Yes |
+| `hypotenuse` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `leg` | [`number`](/docs/kcl/types/number) |  | Yes |
 
 ### Returns
 
-`number` 
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples

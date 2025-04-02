@@ -1,0 +1,1400 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed bench.kcl
+---
+[
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "divider",
+    "functionSourceRange": [
+      1331,
+      1606,
+      5
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "dividerSketch",
+    "functionSourceRange": [
+      309,
+      1312,
+      5
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 2.0,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "dividerSketch",
+    "functionSourceRange": [
+      309,
+      1312,
+      5
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": -2.0,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "faces": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "String",
+              "value": "end"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "thickness": {
+        "value": {
+          "type": "Number",
+          "value": 1.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "shell",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "faces": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "String",
+              "value": "start"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "thickness": {
+        "value": {
+          "type": "Number",
+          "value": 1.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "shell",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "offset": {
+        "value": {
+          "type": "Number",
+          "value": 28.0,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "offsetPlane",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "divider",
+    "functionSourceRange": [
+      1331,
+      1606,
+      5
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "dividerSketch",
+    "functionSourceRange": [
+      309,
+      1312,
+      5
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 2.0,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "dividerSketch",
+    "functionSourceRange": [
+      309,
+      1312,
+      5
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": -2.0,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "faces": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "String",
+              "value": "end"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "thickness": {
+        "value": {
+          "type": "Number",
+          "value": 1.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "shell",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "faces": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "String",
+              "value": "start"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "thickness": {
+        "value": {
+          "type": "Number",
+          "value": 1.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "shell",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "offset": {
+        "value": {
+          "type": "Number",
+          "value": 28.0,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "offsetPlane",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "divider",
+    "functionSourceRange": [
+      1331,
+      1606,
+      5
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "dividerSketch",
+    "functionSourceRange": [
+      309,
+      1312,
+      5
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 2.0,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "dividerSketch",
+    "functionSourceRange": [
+      309,
+      1312,
+      5
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": -2.0,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "faces": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "String",
+              "value": "end"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "thickness": {
+        "value": {
+          "type": "Number",
+          "value": 1.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "shell",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "faces": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "String",
+              "value": "start"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "thickness": {
+        "value": {
+          "type": "Number",
+          "value": 1.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "shell",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "offset": {
+        "value": {
+          "type": "Number",
+          "value": -28.0,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "offsetPlane",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "connector",
+    "functionSourceRange": [
+      1889,
+      2052,
+      5
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "connectorSketch",
+    "functionSourceRange": [
+      1626,
+      1868,
+      5
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 56.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "connectorSketch",
+    "functionSourceRange": [
+      1626,
+      1868,
+      5
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 56.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "offset": {
+        "value": {
+          "type": "Number",
+          "value": -30.0,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "offsetPlane",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "seatSlats",
+    "functionSourceRange": [
+      2474,
+      2560,
+      5
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "seatSlatSketch",
+    "functionSourceRange": [
+      2071,
+      2453,
+      5
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 60.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Array",
+        "value": [
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "offset": {
+        "value": {
+          "type": "Number",
+          "value": -30.0,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "offsetPlane",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "backSlats",
+    "functionSourceRange": [
+      2993,
+      3084,
+      5
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "backSlatsSketch",
+    "functionSourceRange": [
+      2580,
+      2972,
+      5
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 60.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Array",
+        "value": [
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "armRest",
+    "functionSourceRange": [
+      3671,
+      3859,
+      5
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "offset": {
+        "value": {
+          "type": "Number",
+          "value": 28.0,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "offsetPlane",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "armRestPath",
+    "functionSourceRange": [
+      3100,
+      3325,
+      5
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "offset": {
+        "value": {
+          "type": "Number",
+          "value": 20.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "offsetPlane",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "armRestProfile",
+    "functionSourceRange": [
+      3344,
+      3652,
+      5
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "path": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "sweep",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "armRest",
+    "functionSourceRange": [
+      3671,
+      3859,
+      5
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "offset": {
+        "value": {
+          "type": "Number",
+          "value": -28.0,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "offsetPlane",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "armRestPath",
+    "functionSourceRange": [
+      3100,
+      3325,
+      5
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "offset": {
+        "value": {
+          "type": "Number",
+          "value": 20.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "offsetPlane",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "armRestProfile",
+    "functionSourceRange": [
+      3344,
+      3652,
+      5
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "path": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "sweep",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  }
+]

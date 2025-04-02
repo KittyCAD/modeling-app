@@ -1,0 +1,536 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed mounting-plate.kcl
+---
+[
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "rectShape",
+    "functionSourceRange": [
+      519,
+      887,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": -2.25,
+              "ty": {
+                "type": "Unknown"
+              }
+            },
+            {
+              "type": "Number",
+              "value": 4.25,
+              "ty": {
+                "type": "Unknown"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.25,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "holeSketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "hole",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 2.25,
+              "ty": {
+                "type": "Unknown"
+              }
+            },
+            {
+              "type": "Number",
+              "value": 4.25,
+              "ty": {
+                "type": "Unknown"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.25,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "holeSketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "hole",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": -2.25,
+              "ty": {
+                "type": "Unknown"
+              }
+            },
+            {
+              "type": "Number",
+              "value": -4.25,
+              "ty": {
+                "type": "Unknown"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.25,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "holeSketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "hole",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 2.25,
+              "ty": {
+                "type": "Unknown"
+              }
+            },
+            {
+              "type": "Number",
+              "value": -4.25,
+              "ty": {
+                "type": "Unknown"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.25,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "holeSketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "hole",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 2.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "holeSketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "hole",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 0.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "tags": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "fillet",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  }
+]

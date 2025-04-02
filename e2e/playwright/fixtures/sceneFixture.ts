@@ -1,21 +1,27 @@
-import type { Page, Locator } from '@playwright/test'
-import { expect } from '@playwright/test'
-import { uuidv4 } from 'lib/utils'
+import type { Locator, Page } from '@playwright/test'
+import { isArray, uuidv4 } from '@src/lib/utils'
+
+import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
+
 import {
   closeDebugPanel,
   doAndWaitForImageDiff,
   getPixelRGBs,
+  getUtils,
   openAndClearDebugPanel,
   sendCustomCmd,
-} from '../test-utils'
+} from '@e2e/playwright/test-utils'
+import { expect } from '@e2e/playwright/zoo-test'
 
-type mouseParams = {
+type MouseParams = {
   pixelDiff?: number
+  shouldDbClick?: boolean
+  delay?: number
 }
-type mouseDragToParams = mouseParams & {
+type MouseDragToParams = MouseParams & {
   fromPoint: { x: number; y: number }
 }
-type mouseDragFromParams = mouseParams & {
+type MouseDragFromParams = MouseParams & {
   toPoint: { x: number; y: number }
 }
 
@@ -26,22 +32,35 @@ type SceneSerialised = {
   }
 }
 
-type ClickHandler = (clickParams?: mouseParams) => Promise<void | boolean>
-type MoveHandler = (moveParams?: mouseParams) => Promise<void | boolean>
-type DblClickHandler = (clickParams?: mouseParams) => Promise<void | boolean>
-type DragToHandler = (dragParams: mouseDragToParams) => Promise<void | boolean>
+type ClickHandler = (clickParams?: MouseParams) => Promise<void | boolean>
+type MoveHandler = (moveParams?: MouseParams) => Promise<void | boolean>
+type DblClickHandler = (clickParams?: MouseParams) => Promise<void | boolean>
+type DragToHandler = (dragParams: MouseDragToParams) => Promise<void | boolean>
 type DragFromHandler = (
-  dragParams: mouseDragFromParams
+  dragParams: MouseDragFromParams
 ) => Promise<void | boolean>
 
 export class SceneFixture {
   public page: Page
+  public streamWrapper!: Locator
+  public loadingIndicator!: Locator
+  public networkToggleConnected!: Locator
+  public startEditSketchBtn!: Locator
 
-  private exeIndicator!: Locator
+  get exeIndicator() {
+    return this.page
+      .getByTestId('model-state-indicator-execution-done')
+      .or(this.page.getByTestId('model-state-indicator-receive-reliable'))
+  }
 
   constructor(page: Page) {
     this.page = page
-    this.reConstruct(page)
+    this.streamWrapper = page.getByTestId('stream')
+    this.networkToggleConnected = page.getByTestId('network-toggle-ok')
+    this.loadingIndicator = this.streamWrapper.getByTestId('loading')
+    this.startEditSketchBtn = page
+      .getByRole('button', { name: 'Start Sketch' })
+      .or(page.getByRole('button', { name: 'Edit Sketch' }))
   }
   private _serialiseScene = async (): Promise<SceneSerialised> => {
     const camera = await this.getCameraInfo()
@@ -60,29 +79,32 @@ export class SceneFixture {
       .toEqual(expected)
   }
 
-  reConstruct = (page: Page) => {
-    this.page = page
-
-    this.exeIndicator = page.getByTestId('model-state-indicator-execution-done')
-  }
-
   makeMouseHelpers = (
     x: number,
     y: number,
     { steps }: { steps: number } = { steps: 20 }
   ): [ClickHandler, MoveHandler, DblClickHandler] =>
     [
-      (clickParams?: mouseParams) => {
+      (clickParams?: MouseParams) => {
         if (clickParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
-            () => this.page.mouse.click(x, y),
+            () =>
+              clickParams?.shouldDbClick
+                ? this.page.mouse.dblclick(x, y, {
+                    delay: clickParams?.delay || 0,
+                  })
+                : this.page.mouse.click(x, y, {
+                    delay: clickParams?.delay || 0,
+                  }),
             clickParams.pixelDiff
           )
         }
-        return this.page.mouse.click(x, y)
+        return clickParams?.shouldDbClick
+          ? this.page.mouse.dblclick(x, y, { delay: clickParams?.delay || 0 })
+          : this.page.mouse.click(x, y, { delay: clickParams?.delay || 0 })
       },
-      (moveParams?: mouseParams) => {
+      (moveParams?: MouseParams) => {
         if (moveParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
@@ -92,7 +114,7 @@ export class SceneFixture {
         }
         return this.page.mouse.move(x, y, { steps })
       },
-      (clickParams?: mouseParams) => {
+      (clickParams?: MouseParams) => {
         if (clickParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
@@ -109,7 +131,7 @@ export class SceneFixture {
     { steps }: { steps: number } = { steps: 20 }
   ): [DragToHandler, DragFromHandler] =>
     [
-      (dragToParams: mouseDragToParams) => {
+      (dragToParams: MouseDragToParams) => {
         if (dragToParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
@@ -126,7 +148,7 @@ export class SceneFixture {
           targetPosition: { x, y },
         })
       },
-      (dragFromParams: mouseDragFromParams) => {
+      (dragFromParams: MouseDragFromParams) => {
         if (dragFromParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
@@ -213,8 +235,29 @@ export class SceneFixture {
     await expect(this.exeIndicator).toBeVisible({ timeout: 30000 })
   }
 
+  connectionEstablished = async () => {
+    const timeout = 30000
+    await expect(this.networkToggleConnected).toBeVisible({ timeout })
+  }
+
+  settled = async (cmdBar: CmdBarFixture) => {
+    const u = await getUtils(this.page)
+
+    await cmdBar.openCmdBar()
+    await cmdBar.chooseCommand('Settings · app · show debug panel')
+    await cmdBar.selectOption({ name: 'on' }).click()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    await this.waitForExecutionDone()
+    await expect(this.startEditSketchBtn).not.toBeDisabled()
+    await expect(this.startEditSketchBtn).toBeVisible()
+  }
+
   expectPixelColor = async (
-    colour: [number, number, number],
+    colour: [number, number, number] | [number, number, number][],
     coords: { x: number; y: number },
     diff: number
   ) => {
@@ -236,26 +279,42 @@ export class SceneFixture {
   }
 }
 
+function isColourArray(
+  colour: [number, number, number] | [number, number, number][]
+): colour is [number, number, number][] {
+  return isArray(colour[0])
+}
+
 export async function expectPixelColor(
   page: Page,
-  colour: [number, number, number],
+  colour: [number, number, number] | [number, number, number][],
   coords: { x: number; y: number },
   diff: number
 ) {
   let finalValue = colour
   await expect
-    .poll(async () => {
-      const pixel = (await getPixelRGBs(page)(coords, 1))[0]
-      if (!pixel) return null
-      finalValue = pixel
-      return pixel.every(
-        (channel, index) => Math.abs(channel - colour[index]) < diff
-      )
-    })
+    .poll(
+      async () => {
+        const pixel = (await getPixelRGBs(page)(coords, 1))[0]
+        if (!pixel) return null
+        finalValue = pixel
+        if (!isColourArray(colour)) {
+          return pixel.every(
+            (channel, index) => Math.abs(channel - colour[index]) < diff
+          )
+        }
+        return colour.some((c) =>
+          c.every((channel, index) => Math.abs(pixel[index] - channel) < diff)
+        )
+      },
+      { timeout: 10_000 }
+    )
     .toBeTruthy()
     .catch((cause) => {
       throw new Error(
-        `ExpectPixelColor: expecting ${colour} got ${finalValue}`,
+        `ExpectPixelColor: point ${JSON.stringify(
+          coords
+        )} was expecting ${colour} but got ${finalValue}`,
         { cause }
       )
     })

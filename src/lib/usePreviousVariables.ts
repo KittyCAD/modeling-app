@@ -1,11 +1,12 @@
-import { useModelingContext } from 'hooks/useModelingContext'
-import { kclManager } from 'lib/singletons'
-import { useKclContext } from 'lang/KclProvider'
-import { findAllPreviousVariables } from 'lang/queryAst'
 import { useEffect, useState } from 'react'
 
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useKclContext } from '@src/lang/KclProvider'
+import { findAllPreviousVariables } from '@src/lang/queryAst'
+import { kclManager } from '@src/lib/singletons'
+
 export function usePreviousVariables() {
-  const { programMemory, code } = useKclContext()
+  const { variables, code } = useKclContext()
   const { context } = useModelingContext()
   const selectionRange = context.selectionRanges.graphSelections[0]?.codeRef
     ?.range || [code.length, code.length]
@@ -18,14 +19,14 @@ export function usePreviousVariables() {
   })
 
   useEffect(() => {
-    if (!programMemory || !selectionRange) return
+    if (!variables || !selectionRange) return
     const varInfo = findAllPreviousVariables(
       kclManager.ast,
-      kclManager.programMemory,
+      kclManager.variables,
       selectionRange
     )
     setPreviousVariablesInfo(varInfo)
-  }, [kclManager.ast, kclManager.programMemory, selectionRange])
+  }, [kclManager.ast, kclManager.variables, selectionRange])
 
   return previousVariablesInfo
 }

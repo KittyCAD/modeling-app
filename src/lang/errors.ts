@@ -1,12 +1,20 @@
-import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
-import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
-import { Diagnostic as CodeMirrorDiagnostic } from '@codemirror/lint'
+import type { Diagnostic as CodeMirrorDiagnostic } from '@codemirror/lint'
+import type { Text } from '@codemirror/state'
 import { posToOffset } from '@kittycad/codemirror-lsp-client'
-import { Diagnostic as LspDiagnostic } from 'vscode-languageserver-protocol'
-import { Text } from '@codemirror/state'
-import { EditorView } from 'codemirror'
-import { SourceRange } from 'lang/wasm'
-import { Operation } from 'wasm-lib/kcl/bindings/Operation'
+import type { EditorView } from 'codemirror'
+import type { Diagnostic as LspDiagnostic } from 'vscode-languageserver-protocol'
+
+import type { CompilationError } from '@rust/kcl-lib/bindings/CompilationError'
+import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
+import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
+import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+
+import type { ArtifactCommand } from '@rust/kcl-lib/bindings/Artifact'
+import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
+import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
+import { isTopLevelModule } from '@src/lang/util'
+import type { ArtifactGraph } from '@src/lang/wasm'
 
 type ExtractKind<T> = T extends { kind: infer K } ? K : never
 export class KCLError extends Error {
@@ -14,86 +22,246 @@ export class KCLError extends Error {
   sourceRange: SourceRange
   msg: string
   operations: Operation[]
+  artifactCommands: ArtifactCommand[]
+  artifactGraph: ArtifactGraph
+  filenames: { [x: number]: ModulePath | undefined }
+  defaultPlanes: DefaultPlanes | null
 
   constructor(
     kind: ExtractKind<RustKclError> | 'name',
     msg: string,
     sourceRange: SourceRange,
-    operations: Operation[]
+    operations: Operation[],
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined },
+    defaultPlanes: DefaultPlanes | null
   ) {
     super()
     this.kind = kind
     this.msg = msg
     this.sourceRange = sourceRange
     this.operations = operations
+    this.artifactCommands = artifactCommands
+    this.artifactGraph = artifactGraph
+    this.filenames = filenames
+    this.defaultPlanes = defaultPlanes
     Object.setPrototypeOf(this, KCLError.prototype)
   }
 }
 
 export class KCLLexicalError extends KCLError {
-  constructor(msg: string, sourceRange: SourceRange, operations: Operation[]) {
-    super('lexical', msg, sourceRange, operations)
+  constructor(
+    msg: string,
+    sourceRange: SourceRange,
+    operations: Operation[],
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined },
+    defaultPlanes: DefaultPlanes | null
+  ) {
+    super(
+      'lexical',
+      msg,
+      sourceRange,
+      operations,
+      artifactCommands,
+      artifactGraph,
+      filenames,
+      defaultPlanes
+    )
     Object.setPrototypeOf(this, KCLSyntaxError.prototype)
   }
 }
 
 export class KCLInternalError extends KCLError {
-  constructor(msg: string, sourceRange: SourceRange, operations: Operation[]) {
-    super('internal', msg, sourceRange, operations)
+  constructor(
+    msg: string,
+    sourceRange: SourceRange,
+    operations: Operation[],
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined },
+    defaultPlanes: DefaultPlanes | null
+  ) {
+    super(
+      'internal',
+      msg,
+      sourceRange,
+      operations,
+      artifactCommands,
+      artifactGraph,
+      filenames,
+      defaultPlanes
+    )
     Object.setPrototypeOf(this, KCLSyntaxError.prototype)
   }
 }
 
 export class KCLSyntaxError extends KCLError {
-  constructor(msg: string, sourceRange: SourceRange, operations: Operation[]) {
-    super('syntax', msg, sourceRange, operations)
+  constructor(
+    msg: string,
+    sourceRange: SourceRange,
+    operations: Operation[],
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined },
+    defaultPlanes: DefaultPlanes | null
+  ) {
+    super(
+      'syntax',
+      msg,
+      sourceRange,
+      operations,
+      artifactCommands,
+      artifactGraph,
+      filenames,
+      defaultPlanes
+    )
     Object.setPrototypeOf(this, KCLSyntaxError.prototype)
   }
 }
 
 export class KCLSemanticError extends KCLError {
-  constructor(msg: string, sourceRange: SourceRange, operations: Operation[]) {
-    super('semantic', msg, sourceRange, operations)
+  constructor(
+    msg: string,
+    sourceRange: SourceRange,
+    operations: Operation[],
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined },
+    defaultPlanes: DefaultPlanes | null
+  ) {
+    super(
+      'semantic',
+      msg,
+      sourceRange,
+      operations,
+      artifactCommands,
+      artifactGraph,
+      filenames,
+      defaultPlanes
+    )
     Object.setPrototypeOf(this, KCLSemanticError.prototype)
   }
 }
 
 export class KCLTypeError extends KCLError {
-  constructor(msg: string, sourceRange: SourceRange, operations: Operation[]) {
-    super('type', msg, sourceRange, operations)
+  constructor(
+    msg: string,
+    sourceRange: SourceRange,
+    operations: Operation[],
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined },
+    defaultPlanes: DefaultPlanes | null
+  ) {
+    super(
+      'type',
+      msg,
+      sourceRange,
+      operations,
+      artifactCommands,
+      artifactGraph,
+      filenames,
+      defaultPlanes
+    )
     Object.setPrototypeOf(this, KCLTypeError.prototype)
   }
 }
 
-export class KCLUnimplementedError extends KCLError {
-  constructor(msg: string, sourceRange: SourceRange, operations: Operation[]) {
-    super('unimplemented', msg, sourceRange, operations)
-    Object.setPrototypeOf(this, KCLUnimplementedError.prototype)
+export class KCLIoError extends KCLError {
+  constructor(
+    msg: string,
+    sourceRange: SourceRange,
+    operations: Operation[],
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined },
+    defaultPlanes: DefaultPlanes | null
+  ) {
+    super(
+      'io',
+      msg,
+      sourceRange,
+      operations,
+      artifactCommands,
+      artifactGraph,
+      filenames,
+      defaultPlanes
+    )
+    Object.setPrototypeOf(this, KCLIoError.prototype)
   }
 }
 
 export class KCLUnexpectedError extends KCLError {
-  constructor(msg: string, sourceRange: SourceRange, operations: Operation[]) {
-    super('unexpected', msg, sourceRange, operations)
+  constructor(
+    msg: string,
+    sourceRange: SourceRange,
+    operations: Operation[],
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined },
+    defaultPlanes: DefaultPlanes | null
+  ) {
+    super(
+      'unexpected',
+      msg,
+      sourceRange,
+      operations,
+      artifactCommands,
+      artifactGraph,
+      filenames,
+      defaultPlanes
+    )
     Object.setPrototypeOf(this, KCLUnexpectedError.prototype)
   }
 }
 
 export class KCLValueAlreadyDefined extends KCLError {
-  constructor(key: string, sourceRange: SourceRange, operations: Operation[]) {
+  constructor(
+    key: string,
+    sourceRange: SourceRange,
+    operations: Operation[],
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined },
+    defaultPlanes: DefaultPlanes | null
+  ) {
     super(
       'name',
       `Key ${key} was already defined elsewhere`,
       sourceRange,
-      operations
+      operations,
+      artifactCommands,
+      artifactGraph,
+      filenames,
+      defaultPlanes
     )
     Object.setPrototypeOf(this, KCLValueAlreadyDefined.prototype)
   }
 }
 
 export class KCLUndefinedValueError extends KCLError {
-  constructor(key: string, sourceRange: SourceRange, operations: Operation[]) {
-    super('name', `Key ${key} has not been defined`, sourceRange, operations)
+  constructor(
+    key: string,
+    sourceRange: SourceRange,
+    operations: Operation[],
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined },
+    defaultPlanes: DefaultPlanes | null
+  ) {
+    super(
+      'name',
+      `Key ${key} has not been defined`,
+      sourceRange,
+      operations,
+      artifactCommands,
+      artifactGraph,
+      filenames,
+      defaultPlanes
+    )
     Object.setPrototypeOf(this, KCLUndefinedValueError.prototype)
   }
 }
@@ -112,8 +280,12 @@ export function lspDiagnosticsToKclErrors(
         new KCLError(
           'unexpected',
           message,
-          [posToOffset(doc, range.start)!, posToOffset(doc, range.end)!, true],
-          []
+          [posToOffset(doc, range.start)!, posToOffset(doc, range.end)!, 0],
+          [],
+          [],
+          defaultArtifactGraph(),
+          {},
+          null
         )
     )
     .sort((a, b) => {
@@ -137,7 +309,7 @@ export function kclErrorsToDiagnostics(
   errors: KCLError[]
 ): CodeMirrorDiagnostic[] {
   return errors
-    ?.filter((err) => err.sourceRange[2])
+    ?.filter((err) => isTopLevelModule(err.sourceRange))
     .map((err) => {
       return {
         from: err.sourceRange[0],
@@ -148,11 +320,11 @@ export function kclErrorsToDiagnostics(
     })
 }
 
-export function complilationErrorsToDiagnostics(
+export function compilationErrorsToDiagnostics(
   errors: CompilationError[]
 ): CodeMirrorDiagnostic[] {
   return errors
-    ?.filter((err) => err.sourceRange[2] === 0)
+    ?.filter((err) => isTopLevelModule(err.sourceRange))
     .map((err) => {
       let severity: any = 'error'
       if (err.severity === 'Warning') {
@@ -166,7 +338,11 @@ export function complilationErrorsToDiagnostics(
             name: suggestion.title,
             apply: (view: EditorView, from: number, to: number) => {
               view.dispatch({
-                changes: { from, to, insert: suggestion.insert },
+                changes: {
+                  from: suggestion.source_range[0],
+                  to: suggestion.source_range[1],
+                  insert: suggestion.insert,
+                },
               })
             },
           },
@@ -180,4 +356,35 @@ export function complilationErrorsToDiagnostics(
         actions,
       }
     })
+}
+
+// Create an array of KCL Errors with a new formatting to
+// easily map SourceRange of an error to the filename to display in the
+// side bar UI. This is to indicate an error in an imported file, it isn't
+// the specific code mirror error interface.
+export function kclErrorsByFilename(
+  errors: KCLError[]
+): Map<string, KCLError[]> {
+  const fileNameToError: Map<string, KCLError[]> = new Map()
+  errors.forEach((error: KCLError) => {
+    const filenames = error.filenames
+    const sourceRange: SourceRange = error.sourceRange
+    const fileIndex = sourceRange[2]
+    const modulePath: ModulePath | undefined = filenames[fileIndex]
+    if (modulePath && modulePath.type === 'Local') {
+      let localPath = modulePath.value
+      if (localPath) {
+        // Build up an array of errors per file name
+        const value = fileNameToError.get(localPath)
+        if (!value) {
+          fileNameToError.set(localPath, [error])
+        } else {
+          value.push(error)
+          fileNameToError.set(localPath, [error])
+        }
+      }
+    }
+  })
+
+  return fileNameToError
 }

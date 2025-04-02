@@ -1,17 +1,20 @@
-import { Models } from '@kittycad/lib'
-import { VITE_KC_API_BASE_URL } from 'env'
-import crossPlatformFetch from './crossPlatformFetch'
-import { err, reportRejection } from './trap'
-import { Selections } from './selections'
-import { ArtifactGraph, getArtifactOfTypes } from 'lang/std/artifactGraph'
-import { SourceRange } from 'lang/wasm'
-import toast from 'react-hot-toast'
-import { codeManager, editorManager, kclManager } from './singletons'
-import { ToastPromptToEditCadSuccess } from 'components/ToastTextToCad'
-import { uuidv4 } from './utils'
+import type { SelectionRange } from '@codemirror/state'
+import { EditorSelection, Transaction } from '@codemirror/state'
+import type { Models } from '@kittycad/lib'
+import { VITE_KC_API_BASE_URL } from '@src/env'
 import { diffLines } from 'diff'
-import { Transaction, EditorSelection, SelectionRange } from '@codemirror/state'
-import { modelingMachineEvent } from 'editor/manager'
+import toast from 'react-hot-toast'
+
+import { ToastPromptToEditCadSuccess } from '@src/components/ToastTextToCad'
+import { modelingMachineEvent } from '@src/editor/manager'
+import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
+import { topLevelRange } from '@src/lang/util'
+import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
+import crossPlatformFetch from '@src/lib/crossPlatformFetch'
+import type { Selections } from '@src/lib/selections'
+import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
+import { err, reportRejection } from '@src/lib/trap'
+import { uuidv4 } from '@src/lib/utils'
 
 function sourceIndexToLineColumn(
   code: string,
@@ -40,16 +43,36 @@ export async function submitPromptToEditToQueue({
   code,
   token,
   artifactGraph,
+  projectName,
 }: {
   prompt: string
-  selections: Selections
+  selections: Selections | null
   code: string
+  projectName: string
   token?: string
   artifactGraph: ArtifactGraph
 }): Promise<Models['TextToCadIteration_type'] | Error> {
+  // If no selection, use whole file
+  if (selections === null) {
+    const body: Models['TextToCadIterationBody_type'] = {
+      original_source_code: code,
+      prompt,
+      source_ranges: [], // Empty ranges indicates whole file
+      project_name:
+        projectName !== '' && projectName !== 'browser'
+          ? projectName
+          : undefined,
+      kcl_version: kclManager.kclVersion,
+    }
+    return submitToApi(body, token)
+  }
+
+  // Handle manual code selections and artifact selections differently
   const ranges: Models['TextToCadIterationBody_type']['source_ranges'] =
     selections.graphSelections.flatMap((selection) => {
       const artifact = selection.artifact
+
+      // For artifact selections, add context
       const prompts: Models['TextToCadIterationBody_type']['source_ranges'] = []
 
       if (artifact?.type === 'cap') {
@@ -129,7 +152,7 @@ See later source ranges for more context. about the sweep`,
           prompts.push({
             prompt: `This selection is for a segment (line, xLine, angledLine etc) that has been swept (a general-sweep, either an extrusion, revolve, sweep or loft).
 Because it now refers to an edge the way to refer to this edge is to add a tag to the segment, and then use that tag directly.
-i.e. \`fillet({ radius = someInteger, tags = [newTag] }, %)\` will work in the case of filleting this edge
+i.e. \`fillet( radius = someInteger, tags = [newTag])\` will work in the case of filleting this edge
 See later source ranges for more context. about the sweep`,
             range: convertAppRangeToApiRange(selection.codeRef.range, code),
           })
@@ -137,7 +160,7 @@ See later source ranges for more context. about the sweep`,
             { key: artifact.pathId, types: ['path'] },
             artifactGraph
           )
-          if (!err(path)) {
+          if (!err(path) && path.sweepId) {
             const sweep = getArtifactOfTypes(
               { key: path.sweepId, types: ['sweep'] },
               artifactGraph
@@ -151,13 +174,34 @@ See later source ranges for more context. about the sweep`,
           }
         }
       }
+      if (!artifact) {
+        // manually selected code is more likely to not have an artifact
+        // an example might be highlighting the variable name only in a variable declaration
+        prompts.push({
+          prompt: '',
+          range: convertAppRangeToApiRange(selection.codeRef.range, code),
+        })
+      }
       return prompts
     })
+
   const body: Models['TextToCadIterationBody_type'] = {
     original_source_code: code,
     prompt,
     source_ranges: ranges,
+    project_name:
+      projectName !== '' && projectName !== 'browser' ? projectName : undefined,
+    kcl_version: kclManager.kclVersion,
   }
+
+  return submitToApi(body, token)
+}
+
+// Helper function to handle API submission
+async function submitToApi(
+  body: Models['TextToCadIterationBody_type'],
+  token?: string
+): Promise<Models['TextToCadIteration_type'] | Error> {
   const url = VITE_KC_API_BASE_URL + '/ml/text-to-cad/iteration'
   const data: Models['TextToCadIteration_type'] | Error =
     await crossPlatformFetch(
@@ -203,11 +247,13 @@ export async function doPromptEdit({
   code,
   token,
   artifactGraph,
+  projectName,
 }: {
   prompt: string
   selections: Selections
   code: string
   token?: string
+  projectName: string
   artifactGraph: ArtifactGraph
 }): Promise<Models['TextToCadIteration_type'] | Error> {
   const toastId = toast.loading('Submitting to Text-to-CAD API...')
@@ -217,6 +263,7 @@ export async function doPromptEdit({
     code,
     token,
     artifactGraph,
+    projectName,
   })
   if (err(submitResult)) return submitResult
 
@@ -269,12 +316,14 @@ export async function promptToEditFlow({
   code,
   token,
   artifactGraph,
+  projectName,
 }: {
   prompt: string
   selections: Selections
   code: string
   token?: string
   artifactGraph: ArtifactGraph
+  projectName: string
 }) {
   const result = await doPromptEdit({
     prompt,
@@ -282,6 +331,7 @@ export async function promptToEditFlow({
     code,
     token,
     artifactGraph,
+    projectName,
   })
   if (err(result)) return Promise.reject(result)
   const oldCode = codeManager.code
@@ -334,7 +384,7 @@ const reBuildNewCodeWithRanges = (
     } else if (change.added && !change.removed) {
       const start = newCodeWithRanges.length
       const end = start + change.value.length
-      insertRanges.push([start, end, true])
+      insertRanges.push(topLevelRange(start, end))
       newCodeWithRanges += change.value
     }
   }

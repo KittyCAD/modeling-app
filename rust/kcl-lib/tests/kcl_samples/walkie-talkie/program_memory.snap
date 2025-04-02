@@ -1,0 +1,383 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing walkie-talkie.kcl
+---
+{
+  "antenna": {
+    "type": "Function"
+  },
+  "antennaBaseHeight": {
+    "type": "Number",
+    "value": 0.25,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "antennaBaseWidth": {
+    "type": "Number",
+    "value": 0.5,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "antennaLength": {
+    "type": "Number",
+    "value": 3.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "antennaTopHeight": {
+    "type": "Number",
+    "value": 0.05,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "antennaTopWidth": {
+    "type": "Number",
+    "value": 0.3,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "body": {
+    "type": "Function"
+  },
+  "button": {
+    "type": "Function"
+  },
+  "buttonHeight": {
+    "type": "Number",
+    "value": 0.48,
+    "ty": {
+      "type": "Unknown"
+    }
+  },
+  "buttonThickness": {
+    "type": "Number",
+    "value": 0.04,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "buttonWidth": {
+    "type": "Number",
+    "value": 0.15,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "case": {
+    "type": "Function"
+  },
+  "caseTolerance": {
+    "type": "Number",
+    "value": 0.01,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "chamferLength": {
+    "type": "Number",
+    "value": 0.325,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "height": {
+    "type": "Number",
+    "value": 4.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "knob": {
+    "type": "Function"
+  },
+  "knobDiameter": {
+    "type": "Number",
+    "value": 0.5,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "knobHeight": {
+    "type": "Number",
+    "value": 0.25,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "knobRadius": {
+    "type": "Number",
+    "value": 0.05,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "offset": {
+    "type": "Number",
+    "value": 0.125,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "screenDepth": {
+    "type": "Number",
+    "value": -0.0625,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "screenHeight": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "screenWidth": {
+    "type": "Number",
+    "value": 1.75,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "screenYPosition": {
+    "type": "Number",
+    "value": 1.25,
+    "ty": {
+      "type": "Unknown"
+    }
+  },
+  "speakerBoxHeight": {
+    "type": "Number",
+    "value": 1.25,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "speakerBoxWidth": {
+    "type": "Number",
+    "value": 1.25,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "squareHoleSideLength": {
+    "type": "Number",
+    "value": 0.0625,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "tag1": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "tag1"
+  },
+  "tag2": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "tag2"
+  },
+  "tag3": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "tag3"
+  },
+  "tag4": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "tag4"
+  },
+  "talkButton": {
+    "type": "Function"
+  },
+  "talkButtonHeight": {
+    "type": "Number",
+    "value": 0.05,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "talkButtonSideLength": {
+    "type": "Number",
+    "value": 0.5,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "thickness": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "tolerance": {
+    "type": "Number",
+    "value": 0.02,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "width": {
+    "type": "Number",
+    "value": 2.5,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  }
+}

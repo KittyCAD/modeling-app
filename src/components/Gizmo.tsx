@@ -1,32 +1,33 @@
-import { SceneInfra } from 'clientSideScene/sceneInfra'
-import { sceneInfra } from 'lib/singletons'
-import { MutableRefObject, useEffect, useRef } from 'react'
+import { Popover } from '@headlessui/react'
+import type { MutableRefObject } from 'react'
+import { useEffect, useRef } from 'react'
+import type { Camera, ColorRepresentation, Intersection, Object3D } from 'three'
 import {
-  WebGLRenderer,
-  Scene,
-  OrthographicCamera,
   BoxGeometry,
-  SphereGeometry,
-  MeshBasicMaterial,
+  Clock,
   Color,
   Mesh,
-  Clock,
+  MeshBasicMaterial,
+  OrthographicCamera,
   Quaternion,
-  ColorRepresentation,
-  Vector2,
   Raycaster,
-  Camera,
-  Intersection,
-  Object3D,
+  Scene,
+  SphereGeometry,
+  Vector2,
+  WebGLRenderer,
 } from 'three'
-import { Popover } from '@headlessui/react'
-import { CustomIcon } from './CustomIcon'
-import { reportRejection } from 'lib/trap'
+
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { CustomIcon } from '@src/components/CustomIcon'
 import {
-  useViewControlMenuItems,
   ViewControlContextMenu,
-} from './ViewControlMenu'
-import { AxisNames } from 'lib/constants'
+  useViewControlMenuItems,
+} from '@src/components/ViewControlMenu'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { AxisNames } from '@src/lib/constants'
+import { sceneInfra } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
+import { useSettings } from '@src/machines/appMachine'
 
 const CANVAS_SIZE = 80
 const FRUSTUM_SIZE = 0.5
@@ -40,12 +41,33 @@ enum AxisColors {
 }
 
 export default function Gizmo() {
+  const { state: modelingState } = useModelingContext()
+  const settings = useSettings()
   const menuItems = useViewControlMenuItems()
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const raycasterIntersect = useRef<Intersection<Object3D> | null>(null)
   const cameraPassiveUpdateTimer = useRef(0)
   const raycasterPassiveUpdateTimer = useRef(0)
+  const disableOrbitRef = useRef(false)
+
+  // Temporary fix for #4040:
+  // Disable gizmo orbiting in sketch mode
+  // This effect updates disableOrbitRef whenever the user
+  // toggles between Sketch mode and 3D mode
+  useEffect(() => {
+    disableOrbitRef.current =
+      modelingState.matches('Sketch') &&
+      !settings.app.allowOrbitInSketchMode.current
+    if (wrapperRef.current) {
+      wrapperRef.current.style.filter = disableOrbitRef.current
+        ? 'grayscale(100%)'
+        : 'none'
+      wrapperRef.current.style.cursor = disableOrbitRef.current
+        ? 'not-allowed'
+        : 'auto'
+    }
+  }, [modelingState, settings.app.allowOrbitInSketchMode.current])
 
   useEffect(() => {
     if (!canvasRef.current) return
@@ -64,7 +86,8 @@ export default function Gizmo() {
     const { mouse, disposeMouseEvents } = initializeMouseEvents(
       canvas,
       raycasterIntersect,
-      sceneInfra
+      sceneInfra,
+      disableOrbitRef
     )
     const raycasterObjects = [...gizmoAxisHeads]
 
@@ -81,15 +104,21 @@ export default function Gizmo() {
         delta,
         cameraPassiveUpdateTimer
       )
-      updateRayCaster(
-        raycasterObjects,
-        raycaster,
-        mouse,
-        camera,
-        raycasterIntersect,
-        delta,
-        raycasterPassiveUpdateTimer
-      )
+      // If orbits are disabled, skip click logic
+      if (!disableOrbitRef.current) {
+        updateRayCaster(
+          raycasterObjects,
+          raycaster,
+          mouse,
+          camera,
+          raycasterIntersect,
+          delta,
+          raycasterPassiveUpdateTimer
+        )
+      } else {
+        raycasterObjects.forEach((object) => object.scale.set(1, 1, 1)) // Reset scales
+        raycasterIntersect.current = null // Clear intersection
+      }
       renderer.render(scene, camera)
       requestAnimationFrame(animate)
     }
@@ -106,6 +135,7 @@ export default function Gizmo() {
       <div
         ref={wrapperRef}
         aria-label="View orientation gizmo"
+        data-testid={`gizmo${disableOrbitRef.current ? '-disabled' : ''}`}
         className="grid place-content-center rounded-full overflow-hidden border border-solid border-primary/50 pointer-events-auto bg-chalkboard-10/70 dark:bg-chalkboard-100/80 backdrop-blur-sm"
       >
         <canvas ref={canvasRef} />
@@ -246,7 +276,8 @@ const quaternionsEqual = (
 const initializeMouseEvents = (
   canvas: HTMLCanvasElement,
   raycasterIntersect: MutableRefObject<Intersection<Object3D> | null>,
-  sceneInfra: SceneInfra
+  sceneInfra: SceneInfra,
+  disableOrbitRef: MutableRefObject<boolean>
 ): { mouse: Vector2; disposeMouseEvents: () => void } => {
   const mouse = new Vector2()
   mouse.x = 1 // fix initial mouse position issue
@@ -258,10 +289,10 @@ const initializeMouseEvents = (
   }
 
   const handleClick = () => {
-    if (raycasterIntersect.current) {
-      const axisName = raycasterIntersect.current.object.name as AxisNames
-      sceneInfra.camControls.updateCameraToAxis(axisName).catch(reportRejection)
-    }
+    // If orbits are disabled, skip click logic
+    if (disableOrbitRef.current || !raycasterIntersect.current) return
+    const axisName = raycasterIntersect.current.object.name as AxisNames
+    sceneInfra.camControls.updateCameraToAxis(axisName).catch(reportRejection)
   }
 
   window.addEventListener('mousemove', handleMouseMove)

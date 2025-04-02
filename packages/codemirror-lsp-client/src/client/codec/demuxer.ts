@@ -1,10 +1,10 @@
 import * as vsrpc from 'vscode-jsonrpc'
 
-import { Codec } from '.'
 import Bytes from './bytes'
+import PromiseMap from './map'
 import Queue from './queue'
 import Tracer from './tracer'
-import PromiseMap from './map'
+import { Codec } from './utils'
 
 export default class StreamDemuxer extends Queue<Uint8Array> {
   readonly responses: PromiseMap<number | string, vsrpc.ResponseMessage> =
@@ -42,7 +42,7 @@ export default class StreamDemuxer extends Queue<Uint8Array> {
           // try to parse the content-length from the headers
           const length = parseInt(match[1])
 
-          if (isNaN(length))
+          if (Number.isNaN(length))
             return Promise.reject(new Error('invalid content length'))
 
           // slice the headers since we now have the content length
@@ -90,7 +90,7 @@ export default class StreamDemuxer extends Queue<Uint8Array> {
   }
 
   add(bytes: Uint8Array): void {
-    const message = Codec.decode(bytes) as vsrpc.Message
+    const message = Codec.decode<vsrpc.Message>(bytes)
     if (this.trace) {
       Tracer.server(message)
     }

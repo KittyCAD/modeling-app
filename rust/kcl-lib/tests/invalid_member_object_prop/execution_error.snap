@@ -1,0 +1,14 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Error from executing invalid_member_object_prop.kcl
+---
+KCL Semantic error
+
+  × semantic: Only arrays and objects can be indexed, but you're trying to
+  │ index a boolean (true/false value)
+   ╭─[2:5]
+ 1 │ b = true
+ 2 │ x = b["property"]
+   ·     ──────┬──────
+   ·           ╰── tests/invalid_member_object_prop/input.kcl
+   ╰────

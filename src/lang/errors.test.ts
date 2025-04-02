@@ -1,4 +1,7 @@
-import { kclErrorsToDiagnostics, KCLError } from './errors'
+import type { KCLError } from '@src/lang/errors'
+import { kclErrorsToDiagnostics } from '@src/lang/errors'
+import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
+import { topLevelRange } from '@src/lang/util'
 
 describe('test kclErrToDiagnostic', () => {
   it('converts KCL errors to CodeMirror diagnostics', () => {
@@ -8,16 +11,24 @@ describe('test kclErrToDiagnostic', () => {
         message: '',
         kind: 'semantic',
         msg: 'Semantic error',
-        sourceRange: [0, 1, true],
+        sourceRange: topLevelRange(0, 1),
         operations: [],
+        artifactCommands: [],
+        artifactGraph: defaultArtifactGraph(),
+        filenames: {},
+        defaultPlanes: null,
       },
       {
         name: '',
         message: '',
         kind: 'type',
         msg: 'Type error',
-        sourceRange: [4, 5, true],
+        sourceRange: topLevelRange(4, 5),
         operations: [],
+        artifactCommands: [],
+        artifactGraph: defaultArtifactGraph(),
+        filenames: {},
+        defaultPlanes: null,
       },
     ]
     const diagnostics = kclErrorsToDiagnostics(errors)

@@ -1,27 +1,34 @@
-import { Models } from '@kittycad/lib'
+import type { Models } from '@kittycad/lib'
+import { VITE_KC_API_BASE_URL } from '@src/env'
+import toast from 'react-hot-toast'
+import type { NavigateFunction } from 'react-router-dom'
+import type { ContextFrom, EventFrom } from 'xstate'
+
 import {
   ToastTextToCadError,
   ToastTextToCadSuccess,
-} from 'components/ToastTextToCad'
-import { VITE_KC_API_BASE_URL } from 'env'
-import toast from 'react-hot-toast'
-import { FILE_EXT } from './constants'
-import { ContextFrom, EventFrom } from 'xstate'
-import { fileMachine } from 'machines/fileMachine'
-import { NavigateFunction } from 'react-router-dom'
-import crossPlatformFetch from './crossPlatformFetch'
-import { isDesktop } from 'lib/isDesktop'
-import { Themes } from './theme'
-import { commandBarMachine } from 'machines/commandBarMachine'
-import { getNextFileName } from './desktopFS'
-import { reportRejection } from './trap'
-import { toSync } from './utils'
+} from '@src/components/ToastTextToCad'
+import { FILE_EXT } from '@src/lib/constants'
+import crossPlatformFetch from '@src/lib/crossPlatformFetch'
+import { getNextFileName } from '@src/lib/desktopFS'
+import { isDesktop } from '@src/lib/isDesktop'
+import { kclManager } from '@src/lib/singletons'
+import type { Themes } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import { toSync } from '@src/lib/utils'
+import type { fileMachine } from '@src/machines/fileMachine'
 
 async function submitTextToCadPrompt(
   prompt: string,
+  projectName: string,
   token?: string
 ): Promise<Models['TextToCad_type'] | Error> {
-  const body: Models['TextToCadCreateBody_type'] = { prompt }
+  const body: Models['TextToCadCreateBody_type'] = {
+    prompt,
+    project_name:
+      projectName !== '' && projectName !== 'browser' ? projectName : undefined,
+    kcl_version: kclManager.kclVersion,
+  }
   // Glb has a smaller footprint than gltf, should we want to render it.
   const url = VITE_KC_API_BASE_URL + '/ai/text-to-cad/glb?kcl=true'
   const data: Models['TextToCad_type'] | Error = await crossPlatformFetch(
@@ -68,10 +75,6 @@ interface TextToKclProps {
     data?: unknown
   ) => unknown
   navigate: NavigateFunction
-  commandBarSend: (
-    type: EventFrom<typeof commandBarMachine>,
-    data?: unknown
-  ) => unknown
   context: ContextFrom<typeof fileMachine>
   token?: string
   settings: {
@@ -84,7 +87,6 @@ export async function submitAndAwaitTextToKcl({
   trimmedPrompt,
   fileMachineSend,
   navigate,
-  commandBarSend,
   context,
   token,
   settings,
@@ -96,7 +98,6 @@ export async function submitAndAwaitTextToKcl({
         ToastTextToCadError({
           toastId,
           message,
-          commandBarSend,
           prompt: trimmedPrompt,
         }),
       {
@@ -106,7 +107,11 @@ export async function submitAndAwaitTextToKcl({
     )
   }
 
-  const textToCadQueued = await submitTextToCadPrompt(trimmedPrompt, token)
+  const textToCadQueued = await submitTextToCadPrompt(
+    trimmedPrompt,
+    context.project.name,
+    token
+  )
     .then((value) => {
       if (value instanceof Error) {
         return Promise.reject(value)
@@ -195,7 +200,7 @@ export async function submitAndAwaitTextToKcl({
         .toLowerCase()}${FILE_EXT}`
 
       if (isDesktop()) {
-        // We have to pre-emptively run our unique file name logic,
+        // We have to preemptively run our unique file name logic,
         // so that we can pass the unique file name to the toast,
         // and by extension the file-deletion-on-reject logic.
         newFileName = getNextFileName({

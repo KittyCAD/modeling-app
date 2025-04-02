@@ -8,15 +8,12 @@ on:
       - updater-test
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
-  schedule:
-    - cron: '0 4 * * *'
-  # Daily at 04:00 AM UTC
-  # Will checkout the last commit from the default branch (main as of 2023-10-04)
+      - 'nightly-v[0-9]+.[0-9]+.[0-9]+'
 
 env:
-  # IS_RELEASE: ${{ github.ref_type == 'tag' }}
+  # IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
   IS_RELEASE: true
-  IS_NIGHTLY: ${{ github.event_name == 'schedule' }}
+  IS_NIGHTLY: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'nightly-v') }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -38,20 +35,71 @@ jobs:
 
       - run: yarn install
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - uses: Swatinem/rust-cache@v2
+      - id: filter
+        name: Check for Rust changes
+        uses: dorny/paths-filter@v3
         with:
-          workspaces: './src/wasm-lib'
+          filters: |
+            rust:
+              - 'rust/**'
 
-      # TODO: see if we can fetch from main instead if no diff at src/wasm-lib
+      - name: Download Wasm Cache
+        id: download-wasm
+        if: ${{ github.event_name == 'pull_request' && steps.filter.outputs.rust == 'false' }}
+        uses: dawidd6/action-download-artifact@v7
+        continue-on-error: true
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          name: wasm-bundle
+          workflow: build-and-store-wasm.yml
+          branch: main
+          path: rust/kcl-wasm-lib/pkg
+
+      - name: Build WASM condition
+        id: wasm
+        run: |
+          set -euox pipefail
+          # Build wasm if this is a push to main or tag, there are Rust changes, or
+          # downloading from the wasm cache failed.
+          if [[ ${{github.event_name}} == 'push' || ${{steps.filter.outputs.rust}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
+            echo "should-build-wasm=true" >> $GITHUB_OUTPUT
+          else
+            echo "should-build-wasm=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Use correct Rust toolchain
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
+        shell: bash
+        run: |
+          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
+
+      - name: Install rust
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache: false # Configured below.
+
+      - uses: taiki-e/install-action@37bdc826eaedac215f638a96472df572feab0f9b
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
+        with:
+          tool: wasm-pack
+
+      - name: Rust Cache
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+
       - name: Run build:wasm
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         run: "yarn build:wasm"
 
       - name: Set nightly version, product name, release notes, and icons
         if: ${{ env.IS_NIGHTLY == 'true' }}
-        run: yarn files:flip-to-nightly
+        run: |
+          export VERSION=${GITHUB_REF_NAME#nightly-v}
+          yarn files:set-version
+          yarn files:flip-to-nightly
 
       # - name: Set release version
       #   if: ${{ env.IS_RELEASE == 'true' }}
@@ -65,7 +113,7 @@ jobs:
           path: |
             package.json
             electron-builder.yml
-            src/wasm-lib/pkg/wasm_lib*
+            rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
             release-notes.md
             assets/icon.ico
             assets/icon.png
@@ -115,9 +163,9 @@ jobs:
           ls -R prepared-files
           cp prepared-files/package.json package.json
           cp prepared-files/electron-builder.yml electron-builder.yml
-          cp prepared-files/src/wasm-lib/pkg/wasm_lib_bg.wasm public
-          mkdir src/wasm-lib/pkg
-          cp prepared-files/src/wasm-lib/pkg/wasm_lib* src/wasm-lib/pkg
+          cp prepared-files/rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public
+          mkdir rust/kcl-wasm-lib/pkg
+          cp prepared-files/rust/kcl-wasm-lib/pkg/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
           cp prepared-files/release-notes.md release-notes.md
           cp prepared-files/assets/icon.ico assets/icon.ico
           cp prepared-files/assets/icon.png assets/icon.png
@@ -128,9 +176,14 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn' # Set this to npm, yarn or pnpm.
 
-      - run: yarn install
-
-      - run: yarn tronb:vite
+      - name: yarn install
+        # Windows is picky sometimes and fails on fetch. Step takes about ~30s
+        uses: nick-fields/retry@v3.0.2
+        with:
+          shell: bash
+          timeout_minutes: 2
+          max_attempts: 3
+          command: yarn install
 
       - name: Prepare certificate and variables (Windows only)
         if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') && matrix.os == 'windows-2022' }}
@@ -161,8 +214,8 @@ jobs:
       - name: Build the app (debug)
         if: ${{ env.IS_RELEASE == 'false' && env.IS_NIGHTLY == 'false' }}
         # electron-builder doesn't have a concept of release vs debug,
-        # this is just not doing any codesign or release yml generation
-        run: yarn electron-builder --config
+        # this is just not doing any codesign or release yml generation, and points to dev infra
+        run: yarn tronb:package:dev
 
       - name: Build the app (release)
         if: ${{ env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true' }}
@@ -177,11 +230,12 @@ jobs:
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
           DEBUG: "electron-notarize*"
         # TODO: Fix electron-notarize flakes. The logs above should help gather more data on failures
-        uses: nick-fields/retry@v3.0.0
+        uses: nick-fields/retry@v3.0.2
         with:
+          shell: bash
           timeout_minutes: 10
           max_attempts: 3
-          command: yarn electron-builder --config --publish always
+          command: yarn tronb:package:prod
 
       - name: List artifacts in out/
         run: ls -R out
@@ -238,11 +292,12 @@ jobs:
       #     WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
       #     DEBUG: "electron-notarize*"
       #   # TODO: Fix electron-notarize flakes. The logs above should help gather more data on failures
-      #   uses: nick-fields/retry@v3.0.0
+      #   uses: nick-fields/retry@v3.0.2
       #   with:
+      #     shell: bash
       #     timeout_minutes: 10
       #     max_attempts: 3
-      #     command: yarn electron-builder --config --publish always
+      #     command: yarn tronb:package:prod
 
       # - uses: actions/upload-artifact@v4
       #   if: ${{ env.IS_RELEASE == 'true' }}
@@ -267,7 +322,7 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
-    # if: ${{ github.ref_type == 'tag' || github.event_name == 'schedule' }}
+    # if: ${{ github.ref_type == 'tag' }}
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
       VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
@@ -324,8 +379,8 @@ jobs:
         env:
           NOTES: ${{ needs.prepare-files.outputs.notes }}
           PUB_DATE: ${{ github.event.repository.updated_at }}
-          WEBSITE_DIR: ${{ github.event_name == 'schedule' && 'dl.zoo.dev/releases/modeling-app/nightly' || 'dl.zoo.dev/releases/modeling-app' }}
-          URL_CODED_NAME: ${{ github.event_name == 'schedule' && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}
+          WEBSITE_DIR: ${{ env.IS_NIGHTLY == 'true' && 'dl.zoo.dev/releases/modeling-app/nightly' || 'dl.zoo.dev/releases/modeling-app' }}
+          URL_CODED_NAME: ${{ env.IS_NIGHTLY == 'true' && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}
         run: |
           RELEASE_DIR=https://${WEBSITE_DIR}
           jq --null-input \
@@ -380,23 +435,25 @@ jobs:
           # see https://github.com/actions/checkout/issues/1471
           git fetch --prune --unshallow --tags
           export TAG="nightly-${VERSION}"
-          export PREVIOUS_TAG=$(git describe --tags --match="nightly-v[0-9]*" --abbrev=0)
+          export PREVIOUS_TAG=$(git tag --list --sort=-committerdate "nightly-v[0-9]*" | head -n2 | tail -n1)
           export NOTES=$(./scripts/get-nightly-changelog.sh)
           yarn files:set-notes
 
       - name: Authenticate to Google Cloud
-        uses: 'google-github-actions/auth@v2.1.7'
+        # if: ${{ env.IS_NIGHTLY == 'true' }}
+        uses: 'google-github-actions/auth@v2.1.8'
         with:
           credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
 
       - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2.1.2
+        # if: ${{ env.IS_NIGHTLY == 'true' }}
+        uses: google-github-actions/setup-gcloud@v2.1.4
         with:
           project_id: ${{ env.GOOGLE_CLOUD_PROJECT_ID }}
 
       - name: Upload nightly files to public bucket
         if: ${{ env.IS_NIGHTLY == 'true' }}
-        uses: google-github-actions/upload-cloud-storage@v2.2.1
+        uses: google-github-actions/upload-cloud-storage@v2.2.2
         with:
           path: out
           glob: '*'
@@ -414,14 +471,3 @@ jobs:
       - name: Invalidate bucket cache on latest*.yml and last_download.json files
         if: ${{ env.IS_NIGHTLY == 'true' }}
         run: yarn files:invalidate-bucket:nightly
-
-      - name: Tag nightly commit
-        if: ${{ env.IS_NIGHTLY == 'true' }}
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const { VERSION } = process.env          
-            const { owner, repo } = context.repo
-            const { sha } = context
-            const ref = `refs/tags/nightly-${VERSION}`
-            github.rest.git.createRef({ owner, repo, sha, ref })

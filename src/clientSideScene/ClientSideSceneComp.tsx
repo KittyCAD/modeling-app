@@ -1,53 +1,60 @@
-import { useRef, useEffect, useState, useMemo, Fragment } from 'react'
-import { useModelingContext } from 'hooks/useModelingContext'
+import { Dialog, Popover, Transition } from '@headlessui/react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
+import type { InstanceProps } from 'react-modal-promise'
+import { create } from 'react-modal-promise'
 
-import { cameraMouseDragGuards } from 'lib/cameraControls'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { ARROWHEAD, DEBUG_SHOW_BOTH_SCENES } from './sceneInfra'
-import { ReactCameraProperties } from './CameraControls'
-import { throttle, toSync } from 'lib/utils'
-import {
-  sceneInfra,
-  kclManager,
-  codeManager,
-  editorManager,
-  sceneEntitiesManager,
-  engineCommandManager,
-} from 'lib/singletons'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import type { ReactCameraProperties } from '@src/clientSideScene/CameraControls'
 import {
   EXTRA_SEGMENT_HANDLE,
   PROFILE_START,
   getParentGroup,
-} from './sceneEntities'
-import { SegmentOverlay, SketchDetails } from 'machines/modelingMachine'
-import { findUsesOfTagInPipe, getNodeFromPath } from 'lang/queryAst'
+} from '@src/clientSideScene/sceneConstants'
 import {
-  CallExpression,
-  PathToNode,
-  Program,
-  SourceRange,
-  Expr,
-  parse,
-  recast,
-  defaultSourceRange,
-  resultIsOk,
-  ProgramMemory,
-} from 'lang/wasm'
-import { CustomIcon, CustomIconName } from 'components/CustomIcon'
-import { ConstrainInfo } from 'lang/std/stdTypes'
-import { getConstraintInfo } from 'lang/std/sketch'
-import { Dialog, Popover, Transition } from '@headlessui/react'
-import toast from 'react-hot-toast'
-import { InstanceProps, create } from 'react-modal-promise'
-import { executeAst } from 'lang/langHelpers'
+  ARROWHEAD,
+  DEBUG_SHOW_BOTH_SCENES,
+} from '@src/clientSideScene/sceneInfra'
+import { ActionButton } from '@src/components/ActionButton'
+import type { CustomIconName } from '@src/components/CustomIcon'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { executeAstMock } from '@src/lang/langHelpers'
 import {
   deleteSegmentFromPipeExpression,
   removeSingleConstraintInfo,
-} from 'lang/modifyAst'
-import { ActionButton } from 'components/ActionButton'
-import { err, reportRejection, trap } from 'lib/trap'
-import { useCommandsContext } from 'hooks/useCommandsContext'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+} from '@src/lang/modifyAst'
+import { findUsesOfTagInPipe, getNodeFromPath } from '@src/lang/queryAst'
+import { getConstraintInfo, getConstraintInfoKw } from '@src/lang/std/sketch'
+import type { ConstrainInfo } from '@src/lang/std/stdTypes'
+import { topLevelRange } from '@src/lang/util'
+import type {
+  CallExpression,
+  CallExpressionKw,
+  Expr,
+  PathToNode,
+  Program,
+} from '@src/lang/wasm'
+import { defaultSourceRange, parse, recast, resultIsOk } from '@src/lang/wasm'
+import { cameraMouseDragGuards } from '@src/lib/cameraControls'
+import {
+  codeManager,
+  editorManager,
+  engineCommandManager,
+  kclManager,
+  rustContext,
+  sceneEntitiesManager,
+  sceneInfra,
+} from '@src/lib/singletons'
+import { err, reportRejection, trap } from '@src/lib/trap'
+import { throttle, toSync } from '@src/lib/utils'
+import type { useSettings } from '@src/machines/appMachine'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import type {
+  SegmentOverlay,
+  SketchDetails,
+} from '@src/machines/modelingMachine'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -76,8 +83,8 @@ export const ClientSideScene = ({
   cameraControls,
 }: {
   cameraControls: ReturnType<
-    typeof useSettingsAuthContext
-  >['settings']['context']['modeling']['mouseControls']['current']
+    typeof useSettings
+  >['modeling']['mouseControls']['current']
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null)
   const { state, send, context } = useModelingContext()
@@ -124,6 +131,7 @@ export const ClientSideScene = ({
         'mouseup',
         toSync(sceneInfra.onMouseUp, reportRejection)
       )
+      sceneEntitiesManager.tearDownSketch({ removeAxis: true })
     }
   }, [])
 
@@ -144,7 +152,9 @@ export const ClientSideScene = ({
       state.matches({ Sketch: 'Line tool' }) ||
       state.matches({ Sketch: 'Tangential arc to' }) ||
       state.matches({ Sketch: 'Rectangle tool' }) ||
-      state.matches({ Sketch: 'Circle tool' })
+      state.matches({ Sketch: 'Circle tool' }) ||
+      state.matches({ Sketch: 'Circle three point tool' }) ||
+      state.matches({ Sketch: 'Arc three point tool' })
     ) {
       cursor = 'crosshair'
     } else {
@@ -177,17 +187,17 @@ const Overlays = () => {
   // Set a large zIndex, the overlay for hover dropdown menu on line segments needs to render
   // over the length labels on the line segments
   return (
-    <div
-      className="absolute inset-0 pointer-events-none"
-      style={{ zIndex: '99999999' }}
-    >
+    <div className="absolute inset-0 pointer-events-none z-sketchOverlayDropdown">
       {Object.entries(context.segmentOverlays)
-        .filter((a) => a[1].visible)
-        .map(([pathToNodeString, overlay], index) => {
+        .flatMap((a) =>
+          a[1].map((b) => ({ pathToNodeString: a[0], overlay: b }))
+        )
+        .filter((a) => a.overlay.visible)
+        .map(({ pathToNodeString, overlay }, index) => {
           return (
             <Overlay
               overlay={overlay}
-              key={pathToNodeString}
+              key={pathToNodeString + String(index)}
               pathToNodeString={pathToNodeString}
               overlayIndex={index}
             />
@@ -213,10 +223,10 @@ const Overlay = ({
   // It's possible for the pathToNode to request a newer AST node
   // than what's available in the AST at the moment of query.
   // It eventually settles on being updated.
-  const _node1 = getNodeFromPath<Node<CallExpression>>(
+  const _node1 = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
     kclManager.ast,
     overlay.pathToNode,
-    'CallExpression'
+    ['CallExpression', 'CallExpressionKw']
   )
 
   // For that reason, to prevent console noise, we do not use err here.
@@ -226,11 +236,20 @@ const Overlay = ({
   }
   const callExpression = _node1.node
 
-  const constraints = getConstraintInfo(
-    callExpression,
-    codeManager.code,
-    overlay.pathToNode
-  )
+  const constraints =
+    callExpression.type === 'CallExpression'
+      ? getConstraintInfo(
+          callExpression,
+          codeManager.code,
+          overlay.pathToNode,
+          overlay.filterValue
+        )
+      : getConstraintInfoKw(
+          callExpression,
+          codeManager.code,
+          overlay.pathToNode,
+          overlay.filterValue
+        )
 
   const offset = 20 // px
   // We could put a boolean in settings that
@@ -249,7 +268,6 @@ const Overlay = ({
       state.matches({ Sketch: 'Tangential arc to' }) ||
       state.matches({ Sketch: 'Rectangle tool' })
     )
-
   return (
     <div className={`absolute w-0 h-0`}>
       <div
@@ -307,17 +325,18 @@ const Overlay = ({
           this will likely change soon when we implement multi-profile so we'll leave it for now
           issue: https://github.com/KittyCAD/modeling-app/issues/3910
           */}
-          {callExpression?.callee?.name !== 'circle' && (
-            <SegmentMenu
-              verticalPosition={
-                overlay.windowCoords[1] > window.innerHeight / 2
-                  ? 'top'
-                  : 'bottom'
-              }
-              pathToNode={overlay.pathToNode}
-              stdLibFnName={constraints[0]?.stdLibFnName}
-            />
-          )}
+          {callExpression?.callee?.name.name !== 'circle' &&
+            callExpression?.callee?.name.name !== 'circleThreePoint' && (
+              <SegmentMenu
+                verticalPosition={
+                  overlay.windowCoords[1] > window.innerHeight / 2
+                    ? 'top'
+                    : 'bottom'
+                }
+                pathToNode={overlay.pathToNode}
+                stdLibFnName={constraints[0]?.stdLibFnName}
+              />
+            )}
         </div>
       )}
     </div>
@@ -413,7 +432,7 @@ export async function deleteSegment({
   modifiedAst = deleteSegmentFromPipeExpression(
     dependentRanges,
     modifiedAst,
-    kclManager.programMemory,
+    kclManager.variables,
     codeManager.code,
     pathToNode
   )
@@ -424,11 +443,10 @@ export async function deleteSegment({
   if (err(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
   modifiedAst = pResult.program
 
-  const testExecute = await executeAst({
+  const testExecute = await executeAstMock({
     ast: modifiedAst,
-    engineCommandManager: engineCommandManager,
-    // We make sure to send an empty program memory to denote we mean mock mode.
-    programMemoryOverride: ProgramMemory.empty(),
+    usePrevMemory: false,
+    rustContext: rustContext,
   })
   if (testExecute.errors.length) {
     toast.error('Segment tag used outside of current Sketch. Could not delete.')
@@ -438,6 +456,8 @@ export async function deleteSegment({
   if (!sketchDetails) return
   await sceneEntitiesManager.updateAstAndRejigSketch(
     pathToNode,
+    sketchDetails.sketchNodePaths,
+    sketchDetails.planeNodePath,
     modifiedAst,
     sketchDetails.zAxis,
     sketchDetails.yAxis,
@@ -475,14 +495,19 @@ const SegmentMenu = ({
               verticalPosition === 'top' ? 'bottom-full' : 'top-full'
             } z-10 w-36 flex flex-col gap-1 divide-y divide-chalkboard-20 dark:divide-chalkboard-70 align-stretch px-0 py-1 bg-chalkboard-10 dark:bg-chalkboard-100 rounded-sm shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50`}
           >
-            <button
-              className="!border-transparent rounded-sm text-left p-1 text-nowrap"
-              onClick={() => {
-                send({ type: 'Constrain remove constraints', data: pathToNode })
-              }}
-            >
-              Remove constraints
-            </button>
+            {stdLibFnName !== 'arcTo' && (
+              <button
+                className="!border-transparent rounded-sm text-left p-1 text-nowrap"
+                onClick={() => {
+                  send({
+                    type: 'Constrain remove constraints',
+                    data: pathToNode,
+                  })
+                }}
+              >
+                Remove constraints
+              </button>
+            )}
             <button
               className="!border-transparent rounded-sm text-left p-1 text-nowrap"
               title={
@@ -510,7 +535,6 @@ const ConstraintSymbol = ({
   constrainInfo: ConstrainInfo
   verticalPosition: 'top' | 'bottom'
 }) => {
-  const { commandBarSend } = useCommandsContext()
   const { context } = useModelingContext()
   const varNameMap: {
     [key in ConstrainInfo['type']]: {
@@ -600,8 +624,8 @@ const ConstraintSymbol = ({
   if (err(_node)) return
   const node = _node.node
 
-  const range: SourceRange = node
-    ? [node.start, node.end, true]
+  const range = node
+    ? topLevelRange(node.start, node.end)
     : defaultSourceRange()
 
   if (_type === 'intersectionTag') return null
@@ -617,8 +641,8 @@ const ConstraintSymbol = ({
           implicitDesc
             ? 'bg-chalkboard-10 dark:bg-chalkboard-100 border-transparent border-0 rounded'
             : isConstrained
-            ? 'bg-chalkboard-10 dark:bg-chalkboard-90 dark:hover:bg-chalkboard-80 border-chalkboard-40 dark:border-chalkboard-70 rounded-sm'
-            : 'bg-primary/30 dark:bg-primary text-primary dark:text-chalkboard-10 dark:border-transparent group-hover:bg-primary/40 group-hover:border-primary/50 group-hover:brightness-125'
+              ? 'bg-chalkboard-10 dark:bg-chalkboard-90 dark:hover:bg-chalkboard-80 border-chalkboard-40 dark:border-chalkboard-70 rounded-sm'
+              : 'bg-primary/30 dark:bg-primary text-primary dark:text-chalkboard-10 dark:border-transparent group-hover:bg-primary/40 group-hover:border-primary/50 group-hover:brightness-125'
         } h-[26px] w-[26px] rounded-sm relative m-0 p-0`}
         onMouseEnter={() => {
           editorManager.setHighlightRange([range])
@@ -630,7 +654,7 @@ const ConstraintSymbol = ({
         // disabled={implicitDesc} TODO why does this change styles that are hard to override?
         onClick={toSync(async () => {
           if (!isConstrained) {
-            commandBarSend({
+            commandBarActor.send({
               type: 'Find and select command',
               data: {
                 name: 'Constrain with named value',
@@ -650,10 +674,10 @@ const ConstraintSymbol = ({
               if (trap(pResult) || !resultIsOk(pResult))
                 return Promise.reject(pResult)
 
-              const _node1 = getNodeFromPath<CallExpression>(
-                pResult.program!,
+              const _node1 = getNodeFromPath<CallExpression | CallExpressionKw>(
+                pResult.program,
                 pathToNode,
-                'CallExpression',
+                ['CallExpression', 'CallExpressionKw'],
                 true
               )
               if (trap(_node1)) return Promise.reject(_node1)
@@ -664,7 +688,7 @@ const ConstraintSymbol = ({
                 shallowPath,
                 argPosition,
                 kclManager.ast,
-                kclManager.programMemory
+                kclManager.variables
               )
 
               if (!transform) return
@@ -756,7 +780,6 @@ export const CamDebugSettings = () => {
     sceneInfra.camControls.reactCameraProperties
   )
   const [fov, setFov] = useState(12)
-  const { commandBarSend } = useCommandsContext()
 
   useEffect(() => {
     sceneInfra.camControls.setReactCameraPropertiesCallback(setCamSettings)
@@ -775,7 +798,7 @@ export const CamDebugSettings = () => {
         type="checkbox"
         checked={camSettings.type === 'perspective'}
         onChange={() =>
-          commandBarSend({
+          commandBarActor.send({
             type: 'Find and select command',
             data: {
               groupId: 'settings',

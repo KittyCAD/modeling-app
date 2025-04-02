@@ -1,15 +1,13 @@
-import { OnboardingButtons, useDismiss, useNextClick } from '.'
-import { onboardingPaths } from 'routes/Onboarding/paths'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
+import { OnboardingButtons } from '@src/routes/Onboarding/utils'
 
 export default function Streaming() {
-  const dismiss = useDismiss()
-  const next = useNextClick(onboardingPaths.EDITOR)
-
   return (
     <div className="fixed grid justify-start items-center inset-0 z-50 pointer-events-none">
       <div
         className={
-          'pointer-events-auto max-w-xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg h-[75vh] flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded'
+          'relative pointer-events-auto max-w-xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg h-[75vh] flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded'
         }
       >
         <section className="flex-1 overflow-y-auto">
@@ -44,9 +42,7 @@ export default function Streaming() {
         </section>
         <OnboardingButtons
           currentSlug={onboardingPaths.STREAMING}
-          dismiss={dismiss}
-          next={next}
-          nextText="Next: Code Editor"
+          dismissClassName="right-auto left-full"
         />
       </div>
     </div>

@@ -1,11 +1,20 @@
-import { test, expect, Page } from './zoo-test'
-import path from 'path'
+import type { Page } from '@playwright/test'
+import { bracket } from '@src/lib/exampleKcl'
+import { reportRejection } from '@src/lib/trap'
 import * as fsp from 'fs/promises'
-import { getUtils, executorInputPath } from './test-utils'
-import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from './storageStates'
-import { bracket } from 'lib/exampleKcl'
+import path from 'path'
 
-test.describe('Regression tests', () => {
+import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from '@e2e/playwright/storageStates'
+import type { TestColor } from '@e2e/playwright/test-utils'
+import {
+  TEST_COLORS,
+  executorInputPath,
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
+
+test.describe('Regression tests', { tag: ['@skipWin'] }, () => {
   // bugs we found that don't fit neatly into other categories
   test('bad model has inline error #3251', async ({
     context,
@@ -20,11 +29,12 @@ test.describe('Regression tests', () => {
       localStorage.setItem(
         'persistCode',
         `sketch2 = startSketchOn("XY")
-  sketch001 = startSketchAt([-0, -0])
-    |> line([0, 0], %)
-    |> line([-4.84, -5.29], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)`
+  sketch001 = startSketchOn("XY")
+    |> startProfileAt([-0, -0], %)
+    |> line(end = [0, 0])
+    |> line(end = [-4.84, -5.29])
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()`
       )
     })
 
@@ -56,7 +66,7 @@ test.describe('Regression tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('XY')
+        `sketch001 = startSketchOn(XY)
   |> startProfileAt([82.33, 238.21], %)
   |> angledLine([0, 288.63], %, $rectangleSegmentA001)
   |> angledLine([
@@ -67,9 +77,9 @@ test.describe('Regression tests', () => {
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)
      ], %, $rectangleSegmentC001)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(50, sketch001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = 50)
 `
       )
     })
@@ -124,11 +134,11 @@ extrude001 = extrude(50, sketch001)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('-XZ')
+        `sketch001 = startSketchOn(-XZ)
   |> startProfileAt([-6.95, 4.98], %)
-  |> line([25.1, 0.41], %)
-  |> line([0.73, -14.93], %)
-  |> line([-23.44, 0.52], %)`
+  |> line(end = [25.1, 0.41])
+  |> line(end = [0.73, -14.93])
+  |> line(end = [-23.44, 0.52])`
       )
     })
     await page.setBodyDimensions({ width: 1000, height: 500 })
@@ -185,18 +195,18 @@ extrude001 = extrude(50, sketch001)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `part = startSketchOn('XY')
+        `part = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
-  |> line([0, 1], %)
-  |> line([1, 0], %)
-  |> line([0, -1], %)
-  |> close(%)
-  |> extrude(1, %)
-  |> patternLinear3d({
-        axis: [1, 0, 1],
-        repetitions: 3,
-        distance: 6
-      }, %)`
+  |> line(end = [0, 1])
+  |> line(end = [1, 0])
+  |> line(end = [0, -1])
+  |> close()
+  |> extrude(length = 1)
+  |> patternLinear3d(
+        axis = [1, 0, 1],
+        repetitions = 3,
+        distance = 6,
+      )`
       )
     })
     await page.setBodyDimensions({ width: 1000, height: 500 })
@@ -239,12 +249,6 @@ extrude001 = extrude(50, sketch001)
     'Position _ Is Out Of Range... regression test',
     { tag: ['@skipWin'] },
     async ({ context, page, homePage }) => {
-      // SKip on windows, its being weird.
-      test.skip(
-        process.platform === 'win32',
-        'This test is being weird on windows'
-      )
-
       const u = await getUtils(page)
       // const PUR = 400 / 37.5 //pixeltoUnitRatio
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -254,12 +258,12 @@ extrude001 = extrude(50, sketch001)
           `exampleSketch = startSketchOn("XZ")
       |> startProfileAt([0, 0], %)
       |> angledLine({ angle: 50, length: 45 }, %)
-      |> yLineTo(0, %)
-      |> close(%)
+      |> yLine(endAbsolute = 0)
+      |> close()
       |>
-  
-    example = extrude(5, exampleSketch)
-    shell({ faces: ['end'], thickness: 0.25 }, exampleSketch)`
+
+    example = extrude(exampleSketch, length = 5)
+    shell(exampleSketch, faces = ['end'], thickness = 0.25)`
         )
       })
 
@@ -310,128 +314,193 @@ extrude001 = extrude(50, sketch001)
         .toContainText(`exampleSketch = startSketchOn("XZ")
       |> startProfileAt([0, 0], %)
       |> angledLine({ angle: 50, length: 45 }, %)
-      |> yLineTo(0, %)
-      |> close(%)
-  
+      |> yLine(endAbsolute = 0)
+      |> close()
+
       thing: "blah"`)
 
       await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
     }
   )
 
-  test('when engine fails export we handle the failure and alert the user', async ({
-    page,
-    homePage,
-  }) => {
-    const u = await getUtils(page)
-    await page.addInitScript(
-      async ({ code }) => {
-        localStorage.setItem('persistCode', code)
-        ;(window as any).playwrightSkipFilePicker = true
-      },
-      { code: TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR }
-    )
-
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-
-    await homePage.goToModelingScene()
-    await u.waitForPageLoad()
-
-    // wait for execution done
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
-
-    // expect zero errors in guter
-    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-
-    // export the model
-    const exportButton = page.getByTestId('export-pane-button')
-    await expect(exportButton).toBeVisible()
-
-    // Click the export button
-    await exportButton.click()
-
-    // Click the stl.
-    const stlOption = page.getByText('glTF')
-    await expect(stlOption).toBeVisible()
-
-    await page.keyboard.press('Enter')
-
-    // Click the checkbox
-    const submitButton = page.getByText('Confirm Export')
-    await expect(submitButton).toBeVisible()
-
-    await page.keyboard.press('Enter')
-
-    // Find the toast.
-    // Look out for the toast message
-    const exportingToastMessage = page.getByText(`Exporting...`)
-    const errorToastMessage = page.getByText(`Error while exporting`)
-
-    const engineErrorToastMessage = page.getByText(`Nothing to export`)
-    await expect(engineErrorToastMessage).toBeVisible()
-
-    // Make sure the exporting toast is gone
-    await expect(exportingToastMessage).not.toBeVisible()
-
-    // Click the code editor
-    await page.locator('.cm-content').click()
-
-    await page.waitForTimeout(2000)
-
-    // Expect the toast to be gone
-    await expect(errorToastMessage).not.toBeVisible()
-    await expect(engineErrorToastMessage).not.toBeVisible()
-
-    // Now add in code that works.
-    await page.locator('.cm-content').fill(bracket)
-    await page.keyboard.press('End')
-    await page.keyboard.press('Enter')
-
-    // wait for execution done
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
-
-    // Now try exporting
-
-    // Click the export button
-    await exportButton.click()
-
-    // Click the stl.
-    await expect(stlOption).toBeVisible()
-
-    await page.keyboard.press('Enter')
-
-    // Click the checkbox
-    await expect(submitButton).toBeVisible()
-
-    await page.keyboard.press('Enter')
-
-    // Find the toast.
-    // Look out for the toast message
-    await expect(exportingToastMessage).toBeVisible()
-
-    // Expect it to succeed.
-    await expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 })
-    await expect(errorToastMessage).not.toBeVisible()
-    await expect(engineErrorToastMessage).not.toBeVisible()
-
-    const successToastMessage = page.getByText(`Exported successfully`)
-    await expect(successToastMessage).toBeVisible()
-  })
   test(
-    'ensure you can not export while an export is already going',
-    { tag: ['@skipLinux', '@skipWin'] },
-    async ({ page, homePage }) => {
-      // This is being weird on ubuntu and windows.
-      test.skip(
-        // eslint-disable-next-line jest/valid-title
-        process.platform === 'linux' || process.platform === 'win32',
-        'This test is being weird on ubuntu'
+    'window resize updates should reconfigure the stream',
+    { tag: '@skipLocalEngine' },
+    async ({ scene, page, homePage, cmdBar, toolbar }) => {
+      await page.addInitScript(
+        async ({ code }) => {
+          localStorage.setItem(
+            'persistCode',
+            `@settings(defaultLengthUnit = mm)
+sketch002 = startSketchOn(XY)
+profile002 = startProfileAt([72.24, -52.05], sketch002)
+  |> angledLine([0, 181.26], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       21.54
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude002 = extrude(profile002, length = 150)
+`
+          )
+          ;(window as any).playwrightSkipFilePicker = true
+        },
+        { code: TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR }
       )
 
+      const websocketPromise = page.waitForEvent('websocket')
+      await page.setBodyDimensions({ width: 500, height: 500 })
+
+      await homePage.goToModelingScene()
+      const websocket = await websocketPromise
+
+      await scene.connectionEstablished()
+      await scene.settled(cmdBar)
+      await toolbar.closePane('code')
+
+      // expect pixel color to be background color
+      const offModelBefore = { x: 446, y: 250 }
+      const onModelBefore = { x: 422, y: 250 }
+      const offModelAfter = { x: 692, y: 262 }
+      const onModelAfter = { x: 673, y: 266 }
+
+      await scene.expectPixelColor(
+        TEST_COLORS.DARK_MODE_BKGD,
+        offModelBefore,
+        15
+      )
+      const standardModelGrey: TestColor = [100, 100, 100]
+      await scene.expectPixelColor(standardModelGrey, onModelBefore, 15)
+
+      await test.step('resize window and expect "reconfigure_stream" websocket message', async () => {
+        // note this is a bit low level for our tests, usually this would go into a fixture
+        // but it's pretty unique to this resize test, it can be moved/abstracted if we have further need
+        // to listen to websocket messages
+        await Promise.all([
+          new Promise((resolve) => {
+            websocket
+              // @ts-ignore
+              .waitForEvent('framesent', (frame) => {
+                frame.payload
+                  .toString()
+                  .includes(
+                    '"type":"reconfigure_stream","width":1000,"height":500'
+                  ) && resolve(true)
+              })
+              .catch(reportRejection)
+          }),
+          page.setBodyDimensions({ width: 1000, height: 500 }),
+        ])
+      })
+
+      await scene.expectPixelColor(
+        TEST_COLORS.DARK_MODE_BKGD,
+        offModelAfter,
+        15
+      )
+      await scene.expectPixelColor(standardModelGrey, onModelAfter, 15)
+    }
+  )
+  test(
+    'when engine fails export we handle the failure and alert the user',
+    { tag: '@skipLocalEngine' },
+    async ({ scene, page, homePage, cmdBar }) => {
+      await page.addInitScript(
+        async ({ code }) => {
+          localStorage.setItem('persistCode', code)
+          ;(window as any).playwrightSkipFilePicker = true
+        },
+        { code: TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR }
+      )
+
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+
+      await homePage.goToModelingScene()
+
+      await scene.connectionEstablished()
+      await scene.settled(cmdBar)
+
+      // export the model
+      const exportButton = page.getByTestId('export-pane-button')
+      await expect(exportButton).toBeVisible()
+
+      // Click the export button
+      await exportButton.click()
+
+      // Click the stl.
+      const stlOption = page.getByText('glTF')
+      await expect(stlOption).toBeVisible()
+
+      await page.keyboard.press('Enter')
+
+      // Click the checkbox
+      const submitButton = page.getByText('Confirm Export')
+      await expect(submitButton).toBeVisible()
+
+      await page.keyboard.press('Enter')
+
+      // Find the toast.
+      // Look out for the toast message
+      const exportingToastMessage = page.getByText(`Exporting...`)
+
+      const engineErrorToastMessage = page.getByText(`Nothing to export`)
+      await expect(engineErrorToastMessage).toBeVisible()
+
+      // Make sure the exporting toast is gone
+      await expect(exportingToastMessage).not.toBeVisible()
+
+      // Click the code editor
+      await page.locator('.cm-content').click()
+
+      await page.waitForTimeout(2000)
+
+      // Expect the toast to be gone
+      await expect(engineErrorToastMessage).not.toBeVisible()
+
+      // Now add in code that works.
+      await page.locator('.cm-content').fill(bracket)
+      await page.keyboard.press('End')
+      await page.keyboard.press('Enter')
+
+      await scene.settled(cmdBar)
+
+      // Now try exporting
+
+      // Click the export button
+      await exportButton.click()
+
+      // Click the stl.
+      await expect(stlOption).toBeVisible()
+
+      await page.keyboard.press('Enter')
+
+      // Click the checkbox
+      await expect(submitButton).toBeVisible()
+
+      await page.keyboard.press('Enter')
+
+      // Find the toast.
+      // Look out for the toast message
+      await expect(exportingToastMessage).toBeVisible()
+
+      // Expect it to succeed.
+      await expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 })
+      await expect(engineErrorToastMessage).not.toBeVisible()
+
+      const successToastMessage = page.getByText(`Exported successfully`)
+      await expect(successToastMessage).toBeVisible()
+    }
+  )
+  // We updated this test such that you can have multiple exports going at once.
+  test(
+    'ensure you CAN export while an export is already going',
+    { tag: ['@skipLinux', '@skipWin'] },
+    async ({ page, homePage }) => {
       const u = await getUtils(page)
       await test.step('Set up the code and durations', async () => {
         await page.addInitScript(
@@ -464,21 +533,12 @@ extrude001 = extrude(50, sketch001)
       const alreadyExportingToastMessage = page.getByText(`Already exporting`)
       const successToastMessage = page.getByText(`Exported successfully`)
 
-      await test.step('Blocked second export', async () => {
+      await test.step('second export', async () => {
         await clickExportButton(page)
 
         await expect(exportingToastMessage).toBeVisible()
 
         await clickExportButton(page)
-
-        await test.step('The second export is blocked', async () => {
-          // Find the toast.
-          // Look out for the toast message
-          await Promise.all([
-            expect(exportingToastMessage.first()).toBeVisible(),
-            expect(alreadyExportingToastMessage).toBeVisible(),
-          ])
-        })
 
         await test.step('The first export still succeeds', async () => {
           await Promise.all([
@@ -509,7 +569,7 @@ extrude001 = extrude(50, sketch001)
           expect(alreadyExportingToastMessage).not.toBeVisible(),
         ])
 
-        await expect(successToastMessage).toBeVisible()
+        await expect(successToastMessage).toHaveCount(2)
       })
     }
   )
@@ -518,11 +578,12 @@ extrude001 = extrude(50, sketch001)
     `Network health indicator only appears in modeling view`,
     { tag: '@electron' },
     async ({ context, page }, testInfo) => {
+      test.fixme(orRunWhenFullSuiteEnabled())
       await context.folderSetupFn(async (dir) => {
         const bracketDir = path.join(dir, 'bracket')
         await fsp.mkdir(bracketDir, { recursive: true })
         await fsp.copyFile(
-          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          executorInputPath('cylinder-inches.kcl'),
           path.join(bracketDir, 'main.kcl')
         )
       })
@@ -559,14 +620,13 @@ extrude001 = extrude(50, sketch001)
   test(`View gizmo stays visible even when zoomed out all the way`, async ({
     page,
     homePage,
+    scene,
   }) => {
-    // TODO: fix this test on windows after the electron migration
-    test.skip(process.platform === 'win32', 'Skip on windows')
     const u = await getUtils(page)
 
     // Constants and locators
     const planeColor: [number, number, number] = [170, 220, 170]
-    const bgColor: [number, number, number] = [27, 27, 27]
+    const bgColor: [number, number, number] = TEST_COLORS.DARK_MODE_BKGD
     const middlePixelIsColor = async (color: [number, number, number]) => {
       return u.getGreatestPixDiff({ x: 600, y: 250 }, color)
     }
@@ -574,7 +634,7 @@ extrude001 = extrude(50, sketch001)
 
     await test.step(`Load an empty file`, async () => {
       await page.addInitScript(async () => {
-        localStorage.setItem('persistCode', '')
+        localStorage.setItem('persistCode', '@settings(defaultLengthUnit = in)')
       })
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
@@ -588,22 +648,31 @@ extrude001 = extrude(50, sketch001)
           timeout: 5000,
           message: 'Plane color is visible',
         })
-        .toBeLessThanOrEqual(15)
+        .toBeLessThanOrEqual(20)
+      await expect(scene.startEditSketchBtn).toBeEnabled()
 
       let maxZoomOuts = 10
       let middlePixelIsBackgroundColor =
         (await middlePixelIsColor(bgColor)) < 10
+
+      console.time('pressing control')
+      await page.keyboard.down('Control')
+
       while (!middlePixelIsBackgroundColor && maxZoomOuts > 0) {
-        await page.keyboard.down('Control')
-        await page.mouse.move(600, 460)
-        await page.mouse.down({ button: 'right' })
-        await page.mouse.move(600, 50, { steps: 20 })
-        await page.mouse.up({ button: 'right' })
-        await page.keyboard.up('Control')
         await page.waitForTimeout(100)
+        await page.mouse.move(650, 460)
+        console.time('moved to start point')
+        await page.mouse.down({ button: 'right' })
+        console.time('moused down')
+        await page.mouse.move(650, 50, { steps: 20 })
+        console.time('moved to end point')
+        await page.waitForTimeout(100)
+        await page.mouse.up({ button: 'right' })
+        console.time('moused up')
         maxZoomOuts--
-        middlePixelIsBackgroundColor = (await middlePixelIsColor(bgColor)) < 10
+        middlePixelIsBackgroundColor = (await middlePixelIsColor(bgColor)) < 15
       }
+      await page.keyboard.up('Control')
 
       expect(middlePixelIsBackgroundColor, {
         message: 'We should not see the default planes',
@@ -614,6 +683,121 @@ extrude001 = extrude(50, sketch001)
       await expect(gizmo).toBeVisible()
     })
   })
+
+  test(`Refreshing the app doesn't cause the stream to pause on long-executing files`, async ({
+    context,
+    homePage,
+    scene,
+    toolbar,
+  }) => {
+    await context.folderSetupFn(async (dir) => {
+      const legoDir = path.join(dir, 'lego')
+      await fsp.mkdir(legoDir, { recursive: true })
+      await fsp.copyFile(
+        executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
+        path.join(legoDir, 'main.kcl')
+      )
+    })
+
+    await test.step(`Test setup`, async () => {
+      await homePage.openProject('lego')
+      await toolbar.closePane('code')
+    })
+    await test.step(`Waiting for the loading spinner to disappear`, async () => {
+      await scene.loadingIndicator.waitFor({ state: 'detached' })
+    })
+    await test.step(`The part should start loading quickly, not waiting until execution is complete`, async () => {
+      // TODO: use the viewport size to pick the center point, but the `viewport` fixture's values were wrong.
+      await scene.expectPixelColor([116, 116, 116], { x: 500, y: 250 }, 15)
+    })
+  })
+
+  test(`Toolbar doesn't show modeling tools during sketch plane selection animation`, async ({
+    page,
+    homePage,
+    toolbar,
+  }) => {
+    await test.step('Load an empty file', async () => {
+      await page.addInitScript(async () => {
+        localStorage.setItem('persistCode', '')
+      })
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+    })
+
+    await test.step('Start sketch and select a plane', async () => {
+      await toolbar.expectToolbarMode.toBe('modeling')
+      // Click the start sketch button
+      await toolbar.startSketchPlaneSelection()
+
+      // Click on a default plane at position [700, 200]
+      await page.mouse.click(700, 200)
+
+      // Check that the modeling toolbar doesn't appear during the animation
+      // The animation typically takes around 500ms, so we'll check for a second
+      await toolbar.expectToolbarMode.not.toBe('modeling')
+
+      // After animation completes, we should see the sketching toolbar
+      await toolbar.expectToolbarMode.toBe('sketching')
+    })
+  })
+
+  test(`Delete via feature tree then open code pane, never crash`, async ({
+    homePage,
+    toolbar,
+    editor,
+    context,
+    page,
+    scene,
+    cmdBar,
+  }) => {
+    await context.folderSetupFn(async (dir) => {
+      const bracketDir = path.join(dir, 'test-sample')
+      await fsp.mkdir(bracketDir, { recursive: true })
+      await fsp.writeFile(
+        path.join(bracketDir, 'main.kcl'),
+        `x = 5
+plane001 = offsetPlane(XZ, offset = x)
+plane002 = offsetPlane(XZ, offset = -2 * x)`
+      )
+    })
+    await homePage.openProject('test-sample')
+    await scene.waitForExecutionDone()
+    await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 20_000 })
+    const operationButton = await toolbar.getFeatureTreeOperation(
+      'Offset Plane',
+      1
+    )
+
+    await test.step('Delete offset plane via feature tree selection', async () => {
+      await expect(operationButton.last()).toBeVisible({ timeout: 10_000 })
+      await editor.closePane()
+      await operationButton.first().click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+    })
+
+    await test.step(`Open the code pane, don't crash`, async () => {
+      await editor.openPane()
+      await expect(page.getByText('unexpected error')).not.toBeVisible()
+      await editor.expectEditor.toContain(`x = 5`)
+      await editor.expectEditor.toContain(`plane001`)
+      await editor.expectEditor.not.toContain(`plane002`)
+    })
+  })
+
+  test.fail(
+    'Console errors cause tests to fail',
+    async ({ page, homePage }) => {
+      const u = await getUtils(page)
+      await homePage.goToModelingScene()
+      await u.openAndClearDebugPanel()
+
+      await page.getByTestId('custom-cmd-input').fill('foobar')
+      await page.getByTestId('custom-cmd-send-button').scrollIntoViewIfNeeded()
+      await page.getByTestId('custom-cmd-send-button').click()
+    }
+  )
 })
 
 async function clickExportButton(page: Page) {

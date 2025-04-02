@@ -1,21 +1,25 @@
-import { toolTips } from 'lang/langHelpers'
-import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
-import { getNodeFromPath } from '../../lang/queryAst'
-import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import { removeDoubleNegatives } from '@src/components/AvailableVarsHelpers'
 import {
-  transformSecondarySketchLinesTagFirst,
+  GetInfoModal,
+  createInfoModal,
+} from '@src/components/SetHorVertDistanceModal'
+import { createLiteral, createVariableDeclaration } from '@src/lang/create'
+import { toolTips } from '@src/lang/langHelpers'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { isSketchVariablesLinked } from '@src/lang/std/sketchConstraints'
+import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
+import {
   getTransformInfos,
-  PathToNodeMap,
   isExprBinaryPart,
-} from '../../lang/std/sketchcombos'
-import { TransformInfo } from 'lang/std/stdTypes'
-import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
-import { createLiteral, createVariableDeclaration } from '../../lang/modifyAst'
-import { removeDoubleNegatives } from '../AvailableVarsHelpers'
-import { kclManager } from 'lib/singletons'
-import { Selections } from 'lib/selections'
-import { cleanErrs, err } from 'lib/trap'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+  transformSecondarySketchLinesTagFirst,
+} from '@src/lang/std/sketchcombos'
+import type { TransformInfo } from '@src/lang/std/stdTypes'
+import type { Expr, Program, VariableDeclarator } from '@src/lang/wasm'
+import type { Selections } from '@src/lib/selections'
+import { kclManager } from '@src/lib/singletons'
+import { cleanErrs, err } from '@src/lib/trap'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 
@@ -61,11 +65,8 @@ export function horzVertDistanceInfo({
   )
   const isAllTooltips = nodes.every(
     (node) =>
-      node?.type === 'CallExpression' &&
-      [
-        ...toolTips,
-        'startSketchAt', // TODO probably a better place for this to live
-      ].includes(node.callee.name as any)
+      (node?.type === 'CallExpression' || node?.type === 'CallExpressionKw') &&
+      [...toolTips].includes(node.callee.name.name as any)
   )
 
   const theTransforms = getTransformInfos(
@@ -87,15 +88,13 @@ export function horzVertDistanceInfo({
 export async function applyConstraintHorzVertDistance({
   selectionRanges,
   constraint,
-  // TODO align will always be false (covered by synconous applyConstraintHorzVertAlign), remove it
-  isAlign = false,
 }: {
   selectionRanges: Selections
   constraint: 'setHorzDistance' | 'setVertDistance'
-  isAlign?: false
 }): Promise<{
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
+  exprInsertIndex: number
 }> {
   const info = horzVertDistanceInfo({
     selectionRanges: selectionRanges,
@@ -107,7 +106,7 @@ export async function applyConstraintHorzVertDistance({
     ast: structuredClone(kclManager.ast),
     selectionRanges,
     transformInfos,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
   })
   if (err(transformed)) return Promise.reject(transformed)
   const { modifiedAst, tagInfo, valueUsedInTransform, pathToNodeMap } =
@@ -133,25 +132,25 @@ export async function applyConstraintHorzVertDistance({
     return {
       modifiedAst,
       pathToNodeMap,
+      exprInsertIndex: -1,
     }
   } else {
     if (!isExprBinaryPart(valueNode))
       return Promise.reject('Invalid valueNode, is not a BinaryPart')
-    let finalValue = isAlign
-      ? createLiteral(0)
-      : removeDoubleNegatives(valueNode, sign, variableName)
+    let finalValue = removeDoubleNegatives(valueNode, sign, variableName)
     // transform again but forcing certain values
     const transformed = transformSecondarySketchLinesTagFirst({
       ast: kclManager.ast,
       selectionRanges,
       transformInfos,
-      programMemory: kclManager.programMemory,
+      memVars: kclManager.variables,
       forceSegName: segName,
       forceValueUsedInTransform: finalValue,
     })
 
     if (err(transformed)) return Promise.reject(transformed)
     const { modifiedAst: _modifiedAst, pathToNodeMap } = transformed
+    let exprInsertIndex = -1
     if (variableName) {
       const newBody = [..._modifiedAst.body]
       newBody.splice(
@@ -164,10 +163,12 @@ export async function applyConstraintHorzVertDistance({
         const index = pathToNode.findIndex((a) => a[0] === 'body') + 1
         pathToNode[index][0] = Number(pathToNode[index][0]) + 1
       })
+      exprInsertIndex = newVariableInsertIndex
     }
     return {
       modifiedAst: _modifiedAst,
       pathToNodeMap,
+      exprInsertIndex,
     }
   }
 }
@@ -195,7 +196,7 @@ export function applyConstraintHorzVertAlign({
     ast: kclManager.ast,
     selectionRanges,
     transformInfos,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
     forceValueUsedInTransform: finalValue,
   })
   if (err(retval)) return retval

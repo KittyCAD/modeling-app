@@ -1,0 +1,169 @@
+#[cfg(test)]
+mod test_examples_someFn {
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_mock_example_someFn0() -> miette::Result<()> {
+        let program = crate::Program::parse_no_errs("someFn()").unwrap();
+        let ctx = crate::ExecutorContext {
+            engine: std::sync::Arc::new(Box::new(
+                crate::engine::conn_mock::EngineConnection::new()
+                    .await
+                    .unwrap(),
+            )),
+            fs: std::sync::Arc::new(crate::fs::FileManager::new()),
+            stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
+            settings: Default::default(),
+            context_type: crate::execution::ContextType::Mock,
+        };
+        if let Err(e) = ctx
+            .run(&program, &mut crate::execution::ExecState::new(&ctx))
+            .await
+        {
+            return Err(miette::Report::new(crate::errors::Report {
+                error: e.error,
+                filename: format!("{}{}", "someFn", 0usize),
+                kcl_source: "someFn()".to_string(),
+            }));
+        }
+
+        Ok(())
+    }
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
+    async fn kcl_test_example_someFn0() -> miette::Result<()> {
+        let code = "someFn()";
+        let result = match crate::test_server::execute_and_snapshot(code, None).await {
+            Err(crate::errors::ExecError::Kcl(e)) => {
+                return Err(miette::Report::new(crate::errors::Report {
+                    error: e.error,
+                    filename: format!("{}{}", "someFn", 0usize),
+                    kcl_source: "someFn()".to_string(),
+                }));
+            }
+            Err(other_err) => panic!("{}", other_err),
+            Ok(img) => img,
+        };
+        twenty_twenty::assert_image(
+            &format!("tests/outputs/{}.png", "serial_test_example_someFn0"),
+            &result,
+            0.99,
+        );
+        Ok(())
+    }
+}
+
+#[allow(non_camel_case_types, missing_docs)]
+#[doc = "Std lib function: someFn\nDocs"]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, schemars :: JsonSchema, ts_rs :: TS)]
+#[ts(export)]
+pub(crate) struct SomeFn {}
+
+#[allow(non_upper_case_globals, missing_docs)]
+#[doc = "Std lib function: someFn\nDocs"]
+pub(crate) const SomeFn: SomeFn = SomeFn {};
+fn boxed_someFn(
+    exec_state: &mut crate::execution::ExecState,
+    args: crate::std::Args,
+) -> std::pin::Pin<
+    Box<
+        dyn std::future::Future<
+                Output = anyhow::Result<crate::execution::KclValue, crate::errors::KclError>,
+            > + Send
+            + '_,
+    >,
+> {
+    Box::pin(someFn(exec_state, args))
+}
+
+impl crate::docs::StdLibFn for SomeFn {
+    fn name(&self) -> String {
+        "someFn".to_string()
+    }
+
+    fn summary(&self) -> String {
+        "Docs".to_string()
+    }
+
+    fn description(&self) -> String {
+        "".to_string()
+    }
+
+    fn tags(&self) -> Vec<String> {
+        vec![]
+    }
+
+    fn keyword_arguments(&self) -> bool {
+        false
+    }
+
+    fn args(&self, inline_subschemas: bool) -> Vec<crate::docs::StdLibFnArg> {
+        let mut settings = schemars::gen::SchemaSettings::openapi3();
+        settings.inline_subschemas = inline_subschemas;
+        let mut generator = schemars::gen::SchemaGenerator::new(settings);
+        vec![crate::docs::StdLibFnArg {
+            name: "data".to_string(),
+            type_: "Foo".to_string(),
+            schema: generator.root_schema_for::<Foo>(),
+            required: true,
+            label_required: true,
+            description: String::new().to_string(),
+            include_in_snippet: true,
+        }]
+    }
+
+    fn return_value(&self, inline_subschemas: bool) -> Option<crate::docs::StdLibFnArg> {
+        let mut settings = schemars::gen::SchemaSettings::openapi3();
+        settings.inline_subschemas = inline_subschemas;
+        let mut generator = schemars::gen::SchemaGenerator::new(settings);
+        let schema = generator.root_schema_for::<i32>();
+        Some(crate::docs::StdLibFnArg {
+            name: "".to_string(),
+            type_: "i32".to_string(),
+            schema,
+            required: true,
+            label_required: true,
+            description: String::new(),
+            include_in_snippet: true,
+        })
+    }
+
+    fn unpublished(&self) -> bool {
+        false
+    }
+
+    fn deprecated(&self) -> bool {
+        false
+    }
+
+    fn feature_tree_operation(&self) -> bool {
+        false
+    }
+
+    fn examples(&self) -> Vec<String> {
+        let code_blocks = vec!["someFn()"];
+        code_blocks
+            .iter()
+            .map(|cb| {
+                let program = crate::Program::parse_no_errs(cb).unwrap();
+                let mut options: crate::parsing::ast::types::FormatOptions = Default::default();
+                options.insert_final_newline = false;
+                program.ast.recast(&options, 0)
+            })
+            .collect::<Vec<String>>()
+    }
+
+    fn std_lib_fn(&self) -> crate::std::StdFn {
+        boxed_someFn
+    }
+
+    fn clone_box(&self) -> Box<dyn crate::docs::StdLibFn> {
+        Box::new(self.clone())
+    }
+}
+
+#[doc = r" Docs"]
+#[doc = r" ```"]
+#[doc = r" someFn()"]
+#[doc = r" ```"]
+fn someFn<'a>(data: Foo<'a>) -> i32 {
+    3
+}

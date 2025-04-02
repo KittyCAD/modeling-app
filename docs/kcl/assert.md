@@ -1,15 +1,18 @@
 ---
 title: "assert"
-excerpt: "Check a value at runtime, and raise an error if the argument provided"
+excerpt: "Check a value at runtime, and raise an error if the argument provided is false."
 layout: manual
 ---
 
-Check a value at runtime, and raise an error if the argument provided
+Check a value at runtime, and raise an error if the argument provided is false.
 
-is false.
+
 
 ```js
-assert(data: bool, message: string) -> ()
+assert(
+  data: bool,
+  message: string,
+): ()
 ```
 
 
@@ -17,12 +20,12 @@ assert(data: bool, message: string) -> ()
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | `bool` |  | Yes |
-| `message` | `string` |  | Yes |
+| `data` | [`bool`](/docs/kcl/types/bool) |  | Yes |
+| `message` | [`string`](/docs/kcl/types/string) |  | Yes |
 
 ### Returns
 
-`()` 
+`()`
 
 
 ### Examples

@@ -1,0 +1,178 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "declaration": {
+        "commentStart": 0,
+        "end": 20,
+        "id": {
+          "commentStart": 0,
+          "end": 3,
+          "name": "obj",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "commentStart": 6,
+          "end": 20,
+          "properties": [
+            {
+              "commentStart": 8,
+              "end": 12,
+              "key": {
+                "commentStart": 8,
+                "end": 9,
+                "name": "a",
+                "start": 8,
+                "type": "Identifier"
+              },
+              "start": 8,
+              "type": "ObjectProperty",
+              "value": {
+                "commentStart": 11,
+                "end": 12,
+                "raw": "1",
+                "start": 11,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
+              }
+            },
+            {
+              "commentStart": 14,
+              "end": 18,
+              "key": {
+                "commentStart": 14,
+                "end": 15,
+                "name": "b",
+                "start": 14,
+                "type": "Identifier"
+              },
+              "start": 14,
+              "type": "ObjectProperty",
+              "value": {
+                "commentStart": 17,
+                "end": 18,
+                "raw": "2",
+                "start": 17,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
+              }
+            }
+          ],
+          "start": 6,
+          "type": "ObjectExpression",
+          "type": "ObjectExpression"
+        },
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 20,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    },
+    {
+      "commentStart": 25,
+      "declaration": {
+        "commentStart": 25,
+        "end": 50,
+        "id": {
+          "commentStart": 25,
+          "end": 31,
+          "name": "height",
+          "start": 25,
+          "type": "Identifier"
+        },
+        "init": {
+          "commentStart": 34,
+          "elements": [
+            {
+              "commentStart": 35,
+              "end": 46,
+              "left": {
+                "commentStart": 35,
+                "computed": false,
+                "end": 43,
+                "object": {
+                  "commentStart": 35,
+                  "end": 38,
+                  "name": "obj",
+                  "start": 35,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "property": {
+                  "commentStart": 39,
+                  "end": 42,
+                  "raw": "\"a\"",
+                  "start": 39,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": "a"
+                },
+                "start": 35,
+                "type": "MemberExpression",
+                "type": "MemberExpression"
+              },
+              "operator": "-",
+              "right": {
+                "commentStart": 45,
+                "end": 46,
+                "raw": "1",
+                "start": 45,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 35,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            {
+              "commentStart": 48,
+              "end": 49,
+              "raw": "0",
+              "start": 48,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.0,
+                "suffix": "None"
+              }
+            }
+          ],
+          "end": 50,
+          "start": 34,
+          "type": "ArrayExpression",
+          "type": "ArrayExpression"
+        },
+        "start": 25,
+        "type": "VariableDeclarator"
+      },
+      "end": 50,
+      "kind": "const",
+      "start": 25,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "commentStart": 0,
+  "end": 50,
+  "start": 0
+}

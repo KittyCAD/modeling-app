@@ -1,0 +1,13 @@
+fn box = (h, l, w) => {
+ const myBox = startSketchOn(XY)
+    |> startProfileAt([0,0], %)
+    |> line(end = [0, l])
+    |> line(end = [w, 0])
+    |> line(end = [0, -l])
+    |> close()
+    |> extrude(length = h)
+
+  return myBox
+}
+
+const fnBox = box(3, 6, 10)

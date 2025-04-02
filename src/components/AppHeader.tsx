@@ -1,12 +1,13 @@
-import { Toolbar } from '../Toolbar'
-import UserSidebarMenu from 'components/UserSidebarMenu'
-import { type IndexLoaderData } from 'lib/types'
-import ProjectSidebarMenu from './ProjectSidebarMenu'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { Toolbar } from '@src/Toolbar'
+import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
+import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
+import { RefreshButton } from '@src/components/RefreshButton'
+import UserSidebarMenu from '@src/components/UserSidebarMenu'
+import { isDesktop } from '@src/lib/isDesktop'
+import { type IndexLoaderData } from '@src/lib/types'
+import { useUser } from '@src/machines/appMachine'
+
 import styles from './AppHeader.module.css'
-import { RefreshButton } from 'components/RefreshButton'
-import { CommandBarOpenButton } from './CommandBarOpenButton'
-import { isDesktop } from 'lib/isDesktop'
 
 interface AppHeaderProps extends React.PropsWithChildren {
   showToolbar?: boolean
@@ -24,8 +25,7 @@ export const AppHeader = ({
   style,
   enableMenu = false,
 }: AppHeaderProps) => {
-  const { auth } = useSettingsAuthContext()
-  const user = auth?.context?.user
+  const user = useUser()
 
   return (
     <header

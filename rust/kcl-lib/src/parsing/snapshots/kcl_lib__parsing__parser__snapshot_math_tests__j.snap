@@ -1,0 +1,135 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "type": "BinaryExpression",
+  "operator": "/",
+  "left": {
+    "type": "BinaryExpression",
+    "type": "BinaryExpression",
+    "operator": "*",
+    "left": {
+      "type": "BinaryExpression",
+      "type": "BinaryExpression",
+      "operator": "*",
+      "left": {
+        "type": "BinaryExpression",
+        "type": "BinaryExpression",
+        "operator": "*",
+        "left": {
+          "type": "Name",
+          "type": "Name",
+          "name": {
+            "type": "Identifier",
+            "name": "distance",
+            "start": 0,
+            "end": 8,
+            "commentStart": 0
+          },
+          "path": [],
+          "abs_path": false,
+          "start": 0,
+          "end": 8,
+          "commentStart": 0
+        },
+        "right": {
+          "type": "Name",
+          "type": "Name",
+          "name": {
+            "type": "Identifier",
+            "name": "p",
+            "start": 11,
+            "end": 12,
+            "commentStart": 11
+          },
+          "path": [],
+          "abs_path": false,
+          "start": 11,
+          "end": 12,
+          "commentStart": 11
+        },
+        "start": 0,
+        "end": 12,
+        "commentStart": 0
+      },
+      "right": {
+        "type": "Name",
+        "type": "Name",
+        "name": {
+          "type": "Identifier",
+          "name": "FOS",
+          "start": 15,
+          "end": 18,
+          "commentStart": 15
+        },
+        "path": [],
+        "abs_path": false,
+        "start": 15,
+        "end": 18,
+        "commentStart": 15
+      },
+      "start": 0,
+      "end": 18,
+      "commentStart": 0
+    },
+    "right": {
+      "type": "Literal",
+      "type": "Literal",
+      "value": {
+        "value": 6.0,
+        "suffix": "None"
+      },
+      "raw": "6",
+      "start": 21,
+      "end": 22,
+      "commentStart": 21
+    },
+    "start": 0,
+    "end": 22,
+    "commentStart": 0
+  },
+  "right": {
+    "type": "BinaryExpression",
+    "type": "BinaryExpression",
+    "operator": "*",
+    "left": {
+      "type": "Name",
+      "type": "Name",
+      "name": {
+        "type": "Identifier",
+        "name": "sigmaAllow",
+        "start": 26,
+        "end": 36,
+        "commentStart": 26
+      },
+      "path": [],
+      "abs_path": false,
+      "start": 26,
+      "end": 36,
+      "commentStart": 26
+    },
+    "right": {
+      "type": "Name",
+      "type": "Name",
+      "name": {
+        "type": "Identifier",
+        "name": "width",
+        "start": 39,
+        "end": 44,
+        "commentStart": 39
+      },
+      "path": [],
+      "abs_path": false,
+      "start": 39,
+      "end": 44,
+      "commentStart": 39
+    },
+    "start": 26,
+    "end": 44,
+    "commentStart": 26
+  },
+  "start": 0,
+  "end": 44,
+  "commentStart": 0
+}

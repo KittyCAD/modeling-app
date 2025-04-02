@@ -1,27 +1,35 @@
-import { Diagnostic } from '@codemirror/lint'
+import type { Diagnostic } from '@codemirror/lint'
 import { useMachine, useSelector } from '@xstate/react'
-import { ContextMenu, ContextMenuItem } from 'components/ContextMenu'
-import { CustomIcon, CustomIconName } from 'components/CustomIcon'
-import Loading from 'components/Loading'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { useKclContext } from 'lang/KclProvider'
-import { codeRefFromRange, getArtifactFromRange } from 'lang/std/artifactGraph'
-import { sourceRangeFromRust } from 'lang/wasm'
+import type { ComponentProps } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import type { Actor, Prop } from 'xstate'
+
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+
+import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
+import type { CustomIconName } from '@src/components/CustomIcon'
+import { CustomIcon } from '@src/components/CustomIcon'
+import Loading from '@src/components/Loading'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useKclContext } from '@src/lang/KclProvider'
+import {
+  codeRefFromRange,
+  getArtifactFromRange,
+} from '@src/lang/std/artifactGraph'
+import { sourceRangeFromRust } from '@src/lang/wasm'
 import {
   filterOperations,
   getOperationIcon,
   getOperationLabel,
-} from 'lib/operations'
-import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
-import { ComponentProps, useEffect, useMemo, useRef, useState } from 'react'
-import { Operation } from 'wasm-lib/kcl/bindings/Operation'
-import { Actor, Prop } from 'xstate'
-import { featureTreeMachine } from 'machines/featureTreeMachine'
+  stdLibMap,
+} from '@src/lib/operations'
+import { editorManager, kclManager } from '@src/lib/singletons'
+import { featureTreeMachine } from '@src/machines/featureTreeMachine'
 import {
   editorIsMountedSelector,
   kclEditorActor,
   selectionEventSelector,
-} from 'machines/kclEditorMachine'
+} from '@src/machines/kclEditorMachine'
 
 export const FeatureTreePane = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
@@ -57,10 +65,11 @@ export const FeatureTreePane = () => {
           const artifact = context.targetSourceRange
             ? getArtifactFromRange(
                 context.targetSourceRange,
-                engineCommandManager.artifactGraph
+                kclManager.artifactGraph
               )
             : null
-          if (!artifact || !('codeRef' in artifact)) {
+
+          if (!artifact) {
             modelingSend({
               type: 'Set selection',
               data: {
@@ -311,12 +320,36 @@ const OperationItem = (props: {
    * TODO: https://github.com/KittyCAD/modeling-app/issues/4442
    */
   function enterEditFlow() {
-    if (
-      props.item.type === 'StdLibCall' &&
-      props.item.name === 'startSketchOn'
-    ) {
+    if (props.item.type === 'StdLibCall') {
       props.send({
         type: 'enterEditFlow',
+        data: {
+          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+          currentOperation: props.item,
+        },
+      })
+    }
+  }
+
+  function enterAppearanceFlow() {
+    if (props.item.type === 'StdLibCall') {
+      props.send({
+        type: 'enterAppearanceFlow',
+        data: {
+          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+          currentOperation: props.item,
+        },
+      })
+    }
+  }
+
+  function deleteOperation() {
+    if (
+      props.item.type === 'StdLibCall' ||
+      props.item.type === 'UserDefinedFunctionCall'
+    ) {
+      props.send({
+        type: 'deleteOperation',
         data: {
           targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
         },
@@ -364,6 +397,31 @@ const OperationItem = (props: {
             </ContextMenuItem>,
           ]
         : []),
+      ...(props.item.type === 'StdLibCall'
+        ? [
+            <ContextMenuItem
+              disabled={!stdLibMap[props.item.name]?.supportsAppearance}
+              onClick={enterAppearanceFlow}
+              data-testid="context-menu-set-appearance"
+            >
+              Set appearance
+            </ContextMenuItem>,
+            <ContextMenuItem
+              disabled={!stdLibMap[props.item.name]?.prepareToEdit}
+              onClick={enterEditFlow}
+              hotkey="Double click"
+            >
+              Edit
+            </ContextMenuItem>,
+          ]
+        : []),
+      <ContextMenuItem
+        onClick={deleteOperation}
+        hotkey="Delete"
+        data-testid="context-menu-delete"
+      >
+        Delete
+      </ContextMenuItem>,
     ],
     [props.item, props.send]
   )

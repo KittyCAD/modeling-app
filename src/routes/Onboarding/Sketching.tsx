@@ -1,12 +1,11 @@
-import { OnboardingButtons, useDismiss, useNextClick } from '.'
-import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useEffect } from 'react'
-import { codeManager, kclManager } from 'lib/singletons'
+
+import { codeManager, kclManager } from '@src/lib/singletons'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
+import { OnboardingButtons } from '@src/routes/Onboarding/utils'
 
 export default function Sketching() {
-  const dismiss = useDismiss()
-  const next = useNextClick(onboardingPaths.FUTURE_WORK)
-
   useEffect(() => {
     async function clearEditor() {
       // We do want to update both the state and editor here.
@@ -22,7 +21,7 @@ export default function Sketching() {
     <div className="fixed grid justify-center items-end inset-0 z-50 pointer-events-none">
       <div
         className={
-          'pointer-events-auto max-w-full xl:max-w-2xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded'
+          'relative pointer-events-auto max-w-full xl:max-w-2xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded'
         }
       >
         <h1 className="text-2xl font-bold">Sketching</h1>
@@ -45,9 +44,6 @@ export default function Sketching() {
         <OnboardingButtons
           currentSlug={onboardingPaths.SKETCHING}
           className="mt-6"
-          next={next}
-          dismiss={dismiss}
-          nextText="Next: Future Work"
         />
       </div>
     </div>

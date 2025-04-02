@@ -1,0 +1,19 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing import_export.kcl
+---
+{
+  "three": {
+    "type": "Number",
+    "value": 3.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  }
+}

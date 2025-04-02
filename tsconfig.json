@@ -1,14 +1,17 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
+    "noErrorTruncation": true,
     "paths": {
       "@kittycad/codemirror-lsp-client": [
-        "../packages/codemirror-lsp-client/src/index.ts"
+        "./packages/codemirror-lsp-client/src/index.ts"
       ],
       "@kittycad/codemirror-lang-kcl": [
-        "../packages/codemirror-lang-kcl/src/index.ts"
+        "./packages/codemirror-lang-kcl/src/index.ts"
       ],
-      "/*": ["src/*"]
+      "@rust/*": ["./rust/*"],
+      "@e2e/*": ["./e2e/*"],
+      "@src/*": ["./src/*"],
+      "@root/*": ["./*"]
     },
     "types": [
       "vite/client",
@@ -34,7 +37,7 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", "e2e", "packages", "*.ts"],
-  "exclude": ["node_modules", "./*.grammar", "vite.config.ts"],
+  "include": ["src", "e2e", "packages", "*.ts", "rust"],
+  "exclude": ["node_modules", "./*.grammar", "vite.config.ts", ".vscode-test"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

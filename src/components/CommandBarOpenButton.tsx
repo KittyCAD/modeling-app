@@ -1,16 +1,15 @@
-import { useCommandsContext } from 'hooks/useCommandsContext'
-import usePlatform from 'hooks/usePlatform'
-import { hotkeyDisplay } from 'lib/hotkeyWrapper'
-import { COMMAND_PALETTE_HOTKEY } from './CommandBar/CommandBar'
+import { COMMAND_PALETTE_HOTKEY } from '@src/components/CommandBar/CommandBar'
+import usePlatform from '@src/hooks/usePlatform'
+import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
+import { commandBarActor } from '@src/machines/commandBarMachine'
 
 export function CommandBarOpenButton() {
-  const { commandBarSend } = useCommandsContext()
   const platform = usePlatform()
 
   return (
     <button
       className="group rounded-full flex items-center justify-center gap-2 px-2 py-1 bg-primary/10 dark:bg-chalkboard-90 dark:backdrop-blur-sm border-primary hover:border-primary dark:border-chalkboard-50 dark:hover:border-inherit text-primary dark:text-inherit"
-      onClick={() => commandBarSend({ type: 'Open' })}
+      onClick={() => commandBarActor.send({ type: 'Open' })}
       data-testid="command-bar-open-button"
     >
       <span>Commands</span>

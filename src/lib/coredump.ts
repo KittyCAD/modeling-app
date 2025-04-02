@@ -1,12 +1,18 @@
-import { CommandLog, EngineCommandManager } from 'lang/std/engineConnection'
-import { WebrtcStats } from 'wasm-lib/kcl/bindings/WebrtcStats'
-import { OsInfo } from 'wasm-lib/kcl/bindings/OsInfo'
-import { isDesktop } from 'lib/isDesktop'
-import { APP_VERSION } from 'routes/Settings'
+import { VITE_KC_API_BASE_URL } from '@src/env'
 import { UAParser } from 'ua-parser-js'
-import screenshot from 'lib/screenshot'
-import { VITE_KC_API_BASE_URL } from 'env'
-import CodeManager from 'lang/codeManager'
+
+import type { OsInfo } from '@rust/kcl-lib/bindings/OsInfo'
+import type { WebrtcStats } from '@rust/kcl-lib/bindings/WebrtcStats'
+
+import type CodeManager from '@src/lang/codeManager'
+import type {
+  CommandLog,
+  EngineCommandManager,
+} from '@src/lang/std/engineConnection'
+import { isDesktop } from '@src/lib/isDesktop'
+import type RustContext from '@src/lib/rustContext'
+import screenshot from '@src/lib/screenshot'
+import { APP_VERSION } from '@src/routes/Settings'
 
 /* eslint-disable suggest-no-throw/suggest-no-throw --
  * All the throws in CoreDumpManager are intentional and should be caught and handled properly
@@ -29,16 +35,19 @@ import CodeManager from 'lang/codeManager'
 export class CoreDumpManager {
   engineCommandManager: EngineCommandManager
   codeManager: CodeManager
+  rustContext: RustContext
   token: string | undefined
   baseUrl: string = VITE_KC_API_BASE_URL
 
   constructor(
     engineCommandManager: EngineCommandManager,
     codeManager: CodeManager,
+    rustContext: RustContext,
     token: string | undefined
   ) {
     this.engineCommandManager = engineCommandManager
     this.codeManager = codeManager
+    this.rustContext = rustContext
     this.token = token
   }
 
@@ -196,17 +205,6 @@ export class CoreDumpManager {
       // engine_command_manager
       debugLog('CoreDump: engineCommandManager', this.engineCommandManager)
 
-      // artifact map - this.engineCommandManager.artifactGraph
-      if (this.engineCommandManager?.artifactGraph) {
-        debugLog(
-          'CoreDump: Engine Command Manager artifact map',
-          this.engineCommandManager.artifactGraph
-        )
-        clientState.engine_command_manager.artifact_map = structuredClone(
-          this.engineCommandManager.artifactGraph
-        )
-      }
-
       // command logs - this.engineCommandManager.commandLogs
       if (this.engineCommandManager?.commandLogs) {
         debugLog(
@@ -218,14 +216,14 @@ export class CoreDumpManager {
         )
       }
 
-      // default planes - this.engineCommandManager.defaultPlanes
-      if (this.engineCommandManager?.defaultPlanes) {
+      // default planes - this.rustContext.defaultPlanes
+      if (this.rustContext.defaultPlanes) {
         debugLog(
           'CoreDump: Engine Command Manager default planes',
-          this.engineCommandManager.defaultPlanes
+          this.rustContext.defaultPlanes
         )
         clientState.engine_command_manager.default_planes = structuredClone(
-          this.engineCommandManager.defaultPlanes
+          this.rustContext.defaultPlanes
         )
       }
 
@@ -268,6 +266,21 @@ export class CoreDumpManager {
         debugLog('CoreDump: KCL Manager AST', kclManager?.ast)
         if (kclManager?.ast) {
           clientState.kcl_manager.ast = structuredClone(kclManager.ast)
+        }
+
+        // artifact map - this.kclManager.artifactGraph
+        debugLog(
+          'CoreDump: KCL Manager artifact map',
+          kclManager?.artifactGraph
+        )
+        if (kclManager.artifactGraph) {
+          debugLog(
+            'CoreDump: Engine Command Manager artifact map',
+            kclManager.artifactGraph
+          )
+          clientState.engine_command_manager.artifact_map = structuredClone(
+            kclManager.artifactGraph
+          )
         }
 
         // KCL Errors
@@ -349,8 +362,19 @@ export class CoreDumpManager {
           sceneEntitiesManager?.activeSegments
         )
         if (sceneEntitiesManager?.activeSegments) {
+          // You can't structuredClone a THREE.js Group, so let's just get the userData.
           ;(clientState.scene_entities_manager as any).activeSegments =
-            structuredClone(sceneEntitiesManager.activeSegments)
+            Object.entries(sceneEntitiesManager.activeSegments).map(
+              ([id, segmentGroup]) => ({
+                segmentId: id,
+                userData:
+                  segmentGroup &&
+                  typeof segmentGroup === 'object' &&
+                  'userData' in segmentGroup
+                    ? segmentGroup.userData
+                    : null,
+              })
+            )
         }
       }
 

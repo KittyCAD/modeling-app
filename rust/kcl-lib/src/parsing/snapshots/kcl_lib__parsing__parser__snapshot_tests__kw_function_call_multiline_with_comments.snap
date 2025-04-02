@@ -1,0 +1,127 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "declaration": {
+        "commentStart": 0,
+        "end": 90,
+        "id": {
+          "commentStart": 0,
+          "end": 3,
+          "name": "val",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "arguments": [
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 22,
+                "end": 25,
+                "name": "arg",
+                "start": 22,
+                "type": "Identifier"
+              },
+              "arg": {
+                "abs_path": false,
+                "commentStart": 28,
+                "end": 29,
+                "name": {
+                  "commentStart": 28,
+                  "end": 29,
+                  "name": "x",
+                  "start": 28,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 28,
+                "type": "Name",
+                "type": "Name"
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 69,
+                "end": 72,
+                "name": "bar",
+                "start": 69,
+                "type": "Identifier"
+              },
+              "arg": {
+                "abs_path": false,
+                "commentStart": 75,
+                "end": 76,
+                "name": {
+                  "commentStart": 75,
+                  "end": 76,
+                  "name": "x",
+                  "start": 75,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 75,
+                "type": "Name",
+                "type": "Name"
+              }
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 6,
+            "end": 7,
+            "name": {
+              "commentStart": 6,
+              "end": 7,
+              "name": "f",
+              "start": 6,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 6,
+            "type": "Name"
+          },
+          "commentStart": 6,
+          "end": 90,
+          "nonCodeMeta": {
+            "nonCodeNodes": {
+              "1": [
+                {
+                  "commentStart": 44,
+                  "end": 55,
+                  "start": 44,
+                  "type": "NonCodeNode",
+                  "value": {
+                    "type": "blockComment",
+                    "value": "foo = x,",
+                    "style": "line"
+                  }
+                }
+              ]
+            },
+            "startNodes": []
+          },
+          "start": 6,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": null
+        },
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 90,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "commentStart": 0,
+  "end": 90,
+  "start": 0
+}

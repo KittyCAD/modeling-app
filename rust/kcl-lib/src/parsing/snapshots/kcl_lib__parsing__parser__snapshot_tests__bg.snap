@@ -1,0 +1,44 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "declaration": {
+        "commentStart": 0,
+        "end": 5,
+        "id": {
+          "commentStart": 0,
+          "end": 1,
+          "name": "x",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "commentStart": 4,
+          "end": 5,
+          "raw": "4",
+          "start": 4,
+          "type": "Literal",
+          "type": "Literal",
+          "value": {
+            "value": 4.0,
+            "suffix": "None"
+          }
+        },
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 5,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "commentStart": 0,
+  "end": 5,
+  "start": 0
+}

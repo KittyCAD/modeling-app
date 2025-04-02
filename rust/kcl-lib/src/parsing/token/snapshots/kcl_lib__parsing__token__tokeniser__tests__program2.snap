@@ -1,0 +1,1104 @@
+---
+source: kcl-lib/src/parsing/token/tokeniser.rs
+expression: actual.tokens
+---
+[
+    Token {
+        token_type: Keyword,
+        start: 0,
+        end: 5,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "const",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 5,
+        end: 6,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Word,
+        start: 6,
+        end: 13,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "part001",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 13,
+        end: 14,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Operator,
+        start: 14,
+        end: 15,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "=",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 15,
+        end: 16,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Word,
+        start: 16,
+        end: 29,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "startSketchOn",
+    },
+    Token {
+        token_type: Brace,
+        start: 29,
+        end: 30,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "(",
+    },
+    Token {
+        token_type: Word,
+        start: 30,
+        end: 32,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "XY",
+    },
+    Token {
+        token_type: Brace,
+        start: 32,
+        end: 33,
+        module_id: ModuleId(
+            1,
+        ),
+        value: ")",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 33,
+        end: 38,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "\n    ",
+    },
+    Token {
+        token_type: Operator,
+        start: 38,
+        end: 40,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "|>",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 40,
+        end: 41,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Word,
+        start: 41,
+        end: 55,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "startProfileAt",
+    },
+    Token {
+        token_type: Brace,
+        start: 55,
+        end: 56,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "(",
+    },
+    Token {
+        token_type: Brace,
+        start: 56,
+        end: 57,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "[",
+    },
+    Token {
+        token_type: Number,
+        start: 57,
+        end: 69,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "0.0000000000",
+    },
+    Token {
+        token_type: Comma,
+        start: 69,
+        end: 70,
+        module_id: ModuleId(
+            1,
+        ),
+        value: ",",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 70,
+        end: 71,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Number,
+        start: 71,
+        end: 83,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "5.0000000000",
+    },
+    Token {
+        token_type: Brace,
+        start: 83,
+        end: 84,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "]",
+    },
+    Token {
+        token_type: Comma,
+        start: 84,
+        end: 85,
+        module_id: ModuleId(
+            1,
+        ),
+        value: ",",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 85,
+        end: 86,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Operator,
+        start: 86,
+        end: 87,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "%",
+    },
+    Token {
+        token_type: Brace,
+        start: 87,
+        end: 88,
+        module_id: ModuleId(
+            1,
+        ),
+        value: ")",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 88,
+        end: 93,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "\n    ",
+    },
+    Token {
+        token_type: Operator,
+        start: 93,
+        end: 95,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "|>",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 95,
+        end: 96,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Word,
+        start: 96,
+        end: 100,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "line",
+    },
+    Token {
+        token_type: Brace,
+        start: 100,
+        end: 101,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "(",
+    },
+    Token {
+        token_type: Brace,
+        start: 101,
+        end: 102,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "[",
+    },
+    Token {
+        token_type: Number,
+        start: 102,
+        end: 114,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "0.4900857016",
+    },
+    Token {
+        token_type: Comma,
+        start: 114,
+        end: 115,
+        module_id: ModuleId(
+            1,
+        ),
+        value: ",",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 115,
+        end: 116,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Operator,
+        start: 116,
+        end: 117,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "-",
+    },
+    Token {
+        token_type: Number,
+        start: 117,
+        end: 129,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "0.0240763666",
+    },
+    Token {
+        token_type: Brace,
+        start: 129,
+        end: 130,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "]",
+    },
+    Token {
+        token_type: Comma,
+        start: 130,
+        end: 131,
+        module_id: ModuleId(
+            1,
+        ),
+        value: ",",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 131,
+        end: 132,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Operator,
+        start: 132,
+        end: 133,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "%",
+    },
+    Token {
+        token_type: Brace,
+        start: 133,
+        end: 134,
+        module_id: ModuleId(
+            1,
+        ),
+        value: ")",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 134,
+        end: 136,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "\n\n",
+    },
+    Token {
+        token_type: Keyword,
+        start: 136,
+        end: 141,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "const",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 141,
+        end: 142,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Word,
+        start: 142,
+        end: 149,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "part002",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 149,
+        end: 150,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Operator,
+        start: 150,
+        end: 151,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "=",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 151,
+        end: 152,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: String,
+        start: 152,
+        end: 161,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "\"part002\"",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 161,
+        end: 162,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "\n",
+    },
+    Token {
+        token_type: Keyword,
+        start: 162,
+        end: 167,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "const",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 167,
+        end: 168,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Word,
+        start: 168,
+        end: 174,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "things",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 174,
+        end: 175,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Operator,
+        start: 175,
+        end: 176,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "=",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 176,
+        end: 177,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Brace,
+        start: 177,
+        end: 178,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "[",
+    },
+    Token {
+        token_type: Word,
+        start: 178,
+        end: 185,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "part001",
+    },
+    Token {
+        token_type: Comma,
+        start: 185,
+        end: 186,
+        module_id: ModuleId(
+            1,
+        ),
+        value: ",",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 186,
+        end: 187,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Number,
+        start: 187,
+        end: 190,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "0.0",
+    },
+    Token {
+        token_type: Brace,
+        start: 190,
+        end: 191,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "]",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 191,
+        end: 192,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "\n",
+    },
+    Token {
+        token_type: Keyword,
+        start: 192,
+        end: 195,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "let",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 195,
+        end: 196,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Word,
+        start: 196,
+        end: 200,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "blah",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 200,
+        end: 201,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Operator,
+        start: 201,
+        end: 202,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "=",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 202,
+        end: 203,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Number,
+        start: 203,
+        end: 204,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "1",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 204,
+        end: 205,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "\n",
+    },
+    Token {
+        token_type: Keyword,
+        start: 205,
+        end: 210,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "const",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 210,
+        end: 211,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Word,
+        start: 211,
+        end: 214,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "foo",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 214,
+        end: 215,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Operator,
+        start: 215,
+        end: 216,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "=",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 216,
+        end: 217,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Keyword,
+        start: 217,
+        end: 222,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "false",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 222,
+        end: 223,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "\n",
+    },
+    Token {
+        token_type: Keyword,
+        start: 223,
+        end: 226,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "let",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 226,
+        end: 227,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Word,
+        start: 227,
+        end: 230,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "baz",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 230,
+        end: 231,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Operator,
+        start: 231,
+        end: 232,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "=",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 232,
+        end: 233,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Brace,
+        start: 233,
+        end: 234,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "{",
+    },
+    Token {
+        token_type: Word,
+        start: 234,
+        end: 235,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "a",
+    },
+    Token {
+        token_type: Colon,
+        start: 235,
+        end: 236,
+        module_id: ModuleId(
+            1,
+        ),
+        value: ":",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 236,
+        end: 237,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Number,
+        start: 237,
+        end: 238,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "1",
+    },
+    Token {
+        token_type: Comma,
+        start: 238,
+        end: 239,
+        module_id: ModuleId(
+            1,
+        ),
+        value: ",",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 239,
+        end: 240,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Word,
+        start: 240,
+        end: 247,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "part001",
+    },
+    Token {
+        token_type: Colon,
+        start: 247,
+        end: 248,
+        module_id: ModuleId(
+            1,
+        ),
+        value: ":",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 248,
+        end: 249,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: String,
+        start: 249,
+        end: 256,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "\"thing\"",
+    },
+    Token {
+        token_type: Brace,
+        start: 256,
+        end: 257,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "}",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 257,
+        end: 259,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "\n\n",
+    },
+    Token {
+        token_type: Keyword,
+        start: 259,
+        end: 261,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "fn",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 261,
+        end: 262,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Word,
+        start: 262,
+        end: 265,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "ghi",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 265,
+        end: 266,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Operator,
+        start: 266,
+        end: 267,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "=",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 267,
+        end: 268,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Brace,
+        start: 268,
+        end: 269,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "(",
+    },
+    Token {
+        token_type: Word,
+        start: 269,
+        end: 276,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "part001",
+    },
+    Token {
+        token_type: Brace,
+        start: 276,
+        end: 277,
+        module_id: ModuleId(
+            1,
+        ),
+        value: ")",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 277,
+        end: 278,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Operator,
+        start: 278,
+        end: 280,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "=>",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 280,
+        end: 281,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Brace,
+        start: 281,
+        end: 282,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "{",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 282,
+        end: 285,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "\n  ",
+    },
+    Token {
+        token_type: Keyword,
+        start: 285,
+        end: 291,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "return",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 291,
+        end: 292,
+        module_id: ModuleId(
+            1,
+        ),
+        value: " ",
+    },
+    Token {
+        token_type: Word,
+        start: 292,
+        end: 299,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "part001",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 299,
+        end: 300,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "\n",
+    },
+    Token {
+        token_type: Brace,
+        start: 300,
+        end: 301,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "}",
+    },
+    Token {
+        token_type: Whitespace,
+        start: 301,
+        end: 303,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "\n\n",
+    },
+    Token {
+        token_type: Word,
+        start: 303,
+        end: 307,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "show",
+    },
+    Token {
+        token_type: Brace,
+        start: 307,
+        end: 308,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "(",
+    },
+    Token {
+        token_type: Word,
+        start: 308,
+        end: 315,
+        module_id: ModuleId(
+            1,
+        ),
+        value: "part001",
+    },
+    Token {
+        token_type: Brace,
+        start: 315,
+        end: 316,
+        module_id: ModuleId(
+            1,
+        ),
+        value: ")",
+    },
+]

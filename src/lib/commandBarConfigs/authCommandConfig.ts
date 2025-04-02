@@ -1,17 +1,14 @@
-import { StateMachineCommandSetConfig } from 'lib/commandTypes'
-import { authMachine } from 'machines/authMachine'
+import type { Command } from '@src/lib/commandTypes'
+import { authActor } from '@src/machines/appMachine'
+import { ACTOR_IDS } from '@src/machines/machineConstants'
 
-type AuthCommandSchema = {}
-
-export const authCommandBarConfig: StateMachineCommandSetConfig<
-  typeof authMachine,
-  AuthCommandSchema
-> = {
-  'Log in': {
-    hide: 'both',
-  },
-  'Log out': {
-    args: [],
+export const authCommands: Command[] = [
+  {
+    groupId: ACTOR_IDS.AUTH,
+    name: 'log-out',
+    displayName: 'Log out',
     icon: 'arrowLeft',
+    needsReview: false,
+    onSubmit: () => authActor.send({ type: 'Log out' }),
   },
-}
+]

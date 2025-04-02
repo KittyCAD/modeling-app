@@ -1,0 +1,296 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing sketch_in_object.kcl
+---
+{
+  "test": {
+    "type": "Function"
+  },
+  "test2": {
+    "type": "Function"
+  },
+  "x": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            0.0,
+            0.0
+          ],
+          "tag": null,
+          "to": [
+            0.0,
+            1.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            0.0,
+            1.0
+          ],
+          "tag": null,
+          "to": [
+            1.0,
+            1.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            1.0,
+            1.0
+          ],
+          "tag": null,
+          "to": [
+            1.0,
+            0.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            1.0,
+            0.0
+          ],
+          "tag": null,
+          "to": [
+            0.0,
+            0.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        }
+      ],
+      "on": {
+        "type": "plane",
+        "id": "[uuid]",
+        "artifactId": "[uuid]",
+        "value": "XY",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "units": {
+          "type": "Mm"
+        }
+      },
+      "start": {
+        "from": [
+          0.0,
+          0.0
+        ],
+        "to": [
+          0.0,
+          0.0
+        ],
+        "units": {
+          "type": "Mm"
+        },
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": []
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "units": {
+        "type": "Mm"
+      }
+    }
+  },
+  "x2": {
+    "type": "Object",
+    "value": {
+      "thing1": {
+        "type": "Object",
+        "value": {
+          "thing2": {
+            "type": "Sketch",
+            "value": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    0.0,
+                    0.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    0.0,
+                    1.0
+                  ],
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    0.0,
+                    1.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    1.0,
+                    1.0
+                  ],
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    1.0,
+                    1.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    1.0,
+                    0.0
+                  ],
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    1.0,
+                    0.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    0.0,
+                    0.0
+                  ],
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
+                }
+              ],
+              "on": {
+                "type": "plane",
+                "id": "[uuid]",
+                "artifactId": "[uuid]",
+                "value": "XY",
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0
+                },
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
+                },
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "start": {
+                "from": [
+                  0.0,
+                  0.0
+                ],
+                "to": [
+                  0.0,
+                  0.0
+                ],
+                "units": {
+                  "type": "Mm"
+                },
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

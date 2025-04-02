@@ -1,0 +1,49 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing sketch-on-chamfer-two-times-different-order.kcl
+---
+sketch001 = startSketchOn(XZ)
+  |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
+  |> angledLine([0, 268.43], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       217.26
+     ], %, $seg01)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+  |> close(%)
+extrude001 = extrude(sketch001, length = 100)
+  |> fillet(radius = 20, tags = [seg01])
+  |> chamfer(length = 50, tags = [getOppositeEdge(seg01)], tag = $seg03)
+  |> chamfer(length = 50, tags = [seg02], tag = $seg04)
+
+sketch003 = startSketchOn(extrude001, seg04)
+  |> startProfileAt([-69.1, 277.34], %)
+  |> angledLine([0, 41.48], %, $rectangleSegmentA003)
+  |> angledLine([
+       segAng(rectangleSegmentA003) - 90,
+       104.8
+     ], %, $rectangleSegmentB002)
+  |> angledLine([
+       segAng(rectangleSegmentA003),
+       -segLen(rectangleSegmentA003)
+     ], %, $rectangleSegmentC002)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close(%)
+sketch002 = startSketchOn(extrude001, seg03)
+  |> startProfileAt([159.25, 278.35], %)
+  |> angledLine([0, 40.82], %, $rectangleSegmentA002)
+  |> angledLine([
+       segAng(rectangleSegmentA002) - 90,
+       132.27
+     ], %, $rectangleSegmentB001)
+  |> angledLine([
+       segAng(rectangleSegmentA002),
+       -segLen(rectangleSegmentA002)
+     ], %, $rectangleSegmentC001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close(%)
+extrude002 = extrude(sketch002, length = 50)

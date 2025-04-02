@@ -1,0 +1,21 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed tan_arc_x_line.kcl
+---
+[
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "String",
+          "value": "XY"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]

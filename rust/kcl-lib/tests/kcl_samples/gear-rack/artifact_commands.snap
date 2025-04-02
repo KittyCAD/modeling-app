@@ -1,0 +1,3025 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact commands gear-rack.kcl
+---
+[
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "edge_lines_visible",
+      "hidden": false
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "make_plane",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "x_axis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "y_axis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "size": 60.0,
+      "clobber": false,
+      "hide": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": -50.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 100.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": 10.875,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -100.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 5.0,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "make_plane",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "x_axis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "y_axis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "size": 60.0,
+      "clobber": false,
+      "hide": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": -49.432328,
+        "y": 10.875,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": 0.1576,
+          "y": 0.1104,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.3291,
+          "y": 0.9042,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": 0.1576,
+          "y": 0.1104,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.1865,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": 0.1576,
+          "y": -0.1104,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.3291,
+          "y": -0.9042,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": 0.1576,
+          "y": -0.1104,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 5.0,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "entity_linear_pattern_transform",
+      "entity_id": "[uuid]",
+      "transform": [],
+      "transforms": [
+        [
+          {
+            "translate": {
+              "x": 1.570796,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 3.141592,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 4.712388000000001,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 6.283184,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 7.85398,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 9.424776000000001,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 10.995572000000001,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 12.566368,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 14.137164,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 15.70796,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 17.278756,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 18.849552000000003,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 20.420348,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 21.991144000000002,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 23.56194,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 25.132736,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 26.703532000000003,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 28.274328,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 29.845124000000002,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 31.41592,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 32.986716,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 34.557512,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 36.128308000000004,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 37.699104000000005,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 39.2699,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 40.840696,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 42.411492,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 43.982288000000004,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 45.553084000000005,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 47.12388,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 48.694676,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 50.265472,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 51.836268000000004,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 53.407064000000005,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 54.97786,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 56.548656,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 58.119452,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 59.690248000000004,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 61.261044000000005,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 62.83184,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 64.402636,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 65.973432,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 67.544228,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 69.115024,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 70.68582,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 72.25661600000001,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 73.82741200000001,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 75.39820800000001,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 76.969004,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 78.5398,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 80.110596,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 81.681392,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 83.252188,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 84.822984,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 86.39378,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 87.96457600000001,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 89.53537200000001,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 91.10616800000001,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 92.676964,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 94.24776,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 95.818556,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 97.389352,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "make_plane",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "x_axis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "y_axis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "size": 60.0,
+      "clobber": false,
+      "hide": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": -50.0,
+        "y": 11.849525,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.3145,
+          "y": -0.8641,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": 0.1576,
+          "y": -0.1104,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -50.0,
+          "y": 10.875,
+          "z": 0.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 5.0,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "make_plane",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "x_axis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "y_axis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "size": 60.0,
+      "clobber": false,
+      "hide": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 50.0,
+        "y": 11.849525,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -0.3145,
+          "y": -0.8641,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": -0.1576,
+          "y": -0.1104,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 50.0,
+          "y": 10.875,
+          "z": 0.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 5.0,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  }
+]

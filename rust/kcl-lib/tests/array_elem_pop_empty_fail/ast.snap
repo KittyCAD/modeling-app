@@ -1,0 +1,103 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing array_elem_pop_empty_fail.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "name": "arr",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 6,
+            "elements": [],
+            "end": 0,
+            "start": 0,
+            "type": "ArrayExpression",
+            "type": "ArrayExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 9,
+        "declaration": {
+          "commentStart": 9,
+          "end": 0,
+          "id": {
+            "commentStart": 9,
+            "end": 0,
+            "name": "fail",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "abs_path": false,
+                "commentStart": 20,
+                "end": 0,
+                "name": {
+                  "commentStart": 20,
+                  "end": 0,
+                  "name": "arr",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
+              }
+            ],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 16,
+              "end": 0,
+              "name": {
+                "commentStart": 16,
+                "end": 0,
+                "name": "pop",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 16,
+            "end": 0,
+            "start": 0,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "start": 0
+  }
+}

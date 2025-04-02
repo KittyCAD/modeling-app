@@ -1,14 +1,10 @@
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { useFileContext } from 'hooks/useFileContext'
-import { isDesktop } from 'lib/isDesktop'
-import { PATHS } from 'lib/paths'
-import toast from 'react-hot-toast'
-import {
-  TextToCad_type,
+import type {
   TextToCadIteration_type,
+  TextToCad_type,
 } from '@kittycad/lib/dist/types/src/models'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
+import type { Mesh } from 'three'
 import {
   Box3,
   Color,
@@ -16,42 +12,80 @@ import {
   EdgesGeometry,
   LineBasicMaterial,
   LineSegments,
-  Mesh,
   MeshBasicMaterial,
   OrthographicCamera,
   Scene,
   Vector3,
   WebGLRenderer,
 } from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
-import { base64Decode } from 'lang/wasm'
-import { sendTelemetry } from 'lib/textToCad'
-import { Themes } from 'lib/theme'
-import { ActionButton } from './ActionButton'
-import { commandBarMachine } from 'machines/commandBarMachine'
-import { EventFrom } from 'xstate'
-import { fileMachine } from 'machines/fileMachine'
-import { reportRejection } from 'lib/trap'
-import { codeManager, kclManager } from 'lib/singletons'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import type { EventFrom } from 'xstate'
+
+import { ActionButton } from '@src/components/ActionButton'
+import type { useFileContext } from '@src/hooks/useFileContext'
+import { base64Decode } from '@src/lang/wasm'
+import { isDesktop } from '@src/lib/isDesktop'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { PATHS } from '@src/lib/paths'
+import { codeManager, kclManager } from '@src/lib/singletons'
+import { sendTelemetry } from '@src/lib/textToCad'
+import type { Themes } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import type { fileMachine } from '@src/machines/fileMachine'
 
 const CANVAS_SIZE = 128
 const PROMPT_TRUNCATE_LENGTH = 128
 const FRUSTUM_SIZE = 0.5
 const OUTPUT_KEY = 'source.glb'
 
+function TextToCadImprovementMessage({
+  label,
+  ...rest
+}: React.HTMLAttributes<HTMLDetailsElement> & { label: string }) {
+  return (
+    <details {...rest}>
+      <summary className="text-chalkboard-70 dark:text-chalkboard-30">
+        {label}
+      </summary>
+      <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
+        Text-to-CAD is a new ML model. There will be prompts that work and
+        prompts that don't and prompts that generate something a little bit off.
+        Sometimes even a small tweak to your prompt will make it better on the
+        next run. Try our prompt-to-edit feature to iterate on your result with
+        AI. We look at all the failures to make the model better and see our
+        weaknesses. Over time the model will get better. See our{' '}
+        <a
+          href="https://discord.gg/JQEpHR7Nt2"
+          onClick={openExternalBrowserIfDesktop(
+            'https://discord.gg/JQEpHR7Nt2'
+          )}
+        >
+          Discord
+        </a>{' '}
+        or{' '}
+        <a
+          href="https://community.zoo.dev/"
+          onClick={openExternalBrowserIfDesktop('https://community.zoo.dev/')}
+        >
+          Discourse
+        </a>{' '}
+        or some prompting tips from the community or our team.
+      </p>
+    </details>
+  )
+}
+
 export function ToastTextToCadError({
   toastId,
   message,
   prompt,
-  commandBarSend,
 }: {
   toastId: string
   message: string
   prompt: string
-  commandBarSend: (
-    event: EventFrom<typeof commandBarMachine>,
-    data?: unknown
-  ) => void
 }) {
   return (
     <div className="flex flex-col justify-between gap-6">
@@ -81,7 +115,7 @@ export function ToastTextToCadError({
           }}
           name="Edit prompt"
           onClick={() => {
-            commandBarSend({
+            commandBarActor.send({
               type: 'Find and select command',
               data: {
                 groupId: 'modeling',
@@ -291,6 +325,10 @@ export function ToastTextToCadSuccess({
               : data.prompt}
             "
           </p>
+          <TextToCadImprovementMessage
+            className="text-sm mt-2"
+            label="Not what you expected?"
+          />
         </section>
         <div className="flex justify-between gap-8">
           <ActionButton
@@ -441,6 +479,10 @@ export function ToastPromptToEditCadSuccess({
               : data.prompt}
             "
           </p>
+          <TextToCadImprovementMessage
+            className="text-sm mt-2"
+            label="Not what you expected?"
+          />
           <p>Do you want to keep the change?</p>
         </section>
         <div className="flex justify-between gap-8">

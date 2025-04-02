@@ -1,0 +1,254 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing color-cube.kcl
+---
+{
+  "bluePlane": {
+    "type": "Plane",
+    "value": {
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": "Custom",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 50.0
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "units": {
+        "type": "Mm"
+      }
+    }
+  },
+  "extrudeLength": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "greenPlane": {
+    "type": "Plane",
+    "value": {
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": "Custom",
+      "origin": {
+        "x": 0.0,
+        "y": 50.0,
+        "z": 0.0
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      },
+      "units": {
+        "type": "Mm"
+      }
+    }
+  },
+  "halfSize": {
+    "type": "Number",
+    "value": 50.0,
+    "ty": {
+      "type": "Unknown"
+    }
+  },
+  "metalConstant": {
+    "type": "Number",
+    "value": 50.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "purplePlane": {
+    "type": "Plane",
+    "value": {
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": "Custom",
+      "origin": {
+        "x": 0.0,
+        "y": -50.0,
+        "z": 0.0
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "zAxis": {
+        "x": -0.0,
+        "y": 1.0,
+        "z": -0.0
+      },
+      "units": {
+        "type": "Mm"
+      }
+    }
+  },
+  "redPlane": {
+    "type": "Plane",
+    "value": {
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": "Custom",
+      "origin": {
+        "x": 49.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "xAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "zAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "units": {
+        "type": "Mm"
+      }
+    }
+  },
+  "roughnessConstant": {
+    "type": "Number",
+    "value": 50.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "size": {
+    "type": "Number",
+    "value": 100.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "sketchRectangle": {
+    "type": "Function"
+  },
+  "tealPlane": {
+    "type": "Plane",
+    "value": {
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": "Custom",
+      "origin": {
+        "x": -50.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "xAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "zAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "units": {
+        "type": "Mm"
+      }
+    }
+  },
+  "yellowPlane": {
+    "type": "Plane",
+    "value": {
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": "Custom",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": -50.0
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "units": {
+        "type": "Mm"
+      }
+    }
+  }
+}

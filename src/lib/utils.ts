@@ -1,9 +1,10 @@
-import { SourceRange } from '../lang/wasm'
-
+import type { Binary as BSONBinary } from 'bson'
 import { v4 } from 'uuid'
-import { isDesktop } from './isDesktop'
-import { AnyMachineSnapshot } from 'xstate'
-import { AsyncFn } from './types'
+import type { AnyMachineSnapshot } from 'xstate'
+
+import type { SourceRange } from '@src/lang/wasm'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { AsyncFn } from '@src/lib/types'
 
 export const uuidv4 = v4
 
@@ -11,6 +12,7 @@ export const uuidv4 = v4
  * A safer type guard for arrays since the built-in Array.isArray() asserts `any[]`.
  */
 export function isArray(val: any): val is unknown[] {
+  // eslint-disable-next-line no-restricted-syntax
   return Array.isArray(val)
 }
 
@@ -153,29 +155,27 @@ export function toSync<F extends AsyncFn<F>>(
   ) => void | PromiseLike<void | null | undefined> | null | undefined
 ): (...args: Parameters<F>) => void {
   return (...args: Parameters<F>) => {
-    fn(...args).catch(onReject)
+    void fn(...args).catch((...args) => {
+      console.error(...args)
+      return onReject(...args)
+    })
   }
 }
 
-export function getNormalisedCoordinates({
-  clientX,
-  clientY,
-  streamWidth,
-  streamHeight,
-  el,
-}: {
-  clientX: number
-  clientY: number
-  streamWidth: number
-  streamHeight: number
-  el: HTMLElement
-}) {
-  const { left, top, width, height } = el?.getBoundingClientRect()
-  const browserX = clientX - left
-  const browserY = clientY - top
+export function getNormalisedCoordinates(
+  e: PointerEvent | React.MouseEvent<HTMLDivElement, MouseEvent>,
+  elVideo: HTMLVideoElement,
+  streamDimensions: {
+    width: number
+    height: number
+  }
+) {
+  const { left, top, width, height } = elVideo?.getBoundingClientRect()
+  const browserX = e.clientX - left
+  const browserY = e.clientY - top
   return {
-    x: Math.round((browserX / width) * streamWidth),
-    y: Math.round((browserY / height) * streamHeight),
+    x: Math.round((browserX / width) * streamDimensions.width),
+    y: Math.round((browserY / height) * streamDimensions.height),
   }
 }
 
@@ -342,7 +342,7 @@ export function onDragNumberCalculation(text: string, e: MouseEvent) {
   )
   const newVal = roundOff(addition, precision)
 
-  if (isNaN(newVal)) {
+  if (Number.isNaN(newVal)) {
     return
   }
 
@@ -387,4 +387,85 @@ export function onMouseDragMakeANewNumber(
   const newVal = onDragNumberCalculation(text, e)
   if (!newVal) return
   setText(newVal)
+}
+
+export function isClockwise(points: [number, number][]): boolean {
+  // Need at least 3 points to determine orientation
+  if (points.length < 3) {
+    return false
+  }
+
+  // Calculate the sum of (x2 - x1) * (y2 + y1) for all edges
+  // This is the "shoelace formula" for calculating the signed area
+  let sum = 0
+  for (let i = 0; i < points.length; i++) {
+    const current = points[i]
+    const next = points[(i + 1) % points.length]
+    sum += (next[0] - current[0]) * (next[1] + current[1])
+  }
+
+  // If sum is positive, the points are in clockwise order
+  return sum > 0
+}
+
+/**
+ * Converts a binary buffer to a UUID string.
+ *
+ * @param buffer - The binary buffer containing the UUID bytes.
+ * @returns A string representation of the UUID in the format 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.
+ */
+export function binaryToUuid(
+  binaryData: Buffer | Uint8Array | BSONBinary | string
+): string {
+  if (typeof binaryData === 'string') {
+    return binaryData
+  }
+
+  let buffer: Uint8Array
+
+  // Handle MongoDB BSON Binary object
+  if (
+    binaryData &&
+    '_bsontype' in binaryData &&
+    binaryData._bsontype === 'Binary'
+  ) {
+    // Extract the buffer from the BSON Binary object
+    buffer = binaryData.buffer
+  }
+  // Handle case where buffer property exists (some MongoDB drivers structure)
+  else if (binaryData && binaryData.buffer instanceof Uint8Array) {
+    buffer = binaryData.buffer
+  }
+  // Handle direct Buffer or Uint8Array
+  else if (binaryData instanceof Uint8Array || Buffer.isBuffer(binaryData)) {
+    buffer = binaryData
+  } else {
+    console.error(
+      'Invalid input type: expected MongoDB BSON Binary, Buffer, or Uint8Array'
+    )
+    return ''
+  }
+
+  // Ensure we have exactly 16 bytes (128 bits) for a UUID
+  if (buffer.length !== 16) {
+    // For debugging
+    console.log('Buffer length:', buffer.length)
+    console.log('Buffer content:', Array.from(buffer))
+    console.error('UUID must be exactly 16 bytes')
+    return ''
+  }
+
+  // Convert each byte to a hex string and pad with zeros if needed
+  const hexValues = Array.from(buffer).map((byte) =>
+    byte.toString(16).padStart(2, '0')
+  )
+
+  // Format into UUID structure (8-4-4-4-12 characters)
+  return [
+    hexValues.slice(0, 4).join(''),
+    hexValues.slice(4, 6).join(''),
+    hexValues.slice(6, 8).join(''),
+    hexValues.slice(8, 10).join(''),
+    hexValues.slice(10, 16).join(''),
+  ].join('-')
 }

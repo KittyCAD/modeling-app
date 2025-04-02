@@ -1,11 +1,15 @@
-import { useModelingContext } from 'hooks/useModelingContext'
-import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
-import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { useEffect, useRef, useState } from 'react'
-import { trap } from 'lib/trap'
-import { codeToIdSelections } from 'lib/selections'
-import { codeRefFromRange } from 'lang/std/artifactGraph'
-import { defaultSourceRange } from 'lang/wasm'
+
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import { topLevelRange } from '@src/lang/util'
+import { defaultSourceRange } from '@src/lang/wasm'
+import { codeToIdSelections } from '@src/lib/selections'
+import { editorManager, kclManager } from '@src/lib/singletons'
+import { trap } from '@src/lib/trap'
+import { isArray } from '@src/lib/utils'
 
 export function AstExplorer() {
   const { context } = useModelingContext()
@@ -118,25 +122,25 @@ function DisplayObj({
         hasCursor ? 'bg-violet-100/80 dark:bg-violet-100/25' : ''
       }`}
       onMouseEnter={(e) => {
-        editorManager.setHighlightRange([[obj?.start || 0, obj.end, true]])
+        editorManager.setHighlightRange([
+          topLevelRange(obj?.start || 0, obj.end),
+        ])
         e.stopPropagation()
       }}
       onMouseMove={(e) => {
         e.stopPropagation()
-        editorManager.setHighlightRange([[obj?.start || 0, obj.end, true]])
+        editorManager.setHighlightRange([
+          topLevelRange(obj?.start || 0, obj.end),
+        ])
       }}
       onClick={(e) => {
-        const range: [number, number, boolean] = [
-          obj?.start || 0,
-          obj.end || 0,
-          true,
-        ]
-        const idInfo = codeToIdSelections([
-          { codeRef: codeRefFromRange(range, kclManager.ast) },
-        ])[0]
-        const artifact = engineCommandManager.artifactGraph.get(
-          idInfo?.id || ''
-        )
+        const range = topLevelRange(obj?.start || 0, obj.end || 0)
+        const idInfo = codeToIdSelections(
+          [{ codeRef: codeRefFromRange(range, kclManager.ast) }],
+          kclManager.artifactGraph,
+          kclManager.artifactIndex
+        )[0]
+        const artifact = kclManager.artifactGraph.get(idInfo?.id || '')
         if (!artifact) return
         send({
           type: 'Set selection',
@@ -165,12 +169,12 @@ function DisplayObj({
             {Object.entries(obj).map(([key, value]) => {
               if (filterKeys.includes(key)) {
                 return null
-              } else if (Array.isArray(value)) {
+              } else if (isArray(value)) {
                 return (
                   <li key={key}>
                     {`${key}: [`}
                     <DisplayBody
-                      body={value}
+                      body={value as any}
                       filterKeys={filterKeys}
                       node={node}
                     />

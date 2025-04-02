@@ -1,0 +1,34 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "end": 5,
+      "expression": {
+        "abs_path": false,
+        "commentStart": 0,
+        "end": 5,
+        "name": {
+          "commentStart": 0,
+          "end": 5,
+          "name": "truee",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "path": [],
+        "start": 0,
+        "type": "Name",
+        "type": "Name"
+      },
+      "start": 0,
+      "type": "ExpressionStatement",
+      "type": "ExpressionStatement"
+    }
+  ],
+  "commentStart": 0,
+  "end": 5,
+  "start": 0
+}

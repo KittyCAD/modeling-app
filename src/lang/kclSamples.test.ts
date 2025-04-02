@@ -1,79 +1,66 @@
-import { assertParse, initPromise, programMemoryInit } from './wasm'
-import { enginelessExecutor } from '../lib/testHelpers'
-// These unit tests makes web requests to a public github repository.
+import fs from 'node:fs/promises'
+import path from 'node:path'
+
+import { assertParse, initPromise } from '@src/lang/wasm'
+import { enginelessExecutor } from '@src/lib/testHelpers'
+
+// The purpose of these tests is to act as a first line of defense
+// if something gets real screwy with our KCL ecosystem.
+// THESE TESTS ONLY RUN UNDER A NODEJS ENVIRONMENT. They DO NOT
+// test under our application.
+
+const DIR_KCL_SAMPLES = 'public/kcl-samples'
 
 interface KclSampleFile {
   file: string
+  pathFromProjectDirectoryToFirstFile: string
   title: string
   filename: string
   description: string
 }
 
+// @ts-expect-error
+let files = await fs.readdir(DIR_KCL_SAMPLES)
+// @ts-expect-error
+const manifestJsonStr = await fs.readFile(
+  path.resolve(DIR_KCL_SAMPLES, 'manifest.json'),
+  'utf-8'
+)
+const manifest = JSON.parse(manifestJsonStr)
+
+process.chdir(DIR_KCL_SAMPLES)
+
 beforeAll(async () => {
   await initPromise
 })
 
-// Only used to actually fetch an older version of KCL code that will break in the parser.
-/* eslint-disable @typescript-eslint/no-unused-vars */
-async function getBrokenSampleCodeForLocalTesting() {
-  const result = await fetch(
-    'https://raw.githubusercontent.com/KittyCAD/kcl-samples/5ccd04a1773ebdbfd02684057917ce5dbe0eaab3/80-20-rail.kcl'
-  )
-  const text = await result.text()
-  return text
-}
-
-async function getKclSampleCodeFromGithub(file: string): Promise<string> {
-  const result = await fetch(
-    `https://raw.githubusercontent.com/KittyCAD/kcl-samples/refs/heads/main/${file}/${file}.kcl`
-  )
-  const text = await result.text()
-  return text
-}
-
-async function getFileNamesFromManifestJSON(): Promise<KclSampleFile[]> {
-  const result = await fetch(
-    'https://raw.githubusercontent.com/KittyCAD/kcl-samples/refs/heads/main/manifest.json'
-  )
-  const json = await result.json()
-  json.forEach((file: KclSampleFile) => {
-    const filenameWithoutExtension = file.file.split('.')[0]
-    file.filename = filenameWithoutExtension
-  })
-  return json
-}
-
-// Value to use across all tests!
-let files: KclSampleFile[] = []
+afterAll(async () => {
+  try {
+    process.chdir('..')
+    await fs.rm(DIR_KCL_SAMPLES, { recursive: true })
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (e) {}
+})
 
 describe('Test KCL Samples from public Github repository', () => {
-  describe('When parsing source code', () => {
-    // THIS RUNS ACROSS OTHER TESTS!
-    it('should fetch files', async () => {
-      files = await getFileNamesFromManifestJSON()
-    })
-    // Run through all of the files in the manifest json. This will allow us to be automatically updated
-    // with the latest changes in github. We won't be hard coding the filenames
-    files.forEach((file: KclSampleFile) => {
-      it(`should parse ${file.filename} without errors`, async () => {
-        const code = await getKclSampleCodeFromGithub(file.filename)
-        assertParse(code)
-      }, 1000)
-    })
-  })
-
   describe('when performing enginelessExecutor', () => {
-    it(
-      'should run through all the files',
-      async () => {
-        for (let i = 0; i < files.length; i++) {
-          const file: KclSampleFile = files[i]
-          const code = await getKclSampleCodeFromGithub(file.filename)
+    manifest.forEach((file: KclSampleFile) => {
+      it(
+        `should execute ${file.title} (${file.file}) successfully`,
+        async () => {
+          const code = await fs.readFile(
+            file.pathFromProjectDirectoryToFirstFile,
+            'utf-8'
+          )
           const ast = assertParse(code)
-          await enginelessExecutor(ast, programMemoryInit())
-        }
-      },
-      files.length * 1000
-    )
+          await enginelessExecutor(
+            ast,
+            false,
+            file.pathFromProjectDirectoryToFirstFile
+          )
+        },
+        files.length * 1000
+      )
+    })
   })
 })

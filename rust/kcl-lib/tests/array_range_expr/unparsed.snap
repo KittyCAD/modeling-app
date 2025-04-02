@@ -1,0 +1,21 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing array_range_expr.kcl
+---
+r1 = [0..4]
+assertEqual(r1[4], 4, 0.00001, "last element is included")
+
+four = 4
+zero = 0
+r2 = [zero..four]
+assertEqual(r2[4], 4, 0.00001, "last element is included")
+
+five = int(four + 1)
+r3 = [zero..five]
+assertEqual(r3[4], 4, 0.00001, "second-to-last element is included")
+assertEqual(r3[5], 5, 0.00001, "last element is included")
+
+r4 = [int(zero + 1) .. int(five - 1)]
+assertEqual(r4[0], 1, 0.00001, "first element is 1")
+assertEqual(r4[2], 3, 0.00001, "second-to-last element is 3")
+assertEqual(r4[3], 4, 0.00001, "last element is 4")

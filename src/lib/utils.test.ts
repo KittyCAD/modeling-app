@@ -1,21 +1,23 @@
+import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
+import { topLevelRange } from '@src/lang/util'
 import {
+  hasDigitsLeftOfDecimal,
+  hasLeadingZero,
+  isClockwise,
   isOverlap,
+  onDragNumberCalculation,
   roundOff,
   simulateOnMouseDragMatch,
-  onDragNumberCalculation,
-  hasLeadingZero,
-  hasDigitsLeftOfDecimal,
-} from './utils'
-import { SourceRange } from '../lang/wasm'
+} from '@src/lib/utils'
 
 describe('testing isOverlapping', () => {
-  testBothOrders([0, 3, true], [3, 10, true])
-  testBothOrders([0, 5, true], [3, 4, true])
-  testBothOrders([0, 5, true], [5, 10, true])
-  testBothOrders([0, 5, true], [6, 10, true], false)
-  testBothOrders([0, 5, true], [-1, 1, true])
-  testBothOrders([0, 5, true], [-1, 0, true])
-  testBothOrders([0, 5, true], [-2, -1, true], false)
+  testBothOrders(topLevelRange(0, 3), topLevelRange(3, 10))
+  testBothOrders(topLevelRange(0, 5), topLevelRange(3, 4))
+  testBothOrders(topLevelRange(0, 5), topLevelRange(5, 10))
+  testBothOrders(topLevelRange(0, 5), topLevelRange(6, 10), false)
+  testBothOrders(topLevelRange(0, 5), topLevelRange(-1, 1))
+  testBothOrders(topLevelRange(0, 5), topLevelRange(-1, 0))
+  testBothOrders(topLevelRange(0, 5), topLevelRange(-2, -1), false)
 })
 
 function testBothOrders(a: SourceRange, b: SourceRange, result = true) {
@@ -1251,5 +1253,58 @@ describe('testing onDragNumberCalculation', () => {
         expect(actual).toBe(expected)
       })
     })
+  })
+})
+
+describe('testing isClockwise', () => {
+  it('returns for counter clockwise points', () => {
+    // Points in clockwise order (rectangle)
+    const clockwisePoints: [number, number][] = [
+      [0, 0], // bottom-left
+      [10, 0], // bottom-right
+      [10, 10], // top-right
+      [0, 10], // top-left
+    ]
+    expect(isClockwise(clockwisePoints)).toBe(false)
+  })
+
+  it('returns true for clockwise points', () => {
+    // Points in counter-clockwise order (rectangle)
+    const counterClockwisePoints: [number, number][] = [
+      [0, 0], // bottom-left
+      [0, 10], // top-left
+      [10, 10], // top-right
+      [10, 0], // bottom-right
+    ]
+    expect(isClockwise(counterClockwisePoints)).toBe(true)
+  })
+
+  it('returns false for less than 3 points', () => {
+    expect(
+      isClockwise([
+        [0, 0],
+        [10, 10],
+      ])
+    ).toBe(false)
+    expect(isClockwise([[0, 0]])).toBe(false)
+    expect(isClockwise([])).toBe(false)
+  })
+
+  it('correctly identifies counter-clockwise triangle', () => {
+    const clockwiseTriangle: [number, number][] = [
+      [0, 0],
+      [10, 0],
+      [5, 10],
+    ]
+    expect(isClockwise(clockwiseTriangle)).toBe(false)
+  })
+
+  it('correctly identifies clockwise triangle', () => {
+    const counterClockwiseTriangle: [number, number][] = [
+      [0, 0],
+      [5, 10],
+      [10, 0],
+    ]
+    expect(isClockwise(counterClockwiseTriangle)).toBe(true)
   })
 })

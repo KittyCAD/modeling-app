@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { vi } from 'vitest'
-import { ToastUpdate } from './ToastUpdate'
+
+import { ToastUpdate } from '@src/components/ToastUpdate'
 
 describe('ToastUpdate tests', () => {
   const testData = {
@@ -149,5 +150,32 @@ describe('ToastUpdate tests', () => {
     expect(releaseNotesListItem).not.toBeInTheDocument()
     expect(restartButton).toBeEnabled()
     expect(dismissButton).toBeEnabled()
+  })
+
+  test('Happy path: external links render correctly', () => {
+    const releaseNotesWithBreakingChanges = `
+## Some markdown release notes
+- [Zoo](https://zoo.dev/)
+`
+    const onRestart = vi.fn()
+    const onDismiss = vi.fn()
+
+    render(
+      <ToastUpdate
+        onRestart={onRestart}
+        onDismiss={onDismiss}
+        version={testData.version}
+        releaseNotes={releaseNotesWithBreakingChanges}
+      />
+    )
+
+    // Locators and other constants
+    const zooDev = screen.getByText('Zoo', {
+      selector: 'a',
+    })
+
+    expect(zooDev).toHaveAttribute('href', 'https://zoo.dev/')
+    expect(zooDev).toHaveAttribute('target', '_blank')
+    expect(zooDev).toHaveAttribute('onClick')
   })
 })

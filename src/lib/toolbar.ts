@@ -1,14 +1,15 @@
-import { CustomIconName } from 'components/CustomIcon'
-import { DEV } from 'env'
-import { commandBarMachine } from 'machines/commandBarMachine'
+import { DEV } from '@src/env'
+import type { EventFrom, StateFrom } from 'xstate'
+
+import type { CustomIconName } from '@src/components/CustomIcon'
+import { createLiteral } from '@src/lang/create'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
-  canRectangleOrCircleTool,
-  isClosedSketch,
   isEditingExistingSketch,
-  modelingMachine,
   pipeHasCircle,
-} from 'machines/modelingMachine'
-import { EventFrom, StateFrom } from 'xstate'
+} from '@src/machines/modelingMachine'
+import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/Settings'
 
 export type ToolbarModeName = 'modeling' | 'sketching'
 
@@ -20,14 +21,16 @@ type ToolbarMode = {
 export interface ToolbarItemCallbackProps {
   modelingState: StateFrom<typeof modelingMachine>
   modelingSend: (event: EventFrom<typeof modelingMachine>) => void
-  commandBarSend: (event: EventFrom<typeof commandBarMachine>) => void
   sketchPathId: string | false
+  editorHasFocus: boolean | undefined
 }
 
 export type ToolbarItem = {
   id: string
   onClick: (props: ToolbarItemCallbackProps) => void
   icon?: CustomIconName
+  iconColor?: string
+  alwaysDark?: true
   status: 'available' | 'unavailable' | 'kcl-only'
   disabled?: (state: StateFrom<typeof modelingMachine>) => boolean
   disableHotkey?: (state: StateFrom<typeof modelingMachine>) => boolean
@@ -58,12 +61,17 @@ export type ToolbarItemResolved = Omit<
 export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
   modeling: {
     check: (state) =>
-      !(state.matches('Sketch') || state.matches('Sketch no face')),
+      !(
+        state.matches('Sketch') ||
+        state.matches('Sketch no face') ||
+        state.matches('animating to existing sketch') ||
+        state.matches('animating to plane')
+      ),
     items: [
       {
         id: 'sketch',
-        onClick: ({ modelingSend, sketchPathId }) =>
-          !sketchPathId
+        onClick: ({ modelingSend, sketchPathId, editorHasFocus }) =>
+          !(editorHasFocus && sketchPathId)
             ? modelingSend({
                 type: 'Enter sketch',
                 data: { forceNewSketch: true },
@@ -71,8 +79,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             : modelingSend({ type: 'Enter sketch' }),
         icon: 'sketch',
         status: 'available',
-        title: ({ sketchPathId }) =>
-          `${sketchPathId ? 'Edit' : 'Start'} Sketch`,
+        title: ({ editorHasFocus, sketchPathId }) =>
+          editorHasFocus && sketchPathId ? 'Edit Sketch' : 'Start Sketch',
         showTitle: true,
         hotkey: 'S',
         description: 'Start drawing a 2D sketch',
@@ -83,8 +91,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       'break',
       {
         id: 'extrude',
-        onClick: ({ commandBarSend }) =>
-          commandBarSend({
+        onClick: () =>
+          commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Extrude', groupId: 'modeling' },
           }),
@@ -96,46 +104,29 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/extrude' }],
       },
       {
-        id: 'revolve',
-        onClick: ({ commandBarSend }) =>
-          commandBarSend({
-            type: 'Find and select command',
-            data: { name: 'Revolve', groupId: 'modeling' },
-          }),
-        icon: 'revolve',
-        status: DEV ? 'available' : 'kcl-only',
-        title: 'Revolve',
-        hotkey: 'R',
-        description:
-          'Create a 3D body by rotating a sketch region about an axis.',
-        links: [
-          { label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/revolve' },
-          {
-            label: 'KCL example',
-            url: 'https://zoo.dev/docs/kcl-samples/ball-bearing',
-          },
-        ],
-      },
-      {
         id: 'sweep',
-        onClick: () => console.error('Sweep not yet implemented'),
+        onClick: () =>
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Sweep', groupId: 'modeling' },
+          }),
         icon: 'sweep',
-        status: 'unavailable',
+        status: 'available',
         title: 'Sweep',
         hotkey: 'W',
         description:
           'Create a 3D body by moving a sketch region along an arbitrary path.',
         links: [
           {
-            label: 'GitHub discussion',
-            url: 'https://github.com/KittyCAD/modeling-app/discussions/498',
+            label: 'KCL docs',
+            url: 'https://zoo.dev/docs/kcl/sweep',
           },
         ],
       },
       {
         id: 'loft',
-        onClick: ({ commandBarSend }) =>
-          commandBarSend({
+        onClick: () =>
+          commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Loft', groupId: 'modeling' },
           }),
@@ -152,26 +143,51 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           },
         ],
       },
+      {
+        id: 'revolve',
+        onClick: () =>
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Revolve', groupId: 'modeling' },
+          }),
+        icon: 'revolve',
+        status: 'available',
+        title: 'Revolve',
+        hotkey: 'R',
+        description:
+          'Create a 3D body by rotating a sketch region about an axis.',
+        links: [
+          { label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/revolve' },
+          {
+            label: 'KCL example',
+            url: 'https://zoo.dev/docs/kcl-samples/ball-bearing',
+          },
+        ],
+      },
       'break',
       {
         id: 'fillet3d',
-        onClick: ({ commandBarSend }) =>
-          commandBarSend({
+        onClick: () =>
+          commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Fillet', groupId: 'modeling' },
           }),
         icon: 'fillet3d',
-        status: DEV ? 'available' : 'kcl-only',
+        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
         title: 'Fillet',
         hotkey: 'F',
         description: 'Round the edges of a 3D solid.',
         links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/fillet' }],
       },
       {
-        id: 'chamfer',
-        onClick: () => console.error('Chamfer not yet implemented'),
+        id: 'chamfer3d',
+        onClick: () =>
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Chamfer', groupId: 'modeling' },
+          }),
         icon: 'chamfer3d',
-        status: 'kcl-only',
+        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
         title: 'Chamfer',
         hotkey: 'C',
         description: 'Bevel the edges of a 3D solid.',
@@ -179,8 +195,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'shell',
-        onClick: ({ commandBarSend }) => {
-          commandBarSend({
+        onClick: () => {
+          commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Shell', groupId: 'modeling' },
           })
@@ -191,22 +207,17 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         description: 'Hollow out a 3D solid.',
         links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/shell' }],
       },
-      {
-        id: 'hole',
-        onClick: () => console.error('Hole not yet implemented'),
-        icon: 'hole',
-        status: 'unavailable',
-        title: 'Hole',
-        description: 'Create a hole in a 3D solid.',
-        links: [],
-      },
       'break',
       [
         {
           id: 'boolean-union',
-          onClick: () => console.error('Boolean union not yet implemented'),
+          onClick: () =>
+            commandBarActor.send({
+              type: 'Find and select command',
+              data: { name: 'Boolean Union', groupId: 'modeling' },
+            }),
           icon: 'booleanUnion',
-          status: 'unavailable',
+          status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'unavailable',
           title: 'Union',
           hotkey: 'Shift + B U',
           description: 'Combine two or more solids into a single solid.',
@@ -219,9 +230,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         },
         {
           id: 'boolean-subtract',
-          onClick: () => console.error('Boolean subtract not yet implemented'),
+          onClick: () =>
+            commandBarActor.send({
+              type: 'Find and select command',
+              data: { name: 'Boolean Subtract', groupId: 'modeling' },
+            }),
           icon: 'booleanSubtract',
-          status: 'unavailable',
+          status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'unavailable',
           title: 'Subtract',
           hotkey: 'Shift + B S',
           description: 'Subtract one solid from another.',
@@ -234,9 +249,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         },
         {
           id: 'boolean-intersect',
-          onClick: () => console.error('Boolean intersect not yet implemented'),
+          onClick: () =>
+            commandBarActor.send({
+              type: 'Find and select command',
+              data: { name: 'Boolean Intersect', groupId: 'modeling' },
+            }),
           icon: 'booleanIntersect',
-          status: 'unavailable',
+          status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'unavailable',
           title: 'Intersect',
           hotkey: 'Shift + B I',
           description: 'Create a solid from the intersection of two solids.',
@@ -248,11 +267,12 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           ],
         },
       ],
+      'break',
       [
         {
           id: 'plane-offset',
-          onClick: ({ commandBarSend }) => {
-            commandBarSend({
+          onClick: () => {
+            commandBarActor.send({
               type: 'Find and select command',
               data: { name: 'Offset plane', groupId: 'modeling' },
             })
@@ -262,7 +282,12 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           status: 'available',
           title: 'Offset plane',
           description: 'Create a plane parallel to an existing plane.',
-          links: [],
+          links: [
+            {
+              label: 'KCL docs',
+              url: 'https://zoo.dev/docs/kcl/offsetPlane',
+            },
+          ],
         },
         {
           id: 'plane-points',
@@ -274,32 +299,56 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           links: [],
         },
       ],
+      {
+        id: 'helix',
+        onClick: () => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Helix', groupId: 'modeling' },
+          })
+        },
+        hotkey: 'H',
+        icon: 'helix',
+        status: 'available',
+        title: 'Helix',
+        description: 'Create a helix or spiral in 3D about an axis.',
+        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/helix' }],
+      },
       'break',
       [
         {
           id: 'text-to-cad',
-          onClick: ({ commandBarSend }) =>
-            commandBarSend({
+          onClick: () =>
+            commandBarActor.send({
               type: 'Find and select command',
               data: { name: 'Text-to-CAD', groupId: 'modeling' },
             }),
           icon: 'sparkles',
+          iconColor: '#29FFA4',
+          alwaysDark: true,
           status: 'available',
-          title: 'Text-to-CAD',
-          description: 'Generate geometry from a text prompt.',
-          links: [],
+          title: 'Create with Zoo Text-to-CAD',
+          description: 'Create geometry with AI / ML.',
+          links: [
+            {
+              label: 'API docs',
+              url: 'https://zoo.dev/docs/api/ml/generate-a-cad-model-from-text',
+            },
+          ],
         },
         {
           id: 'prompt-to-edit',
-          onClick: ({ commandBarSend }) =>
-            commandBarSend({
+          onClick: () =>
+            commandBarActor.send({
               type: 'Find and select command',
               data: { name: 'Prompt-to-edit', groupId: 'modeling' },
             }),
           icon: 'sparkles',
+          iconColor: '#29FFA4',
+          alwaysDark: true,
           status: 'available',
-          title: 'Prompt-to-Edit',
-          description: 'Edit geometry based on a text prompt.',
+          title: 'Modify with Zoo Text-to-CAD',
+          description: 'Edit geometry with AI / ML.',
           links: [],
         },
       ],
@@ -307,7 +356,10 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
   },
   sketching: {
     check: (state) =>
-      state.matches('Sketch') || state.matches('Sketch no face'),
+      state.matches('Sketch') ||
+      state.matches('Sketch no face') ||
+      state.matches('animating to existing sketch') ||
+      state.matches('animating to plane'),
     items: [
       {
         id: 'sketch-exit',
@@ -332,34 +384,18 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       {
         id: 'line',
         onClick: ({ modelingState, modelingSend }) => {
-          if (modelingState.matches({ Sketch: { 'Line tool': 'No Points' } })) {
-            // Exit the sketch state if there are no points and they press ESC
-            modelingSend({
-              type: 'Cancel',
-            })
-          } else {
-            // Exit the tool if there are points and they press ESC
-            modelingSend({
-              type: 'change tool',
-              data: {
-                tool: !modelingState.matches({ Sketch: 'Line tool' })
-                  ? 'line'
-                  : 'none',
-              },
-            })
-          }
+          modelingSend({
+            type: 'change tool',
+            data: {
+              tool: !modelingState.matches({ Sketch: 'Line tool' })
+                ? 'line'
+                : 'none',
+            },
+          })
         },
         icon: 'line',
         status: 'available',
-        disabled: (state) =>
-          state.matches('Sketch no face') ||
-          state.matches({
-            Sketch: { 'Rectangle tool': 'Awaiting second corner' },
-          }) ||
-          state.matches({
-            Sketch: { 'Circle tool': 'Awaiting Radius' },
-          }) ||
-          isClosedSketch(state.context),
+        disabled: (state) => state.matches('Sketch no face'),
         title: 'Line',
         hotkey: (state) =>
           state.matches({ Sketch: 'Line tool' }) ? ['Esc', 'L'] : 'L',
@@ -399,10 +435,22 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         },
         {
           id: 'three-point-arc',
-          onClick: () => console.error('Three-point arc not yet implemented'),
+          onClick: ({ modelingState, modelingSend }) =>
+            modelingSend({
+              type: 'change tool',
+              data: {
+                tool: !modelingState.matches({ Sketch: 'Arc three point tool' })
+                  ? 'arcThreePoint'
+                  : 'none',
+              },
+            }),
           icon: 'arc',
-          status: 'unavailable',
+          status: 'available',
           title: 'Three-point Arc',
+          hotkey: (state) =>
+            state.matches({ Sketch: 'Arc three point tool' })
+              ? ['Esc', 'T']
+              : 'T',
           showTitle: false,
           description: 'Draw a circular arc defined by three points',
           links: [
@@ -411,6 +459,26 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               url: 'https://github.com/KittyCAD/modeling-app/issues/1659',
             },
           ],
+          isActive: (state) =>
+            state.matches({ Sketch: 'Arc three point tool' }),
+        },
+        {
+          id: 'arc',
+          onClick: ({ modelingState, modelingSend }) =>
+            modelingSend({
+              type: 'change tool',
+              data: {
+                tool: !modelingState.matches({ Sketch: 'Arc tool' })
+                  ? 'arc'
+                  : 'none',
+              },
+            }),
+          icon: 'arc',
+          status: DEV ? 'available' : 'unavailable',
+          title: 'Arc',
+          description: 'Start drawing an arc',
+          links: [],
+          isActive: (state) => state.matches({ Sketch: 'Arc tool' }),
         },
       ],
       {
@@ -439,21 +507,15 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           icon: 'circle',
           status: 'available',
           title: 'Center circle',
-          disabled: (state) =>
-            state.matches('Sketch no face') ||
-            (!canRectangleOrCircleTool(state.context) &&
-              !state.matches({ Sketch: 'Circle tool' })),
-          isActive: (state) => state.matches({ Sketch: 'Circle tool' }),
+          disabled: (state) => state.matches('Sketch no face'),
+          isActive: (state) =>
+            state.matches({ Sketch: 'Circle tool' }) ||
+            state.matches({ Sketch: 'Circle three point tool' }),
           hotkey: (state) =>
             state.matches({ Sketch: 'Circle tool' }) ? ['Esc', 'C'] : 'C',
           showTitle: false,
           description: 'Start drawing a circle from its center',
-          links: [
-            {
-              label: 'GitHub issue',
-              url: 'https://github.com/KittyCAD/modeling-app/issues/1501',
-            },
-          ],
+          links: [],
         },
         {
           id: 'circle-three-points',
@@ -462,15 +524,15 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               type: 'change tool',
               data: {
                 tool: !modelingState.matches({
-                  Sketch: 'circle3PointToolSelect',
+                  Sketch: 'Circle three point tool',
                 })
-                  ? 'circle3Points'
+                  ? 'circleThreePoint'
                   : 'none',
               },
             }),
           icon: 'circle',
           status: 'available',
-          title: 'Three-point circle',
+          title: '3-point circle',
           showTitle: false,
           description: 'Draw a circle defined by three points',
           links: [],
@@ -490,10 +552,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             }),
           icon: 'rectangle',
           status: 'available',
-          disabled: (state) =>
-            state.matches('Sketch no face') ||
-            (!canRectangleOrCircleTool(state.context) &&
-              !state.matches({ Sketch: 'Rectangle tool' })),
+          disabled: (state) => state.matches('Sketch no face'),
           title: 'Corner rectangle',
           hotkey: (state) =>
             state.matches({ Sketch: 'Rectangle tool' }) ? ['Esc', 'R'] : 'R',
@@ -516,10 +575,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             }),
           icon: 'arc',
           status: 'available',
-          disabled: (state) =>
-            state.matches('Sketch no face') ||
-            (!canRectangleOrCircleTool(state.context) &&
-              !state.matches({ Sketch: 'Center Rectangle tool' })),
+          disabled: (state) => state.matches('Sketch no face'),
           title: 'Center rectangle',
           hotkey: (state) =>
             state.matches({ Sketch: 'Center Rectangle tool' })
@@ -566,9 +622,24 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'constraint-length',
-          disabled: (state) => !state.matches({ Sketch: 'SketchIdle' }),
-          onClick: ({ commandBarSend }) =>
-            commandBarSend({
+          disabled: (state) =>
+            !(
+              state.matches({ Sketch: 'SketchIdle' }) &&
+              state.can({
+                type: 'Constrain length',
+                data: {
+                  selection: state.context.selectionRanges,
+                  // dummy data is okay for checking if the constrain is possible
+                  length: {
+                    valueAst: createLiteral(1),
+                    valueText: '1',
+                    valueCalculated: '1',
+                  },
+                },
+              })
+            ),
+          onClick: () =>
+            commandBarActor.send({
               type: 'Find and select command',
               data: {
                 name: 'Constrain length',

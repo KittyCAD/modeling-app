@@ -1,9 +1,16 @@
 import { type Models } from '@kittycad/lib'
-import { Setting, settings } from './initialSettings'
-import { AtLeast, PathValue, Paths } from 'lib/types'
-import { CommandArgumentConfig } from 'lib/commandTypes'
-import { Themes } from 'lib/theme'
-import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType'
+import type {
+  UnitAngle_type,
+  UnitLength_type,
+} from '@kittycad/lib/dist/types/src/models'
+
+import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
+import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+
+import type { CommandArgumentConfig } from '@src/lib/commandTypes'
+import type { Setting, settings } from '@src/lib/settings/initialSettings'
+import type { Themes } from '@src/lib/theme'
+import type { AtLeast, PathValue, Paths } from '@src/lib/types'
 
 export interface SettingsViaQueryString {
   pool: string | null
@@ -12,6 +19,7 @@ export interface SettingsViaQueryString {
   enableSSAO: boolean
   showScaleGrid: boolean
   cameraProjection: CameraProjectionType
+  cameraOrbit: CameraOrbitType
 }
 
 export enum UnitSystem {
@@ -136,3 +144,12 @@ type RecursiveSettingsPayloads<T> = {
 }
 
 export type SaveSettingsPayload = RecursiveSettingsPayloads<typeof settings>
+
+/**
+ * Annotation names for default units are defined on rust side in
+ * rust/kcl-lib/src/execution/annotations.rs
+ */
+export interface KclSettingsAnnotation {
+  defaultLengthUnit?: UnitLength_type
+  defaultAngleUnit?: UnitAngle_type
+}

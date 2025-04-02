@@ -1,0 +1,13 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Error from executing object_prop_not_found.kcl
+---
+KCL UndefinedValue error
+
+  × undefined value: Property 'age' not found in object
+   ╭─[2:5]
+ 1 │ obj = {  }
+ 2 │ k = obj["age"]
+   ·     ─────┬────
+   ·          ╰── tests/object_prop_not_found/input.kcl
+   ╰────

@@ -1,0 +1,61 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing washer.kcl
+---
+{
+  "innerDiameter": {
+    "type": "Number",
+    "value": 0.203,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "outerDiameter": {
+    "type": "Number",
+    "value": 0.438,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "thicknessMax": {
+    "type": "Number",
+    "value": 0.038,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "thicknessMin": {
+    "type": "Number",
+    "value": 0.024,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "washer": {
+    "type": "Function"
+  }
+}

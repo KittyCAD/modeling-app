@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import { ActionButton } from './ActionButton'
+
+import { ActionButton } from '@src/components/ActionButton'
 
 describe('ActionButton tests', () => {
   it('ActionButton with no iconStart or iconEnd should have even left and right padding', () => {

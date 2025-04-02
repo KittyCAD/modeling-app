@@ -1,3 +1,7 @@
+import type { Models } from '@kittycad/lib/dist/types/src'
+
+import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
+
 export const APP_NAME = 'Modeling App'
 /** Search string in new project names to increment as an index */
 export const INDEX_IDENTIFIER = '$n'
@@ -26,7 +30,7 @@ export const FILE_EXT = '.kcl'
 /** Default file to open when a project is opened */
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */
-export const PROJECT_IMAGE_NAME = `main.jpg` as const
+export const PROJECT_IMAGE_NAME = `thumbnail.png`
 /** The localStorage key for last-opened projects */
 export const FILE_PERSIST_KEY = `${PROJECT_FOLDER}-last-opened` as const
 /** The default name given to new kcl files in a project */
@@ -53,10 +57,12 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   SKETCH: 'sketch',
   EXTRUDE: 'extrude',
   LOFT: 'loft',
+  SWEEP: 'sweep',
   SHELL: 'shell',
   SEGMENT: 'seg',
   REVOLVE: 'revolve',
   PLANE: 'plane',
+  HELIX: 'helix',
 } as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
@@ -64,10 +70,12 @@ export const KCL_DEFAULT_LENGTH = `5`
 /** The default KCL degree expression */
 export const KCL_DEFAULT_DEGREE = `360`
 
+/** The default KCL color expression */
+export const KCL_DEFAULT_COLOR = `#3c73ff`
+
 /** localStorage key for the playwright test-specific app settings file */
 export const TEST_SETTINGS_FILE_KEY = 'playwright-test-settings'
 
-export const DEFAULT_HOST = 'https://api.zoo.dev'
 export const SETTINGS_FILE_NAME = 'settings.toml'
 export const TOKEN_FILE_NAME = 'token.txt'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
@@ -79,9 +87,24 @@ export const TELEMETRY_RAW_FILE_NAME = 'raw-metrics.txt'
 export const PLAYWRIGHT_KEY = 'playwright'
 
 /** Custom error message to match when rejectAllModelCommands is called
- * allows us to match if the execution of executeAst was interrupted */
-export const EXECUTE_AST_INTERRUPT_ERROR_MESSAGE =
+ * allows us to match if the execution of executeAst was interrupted
+ * This needs to be of type WebsocketResponse, so that we can parse it back out
+ * nicely on the rust side.
+ * */
+export const EXECUTE_AST_INTERRUPT_ERROR_STRING =
   'Force interrupt, executionIsStale, new AST requested'
+const EXECUTE_AST_INTERRUPT_ERROR: Models['WebSocketResponse_type'] = {
+  success: false,
+  errors: [
+    {
+      message: EXECUTE_AST_INTERRUPT_ERROR_STRING,
+      error_code: 'bad_request',
+    },
+  ],
+}
+export const EXECUTE_AST_INTERRUPT_ERROR_MESSAGE = JSON.stringify(
+  EXECUTE_AST_INTERRUPT_ERROR
+)
 
 /** The messages that appear for exporting toasts */
 export const EXPORT_TOAST_MESSAGES = {
@@ -103,11 +126,10 @@ export const MAKE_TOAST_MESSAGES = {
 }
 
 /** The URL for the KCL samples manifest files */
-export const KCL_SAMPLES_MANIFEST_URLS = {
-  remote:
-    'https://raw.githubusercontent.com/KittyCAD/kcl-samples/main/manifest.json',
-  localFallback: '/kcl-samples-manifest-fallback.json',
-} as const
+export const KCL_SAMPLES_MANIFEST_URL = '/kcl-samples/manifest.json'
+
+/** URL parameter to create a file */
+export const CREATE_FILE_URL_PARAM = 'create-file'
 
 /** Toast id for the app auto-updater toast */
 export const AUTO_UPDATER_TOAST_ID = 'auto-updater-toast'
@@ -138,3 +160,38 @@ export const VIEW_NAMES_SEMANTIC = {
 } as const
 /** The modeling sidebar buttons' IDs get a suffix to prevent collisions */
 export const SIDEBAR_BUTTON_SUFFIX = '-pane-button'
+
+/** Custom URL protocol our desktop registers */
+export const ZOO_STUDIO_PROTOCOL = 'zoo-studio'
+
+/**
+ * A query parameter that triggers a modal
+ * to "open in desktop app" when present in the URL
+ */
+export const ASK_TO_OPEN_QUERY_PARAM = 'ask-open-desktop'
+
+/**
+ * When no annotation is in the KCL file to specify the defaults, we use these
+ * default units.
+ */
+export const DEFAULT_DEFAULT_ANGLE_UNIT: UnitAngle = 'degrees'
+
+/**
+ * When no annotation is in the KCL file to specify the defaults, we use these
+ * default units.
+ */
+export const DEFAULT_DEFAULT_LENGTH_UNIT: UnitLength = 'mm'
+
+/** Real execution. */
+export const EXECUTION_TYPE_REAL = 'real'
+/** Mock execution. */
+export const EXECUTION_TYPE_MOCK = 'mock'
+/** No execution. */
+export const EXECUTION_TYPE_NONE = 'none'
+/**
+ * Enum of engine execution kinds.
+ */
+export type ExecutionType =
+  | typeof EXECUTION_TYPE_REAL
+  | typeof EXECUTION_TYPE_MOCK
+  | typeof EXECUTION_TYPE_NONE

@@ -1,15 +1,17 @@
 import { Popover, Transition } from '@headlessui/react'
-import { ActionButton, ActionButtonProps } from './ActionButton'
-import { useLocation, useNavigate } from 'react-router-dom'
+import type { Models } from '@kittycad/lib'
 import { Fragment, useMemo, useState } from 'react'
-import { PATHS } from 'lib/paths'
-import { Models } from '@kittycad/lib'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
-import Tooltip from './Tooltip'
-import usePlatform from 'hooks/usePlatform'
-import { isDesktop } from 'lib/isDesktop'
-import { CustomIcon } from './CustomIcon'
+import { useLocation, useNavigate } from 'react-router-dom'
+
+import type { ActionButtonProps } from '@src/components/ActionButton'
+import { ActionButton } from '@src/components/ActionButton'
+import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
+import usePlatform from '@src/hooks/usePlatform'
+import { isDesktop } from '@src/lib/isDesktop'
+import { PATHS } from '@src/lib/paths'
+import { authActor } from '@src/machines/appMachine'
 
 type User = Models['User_type']
 
@@ -20,7 +22,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   const displayedName = getDisplayName(user)
   const [imageLoadFailed, setImageLoadFailed] = useState(false)
   const navigate = useNavigate()
-  const send = useSettingsAuthContext()?.auth?.send
+  const send = authActor.send
 
   // We filter this memoized list so that no orphan "break" elements are rendered.
   const userMenuItems = useMemo<(ActionButtonProps | 'break')[]>(
@@ -193,7 +195,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
             className="w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40 ui-open:rotate-180"
           />
         </div>
-        <Tooltip position="bottom-right" delay={1000} hoverOnly>
+        <Tooltip position="bottom-right" hoverOnly>
           User menu
         </Tooltip>
       </Popover.Button>

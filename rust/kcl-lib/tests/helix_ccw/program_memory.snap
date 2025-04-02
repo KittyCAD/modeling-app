@@ -1,0 +1,20 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing helix_ccw.kcl
+---
+{
+  "part001": {
+    "type": "Helix",
+    "value": {
+      "value": "[uuid]",
+      "artifactId": "[uuid]",
+      "revolutions": 16.0,
+      "angleStart": 0.0,
+      "ccw": true,
+      "cylinderId": "[uuid]",
+      "units": {
+        "type": "Mm"
+      }
+    }
+  }
+}

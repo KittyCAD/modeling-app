@@ -1,18 +1,26 @@
-import { SceneEntities } from 'clientSideScene/sceneEntities'
-import { SceneInfra } from 'clientSideScene/sceneInfra'
-import EditorManager from 'editor/manager'
-import { KclManager } from 'lang/KclSingleton'
-import CodeManager from 'lang/codeManager'
-import { EngineCommandManager } from 'lang/std/engineConnection'
-import { uuidv4 } from './utils'
+import EditorManager from '@src/editor/manager'
+import { KclManager } from '@src/lang/KclSingleton'
+import CodeManager from '@src/lang/codeManager'
+import { EngineCommandManager } from '@src/lang/std/engineConnection'
+import RustContext from '@src/lib/rustContext'
+import { uuidv4 } from '@src/lib/utils'
+
+import { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 
 export const codeManager = new CodeManager()
 
 export const engineCommandManager = new EngineCommandManager()
 
+declare global {
+  interface Window {
+    editorManager: EditorManager
+    engineCommandManager: EngineCommandManager
+  }
+}
+
 // Accessible for tests mostly
-// @ts-ignore
-window.tearDown = engineCommandManager.tearDown
+window.engineCommandManager = engineCommandManager
 
 // This needs to be after codeManager is created.
 export const kclManager = new KclManager(engineCommandManager)
@@ -21,16 +29,19 @@ engineCommandManager.kclManager = kclManager
 export const sceneInfra = new SceneInfra(engineCommandManager)
 engineCommandManager.camControlsCameraChange = sceneInfra.onCameraChange
 
-export const sceneEntitiesManager = new SceneEntities(engineCommandManager)
-
-declare global {
-  interface Window {
-    editorManager: EditorManager
-  }
-}
-
 // This needs to be after sceneInfra and engineCommandManager are is created.
 export const editorManager = new EditorManager()
+
+export const rustContext = new RustContext(engineCommandManager)
+
+export const sceneEntitiesManager = new SceneEntities(
+  engineCommandManager,
+  sceneInfra,
+  editorManager,
+  codeManager,
+  kclManager,
+  rustContext
+)
 
 if (typeof window !== 'undefined') {
   ;(window as any).engineCommandManager = engineCommandManager
@@ -38,6 +49,8 @@ if (typeof window !== 'undefined') {
   ;(window as any).sceneInfra = sceneInfra
   ;(window as any).sceneEntitiesManager = sceneEntitiesManager
   ;(window as any).editorManager = editorManager
+  ;(window as any).codeManager = codeManager
+  ;(window as any).rustContext = rustContext
   ;(window as any).enableMousePositionLogs = () =>
     document.addEventListener('mousemove', (e) =>
       console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)

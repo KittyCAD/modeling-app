@@ -1,0 +1,383 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing pipe-flange-assembly.kcl
+---
+{
+  "bolt": {
+    "type": "Function"
+  },
+  "boltDiameter": {
+    "type": "Number",
+    "value": 0.625,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "boltHeadDiameter": {
+    "type": "Number",
+    "value": 0.938,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "boltHeadLength": {
+    "type": "Number",
+    "value": 0.625,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "boltHexDrive": {
+    "type": "Number",
+    "value": 0.5,
+    "ty": {
+      "type": "Unknown"
+    }
+  },
+  "boltHexFlatLength": {
+    "type": "Number",
+    "value": 0.2887,
+    "ty": {
+      "type": "Unknown"
+    }
+  },
+  "boltLength": {
+    "type": "Number",
+    "value": 2.5,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "boltThreadLength": {
+    "type": "Number",
+    "value": 1.75,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "filletEdge": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "filletEdge"
+  },
+  "flange": {
+    "type": "Function"
+  },
+  "flangeBackDiameter": {
+    "type": "Number",
+    "value": 3.62,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "flangeBackHeight": {
+    "type": "Number",
+    "value": 0.06,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "flangeBaseThickness": {
+    "type": "Number",
+    "value": 0.69,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "flangeDiameter": {
+    "type": "Number",
+    "value": 6.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "flangeFrontDiameter": {
+    "type": "Number",
+    "value": 3.06,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "flangeFrontHeight": {
+    "type": "Number",
+    "value": 0.25,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "flangeTotalThickness": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "gasket": {
+    "type": "Function"
+  },
+  "gasketInnerDiameter": {
+    "type": "Number",
+    "value": 2.375,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "gasketOutsideDiameter": {
+    "type": "Number",
+    "value": 4.125,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "gasketThickness": {
+    "type": "Number",
+    "value": 0.031,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "hexNut": {
+    "type": "Function"
+  },
+  "hexNutDiameter": {
+    "type": "Number",
+    "value": 0.625,
+    "ty": {
+      "type": "Unknown"
+    }
+  },
+  "hexNutFlatLength": {
+    "type": "Number",
+    "value": 0.5413,
+    "ty": {
+      "type": "Unknown"
+    }
+  },
+  "hexNutFlatToFlat": {
+    "type": "Number",
+    "value": 0.9375,
+    "ty": {
+      "type": "Unknown"
+    }
+  },
+  "hexNutThickness": {
+    "type": "Number",
+    "value": 0.5469,
+    "ty": {
+      "type": "Unknown"
+    }
+  },
+  "mountingHoleDiameter": {
+    "type": "Number",
+    "value": 0.75,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "mountingHolePlacementDiameter": {
+    "type": "Number",
+    "value": 4.75,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "pipe": {
+    "type": "Function"
+  },
+  "pipeDiameter": {
+    "type": "Number",
+    "value": 2.44,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "pipeInnerDiameter": {
+    "type": "Number",
+    "value": 2.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "pipeLength": {
+    "type": "Number",
+    "value": 6.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "pipeOuterDiameter": {
+    "type": "Number",
+    "value": 2.375,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "washer": {
+    "type": "Function"
+  },
+  "washerInnerDia": {
+    "type": "Number",
+    "value": 0.64,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "washerOuterDia": {
+    "type": "Number",
+    "value": 1.188,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "washerThickness": {
+    "type": "Number",
+    "value": 0.032,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  }
+}

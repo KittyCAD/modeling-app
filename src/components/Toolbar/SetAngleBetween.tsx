@@ -1,20 +1,23 @@
-import { toolTips } from 'lang/langHelpers'
-import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
-import { Selections } from 'lib/selections'
-import { getNodeFromPath } from '../../lang/queryAst'
-import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
+import { removeDoubleNegatives } from '@src/components/AvailableVarsHelpers'
 import {
-  transformSecondarySketchLinesTagFirst,
+  GetInfoModal,
+  createInfoModal,
+} from '@src/components/SetHorVertDistanceModal'
+import { createVariableDeclaration } from '@src/lang/create'
+import { toolTips } from '@src/lang/langHelpers'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { isSketchVariablesLinked } from '@src/lang/std/sketchConstraints'
+import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
+import {
   getTransformInfos,
-  PathToNodeMap,
   isExprBinaryPart,
-} from '../../lang/std/sketchcombos'
-import { TransformInfo } from 'lang/std/stdTypes'
-import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
-import { createVariableDeclaration } from '../../lang/modifyAst'
-import { removeDoubleNegatives } from '../AvailableVarsHelpers'
-import { kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
+  transformSecondarySketchLinesTagFirst,
+} from '@src/lang/std/sketchcombos'
+import type { TransformInfo } from '@src/lang/std/stdTypes'
+import type { Expr, Program, VariableDeclarator } from '@src/lang/wasm'
+import type { Selections } from '@src/lib/selections'
+import { kclManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 
@@ -57,8 +60,8 @@ export function angleBetweenInfo({
   )
   const isAllTooltips = nodes.every(
     (node) =>
-      node?.type === 'CallExpression' &&
-      toolTips.includes(node.callee.name as any)
+      (node?.type === 'CallExpression' || node?.type === 'CallExpressionKw') &&
+      toolTips.includes(node.callee.name.name as any)
   )
 
   const theTransforms = getTransformInfos(
@@ -86,6 +89,7 @@ export async function applyConstraintAngleBetween({
 }): Promise<{
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
+  exprInsertIndex: number
 }> {
   const info = angleBetweenInfo({ selectionRanges })
   if (err(info)) return Promise.reject(info)
@@ -95,7 +99,7 @@ export async function applyConstraintAngleBetween({
     ast: structuredClone(kclManager.ast),
     selectionRanges,
     transformInfos,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
   })
   if (err(transformed1)) return Promise.reject(transformed1)
   const { modifiedAst, tagInfo, valueUsedInTransform, pathToNodeMap } =
@@ -122,6 +126,7 @@ export async function applyConstraintAngleBetween({
     return {
       modifiedAst,
       pathToNodeMap,
+      exprInsertIndex: -1,
     }
   }
 
@@ -133,7 +138,7 @@ export async function applyConstraintAngleBetween({
     ast: kclManager.ast,
     selectionRanges,
     transformInfos,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
     forceSegName: segName,
     forceValueUsedInTransform: finalValue,
   })
@@ -141,6 +146,7 @@ export async function applyConstraintAngleBetween({
   const { modifiedAst: _modifiedAst, pathToNodeMap: _pathToNodeMap } =
     transformed2
 
+  let exprInsertIndex = -1
   if (variableName) {
     const newBody = [..._modifiedAst.body]
     newBody.splice(
@@ -153,9 +159,11 @@ export async function applyConstraintAngleBetween({
       const index = pathToNode.findIndex((a) => a[0] === 'body') + 1
       pathToNode[index][0] = Number(pathToNode[index][0]) + 1
     })
+    exprInsertIndex = newVariableInsertIndex
   }
   return {
     modifiedAst: _modifiedAst,
     pathToNodeMap: _pathToNodeMap,
+    exprInsertIndex,
   }
 }

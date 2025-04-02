@@ -1,28 +1,34 @@
-import type { IndexLoaderData } from 'lib/types'
-import { PATHS } from 'lib/paths'
-import { ActionButton } from './ActionButton'
-import Tooltip from './Tooltip'
-import { Dispatch, useCallback, useRef, useState } from 'react'
-import { useNavigate, useRouteLoaderData } from 'react-router-dom'
-import { Disclosure } from '@headlessui/react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronRight, faPencil } from '@fortawesome/free-solid-svg-icons'
-import { useFileContext } from 'hooks/useFileContext'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { Disclosure } from '@headlessui/react'
+import type { Dispatch } from 'react'
+import { useCallback, useRef, useState } from 'react'
+import { useNavigate, useRouteLoaderData } from 'react-router-dom'
+
+import { ActionButton } from '@src/components/ActionButton'
+import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { useLspContext } from '@src/components/LspProvider'
+import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
+import Tooltip from '@src/components/Tooltip'
+import { useFileContext } from '@src/hooks/useFileContext'
+import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import usePlatform from '@src/hooks/usePlatform'
+import { useKclContext } from '@src/lang/KclProvider'
+import type { KCLError } from '@src/lang/errors'
+import { kclErrorsByFilename } from '@src/lang/errors'
+import { normalizeLineEndings } from '@src/lib/codeEditor'
+import { FILE_EXT } from '@src/lib/constants'
+import { sortFilesAndDirectories } from '@src/lib/desktopFS'
+import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
+import { PATHS } from '@src/lib/paths'
+import type { FileEntry } from '@src/lib/project'
+import { codeManager, kclManager } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
+import type { IndexLoaderData } from '@src/lib/types'
+
 import styles from './FileTree.module.css'
-import { sortFilesAndDirectories } from 'lib/desktopFS'
-import { FILE_EXT } from 'lib/constants'
-import { CustomIcon } from './CustomIcon'
-import { codeManager, kclManager } from 'lib/singletons'
-import { useLspContext } from './LspProvider'
-import useHotkeyWrapper from 'lib/hotkeyWrapper'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { DeleteConfirmationDialog } from './ProjectCard/DeleteProjectDialog'
-import { ContextMenu, ContextMenuItem } from './ContextMenu'
-import usePlatform from 'hooks/usePlatform'
-import { FileEntry } from 'lib/project'
-import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
-import { normalizeLineEndings } from 'lib/codeEditor'
-import { reportRejection } from 'lib/trap'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -153,10 +159,12 @@ const FileTreeItem = ({
   onClickDirectory,
   onCreateFile,
   onCreateFolder,
+  onCloneFileOrFolder,
   newTreeEntry,
   level = 0,
   treeSelection,
   setTreeSelection,
+  runtimeErrors,
 }: {
   parentDir: FileEntry | undefined
   project?: IndexLoaderData['project']
@@ -171,10 +179,12 @@ const FileTreeItem = ({
   ) => void
   onCreateFile: (name: string) => void
   onCreateFolder: (name: string) => void
+  onCloneFileOrFolder: (path: string) => void
   newTreeEntry: TreeEntry
   level?: number
   treeSelection: FileEntry | undefined
   setTreeSelection: Dispatch<React.SetStateAction<FileEntry | undefined>>
+  runtimeErrors: Map<string, KCLError[]>
 }) => {
   const { send: fileSend, context: fileContext } = useFileContext()
   const { onFileOpen, onFileClose } = useLspContext()
@@ -183,6 +193,8 @@ const FileTreeItem = ({
   const isCurrentFile = fileOrDir.path === currentFile?.path
   const isFileOrDirHighlighted = treeSelection?.path === fileOrDir?.path
   const itemRef = useRef(null)
+
+  const hasRuntimeError = runtimeErrors.has(fileOrDir.path)
 
   // Since every file or directory gets its own FileTreeItem, we can do this.
   // Because subtrees only render when they are opened, that means this
@@ -290,7 +302,7 @@ const FileTreeItem = ({
         >
           {!isRenaming ? (
             <button
-              className="flex gap-1 items-center py-0.5 rounded-none border-none p-0 m-0 text-sm w-full hover:!bg-transparent text-left !text-inherit"
+              className="relative flex gap-1 items-center py-0.5 rounded-none border-none p-0 m-0 text-sm w-full hover:!bg-transparent text-left !text-inherit"
               style={{ paddingInlineStart: getIndentationCSS(level) }}
               onClick={(e) => {
                 e.currentTarget.focus()
@@ -298,11 +310,21 @@ const FileTreeItem = ({
               }}
               onKeyUp={handleKeyUp}
             >
+              {hasRuntimeError && (
+                <p
+                  className={
+                    'absolute m-0 p-0 bottom-3 left-6 w-3 h-3 flex items-center justify-center text-[9px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
+                  }
+                  title={`Click to view notifications`}
+                >
+                  <span>x</span>
+                </p>
+              )}
               <CustomIcon
                 name={fileOrDir.name?.endsWith(FILE_EXT) ? 'kcl' : 'file'}
                 className="inline-block w-3 text-current"
               />
-              {fileOrDir.name}
+              <span className="pl-1">{fileOrDir.name}</span>
             </button>
           ) : (
             <RenameForm
@@ -403,6 +425,7 @@ const FileTreeItem = ({
                         currentFile={currentFile}
                         onCreateFile={onCreateFile}
                         onCreateFolder={onCreateFolder}
+                        onCloneFileOrFolder={onCloneFileOrFolder}
                         newTreeEntry={newTreeEntry}
                         lastDirectoryClicked={lastDirectoryClicked}
                         onClickDirectory={onClickDirectory}
@@ -411,6 +434,7 @@ const FileTreeItem = ({
                         key={level + '-' + child.path}
                         treeSelection={treeSelection}
                         setTreeSelection={setTreeSelection}
+                        runtimeErrors={runtimeErrors}
                       />
                     )
                   )}
@@ -441,6 +465,7 @@ const FileTreeItem = ({
         itemRef={itemRef}
         onRename={addCurrentItemToRenaming}
         onDelete={() => setIsConfirmingDelete(true)}
+        onClone={() => onCloneFileOrFolder(fileOrDir.path)}
       />
     </div>
   )
@@ -450,12 +475,14 @@ interface FileTreeContextMenuProps {
   itemRef: React.RefObject<HTMLElement>
   onRename: () => void
   onDelete: () => void
+  onClone: () => void
 }
 
 function FileTreeContextMenu({
   itemRef,
   onRename,
   onDelete,
+  onClone,
 }: FileTreeContextMenuProps) {
   const platform = usePlatform()
   const metaKey = platform === 'macos' ? '⌘' : 'Ctrl'
@@ -478,6 +505,13 @@ function FileTreeContextMenu({
         >
           Delete
         </ContextMenuItem>,
+        <ContextMenuItem
+          data-testid="context-menu-clone"
+          onClick={onClone}
+          hotkey=""
+        >
+          Clone
+        </ContextMenuItem>,
       ]}
     />
   )
@@ -487,10 +521,7 @@ interface FileTreeProps {
   className?: string
   file?: IndexLoaderData['file']
   onNavigateToFile: (
-    focusableElement?:
-      | HTMLElement
-      | React.MutableRefObject<HTMLElement | null>
-      | undefined
+    focusableElement?: HTMLElement | React.MutableRefObject<HTMLElement | null>
   ) => void
 }
 
@@ -517,9 +548,7 @@ export const FileTreeMenu = ({
         className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
         onClick={onCreateFile}
       >
-        <Tooltip position="bottom-right" delay={750}>
-          Create file
-        </Tooltip>
+        <Tooltip position="bottom-right">Create file</Tooltip>
       </ActionButton>
 
       <ActionButton
@@ -533,9 +562,7 @@ export const FileTreeMenu = ({
         className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
         onClick={onCreateFolder}
       >
-        <Tooltip position="bottom-right" delay={750}>
-          Create folder
-        </Tooltip>
+        <Tooltip position="bottom-right">Create folder</Tooltip>
       </ActionButton>
     </>
   )
@@ -584,9 +611,22 @@ export const useFileTreeOperations = () => {
     })
   }
 
+  function cloneFileOrDir(args: { path: string }) {
+    send({
+      type: 'Create file',
+      data: {
+        name: '',
+        makeDir: false,
+        shouldSetToRename: false,
+        targetPathToClone: args.path,
+      },
+    })
+  }
+
   return {
     createFile,
     createFolder,
+    cloneFileOrDir,
     newTreeEntry,
   }
 }
@@ -595,7 +635,8 @@ export const FileTree = ({
   className = '',
   onNavigateToFile: closePanel,
 }: FileTreeProps) => {
-  const { createFile, createFolder, newTreeEntry } = useFileTreeOperations()
+  const { createFile, createFolder, cloneFileOrDir, newTreeEntry } =
+    useFileTreeOperations()
 
   return (
     <div className={className}>
@@ -611,6 +652,7 @@ export const FileTree = ({
         newTreeEntry={newTreeEntry}
         onCreateFile={(name: string) => createFile({ dryRun: false, name })}
         onCreateFolder={(name: string) => createFolder({ dryRun: false, name })}
+        onCloneFileOrFolder={(path: string) => cloneFileOrDir({ path })}
       />
     </div>
   )
@@ -620,16 +662,20 @@ export const FileTreeInner = ({
   onNavigateToFile,
   onCreateFile,
   onCreateFolder,
+  onCloneFileOrFolder,
   newTreeEntry,
 }: {
   onCreateFile: (name: string) => void
   onCreateFolder: (name: string) => void
+  onCloneFileOrFolder: (path: string) => void
   newTreeEntry: TreeEntry
   onNavigateToFile?: () => void
 }) => {
   const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const { send: fileSend, context: fileContext } = useFileContext()
   const { send: modelingSend } = useModelingContext()
+  const { errors } = useKclContext()
+  const runtimeErrors = kclErrorsByFilename(errors)
 
   const [lastDirectoryClicked, setLastDirectoryClicked] = useState<
     FileEntry | undefined
@@ -732,12 +778,14 @@ export const FileTreeInner = ({
                 fileOrDir={fileOrDir}
                 onCreateFile={onCreateFile}
                 onCreateFolder={onCreateFolder}
+                onCloneFileOrFolder={onCloneFileOrFolder}
                 newTreeEntry={newTreeEntry}
                 onClickDirectory={onClickDirectory}
                 onNavigateToFile={onNavigateToFile_}
                 key={fileOrDir.path}
                 treeSelection={treeSelection}
                 setTreeSelection={setTreeSelection}
+                runtimeErrors={runtimeErrors}
               />
             )
           )}

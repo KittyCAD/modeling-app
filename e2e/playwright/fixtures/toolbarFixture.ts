@@ -1,52 +1,66 @@
-import type { Page, Locator } from '@playwright/test'
-import { expect } from '../zoo-test'
+import { type Locator, type Page, test } from '@playwright/test'
+import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
+import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
+import type { ToolbarModeName } from '@src/lib/toolbar'
+
 import {
   checkIfPaneIsOpen,
   closePane,
   doAndWaitForImageDiff,
   openPane,
-} from '../test-utils'
-import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
-import { SIDEBAR_BUTTON_SUFFIX } from 'lib/constants'
+} from '@e2e/playwright/test-utils'
+import { expect } from '@e2e/playwright/zoo-test'
 
 export class ToolbarFixture {
   public page: Page
 
   extrudeButton!: Locator
   loftButton!: Locator
+  sweepButton!: Locator
+  filletButton!: Locator
+  chamferButton!: Locator
   shellButton!: Locator
+  revolveButton!: Locator
   offsetPlaneButton!: Locator
+  helixButton!: Locator
   startSketchBtn!: Locator
   lineBtn!: Locator
+  tangentialArcBtn!: Locator
+  circleBtn!: Locator
   rectangleBtn!: Locator
+  lengthConstraintBtn!: Locator
   exitSketchBtn!: Locator
-  editSketchBtn!: Locator
   fileTreeBtn!: Locator
   createFileBtn!: Locator
   fileCreateToast!: Locator
   filePane!: Locator
-  exeIndicator!: Locator
   treeInputField!: Locator
   /** The sidebar button for the Feature Tree pane */
   featureTreeId = 'feature-tree' as const
   /** The pane element for the Feature Tree */
   featureTreePane!: Locator
+  gizmo!: Locator
+  gizmoDisabled!: Locator
 
   constructor(page: Page) {
     this.page = page
-    this.reConstruct(page)
-  }
-  reConstruct = (page: Page) => {
-    this.page = page
+
     this.extrudeButton = page.getByTestId('extrude')
     this.loftButton = page.getByTestId('loft')
+    this.sweepButton = page.getByTestId('sweep')
+    this.filletButton = page.getByTestId('fillet3d')
+    this.chamferButton = page.getByTestId('chamfer3d')
     this.shellButton = page.getByTestId('shell')
+    this.revolveButton = page.getByTestId('revolve')
     this.offsetPlaneButton = page.getByTestId('plane-offset')
+    this.helixButton = page.getByTestId('helix')
     this.startSketchBtn = page.getByTestId('sketch')
     this.lineBtn = page.getByTestId('line')
+    this.tangentialArcBtn = page.getByTestId('tangential-arc')
+    this.circleBtn = page.getByTestId('circle-center')
     this.rectangleBtn = page.getByTestId('corner-rectangle')
+    this.lengthConstraintBtn = page.getByTestId('constraint-length')
     this.exitSketchBtn = page.getByTestId('sketch-exit')
-    this.editSketchBtn = page.getByText('Edit Sketch')
     this.fileTreeBtn = page.locator('[id="files-button-holder"]')
     this.createFileBtn = page.getByTestId('create-file-button')
     this.treeInputField = page.getByTestId('tree-input-field')
@@ -54,17 +68,73 @@ export class ToolbarFixture {
     this.filePane = page.locator('#files-pane')
     this.featureTreePane = page.locator('#feature-tree-pane')
     this.fileCreateToast = page.getByText('Successfully created')
-    this.exeIndicator = page.getByTestId('model-state-indicator-execution-done')
+
+    // Note to test writers: having two locators like this is preferable to one
+    // which changes another el property because it means our test "signal" is
+    // completely decoupled from the elements themselves. It means the same
+    // element or two different elements can represent these states.
+    this.gizmo = page.getByTestId('gizmo')
+    this.gizmoDisabled = page.getByTestId('gizmo-disabled')
+  }
+
+  get logoLink() {
+    return this.page.getByTestId('app-logo')
+  }
+
+  get exeIndicator() {
+    return this.page
+      .getByTestId('model-state-indicator-receive-reliable')
+      .or(this.page.getByTestId('model-state-indicator-execution-done'))
   }
 
   startSketchPlaneSelection = async () =>
     doAndWaitForImageDiff(this.page, () => this.startSketchBtn.click(), 500)
 
-  editSketch = async () => {
-    await this.editSketchBtn.first().click()
-    // One of the rare times we want to allow a arbitrary wait
-    // this is for the engine animation, as it takes 500ms to complete
-    await this.page.waitForTimeout(600)
+  waitUntilSketchingReady = async () => {
+    await expect(this.gizmoDisabled).toBeVisible()
+  }
+
+  startSketchThenCallbackThenWaitUntilReady = async (
+    cb: () => Promise<void>
+  ) => {
+    await this.startSketchBtn.click()
+    await cb()
+    await this.waitUntilSketchingReady()
+  }
+
+  exitSketch = async () => {
+    await this.exitSketchBtn.click()
+    await expect(
+      this.page.getByRole('button', { name: 'Start Sketch' })
+    ).toBeVisible()
+    await expect(
+      this.page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+  }
+
+  editSketch = async (operationIndex = 0) => {
+    await test.step(`Editing sketch`, async () => {
+      await this.openFeatureTreePane()
+      const operation = await this.getFeatureTreeOperation(
+        'Sketch',
+        operationIndex
+      )
+      await operation.dblclick()
+      // One of the rare times we want to allow a arbitrary wait
+      // this is for the engine animation, as it takes 500ms to complete
+      await this.page.waitForTimeout(600)
+      await expect(this.exitSketchBtn).toBeEnabled()
+      await this.closeFeatureTreePane()
+    })
+  }
+  private _getMode = () =>
+    this.page.locator('[data-current-mode]').getAttribute('data-current-mode')
+  expectToolbarMode = {
+    toBe: (mode: ToolbarModeName) => expect.poll(this._getMode).toEqual(mode),
+    not: {
+      toBe: (mode: ToolbarModeName) =>
+        expect.poll(this._getMode).not.toEqual(mode),
+    },
   }
 
   private _serialiseFileTree = async () => {
@@ -103,6 +173,49 @@ export class ToolbarFixture {
       await expect(this.exeIndicator).toBeVisible({ timeout: 15_000 })
     }
   }
+  selectCenterRectangle = async () => {
+    await this.page
+      .getByRole('button', { name: 'caret down Corner rectangle:' })
+      .click()
+    await expect(
+      this.page.getByTestId('dropdown-center-rectangle')
+    ).toBeVisible()
+    await this.page.getByTestId('dropdown-center-rectangle').click()
+  }
+  selectBoolean = async (operation: 'union' | 'subtract' | 'intersect') => {
+    await this.page
+      .getByRole('button', { name: 'caret down Union: open menu' })
+      .click()
+    const operationTestId = `dropdown-boolean-${operation}`
+    await expect(this.page.getByTestId(operationTestId)).toBeVisible()
+    await this.page.getByTestId(operationTestId).click()
+  }
+
+  selectCircleThreePoint = async () => {
+    await this.page
+      .getByRole('button', { name: 'caret down Center circle:' })
+      .click()
+    await expect(
+      this.page.getByTestId('dropdown-circle-three-points')
+    ).toBeVisible()
+    await this.page.getByTestId('dropdown-circle-three-points').click()
+  }
+  selectArc = async () => {
+    await this.page
+      .getByRole('button', { name: 'caret down Tangential Arc:' })
+      .click()
+    await expect(this.page.getByTestId('dropdown-arc')).toBeVisible()
+    await this.page.getByTestId('dropdown-arc').click()
+  }
+  selectThreePointArc = async () => {
+    await this.page
+      .getByRole('button', { name: 'caret down Tangential Arc:' })
+      .click()
+    await expect(
+      this.page.getByTestId('dropdown-three-point-arc')
+    ).toBeVisible()
+    await this.page.getByTestId('dropdown-three-point-arc').click()
+  }
 
   async closePane(paneId: SidebarType) {
     return closePane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
@@ -125,7 +238,8 @@ export class ToolbarFixture {
   }
 
   /**
-   * Get a specific operation button from the Feature Tree pane
+   * Get a specific operation button from the Feature Tree pane.
+   * Index is 0-based.
    */
   async getFeatureTreeOperation(operationName: string, operationIndex: number) {
     await this.openFeatureTreePane()

@@ -1,0 +1,753 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing car-wheel-assembly.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 127,
+        "end": 0,
+        "path": {
+          "type": "Kcl",
+          "filename": "car-wheel.kcl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": {
+            "commentStart": 155,
+            "end": 0,
+            "name": "carWheel",
+            "start": 0,
+            "type": "Identifier"
+          }
+        },
+        "start": 0,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "commentStart": 164,
+        "end": 0,
+        "path": {
+          "type": "Kcl",
+          "filename": "car-rotor.kcl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": {
+            "commentStart": 190,
+            "end": 0,
+            "name": "carRotor",
+            "start": 0,
+            "type": "Identifier"
+          }
+        },
+        "start": 0,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "commentStart": 199,
+        "end": 0,
+        "path": {
+          "type": "Kcl",
+          "filename": "brake-caliper.kcl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": {
+            "commentStart": 229,
+            "end": 0,
+            "name": "brakeCaliper",
+            "start": 0,
+            "type": "Identifier"
+          }
+        },
+        "start": 0,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "commentStart": 242,
+        "end": 0,
+        "path": {
+          "type": "Kcl",
+          "filename": "lug-nut.kcl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": {
+            "commentStart": 266,
+            "end": 0,
+            "name": "lugNut",
+            "start": 0,
+            "type": "Identifier"
+          }
+        },
+        "start": 0,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "commentStart": 273,
+        "end": 0,
+        "path": {
+          "type": "Kcl",
+          "filename": "car-tire.kcl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": {
+            "commentStart": 298,
+            "end": 0,
+            "name": "carTire",
+            "start": 0,
+            "type": "Identifier"
+          }
+        },
+        "start": 0,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "commentStart": 306,
+        "end": 0,
+        "path": {
+          "type": "Kcl",
+          "filename": "globals.kcl"
+        },
+        "selector": {
+          "type": "List",
+          "items": [
+            {
+              "alias": null,
+              "commentStart": 313,
+              "end": 0,
+              "name": {
+                "commentStart": 313,
+                "end": 0,
+                "name": "lugCount",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "start": 0,
+              "type": "ImportItem"
+            }
+          ]
+        },
+        "start": 0,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "commentStart": 340,
+        "end": 0,
+        "expression": {
+          "body": [
+            {
+              "abs_path": false,
+              "commentStart": 342,
+              "end": 0,
+              "name": {
+                "commentStart": 342,
+                "end": 0,
+                "name": "carRotor",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            },
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 366,
+                    "end": 0,
+                    "name": "x",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 370,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 373,
+                    "end": 0,
+                    "name": "y",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 377,
+                    "end": 0,
+                    "raw": "0.5",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.5,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 382,
+                    "end": 0,
+                    "name": "z",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 386,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  }
+                }
+              ],
+              "callee": {
+                "abs_path": false,
+                "commentStart": 356,
+                "end": 0,
+                "name": {
+                  "commentStart": 356,
+                  "end": 0,
+                  "name": "translate",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name"
+              },
+              "commentStart": 356,
+              "end": 0,
+              "start": 0,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": null
+            }
+          ],
+          "commentStart": 342,
+          "end": 0,
+          "start": 0,
+          "type": "PipeExpression",
+          "type": "PipeExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 389,
+        "end": 0,
+        "expression": {
+          "abs_path": false,
+          "commentStart": 389,
+          "end": 0,
+          "name": {
+            "commentStart": 389,
+            "end": 0,
+            "name": "carWheel",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "path": [],
+          "start": 0,
+          "type": "Name",
+          "type": "Name"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 398,
+        "end": 0,
+        "expression": {
+          "body": [
+            {
+              "abs_path": false,
+              "commentStart": 398,
+              "end": 0,
+              "name": {
+                "commentStart": 398,
+                "end": 0,
+                "name": "lugNut",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            },
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 436,
+                    "end": 0,
+                    "name": "arcDegrees",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 449,
+                    "end": 0,
+                    "raw": "360",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 360.0,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 461,
+                    "end": 0,
+                    "name": "axis",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 468,
+                    "elements": [
+                      {
+                        "commentStart": 469,
+                        "end": 0,
+                        "raw": "0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "commentStart": 472,
+                        "end": 0,
+                        "raw": "1",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 1.0,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "commentStart": 475,
+                        "end": 0,
+                        "raw": "0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    ],
+                    "end": 0,
+                    "start": 0,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 486,
+                    "end": 0,
+                    "name": "center",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 495,
+                    "elements": [
+                      {
+                        "commentStart": 496,
+                        "end": 0,
+                        "raw": "0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "commentStart": 499,
+                        "end": 0,
+                        "raw": "0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "commentStart": 502,
+                        "end": 0,
+                        "raw": "0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    ],
+                    "end": 0,
+                    "start": 0,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 513,
+                    "end": 0,
+                    "name": "instances",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "abs_path": false,
+                    "commentStart": 525,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 525,
+                      "end": 0,
+                      "name": "lugCount",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 542,
+                    "end": 0,
+                    "name": "rotateDuplicates",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 561,
+                    "end": 0,
+                    "raw": "false",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": false
+                  }
+                }
+              ],
+              "callee": {
+                "abs_path": false,
+                "commentStart": 410,
+                "end": 0,
+                "name": {
+                  "commentStart": 410,
+                  "end": 0,
+                  "name": "patternCircular3d",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name"
+              },
+              "commentStart": 410,
+              "end": 0,
+              "start": 0,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": null
+            }
+          ],
+          "commentStart": 398,
+          "end": 0,
+          "start": 0,
+          "type": "PipeExpression",
+          "type": "PipeExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 575,
+        "end": 0,
+        "expression": {
+          "body": [
+            {
+              "abs_path": false,
+              "commentStart": 575,
+              "end": 0,
+              "name": {
+                "commentStart": 575,
+                "end": 0,
+                "name": "brakeCaliper",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            },
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 603,
+                    "end": 0,
+                    "name": "x",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 607,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 610,
+                    "end": 0,
+                    "name": "y",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 614,
+                    "end": 0,
+                    "raw": "0.5",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.5,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 619,
+                    "end": 0,
+                    "name": "z",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 623,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  }
+                }
+              ],
+              "callee": {
+                "abs_path": false,
+                "commentStart": 593,
+                "end": 0,
+                "name": {
+                  "commentStart": 593,
+                  "end": 0,
+                  "name": "translate",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name"
+              },
+              "commentStart": 593,
+              "end": 0,
+              "start": 0,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": null
+            }
+          ],
+          "commentStart": 575,
+          "end": 0,
+          "start": 0,
+          "type": "PipeExpression",
+          "type": "PipeExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 626,
+        "end": 0,
+        "expression": {
+          "abs_path": false,
+          "commentStart": 626,
+          "end": 0,
+          "name": {
+            "commentStart": 626,
+            "end": 0,
+            "name": "carTire",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "path": [],
+          "start": 0,
+          "type": "Name",
+          "type": "Name"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "innerAttrs": [
+      {
+        "commentStart": 0,
+        "end": 0,
+        "name": {
+          "commentStart": 95,
+          "end": 0,
+          "name": "settings",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "preComments": [
+          "// Car Wheel Assembly",
+          "// A car wheel assembly with a rotor, tire, and lug nuts.",
+          "",
+          "",
+          "// Set units"
+        ],
+        "properties": [
+          {
+            "commentStart": 104,
+            "end": 0,
+            "key": {
+              "commentStart": 104,
+              "end": 0,
+              "name": "defaultLengthUnit",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "abs_path": false,
+              "commentStart": 124,
+              "end": 0,
+              "name": {
+                "commentStart": 124,
+                "end": 0,
+                "name": "in",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          }
+        ],
+        "start": 0,
+        "type": "Annotation"
+      }
+    ],
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "5": [
+          {
+            "commentStart": 340,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "commentStart": 127,
+          "end": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}

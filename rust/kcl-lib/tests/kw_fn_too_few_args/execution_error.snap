@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing kw_fn_too_few_args.kcl
+---
+KCL Semantic error
+
+  × semantic: This function requires a parameter y, but you haven't passed it
+  │ one.
+   ╭─[1:7]
+ 1 │ ╭─▶ fn add(x, y) {
+ 2 │ │     return x + y
+ 3 │ ├─▶ }
+   · ╰──── tests/kw_fn_too_few_args/input.kcl
+ 4 │     
+ 5 │     three = add(x = 1)
+   ·             ─────┬────
+   ·                  ╰── tests/kw_fn_too_few_args/input.kcl
+   ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: This function requires a parameter y, but you haven't
+        │ passed it one.
+         ╭─[1:7]
+       1 │ ╭─▶ fn add(x, y) {
+       2 │ │     return x + y
+       3 │ ├─▶ }
+         · ╰──── tests/kw_fn_too_few_args/input.kcl
+       4 │
+         ╰────

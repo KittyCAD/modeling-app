@@ -1,26 +1,24 @@
-import { toolTips } from 'lang/langHelpers'
-import { Program, Expr } from '../../lang/wasm'
-import { Selections } from 'lib/selections'
-import { getNodeFromPath } from '../../lang/queryAst'
-import {
-  getTransformInfos,
-  transformAstSketchLines,
-  PathToNodeMap,
-  isExprBinaryPart,
-} from '../../lang/std/sketchcombos'
-import { TransformInfo } from 'lang/std/stdTypes'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import { removeDoubleNegatives } from '@src/components/AvailableVarsHelpers'
 import {
   SetAngleLengthModal,
   createSetAngleLengthModal,
-} from '../SetAngleLengthModal'
+} from '@src/components/SetAngleLengthModal'
+import { createName, createVariableDeclaration } from '@src/lang/create'
+import { toolTips } from '@src/lang/langHelpers'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
 import {
-  createIdentifier,
-  createVariableDeclaration,
-} from '../../lang/modifyAst'
-import { removeDoubleNegatives } from '../AvailableVarsHelpers'
-import { kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+  getTransformInfos,
+  isExprBinaryPart,
+  transformAstSketchLines,
+} from '@src/lang/std/sketchcombos'
+import type { TransformInfo } from '@src/lang/std/stdTypes'
+import type { Expr, Program } from '@src/lang/wasm'
+import type { Selections } from '@src/lib/selections'
+import { kclManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
 
 const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
 
@@ -42,14 +40,13 @@ export function absDistanceInfo({
     constraint === 'xAbs' || constraint === 'yAbs'
       ? constraint
       : constraint === 'snapToYAxis'
-      ? 'xAbs'
-      : 'yAbs'
+        ? 'xAbs'
+        : 'yAbs'
   const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
-    const tmp = getNodeFromPath<Expr>(
-      kclManager.ast,
-      codeRef.pathToNode,
-      'CallExpression'
-    )
+    const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode, [
+      'CallExpression',
+      'CallExpressionKw',
+    ])
     if (err(tmp)) return tmp
     return tmp.node
   })
@@ -59,8 +56,8 @@ export function absDistanceInfo({
 
   const isAllTooltips = nodes.every(
     (node) =>
-      node?.type === 'CallExpression' &&
-      toolTips.includes(node.callee.name as any)
+      (node?.type === 'CallExpression' || node?.type === 'CallExpressionKw') &&
+      toolTips.includes(node.callee.name.name as any)
   )
 
   const transforms = getTransformInfos(selectionRanges, kclManager.ast, disType)
@@ -93,6 +90,7 @@ export async function applyConstraintAbsDistance({
 }): Promise<{
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
+  exprInsertIndex: number
 }> {
   const info = absDistanceInfo({
     selectionRanges,
@@ -105,7 +103,7 @@ export async function applyConstraintAbsDistance({
     ast: structuredClone(kclManager.ast),
     selectionRanges,
     transformInfos,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
     referenceSegName: '',
   })
   if (err(transform1)) return Promise.reject(transform1)
@@ -125,13 +123,14 @@ export async function applyConstraintAbsDistance({
     ast: structuredClone(kclManager.ast),
     selectionRanges,
     transformInfos,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
     referenceSegName: '',
     forceValueUsedInTransform: finalValue,
   })
   if (err(transform2)) return Promise.reject(transform2)
   const { modifiedAst: _modifiedAst, pathToNodeMap } = transform2
 
+  let exprInsertIndex = -1
   if (variableName) {
     const newBody = [..._modifiedAst.body]
     newBody.splice(
@@ -144,8 +143,9 @@ export async function applyConstraintAbsDistance({
       const index = pathToNode.findIndex((a) => a[0] === 'body') + 1
       pathToNode[index][0] = Number(pathToNode[index][0]) + 1
     })
+    exprInsertIndex = newVariableInsertIndex
   }
-  return { modifiedAst: _modifiedAst, pathToNodeMap }
+  return { modifiedAst: _modifiedAst, pathToNodeMap, exprInsertIndex }
 }
 
 export function applyConstraintAxisAlign({
@@ -167,13 +167,13 @@ export function applyConstraintAxisAlign({
   if (err(info)) return info
   const transformInfos = info.transforms
 
-  let finalValue = createIdentifier('ZERO')
+  let finalValue = createName(['turns'], 'ZERO')
 
   return transformAstSketchLines({
     ast: structuredClone(kclManager.ast),
     selectionRanges,
     transformInfos,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
     referenceSegName: '',
     forceValueUsedInTransform: finalValue,
   })

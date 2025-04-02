@@ -23,25 +23,22 @@ jobs:
   cargoclippy:
     name: cargo clippy
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        dir: ['src/wasm-lib']
     steps:
       - uses: actions/checkout@v4
       - uses: taiki-e/install-action@just
-      - name: Install latest rust
-        uses: actions-rs/toolchain@v1
+      - name: Use correct Rust toolchain
+        shell: bash
+        run: |
+          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
+      - name: Install rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-            toolchain: stable
-            override: true
-            components: clippy
-
-      - name: Rust Cache
-        uses: Swatinem/rust-cache@v2.6.1
+          cache-workspaces: rust
+          components: clippy
 
       - name: Run clippy
         run: |
-          cd "${{ matrix.dir }}"
+          cd rust
           just lint
       # If this fails, run "cargo check" to update Cargo.lock,
       # then add Cargo.lock to the PR.

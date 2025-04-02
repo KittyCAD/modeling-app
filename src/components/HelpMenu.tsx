@@ -1,14 +1,17 @@
 import { Popover } from '@headlessui/react'
-import Tooltip from './Tooltip'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { CustomIcon } from './CustomIcon'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { PATHS } from 'lib/paths'
-import { createAndOpenNewTutorialProject } from 'lib/desktopFS'
-import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
-import { useLspContext } from './LspProvider'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import { reportRejection } from 'lib/trap'
+
+import { CustomIcon } from '@src/components/CustomIcon'
+import { useLspContext } from '@src/components/LspProvider'
+import Tooltip from '@src/components/Tooltip'
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
+import { useMenuListener } from '@src/hooks/useMenu'
+import { createAndOpenNewTutorialProject } from '@src/lib/desktopFS'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { PATHS } from '@src/lib/paths'
+import { reportRejection } from '@src/lib/trap'
+import { settingsActor } from '@src/machines/appMachine'
+import type { WebContentSendPayload } from '@src/menu/channels'
 
 const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />
@@ -20,7 +23,31 @@ export function HelpMenu(props: React.PropsWithChildren) {
   const filePath = useAbsoluteFilePath()
   const isInProject = location.pathname.includes(PATHS.FILE)
   const navigate = useNavigate()
-  const { settings } = useSettingsAuthContext()
+
+  const resetOnboardingWorkflow = () => {
+    settingsActor.send({
+      type: 'set.app.onboardingStatus',
+      data: {
+        value: '',
+        level: 'user',
+      },
+    })
+    if (isInProject) {
+      navigate(filePath + PATHS.ONBOARDING.INDEX)
+    } else {
+      createAndOpenNewTutorialProject({
+        onProjectOpen,
+        navigate,
+      }).catch(reportRejection)
+    }
+  }
+
+  const cb = (data: WebContentSendPayload) => {
+    if (data.menuLabel === 'Help.Reset onboarding') {
+      resetOnboardingWorkflow()
+    }
+  }
+  useMenuListener(cb)
 
   return (
     <Popover className="relative">
@@ -103,26 +130,7 @@ export function HelpMenu(props: React.PropsWithChildren) {
         >
           Keyboard shortcuts
         </HelpMenuItem>
-        <HelpMenuItem
-          as="button"
-          onClick={() => {
-            settings.send({
-              type: 'set.app.onboardingStatus',
-              data: {
-                value: '',
-                level: 'user',
-              },
-            })
-            if (isInProject) {
-              navigate(filePath + PATHS.ONBOARDING.INDEX)
-            } else {
-              createAndOpenNewTutorialProject({
-                onProjectOpen,
-                navigate,
-              }).catch(reportRejection)
-            }
-          }}
-        >
+        <HelpMenuItem as="button" onClick={resetOnboardingWorkflow}>
           Reset onboarding
         </HelpMenuItem>
       </Popover.Panel>
@@ -148,6 +156,7 @@ function HelpMenuItem({
   return (
     <li className="p-0 m-0">
       {as === 'a' ? (
+        // eslint-disable-next-line jsx-a11y/no-static-element-interactions
         <a
           {...(props as React.ComponentProps<'a'>)}
           onClick={openExternalBrowserIfDesktop(

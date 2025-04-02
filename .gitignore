@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules
 /.pnp
 .pnp.js
 
@@ -9,7 +9,7 @@
 /coverage
 
 # production
-/build
+build
 
 # misc
 .DS_Store
@@ -25,45 +25,60 @@ yarn-error.log*
 
 .idea
 .vscode
-src/wasm-lib/.idea
-src/wasm-lib/.vscode
+.helix
 
 # rust
-src/wasm-lib/target
-src/wasm-lib/bindings
-src/wasm-lib/kcl/bindings
-public/wasm_lib_bg.wasm
-src/wasm-lib/lcov.info
-src/wasm-lib/grackle/test_json_output
+rust/target
+rust/kcl-lib/bindings
+public/kcl_wasm_lib_bg.wasm
+rust/lcov.info
+rust/kcl-wasm-lib/pkg
+*.snap.new
+rust/kcl-lib/fuzz/Cargo.lock
+rust/kcl-language-server-release/Cargo.lock
+
+# kcl language server package
+rust/kcl-language-server/dist/
 
 e2e/playwright/playwright-secrets.env
 e2e/playwright/temp1.png
 e2e/playwright/temp2.png
 e2e/playwright/temp3.png
+# this will be overridden for specific directories
+e2e/playwright/**/*.png
 # exports from snapshot-tests.spec.ts "exports of each format should work"
 e2e/playwright/export-snapshots/*
 !e2e/playwright/export-snapshots/*.png
+!e2e/playwright/snapshot-tests.spec.ts-snapshots/*.png
+trace.zip
 
-
+/public/kcl-samples.zip
+/public/kcl-samples/.github
+/public/kcl-samples/screenshots/main.kcl
+/public/kcl-samples/step/main.kcl
 /test-results/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
 /src/lang/std/artifactMapCache
 
-
 ## generated files
 src/**/*.typegen.ts
 
-src/wasm-lib/grackle/stdlib_cube_partial.json
 Mac_App_Distribution.provisionprofile
 
 *.tsbuildinfo
-src/wasm-lib/pkg
 
 .eslintcache
-venv
 .vite/
 
 # electron
 out/
+
+# python
+__pycache__/
+uv.lock
+dist
+venv
+
+.vscode-test

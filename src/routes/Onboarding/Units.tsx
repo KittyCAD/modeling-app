@@ -1,22 +1,19 @@
 import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
-import { type BaseUnit, baseUnitsUnion } from 'lib/settings/settingsTypes'
-import { ActionButton } from 'components/ActionButton'
-import { SettingsSection } from 'components/Settings/SettingsSection'
-import { useDismiss, useNextClick } from '.'
-import { onboardingPaths } from 'routes/Onboarding/paths'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+
+import { ActionButton } from '@src/components/ActionButton'
+import { SettingsSection } from '@src/components/Settings/SettingsSection'
+import { type BaseUnit, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
+import { settingsActor, useSettings } from '@src/machines/appMachine'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
+import { useDismiss, useNextClick } from '@src/routes/Onboarding/utils'
 
 export default function Units() {
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.CAMERA)
   const {
-    settings: {
-      send,
-      context: {
-        modeling: { defaultUnit },
-      },
-    },
-  } = useSettingsAuthContext()
+    modeling: { defaultUnit },
+  } = useSettings()
 
   return (
     <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">
@@ -31,7 +28,7 @@ export default function Units() {
             className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
             value={defaultUnit.user}
             onChange={(e) => {
-              send({
+              settingsActor.send({
                 type: 'set.modeling.defaultUnit',
                 data: {
                   level: 'user',

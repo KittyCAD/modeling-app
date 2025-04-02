@@ -1,23 +1,27 @@
 import { useSelector } from '@xstate/react'
-import { useCommandsContext } from 'hooks/useCommandsContext'
-import { Artifact } from 'lang/std/artifactGraph'
-import { CommandArgument } from 'lib/commandTypes'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import type { StateFrom } from 'xstate'
+
+import type { Artifact } from '@src/lang/std/artifactGraph'
+import type { CommandArgument } from '@src/lib/commandTypes'
 import {
   canSubmitSelectionArg,
   getSelectionCountByType,
   getSelectionTypeDisplayText,
-} from 'lib/selections'
-import { kclManager } from 'lib/singletons'
-import { reportRejection } from 'lib/trap'
-import { toSync } from 'lib/utils'
-import { modelingMachine } from 'machines/modelingMachine'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { StateFrom } from 'xstate'
+} from '@src/lib/selections'
+import { engineCommandManager, kclManager } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
+import { toSync } from '@src/lib/utils'
+import {
+  commandBarActor,
+  useCommandBarState,
+} from '@src/machines/commandBarMachine'
+import type { modelingMachine } from '@src/machines/modelingMachine'
 
 const semanticEntityNames: {
   [key: string]: Array<Artifact['type'] | 'defaultPlane'>
 } = {
-  face: ['wall', 'cap', 'solid2D'],
+  face: ['wall', 'cap', 'solid2d'],
   edge: ['segment', 'sweepEdge', 'edgeCutEdge'],
   point: [],
   plane: ['defaultPlane'],
@@ -49,7 +53,7 @@ function CommandBarSelectionInput({
   onSubmit: (data: unknown) => void
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const { commandBarState, commandBarSend } = useCommandsContext()
+  const commandBarState = useCommandBarState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
   const selection = useSelector(arg.machineActor, selectionSelector)
   const selectionsByType = useMemo(() => {
@@ -112,6 +116,23 @@ function CommandBarSelectionInput({
     onSubmit(selection)
   }
 
+  // Clear selection if needed
+  useEffect(() => {
+    arg.clearSelectionFirst &&
+      engineCommandManager.modelingSend({
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+        },
+      })
+  }, [arg.clearSelectionFirst])
+
+  // Set selection filter if needed, and reset it when the component unmounts
+  useEffect(() => {
+    arg.selectionFilter && kclManager.setSelectionFilter(arg.selectionFilter)
+    return () => kclManager.defaultSelectionFilter(selection)
+  }, [arg.selectionFilter])
+
   return (
     <form id="arg-form" onSubmit={handleSubmit}>
       <label
@@ -142,10 +163,10 @@ function CommandBarSelectionInput({
           placeholder="Select an entity with your mouse"
           className="absolute inset-0 w-full h-full opacity-0 cursor-default"
           onKeyDown={(event) => {
-            if (event.key === 'Backspace') {
+            if (event.key === 'Backspace' && event.shiftKey) {
               stepBack()
             } else if (event.key === 'Escape') {
-              commandBarSend({ type: 'Close' })
+              commandBarActor.send({ type: 'Close' })
             }
           }}
           onChange={handleChange}

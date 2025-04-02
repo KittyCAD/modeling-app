@@ -15,7 +15,7 @@ For example, if the current project uses inches, this function will return `1`. 
 We merely provide these functions for convenience and readability, as `10 * inch()` is more readable that your intent is "I want 10 inches" than `10 * 25.4`, if the project settings are in millimeters.
 
 ```js
-inch() -> number
+inch(): number
 ```
 
 ### Tags
@@ -26,7 +26,7 @@ inch() -> number
 
 ### Returns
 
-`number` 
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples

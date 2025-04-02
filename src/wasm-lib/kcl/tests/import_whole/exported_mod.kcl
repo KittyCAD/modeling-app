@@ -1,3 +1,0 @@
-startSketchOn('XY')
-  |> circle({ center = [5, 5], radius = 10 }, %)
-  |> extrude(10, %)

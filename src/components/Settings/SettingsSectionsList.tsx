@@ -1,8 +1,9 @@
 import decamelize from 'decamelize'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { Setting } from 'lib/settings/initialSettings'
-import { SettingsLevel } from 'lib/settings/settingsTypes'
-import { shouldHideSetting } from 'lib/settings/settingsUtils'
+
+import type { Setting } from '@src/lib/settings/initialSettings'
+import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
+import { shouldHideSetting } from '@src/lib/settings/settingsUtils'
+import { useSettings } from '@src/machines/appMachine'
 
 interface SettingsSectionsListProps {
   searchParamTab: SettingsLevel
@@ -13,9 +14,7 @@ export function SettingsSectionsList({
   searchParamTab,
   scrollRef,
 }: SettingsSectionsListProps) {
-  const {
-    settings: { context },
-  } = useSettingsAuthContext()
+  const context = useSettings()
   return (
     <div className="flex w-32 flex-col gap-3 pr-2 py-1 border-0 border-r border-r-chalkboard-20 dark:border-r-chalkboard-90">
       {Object.entries(context)

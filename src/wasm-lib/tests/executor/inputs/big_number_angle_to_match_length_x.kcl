@@ -1,9 +1,0 @@
-const part001 = startSketchOn('XY')
-  |> startProfileAt([0, 0], %)
-  |> line([1, 3.82], %, $seg01)
-  |> angledLineToX([
-       -angleToMatchLengthX(seg01, 3, %),
-       3
-     ], %)
-  |> close(%)
-  |> extrude(10, %)

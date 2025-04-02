@@ -16,7 +16,7 @@ Geometry metadata.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `id` |`string`| The id of the geometry. | No |
-| `sourceRange` |`SourceRange`| The source range. | No |
+| `id` |[`string`](/docs/kcl/types/string)| The id of the geometry. | No |
+| `sourceRange` |`[integer, integer, integer]`| The source range. | No |
 
 

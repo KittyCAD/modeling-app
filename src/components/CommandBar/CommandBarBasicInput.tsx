@@ -1,7 +1,11 @@
-import { useCommandsContext } from 'hooks/useCommandsContext'
-import { CommandArgument } from 'lib/commandTypes'
 import { useEffect, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
+
+import type { CommandArgument } from '@src/lib/commandTypes'
+import {
+  commandBarActor,
+  useCommandBarState,
+} from '@src/machines/commandBarMachine'
 
 function CommandBarBasicInput({
   arg,
@@ -15,8 +19,8 @@ function CommandBarBasicInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
-  const { commandBarSend, commandBarState } = useCommandsContext()
-  useHotkeys('mod + k, mod + /', () => commandBarSend({ type: 'Close' }))
+  const commandBarState = useCommandBarState()
+  useHotkeys('mod + k, mod + /', () => commandBarActor.send({ type: 'Close' }))
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -38,7 +42,7 @@ function CommandBarBasicInput({
         className="flex items-center mx-4 my-4"
       >
         <span className="capitalize px-2 py-1 rounded-l bg-chalkboard-100 dark:bg-chalkboard-80 text-chalkboard-10 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80">
-          {arg.name}
+          {arg.displayName || arg.name}
         </span>
         <input
           data-testid="cmd-bar-arg-value"
@@ -55,7 +59,7 @@ function CommandBarBasicInput({
               | undefined) || (arg.defaultValue as string)
           }
           onKeyDown={(event) => {
-            if (event.key === 'Backspace' && !event.currentTarget.value) {
+            if (event.key === 'Backspace' && event.shiftKey) {
               stepBack()
             }
           }}

@@ -40,7 +40,7 @@ The 3D view in Modeling App is just a video stream from our hosted geometry engi
 
 [Original demo video](https://drive.google.com/file/d/183_wjqGdzZ8EEZXSqZ3eDcJocYPCyOdC/view?pli=1)
 
-[Original demo slides](https://github.com/KittyCAD/Eng/files/10398178/demo.pdf)
+[Original demo slides](https://github.com/user-attachments/files/19010536/demo.pdf)
 
 ## Get started
 
@@ -48,22 +48,53 @@ We recommend downloading the latest application binary from [our Releases page](
 
 ## Running a development build
 
-First, [install Rust via `rustup`](https://www.rust-lang.org/tools/install). This project uses a lot of Rust compiled to [WASM](https://webassembly.org/) within it. We always use the latest stable version of Rust, so you may need to run `rustup update stable`. Then, run:
+Install a node version manager such as [fnm](https://github.com/Schniz/fnm?tab=readme-ov-#installation).
+
+On Windows, it's also recommended to [upgrade your PowerShell version](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.5#winget), we're using 7.
+
+Then in the repo run the following to install and use the node version specified in `.nvmrc`. You might need to specify your processor architecture with `--arch arm64` or `--arch x64` if it's not autodetected.
+
+```
+fnm install --corepack-enabled
+fnm use
+```
+
+Install the NPM dependencies with:
 
 ```
 yarn install
 ```
 
-followed by:
+This project uses a lot of Rust compiled to [WASM](https://webassembly.org/) within it. We have package scripts to run rustup, see `package.json` for reference:
 
 ```
+# macOS/Linux
+yarn install:rust
+yarn install:wasm-pack:sh
+
+# Windows
+yarn install:rust:windows
+yarn install:wasm-pack:cargo
+```
+
+Then to build the WASM layer, run:
+
+```
+# macOS/Linux
 yarn build:wasm
+
+# Windows
+yarn build:wasm:windows
 ```
 
-or if you have the gh cli installed
+Or if you have the `gh` cli installed and want to download the latest main wasm bundle. Note that on Windows, you need to associate .ps1 files with PowerShell, which can be done via the right click menu, selecting `C:\Program Files\PowerShell\7\pwsh.exe`, and you can install tools like `gh` via `yarn install:tools:windows`.
 
 ```
-./get-latest-wasm-bundle.sh # this will download the latest main wasm bundle
+# macOS/Linux
+yarn fetch:wasm
+
+# Windows
+yarn fetch:wasm:windows
 ```
 
 That will build the WASM binary and put in the `public` dir (though gitignored).
@@ -74,7 +105,7 @@ Finally, to run the web app only, run:
 yarn start
 ```
 
-If you're not an KittyCAD employee you won't be able to access the dev environment, you should copy everything from `.env.production` to `.env.development` to make it point to production instead, then when you navigate to `localhost:3000` the easiest way to sign in is to paste `localStorage.setItem('TOKEN_PERSIST_KEY', "your-token-from-https://zoo.dev/account/api-tokens")` replacing the with a real token from https://zoo.dev/account/api-tokens of course, then navigate to localhost:3000 again. Note that navigating to `localhost:3000/signin` removes your token so you will need to set the token again.
+If you're not a Zoo employee you won't be able to access the dev environment, you should copy everything from `.env.production` to `.env.development.local` to make it point to production instead, then when you navigate to `localhost:3000` the easiest way to sign in is to paste `localStorage.setItem('TOKEN_PERSIST_KEY', "your-token-from-https://zoo.dev/account/api-tokens")` replacing the with a real token from https://zoo.dev/account/api-tokens of course, then navigate to `localhost:3000` again. Note that navigating to `localhost:3000/signin` removes your token so you will need to set the token again.
 
 ### Development environment variables
 
@@ -91,7 +122,7 @@ Third-Party Cookies".
 
 ## Desktop
 
-To spin up the desktop app, `yarn install` and `yarn build:wasm` need to have been done before hand then
+To spin up the desktop app, `yarn install` and `yarn build:wasm` need to have been done before hand then:
 
 ```
 yarn tron:start
@@ -99,15 +130,16 @@ yarn tron:start
 
 This will start the application and hot-reload on changes.
 
-Devtools can be opened with the usual Cmd-Opt-I (Mac) or Ctrl-Shift-I (Linux and Windows).
+Devtools can be opened with the usual Command-Option-I (macOS) or Ctrl-Shift-I (Linux and Windows).
 
-To build, run `yarn tron:package`.
+To package the app for your platform with electron-builder, run `yarn tronb:package:dev` (or `yarn tronb:package:prod` to point to the .env.production variables).
 
 ## Checking out commits / Bisecting
 
-Which commands from setup are one off vs need to be run every time?
+Which commands from setup are one off vs. need to be run every time?
 
 The following will need to be run when checking out a new commit and guarantees the build is not stale:
+
 ```bash
 yarn install
 yarn build:wasm
@@ -158,11 +190,12 @@ Manually test against this [list](https://github.com/KittyCAD/modeling-app/issue
 
 ##### Updater-test builds
 
-The other `build-apps` output in the release `build-apps` workflow (triggered by 2.) is `updater-test-{arch}-{platform}`. It's a semi-automated process: for macOS, Windows, and Linux, download the corresponding updater-test artifact file, install the app, run it, expect an updater prompt to a dummy v0.255.255, install it and check that the app comes back at that version. 
+The other `build-apps` output in the release `build-apps` workflow (triggered by 2.) is `updater-test-{arch}-{platform}`. It's a semi-automated process: for macOS, Windows, and Linux, download the corresponding updater-test artifact file, install the app, run it, expect an updater prompt to a dummy v0.255.255, install it and check that the app comes back at that version.
 
 The only difference with these builds is that they point to a different update location on the release bucket, with this dummy v0.255.255 always available. This helps ensuring that the version we release will be able to update to the next one available.
 
 If the prompt doesn't show up, start the app in command line to grab the electron-updater logs. This is likely an issue with the current build that needs addressing (or the updater-test location in the storage bucket).
+
 ```
 # Windows (PowerShell)
 & 'C:\Program Files\Zoo Modeling App\Zoo Modeling App.exe'
@@ -178,14 +211,13 @@ If the prompt doesn't show up, start the app in command line to grab the electro
 
 Head over to https://github.com/KittyCAD/modeling-app/releases/new, pick the newly created tag and type it in the _Release title_ field as well.
 
-Hit _Generate release notes_ as a starting point to discuss the changelog in the issue. Once done, make sure _Set as the latest release_ is checked, and hit _Publish release_. 
+Hit _Generate release notes_ as a starting point to discuss the changelog in the issue. Once done, make sure _Set as the latest release_ is checked, and hit _Publish release_.
 
-A new `publish-apps-release` will kick in and you should be able to find it [here](https://github.com/KittyCAD/modeling-app/actions?query=event%3Arelease). On success, the files will be uploaded to the public bucket as well as to the GitHub release, and the announcement on Discord will be sent. 
+A new `publish-apps-release` will kick in and you should be able to find it [here](https://github.com/KittyCAD/modeling-app/actions?query=event%3Arelease). On success, the files will be uploaded to the public bucket as well as to the GitHub release, and the announcement on Discord will be sent.
 
 #### 5. Close the issue
 
 If everything is well and the release is out to the public, the issue tracking the release shall be closed.
-
 
 ## Fuzzing the parser
 
@@ -196,7 +228,7 @@ $ cargo install cargo-fuzz
 ```
 
 ```bash
-$ cd src/wasm-lib/kcl
+$ cd rust/kcl-lib
 
 # list the fuzz targets
 $ cargo fuzz list
@@ -224,6 +256,7 @@ snapshottoken=<your-snapshot-token>
 For a portable way to run Playwright you'll need Docker.
 
 #### Generic example
+
 After that, open a terminal and run:
 
 ```bash
@@ -235,7 +268,6 @@ and in another terminal, run:
 ```bash
 PW_TEST_CONNECT_WS_ENDPOINT=ws://127.0.0.1:4444/ yarn playwright test --project="Google Chrome" <test suite>
 ```
-
 
 #### Specific example
 
@@ -253,7 +285,6 @@ PW_TEST_CONNECT_WS_ENDPOINT=ws://127.0.0.1:4444/ yarn playwright test --project=
 
 run a specific test change the test from `test('...` to `test.only('...`
 (note if you commit this, the tests will instantly fail without running any of the tests)
-
 
 **Gotcha**: running the docker container with a mismatched image against your `./node_modules/playwright` will cause a failure. Make sure the versions are matched and up to date.
 
@@ -348,17 +379,19 @@ Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testin
 - `just`
 
 #### Setting KITTYCAD_API_TOKEN
+
 Use the production zoo.dev token, set this environment variable before running the tests
 
 #### Installing cargonextest
 
 ```
-cd src/wasm-lib
+cd rust 
 cargo search cargo-nextest
 cargo install cargo-nextest
 ```
 
 #### just
+
 install [`just`](https://github.com/casey/just?tab=readme-ov-file#pre-built-binaries)
 
 #### Running the tests
@@ -368,7 +401,7 @@ install [`just`](https://github.com/casey/just?tab=readme-ov-file#pre-built-bina
 # Make sure KITTYCAD_API_TOKEN=<prod zoo.dev token> is set
 # Make sure you installed cargo-nextest
 # Make sure you installed just
-cd src/wasm-lib
+cd rust 
 just test
 ```
 
@@ -376,7 +409,7 @@ just test
 # Without just
 # Make sure KITTYCAD_API_TOKEN=<prod zoo.dev token> is set
 # Make sure you installed cargo-nextest
-cd src/wasm-lib
+cd rust 
 export RUST_BRACKTRACE="full" && cargo nextest run --workspace --test-threads=1
 ```
 
@@ -385,13 +418,14 @@ Where `XXX` is an API token from the production engine (NOT the dev environment)
 We recommend using [nextest](https://nexte.st/) to run the Rust tests (its faster and is used in CI). Once installed, run the tests using
 
 ```
-cd src/wasm-lib
+cd rust 
 KITTYCAD_API_TOKEN=XXX cargo run nextest
 ```
 
 ### Mapping CI CD jobs to local commands
 
 When you see the CI CD fail on jobs you may wonder three things
+
 - Do I have a bug in my code?
 - Is the test flaky?
 - Is there a bug in `main`?
@@ -409,7 +443,6 @@ yarn test-setup
 ```
 
 > Gotcha, are packages up to date and is the wasm built?
-
 
 ```
 yarn tsc
@@ -466,7 +499,7 @@ PS: for the debug panel, the following JSON is useful for snapping the camera
 
 ## KCL
 
-For how to contribute to KCL, [see our KCL README](https://github.com/KittyCAD/modeling-app/tree/main/src/wasm-lib/kcl).
+For how to contribute to KCL, [see our KCL README](https://github.com/KittyCAD/modeling-app/tree/main/rust/kcl-lib).
 
 ### Logging
 

@@ -1,16 +1,17 @@
-import { toolTips } from 'lang/langHelpers'
-import { Selections } from 'lib/selections'
-import { Program, ProgramMemory, Expr } from '../../lang/wasm'
-import { getNodeFromPath } from '../../lang/queryAst'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import { toolTips } from '@src/lang/langHelpers'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
 import {
-  PathToNodeMap,
   getTransformInfos,
   transformAstSketchLines,
-} from '../../lang/std/sketchcombos'
-import { TransformInfo } from 'lang/std/stdTypes'
-import { kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+} from '@src/lang/std/sketchcombos'
+import type { TransformInfo } from '@src/lang/std/stdTypes'
+import type { Expr, Program, VariableMap } from '@src/lang/wasm'
+import type { Selections } from '@src/lib/selections'
+import { kclManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
 
 export function horzVertInfo(
   selectionRanges: Selections,
@@ -32,8 +33,8 @@ export function horzVertInfo(
 
   const isAllTooltips = nodes.every(
     (node) =>
-      node?.type === 'CallExpression' &&
-      toolTips.includes(node.callee.name as any)
+      (node?.type === 'CallExpression' || node?.type === 'CallExpressionKw') &&
+      toolTips.includes(node.callee.name.name as any)
   )
 
   const theTransforms = getTransformInfos(
@@ -51,7 +52,7 @@ export function applyConstraintHorzVert(
   selectionRanges: Selections,
   horOrVert: 'vertical' | 'horizontal',
   ast: Node<Program>,
-  programMemory: ProgramMemory
+  memVars: VariableMap
 ):
   | {
       modifiedAst: Node<Program>
@@ -66,7 +67,7 @@ export function applyConstraintHorzVert(
     ast,
     selectionRanges,
     transformInfos,
-    programMemory,
+    memVars,
     referenceSegName: '',
   })
 }

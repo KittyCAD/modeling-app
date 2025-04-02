@@ -1,9 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
-import ProjectSidebarMenu from './ProjectSidebarMenu'
-import { SettingsAuthProviderJest } from './SettingsAuthProvider'
-import { CommandBarProvider } from './CommandBar/CommandBarProvider'
-import { Project } from 'lib/project'
+
+import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
+import type { Project } from '@src/lib/project'
 
 const now = new Date()
 const projectWellFormed = {
@@ -16,6 +15,7 @@ const projectWellFormed = {
       children: [],
     },
   ],
+  readWriteAccess: true,
   metadata: {
     created: now.toISOString(),
     modified: now.toISOString(),
@@ -33,11 +33,7 @@ describe('ProjectSidebarMenu tests', () => {
   test('Disables popover menu by default', () => {
     render(
       <BrowserRouter>
-        <CommandBarProvider>
-          <SettingsAuthProviderJest>
-            <ProjectSidebarMenu project={projectWellFormed} />
-          </SettingsAuthProviderJest>
-        </CommandBarProvider>
+        <ProjectSidebarMenu project={projectWellFormed} />
       </BrowserRouter>
     )
 

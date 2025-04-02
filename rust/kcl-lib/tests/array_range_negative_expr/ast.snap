@@ -1,0 +1,198 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing array_range_negative_expr.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "name": "xs",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 5,
+            "end": 0,
+            "endElement": {
+              "commentStart": 17,
+              "end": 0,
+              "raw": "5",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 5.0,
+                "suffix": "None"
+              }
+            },
+            "endInclusive": true,
+            "start": 0,
+            "startElement": {
+              "arguments": [
+                {
+                  "argument": {
+                    "commentStart": 11,
+                    "end": 0,
+                    "raw": "5",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 5.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "commentStart": 10,
+                  "end": 0,
+                  "operator": "-",
+                  "start": 0,
+                  "type": "UnaryExpression",
+                  "type": "UnaryExpression"
+                }
+              ],
+              "callee": {
+                "abs_path": false,
+                "commentStart": 6,
+                "end": 0,
+                "name": {
+                  "commentStart": 6,
+                  "end": 0,
+                  "name": "int",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name"
+              },
+              "commentStart": 6,
+              "end": 0,
+              "start": 0,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            "type": "ArrayRangeExpression",
+            "type": "ArrayRangeExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 20,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "commentStart": 32,
+              "computed": false,
+              "end": 0,
+              "object": {
+                "commentStart": 32,
+                "end": 0,
+                "name": "xs",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "property": {
+                "commentStart": 35,
+                "end": 0,
+                "raw": "0",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 0.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 0,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
+            },
+            {
+              "argument": {
+                "commentStart": 40,
+                "end": 0,
+                "raw": "5",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 5.0,
+                  "suffix": "None"
+                }
+              },
+              "commentStart": 39,
+              "end": 0,
+              "operator": "-",
+              "start": 0,
+              "type": "UnaryExpression",
+              "type": "UnaryExpression"
+            },
+            {
+              "commentStart": 43,
+              "end": 0,
+              "raw": "0.001",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.001,
+                "suffix": "None"
+              }
+            },
+            {
+              "commentStart": 50,
+              "end": 0,
+              "raw": "\"first element is -5\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "first element is -5"
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 20,
+            "end": 0,
+            "name": {
+              "commentStart": 20,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 20,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "start": 0
+  }
+}

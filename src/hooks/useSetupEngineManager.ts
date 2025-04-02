@@ -1,29 +1,30 @@
-import { useLayoutEffect, useEffect, useRef } from 'react'
-import { engineCommandManager, kclManager } from 'lib/singletons'
-import { deferExecution } from 'lib/utils'
-import { Themes } from 'lib/theme'
-import { makeDefaultPlanes } from 'lang/wasm'
-import { useModelingContext } from './useModelingContext'
-import { useNetworkContext } from 'hooks/useNetworkContext'
-import { useAppState, useAppStream } from 'AppState'
-import { SettingsViaQueryString } from 'lib/settings/settingsTypes'
+import { useAppState, useAppStream } from '@src/AppState'
+import { useEffect, useLayoutEffect, useRef } from 'react'
+
+import type { useModelingContext } from '@src/hooks/useModelingContext'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import {
-  EngineConnectionStateType,
   DisconnectingType,
-} from 'lang/std/engineConnection'
+  EngineConnectionStateType,
+} from '@src/lang/std/engineConnection'
+import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
+import { engineCommandManager } from '@src/lib/singletons'
+import { Themes } from '@src/lib/theme'
+import { deferExecution } from '@src/lib/utils'
 
 export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,
   modelingSend: ReturnType<typeof useModelingContext>['send'],
   modelingContext: ReturnType<typeof useModelingContext>['context'],
-  settings = {
+  settings: SettingsViaQueryString = {
     pool: null,
     theme: Themes.System,
     highlightEdges: true,
     enableSSAO: true,
     showScaleGrid: false,
     cameraProjection: 'perspective',
-  } as SettingsViaQueryString,
+    cameraOrbit: 'spherical',
+  },
   token?: string
 ) {
   const networkContext = useNetworkContext()
@@ -53,9 +54,6 @@ export function useSetupEngineManager(
       height: quadHeight,
       token,
       settings,
-      makeDefaultPlanes: () => {
-        return makeDefaultPlanes(kclManager.engineCommandManager)
-      },
     })
     hasSetNonZeroDimensions.current = true
   }
@@ -96,14 +94,12 @@ export function useSetupEngineManager(
     engineCommandManager.settings = settings
 
     const handleResize = deferExecution(() => {
-      const { width, height } = getDimensions(
-        streamRef?.current?.offsetWidth ?? 0,
-        streamRef?.current?.offsetHeight ?? 0
+      engineCommandManager.handleResize(
+        getDimensions(
+          streamRef?.current?.offsetWidth ?? 0,
+          streamRef?.current?.offsetHeight ?? 0
+        )
       )
-      engineCommandManager.handleResize({
-        streamWidth: width,
-        streamHeight: height,
-      })
     }, 500)
 
     const onOnline = () => {

@@ -4,20 +4,22 @@ import {
   IntoServer,
   LspWorkerEventType,
 } from '@kittycad/codemirror-lsp-client'
-import { fileSystemManager } from 'lang/std/fileSystemManager'
+import type * as jsrpc from 'json-rpc-2.0'
+
 import init, {
-  ServerConfig,
-  copilot_lsp_run,
-  kcl_lsp_run,
-} from 'wasm-lib/pkg/wasm_lib'
-import * as jsrpc from 'json-rpc-2.0'
-import {
-  LspWorkerEvent,
-  LspWorker,
-  KclWorkerOptions,
+  LspServerConfig,
+  lsp_run_copilot,
+  lsp_run_kcl,
+} from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+
+import type {
   CopilotWorkerOptions,
-} from 'editor/plugins/lsp/types'
-import { err, reportRejection } from 'lib/trap'
+  KclWorkerOptions,
+  LspWorkerEvent,
+} from '@src/editor/plugins/lsp/types'
+import { LspWorker } from '@src/editor/plugins/lsp/types'
+import { fileSystemManager } from '@src/lang/std/fileSystemManager'
+import { err, reportRejection } from '@src/lib/trap'
 
 const intoServer: IntoServer = new IntoServer()
 const fromServer: FromServer | Error = FromServer.create()
@@ -30,13 +32,13 @@ const initialise = async (wasmUrl: string) => {
 }
 
 export async function copilotLspRun(
-  config: ServerConfig,
+  config: LspServerConfig,
   token: string,
   baseUrl: string
 ) {
   try {
     console.log('starting copilot lsp')
-    await copilot_lsp_run(config, token, baseUrl)
+    await lsp_run_copilot(config, token, baseUrl)
   } catch (e: any) {
     console.log('copilot lsp failed', e)
     // We can't restart here because a moved value, we should do this another way.
@@ -44,13 +46,13 @@ export async function copilotLspRun(
 }
 
 export async function kclLspRun(
-  config: ServerConfig,
+  config: LspServerConfig,
   token: string,
   baseUrl: string
 ) {
   try {
     console.log('start kcl lsp')
-    await kcl_lsp_run(config, null, undefined, token, baseUrl)
+    await lsp_run_kcl(config, token, baseUrl)
   } catch (e: any) {
     console.log('kcl lsp failed', e)
     // We can't restart here because a moved value, we should do this another way.
@@ -70,7 +72,7 @@ onmessage = function (event: MessageEvent) {
       initialise(wasmUrl)
         .then(async (instantiatedModule) => {
           console.log('Worker: WASM module loaded', worker, instantiatedModule)
-          const config = new ServerConfig(
+          const config = new LspServerConfig(
             intoServer,
             fromServer,
             fileSystemManager

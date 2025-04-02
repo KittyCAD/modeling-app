@@ -1,0 +1,20 @@
+// This file is used by the import docs.
+
+export fn width = () => {
+  return 10
+}
+
+export fn height = () => {
+  return 10
+}
+
+export fn buildSketch = (plane, offset) => {
+  w = width()
+  h = height()
+  return startSketchOn(plane)
+  |> startProfileAt(offset, %)
+  |> line(end = [w, 0])
+  |> line(end = [0, h])
+  |> line(end = [-w, 0])
+  |> close()
+}

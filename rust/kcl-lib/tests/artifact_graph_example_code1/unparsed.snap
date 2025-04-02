@@ -1,0 +1,20 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing artifact_graph_example_code1.kcl
+---
+sketch001 = startSketchOn(XY)
+  |> startProfileAt([-5, -5], %)
+  |> line(end = [0, 10])
+  |> line(end = [10.55, 0], tag = $seg01)
+  |> line(end = [0, -10], tag = $seg02)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = -10)
+  |> fillet(radius = 5, tags = [seg01])
+sketch002 = startSketchOn(extrude001, seg02)
+  |> startProfileAt([-2, -6], %)
+  |> line(end = [2, 3])
+  |> line(end = [2, -3])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude002 = extrude(sketch002, length = 5)

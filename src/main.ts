@@ -1,56 +1,83 @@
 // Some of the following was taken from bits and pieces of the vite-typescript
 // template that ElectronJS provides.
-import dotenv from 'dotenv'
-import {
-  app,
-  BrowserWindow,
-  ipcMain,
-  dialog,
-  shell,
-  nativeTheme,
-  desktopCapturer,
-  systemPreferences,
-} from 'electron'
-import path from 'path'
-import { Issuer } from 'openid-client'
-import { Bonjour, Service } from 'bonjour-service'
 // @ts-ignore: TS1343
 import * as kittycad from '@kittycad/lib/import'
+import * as packageJSON from '@root/package.json'
+import type { Service } from 'bonjour-service'
+import { Bonjour } from 'bonjour-service'
+import dotenv from 'dotenv'
+import {
+  BrowserWindow,
+  Menu,
+  app,
+  desktopCapturer,
+  dialog,
+  ipcMain,
+  nativeTheme,
+  screen,
+  shell,
+  systemPreferences,
+} from 'electron'
 import electronUpdater, { type AppUpdater } from 'electron-updater'
-import minimist from 'minimist'
-import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
-import { reportRejection } from 'lib/trap'
-import argvFromYargs from './commandLineArgs'
+import { Issuer } from 'openid-client'
+import path from 'path'
 
-import * as packageJSON from '../package.json'
+import {
+  argvFromYargs,
+  getPathOrUrlFromArgs,
+  parseCLIArgs,
+} from '@src/commandLineArgs'
+import { ZOO_STUDIO_PROTOCOL } from '@src/lib/constants'
+import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
+import { reportRejection } from '@src/lib/trap'
+import {
+  buildAndSetMenuForFallback,
+  buildAndSetMenuForModelingPage,
+  buildAndSetMenuForProjectPage,
+  disableMenu,
+  enableMenu,
+} from '@src/menu'
 
 let mainWindow: BrowserWindow | null = null
 
-// Check the command line arguments for a project path
-const args = parseCLIArgs()
+// Preemptive code, GC may delete a menu while a user is using it as seen in VSCode
+// as seen on https://github.com/microsoft/vscode/issues/55347
+let oldMenus: Menu[] = []
+const scheduleMenuGC = () => {
+  setTimeout(() => {
+    oldMenus = []
+  }, 10000)
+}
 
-// If it's not set, scream.
-const NODE_ENV = process.env.NODE_ENV || 'production'
-if (!process.env.NODE_ENV)
-  console.warn(
-    '*FOX SCREAM* process.env.NODE_ENV is not explicitly set!, defaulting to production'
-  )
-// Default prod values
+// Check the command line arguments for a project path
+const args = parseCLIArgs(process.argv)
+
+// @ts-ignore: TS1343
+const viteEnv = import.meta.env
+const NODE_ENV = process.env.NODE_ENV || viteEnv.MODE
+const IS_PLAYWRIGHT = process.env.IS_PLAYWRIGHT
 
 // dotenv override when present
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 
-process.env.VITE_KC_API_WS_MODELING_URL ??=
-  'wss://api.zoo.dev/ws/modeling/commands'
-process.env.VITE_KC_API_BASE_URL ??= 'https://api.zoo.dev'
-process.env.VITE_KC_SITE_BASE_URL ??= 'https://zoo.dev'
-process.env.VITE_KC_SKIP_AUTH ??= 'false'
-process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??= '15000'
+// default vite values based on mode
+process.env.NODE_ENV ??= viteEnv.MODE
+process.env.BASE_URL ??= viteEnv.VITE_KC_API_BASE_URL
+process.env.VITE_KC_API_WS_MODELING_URL ??= viteEnv.VITE_KC_API_WS_MODELING_URL
+process.env.VITE_KC_API_BASE_URL ??= viteEnv.VITE_KC_API_BASE_URL
+process.env.VITE_KC_SITE_BASE_URL ??= viteEnv.VITE_KC_SITE_BASE_URL
+process.env.VITE_KC_SITE_APP_URL ??= viteEnv.VITE_KC_SITE_APP_URL
+process.env.VITE_KC_SKIP_AUTH ??= viteEnv.VITE_KC_SKIP_AUTH
+process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??=
+  viteEnv.VITE_KC_CONNECTION_TIMEOUT_MS
 
-const ZOO_STUDIO_PROTOCOL = 'zoo-studio'
+// Likely convenient to keep for debugging
+console.log('Environment vars', process.env)
+console.log('Parsed CLI args', args)
 
-/// Register our application to handle all "electron-fiddle://" protocols.
+/// Register our application to handle all "zoo-studio:" protocols.
+const singleInstanceLock = app.requestSingleInstanceLock()
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
     app.setAsDefaultProtocolClient(ZOO_STUDIO_PROTOCOL, process.execPath, [
@@ -63,20 +90,39 @@ if (process.defaultApp) {
 
 // Global app listeners
 // Must be done before ready event.
-registerStartupListeners()
+// Checking against this lock is needed for Windows and Linux, see
+// https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app#windows-and-linux-code
+if (!singleInstanceLock && !IS_PLAYWRIGHT) {
+  app.quit()
+} else {
+  registerStartupListeners()
+}
 
-const createWindow = (filePath?: string, reuse?: boolean): BrowserWindow => {
+const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   let newWindow
 
   if (reuse) {
     newWindow = mainWindow
   }
   if (!newWindow) {
+    const primaryDisplay = screen.getPrimaryDisplay()
+    const { width, height } = primaryDisplay.workAreaSize
+
+    const windowWidth = Math.max(500, width - 150)
+    const windowHeight = Math.max(400, height - 100)
+
+    const x = primaryDisplay.workArea.x + Math.floor((width - windowWidth) / 2)
+    const y =
+      primaryDisplay.workArea.y + Math.floor((height - windowHeight) / 2)
+
     newWindow = new BrowserWindow({
-      autoHideMenuBar: true,
+      autoHideMenuBar: false,
       show: false,
-      width: 1800,
-      height: 1200,
+      enableLargerThanScreen: true,
+      width: windowWidth,
+      height: windowHeight,
+      x,
+      y,
       webPreferences: {
         nodeIntegration: false, // do not give the application implicit system access
         contextIsolation: true, // expose system functions in preload
@@ -90,32 +136,76 @@ const createWindow = (filePath?: string, reuse?: boolean): BrowserWindow => {
     })
   }
 
+  // Deep Link: Case of a cold start from Windows or Linux
+  const pathOrUrl = getPathOrUrlFromArgs(args)
+  if (
+    !pathToOpen &&
+    pathOrUrl &&
+    pathOrUrl.startsWith(ZOO_STUDIO_PROTOCOL + '://')
+  ) {
+    pathToOpen = pathOrUrl
+    console.log('Retrieved deep link from CLI args', pathToOpen)
+  }
+
+  // Deep Link: Case of a second window opened for macOS
+  // @ts-ignore
+  if (!pathToOpen && global['openUrls'] && global['openUrls'][0]) {
+    // @ts-ignore
+    pathToOpen = global['openUrls'][0]
+    console.log('Retrieved deep link from open-url', pathToOpen)
+  }
+
+  const pathIsCustomProtocolLink =
+    pathToOpen?.startsWith(ZOO_STUDIO_PROTOCOL) ?? false
+
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    newWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL).catch(reportRejection)
+    const filteredPath = pathToOpen
+      ? decodeURI(pathToOpen.replace(ZOO_STUDIO_PROTOCOL + '://', ''))
+      : ''
+    const fullHashBasedUrl = `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/#/${filteredPath}`
+    newWindow.loadURL(fullHashBasedUrl).catch(reportRejection)
   } else {
-    getProjectPathAtStartup(filePath)
-      .then(async (projectPath) => {
-        const startIndex = path.join(
-          __dirname,
-          `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
-        )
-
-        if (projectPath === null) {
-          await newWindow.loadFile(startIndex)
-          return
-        }
-
-        console.log('Loading file', projectPath)
-
-        const fullUrl = `/file/${encodeURIComponent(projectPath)}`
-        console.log('Full URL', fullUrl)
-
-        await newWindow.loadFile(startIndex, {
-          hash: fullUrl,
+    if (pathIsCustomProtocolLink && pathToOpen) {
+      // We're trying to open a custom protocol link
+      // TODO: fix the replace %3 thing
+      const urlNoProtocol = pathToOpen
+        .replace(ZOO_STUDIO_PROTOCOL + '://', '')
+        .replaceAll('%3D', '')
+        .replaceAll('%3', '')
+      const filteredPath = decodeURI(urlNoProtocol)
+      const startIndex = path.join(
+        __dirname,
+        `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
+      )
+      newWindow
+        .loadFile(startIndex, {
+          hash: filteredPath,
         })
-      })
-      .catch(reportRejection)
+        .catch(reportRejection)
+    } else {
+      // otherwise we're trying to open a local file from the command line
+      getProjectPathAtStartup(pathToOpen)
+        .then(async (projectPath) => {
+          const startIndex = path.join(
+            __dirname,
+            `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
+          )
+
+          if (projectPath === null) {
+            await newWindow.loadFile(startIndex)
+            return
+          }
+
+          const fullUrl = `/file/${encodeURIComponent(projectPath)}`
+          console.log('Full URL', fullUrl)
+
+          await newWindow.loadFile(startIndex, {
+            hash: fullUrl,
+          })
+        })
+        .catch(reportRejection)
+    }
   }
 
   // Open the DevTools.
@@ -139,8 +229,12 @@ app.on('window-all-closed', () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', (event, data) => {
+  // Avoid potentially 2 ready fires
+  if (mainWindow) return
   // Create the mainWindow
   mainWindow = createWindow()
+  // Set menu application to null to avoid default electron menu
+  Menu.setApplicationMenu(null)
 })
 
 // For now there is no good reason to separate these out to another file(s)
@@ -277,12 +371,10 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
 ipcMain.handle('kittycad', (event, data) => {
   return data.access
     .split('.')
-    .reduce(
-      (obj: any, prop: any) => obj[prop],
-      kittycad
-    )(data.args)
+    .reduce((obj: any, prop: any) => obj[prop], kittycad)(data.args)
 })
 
+// Used to find other devices on the local network, e.g. 3D printers, CNC machines, etc.
 ipcMain.handle('find_machine_api', () => {
   const timeoutAfterMs = 5000
   return new Promise((resolve, reject) => {
@@ -293,7 +385,6 @@ ipcMain.handle('find_machine_api', () => {
       console.error(error)
       resolve(null)
     })
-    console.log('Looking for machine API...')
     bonjourEt.find(
       { protocol: 'tcp', type: 'machine-api' },
       (service: Service) => {
@@ -312,6 +403,43 @@ ipcMain.handle('find_machine_api', () => {
   })
 })
 
+// Given the route create the new context menu
+// internal menu state will be reset since it creates a new one from
+// the initial state
+ipcMain.handle('create-menu', (event, data) => {
+  const page = data.page
+
+  if (!(page === 'project' || page === 'modeling' || page === 'fallback')) {
+    return
+  }
+
+  // Store old menu in our array to avoid GC to collect the menu and crash
+  const oldMenu = Menu.getApplicationMenu()
+  if (oldMenu) {
+    oldMenus.push(oldMenu)
+  }
+
+  if (page === 'project' && mainWindow) {
+    buildAndSetMenuForProjectPage(mainWindow)
+  } else if (page === 'modeling' && mainWindow) {
+    buildAndSetMenuForModelingPage(mainWindow)
+  } else if (page === 'fallback' && mainWindow) {
+    buildAndSetMenuForFallback(mainWindow)
+  }
+
+  scheduleMenuGC()
+})
+
+ipcMain.handle('enable-menu', (event, data) => {
+  const menuId = data.menuId
+  enableMenu(menuId)
+})
+
+ipcMain.handle('disable-menu', (event, data) => {
+  const menuId = data.menuId
+  disableMenu(menuId)
+})
+
 export function getAutoUpdater(): AppUpdater {
   // Using destructuring to access autoUpdater due to the CommonJS module of 'electron-updater'.
   // It is a workaround for ESM compatibility issues, see https://github.com/electron-userland/electron-builder/issues/7976.
@@ -320,6 +448,11 @@ export function getAutoUpdater(): AppUpdater {
 }
 
 app.on('ready', () => {
+  // Disable auto updater on non-versioned builds
+  if (packageJSON.version === '0.0.0' && viteEnv.MODE !== 'production') {
+    return
+  }
+
   const autoUpdater = getAutoUpdater()
   // TODO: we're getting `Error: Response ends without calling any handlers` with our setup,
   // so at the moment this isn't worth enabling
@@ -333,8 +466,8 @@ app.on('ready', () => {
   }, fifteenMinutes)
 
   autoUpdater.on('error', (error) => {
-    console.error('updater-error', error)
-    mainWindow?.webContents.send('updater-error', error)
+    console.error('update-error', error)
+    mainWindow?.webContents.send('update-error', error)
   })
 
   autoUpdater.on('update-available', (info) => {
@@ -367,6 +500,9 @@ app.on('ready', () => {
   ipcMain.handle('app.restart', () => {
     autoUpdater.quitAndInstall()
   })
+  ipcMain.handle('app.checkForUpdates', () => {
+    return autoUpdater.checkForUpdates()
+  })
 })
 
 const getProjectPathAtStartup = async (
@@ -375,7 +511,8 @@ const getProjectPathAtStartup = async (
   // If we are in development mode, we don't want to load a project at
   // startup.
   // Since the args passed are always '.'
-  if (NODE_ENV !== 'production') {
+  // aka Forge for yarn tron:start live dev or playwright tests, but not dev packaged apps
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL || IS_PLAYWRIGHT) {
     return null
   }
 
@@ -428,11 +565,20 @@ const getProjectPathAtStartup = async (
   return null
 }
 
-function parseCLIArgs(): minimist.ParsedArgs {
-  return minimist(process.argv, {})
-}
-
 function registerStartupListeners() {
+  // Linux and Windows from https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    // Deep Link: second instance for Windows and Linux
+    // Likely convenient to keep for debugging
+    console.log(
+      'Parsed CLI args from second instance',
+      parseCLIArgs(commandLine)
+    )
+    const pathOrUrl = getPathOrUrlFromArgs(parseCLIArgs(commandLine))
+    console.log('Retrieved path or deep link from second-instance', pathOrUrl)
+    createWindow(pathOrUrl)
+  })
+
   /**
    * macOS: when someone drops a file to the not-yet running VSCode, the open-file event fires even before
    * the app-ready event. We listen very early for open-file and remember this upon startup as path to open.
@@ -452,7 +598,7 @@ function registerStartupListeners() {
   })
 
   /**
-   * macOS: react to open-url requests.
+   * macOS: react to open-url requests (including Deep Link on second instances)
    */
   const openUrls: string[] = []
   // @ts-ignore

@@ -1,0 +1,89 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "declaration": {
+        "commentStart": 3,
+        "end": 27,
+        "id": {
+          "commentStart": 3,
+          "end": 6,
+          "name": "foo",
+          "start": 3,
+          "type": "Identifier"
+        },
+        "init": {
+          "body": {
+            "body": [
+              {
+                "argument": {
+                  "commentStart": 24,
+                  "end": 25,
+                  "raw": "1",
+                  "start": 24,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
+                  }
+                },
+                "commentStart": 17,
+                "end": 25,
+                "start": 17,
+                "type": "ReturnStatement",
+                "type": "ReturnStatement"
+              }
+            ],
+            "commentStart": 15,
+            "end": 27,
+            "start": 15
+          },
+          "commentStart": 6,
+          "end": 27,
+          "params": [
+            {
+              "type": "Parameter",
+              "identifier": {
+                "commentStart": 7,
+                "end": 8,
+                "name": "x",
+                "start": 7,
+                "type": "Identifier"
+              },
+              "default_value": {
+                "commentStart": 12,
+                "end": 13,
+                "raw": "2",
+                "start": 12,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
+              }
+            }
+          ],
+          "start": 6,
+          "type": "FunctionExpression",
+          "type": "FunctionExpression"
+        },
+        "start": 3,
+        "type": "VariableDeclarator"
+      },
+      "end": 27,
+      "kind": "fn",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "commentStart": 0,
+  "end": 27,
+  "start": 0
+}

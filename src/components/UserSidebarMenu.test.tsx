@@ -1,14 +1,13 @@
+import type { Models } from '@kittycad/lib'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import UserSidebarMenu from './UserSidebarMenu'
 import {
   Route,
   RouterProvider,
   createMemoryRouter,
   createRoutesFromElements,
 } from 'react-router-dom'
-import { Models } from '@kittycad/lib'
-import { SettingsAuthProviderJest } from './SettingsAuthProvider'
-import { CommandBarProvider } from './CommandBar/CommandBarProvider'
+
+import UserSidebarMenu from '@src/components/UserSidebarMenu'
 
 type User = Models['User_type']
 
@@ -121,14 +120,7 @@ function TestWrap({ children }: { children: React.ReactNode }) {
   // https://reactrouter.com/en/6.16.0/routers/picking-a-router#using-v64-data-apis
   const router = createMemoryRouter(
     createRoutesFromElements(
-      <Route
-        path="/file/:id"
-        element={
-          <CommandBarProvider>
-            <SettingsAuthProviderJest>{children}</SettingsAuthProviderJest>
-          </CommandBarProvider>
-        }
-      />
+      <Route path="/file/:id" element={<>{children}</>} />
     ),
     {
       initialEntries: ['/file/new'],

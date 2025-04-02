@@ -1,12 +1,13 @@
 import { Dialog } from '@headlessui/react'
-import { ActionButton } from './ActionButton'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useState } from 'react'
 
+import { ActionButton } from '@src/components/ActionButton'
+import { useSettings } from '@src/machines/appMachine'
+
 const DownloadAppBanner = () => {
-  const { settings } = useSettingsAuthContext()
+  const settings = useSettings()
   const [isBannerDismissed, setIsBannerDismissed] = useState(
-    settings.context.app.dismissWebBanner.current
+    settings.app.dismissWebBanner.current
   )
 
   return (

@@ -1,11 +1,20 @@
-import { ipcRenderer, contextBridge } from 'electron'
-import path from 'path'
+import packageJson from '@root/package.json'
+import type { MachinesListing } from '@src/components/MachineManagerProvider'
+import chokidar from 'chokidar'
+import type { IpcRendererEvent } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
+import fsSync from 'node:fs'
 import fs from 'node:fs/promises'
 import os from 'node:os'
-import fsSync from 'node:fs'
-import packageJson from '../package.json'
-import { MachinesListing } from 'components/MachineManagerProvider'
-import chokidar from 'chokidar'
+import path from 'path'
+
+import type { Channel } from '@src/channels'
+import type { WebContentSendPayload } from '@src/menu/channels'
+
+const typeSafeIpcRendererOn = (
+  channel: Channel,
+  listener: (event: IpcRendererEvent, ...args: any[]) => void
+) => ipcRenderer.on(channel, listener)
 
 const resizeWindow = (width: number, height: number) =>
   ipcRenderer.invoke('app.resizeWindow', [width, height])
@@ -38,6 +47,7 @@ const onUpdateDownloadStart = (
 const onUpdateError = (callback: (value: Error) => void) =>
   ipcRenderer.on('update-error', (_event: any, value) => callback(value))
 const appRestart = () => ipcRenderer.invoke('app.restart')
+const appCheckForUpdates = () => ipcRenderer.invoke('app.checkForUpdates')
 const getAppTestProperty = (propertyName: string) =>
   ipcRenderer.invoke('app.testProperty', propertyName)
 
@@ -97,13 +107,39 @@ const rename = (prev: string, next: string) => fs.rename(prev, next)
 const writeFile = (path: string, data: string | Uint8Array) =>
   fs.writeFile(path, data, 'utf-8')
 const readdir = (path: string) => fs.readdir(path, 'utf-8')
-const stat = (path: string) =>
-  fs.stat(path).catch((e) => Promise.reject(e.code))
+const stat = (path: string) => {
+  return fs.stat(path).catch((e) => Promise.reject(e.code))
+}
+
 // Electron has behavior where it doesn't clone the prototype chain over.
 // So we need to call stat.isDirectory on this side.
 const statIsDirectory = (path: string) =>
   stat(path).then((res) => res.isDirectory())
 const getPath = async (name: string) => ipcRenderer.invoke('app.getPath', name)
+
+const canReadWriteDirectory = async (
+  path: string
+): Promise<{ value: boolean; error: unknown } | Error> => {
+  const isDirectory = await statIsDirectory(path)
+  if (!isDirectory) {
+    return new Error('path is not a directory. Do not send a file path.')
+  }
+
+  // bitwise OR to check read and write permissions
+  try {
+    const canReadWrite = await fs.access(
+      path,
+      fs.constants.R_OK | fs.constants.W_OK
+    )
+    // This function returns undefined. If it cannot access the path it will throw an error
+    return canReadWrite === undefined
+      ? { value: true, error: undefined }
+      : { value: false, error: undefined }
+  } catch (e) {
+    console.error(e)
+    return { value: false, error: e }
+  }
+}
 
 const exposeProcessEnvs = (varNames: Array<string>) => {
   const envs: Record<string, string> = {}
@@ -129,11 +165,63 @@ const listMachines = async (
   })
 }
 
-const getMachineApiIp = async (): Promise<String | null> =>
+const getMachineApiIp = async (): Promise<string | null> =>
   ipcRenderer.invoke('find_machine_api')
 
 const getArgvParsed = () => {
   return ipcRenderer.invoke('argv.parser')
+}
+
+// Creating a menu will refresh the state of the menu
+// Anything that was enabled will be reset to the hard coded state of the original menu
+const createHomePageMenu = async (): Promise<any> => {
+  return ipcRenderer.invoke('create-menu', { page: 'project' })
+}
+
+// Creating a menu will refresh the state of the menu
+// Anything that was enabled will be reset to the hard coded state of the original menu
+const createModelingPageMenu = async (): Promise<any> => {
+  return ipcRenderer.invoke('create-menu', { page: 'modeling' })
+}
+
+// Creating a menu will refresh the state of the menu
+// Anything that was enabled will be reset to the hard coded state of the original menu
+const createFallbackMenu = async (): Promise<any> => {
+  return ipcRenderer.invoke('create-menu', { page: 'fallback' })
+}
+
+// Given the application menu, try to enable the menu
+const enableMenu = async (menuId: string): Promise<any> => {
+  return ipcRenderer.invoke('enable-menu', {
+    menuId,
+  })
+}
+
+// Given the application menu, try to disable the menu
+const disableMenu = async (menuId: string): Promise<any> => {
+  return ipcRenderer.invoke('disable-menu', {
+    menuId,
+  })
+}
+
+/**
+ * Gotcha: Even if the callback function is the same function in JS memory
+ * when passing it over the IPC layer it will not map to the same function.
+ * this means your .on and .off with the same callback function in memory will
+ * not be removed.
+ * To remove the listener call the return value of menuOn. It builds a closure
+ * of the subscription on the electron side and it will let you remove the listener correctly.
+ */
+const menuOn = (callback: (payload: WebContentSendPayload) => void) => {
+  // Build a new subscription function for the closure below
+  const subscription = (event: IpcRendererEvent, data: WebContentSendPayload) =>
+    callback(data)
+  typeSafeIpcRendererOn('menu-action-clicked', subscription)
+
+  // This is the only way to remove the event listener from the JS side
+  return () => {
+    ipcRenderer.removeListener('menu-action-clicked', subscription)
+  }
 }
 
 contextBridge.exposeInMainWorld('electron', {
@@ -144,6 +232,7 @@ contextBridge.exposeInMainWorld('electron', {
   // exported.
   watchFileOn,
   watchFileOff,
+  copyFile: fs.copyFile,
   readFile,
   writeFile,
   exists,
@@ -185,6 +274,7 @@ contextBridge.exposeInMainWorld('electron', {
         'VITE_KC_API_WS_MODELING_URL',
         'VITE_KC_API_BASE_URL',
         'VITE_KC_SITE_BASE_URL',
+        'VITE_KC_SITE_APP_URL',
         'VITE_KC_SKIP_AUTH',
         'VITE_KC_CONNECTION_TIMEOUT_MS',
         'VITE_KC_DEV_TOKEN',
@@ -205,6 +295,14 @@ contextBridge.exposeInMainWorld('electron', {
   onUpdateDownloaded,
   onUpdateError,
   appRestart,
+  appCheckForUpdates,
   getArgvParsed,
   resizeWindow,
+  createHomePageMenu,
+  createModelingPageMenu,
+  createFallbackMenu,
+  enableMenu,
+  disableMenu,
+  menuOn,
+  canReadWriteDirectory,
 })

@@ -1,78 +1,31 @@
-import { ActionFunction, LoaderFunction, redirect } from 'react-router-dom'
-import { FileLoaderData, HomeLoaderData, IndexLoaderData } from './types'
-import { getProjectMetaByRouteId, PATHS } from './paths'
-import { isDesktop } from './isDesktop'
-import { BROWSER_PATH } from 'lib/paths'
+import type { LoaderFunction } from 'react-router-dom'
+import { redirect } from 'react-router-dom'
+import { waitFor } from 'xstate'
+
+import { fileSystemManager } from '@src/lang/std/fileSystemManager'
+import { normalizeLineEndings } from '@src/lib/codeEditor'
 import {
   BROWSER_FILE_NAME,
   BROWSER_PROJECT_NAME,
+  FILE_EXT,
   PROJECT_ENTRYPOINT,
-} from 'lib/constants'
-import { loadAndValidateSettings } from './settings/settingsUtils'
-import makeUrlPathRelative from './makeUrlPathRelative'
-import { codeManager } from 'lib/singletons'
-import { fileSystemManager } from 'lang/std/fileSystemManager'
-import { getProjectInfo } from './desktop'
-import { createSettings } from './settings/initialSettings'
-import { normalizeLineEndings } from 'lib/codeEditor'
-import { OnboardingStatus } from 'wasm-lib/kcl/bindings/OnboardingStatus'
-
-// The root loader simply resolves the settings and any errors that
-// occurred during the settings load
-export const settingsLoader: LoaderFunction = async ({
-  params,
-}): Promise<
-  ReturnType<typeof createSettings> | ReturnType<typeof redirect>
-> => {
-  let { settings, configuration } = await loadAndValidateSettings()
-
-  // I don't love that we have to read the settings again here,
-  // but we need to get the project path to load the project settings
-  if (params.id) {
-    const projectPathData = await getProjectMetaByRouteId(
-      params.id,
-      configuration
-    )
-    if (projectPathData) {
-      const { projectPath } = projectPathData
-      const { settings: s } = await loadAndValidateSettings(
-        projectPath || undefined
-      )
-      return s
-    }
-  }
-
-  return settings
-}
+} from '@src/lib/constants'
+import { getProjectInfo } from '@src/lib/desktop'
+import { isDesktop } from '@src/lib/isDesktop'
+import { BROWSER_PATH, PATHS, getProjectMetaByRouteId } from '@src/lib/paths'
+import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
+import { codeManager } from '@src/lib/singletons'
+import type {
+  FileLoaderData,
+  HomeLoaderData,
+  IndexLoaderData,
+} from '@src/lib/types'
+import { settingsActor } from '@src/machines/appMachine'
 
 export const telemetryLoader: LoaderFunction = async ({
   params,
 }): Promise<null> => {
   return null
-}
-
-// Redirect users to the appropriate onboarding page if they haven't completed it
-export const onboardingRedirectLoader: ActionFunction = async (args) => {
-  const { settings } = await loadAndValidateSettings()
-  const onboardingStatus: OnboardingStatus =
-    settings.app.onboardingStatus.current || ''
-  const notEnRouteToOnboarding = !args.request.url.includes(
-    PATHS.ONBOARDING.INDEX
-  )
-  // '' is the initial state, 'completed' and 'dismissed' are the final states
-  const hasValidOnboardingStatus =
-    onboardingStatus.length === 0 ||
-    !(onboardingStatus === 'completed' || onboardingStatus === 'dismissed')
-  const shouldRedirectToOnboarding =
-    notEnRouteToOnboarding && hasValidOnboardingStatus
-
-  if (shouldRedirectToOnboarding) {
-    return redirect(
-      makeUrlPathRelative(PATHS.ONBOARDING.INDEX) + onboardingStatus.slice(1)
-    )
-  }
-
-  return settingsLoader(args)
 }
 
 export const fileLoader: LoaderFunction = async (
@@ -114,7 +67,7 @@ export const fileLoader: LoaderFunction = async (
         return redirect(
           `${PATHS.FILE}/${encodeURIComponent(
             isDesktop() ? fallbackFile : params.id + '/' + PROJECT_ENTRYPOINT
-          )}`
+          )}${new URL(routerData.request.url).search || ''}`
         )
       }
 
@@ -150,15 +103,26 @@ export const fileLoader: LoaderFunction = async (
       directory_count: 0,
       metadata: null,
       default_file: projectPath,
+      readWriteAccess: true,
     }
 
     const maybeProjectInfo = isDesktop()
       ? await getProjectInfo(projectPath)
       : null
 
+    const project = maybeProjectInfo ?? defaultProjectData
+
+    // Fire off the event to load the project settings
+    // once we know it's idle.
+    await waitFor(settingsActor, (state) => state.matches('idle'))
+    settingsActor.send({
+      type: 'load.project',
+      project,
+    })
+
     const projectData: IndexLoaderData = {
       code,
-      project: maybeProjectInfo ?? defaultProjectData,
+      project,
       file: {
         name: currentFileName || '',
         path: currentFilePath || '',
@@ -171,13 +135,34 @@ export const fileLoader: LoaderFunction = async (
     }
   }
 
+  const project = {
+    name: BROWSER_PROJECT_NAME,
+    path: `/${BROWSER_PROJECT_NAME}`,
+    children: [
+      {
+        name: `${BROWSER_FILE_NAME}.${FILE_EXT}`,
+        path: BROWSER_PATH,
+        children: [],
+      },
+    ],
+    default_file: BROWSER_FILE_NAME,
+    directory_count: 0,
+    kcl_file_count: 1,
+    metadata: null,
+    readWriteAccess: true,
+  }
+
+  // Fire off the event to load the project settings
+  // once we know it's idle.
+  await waitFor(settingsActor, (state) => state.matches('idle'))
+  settingsActor.send({
+    type: 'load.project',
+    project,
+  })
+
   return {
     code,
-    project: {
-      name: BROWSER_PROJECT_NAME,
-      path: '/' + BROWSER_PROJECT_NAME,
-      children: [],
-    },
+    project,
     file: {
       name: BROWSER_FILE_NAME,
       path: decodeURIComponent(BROWSER_PATH),
@@ -188,11 +173,17 @@ export const fileLoader: LoaderFunction = async (
 
 // Loads the settings and by extension the projects in the default directory
 // and returns them to the Home route, along with any errors that occurred
-export const homeLoader: LoaderFunction = async (): Promise<
-  HomeLoaderData | Response
-> => {
+export const homeLoader: LoaderFunction = async ({
+  request,
+}): Promise<HomeLoaderData | Response> => {
+  const url = new URL(request.url)
   if (!isDesktop()) {
-    return redirect(PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME)
+    return redirect(
+      PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME + (url.search || '')
+    )
   }
+  settingsActor.send({
+    type: 'clear.project',
+  })
   return {}
 }

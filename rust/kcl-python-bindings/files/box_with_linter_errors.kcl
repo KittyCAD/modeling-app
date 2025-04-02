@@ -1,0 +1,14 @@
+// A 25x25x50 box
+
+const box_width = 25
+const box_depth = 25
+const box_height = 50
+
+const box_sketch = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> xLine(length = box_width, tag = $line1)
+  |> yLine(length = box_depth, tag = $line2)
+  |> xLine(endAbsolute = profileStartX(%), tag = $line3)
+  |> close(%, $line4)
+
+const box3D = extrude(box_sketch, length = box_height)

@@ -1,0 +1,13 @@
+{{#if properties}}
+{{#if @root.inDefinition}}
+#### Properties
+{{else}}
+## Properties
+{{/if}}
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+{{#each properties}}
+| `{{@key}}` | {{~ > propertyType this ~}} | {{{firstLine this.description}}} | {{#if (lookup ../required @key)}}Yes{{else}}No{{/if}} |
+{{/each}}
+{{/if}}

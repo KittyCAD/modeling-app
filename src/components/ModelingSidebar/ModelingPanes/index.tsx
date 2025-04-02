@@ -1,23 +1,30 @@
-import { IconDefinition, faBugSlash } from '@fortawesome/free-solid-svg-icons'
-import { KclEditorMenu } from 'components/ModelingSidebar/ModelingPanes/KclEditorMenu'
-import { CustomIconName } from 'components/CustomIcon'
-import { KclEditorPane } from 'components/ModelingSidebar/ModelingPanes/KclEditorPane'
-import { ModelingPaneHeader } from 'components/ModelingSidebar/ModelingPane'
-import { MouseEventHandler, ReactNode } from 'react'
-import { MemoryPane, MemoryPaneMenu } from './MemoryPane'
-import { LogsPane } from './LoggingPanes'
-import { DebugPane } from './DebugPane'
+import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
+import { faBugSlash } from '@fortawesome/free-solid-svg-icons'
+import type { MouseEventHandler, ReactNode } from 'react'
+import type { ContextFrom } from 'xstate'
+
+import type { CustomIconName } from '@src/components/CustomIcon'
 import {
   FileTreeInner,
   FileTreeMenu,
   FileTreeRoot,
   useFileTreeOperations,
-} from 'components/FileTree'
-import { useKclContext } from 'lang/KclProvider'
-import { editorManager } from 'lib/singletons'
-import { ContextFrom } from 'xstate'
-import { settingsMachine } from 'machines/settingsMachine'
-import { FeatureTreePane } from './FeatureTreePane'
+} from '@src/components/FileTree'
+import { ModelingPaneHeader } from '@src/components/ModelingSidebar/ModelingPane'
+import { DebugPane } from '@src/components/ModelingSidebar/ModelingPanes/DebugPane'
+import { FeatureTreeMenu } from '@src/components/ModelingSidebar/ModelingPanes/FeatureTreeMenu'
+import { FeatureTreePane } from '@src/components/ModelingSidebar/ModelingPanes/FeatureTreePane'
+import { KclEditorMenu } from '@src/components/ModelingSidebar/ModelingPanes/KclEditorMenu'
+import { KclEditorPane } from '@src/components/ModelingSidebar/ModelingPanes/KclEditorPane'
+import { LogsPane } from '@src/components/ModelingSidebar/ModelingPanes/LoggingPanes'
+import {
+  MemoryPane,
+  MemoryPaneMenu,
+} from '@src/components/ModelingSidebar/ModelingPanes/MemoryPane'
+import type { useKclContext } from '@src/lang/KclProvider'
+import { kclErrorsByFilename } from '@src/lang/errors'
+import { editorManager } from '@src/lib/singletons'
+import type { settingsMachine } from '@src/machines/settingsMachine'
 
 export type SidebarType =
   | 'code'
@@ -30,8 +37,10 @@ export type SidebarType =
   | 'variables'
 
 export interface BadgeInfo {
-  value: (props: PaneCallbackProps) => boolean | number
+  value: (props: PaneCallbackProps) => boolean | number | string
   onClick?: MouseEventHandler<any>
+  className?: string
+  title?: string
 }
 
 /**
@@ -82,6 +91,7 @@ export const sidebarPanes: SidebarPane[] = [
           id={props.id}
           icon="model"
           title="Feature Tree"
+          Menu={FeatureTreeMenu}
           onClose={props.onClose}
         />
         <FeatureTreePane />
@@ -122,7 +132,8 @@ export const sidebarPanes: SidebarPane[] = [
     icon: 'folder',
     sidebarName: 'Project Files',
     Content: (props: { id: SidebarType; onClose: () => void }) => {
-      const { createFile, createFolder, newTreeEntry } = useFileTreeOperations()
+      const { createFile, createFolder, cloneFileOrDir, newTreeEntry } =
+        useFileTreeOperations()
 
       return (
         <>
@@ -143,6 +154,7 @@ export const sidebarPanes: SidebarPane[] = [
             onCreateFolder={(name: string) =>
               createFolder({ dryRun: false, name })
             }
+            onCloneFileOrFolder={(path: string) => cloneFileOrDir({ path })}
             newTreeEntry={newTreeEntry}
           />
         </>
@@ -150,6 +162,25 @@ export const sidebarPanes: SidebarPane[] = [
     },
     keybinding: 'Shift + F',
     hide: ({ platform }) => platform === 'web',
+    showBadge: {
+      value: (context) => {
+        // Only compute runtime errors! Compilation errors are not tracked here.
+        const errors = kclErrorsByFilename(context.kclContext.errors)
+        return errors.size > 0 ? 'x' : ''
+      },
+      onClick: (e) => {
+        e.preventDefault()
+        // TODO: When we have generic file open
+        // If badge is pressed
+        // Open the first error in the array of errors
+        // Then scroll to error
+        // Do you automatically open the project files
+        // editorManager.scrollToFirstErrorDiagnosticIfExists()
+      },
+      className:
+        'absolute m-0 p-0 bottom-4 left-4 w-3 h-3 flex items-center justify-center text-[9px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200',
+      title: 'Project files have runtime errors',
+    },
   },
   {
     id: 'variables',
@@ -210,6 +241,6 @@ export const sidebarPanes: SidebarPane[] = [
       )
     },
     keybinding: 'Shift + D',
-    hide: ({ settings }) => !settings.modeling.showDebugPanel.current,
+    hide: ({ settings }) => !settings.app.showDebugPanel.current,
   },
 ]

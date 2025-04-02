@@ -1,24 +1,28 @@
-import { toolTips } from 'lang/langHelpers'
-import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
-import { Selections } from 'lib/selections'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import { removeDoubleNegatives } from '@src/components/AvailableVarsHelpers'
+import {
+  GetInfoModal,
+  createInfoModal,
+} from '@src/components/SetHorVertDistanceModal'
+import { createVariableDeclaration } from '@src/lang/create'
+import { toolTips } from '@src/lang/langHelpers'
 import {
   getNodeFromPath,
   isLinesParallelAndConstrained,
-} from '../../lang/queryAst'
-import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
+} from '@src/lang/queryAst'
+import { isSketchVariablesLinked } from '@src/lang/std/sketchConstraints'
+import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
 import {
-  transformSecondarySketchLinesTagFirst,
   getTransformInfos,
-  PathToNodeMap,
   isExprBinaryPart,
-} from '../../lang/std/sketchcombos'
-import { TransformInfo } from 'lang/std/stdTypes'
-import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
-import { createVariableDeclaration } from '../../lang/modifyAst'
-import { removeDoubleNegatives } from '../AvailableVarsHelpers'
-import { engineCommandManager, kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+  transformSecondarySketchLinesTagFirst,
+} from '@src/lang/std/sketchcombos'
+import type { TransformInfo } from '@src/lang/std/stdTypes'
+import type { Expr, Program, VariableDeclarator } from '@src/lang/wasm'
+import type { Selections } from '@src/lib/selections'
+import { kclManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 
@@ -45,8 +49,8 @@ export function intersectInfo({
     selectionRanges.graphSelections.length > 1 &&
     isLinesParallelAndConstrained(
       kclManager.ast,
-      engineCommandManager.artifactGraph,
-      kclManager.programMemory,
+      kclManager.artifactGraph,
+      kclManager.variables,
       selectionRanges.graphSelections[0],
       selectionRanges.graphSelections[1]
     )
@@ -98,11 +102,8 @@ export function intersectInfo({
   )
   const isAllTooltips = nodes.every(
     (node) =>
-      node?.type === 'CallExpression' &&
-      [
-        ...toolTips,
-        'startSketchAt', // TODO probably a better place for this to live
-      ].includes(node.callee.name as any)
+      (node?.type === 'CallExpression' || node?.type === 'CallExpressionKw') &&
+      [...toolTips].includes(node.callee.name.name as any)
   )
 
   const theTransforms = getTransformInfos(
@@ -136,6 +137,7 @@ export async function applyConstraintIntersect({
 }): Promise<{
   modifiedAst: Node<Program>
   pathToNodeMap: PathToNodeMap
+  exprInsertIndex: number
 }> {
   const info = intersectInfo({
     selectionRanges,
@@ -147,7 +149,7 @@ export async function applyConstraintIntersect({
     ast: structuredClone(kclManager.ast),
     selectionRanges: forcedSelectionRanges,
     transformInfos: transforms,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
   })
   if (err(transform1)) return Promise.reject(transform1)
   const { modifiedAst, tagInfo, valueUsedInTransform, pathToNodeMap } =
@@ -174,6 +176,7 @@ export async function applyConstraintIntersect({
     return {
       modifiedAst,
       pathToNodeMap,
+      exprInsertIndex: -1,
     }
   }
   // transform again but forcing certain values
@@ -184,7 +187,7 @@ export async function applyConstraintIntersect({
     ast: kclManager.ast,
     selectionRanges: forcedSelectionRanges,
     transformInfos: transforms,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
     forceSegName: segName,
     forceValueUsedInTransform: finalValue,
   })
@@ -192,6 +195,7 @@ export async function applyConstraintIntersect({
   const { modifiedAst: _modifiedAst, pathToNodeMap: _pathToNodeMap } =
     transform2
 
+  let exprInsertIndex = -1
   if (variableName) {
     const newBody = [..._modifiedAst.body]
     newBody.splice(
@@ -204,9 +208,11 @@ export async function applyConstraintIntersect({
       const index = pathToNode.findIndex((a) => a[0] === 'body') + 1
       pathToNode[index][0] = Number(pathToNode[index][0]) + 1
     })
+    exprInsertIndex = newVariableInsertIndex
   }
   return {
     modifiedAst: _modifiedAst,
     pathToNodeMap: _pathToNodeMap,
+    exprInsertIndex,
   }
 }

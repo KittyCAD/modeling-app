@@ -1,0 +1,225 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing array_range_expr.kcl
+---
+{
+  "five": {
+    "type": "Number",
+    "value": 5.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "four": {
+    "type": "Number",
+    "value": 4.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "r1": {
+    "type": "MixedArray",
+    "value": [
+      {
+        "type": "Number",
+        "value": 0.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 1.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 2.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 3.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 4.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      }
+    ]
+  },
+  "r2": {
+    "type": "MixedArray",
+    "value": [
+      {
+        "type": "Number",
+        "value": 0.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 1.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 2.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 3.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 4.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      }
+    ]
+  },
+  "r3": {
+    "type": "MixedArray",
+    "value": [
+      {
+        "type": "Number",
+        "value": 0.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 1.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 2.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 3.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 4.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 5.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      }
+    ]
+  },
+  "r4": {
+    "type": "MixedArray",
+    "value": [
+      {
+        "type": "Number",
+        "value": 1.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 2.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 3.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 4.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      }
+    ]
+  },
+  "zero": {
+    "type": "Number",
+    "value": 0.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  }
+}

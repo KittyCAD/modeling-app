@@ -1,4 +1,4 @@
-import type { Page, Locator } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 
 interface ProjectCardState {
@@ -26,10 +26,6 @@ export class HomePageFixture {
   sortByNameBtn!: Locator
 
   constructor(page: Page) {
-    this.page = page
-    this.reConstruct(page)
-  }
-  reConstruct = (page: Page) => {
     this.page = page
 
     this.projectSection = this.page.getByTestId('home-section')
@@ -89,22 +85,19 @@ export class HomePageFixture {
    * Maybe there a good sanity check we can do each time?
    */
   expectState = async (expectedState: HomePageState) => {
-    await expect
-      .poll(async () => {
-        const [projectCards, sortBy] = await Promise.all([
-          this._serialiseProjectCards(),
-          this._serialiseSortBy(),
-        ])
-        return {
-          projectCards,
-          sortBy,
-        }
-      })
-      .toEqual(expectedState)
+    await expect.poll(this._serialiseSortBy).toEqual(expectedState.sortBy)
+
+    for (const projectCard of expectedState.projectCards) {
+      await expect.poll(this._serialiseProjectCards).toContainEqual(projectCard)
+    }
   }
 
-  createAndGoToProject = async (projectTitle: string) => {
+  projectsLoaded = async () => {
     await expect(this.projectSection).not.toHaveText('Loading your Projects...')
+  }
+
+  createAndGoToProject = async (projectTitle = 'project-$nnn') => {
+    await this.projectsLoaded()
     await this.projectButtonNew.click()
     await this.projectTextName.click()
     await this.projectTextName.fill(projectTitle)

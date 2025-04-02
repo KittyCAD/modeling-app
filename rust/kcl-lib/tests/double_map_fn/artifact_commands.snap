@@ -1,0 +1,32 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact commands double_map_fn.kcl
+---
+[
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "edge_lines_visible",
+      "hidden": false
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  }
+]

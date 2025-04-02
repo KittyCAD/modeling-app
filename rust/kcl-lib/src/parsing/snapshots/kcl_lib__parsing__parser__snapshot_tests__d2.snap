@@ -1,0 +1,80 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "declaration": {
+        "commentStart": 0,
+        "end": 21,
+        "id": {
+          "commentStart": 0,
+          "end": 1,
+          "name": "x",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "commentStart": 4,
+          "end": 21,
+          "left": {
+            "argument": {
+              "abs_path": false,
+              "commentStart": 5,
+              "end": 9,
+              "name": {
+                "commentStart": 5,
+                "end": 9,
+                "name": "leg2",
+                "start": 5,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 5,
+              "type": "Name",
+              "type": "Name"
+            },
+            "commentStart": 4,
+            "end": 9,
+            "operator": "-",
+            "start": 4,
+            "type": "UnaryExpression",
+            "type": "UnaryExpression"
+          },
+          "operator": "+",
+          "right": {
+            "abs_path": false,
+            "commentStart": 12,
+            "end": 21,
+            "name": {
+              "commentStart": 12,
+              "end": 21,
+              "name": "thickness",
+              "start": 12,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 12,
+            "type": "Name",
+            "type": "Name"
+          },
+          "start": 4,
+          "type": "BinaryExpression",
+          "type": "BinaryExpression"
+        },
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 21,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "commentStart": 0,
+  "end": 21,
+  "start": 0
+}

@@ -1,0 +1,75 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing socket-head-cap-screw.kcl
+---
+{
+  "bolt": {
+    "type": "Function"
+  },
+  "boltDiameter": {
+    "type": "Number",
+    "value": 0.19,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "boltHeadDiameter": {
+    "type": "Number",
+    "value": 0.313,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "boltHeadLength": {
+    "type": "Number",
+    "value": 0.19,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "boltHexDrive": {
+    "type": "Number",
+    "value": 0.1563,
+    "ty": {
+      "type": "Unknown"
+    }
+  },
+  "boltHexFlatLength": {
+    "type": "Number",
+    "value": 0.0902,
+    "ty": {
+      "type": "Unknown"
+    }
+  },
+  "boltLength": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  }
+}

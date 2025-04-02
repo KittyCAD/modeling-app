@@ -1,17 +1,18 @@
-import { toolTips } from 'lang/langHelpers'
-import { Selections } from 'lib/selections'
-import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
-import { getNodeFromPath } from '../../lang/queryAst'
-import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import { toolTips } from '@src/lang/langHelpers'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { isSketchVariablesLinked } from '@src/lang/std/sketchConstraints'
+import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
 import {
-  transformSecondarySketchLinesTagFirst,
   getTransformInfos,
-  PathToNodeMap,
-} from '../../lang/std/sketchcombos'
-import { TransformInfo } from 'lang/std/stdTypes'
-import { kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+  transformSecondarySketchLinesTagFirst,
+} from '@src/lang/std/sketchcombos'
+import type { TransformInfo } from '@src/lang/std/stdTypes'
+import type { Expr, Program, VariableDeclarator } from '@src/lang/wasm'
+import type { Selections } from '@src/lib/selections'
+import { kclManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
 
 export function setEqualLengthInfo({
   selectionRanges,
@@ -52,8 +53,8 @@ export function setEqualLengthInfo({
   )
   const isAllTooltips = nodes.every(
     (node) =>
-      node?.type === 'CallExpression' &&
-      toolTips.includes(node.callee.name as any)
+      (node?.type === 'CallExpression' || node?.type === 'CallExpressionKw') &&
+      toolTips.includes(node.callee.name.name as any)
   )
 
   const transforms = getTransformInfos(
@@ -93,7 +94,7 @@ export function applyConstraintEqualLength({
     ast: kclManager.ast,
     selectionRanges,
     transformInfos: transforms,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
   })
   if (err(transform)) return transform
   const { modifiedAst, pathToNodeMap } = transform

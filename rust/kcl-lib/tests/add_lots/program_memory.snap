@@ -1,0 +1,16 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing add_lots.kcl
+---
+{
+  "f": {
+    "type": "Function"
+  },
+  "x": {
+    "type": "Number",
+    "value": 10100.0,
+    "ty": {
+      "type": "Unknown"
+    }
+  }
+}

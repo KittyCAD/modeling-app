@@ -1,34 +1,36 @@
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { Resizable } from 're-resizable'
-import {
-  MouseEventHandler,
-  useCallback,
-  useEffect,
-  useMemo,
-  useContext,
-} from 'react'
+import type { MouseEventHandler } from 'react'
+import { useCallback, useContext, useEffect, useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { SidebarAction, SidebarType, sidebarPanes } from './ModelingPanes'
-import Tooltip from 'components/Tooltip'
-import { ActionIcon } from 'components/ActionIcon'
-import { ModelingPane } from './ModelingPane'
-import { isDesktop } from 'lib/isDesktop'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { CustomIconName } from 'components/CustomIcon'
-import { useCommandsContext } from 'hooks/useCommandsContext'
-import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
-import { useKclContext } from 'lang/KclProvider'
-import { MachineManagerContext } from 'components/MachineManagerProvider'
-import { onboardingPaths } from 'routes/Onboarding/paths'
-import { SIDEBAR_BUTTON_SUFFIX } from 'lib/constants'
+
+import { ActionIcon } from '@src/components/ActionIcon'
+import type { CustomIconName } from '@src/components/CustomIcon'
+import { MachineManagerContext } from '@src/components/MachineManagerProvider'
+import { ModelingPane } from '@src/components/ModelingSidebar/ModelingPane'
+import type {
+  SidebarAction,
+  SidebarType,
+} from '@src/components/ModelingSidebar/ModelingPanes'
+import { sidebarPanes } from '@src/components/ModelingSidebar/ModelingPanes'
+import Tooltip from '@src/components/Tooltip'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useKclContext } from '@src/lang/KclProvider'
+import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import { useSettings } from '@src/machines/appMachine'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
 }
 
 interface BadgeInfoComputed {
-  value: number | boolean
+  value: number | boolean | string
   onClick?: MouseEventHandler<any>
+  className?: string
+  title?: string
 }
 
 function getPlatformString(): 'web' | 'desktop' {
@@ -37,25 +39,24 @@ function getPlatformString(): 'web' | 'desktop' {
 
 export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   const machineManager = useContext(MachineManagerContext)
-  const { commandBarSend } = useCommandsContext()
   const kclContext = useKclContext()
-  const { settings } = useSettingsAuthContext()
-  const onboardingStatus = settings.context.app.onboardingStatus
+  const settings = useSettings()
+  const onboardingStatus = settings.app.onboardingStatus
   const { send, context } = useModelingContext()
   const pointerEventsCssClass =
     onboardingStatus.current === onboardingPaths.CAMERA ||
     context.store?.openPanes.length === 0
       ? 'pointer-events-none '
       : 'pointer-events-auto '
-  const showDebugPanel = settings.context.modeling.showDebugPanel
+  const showDebugPanel = settings.app.showDebugPanel
 
   const paneCallbackProps = useMemo(
     () => ({
       kclContext,
-      settings: settings.context,
+      settings,
       platform: getPlatformString(),
     }),
-    [kclContext.diagnostics, settings.context]
+    [kclContext.diagnostics, settings]
   )
 
   const sidebarActions: SidebarAction[] = [
@@ -66,7 +67,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       icon: 'floppyDiskArrow',
       keybinding: 'Ctrl + Shift + E',
       action: () =>
-        commandBarSend({
+        commandBarActor.send({
           type: 'Find and select command',
           data: { name: 'Export', groupId: 'modeling' },
         }),
@@ -79,7 +80,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       keybinding: 'Ctrl + Shift + M',
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       action: async () => {
-        commandBarSend({
+        commandBarActor.send({
           type: 'Find and select command',
           data: { name: 'Make', groupId: 'modeling' },
         })
@@ -112,20 +113,26 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   )
 
   const paneBadgeMap: Record<SidebarType, BadgeInfoComputed> = useMemo(() => {
-    return filteredPanes.reduce((acc, pane) => {
-      if (pane.showBadge) {
-        acc[pane.id] = {
-          value: pane.showBadge.value(paneCallbackProps),
-          onClick: pane.showBadge.onClick,
+    return filteredPanes.reduce(
+      (acc, pane) => {
+        if (pane.showBadge) {
+          acc[pane.id] = {
+            value: pane.showBadge.value(paneCallbackProps),
+            onClick: pane.showBadge.onClick,
+            className: pane.showBadge.className,
+            title: pane.showBadge.title,
+          }
         }
-      }
-      return acc
-    }, {} as Record<SidebarType, BadgeInfoComputed>)
+        return acc
+      },
+      {} as Record<SidebarType, BadgeInfoComputed>
+    )
   }, [paneCallbackProps])
 
   // Clear any hidden panes from the `openPanes` array
   useEffect(() => {
     const panesToReset: SidebarType[] = []
+
     sidebarPanes.forEach((pane) => {
       if (
         pane.hide === true ||
@@ -145,7 +152,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         },
       })
     }
-  }, [settings.context])
+  }, [settings.app.showDebugPanel])
 
   const togglePane = useCallback(
     (newPane: SidebarType) => {
@@ -169,7 +176,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         height: 'auto',
       }}
       minWidth={200}
-      maxWidth={800}
+      maxWidth={window.innerWidth - 10}
       handleWrapperClass="sidebar-resize-handles"
       handleClasses={{
         right:
@@ -298,7 +305,7 @@ function ModelingPaneButton({
   })
 
   return (
-    <div id={paneConfig.id + '-button-holder'}>
+    <div id={paneConfig.id + '-button-holder'} className="relative">
       <button
         className="group pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent disabled:!border-transparent p-0 m-0 rounded-sm !outline-0 focus-visible:border-primary"
         onClick={onClick}
@@ -340,22 +347,31 @@ function ModelingPaneButton({
         <p
           id={`${paneConfig.id}-badge`}
           className={
-            'absolute m-0 p-0 top-1 right-0 w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
+            showBadge.className
+              ? showBadge.className
+              : 'absolute m-0 p-0 bottom-4 left-4 w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
           }
           onClick={showBadge.onClick}
-          title={`Click to view ${showBadge.value} notification${
-            Number(showBadge.value) > 1 ? 's' : ''
-          }`}
+          title={
+            showBadge.title
+              ? showBadge.title
+              : `Click to view ${showBadge.value} notification${
+                  Number(showBadge.value) > 1 ? 's' : ''
+                }`
+          }
         >
           <span className="sr-only">&nbsp;has&nbsp;</span>
-          {typeof showBadge.value === 'number' ? (
+          {typeof showBadge.value === 'number' ||
+          typeof showBadge.value === 'string' ? (
             <span>{showBadge.value}</span>
           ) : (
             <span className="sr-only">a</span>
           )}
-          <span className="sr-only">
-            &nbsp;notification{Number(showBadge.value) > 1 ? 's' : ''}
-          </span>
+          {typeof showBadge.value === 'number' && (
+            <span className="sr-only">
+              &nbsp;notification{Number(showBadge.value) > 1 ? 's' : ''}
+            </span>
+          )}
         </p>
       )}
     </div>

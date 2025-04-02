@@ -1,4 +1,4 @@
-import { AppTheme } from 'wasm-lib/kcl/bindings/AppTheme'
+import type { AppTheme } from '@rust/kcl-lib/bindings/AppTheme'
 
 /** A media query matcher for dark mode */
 export const darkModeMatcher =

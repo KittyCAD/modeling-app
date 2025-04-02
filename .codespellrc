@@ -1,3 +1,3 @@
 [codespell]
-ignore-words-list: crate,everytime,inout,co-ordinate,ot,nwo,atleast,ue,afterall
-skip: **/target,node_modules,build,**/Cargo.lock,./docs/kcl/*.md,.yarn.lock,**/yarn.lock,./openapi/*.json,./src/lib/machine-api.d.ts,./packages/codemirror-lang-kcl/test/all.test.ts
+ignore-words-list: crate,everytime,inout,co-ordinate,ot,nwo,atleast,ue,afterall,ser
+skip: **/target,node_modules,build,dist,./out,**/Cargo.lock,./docs/kcl/*.md,.yarn.lock,**/yarn.lock,./openapi/*.json,./packages/codemirror-lang-kcl/test/all.test.ts,./public/kcl-samples,./rust/kcl-lib/tests/kcl_samples,tsconfig.tsbuildinfo

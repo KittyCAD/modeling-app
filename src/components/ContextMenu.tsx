@@ -1,16 +1,11 @@
-import toast from 'react-hot-toast'
-import { ActionIcon, ActionIconProps } from './ActionIcon'
-import {
-  MouseEvent,
-  RefObject,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
 import { Dialog } from '@headlessui/react'
+import type { RefObject } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
+import { useHotkeys } from 'react-hotkeys-hook'
+
+import type { ActionIconProps } from '@src/components/ActionIcon'
+import { ActionIcon } from '@src/components/ActionIcon'
 
 export interface ContextMenuProps
   extends Omit<React.HTMLAttributes<HTMLUListElement>, 'children'> {
@@ -148,24 +143,22 @@ interface ContextMenuItemProps {
   onClick?: () => void
   hotkey?: string
   'data-testid'?: string
+  disabled?: boolean
 }
 
 export function ContextMenuItem(props: ContextMenuItemProps) {
-  const { children, icon, onClick, hotkey } = props
+  const { children, icon, onClick, hotkey, disabled } = props
 
   return (
     <button
+      disabled={disabled}
       data-testid={props['data-testid']}
       className="flex items-center gap-2 py-1 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
     >
       {icon && <ActionIcon icon={icon} bgClassName="!bg-transparent" />}
       <div className="flex-1">{children}</div>
-      {hotkey && (
-        <kbd className="px-1.5 py-0.5 rounded bg-primary/10 text-primary dark:bg-chalkboard-80 dark:text-chalkboard-40">
-          {hotkey}
-        </kbd>
-      )}
+      {hotkey && <kbd className="hotkey">{hotkey}</kbd>}
     </button>
   )
 }

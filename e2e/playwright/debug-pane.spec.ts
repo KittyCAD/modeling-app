@@ -1,6 +1,5 @@
-import { test, expect } from './zoo-test'
-
-import { getUtils } from './test-utils'
+import { getUtils } from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 function countNewlines(input: string): number {
   let count = 0
@@ -18,9 +17,9 @@ test.describe('Debug pane', () => {
     context,
     homePage,
   }) => {
-    const code = `sketch001 = startSketchOn('XZ')
+    const code = `sketch001 = startSketchOn(XZ)
     |> startProfileAt([0, 0], %)
-  |> line([1, 1], %)
+  |> line(end = [1, 1])
   `
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -38,14 +37,14 @@ test.describe('Debug pane', () => {
       // Set the code in the code editor.
       await u.codeLocator.click()
       await page.keyboard.type(code, { delay: 0 })
-      // Scroll to the feature tree.
+      // Scroll to the artifact graph.
       await tree.scrollIntoViewIfNeeded()
-      // Expand the feature tree.
-      await tree.getByText('Feature Tree').click()
+      // Expand the artifact graph.
+      await tree.getByText('Artifact Graph').click()
       // Just expanded the details, making the element taller, so scroll again.
       await tree.getByText('Plane').first().scrollIntoViewIfNeeded()
     })
-    // Extract the artifact IDs from the debug feature tree.
+    // Extract the artifact IDs from the debug artifact graph.
     const initialSegmentIds = await segment.innerText({ timeout: 5_000 })
     // The artifact ID should include a UUID.
     expect(initialSegmentIds).toMatch(
@@ -61,7 +60,7 @@ test.describe('Debug pane', () => {
       }
     })
     await test.step('Enter a comment', async () => {
-      await page.keyboard.type('|> line([2, 2], %)', { delay: 0 })
+      await page.keyboard.type('|> line(end = [2, 2])', { delay: 0 })
       // Wait for keyboard input debounce and updated artifact graph.
       await page.waitForTimeout(1000)
     })

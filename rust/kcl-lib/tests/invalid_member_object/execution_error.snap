@@ -1,0 +1,14 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Error from executing invalid_member_object.kcl
+---
+KCL Semantic error
+
+  × semantic: Only arrays and objects can be indexed, but you're trying to
+  │ index a number
+   ╭─[2:5]
+ 1 │ num = 999
+ 2 │ x = num[3]
+   ·     ───┬──
+   ·        ╰── tests/invalid_member_object/input.kcl
+   ╰────

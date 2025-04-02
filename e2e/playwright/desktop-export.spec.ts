@@ -1,26 +1,31 @@
-import { test, expect } from './zoo-test'
+import fsp from 'fs/promises'
 import path from 'path'
+
 import {
-  getUtils,
   executorInputPath,
   getPlaywrightDownloadDir,
-} from './test-utils'
-import fsp from 'fs/promises'
+  getUtils,
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test(
   'export works on the first try',
-  { tag: '@electron' },
-  async ({ page, context }, testInfo) => {
+  { tag: ['@electron', '@skipLocalEngine'] },
+  async ({ page, context, scene, tronApp }, testInfo) => {
+    if (!tronApp) {
+      fail()
+    }
+
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await Promise.all([fsp.mkdir(bracketDir, { recursive: true })])
       await Promise.all([
         fsp.copyFile(
-          executorInputPath('router-template-slate.kcl'),
+          executorInputPath('cylinder-inches.kcl'),
           path.join(bracketDir, 'other.kcl')
         ),
         fsp.copyFile(
-          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
           path.join(bracketDir, 'main.kcl')
         ),
       ])
@@ -86,7 +91,7 @@ test(
       await expect(exportingToastMessage).not.toBeVisible()
 
       const firstFileFullPath = path.resolve(
-        getPlaywrightDownloadDir(page),
+        getPlaywrightDownloadDir(tronApp.projectDirName),
         exportFileName
       )
       await test.step('Check the export size', async () => {
@@ -96,13 +101,14 @@ test(
               try {
                 const outputGltf = await fsp.readFile(firstFileFullPath)
                 return outputGltf.byteLength
-              } catch (e) {
+              } catch (error: unknown) {
+                void error
                 return 0
               }
             },
             { timeout: 15_000 }
           )
-          .toBeGreaterThan(300_000)
+          .toBeGreaterThan(30_000)
       })
     })
 
@@ -118,8 +124,9 @@ test(
       // Close the file pane
       await u.closeFilePanel()
 
-      // wait for it to finish executing (todo: make this more robust)
-      await page.waitForTimeout(1000)
+      // FIXME: await scene.waitForExecutionDone() does not work. The modeling indicator stays in -receive-reliable and not execution done
+      await page.waitForTimeout(10000)
+
       // expect zero errors in guter
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
@@ -164,7 +171,7 @@ test(
         ]))
 
       const secondFileFullPath = path.resolve(
-        getPlaywrightDownloadDir(page),
+        getPlaywrightDownloadDir(tronApp.projectDirName),
         exportFileName
       )
       await test.step('Check the export size', async () => {
@@ -174,13 +181,14 @@ test(
               try {
                 const outputGltf = await fsp.readFile(secondFileFullPath)
                 return outputGltf.byteLength
-              } catch (e) {
+              } catch (error: unknown) {
+                void error
                 return 0
               }
             },
             { timeout: 15_000 }
           )
-          .toBeGreaterThan(100_000)
+          .toBeGreaterThan(50_000)
       })
     })
   }

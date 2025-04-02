@@ -1,15 +1,18 @@
 ---
 title: "rem"
-excerpt: "Compute the remainder after dividing `num` by `div`."
+excerpt: "Compute the remainder after dividing `num` by `div`. If `num` is negative, the result will be too."
 layout: manual
 ---
 
-Compute the remainder after dividing `num` by `div`.
+Compute the remainder after dividing `num` by `div`. If `num` is negative, the result will be too.
 
-If `num` is negative, the result will be too.
+
 
 ```js
-rem(num: number, divisor: number) -> number
+rem(
+  num: number,
+  divisor: number,
+): number
 ```
 
 ### Tags
@@ -21,12 +24,12 @@ rem(num: number, divisor: number) -> number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `number` | The number which will be divided by `divisor`. | Yes |
-| `divisor` | `number` | The number which will divide `num`. | Yes |
+| `num` | [`number`](/docs/kcl/types/number) | The number which will be divided by `divisor`. | Yes |
+| `divisor` | [`number`](/docs/kcl/types/number) | The number which will divide `num`. | Yes |
 
 ### Returns
 
-`number` 
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples

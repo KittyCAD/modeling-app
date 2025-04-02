@@ -1,34 +1,21 @@
 import { useHotkeys } from 'react-hotkeys-hook'
-import { Outlet, useNavigate } from 'react-router-dom'
-import Introduction from './Introduction'
-import Camera from './Camera'
-import Sketching from './Sketching'
-import { useCallback, useEffect } from 'react'
-import makeUrlPathRelative from '../../lib/makeUrlPathRelative'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import Streaming from './Streaming'
-import CodeEditor from './CodeEditor'
-import ParametricModeling from './ParametricModeling'
-import InteractiveNumbers from './InteractiveNumbers'
-import CmdK from './CmdK'
-import UserMenu from './UserMenu'
-import ProjectMenu from './ProjectMenu'
-import Export from './Export'
-import FutureWork from './FutureWork'
-import { PATHS } from 'lib/paths'
-import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
-import { ActionButton } from 'components/ActionButton'
-import { onboardingPaths } from 'routes/Onboarding/paths'
-import { codeManager, editorManager, kclManager } from 'lib/singletons'
-import { bracket } from 'lib/exampleKcl'
-import { toSync } from 'lib/utils'
-import { reportRejection } from 'lib/trap'
-import { useNetworkContext } from 'hooks/useNetworkContext'
-import { NetworkHealthState } from 'hooks/useNetworkStatus'
-import { EngineConnectionStateType } from 'lang/std/engineConnection'
+import { Outlet } from 'react-router-dom'
 
-export const kbdClasses =
-  'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
+import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
+import Camera from '@src/routes/Onboarding/Camera'
+import CmdK from '@src/routes/Onboarding/CmdK'
+import CodeEditor from '@src/routes/Onboarding/CodeEditor'
+import Export from '@src/routes/Onboarding/Export'
+import FutureWork from '@src/routes/Onboarding/FutureWork'
+import InteractiveNumbers from '@src/routes/Onboarding/InteractiveNumbers'
+import Introduction from '@src/routes/Onboarding/Introduction'
+import ParametricModeling from '@src/routes/Onboarding/ParametricModeling'
+import ProjectMenu from '@src/routes/Onboarding/ProjectMenu'
+import Sketching from '@src/routes/Onboarding/Sketching'
+import Streaming from '@src/routes/Onboarding/Streaming'
+import UserMenu from '@src/routes/Onboarding/UserMenu'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+import { useDismiss } from '@src/routes/Onboarding/utils'
 
 export const onboardingRoutes = [
   {
@@ -81,141 +68,6 @@ export const onboardingRoutes = [
     element: <FutureWork />,
   },
 ]
-
-export function useDemoCode() {
-  const { overallState, immediateState } = useNetworkContext()
-
-  useEffect(() => {
-    // Don't run if the editor isn't loaded or the code is already the bracket
-    if (!editorManager.editorView || codeManager.code === bracket) {
-      return
-    }
-    // Don't run if the network isn't healthy or the connection isn't established
-    if (
-      overallState !== NetworkHealthState.Ok ||
-      immediateState.type !== EngineConnectionStateType.ConnectionEstablished
-    ) {
-      return
-    }
-    setTimeout(
-      toSync(async () => {
-        codeManager.updateCodeStateEditor(bracket)
-        await kclManager.executeCode(true)
-        await codeManager.writeToFile()
-      }, reportRejection)
-    )
-  }, [editorManager.editorView, immediateState, overallState])
-}
-
-export function useNextClick(newStatus: string) {
-  const filePath = useAbsoluteFilePath()
-  const {
-    settings: { send },
-  } = useSettingsAuthContext()
-  const navigate = useNavigate()
-
-  return useCallback(() => {
-    send({
-      type: 'set.app.onboardingStatus',
-      data: { level: 'user', value: newStatus },
-    })
-    navigate(filePath + PATHS.ONBOARDING.INDEX.slice(0, -1) + newStatus)
-  }, [filePath, newStatus, send, navigate])
-}
-
-export function useDismiss() {
-  const filePath = useAbsoluteFilePath()
-  const {
-    settings: { state, send },
-  } = useSettingsAuthContext()
-  const navigate = useNavigate()
-
-  const settingsCallback = useCallback(() => {
-    send({
-      type: 'set.app.onboardingStatus',
-      data: { level: 'user', value: 'dismissed' },
-    })
-  }, [send])
-
-  /**
-   * A "listener" for the XState to return to "idle" state
-   * when the user dismisses the onboarding, using the callback above
-   */
-  useEffect(() => {
-    if (
-      state.context.app.onboardingStatus.user === 'dismissed' &&
-      state.matches('idle')
-    ) {
-      navigate(filePath)
-    }
-  }, [filePath, navigate, state])
-
-  return settingsCallback
-}
-
-// Get the 1-indexed step number of the current onboarding step
-export function useStepNumber(
-  slug?: (typeof onboardingPaths)[keyof typeof onboardingPaths]
-) {
-  return slug
-    ? slug === onboardingPaths.INDEX
-      ? 1
-      : onboardingRoutes.findIndex(
-          (r) => r.path === makeUrlPathRelative(slug)
-        ) + 1
-    : undefined
-}
-
-export function OnboardingButtons({
-  next,
-  nextText,
-  dismiss,
-  currentSlug,
-  className,
-  ...props
-}: {
-  next: () => void
-  nextText?: string
-  dismiss: () => void
-  currentSlug?: (typeof onboardingPaths)[keyof typeof onboardingPaths]
-  className?: string
-} & React.HTMLAttributes<HTMLDivElement>) {
-  const stepNumber = useStepNumber(currentSlug)
-
-  return (
-    <div
-      className={'flex items-center justify-between ' + (className ?? '')}
-      {...props}
-    >
-      <ActionButton
-        Element="button"
-        onClick={dismiss}
-        iconStart={{
-          icon: 'close',
-          className: 'text-chalkboard-10',
-          bgClassName: 'bg-destroy-80 group-hover:bg-destroy-80',
-        }}
-        className="hover:border-destroy-40 hover:bg-destroy-10/50 dark:hover:bg-destroy-80/50"
-      >
-        Dismiss
-      </ActionButton>
-      {stepNumber !== undefined && (
-        <p className="font-mono text-xs text-center m-0">
-          {stepNumber} / {onboardingRoutes.length}
-        </p>
-      )}
-      <ActionButton
-        Element="button"
-        onClick={next}
-        iconStart={{ icon: 'arrowRight', bgClassName: 'dark:bg-chalkboard-80' }}
-        className="dark:hover:bg-chalkboard-80/50"
-        data-testid="onboarding-next"
-      >
-        {nextText ?? 'Next'}
-      </ActionButton>
-    </div>
-  )
-}
 
 const Onboarding = () => {
   const dismiss = useDismiss()

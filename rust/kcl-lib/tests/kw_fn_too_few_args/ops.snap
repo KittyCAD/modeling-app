@@ -1,0 +1,35 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed kw_fn_too_few_args.kcl
+---
+[
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "add",
+    "functionSourceRange": [
+      6,
+      31,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "x": {
+        "value": {
+          "type": "Number",
+          "value": 1.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  }
+]

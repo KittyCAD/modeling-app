@@ -1,0 +1,56 @@
+// Lego Brick
+
+const lbumps = 10 // number of bumps long
+const wbumps = 6 // number of bumps wide
+
+const pitch = 8.0
+const clearance = 0.1
+const bumpDiam = 4.8
+const bumpHeight = 1.8
+const height = 3.2
+
+
+const t = (pitch - (2 * clearance) - bumpDiam) / 2.0
+const postDiam = pitch - t // works out to 6.5
+const total_length = lbumps * pitch - (2.0 * clearance)
+const total_width = wbumps * pitch - (2.0 * clearance)
+
+const lSegments = total_length / (lbumps + 1)
+const wSegments = total_width / (wbumps + 1)
+
+// make the base
+const s = startSketchOn(XY)
+  |> startProfileAt([-total_width / 2, -total_length / 2], %)
+  |> line(end = [total_width, 0])
+  |> line(end = [0, total_length])
+  |> line(end = [-total_width, 0])
+  |> close()
+  |> extrude(length = height)
+
+const shellExtrude = startSketchOn(s, "start")
+  |> startProfileAt([
+       -(total_width / 2 - t),
+       -(total_length / 2 - t)
+     ], %)
+  |> line(end = [total_width - (2 * t), 0])
+  |> line(end = [0, total_length - (2 * t)])
+  |> line(end = [-(total_width - (2 * t)), 0])
+  |> close()
+  |> extrude(length = -(height - t))
+
+const peg = startSketchOn(s, "end")
+  |> circle( center= [
+       -(total_width / 2 - wSegments),
+       -(total_length / 2 - lSegments)
+     ], radius= bumpDiam / 2)
+  |> patternLinear2d(
+       axis = [1, 0],
+       instances = 6,
+       distance = 7
+     )
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = 10,
+       distance = 7
+     )
+  |> extrude(length = bumpHeight)

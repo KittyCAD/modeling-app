@@ -9,7 +9,10 @@ Compute the angle of the given leg for x.
 
 
 ```js
-legAngX(hypotenuse: number, leg: number) -> number
+legAngX(
+  hypotenuse: number,
+  leg: number,
+): number
 ```
 
 ### Tags
@@ -21,12 +24,12 @@ legAngX(hypotenuse: number, leg: number) -> number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `hypotenuse` | `number` |  | Yes |
-| `leg` | `number` |  | Yes |
+| `hypotenuse` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `leg` | [`number`](/docs/kcl/types/number) |  | Yes |
 
 ### Returns
 
-`number` 
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples

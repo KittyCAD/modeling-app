@@ -1,11 +1,12 @@
-import type { Page, Locator } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
+
 import {
-  closePane,
   checkIfPaneIsOpen,
+  closePane,
   openPane,
   sansWhitespace,
-} from '../test-utils'
+} from '@e2e/playwright/test-utils'
 
 interface EditorState {
   activeLines: Array<string>
@@ -24,11 +25,6 @@ export class EditorFixture {
 
   constructor(page: Page) {
     this.page = page
-    this.reConstruct(page)
-  }
-  reConstruct = (page: Page) => {
-    this.page = page
-
     this.codeContent = page.locator('.cm-content[data-language="kcl"]')
     this.diagnosticsTooltip = page.locator('.cm-tooltip-lint')
     this.diagnosticsGutterIcon = page.locator('.cm-lint-marker-error')
@@ -86,6 +82,37 @@ export class EditorFixture {
   expectEditor = {
     toContain: this._expectEditorToContain(),
     not: { toContain: this._expectEditorToContain(true) },
+    toBe: async (code: string) => {
+      const currentCode = await this.getCurrentCode()
+      return expect(currentCode).toBe(code)
+    },
+  }
+  getCurrentCode = async () => {
+    return await this.codeContent.innerText()
+  }
+  snapshot = async (options?: { timeout?: number; name?: string }) => {
+    const wasPaneOpen = await this.checkIfPaneIsOpen()
+    if (!wasPaneOpen) {
+      await this.openPane()
+    }
+
+    try {
+      // Use expect.poll to implement retry logic
+      await expect
+        .poll(
+          async () => {
+            const code = await this.codeContent.textContent()
+            return code || ''
+          },
+          { timeout: options?.timeout || 5000 }
+        )
+        .toMatchSnapshot(options?.name || 'editor-content')
+    } finally {
+      // Reset pane state if needed
+      if (!wasPaneOpen) {
+        await this.closePane()
+      }
+    }
   }
   private _serialiseDiagnostics = async (): Promise<Array<string>> => {
     const diagnostics = await this.diagnosticsGutterIcon.all()
@@ -133,9 +160,15 @@ export class EditorFixture {
   }
   replaceCode = async (findCode: string, replaceCode: string) => {
     const lines = await this.page.locator('.cm-line').all()
+
     let code = (await Promise.all(lines.map((c) => c.textContent()))).join('\n')
-    if (!lines) return
-    code = code.replace(findCode, replaceCode)
+    if (!findCode) {
+      // nuke everything
+      code = replaceCode
+    } else {
+      if (!lines) return
+      code = code.replace(findCode, replaceCode)
+    }
     await this.codeContent.fill(code)
   }
   checkIfPaneIsOpen() {
@@ -170,5 +203,23 @@ export class EditorFixture {
       },
       { text, placeCursor }
     )
+  }
+  async selectText(text: string) {
+    // First make sure the code pane is open
+    const wasPaneOpen = await this.checkIfPaneIsOpen()
+    if (!wasPaneOpen) {
+      await this.openPane()
+    }
+
+    // Use Playwright's built-in text selection on the code content
+    // it seems to only select whole divs, which works out to align with syntax highlighting
+    // for code mirror, so you can probably select "sketch002 = startSketchOn(XZ)"
+    // but less so for exactly "sketch002 = startS"
+    await this.codeContent.getByText(text).first().selectText()
+
+    // Reset pane state if needed
+    if (!wasPaneOpen) {
+      await this.closePane()
+    }
   }
 }

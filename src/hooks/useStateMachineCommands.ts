@@ -1,21 +1,21 @@
+import { useAppState } from '@src/AppState'
 import { useEffect } from 'react'
-import { AnyStateMachine, Actor, StateFrom } from 'xstate'
-import { createMachineCommand } from '../lib/createMachineCommand'
-import { useCommandsContext } from './useCommandsContext'
-import { modelingMachine } from 'machines/modelingMachine'
-import { authMachine } from 'machines/authMachine'
-import { settingsMachine } from 'machines/settingsMachine'
-import { projectsMachine } from 'machines/projectsMachine'
-import {
+import type { Actor, AnyStateMachine, EventFrom, StateFrom } from 'xstate'
+
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import { useKclContext } from '@src/lang/KclProvider'
+import type {
   Command,
   StateMachineCommandSetConfig,
   StateMachineCommandSetSchema,
-} from 'lib/commandTypes'
-import { useKclContext } from 'lang/KclProvider'
-import { useNetworkContext } from 'hooks/useNetworkContext'
-import { NetworkHealthState } from 'hooks/useNetworkStatus'
-import { useAppState } from 'AppState'
-import { getActorNextEvents } from 'lib/utils'
+} from '@src/lib/commandTypes'
+import { createMachineCommand } from '@src/lib/createMachineCommand'
+import type { authMachine } from '@src/machines/authMachine'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import type { modelingMachine } from '@src/machines/modelingMachine'
+import type { projectsMachine } from '@src/machines/projectsMachine'
+import type { settingsMachine } from '@src/machines/settingsMachine'
 
 // This might not be necessary, AnyStateMachine from xstate is working
 export type AllMachines =
@@ -26,7 +26,7 @@ export type AllMachines =
 
 interface UseStateMachineCommandsArgs<
   T extends AllMachines,
-  S extends StateMachineCommandSetSchema<T>
+  S extends StateMachineCommandSetSchema<T>,
 > {
   machineId: T['id']
   state: StateFrom<T>
@@ -39,7 +39,7 @@ interface UseStateMachineCommandsArgs<
 
 export default function useStateMachineCommands<
   T extends AnyStateMachine,
-  S extends StateMachineCommandSetSchema<T>
+  S extends StateMachineCommandSetSchema<T>,
 >({
   machineId,
   state,
@@ -49,7 +49,6 @@ export default function useStateMachineCommands<
   allCommandsRequireNetwork = false,
   onCancel,
 }: UseStateMachineCommandsArgs<T, S>) {
-  const { commandBarSend } = useCommandsContext()
   const { overallState } = useNetworkContext()
   const { isExecuting } = useKclContext()
   const { isStreamReady } = useAppState()
@@ -60,30 +59,33 @@ export default function useStateMachineCommands<
         overallState !== NetworkHealthState.Weak) ||
       isExecuting ||
       !isStreamReady
-    const newCommands = getActorNextEvents(state)
+    const newCommands = Object.keys(commandBarConfig || {})
       .filter((_) => !allCommandsRequireNetwork || !disableAllButtons)
-      .filter((e) => !['done.', 'error.'].some((n) => e.includes(n)))
-      .flatMap((type) =>
-        createMachineCommand<T, S>({
+      .flatMap((type) => {
+        const typeWithProperType = type as EventFrom<T>['type']
+        return createMachineCommand<T, S>({
           // The group is the owner machine's ID.
           groupId: machineId,
-          type,
+          type: typeWithProperType,
           state,
           send,
           actor,
           commandBarConfig,
           onCancel,
         })
-      )
+      })
       .filter((c) => c !== null) as Command[] // TS isn't smart enough to know this filter removes nulls
 
-    commandBarSend({ type: 'Add commands', data: { commands: newCommands } })
+    commandBarActor.send({
+      type: 'Add commands',
+      data: { commands: newCommands },
+    })
 
     return () => {
-      commandBarSend({
+      commandBarActor.send({
         type: 'Remove commands',
         data: { commands: newCommands },
       })
     }
-  }, [state, overallState, isExecuting, isStreamReady])
+  }, [overallState, isExecuting, isStreamReady])
 }

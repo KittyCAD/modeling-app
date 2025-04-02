@@ -1,8 +1,11 @@
+import type { MarkedOptions } from '@ts-stack/markdown'
+import { Marked, escape, unescape } from '@ts-stack/markdown'
 import toast from 'react-hot-toast'
-import { ActionButton } from './ActionButton'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import { Marked } from '@ts-stack/markdown'
-import { getReleaseUrl } from 'routes/Settings'
+
+import { ActionButton } from '@src/components/ActionButton'
+import { SafeRenderer } from '@src/lib/markdown'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { getReleaseUrl } from '@src/routes/Settings'
 
 export function ToastUpdate({
   version,
@@ -18,6 +21,14 @@ export function ToastUpdate({
   const containsBreakingChanges = releaseNotes
     ?.toLocaleLowerCase()
     .includes('breaking')
+
+  const markedOptions: MarkedOptions = {
+    gfm: true,
+    breaks: true,
+    sanitize: true,
+    unescape,
+    escape,
+  }
 
   return (
     <div className="inset-0 z-50 grid place-content-center rounded bg-chalkboard-110/50 shadow-md">
@@ -58,9 +69,8 @@ export function ToastUpdate({
               className="parsed-markdown py-2 px-4 mt-2 border-t border-chalkboard-30 dark:border-chalkboard-60 max-h-60 overflow-y-auto"
               dangerouslySetInnerHTML={{
                 __html: Marked.parse(releaseNotes, {
-                  gfm: true,
-                  breaks: true,
-                  sanitize: true,
+                  renderer: new SafeRenderer(markedOptions),
+                  ...markedOptions,
                 }),
               }}
             ></div>

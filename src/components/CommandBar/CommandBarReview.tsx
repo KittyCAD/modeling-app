@@ -1,14 +1,18 @@
-import { useCommandsContext } from 'hooks/useCommandsContext'
-import CommandBarHeader from './CommandBarHeader'
 import { useHotkeys } from 'react-hotkeys-hook'
 
+import CommandBarHeader from '@src/components/CommandBar/CommandBarHeader'
+import {
+  commandBarActor,
+  useCommandBarState,
+} from '@src/machines/commandBarMachine'
+
 function CommandBarReview({ stepBack }: { stepBack: () => void }) {
-  const { commandBarState, commandBarSend } = useCommandsContext()
+  const commandBarState = useCommandBarState()
   const {
     context: { argumentsToSubmit, selectedCommand },
   } = commandBarState
 
-  useHotkeys('backspace', stepBack, {
+  useHotkeys('backspace+shift', stepBack, {
     enableOnFormTags: true,
     enableOnContentEditable: true,
   })
@@ -33,7 +37,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
           parseInt(b.keys[0], 10) - 1
         ]
         const arg = selectedCommand?.args[argName]
-        commandBarSend({
+        commandBarActor.send({
           type: 'Edit argument',
           data: { arg: { ...arg, name: argName } },
         })
@@ -50,7 +54,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
 
   function submitCommand(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    commandBarSend({
+    commandBarActor.send({
       type: 'Submit command',
       output: argumentsToSubmit,
     })
@@ -58,7 +62,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
 
   return (
     <CommandBarHeader>
-      <p className="px-4">
+      <p className="px-4 pb-2">
         {selectedCommand?.reviewMessage ? (
           selectedCommand.reviewMessage instanceof Function ? (
             selectedCommand.reviewMessage(commandBarState.context)
@@ -66,7 +70,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
             selectedCommand.reviewMessage
           )
         ) : (
-          <>Confirm {selectedCommand?.name}</>
+          <>Confirm {selectedCommand?.displayName || selectedCommand?.name}</>
         )}
       </p>
       <form

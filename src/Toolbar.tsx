@@ -1,55 +1,61 @@
-import { useRef, useMemo, memo } from 'react'
-import { isCursorInSketchCommandRange } from 'lang/util'
-import { engineCommandManager, kclManager } from 'lib/singletons'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { useCommandsContext } from 'hooks/useCommandsContext'
-import { useNetworkContext } from 'hooks/useNetworkContext'
-import { NetworkHealthState } from 'hooks/useNetworkStatus'
-import { ActionButton } from 'components/ActionButton'
-import { isSingleCursorInPipe } from 'lang/queryAst'
-import { useKclContext } from 'lang/KclProvider'
-import { ActionButtonDropdown } from 'components/ActionButtonDropdown'
+import { memo, useCallback, useMemo, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import Tooltip from 'components/Tooltip'
-import { useAppState } from 'AppState'
-import { CustomIcon } from 'components/CustomIcon'
-import {
-  toolbarConfig,
+
+import { useAppState } from '@src/AppState'
+import { ActionButton } from '@src/components/ActionButton'
+import { ActionButtonDropdown } from '@src/components/ActionButtonDropdown'
+import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import { useKclContext } from '@src/lang/KclProvider'
+import { isCursorInFunctionDefinition } from '@src/lang/queryAst'
+import { isCursorInSketchCommandRange } from '@src/lang/util'
+import { isDesktop } from '@src/lib/isDesktop'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { editorManager, kclManager } from '@src/lib/singletons'
+import type {
   ToolbarItem,
   ToolbarItemCallbackProps,
   ToolbarItemResolved,
   ToolbarModeName,
-} from 'lib/toolbar'
-import { isDesktop } from 'lib/isDesktop'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
+} from '@src/lib/toolbar'
+import { toolbarConfig } from '@src/lib/toolbar'
+import { isArray } from '@src/lib/utils'
+import { commandBarActor } from '@src/machines/commandBarMachine'
 
 export function Toolbar({
   className = '',
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
   const { state, send, context } = useModelingContext()
-  const { commandBarSend } = useCommandsContext()
   const iconClassName =
     'group-disabled:text-chalkboard-50 !text-inherit dark:group-enabled:group-hover:!text-inherit'
   const bgClassName = '!bg-transparent'
   const buttonBgClassName =
     'bg-chalkboard-transparent dark:bg-transparent disabled:bg-transparent dark:disabled:bg-transparent enabled:hover:bg-chalkboard-10 dark:enabled:hover:bg-chalkboard-100 pressed:!bg-primary pressed:enabled:hover:!text-chalkboard-10'
-  const buttonBorderClassName =
-    '!border-transparent hover:!border-chalkboard-20 dark:enabled:hover:!border-primary pressed:!border-primary ui-open:!border-primary'
+  const buttonBorderClassName = '!border-transparent'
 
   const sketchPathId = useMemo(() => {
-    if (!isSingleCursorInPipe(context.selectionRanges, kclManager.ast))
+    if (
+      isCursorInFunctionDefinition(
+        kclManager.ast,
+        context.selectionRanges.graphSelections[0]
+      )
+    )
       return false
     return isCursorInSketchCommandRange(
-      engineCommandManager.artifactGraph,
+      kclManager.artifactGraph,
       context.selectionRanges
     )
-  }, [engineCommandManager.artifactGraph, context.selectionRanges])
+  }, [kclManager.artifactGraph, context.selectionRanges])
 
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
   const { overallState } = useNetworkContext()
   const { isExecuting } = useKclContext()
   const { isStreamReady } = useAppState()
+  const [showRichContent, setShowRichContent] = useState(false)
 
   const disableAllButtons =
     (overallState !== NetworkHealthState.Ok &&
@@ -71,11 +77,51 @@ export function Toolbar({
     () => ({
       modelingState: state,
       modelingSend: send,
-      commandBarSend,
       sketchPathId,
+      editorHasFocus: editorManager.editorView?.hasFocus,
     }),
-    [state, send, commandBarSend, sketchPathId]
+    [
+      state,
+      send,
+      commandBarActor.send,
+      sketchPathId,
+      editorManager.editorView?.hasFocus,
+    ]
   )
+
+  const tooltipContentClassName = !showRichContent
+    ? ''
+    : '!text-left text-wrap !text-xs !p-0 !pb-2 flex gap-2 !max-w-none !w-72 flex-col items-stretch'
+  const richContentTimeout = useRef<number | null>(null)
+  const richContentClearTimeout = useRef<number | null>(null)
+  // On mouse enter, show rich content after a 1s delay
+  const handleMouseEnter = useCallback(() => {
+    // Cancel the clear timeout if it's already set
+    if (richContentClearTimeout.current) {
+      clearTimeout(richContentClearTimeout.current)
+    }
+    // Start our own timeout to show the rich content
+    richContentTimeout.current = window.setTimeout(() => {
+      setShowRichContent(true)
+      if (richContentClearTimeout.current) {
+        clearTimeout(richContentClearTimeout.current)
+      }
+    }, 1000)
+  }, [setShowRichContent])
+  // On mouse leave, clear the timeout and hide rich content
+  const handleMouseLeave = useCallback(() => {
+    // Clear the timeout to show rich content
+    if (richContentTimeout.current) {
+      clearTimeout(richContentTimeout.current)
+    }
+    // Start a timeout to hide the rich content
+    richContentClearTimeout.current = window.setTimeout(() => {
+      setShowRichContent(false)
+      if (richContentClearTimeout.current) {
+        clearTimeout(richContentClearTimeout.current)
+      }
+    }, 500)
+  }, [setShowRichContent])
 
   /**
    * Resolve all the callbacks and values for the current mode,
@@ -89,7 +135,7 @@ export function Toolbar({
     return toolbarConfig[currentMode].items.map((maybeIconConfig) => {
       if (maybeIconConfig === 'break') {
         return 'break'
-      } else if (Array.isArray(maybeIconConfig)) {
+      } else if (isArray(maybeIconConfig)) {
         return maybeIconConfig.map(resolveItemConfig)
       } else {
         return resolveItemConfig(maybeIconConfig)
@@ -129,7 +175,10 @@ export function Toolbar({
   }, [currentMode, disableAllButtons, configCallbackProps])
 
   return (
-    <menu className="max-w-full whitespace-nowrap rounded-b px-2 py-1 bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm">
+    <menu
+      data-current-mode={currentMode}
+      className="max-w-full whitespace-nowrap rounded-b px-2 py-1 bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm"
+    >
       <ul
         {...props}
         ref={toolbarButtonsRef}
@@ -148,7 +197,7 @@ export function Toolbar({
                 className="h-5 w-[1px] block bg-chalkboard-30 dark:bg-chalkboard-80"
               />
             )
-          } else if (Array.isArray(maybeIconConfig)) {
+          } else if (isArray(maybeIconConfig)) {
             // A button with a dropdown
             return (
               <ActionButtonDropdown
@@ -158,9 +207,12 @@ export function Toolbar({
                 id={maybeIconConfig[0].id + '-dropdown'}
                 name={maybeIconConfig[0].title}
                 className={
+                  (maybeIconConfig[0].alwaysDark
+                    ? 'dark bg-chalkboard-90 '
+                    : '!bg-transparent ') +
                   'group/wrapper ' +
                   buttonBorderClassName +
-                  ' !bg-transparent relative group !gap-0'
+                  ' relative group !gap-0'
                 }
                 splitMenuItems={maybeIconConfig.map((itemConfig) => ({
                   id: itemConfig.id,
@@ -174,43 +226,65 @@ export function Toolbar({
                   status: itemConfig.status,
                 }))}
               >
-                <ActionButton
-                  Element="button"
-                  id={maybeIconConfig[0].id}
-                  data-testid={maybeIconConfig[0].id}
-                  iconStart={{
-                    icon: maybeIconConfig[0].icon,
-                    className: iconClassName,
-                    bgClassName: bgClassName,
-                  }}
-                  className={
-                    '!border-transparent !px-0 pressed:!text-chalkboard-10 pressed:enabled:hovered:!text-chalkboard-10 ' +
-                    buttonBgClassName
-                  }
-                  aria-pressed={maybeIconConfig[0].isActive}
-                  disabled={
-                    disableAllButtons ||
-                    maybeIconConfig[0].status !== 'available' ||
-                    maybeIconConfig[0].disabled
-                  }
-                  name={maybeIconConfig[0].title}
-                  // aria-description is still in ARIA 1.3 draft.
-                  // eslint-disable-next-line jsx-a11y/aria-props
-                  aria-description={maybeIconConfig[0].description}
-                  onClick={() =>
-                    maybeIconConfig[0].onClick(configCallbackProps)
-                  }
+                <div
+                  className="contents"
+                  // Mouse events do not fire on disabled buttons
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
                 >
-                  <span
-                    className={!maybeIconConfig[0].showTitle ? 'sr-only' : ''}
+                  <ActionButton
+                    Element="button"
+                    id={maybeIconConfig[0].id}
+                    data-testid={maybeIconConfig[0].id}
+                    iconStart={{
+                      icon: maybeIconConfig[0].icon,
+                      iconColor: maybeIconConfig[0].iconColor,
+                      className: iconClassName,
+                      bgClassName: bgClassName,
+                    }}
+                    className={
+                      '!border-transparent !px-0 pressed:!text-chalkboard-10 pressed:enabled:hovered:!text-chalkboard-10 ' +
+                      buttonBgClassName
+                    }
+                    aria-pressed={maybeIconConfig[0].isActive}
+                    disabled={
+                      disableAllButtons ||
+                      maybeIconConfig[0].status !== 'available' ||
+                      maybeIconConfig[0].disabled
+                    }
+                    name={maybeIconConfig[0].title}
+                    // aria-description is still in ARIA 1.3 draft.
+                    // eslint-disable-next-line jsx-a11y/aria-props
+                    aria-description={maybeIconConfig[0].description}
+                    onClick={() =>
+                      maybeIconConfig[0].onClick(configCallbackProps)
+                    }
                   >
-                    {maybeIconConfig[0].title}
-                  </span>
-                </ActionButton>
-                <ToolbarItemTooltip
-                  itemConfig={maybeIconConfig[0]}
-                  configCallbackProps={configCallbackProps}
-                />
+                    <span
+                      className={!maybeIconConfig[0].showTitle ? 'sr-only' : ''}
+                    >
+                      {maybeIconConfig[0].title}
+                    </span>
+                    <ToolbarItemTooltip
+                      itemConfig={maybeIconConfig[0]}
+                      configCallbackProps={configCallbackProps}
+                      wrapperClassName="ui-open:!hidden"
+                      contentClassName={tooltipContentClassName}
+                    >
+                      {showRichContent ? (
+                        <ToolbarItemTooltipRichContent
+                          itemConfig={maybeIconConfig[0]}
+                        />
+                      ) : (
+                        <ToolbarItemTooltipShortContent
+                          status={maybeIconConfig[0].status}
+                          title={maybeIconConfig[0].title}
+                          hotkey={maybeIconConfig[0].hotkey}
+                        />
+                      )}
+                    </ToolbarItemTooltip>
+                  </ActionButton>
+                </div>
               </ActionButtonDropdown>
             )
           }
@@ -218,7 +292,13 @@ export function Toolbar({
 
           // A single button
           return (
-            <div className="relative" key={itemConfig.id}>
+            <div
+              className="relative"
+              key={itemConfig.id}
+              // Mouse events do not fire on disabled buttons
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
               <ActionButton
                 Element="button"
                 key={itemConfig.id}
@@ -226,6 +306,7 @@ export function Toolbar({
                 data-testid={itemConfig.id}
                 iconStart={{
                   icon: itemConfig.icon,
+                  iconColor: itemConfig.iconColor,
                   className: iconClassName,
                   bgClassName: bgClassName,
                 }}
@@ -255,7 +336,18 @@ export function Toolbar({
               <ToolbarItemTooltip
                 itemConfig={itemConfig}
                 configCallbackProps={configCallbackProps}
-              />
+                contentClassName={tooltipContentClassName}
+              >
+                {showRichContent ? (
+                  <ToolbarItemTooltipRichContent itemConfig={itemConfig} />
+                ) : (
+                  <ToolbarItemTooltipShortContent
+                    status={itemConfig.status}
+                    title={itemConfig.title}
+                    hotkey={itemConfig.hotkey}
+                  />
+                )}
+              </ToolbarItemTooltip>
             </div>
           )
         })}
@@ -269,6 +361,12 @@ export function Toolbar({
   )
 }
 
+interface ToolbarItemContentsProps extends React.PropsWithChildren {
+  itemConfig: ToolbarItemResolved
+  configCallbackProps: ToolbarItemCallbackProps
+  wrapperClassName?: string
+  contentClassName?: string
+}
 /**
  * The single button and dropdown button share content, so we extract it here
  * It contains a tooltip with the title, description, and links
@@ -277,12 +375,10 @@ export function Toolbar({
 const ToolbarItemTooltip = memo(function ToolbarItemContents({
   itemConfig,
   configCallbackProps,
-}: {
-  itemConfig: ToolbarItemResolved
-  configCallbackProps: ToolbarItemCallbackProps
-}) {
-  const { state } = useModelingContext()
-
+  wrapperClassName = '',
+  contentClassName = '',
+  children,
+}: ToolbarItemContentsProps) {
   useHotkeys(
     itemConfig.hotkey || '',
     () => {
@@ -302,14 +398,57 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
       inert={false}
       wrapperStyle={
         isDesktop()
-          ? ({ '-webkit-app-region': 'no-drag' } as React.CSSProperties)
+          ? // Without this, the tooltip disappears before being able to click on anything in it
+            ({ WebkitAppRegion: 'no-drag' } as React.CSSProperties)
           : {}
       }
+      hoverOnly
       position="bottom"
-      wrapperClassName="!p-4 !pointer-events-auto"
-      contentClassName="!text-left text-wrap !text-xs !p-0 !pb-2 flex gap-2 !max-w-none !w-72 flex-col items-stretch"
+      wrapperClassName={'!p-4 !pointer-events-auto ' + wrapperClassName}
+      contentClassName={contentClassName}
     >
+      {children}
+    </Tooltip>
+  )
+})
+
+const ToolbarItemTooltipShortContent = ({
+  status,
+  title,
+  hotkey,
+}: {
+  status: string
+  title: string
+  hotkey?: string | string[]
+}) => (
+  <span
+    className={`text-sm ${
+      status !== 'available' ? 'text-chalkboard-70 dark:text-chalkboard-40' : ''
+    }`}
+  >
+    {title}
+    {hotkey && (
+      <kbd className="inline-block ml-2 flex-none hotkey">{hotkey}</kbd>
+    )}
+  </span>
+)
+
+const ToolbarItemTooltipRichContent = ({
+  itemConfig,
+}: {
+  itemConfig: ToolbarItemResolved
+}) => {
+  const { state } = useModelingContext()
+  return (
+    <>
       <div className="rounded-top flex items-center gap-2 pt-3 pb-2 px-2 bg-chalkboard-20/50 dark:bg-chalkboard-80/50">
+        {itemConfig.icon && (
+          <CustomIcon
+            className="w-5 h-5"
+            style={{ color: itemConfig.iconColor }}
+            name={itemConfig.icon}
+          />
+        )}
         <span
           className={`text-sm flex-1 ${
             itemConfig.status !== 'available'
@@ -378,6 +517,6 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
           </ul>
         </>
       )}
-    </Tooltip>
+    </>
   )
-})
+}

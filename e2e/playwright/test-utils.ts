@@ -1,43 +1,41 @@
-import {
-  expect,
-  BrowserContext,
-  TestInfo,
-  _electron as electron,
-  ElectronApplication,
-  Locator,
-} from '@playwright/test'
-import { test, Page } from './zoo-test'
-import { EngineCommand } from 'lang/std/artifactGraph'
+import * as TOML from '@iarna/toml'
+import type { Models } from '@kittycad/lib'
+import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
+import { expect } from '@playwright/test'
+import type { EngineCommand } from '@src/lang/std/artifactGraph'
+import type { Configuration } from '@src/lang/wasm'
+import { COOKIE_NAME } from '@src/lib/constants'
+import { reportRejection } from '@src/lib/trap'
+import type { DeepPartial } from '@src/lib/types'
+import { isArray } from '@src/lib/utils'
 import fsp from 'fs/promises'
-import fsSync from 'fs'
 import path from 'path'
 import pixelMatch from 'pixelmatch'
+import type { Protocol } from 'playwright-core/types/protocol'
 import { PNG } from 'pngjs'
-import { Protocol } from 'playwright-core/types/protocol'
-import type { Models } from '@kittycad/lib'
-import { COOKIE_NAME } from 'lib/constants'
-import { secrets } from './secrets'
+
+import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+
+import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
+import { secrets } from '@e2e/playwright/secrets'
 import {
-  TEST_SETTINGS_KEY,
-  TEST_SETTINGS,
   IS_PLAYWRIGHT_KEY,
-} from './storageStates'
-import * as TOML from '@iarna/toml'
-import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
-import { SETTINGS_FILE_NAME } from 'lib/constants'
-import { isErrorWhitelisted } from './lib/console-error-whitelist'
-import { isArray } from 'lib/utils'
-import { reportRejection } from 'lib/trap'
+  TEST_SETTINGS,
+  TEST_SETTINGS_KEY,
+} from '@e2e/playwright/storageStates'
+import { test } from '@e2e/playwright/zoo-test'
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
 }
 
-type TestColor = [number, number, number]
-export const TEST_COLORS = {
-  WHITE: [249, 249, 249] as TestColor,
-  YELLOW: [255, 255, 0] as TestColor,
-  BLUE: [0, 0, 255] as TestColor,
+export type TestColor = [number, number, number]
+export const TEST_COLORS: { [key: string]: TestColor } = {
+  WHITE: [249, 249, 249],
+  YELLOW: [255, 255, 0],
+  BLUE: [0, 0, 255],
+  DARK_MODE_BKGD: [27, 27, 27],
+  DARK_MODE_PLANE_XZ: [50, 50, 99],
 } as const
 
 export const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
@@ -52,16 +50,25 @@ export const commonPoints = {
   num3: -2.44,
 } as const
 
-/** A semi-reliable color to check the default XZ plane on
- * in dark mode in the default camera position
- */
-export const darkModePlaneColorXZ: [number, number, number] = [50, 50, 99]
-
-/** A semi-reliable color to check the default dark mode bg color against */
-export const darkModeBgColor: [number, number, number] = [27, 27, 27]
-
 export const editorSelector = '[role="textbox"][data-language="kcl"]'
 type PaneId = 'variables' | 'code' | 'files' | 'logs'
+
+export function runningOnLinux() {
+  return process.platform === 'linux'
+}
+
+export function runningOnMac() {
+  return process.platform === 'darwin'
+}
+
+export function runningOnWindows() {
+  return process.platform === 'win32'
+}
+
+export function orRunWhenFullSuiteEnabled() {
+  const branch = process.env.GITHUB_REF?.replace('refs/heads/', '')
+  return branch !== 'all-e2e'
+}
 
 async function waitForPageLoadWithRetry(page: Page) {
   await expect(async () => {
@@ -334,7 +341,7 @@ export const getMovementUtils = (opts: any) => {
 
 async function waitForAuthAndLsp(page: Page) {
   const waitForLspPromise = page.waitForEvent('console', {
-    predicate: async (message) => {
+    predicate: async (message: any) => {
       // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
       // but that doesn't seem to make it to the console for macos/safari :(
       if (message.text().includes('start kcl lsp')) {
@@ -417,7 +424,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
       const overlay = page.locator(locator)
       const bbox = await overlay
         .boundingBox({ timeout: 5_000 })
-        .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 }))
+        .then((box: any) => ({ ...box, x: box?.x || 0, y: box?.y || 0 }))
       const angle = Number(await overlay.getAttribute('data-overlay-angle'))
       const angleXOffset = Math.cos(((angle - 180) * Math.PI) / 180) * px
       const angleYOffset = Math.sin(((angle - 180) * Math.PI) / 180) * px
@@ -434,7 +441,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
       page
         .locator(locator)
         .boundingBox({ timeout: 5_000 })
-        .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
+        .then((box: any) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
     codeLocator: page.locator('.cm-content'),
     crushKclCodeIntoOneLineAndThenMaybeSome: async () => {
       const code = await page.locator('.cm-content').innerText()
@@ -501,7 +508,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     ) => {
       if (cdpSession === null) {
         // Use a fail safe if we can't simulate disconnect (on Safari)
-        return page.evaluate('window.tearDown()')
+        return page.evaluate('window.engineCommandManager.tearDown()')
       }
 
       return cdpSession?.send(
@@ -549,6 +556,16 @@ export async function getUtils(page: Page, test_?: typeof test) {
         await page.getByTestId('create-file-button').click()
         await page.getByTestId('tree-input-field').fill(name)
         await page.keyboard.press('Enter')
+      })
+    },
+
+    cloneFile: async (name: string) => {
+      return test?.step(`Cloning file '${name}'`, async () => {
+        await page
+          .locator('[data-testid="file-pane-scroll-container"] button')
+          .filter({ hasText: name })
+          .click({ button: 'right' })
+        await page.getByTestId('context-menu-clone').click()
       })
     },
 
@@ -618,7 +635,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     panesOpen: async (paneIds: PaneId[]) => {
       return test?.step(`Setting ${paneIds} panes to be open`, async () => {
         await page.addInitScript(
-          ({ PERSIST_MODELING_CONTEXT, paneIds }) => {
+          ({ PERSIST_MODELING_CONTEXT, paneIds }: any) => {
             localStorage.setItem(
               PERSIST_MODELING_CONTEXT,
               JSON.stringify({ openPanes: paneIds })
@@ -663,8 +680,8 @@ const _makeTemplate = (
           isArray(currentOptions)
             ? currentOptions[i]
             : typeof currentOptions === 'number'
-            ? currentOptions
-            : ''
+              ? currentOptions
+              : ''
         )
       )
     })
@@ -709,14 +726,14 @@ export const makeTemplate: (
 
 const PLAYWRIGHT_DOWNLOAD_DIR = 'downloads-during-playwright'
 
-export const getPlaywrightDownloadDir = (page: Page) => {
-  return path.resolve(page.dir, PLAYWRIGHT_DOWNLOAD_DIR)
+export const getPlaywrightDownloadDir = (rootDir: string) => {
+  return path.resolve(rootDir, PLAYWRIGHT_DOWNLOAD_DIR)
 }
 
-const moveDownloadedFileTo = async (page: Page, toLocation: string) => {
+const moveDownloadedFileTo = async (rootDir: string, toLocation: string) => {
   await fsp.mkdir(path.dirname(toLocation), { recursive: true })
 
-  const downloadDir = getPlaywrightDownloadDir(page)
+  const downloadDir = getPlaywrightDownloadDir(rootDir)
 
   // Expect there to be at least one file
   await expect
@@ -742,7 +759,8 @@ export interface Paths {
 }
 
 export const doExport = async (
-  output: Models['OutputFormat_type'],
+  output: Models['OutputFormat3d_type'],
+  rootDir: string,
   page: Page,
   exportFrom: 'dropdown' | 'sidebarButton' | 'commandBar' = 'dropdown'
 ): Promise<Paths> => {
@@ -823,7 +841,7 @@ export const doExport = async (
     // (declared in src/lib/exportSave)
     // To remain consistent with our old web tests, we want to move some downloads
     // (images) to another directory.
-    await moveDownloadedFileTo(page, downloadLocation)
+    await moveDownloadedFileTo(rootDir, downloadLocation)
   }
 
   return {
@@ -846,12 +864,6 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
     downloadThroughput: -1,
     uploadThroughput: -1,
   })
-
-  // It seems it's best to give the browser about 3s to close things
-  // It's not super reliable but we have no real other choice for now
-  await page.waitForTimeout(3000)
-
-  await testInfo.tronApp?.close()
 }
 
 // settingsOverrides may need to be augmented to take more generic items,
@@ -884,19 +896,25 @@ export async function setup(
     {
       token: secrets.token,
       settingsKey: TEST_SETTINGS_KEY,
-      settings: TOML.stringify({
+      settings: settingsToToml({
         settings: {
           ...TEST_SETTINGS,
           app: {
-            ...TEST_SETTINGS.projects,
-            projectDirectory: TEST_SETTINGS.app.projectDirectory,
-            onboardingStatus: 'dismissed',
-            theme: 'dark',
+            appearance: {
+              ...TEST_SETTINGS.app?.appearance,
+              theme: 'dark',
+            },
+            ...TEST_SETTINGS.project,
+            onboarding_status: 'dismissed',
           },
-        } as Partial<SaveSettingsPayload>,
+          project: {
+            ...TEST_SETTINGS.project,
+            directory: TEST_SETTINGS.project?.directory,
+          },
+        },
       }),
       IS_PLAYWRIGHT_KEY,
-      PLAYWRIGHT_TEST_DIR: TEST_SETTINGS.app.projectDirectory,
+      PLAYWRIGHT_TEST_DIR: TEST_SETTINGS.project?.directory || '',
       PERSIST_MODELING_CONTEXT,
     }
   )
@@ -919,135 +937,40 @@ export async function setup(
   // await page.reload()
 }
 
-let electronApp: ElectronApplication | undefined = undefined
-let context: BrowserContext | undefined = undefined
-let page: Page | undefined = undefined
-
-export async function setupElectron({
-  testInfo,
-  cleanProjectDir = true,
-  appSettings,
-}: {
-  testInfo: TestInfo
-  folderSetupFn?: (projectDirName: string) => Promise<void>
-  cleanProjectDir?: boolean
-  appSettings?: Partial<SaveSettingsPayload>
-}): Promise<{
-  electronApp: ElectronApplication
-  context: BrowserContext
-  page: Page
-  dir: string
-}> {
-  // create or otherwise clear the folder
-  const projectDirName = testInfo.outputPath('electron-test-projects-dir')
-  try {
-    if (fsSync.existsSync(projectDirName) && cleanProjectDir) {
-      await fsp.rm(projectDirName, { recursive: true })
-    }
-  } catch (e) {
-    console.error(e)
-  }
-
-  if (cleanProjectDir) {
-    await fsp.mkdir(projectDirName)
-  }
-
-  const options = {
-    args: ['.', '--no-sandbox'],
-    env: {
-      ...process.env,
-      TEST_SETTINGS_FILE_KEY: projectDirName,
-      IS_PLAYWRIGHT: 'true',
-    },
-    ...(process.env.ELECTRON_OVERRIDE_DIST_PATH
-      ? { executablePath: process.env.ELECTRON_OVERRIDE_DIST_PATH + 'electron' }
-      : {}),
-  }
-
-  // Do this once and then reuse window on subsequent calls.
-  if (!electronApp) {
-    electronApp = await electron.launch(options)
-  }
-
-  if (!context || !page) {
-    context = electronApp.context()
-    page = await electronApp.firstWindow()
-    context.on('console', console.log)
-    page.on('console', console.log)
-  }
-
-  if (cleanProjectDir) {
-    const tempSettingsFilePath = path.join(projectDirName, SETTINGS_FILE_NAME)
-    const settingsOverrides = TOML.stringify(
-      appSettings
-        ? {
-            settings: {
-              ...TEST_SETTINGS,
-              ...appSettings,
-              app: {
-                ...TEST_SETTINGS.app,
-                projectDirectory: projectDirName,
-                ...appSettings.app,
-              },
-            },
-          }
-        : {
-            settings: {
-              ...TEST_SETTINGS,
-              app: {
-                ...TEST_SETTINGS.app,
-                projectDirectory: projectDirName,
-              },
-            },
-          }
-    )
-    await fsp.writeFile(tempSettingsFilePath, settingsOverrides)
-  }
-
-  return { electronApp, page, context, dir: projectDirName }
-}
-
 function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {
-  // enabled for chrome for now
-  if (page.context().browser()?.browserType().name() === 'chromium') {
-    page.on('pageerror', (exception) => {
-      if (isErrorWhitelisted(exception)) {
-        return
-      }
+  page.on('pageerror', (exception: any) => {
+    if (isErrorWhitelisted(exception)) {
+      return
+    }
+    // Only disable this environment variable if you want to collect console errors
+    if (process.env.FAIL_ON_CONSOLE_ERRORS !== 'false') {
+      // Use expect to prevent page from closing and not cleaning up
+      expect(`An error was detected in the console: \r\n message:${exception.message} \r\n name:${exception.name} \r\n stack:${exception.stack}
 
-      // only set this env var to false if you want to collect console errors
-      // This can be configured in the GH workflow.  This should be set to true by default (we want tests to fail when
-      // unwhitelisted console errors are detected).
-      if (process.env.FAIL_ON_CONSOLE_ERRORS === 'true') {
-        // Fail when running on CI and FAIL_ON_CONSOLE_ERRORS is set
-        // use expect to prevent page from closing and not cleaning up
-        expect(`An error was detected in the console: \r\n message:${exception.message} \r\n name:${exception.name} \r\n stack:${exception.stack}
-          
-          *Either fix the console error or add it to the whitelist defined in ./lib/console-error-whitelist.ts (if the error can be safely ignored)       
-          `).toEqual('Console error detected')
-      } else {
-        // the (test-results/exceptions.txt) file will be uploaded as part of an upload artifact in GH
-        fsp
-          .appendFile(
-            './test-results/exceptions.txt',
-            [
-              '~~~',
-              `triggered_by_test:${
-                testInfo?.file + ' ' + (testInfo?.title || ' ')
-              }`,
-              `name:${exception.name}`,
-              `message:${exception.message}`,
-              `stack:${exception.stack}`,
-              `project:${testInfo?.project.name}`,
-              '~~~',
-            ].join('\n')
-          )
-          .catch((err) => {
-            console.error(err)
-          })
-      }
-    })
-  }
+        *Either fix the console error or add it to the whitelist defined in ./lib/console-error-whitelist.ts (if the error can be safely ignored)
+        `).toEqual('Console error detected')
+    } else {
+      // Add errors to `test-results/exceptions.txt` as a test artifact
+      fsp
+        .appendFile(
+          './test-results/exceptions.txt',
+          [
+            '~~~',
+            `triggered_by_test:${
+              testInfo?.file + ' ' + (testInfo?.title || ' ')
+            }`,
+            `name:${exception.name}`,
+            `message:${exception.message}`,
+            `stack:${exception.stack}`,
+            `project:${testInfo?.project.name}`,
+            '~~~',
+          ].join('\n')
+        )
+        .catch((err) => {
+          console.error(err)
+        })
+    }
+  })
 }
 export async function isOutOfViewInScrollContainer(
   element: Locator,
@@ -1078,7 +1001,7 @@ export async function createProject({
   returnHome?: boolean
 }) {
   await test.step(`Create project and navigate to it`, async () => {
-    await page.getByRole('button', { name: 'New project' }).click()
+    await page.getByRole('button', { name: 'Create project' }).click()
     await page.getByRole('textbox', { name: 'Name' }).fill(name)
     await page.getByRole('button', { name: 'Continue' }).click()
 
@@ -1090,7 +1013,7 @@ export async function createProject({
 }
 
 export function executorInputPath(fileName: string): string {
-  return path.join('src', 'wasm-lib', 'tests', 'executor', 'inputs', fileName)
+  return path.join('rust', 'kcl-lib', 'e2e', 'executor', 'inputs', fileName)
 }
 
 export async function doAndWaitForImageDiff(
@@ -1189,4 +1112,28 @@ export async function pollEditorLinesSelectedLength(page: Page, lines: number) {
       return lines.length
     })
     .toBe(lines)
+}
+
+export function settingsToToml(settings: DeepPartial<Configuration>) {
+  // eslint-disable-next-line no-restricted-syntax
+  return TOML.stringify(settings as any)
+}
+
+export function tomlToSettings(toml: string): DeepPartial<Configuration> {
+  // eslint-disable-next-line no-restricted-syntax
+  return TOML.parse(toml)
+}
+
+export function tomlToPerProjectSettings(
+  toml: string
+): DeepPartial<ProjectConfiguration> {
+  // eslint-disable-next-line no-restricted-syntax
+  return TOML.parse(toml)
+}
+
+export function perProjectsettingsToToml(
+  settings: DeepPartial<ProjectConfiguration>
+) {
+  // eslint-disable-next-line no-restricted-syntax
+  return TOML.stringify(settings as any)
 }

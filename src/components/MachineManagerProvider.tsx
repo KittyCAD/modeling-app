@@ -1,11 +1,11 @@
 import { createContext, useEffect, useState } from 'react'
 
-import { engineCommandManager } from 'lib/singletons'
-import { CommandsContext } from 'components/CommandBar/CommandBarProvider'
-import { isDesktop } from 'lib/isDesktop'
-import { components } from 'lib/machine-api'
-import { reportRejection } from 'lib/trap'
-import { toSync } from 'lib/utils'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { components } from '@src/lib/machine-api'
+import { engineCommandManager } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
+import { toSync } from '@src/lib/utils'
+import { commandBarActor } from '@src/machines/commandBarMachine'
 
 export type MachinesListing = Array<
   components['schemas']['MachineInfoResponse']
@@ -41,8 +41,6 @@ export const MachineManagerProvider = ({
   const [currentMachine, setCurrentMachine] = useState<
     components['schemas']['MachineInfoResponse'] | null
   >(null)
-
-  const commandBarActor = CommandsContext.useActorRef()
 
   // Get the reason message for why there are no machines.
   const noMachinesReason = (): string | undefined => {

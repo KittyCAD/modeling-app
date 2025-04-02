@@ -1,0 +1,122 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "declaration": {
+        "commentStart": 3,
+        "end": 49,
+        "id": {
+          "commentStart": 3,
+          "end": 4,
+          "name": "f",
+          "start": 3,
+          "type": "Identifier"
+        },
+        "init": {
+          "body": {
+            "body": [
+              {
+                "argument": {
+                  "arguments": [
+                    {
+                      "abs_path": false,
+                      "commentStart": 36,
+                      "end": 41,
+                      "name": {
+                        "commentStart": 36,
+                        "end": 41,
+                        "name": "angle",
+                        "start": 36,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 36,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    {
+                      "commentStart": 43,
+                      "end": 46,
+                      "raw": "360",
+                      "start": 43,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 360.0,
+                        "suffix": "None"
+                      }
+                    }
+                  ],
+                  "callee": {
+                    "abs_path": false,
+                    "commentStart": 28,
+                    "end": 35,
+                    "name": {
+                      "commentStart": 28,
+                      "end": 35,
+                      "name": "default",
+                      "start": 28,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 28,
+                    "type": "Name"
+                  },
+                  "commentStart": 28,
+                  "end": 47,
+                  "start": 28,
+                  "type": "CallExpression",
+                  "type": "CallExpression"
+                },
+                "commentStart": 21,
+                "end": 47,
+                "start": 21,
+                "type": "ReturnStatement",
+                "type": "ReturnStatement"
+              }
+            ],
+            "commentStart": 19,
+            "end": 49,
+            "start": 19
+          },
+          "commentStart": 7,
+          "end": 49,
+          "params": [
+            {
+              "type": "Parameter",
+              "identifier": {
+                "commentStart": 8,
+                "end": 13,
+                "name": "angle",
+                "start": 8,
+                "type": "Identifier"
+              },
+              "default_value": {
+                "type": "KclNone",
+                "type": "KclNone",
+                "__private": "KCL_NONE_ID"
+              }
+            }
+          ],
+          "start": 7,
+          "type": "FunctionExpression",
+          "type": "FunctionExpression"
+        },
+        "start": 3,
+        "type": "VariableDeclarator"
+      },
+      "end": 49,
+      "kind": "fn",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "commentStart": 0,
+  "end": 49,
+  "start": 0
+}

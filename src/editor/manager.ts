@@ -1,20 +1,25 @@
-import { EditorView, ViewUpdate } from '@codemirror/view'
+import { redo, undo } from '@codemirror/commands'
 import { syntaxTree } from '@codemirror/language'
-import { EditorSelection, Annotation, Transaction } from '@codemirror/state'
-import { engineCommandManager, kclManager } from 'lib/singletons'
-import { modelingMachine, ModelingMachineEvent } from 'machines/modelingMachine'
-import { Selections, Selection, processCodeMirrorRanges } from 'lib/selections'
-import { undo, redo } from '@codemirror/commands'
-import { CommandBarMachineEvent } from 'machines/commandBarMachine'
-import { addLineHighlight, addLineHighlightEvent } from './highlightextension'
+import type { Diagnostic } from '@codemirror/lint'
+import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint'
+import { Annotation, EditorSelection, Transaction } from '@codemirror/state'
+import type { ViewUpdate } from '@codemirror/view'
+import { EditorView } from '@codemirror/view'
+import type { StateFrom } from 'xstate'
+
 import {
-  Diagnostic,
-  forEachDiagnostic,
-  setDiagnosticsEffect,
-} from '@codemirror/lint'
-import { StateFrom } from 'xstate'
-import { markOnce } from 'lib/performance'
-import { kclEditorActor } from 'machines/kclEditorMachine'
+  addLineHighlight,
+  addLineHighlightEvent,
+} from '@src/editor/highlightextension'
+import { markOnce } from '@src/lib/performance'
+import type { Selection, Selections } from '@src/lib/selections'
+import { processCodeMirrorRanges } from '@src/lib/selections'
+import { engineCommandManager, kclManager } from '@src/lib/singletons'
+import { kclEditorActor } from '@src/machines/kclEditorMachine'
+import type {
+  ModelingMachineEvent,
+  modelingMachine,
+} from '@src/machines/modelingMachine'
 
 declare global {
   interface Window {
@@ -51,9 +56,6 @@ export default class EditorManager {
 
   private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => {}
   private _modelingState: StateFrom<typeof modelingMachine> | null = null
-
-  private _commandBarSend: (eventInfo: CommandBarMachineEvent) => void =
-    () => {}
 
   private _convertToVariableEnabled: boolean = false
   private _convertToVariableCallback: () => void = () => {}
@@ -159,14 +161,6 @@ export default class EditorManager {
 
   set modelingState(state: StateFrom<typeof modelingMachine>) {
     this._modelingState = state
-  }
-
-  setCommandBarSend(send: (eventInfo: CommandBarMachineEvent) => void) {
-    this._commandBarSend = send
-  }
-
-  commandBarSend(eventInfo: CommandBarMachineEvent): void {
-    return this._commandBarSend(eventInfo)
   }
 
   get highlightRange(): Array<[number, number]> {
@@ -315,6 +309,21 @@ export default class EditorManager {
     if (selections?.graphSelections?.length === 0) {
       return
     }
+
+    if (!this._editorView) {
+      return
+    }
+    const codeBaseSelections = this.createEditorSelection(selections)
+    this._editorView.dispatch({
+      selection: codeBaseSelections,
+      annotations: [
+        updateOutsideEditorEvent,
+        Transaction.addToHistory.of(false),
+      ],
+    })
+  }
+
+  createEditorSelection(selections: Selections) {
     let codeBasedSelections = []
     for (const selection of selections.graphSelections) {
       const safeEnd = Math.min(
@@ -331,18 +340,7 @@ export default class EditorManager {
         .range[1]
     const safeEnd = Math.min(end, this._editorView?.state.doc.length || end)
     codeBasedSelections.push(EditorSelection.cursor(safeEnd))
-
-    if (!this._editorView) {
-      return
-    }
-
-    this._editorView.dispatch({
-      selection: EditorSelection.create(codeBasedSelections, 1),
-      annotations: [
-        updateOutsideEditorEvent,
-        Transaction.addToHistory.of(false),
-      ],
-    })
+    return EditorSelection.create(codeBasedSelections, 1)
   }
 
   // We will ONLY get here if the user called a select event.
@@ -382,6 +380,7 @@ export default class EditorManager {
       selectionRanges: this._selectionRanges,
       isShiftDown: this._isShiftDown,
       ast: kclManager.ast,
+      artifactGraph: kclManager.artifactGraph,
     })
 
     if (!eventInfo) {

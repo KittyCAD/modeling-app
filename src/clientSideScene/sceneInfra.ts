@@ -1,3 +1,13 @@
+import * as TWEEN from '@tweenjs/tween.js'
+import type {
+  Group,
+  Intersection,
+  Mesh,
+  MeshBasicMaterial,
+  Object3D,
+  Object3DEventMap,
+  Texture,
+} from 'three'
 import {
   AmbientLight,
   Color,
@@ -5,32 +15,29 @@ import {
   LineBasicMaterial,
   OrthographicCamera,
   PerspectiveCamera,
+  Raycaster,
   Scene,
+  TextureLoader,
+  Vector2,
   Vector3,
   WebGLRenderer,
-  Raycaster,
-  Vector2,
-  Group,
-  MeshBasicMaterial,
-  Mesh,
-  Intersection,
-  Object3D,
-  Object3DEventMap,
-  TextureLoader,
-  Texture,
 } from 'three'
-import { Coords2d, compareVec2Epsilon2 } from 'lang/std/sketch'
-import { useModelingContext } from 'hooks/useModelingContext'
-import * as TWEEN from '@tweenjs/tween.js'
-import { Axis, NonCodeSelection } from 'lib/selections'
-import { type BaseUnit } from 'lib/settings/settingsTypes'
-import { CameraControls } from './CameraControls'
-import { EngineCommandManager } from 'lang/std/engineConnection'
-import { MouseState, SegmentOverlayPayload } from 'machines/modelingMachine'
-import { getAngle, throttle } from 'lib/utils'
-import { Themes } from 'lib/theme'
 import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { orthoScale, perspScale } from './helpers'
+
+import { CameraControls } from '@src/clientSideScene/CameraControls'
+import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
+import type { useModelingContext } from '@src/hooks/useModelingContext'
+import type { EngineCommandManager } from '@src/lang/std/engineConnection'
+import type { Coords2d } from '@src/lang/std/sketch'
+import { compareVec2Epsilon2 } from '@src/lang/std/sketch'
+import type { Axis, NonCodeSelection } from '@src/lib/selections'
+import { type BaseUnit } from '@src/lib/settings/settingsTypes'
+import { Themes } from '@src/lib/theme'
+import { getAngle, throttle } from '@src/lib/utils'
+import type {
+  MouseState,
+  SegmentOverlayPayload,
+} from '@src/machines/modelingMachine'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -43,8 +50,8 @@ export const INTERSECTION_PLANE_LAYER = 1
 export const SKETCH_LAYER = 2
 
 // redundant types so that it can be changed temporarily but CI will catch the wrong type
-export const DEBUG_SHOW_INTERSECTION_PLANE: false = false
-export const DEBUG_SHOW_BOTH_SCENES: false = false
+export const DEBUG_SHOW_INTERSECTION_PLANE = false
+export const DEBUG_SHOW_BOTH_SCENES = false
 
 export const RAYCASTABLE_PLANE = 'raycastable-plane'
 
@@ -110,18 +117,16 @@ interface OnMoveCallbackArgs {
 type Voidish = void | Promise<void>
 export class SceneInfra {
   static instance: SceneInfra
-  scene: Scene
-  renderer: WebGLRenderer
-  labelRenderer: CSS2DRenderer
-  camControls: CameraControls
-  isPerspective = true
-  fov = 45
-  fovBeforeAnimate = 45
+  readonly scene: Scene
+  readonly renderer: WebGLRenderer
+  readonly labelRenderer: CSS2DRenderer
+  readonly camControls: CameraControls
+  private readonly fov = 45
   isFovAnimationInProgress = false
   _baseUnit: BaseUnit = 'mm'
   _baseUnitMultiplier = 1
   _theme: Themes = Themes.System
-  extraSegmentTexture: Texture
+  readonly extraSegmentTexture: Texture
   lastMouseState: MouseState = { type: 'idle' }
   onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onDragEndCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
@@ -182,13 +187,15 @@ export class SceneInfra {
   callbacks: (() => SegmentOverlayPayload | null)[] = []
   _overlayCallbacks(callbacks: (() => SegmentOverlayPayload | null)[]) {
     const segmentOverlayPayload: SegmentOverlayPayload = {
-      type: 'set-many',
+      type: 'add-many',
       overlays: {},
     }
     callbacks.forEach((cb) => {
       const overlay = cb()
       if (overlay?.type === 'set-one') {
         segmentOverlayPayload.overlays[overlay.pathToNodeString] = overlay.seg
+      } else if (overlay?.type === 'add-many') {
+        Object.assign(segmentOverlayPayload.overlays, overlay.overlays)
       }
     })
     this.modelingSend({
@@ -213,25 +220,27 @@ export class SceneInfra {
 
   overlayThrottleMap: { [pathToNodeString: string]: number } = {}
   updateOverlayDetails({
-    arrowGroup,
+    handle,
     group,
     isHandlesVisible,
     from,
     to,
     angle,
+    hasThreeDotMenu,
   }: {
-    arrowGroup: Group
+    handle: Group
     group: Group
     isHandlesVisible: boolean
     from: Coords2d
     to: Coords2d
+    hasThreeDotMenu: boolean
     angle?: number
   }): SegmentOverlayPayload | null {
-    if (!group.userData.draft && group.userData.pathToNode && arrowGroup) {
+    if (!group.userData.draft && group.userData.pathToNode && handle) {
       const vector = new Vector3(0, 0, 0)
 
       // Get the position of the object3D in world space
-      arrowGroup.getWorldPosition(vector)
+      handle.getWorldPosition(vector)
 
       // Project that position to screen space
       vector.project(this.camControls.camera)
@@ -244,19 +253,22 @@ export class SceneInfra {
       return {
         type: 'set-one',
         pathToNodeString,
-        seg: {
-          windowCoords: [x, y],
-          angle: _angle,
-          group,
-          pathToNode: group.userData.pathToNode,
-          visible: isHandlesVisible,
-        },
+        seg: [
+          {
+            windowCoords: [x, y],
+            angle: _angle,
+            group,
+            pathToNode: group.userData.pathToNode,
+            visible: isHandlesVisible,
+            hasThreeDotMenu,
+          },
+        ],
       }
     }
     return null
   }
 
-  hoveredObject: null | any = null
+  hoveredObject: null | Object3D<Object3DEventMap> = null
   raycaster = new Raycaster()
   planeRaycaster = new Raycaster()
   currentMouseVector = new Vector2()
@@ -284,6 +296,7 @@ export class SceneInfra {
     this.labelRenderer.domElement.style.position = 'absolute'
     this.labelRenderer.domElement.style.top = '0px'
     this.labelRenderer.domElement.style.pointerEvents = 'none'
+    this.labelRenderer.domElement.className = 'z-sketchSegmentIndicators'
     window.addEventListener('resize', this.onWindowResize)
 
     this.camControls = new CameraControls(
@@ -481,11 +494,13 @@ export class SceneInfra {
       if (this.hoveredObject !== firstIntersectObject) {
         const hoveredObj = this.hoveredObject
         this.hoveredObject = null
-        await this.onMouseLeave({
-          selected: hoveredObj,
-          mouseEvent: mouseEvent,
-          intersectionPoint,
-        })
+        if (hoveredObj) {
+          await this.onMouseLeave({
+            selected: hoveredObj,
+            mouseEvent: mouseEvent,
+            intersectionPoint,
+          })
+        }
         this.hoveredObject = firstIntersectObject
         await this.onMouseEnter({
           selected: this.hoveredObject,

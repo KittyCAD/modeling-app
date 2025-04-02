@@ -1,0 +1,186 @@
+#[cfg(test)]
+mod test_examples_line_to {
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_mock_example_line_to0() -> miette::Result<()> {
+        let program =
+            crate::Program::parse_no_errs("This is another code block.\nyes sirrr.\nlineTo")
+                .unwrap();
+        let ctx = crate::ExecutorContext {
+            engine: std::sync::Arc::new(Box::new(
+                crate::engine::conn_mock::EngineConnection::new()
+                    .await
+                    .unwrap(),
+            )),
+            fs: std::sync::Arc::new(crate::fs::FileManager::new()),
+            stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
+            settings: Default::default(),
+            context_type: crate::execution::ContextType::Mock,
+        };
+        if let Err(e) = ctx
+            .run(&program, &mut crate::execution::ExecState::new(&ctx))
+            .await
+        {
+            return Err(miette::Report::new(crate::errors::Report {
+                error: e.error,
+                filename: format!("{}{}", "line_to", 0usize),
+                kcl_source: "This is another code block.\nyes sirrr.\nlineTo".to_string(),
+            }));
+        }
+
+        Ok(())
+    }
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
+    async fn kcl_test_example_line_to0() -> miette::Result<()> {
+        let code = "This is another code block.\nyes sirrr.\nlineTo";
+        let result = match crate::test_server::execute_and_snapshot(code, None).await {
+            Err(crate::errors::ExecError::Kcl(e)) => {
+                return Err(miette::Report::new(crate::errors::Report {
+                    error: e.error,
+                    filename: format!("{}{}", "line_to", 0usize),
+                    kcl_source: "This is another code block.\nyes sirrr.\nlineTo".to_string(),
+                }));
+            }
+            Err(other_err) => panic!("{}", other_err),
+            Ok(img) => img,
+        };
+        twenty_twenty::assert_image(
+            &format!("tests/outputs/{}.png", "serial_test_example_line_to0"),
+            &result,
+            0.99,
+        );
+        Ok(())
+    }
+}
+
+#[allow(non_camel_case_types, missing_docs)]
+#[doc = "Std lib function: lineTo\nThis is some function. It does shit."]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, schemars :: JsonSchema, ts_rs :: TS)]
+#[ts(export)]
+pub(crate) struct LineTo {}
+
+#[allow(non_upper_case_globals, missing_docs)]
+#[doc = "Std lib function: lineTo\nThis is some function. It does shit."]
+pub(crate) const LineTo: LineTo = LineTo {};
+fn boxed_line_to(
+    exec_state: &mut crate::execution::ExecState,
+    args: crate::std::Args,
+) -> std::pin::Pin<
+    Box<
+        dyn std::future::Future<
+                Output = anyhow::Result<crate::execution::KclValue, crate::errors::KclError>,
+            > + Send
+            + '_,
+    >,
+> {
+    Box::pin(line_to(exec_state, args))
+}
+
+impl crate::docs::StdLibFn for LineTo {
+    fn name(&self) -> String {
+        "lineTo".to_string()
+    }
+
+    fn summary(&self) -> String {
+        "This is some function. It does shit.".to_string()
+    }
+
+    fn description(&self) -> String {
+        "".to_string()
+    }
+
+    fn tags(&self) -> Vec<String> {
+        vec![]
+    }
+
+    fn keyword_arguments(&self) -> bool {
+        false
+    }
+
+    fn args(&self, inline_subschemas: bool) -> Vec<crate::docs::StdLibFnArg> {
+        let mut settings = schemars::gen::SchemaSettings::openapi3();
+        settings.inline_subschemas = inline_subschemas;
+        let mut generator = schemars::gen::SchemaGenerator::new(settings);
+        vec![
+            crate::docs::StdLibFnArg {
+                name: "data".to_string(),
+                type_: "LineToData".to_string(),
+                schema: generator.root_schema_for::<LineToData>(),
+                required: true,
+                label_required: true,
+                description: String::new().to_string(),
+                include_in_snippet: true,
+            },
+            crate::docs::StdLibFnArg {
+                name: "sketch".to_string(),
+                type_: "Sketch".to_string(),
+                schema: generator.root_schema_for::<Sketch>(),
+                required: true,
+                label_required: true,
+                description: "the sketch you're adding the line to".to_string(),
+                include_in_snippet: true,
+            },
+        ]
+    }
+
+    fn return_value(&self, inline_subschemas: bool) -> Option<crate::docs::StdLibFnArg> {
+        let mut settings = schemars::gen::SchemaSettings::openapi3();
+        settings.inline_subschemas = inline_subschemas;
+        let mut generator = schemars::gen::SchemaGenerator::new(settings);
+        let schema = generator.root_schema_for::<Sketch>();
+        Some(crate::docs::StdLibFnArg {
+            name: "".to_string(),
+            type_: "Sketch".to_string(),
+            schema,
+            required: true,
+            label_required: true,
+            description: String::new(),
+            include_in_snippet: true,
+        })
+    }
+
+    fn unpublished(&self) -> bool {
+        false
+    }
+
+    fn deprecated(&self) -> bool {
+        false
+    }
+
+    fn feature_tree_operation(&self) -> bool {
+        false
+    }
+
+    fn examples(&self) -> Vec<String> {
+        let code_blocks = vec!["This is another code block.\nyes sirrr.\nlineTo"];
+        code_blocks
+            .iter()
+            .map(|cb| {
+                let program = crate::Program::parse_no_errs(cb).unwrap();
+                let mut options: crate::parsing::ast::types::FormatOptions = Default::default();
+                options.insert_final_newline = false;
+                program.ast.recast(&options, 0)
+            })
+            .collect::<Vec<String>>()
+    }
+
+    fn std_lib_fn(&self) -> crate::std::StdFn {
+        boxed_line_to
+    }
+
+    fn clone_box(&self) -> Box<dyn crate::docs::StdLibFn> {
+        Box::new(self.clone())
+    }
+}
+
+#[doc = r" This is some function."]
+#[doc = r" It does shit."]
+#[doc = r""]
+#[doc = r" ```"]
+#[doc = r" This is another code block."]
+#[doc = r" yes sirrr."]
+#[doc = r" lineTo"]
+#[doc = r" ```"]
+fn inner_line_to(data: LineToData, sketch: Sketch, args: &Args) -> Result<Sketch, KclError> {
+    Ok(())
+}

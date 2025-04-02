@@ -1,0 +1,84 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "declaration": {
+        "commentStart": 0,
+        "end": 16,
+        "id": {
+          "commentStart": 0,
+          "end": 4,
+          "name": "five",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "commentStart": 7,
+          "end": 16,
+          "left": {
+            "commentStart": 7,
+            "end": 12,
+            "left": {
+              "commentStart": 7,
+              "end": 8,
+              "raw": "3",
+              "start": 7,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 3.0,
+                "suffix": "None"
+              }
+            },
+            "operator": "*",
+            "right": {
+              "commentStart": 11,
+              "end": 12,
+              "raw": "1",
+              "start": 11,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
+            },
+            "start": 7,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "operator": "+",
+          "right": {
+            "commentStart": 15,
+            "end": 16,
+            "raw": "2",
+            "start": 15,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 2.0,
+              "suffix": "None"
+            }
+          },
+          "start": 7,
+          "type": "BinaryExpression",
+          "type": "BinaryExpression"
+        },
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 16,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "commentStart": 0,
+  "end": 16,
+  "start": 0
+}

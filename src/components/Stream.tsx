@@ -1,26 +1,32 @@
-import { MouseEventHandler, useEffect, useRef, useState } from 'react'
-import Loading from './Loading'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { useNetworkContext } from 'hooks/useNetworkContext'
-import { NetworkHealthState } from 'hooks/useNetworkStatus'
-import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
-import { btnName } from 'lib/cameraControls'
-import { sendSelectEventToEngine } from 'lib/selections'
-import { kclManager, engineCommandManager, sceneInfra } from 'lib/singletons'
-import { useAppStream } from 'AppState'
+import { useAppStream } from '@src/AppState'
+import type { MouseEventHandler } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useRouteLoaderData } from 'react-router-dom'
+
+import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
+import Loading from '@src/components/Loading'
+import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import {
+  DisconnectingType,
   EngineCommandManagerEvents,
   EngineConnectionStateType,
-  DisconnectingType,
-} from 'lang/std/engineConnection'
-import { useRouteLoaderData } from 'react-router-dom'
-import { PATHS } from 'lib/paths'
-import { IndexLoaderData } from 'lib/types'
-import { useCommandsContext } from 'hooks/useCommandsContext'
-import { err, reportRejection } from 'lib/trap'
-import { getArtifactOfTypes } from 'lang/std/artifactGraph'
-import { ViewControlContextMenu } from './ViewControlMenu'
+} from '@src/lang/std/engineConnection'
+import { btnName } from '@src/lib/cameraControls'
+import { PATHS } from '@src/lib/paths'
+import { sendSelectEventToEngine } from '@src/lib/selections'
+import {
+  engineCommandManager,
+  kclManager,
+  sceneInfra,
+} from '@src/lib/singletons'
+import { err, reportRejection } from '@src/lib/trap'
+import type { IndexLoaderData } from '@src/lib/types'
+import { useSettings } from '@src/machines/appMachine'
+import { useCommandBarState } from '@src/machines/commandBarMachine'
 
 enum StreamState {
   Playing = 'playing',
@@ -33,19 +39,21 @@ export const Stream = () => {
   const [isLoading, setIsLoading] = useState(true)
   const videoWrapperRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
-  const { settings } = useSettingsAuthContext()
+  const settings = useSettings()
   const { state, send } = useModelingContext()
-  const { commandBarState } = useCommandsContext()
+  const commandBarState = useCommandBarState()
   const { mediaStream } = useAppStream()
   const { overallState, immediateState } = useNetworkContext()
   const [streamState, setStreamState] = useState(StreamState.Unset)
   const { file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
 
-  const IDLE = settings.context.app.streamIdleMode.current
+  const IDLE = settings.app.streamIdleMode.current
 
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
+
+  engineCommandManager.elVideo = videoRef.current
 
   /**
    * Execute code and show a "building scene message"
@@ -218,20 +226,6 @@ export const Stream = () => {
     }
   }, [IDLE, streamState])
 
-  /**
-   * Play the vid
-   */
-  useEffect(() => {
-    if (!kclManager.isExecuting) {
-      setTimeout(() => {
-        // execute in the next event loop
-        videoRef.current?.play().catch((e) => {
-          console.warn('Video playing was prevented', e, videoRef.current)
-        })
-      })
-    }
-  }, [kclManager.isExecuting])
-
   useEffect(() => {
     if (
       typeof window === 'undefined' ||
@@ -243,9 +237,15 @@ export const Stream = () => {
 
     // The browser complains if we try to load a new stream without pausing first.
     // Do not immediately play the stream!
+    // we instead use a setTimeout to play the stream in the next event loop
     try {
       videoRef.current.srcObject = mediaStream
       videoRef.current.pause()
+      setTimeout(() => {
+        videoRef.current?.play().catch((e) => {
+          console.warn('Video playing was prevented', e, videoRef.current)
+        })
+      })
     } catch (e) {
       console.warn('Attempted to pause stream while play was still loading', e)
     }
@@ -280,7 +280,7 @@ export const Stream = () => {
 
     if (btnName(e.nativeEvent).left) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sendSelectEventToEngine(e, videoRef.current)
+      sendSelectEventToEngine(e)
     }
   }
 
@@ -302,15 +302,15 @@ export const Stream = () => {
       return
     }
 
-    sendSelectEventToEngine(e, videoRef.current)
+    sendSelectEventToEngine(e)
       .then(({ entity_id }) => {
         if (!entity_id) {
           // No entity selected. This is benign
           return
         }
         const path = getArtifactOfTypes(
-          { key: entity_id, types: ['path', 'solid2D', 'segment'] },
-          engineCommandManager.artifactGraph
+          { key: entity_id, types: ['path', 'solid2d', 'segment', 'helix'] },
+          kclManager.artifactGraph
         )
         if (err(path)) {
           return path
@@ -321,6 +321,7 @@ export const Stream = () => {
   }
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       ref={videoWrapperRef}
       className="absolute inset-0 z-0"
@@ -342,7 +343,7 @@ export const Stream = () => {
         id="video-stream"
       />
       <ClientSideScene
-        cameraControls={settings.context.modeling.mouseControls.current}
+        cameraControls={settings.modeling.mouseControls.current}
       />
       {(streamState === StreamState.Paused ||
         streamState === StreamState.Resuming) && (

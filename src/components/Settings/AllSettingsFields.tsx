@@ -1,30 +1,36 @@
+import { useSelector } from '@xstate/react'
 import decamelize from 'decamelize'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { Setting } from 'lib/settings/initialSettings'
-import { SetEventTypes, SettingsLevel } from 'lib/settings/settingsTypes'
-import {
-  shouldHideSetting,
-  shouldShowSettingInput,
-} from 'lib/settings/settingsUtils'
-import { Fragment } from 'react/jsx-runtime'
-import { SettingsSection } from './SettingsSection'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { isDesktop } from 'lib/isDesktop'
-import { ActionButton } from 'components/ActionButton'
-import { SettingsFieldInput } from './SettingsFieldInput'
+import type { ForwardedRef } from 'react'
+import { forwardRef, useEffect, useMemo } from 'react'
 import toast from 'react-hot-toast'
-import { APP_VERSION, IS_NIGHTLY, getReleaseUrl } from 'routes/Settings'
-import { PATHS } from 'lib/paths'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { Fragment } from 'react/jsx-runtime'
+
+import { ActionButton } from '@src/components/ActionButton'
+import { useLspContext } from '@src/components/LspProvider'
+import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
+import { SettingsSection } from '@src/components/Settings/SettingsSection'
+import { useDotDotSlash } from '@src/hooks/useDotDotSlash'
 import {
   createAndOpenNewTutorialProject,
   getSettingsFolderPaths,
-} from 'lib/desktopFS'
-import { useDotDotSlash } from 'hooks/useDotDotSlash'
-import { ForwardedRef, forwardRef, useEffect } from 'react'
-import { useLspContext } from 'components/LspProvider'
-import { toSync } from 'lib/utils'
-import { reportRejection } from 'lib/trap'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
+} from '@src/lib/desktopFS'
+import { isDesktop } from '@src/lib/isDesktop'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { PATHS } from '@src/lib/paths'
+import type { Setting } from '@src/lib/settings/initialSettings'
+import type {
+  SetEventTypes,
+  SettingsLevel,
+} from '@src/lib/settings/settingsTypes'
+import {
+  shouldHideSetting,
+  shouldShowSettingInput,
+} from '@src/lib/settings/settingsUtils'
+import { reportRejection } from '@src/lib/trap'
+import { toSync } from '@src/lib/utils'
+import { settingsActor, useSettings } from '@src/machines/appMachine'
+import { APP_VERSION, IS_NIGHTLY, getReleaseUrl } from '@src/routes/Settings'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
@@ -40,27 +46,27 @@ export const AllSettingsFields = forwardRef(
     const navigate = useNavigate()
     const { onProjectOpen } = useLspContext()
     const dotDotSlash = useDotDotSlash()
-    const {
-      settings: { send, context, state },
-    } = useSettingsAuthContext()
+    const context = useSettings()
 
-    const projectPath =
-      isFileSettings && isDesktop()
-        ? decodeURI(
-            location.pathname
-              .replace(PATHS.FILE + '/', '')
-              .replace(PATHS.SETTINGS, '')
-              .slice(
-                0,
-                decodeURI(location.pathname).lastIndexOf(
-                  window.electron.path.sep
-                )
-              )
-          )
-        : undefined
+    const projectPath = useMemo(() => {
+      const filteredPathname = location.pathname
+        .replace(PATHS.FILE, '')
+        .replace(PATHS.SETTINGS, '')
+      const lastSlashIndex = filteredPathname.lastIndexOf(
+        // This is slicing off any remaining browser path segments,
+        // so we don't use window.electron.sep here
+        '/'
+      )
+      const projectPath =
+        isFileSettings && isDesktop()
+          ? decodeURIComponent(filteredPathname.slice(lastSlashIndex + 1))
+          : undefined
+
+      return projectPath
+    }, [location.pathname])
 
     function restartOnboarding() {
-      send({
+      settingsActor.send({
         type: `set.app.onboardingStatus`,
         data: { level: 'user', value: '' },
       })
@@ -70,11 +76,14 @@ export const AllSettingsFields = forwardRef(
      * A "listener" for the XState to return to "idle" state
      * when the user resets the onboarding, using the callback above
      */
+    const isSettingsMachineIdle = useSelector(settingsActor, (s) =>
+      s.matches('idle')
+    )
     useEffect(() => {
       async function navigateToOnboardingStart() {
         if (
-          state.context.app.onboardingStatus.user === '' &&
-          state.matches('idle')
+          context.app.onboardingStatus.current === '' &&
+          isSettingsMachineIdle
         ) {
           if (isFileSettings) {
             // If we're in a project, first navigate to the onboarding start here
@@ -89,7 +98,12 @@ export const AllSettingsFields = forwardRef(
       }
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigateToOnboardingStart()
-    }, [isFileSettings, navigate, state])
+    }, [
+      isFileSettings,
+      navigate,
+      isSettingsMachineIdle,
+      context.app.onboardingStatus.current,
+    ])
 
     return (
       <div className="relative overflow-y-auto">
@@ -140,7 +154,7 @@ export const AllSettingsFields = forwardRef(
                         }
                         parentLevel={setting.getParentLevel(searchParamTab)}
                         onFallback={() =>
-                          send({
+                          settingsActor.send({
                             type: `set.${category}.${settingName}`,
                             data: {
                               level: searchParamTab,
@@ -197,9 +211,7 @@ export const AllSettingsFields = forwardRef(
                 <ActionButton
                   Element="button"
                   onClick={toSync(async () => {
-                    const paths = await getSettingsFolderPaths(
-                      projectPath ? decodeURIComponent(projectPath) : undefined
-                    )
+                    const paths = await getSettingsFolderPaths(projectPath)
                     const finalPath = paths[searchParamTab]
                     if (!finalPath) {
                       return new Error('finalPath undefined')
@@ -218,7 +230,7 @@ export const AllSettingsFields = forwardRef(
               <ActionButton
                 Element="button"
                 onClick={() => {
-                  send({
+                  settingsActor.send({
                     type: 'Reset settings',
                     level: searchParamTab,
                   })
@@ -245,15 +257,29 @@ export const AllSettingsFields = forwardRef(
               {/* This uses a Vite plugin, set in vite.config.ts
                   to inject the version from package.json */}
               App version {APP_VERSION}.{' '}
-              <a
-                onClick={openExternalBrowserIfDesktop(getReleaseUrl())}
-                href={getReleaseUrl()}
-                target="_blank"
-                rel="noopener noreferrer"
+            </p>
+            <div className="flex gap-2 flex-wrap my-4">
+              <ActionButton
+                Element="externalLink"
+                to={getReleaseUrl()}
+                iconStart={{ icon: 'file', className: 'p-1' }}
               >
                 View release on GitHub
-              </a>
-            </p>
+              </ActionButton>
+              <ActionButton
+                Element="button"
+                onClick={() => {
+                  window.electron.appCheckForUpdates().catch(reportRejection)
+                }}
+                iconStart={{
+                  icon: 'refresh',
+                  size: 'sm',
+                  className: 'p-1',
+                }}
+              >
+                Check for updates
+              </ActionButton>
+            </div>
             <p className="max-w-2xl mt-6">
               Don't see the feature you want? Check to see if it's on{' '}
               <a

@@ -1,29 +1,45 @@
+import type { Completion } from '@codemirror/autocomplete'
 import {
   closeBrackets,
   closeBracketsKeymap,
-  Completion,
   completionKeymap,
   completionStatus,
 } from '@codemirror/autocomplete'
-import { EditorView, keymap, ViewUpdate } from '@codemirror/view'
-import { CustomIcon } from 'components/CustomIcon'
-import { useCommandsContext } from 'hooks/useCommandsContext'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { CommandArgument, KclCommandValue } from 'lib/commandTypes'
-import { getSystemTheme } from 'lib/theme'
-import { useCalculateKclExpression } from 'lib/useCalculateKclExpression'
-import { roundOff } from 'lib/utils'
-import { varMentions } from 'lib/varCompletionExtension'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
-import styles from './CommandBarKclInput.module.css'
-import { createIdentifier, createVariableDeclaration } from 'lang/modifyAst'
-import { useCodeMirror } from 'components/ModelingSidebar/ModelingPanes/CodeEditor'
+import type { ViewUpdate } from '@codemirror/view'
+import { EditorView, keymap } from '@codemirror/view'
 import { useSelector } from '@xstate/react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
+import { useHotkeys } from 'react-hotkeys-hook'
+import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 
-const machineContextSelector = (snapshot?: {
-  context: Record<string, unknown>
-}) => snapshot?.context
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import { CustomIcon } from '@src/components/CustomIcon'
+import { useCodeMirror } from '@src/components/ModelingSidebar/ModelingPanes/CodeEditor'
+import { Spinner } from '@src/components/Spinner'
+import { createLocalName, createVariableDeclaration } from '@src/lang/create'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import type { SourceRange, VariableDeclarator } from '@src/lang/wasm'
+import { isPathToNode } from '@src/lang/wasm'
+import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
+import { kclManager } from '@src/lib/singletons'
+import { getSystemTheme } from '@src/lib/theme'
+import { err } from '@src/lib/trap'
+import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
+import { roundOff } from '@src/lib/utils'
+import { varMentions } from '@src/lib/varCompletionExtension'
+import { useSettings } from '@src/machines/appMachine'
+import {
+  commandBarActor,
+  useCommandBarState,
+} from '@src/machines/commandBarMachine'
+
+import styles from './CommandBarKclInput.module.css'
+
+// TODO: remove the need for this selector once we decouple all actors from React
+const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
+  snapshot?.context
 
 function CommandBarKclInput({
   arg,
@@ -37,15 +53,25 @@ function CommandBarKclInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
-  const { commandBarSend, commandBarState } = useCommandsContext()
+  const commandBarState = useCommandBarState()
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
     arg.name
   ] as KclCommandValue | undefined
-  const { settings } = useSettingsAuthContext()
+  const settings = useSettings()
   const argMachineContext = useSelector(
     arg.machineActor,
     machineContextSelector
   )
+  const sourceRangeForPrevVariables = useMemo<SourceRange | undefined>(() => {
+    const nodeToEdit = commandBarState.context.argumentsToSubmit.nodeToEdit
+    const pathToNode = isPathToNode(nodeToEdit) ? nodeToEdit : undefined
+    const node = pathToNode
+      ? getNodeFromPath<Node<VariableDeclarator>>(kclManager.ast, pathToNode)
+      : undefined
+    return !err(node) && node && node.node.type === 'VariableDeclarator'
+      ? [node.node.start, node.node.end, node.node.moduleId]
+      : undefined
+  }, [kclManager.ast, commandBarState.context.argumentsToSubmit.nodeToEdit])
   const defaultValue = useMemo(
     () =>
       arg.defaultValue
@@ -63,7 +89,8 @@ function CommandBarKclInput({
         : arg.variableName
     }
     // or derive it from the previously set value or the argument name
-    return previouslySetValue && 'variableName' in previouslySetValue
+    return typeof previouslySetValue === 'object' &&
+      'variableName' in previouslySetValue
       ? previouslySetValue.variableName
       : arg.name
   }, [
@@ -73,51 +100,59 @@ function CommandBarKclInput({
     arg.name,
     previouslySetValue,
   ])
-  const [value, setValue] = useState(
-    previouslySetValue?.valueText || defaultValue || ''
+  const initialValue = useMemo(
+    () => previouslySetValue?.valueText || defaultValue || '',
+    [previouslySetValue, defaultValue]
   )
+  const [value, setValue] = useState(initialValue)
   const [createNewVariable, setCreateNewVariable] = useState(
-    (previouslySetValue && 'variableName' in previouslySetValue) ||
-      arg.createVariableByDefault ||
+    (typeof previouslySetValue === 'object' &&
+      'variableName' in previouslySetValue) ||
+      arg.createVariable === 'byDefault' ||
+      arg.createVariable === 'force' ||
       false
   )
   const [canSubmit, setCanSubmit] = useState(true)
-  useHotkeys('mod + k, mod + /', () => commandBarSend({ type: 'Close' }))
+  useHotkeys('mod + k, mod + /', () => commandBarActor.send({ type: 'Close' }))
   const editorRef = useRef<HTMLDivElement>(null)
 
   const {
-    prevVariables,
     calcResult,
     newVariableInsertIndex,
     valueNode,
     newVariableName,
     setNewVariableName,
     isNewVariableNameUnique,
+    prevVariables,
+    isExecuting,
   } = useCalculateKclExpression({
     value,
     initialVariableName,
+    sourceRange: sourceRangeForPrevVariables,
   })
+
   const varMentionData: Completion[] = prevVariables.map((v) => ({
     label: v.key,
-    detail: String(roundOff(v.value as number)),
+    detail: String(roundOff(Number(v.value))),
   }))
   const varMentionsExtension = varMentions(varMentionData)
 
-  const { setContainer } = useCodeMirror({
+  const { setContainer, view } = useCodeMirror({
     container: editorRef.current,
     initialDocValue: value,
     autoFocus: true,
     selection: {
       anchor: 0,
       head:
-        previouslySetValue && 'valueText' in previouslySetValue
+        typeof previouslySetValue === 'object' &&
+        'valueText' in previouslySetValue
           ? previouslySetValue.valueText.length
           : defaultValue.length,
     },
     theme:
-      settings.context.app.theme.current === 'system'
+      settings.app.theme.current === 'system'
         ? getSystemTheme()
-        : settings.context.app.theme.current,
+        : settings.app.theme.current,
     extensions: [
       varMentionsExtension,
       EditorView.updateListener.of((vu: ViewUpdate) => {
@@ -142,14 +177,10 @@ function CommandBarKclInput({
           },
         },
         {
-          key: 'Backspace',
-          run: (editor) => {
-            // Only step back if the editor is empty
-            if (editor.state.doc.toString() === '') {
-              stepBack()
-              return true
-            }
-            return false
+          key: 'Shift-Backspace',
+          run: () => {
+            stepBack()
+            return true
           },
         },
       ]),
@@ -159,18 +190,43 @@ function CommandBarKclInput({
   useEffect(() => {
     if (editorRef.current) {
       setContainer(editorRef.current)
+      // Reset the value when the arg changes and
+      // the new arg is also a KCL type, since the component
+      // sticks around.
+      view?.focus()
+      view?.dispatch({
+        changes: {
+          from: 0,
+          to: view.state.doc.length,
+          insert: initialValue,
+        },
+        selection: {
+          anchor: 0,
+          head: initialValue.length,
+        },
+      })
     }
   }, [arg, editorRef])
 
   useEffect(() => {
     setCanSubmit(
-      calcResult !== 'NAN' && (!createNewVariable || isNewVariableNameUnique)
+      calcResult !== 'NAN' &&
+        (!createNewVariable || isNewVariableNameUnique) &&
+        !isExecuting
     )
-  }, [calcResult, createNewVariable, isNewVariableNameUnique])
+  }, [calcResult, createNewVariable, isNewVariableNameUnique, isExecuting])
 
   function handleSubmit(e?: React.FormEvent<HTMLFormElement>) {
     e?.preventDefault()
-    if (!canSubmit || valueNode === null) return
+    if (!canSubmit || valueNode === null) {
+      // Gotcha: Our application can attempt to submit a command value before the command bar kcl input is ready. Notify the scene and user.
+      if (!canSubmit) {
+        toast.error('Unable to submit command')
+      } else if (valueNode === null) {
+        toast.error('Unable to submit undefined command value')
+      }
+      return
+    }
 
     onSubmit(
       createNewVariable
@@ -180,7 +236,7 @@ function CommandBarKclInput({
             valueCalculated: calcResult,
             variableName: newVariableName,
             insertIndex: newVariableInsertIndex,
-            variableIdentifierAst: createIdentifier(newVariableName),
+            variableIdentifierAst: createLocalName(newVariableName),
             variableDeclarationAst: createVariableDeclaration(
               newVariableName,
               valueNode
@@ -195,13 +251,18 @@ function CommandBarKclInput({
   }
 
   return (
-    <form id="arg-form" onSubmit={handleSubmit} data-can-submit={canSubmit}>
+    <form
+      id="arg-form"
+      className="mb-2"
+      onSubmit={handleSubmit}
+      data-can-submit={canSubmit}
+    >
       <label className="flex gap-4 items-center mx-4 my-4 border-solid border-b border-chalkboard-50">
         <span
           data-testid="cmd-bar-arg-name"
           className="capitalize text-chalkboard-80 dark:text-chalkboard-20"
         >
-          {arg.name}
+          {arg.displayName || arg.name}
         </span>
         <div
           data-testid="cmd-bar-arg-value"
@@ -219,9 +280,13 @@ function CommandBarKclInput({
               : 'text-succeed-80 dark:text-succeed-40'
           }
         >
-          {calcResult === 'NAN'
-            ? "Can't calculate"
-            : roundOff(Number(calcResult), 4)}
+          {isExecuting === true || !calcResult ? (
+            <Spinner className="text-inherit w-4 h-4" />
+          ) : calcResult === 'NAN' ? (
+            "Can't calculate"
+          ) : (
+            roundOff(Number(calcResult), 4)
+          )}
         </span>
       </label>
       {createNewVariable ? (
@@ -246,7 +311,11 @@ function CommandBarKclInput({
             autoFocus
             onChange={(e) => setNewVariableName(e.target.value)}
             onKeyDown={(e) => {
-              if (e.currentTarget.value === '' && e.key === 'Backspace') {
+              if (
+                e.currentTarget.value === '' &&
+                e.key === 'Backspace' &&
+                arg.createVariable !== 'force'
+              ) {
                 setCreateNewVariable(false)
               }
             }}
@@ -267,15 +336,17 @@ function CommandBarKclInput({
           </span>
         </div>
       ) : (
-        <div className="flex justify-between gap-2 px-4">
-          <button
-            onClick={() => setCreateNewVariable(true)}
-            className="text-blue border-none bg-transparent font-sm flex gap-1 items-center pl-0 pr-1"
-          >
-            <CustomIcon name="plus" className="w-5 h-5" />
-            Create new variable
-          </button>
-        </div>
+        arg.createVariable !== 'disallow' && (
+          <div className="flex justify-between gap-2 px-4">
+            <button
+              onClick={() => setCreateNewVariable(true)}
+              className="text-blue border-none bg-transparent font-sm flex gap-1 items-center pl-0 pr-1"
+            >
+              <CustomIcon name="plus" className="w-5 h-5" />
+              Create new variable
+            </button>
+          </div>
+        )
       )}
     </form>
   )

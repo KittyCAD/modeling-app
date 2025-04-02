@@ -1,14 +1,15 @@
-import { Toggle } from 'components/Toggle/Toggle'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { Setting } from 'lib/settings/initialSettings'
-import {
+import { useMemo } from 'react'
+import type { EventFrom } from 'xstate'
+
+import { Toggle } from '@src/components/Toggle/Toggle'
+import type { Setting } from '@src/lib/settings/initialSettings'
+import type {
   SetEventTypes,
   SettingsLevel,
   WildcardSetEvent,
-} from 'lib/settings/settingsTypes'
-import { getSettingInputType } from 'lib/settings/settingsUtils'
-import { useMemo } from 'react'
-import { EventFrom } from 'xstate'
+} from '@src/lib/settings/settingsTypes'
+import { getSettingInputType } from '@src/lib/settings/settingsUtils'
+import { settingsActor, useSettings } from '@src/machines/appMachine'
 
 interface SettingsFieldInputProps {
   // We don't need the fancy types here,
@@ -25,9 +26,8 @@ export function SettingsFieldInput({
   settingsLevel,
   setting,
 }: SettingsFieldInputProps) {
-  const {
-    settings: { context, send },
-  } = useSettingsAuthContext()
+  const context = useSettings()
+  const send = settingsActor.send
   const options = useMemo(() => {
     return setting.commandConfig &&
       'options' in setting.commandConfig &&

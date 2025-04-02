@@ -1,24 +1,29 @@
-import { err } from 'lib/trap'
-import { Models } from '@kittycad/lib'
-import { Project, FileEntry } from 'lib/project'
+import type { Models } from '@kittycad/lib'
 
+import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+
+import { newKclFile } from '@src/lang/project'
 import {
   defaultAppSettings,
+  initPromise,
   parseAppSettings,
   parseProjectSettings,
-} from 'lang/wasm'
+} from '@src/lang/wasm'
 import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
   PROJECT_FOLDER,
+  PROJECT_IMAGE_NAME,
   PROJECT_SETTINGS_FILE_NAME,
   SETTINGS_FILE_NAME,
   TELEMETRY_FILE_NAME,
   TELEMETRY_RAW_FILE_NAME,
   TOKEN_FILE_NAME,
-} from './constants'
-import { DeepPartial } from './types'
-import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
-import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+} from '@src/lib/constants'
+import type { FileEntry, Project } from '@src/lib/project'
+import { err } from '@src/lib/trap'
+import type { DeepPartial } from '@src/lib/types'
 
 export async function renameProjectDirectory(
   projectPath: string,
@@ -63,9 +68,7 @@ export async function renameProjectDirectory(
 export async function ensureProjectDirectoryExists(
   config: DeepPartial<Configuration>
 ): Promise<string | undefined> {
-  const projectDir =
-    config.settings?.app?.project_directory ||
-    config.settings?.project?.directory
+  const projectDir = config.settings?.project?.directory
   if (!projectDir) {
     console.error('projectDir is falsey', config)
     return Promise.reject(new Error('projectDir is falsey'))
@@ -111,7 +114,15 @@ export async function createNewProjectDirectory(
   }
 
   const projectFile = window.electron.path.join(projectDir, PROJECT_ENTRYPOINT)
-  await window.electron.writeFile(projectFile, initialCode ?? '')
+  // When initialCode is present, we're loading existing code.  If it's not
+  // present, we're creating a new project, and we want to incorporate the
+  // user's settings.
+  const codeToWrite = newKclFile(
+    initialCode,
+    configuration?.settings?.modeling?.base_unit ?? DEFAULT_DEFAULT_LENGTH_UNIT
+  )
+  if (err(codeToWrite)) return Promise.reject(codeToWrite)
+  await window.electron.writeFile(projectFile, codeToWrite)
   const metadata = await window.electron.stat(projectFile)
 
   return {
@@ -124,22 +135,38 @@ export async function createNewProjectDirectory(
     metadata,
     kcl_file_count: 1,
     directory_count: 0,
+    // If the mkdir did not crash you have readWriteAccess
+    readWriteAccess: true,
   }
 }
 
 export async function listProjects(
   configuration?: DeepPartial<Configuration> | Error
 ): Promise<Project[]> {
-  if (configuration === undefined) {
-    configuration = await readAppSettingsFile()
+  // Make sure we have wasm initialized.
+  const initializedResult = await initPromise
+  if (err(initializedResult)) {
+    return Promise.reject(initializedResult)
   }
 
-  if (err(configuration)) return Promise.reject(configuration)
+  if (configuration === undefined) {
+    configuration = await readAppSettingsFile().catch((e) => {
+      console.error(e)
+      return e
+    })
+  }
+
+  if (err(configuration) || !configuration) return Promise.reject(configuration)
   const projectDir = await ensureProjectDirectoryExists(configuration)
   const projects = []
   if (!projectDir) return Promise.reject(new Error('projectDir was falsey'))
 
+  // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
   const entries = await window.electron.readdir(projectDir)
+
+  const { value: canReadWriteProjectDirectory } =
+    await window.electron.canReadWriteDirectory(projectDir)
+
   for (let entry of entries) {
     // Skip directories that start with a dot
     if (entry.startsWith('.')) {
@@ -147,19 +174,28 @@ export async function listProjects(
     }
 
     const projectPath = window.electron.path.join(projectDir, entry)
+
     // if it's not a directory ignore.
+    // Gotcha: statIsDirectory will work even if you do not have read write permissions on the project path
     const isDirectory = await window.electron.statIsDirectory(projectPath)
     if (!isDirectory) {
       continue
     }
 
     const project = await getProjectInfo(projectPath)
-    // Needs at least one file to be added to the projects list
-    if (project.kcl_file_count === 0) {
+
+    if (
+      project.kcl_file_count === 0 &&
+      project.readWriteAccess &&
+      canReadWriteProjectDirectory
+    ) {
       continue
     }
+
+    // Push folders you cannot readWrite to show users the issue
     projects.push(project)
   }
+
   return projects
 }
 
@@ -174,7 +210,10 @@ const IMPORT_FILE_EXTENSIONS = [
 const isRelevantFile = (filename: string): boolean =>
   IMPORT_FILE_EXTENSIONS.some((ext) => filename.endsWith('.' + ext))
 
-const collectAllFilesRecursiveFrom = async (path: string) => {
+const collectAllFilesRecursiveFrom = async (
+  path: string,
+  canReadWritePath: boolean
+) => {
   // Make sure the filesystem object exists.
   try {
     await window.electron.stat(path)
@@ -191,10 +230,16 @@ const collectAllFilesRecursiveFrom = async (path: string) => {
   }
 
   const name = window.electron.path.basename(path)
+
   let entry: FileEntry = {
     name: name,
     path,
     children: [],
+  }
+
+  // If you cannot read/write this project path do not collect the files
+  if (!canReadWritePath) {
+    return entry
   }
 
   const children = []
@@ -223,7 +268,10 @@ const collectAllFilesRecursiveFrom = async (path: string) => {
     const isEDir = await window.electron.statIsDirectory(ePath)
 
     if (isEDir) {
-      const subChildren = await collectAllFilesRecursiveFrom(ePath)
+      const subChildren = await collectAllFilesRecursiveFrom(
+        ePath,
+        canReadWritePath
+      )
       children.push(subChildren)
     } else {
       if (!isRelevantFile(ePath)) {
@@ -332,14 +380,30 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
 
   // Make sure it is a directory.
   const projectPathIsDir = await window.electron.statIsDirectory(projectPath)
+
   if (!projectPathIsDir) {
     return Promise.reject(
       new Error(`Project path is not a directory: ${projectPath}`)
     )
   }
-  let walked = await collectAllFilesRecursiveFrom(projectPath)
-  let default_file = await getDefaultKclFileForDir(projectPath, walked)
+
+  // Detect the projectPath has read write permission
+  const { value: canReadWriteProjectPath } =
+    await window.electron.canReadWriteDirectory(projectPath)
   const metadata = await window.electron.stat(projectPath)
+
+  // Return walked early if canReadWriteProjectPath is false
+  let walked = await collectAllFilesRecursiveFrom(
+    projectPath,
+    canReadWriteProjectPath
+  )
+
+  // If the projectPath does not have read write permissions, the default_file is empty string
+  let default_file = ''
+  if (canReadWriteProjectPath) {
+    // Create the default main.kcl file only if the project path has read write permissions
+    default_file = await getDefaultKclFileForDir(projectPath, walked)
+  }
 
   let project = {
     ...walked,
@@ -357,6 +421,7 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
     kcl_file_count: 0,
     directory_count: 0,
     default_file,
+    readWriteAccess: canReadWriteProjectPath,
   }
 
   // Populate the number of KCL files in the project.
@@ -394,6 +459,8 @@ export const getAppSettingsFilePath = async () => {
   const testSettingsPath = await window.electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
+  if (isTestEnv && !testSettingsPath) return SETTINGS_FILE_NAME
+
   const appConfig = await window.electron.getPath('appData')
   const fullPath = isTestEnv
     ? testSettingsPath
@@ -520,8 +587,7 @@ export const readAppSettingsFile = async () => {
     }
 
     const hasProjectDirectorySetting =
-      parsedAppConfig.settings?.project?.directory ||
-      parsedAppConfig.settings?.app?.project_directory
+      parsedAppConfig.settings?.project?.directory
 
     if (hasProjectDirectorySetting) {
       return parsedAppConfig
@@ -624,4 +690,20 @@ export const getUser = async (
     console.error(e)
   }
   return Promise.reject(new Error('unreachable'))
+}
+
+export const writeProjectThumbnailFile = async (
+  dataUrl: string,
+  projectDirectoryPath: string
+) => {
+  const filePath = window.electron.path.join(
+    projectDirectoryPath,
+    PROJECT_IMAGE_NAME
+  )
+  const data = atob(dataUrl.substring('data:image/png;base64,'.length))
+  const asArray = new Uint8Array(data.length)
+  for (let i = 0, len = data.length; i < len; ++i) {
+    asArray[i] = data.charCodeAt(i)
+  }
+  return window.electron.writeFile(filePath, asArray)
 }

@@ -1,0 +1,26 @@
+
+[package]
+name = "kcl-bumper"
+version = "0.1.57"
+edition = "2021"
+repository = "https://github.com/KittyCAD/modeling-api"
+rust-version = "1.76"
+description = "Bumps versions in Cargo.toml"
+publish = false
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "kcl-bumper"
+path = "src/main.rs"
+bench = false
+
+[dependencies]
+anyhow = { workspace = true }
+clap = { workspace = true, features = ["derive"] }
+semver = "1.0.25"
+serde = { workspace = true }
+toml_edit = "0.22.16"
+
+[lints]
+workspace = true
+

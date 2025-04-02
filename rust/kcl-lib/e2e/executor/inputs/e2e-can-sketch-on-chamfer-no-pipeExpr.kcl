@@ -1,0 +1,25 @@
+@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
+  |> startProfileAt([75.8, 317.2], %)
+  |> angledLine([0, 268.43], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       217.26
+     ], %, $seg01)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %, $yo)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+  |> close()
+extrude001 = extrude(sketch001, length = 100)
+chamf = chamfer(
+  extrude001,
+  length = 30,
+  tags = [
+    seg01,
+    getNextAdjacentEdge(yo),
+    getNextAdjacentEdge(seg02),
+    getOppositeEdge(seg01)
+  ]
+)

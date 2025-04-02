@@ -1,0 +1,1007 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed poopy-shoe.kcl
+---
+[
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "angle": {
+        "value": {
+          "type": "Number",
+          "value": 90.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "axis": {
+        "value": {
+          "type": "Object",
+          "value": {
+            "custom": {
+              "type": "Object",
+              "value": {
+                "axis": {
+                  "type": "Array",
+                  "value": [
+                    {
+                      "type": "Number",
+                      "value": 1.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "origin": {
+                  "type": "Array",
+                  "value": [
+                    {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    {
+                      "type": "Number",
+                      "value": 5.1251,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "revolve",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 0.875,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Object",
+          "value": {
+            "plane": {
+              "type": "Object",
+              "value": {
+                "origin": {
+                  "type": "Object",
+                  "value": {
+                    "x": {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    "y": {
+                      "type": "Number",
+                      "value": -1.4375,
+                      "ty": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "z": {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    }
+                  }
+                },
+                "xAxis": {
+                  "type": "Object",
+                  "value": {
+                    "x": {
+                      "type": "Number",
+                      "value": 1.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    "y": {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    "z": {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    }
+                  }
+                },
+                "yAxis": {
+                  "type": "Object",
+                  "value": {
+                    "x": {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    "y": {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    "z": {
+                      "type": "Number",
+                      "value": 1.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    }
+                  }
+                },
+                "zAxis": {
+                  "type": "Object",
+                  "value": {
+                    "x": {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    "y": {
+                      "type": "Number",
+                      "value": -1.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    "z": {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 0.125,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "tag": {
+        "value": {
+          "type": "String",
+          "value": "END"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 0.125,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Object",
+          "value": {
+            "plane": {
+              "type": "Object",
+              "value": {
+                "origin": {
+                  "type": "Object",
+                  "value": {
+                    "x": {
+                      "type": "Number",
+                      "value": -3.875,
+                      "ty": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "y": {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    "z": {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    }
+                  }
+                },
+                "xAxis": {
+                  "type": "Object",
+                  "value": {
+                    "x": {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    "y": {
+                      "type": "Number",
+                      "value": -1.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    "z": {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    }
+                  }
+                },
+                "yAxis": {
+                  "type": "Object",
+                  "value": {
+                    "x": {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    "y": {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    "z": {
+                      "type": "Number",
+                      "value": 1.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    }
+                  }
+                },
+                "zAxis": {
+                  "type": "Object",
+                  "value": {
+                    "x": {
+                      "type": "Number",
+                      "value": 1.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    "y": {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    "z": {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 0.125,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "tag": {
+        "value": {
+          "type": "TagIdentifier",
+          "value": "seg03",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 0.125,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "tag": {
+        "value": {
+          "type": "String",
+          "value": "END"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 2.75,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Object",
+          "value": {
+            "plane": {
+              "type": "Object",
+              "value": {
+                "origin": {
+                  "type": "Object",
+                  "value": {
+                    "x": {
+                      "type": "Number",
+                      "value": -3.875,
+                      "ty": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "y": {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    "z": {
+                      "type": "Number",
+                      "value": 0.125,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    }
+                  }
+                },
+                "xAxis": {
+                  "type": "Object",
+                  "value": {
+                    "x": {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    "y": {
+                      "type": "Number",
+                      "value": -1.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    "z": {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    }
+                  }
+                },
+                "yAxis": {
+                  "type": "Object",
+                  "value": {
+                    "x": {
+                      "type": "Number",
+                      "value": 1.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    "y": {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    "z": {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    }
+                  }
+                },
+                "zAxis": {
+                  "type": "Object",
+                  "value": {
+                    "x": {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    "y": {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    "z": {
+                      "type": "Number",
+                      "value": 1.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": -0.125,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  }
+]

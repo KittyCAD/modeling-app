@@ -1,9 +1,15 @@
-import { test, expect, Page } from './zoo-test'
-import { getUtils, createProject } from './test-utils'
-import { join } from 'path'
+import type { Page } from '@playwright/test'
 import fs from 'fs'
+import { join } from 'path'
 
-test.describe('Text-to-CAD tests', () => {
+import {
+  createProject,
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
+
+test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
   test('basic lego happy case', async ({ page, homePage }) => {
     const u = await getUtils(page)
 
@@ -429,17 +435,14 @@ test.describe('Text-to-CAD tests', () => {
     await expect(page.getByText(promptWithNewline)).toBeVisible()
   })
 
+  // This will be fine once greg makes prompt at top of file deterministic
   test(
     'can do many at once and get many prompts back, and interact with many',
     { tag: ['@skipWin'] },
     async ({ page, homePage }) => {
+      test.fixme(orRunWhenFullSuiteEnabled())
       // Let this test run longer since we've seen it timeout.
       test.setTimeout(180_000)
-      // skip on windows
-      test.skip(
-        process.platform === 'win32',
-        'This test is flaky, skipping for now'
-      )
 
       const u = await getUtils(page)
 
@@ -495,8 +498,15 @@ test.describe('Text-to-CAD tests', () => {
       // Click the button.
       await copyToClipboardButton.first().click()
 
-      // Expect the code to be pasted.
-      await expect(page.locator('.cm-content')).toContainText(`2x8`)
+      // Do NOT do AI tests like this: "Expect the code to be pasted."
+      // Reason: AI tests are NONDETERMINISTIC. Thus we need to be as most
+      // general as we can for the assertion.
+      // We can use Kolmogorov complexity as a measurement of the
+      // "probably most minimal version of this program" to have a lower
+      // bound to work with. It is completely by feel because there are
+      // no proofs that any program is its smallest self.
+      const code2x8 = await page.locator('.cm-content').innerText()
+      await expect(code2x8.length).toBeGreaterThan(249)
 
       // Ensure the final toast remains.
       await expect(page.getByText(`a 2x10 lego`)).not.toBeVisible()
@@ -509,7 +519,8 @@ test.describe('Text-to-CAD tests', () => {
       await copyToClipboardButton.click()
 
       // Expect the code to be pasted.
-      await expect(page.locator('.cm-content')).toContainText(`2x4`)
+      const code2x4 = await page.locator('.cm-content').innerText()
+      await expect(code2x4.length).toBeGreaterThan(249)
     }
   )
 
@@ -618,6 +629,7 @@ test(
   'Text-to-CAD functionality',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
+    test.fixme(orRunWhenFullSuiteEnabled())
     const projectName = 'project-000'
     const prompt = 'lego 2x4'
     const textToCadFileName = 'lego-2x4.kcl'

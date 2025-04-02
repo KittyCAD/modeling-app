@@ -1,11 +1,13 @@
 import { Popover } from '@headlessui/react'
-import { ActionIcon, ActionIconProps } from './ActionIcon'
-import Tooltip from './Tooltip'
-import { ConnectingTypeGroup } from '../lang/std/engineConnection'
-import { useNetworkContext } from '../hooks/useNetworkContext'
-import { NetworkHealthState } from '../hooks/useNetworkStatus'
-import { toSync } from 'lib/utils'
-import { reportRejection } from 'lib/trap'
+
+import type { ActionIconProps } from '@src/components/ActionIcon'
+import { ActionIcon } from '@src/components/ActionIcon'
+import Tooltip from '@src/components/Tooltip'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import type { ConnectingTypeGroup } from '@src/lang/std/engineConnection'
+import { reportRejection } from '@src/lib/trap'
+import { toSync } from '@src/lib/utils'
 
 export const NETWORK_HEALTH_TEXT: Record<NetworkHealthState, string> = {
   [NetworkHealthState.Ok]: 'Connected',
@@ -99,6 +101,9 @@ export const NetworkHealthIndicator = () => {
       >
         <ActionIcon
           icon={overallConnectionStateIcon[overallState]}
+          data-testid={`network-toggle-${
+            overallState == NetworkHealthState.Ok ? 'ok' : 'other'
+          }`}
           className="p-1"
           iconClassName={overallConnectionStateColor[overallState].icon}
           bgClassName={

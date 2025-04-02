@@ -1,7 +1,9 @@
-import { vi, describe, it, expect, beforeEach } from 'vitest'
-import { listProjects } from './desktop'
-import { DeepPartial } from './types'
-import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+
+import { listProjects } from '@src/lib/desktop'
+import type { DeepPartial } from '@src/lib/types'
 
 // Mock the electron window global
 const mockElectron = {
@@ -25,6 +27,7 @@ const mockElectron = {
   },
   getPath: vi.fn(),
   kittycad: vi.fn(),
+  canReadWriteDirectory: vi.fn(),
 }
 
 vi.stubGlobal('window', { electron: mockElectron })
@@ -86,6 +89,12 @@ describe('desktop utilities', () => {
     mockElectron.statIsDirectory.mockImplementation(async (path: string) => {
       return path in mockFileSystem
     })
+
+    mockElectron.canReadWriteDirectory.mockImplementation(
+      async (path: string) => {
+        return { value: path in mockFileSystem, error: undefined }
+      }
+    )
 
     // Mock stat to always resolve with dummy metadata
     mockElectron.stat.mockResolvedValue({

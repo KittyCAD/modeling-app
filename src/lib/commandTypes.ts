@@ -1,23 +1,32 @@
-import { CustomIconName } from 'components/CustomIcon'
-import { AllMachines } from 'hooks/useStateMachineCommands'
-import { Actor, AnyStateMachine, ContextFrom, EventFrom } from 'xstate'
-import { Identifier, Expr, VariableDeclaration } from 'lang/wasm'
-import { commandBarMachine } from 'machines/commandBarMachine'
-import { ReactNode } from 'react'
-import { MachineManager } from 'components/MachineManagerProvider'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { Artifact } from 'lang/std/artifactGraph'
-import { CommandBarContext } from 'machines/commandBarMachine'
+import type { EntityType_type } from '@kittycad/lib/dist/types/src/models'
+import type { ReactNode } from 'react'
+import type { Actor, AnyStateMachine, ContextFrom, EventFrom } from 'xstate'
+
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import type { CustomIconName } from '@src/components/CustomIcon'
+import type { MachineManager } from '@src/components/MachineManagerProvider'
+import type { AllMachines } from '@src/hooks/useStateMachineCommands'
+import type { Artifact } from '@src/lang/std/artifactGraph'
+import type { Expr, Name, VariableDeclaration } from '@src/lang/wasm'
+import type {
+  CommandBarContext,
+  commandBarMachine,
+} from '@src/machines/commandBarMachine'
+
 type Icon = CustomIconName
-const PLATFORMS = ['both', 'web', 'desktop'] as const
-const INPUT_TYPES = [
+const _PLATFORMS = ['both', 'web', 'desktop'] as const
+type PLATFORM = typeof _PLATFORMS
+const _INPUT_TYPES = [
   'options',
   'string',
   'text',
   'kcl',
   'selection',
+  'selectionMixed',
   'boolean',
 ] as const
+type INPUT_TYPE = typeof _INPUT_TYPES
 export interface KclExpression {
   valueAst: Expr
   valueText: string
@@ -26,11 +35,11 @@ export interface KclExpression {
 export interface KclExpressionWithVariable extends KclExpression {
   variableName: string
   variableDeclarationAst: Node<VariableDeclaration>
-  variableIdentifierAst: Node<Identifier>
+  variableIdentifierAst: Node<Name>
   insertIndex: number
 }
 export type KclCommandValue = KclExpression | KclExpressionWithVariable
-export type CommandInputType = (typeof INPUT_TYPES)[number]
+export type CommandInputType = INPUT_TYPE[number]
 
 export type StateMachineCommandSetSchema<T extends AnyStateMachine> = Partial<{
   [EventType in EventFrom<T>['type']]: Record<string, any>
@@ -38,7 +47,7 @@ export type StateMachineCommandSetSchema<T extends AnyStateMachine> = Partial<{
 
 export type StateMachineCommandSet<
   T extends AllMachines,
-  Schema extends StateMachineCommandSetSchema<T>
+  Schema extends StateMachineCommandSetSchema<T>,
 > = Partial<{
   [EventType in EventFrom<T>['type']]: Command<
     T,
@@ -55,7 +64,7 @@ export type StateMachineCommandSet<
  */
 export type StateMachineCommandSetConfig<
   T extends AllMachines,
-  Schema extends StateMachineCommandSetSchema<T>
+  Schema extends StateMachineCommandSetSchema<T>,
 > = Partial<{
   [EventType in EventFrom<T>['type']]:
     | CommandConfig<T, EventFrom<T>['type'], Schema[EventType]>
@@ -65,7 +74,8 @@ export type StateMachineCommandSetConfig<
 export type Command<
   T extends AnyStateMachine = AnyStateMachine,
   CommandName extends EventFrom<T>['type'] = EventFrom<T>['type'],
-  CommandSchema extends StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName]
+  CommandSchema extends
+    StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName],
 > = {
   name: CommandName
   groupId: T['id']
@@ -76,6 +86,7 @@ export type Command<
     | ((
         commandBarContext: { argumentsToSubmit: Record<string, unknown> } // Should be the commandbarMachine's context, but it creates a circular dependency
       ) => string | ReactNode)
+  machineActor?: Actor<T>
   onSubmit: (data?: CommandSchema) => void
   onCancel?: () => void
   args?: {
@@ -84,18 +95,19 @@ export type Command<
   displayName?: string
   description?: string
   icon?: Icon
-  hide?: (typeof PLATFORMS)[number]
+  hide?: PLATFORM[number]
 }
 
 export type CommandConfig<
   T extends AnyStateMachine = AnyStateMachine,
   CommandName extends EventFrom<T>['type'] = EventFrom<T>['type'],
-  CommandSchema extends StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName]
+  CommandSchema extends
+    StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName],
 > = Omit<
   Command<T, CommandName, CommandSchema>,
   'name' | 'groupId' | 'onSubmit' | 'onCancel' | 'args' | 'needsReview'
 > & {
-  needsReview?: true
+  needsReview?: boolean
   status?: 'active' | 'development' | 'inactive'
   args?: {
     [ArgName in keyof CommandSchema]: CommandArgumentConfig<
@@ -107,8 +119,9 @@ export type CommandConfig<
 
 export type CommandArgumentConfig<
   OutputType,
-  C = ContextFrom<AnyStateMachine>
+  C = ContextFrom<AnyStateMachine>,
 > = {
+  displayName?: string
   description?: string
   required:
     | boolean
@@ -117,6 +130,13 @@ export type CommandArgumentConfig<
         machineContext?: C
       ) => boolean)
   warningMessage?: string
+  /** If `true`, arg is used as passed-through data, never for user input */
+  hidden?:
+    | boolean
+    | ((
+        commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
+        machineContext?: C
+      ) => boolean)
   skip?: boolean
   /** For showing a summary display of the current value, such as in
    *  the command bar's header
@@ -146,6 +166,8 @@ export type CommandArgumentConfig<
   | {
       inputType: 'selection'
       selectionTypes: Artifact['type'][]
+      clearSelectionFirst?: boolean
+      selectionFilter?: EntityType_type[]
       multiple: boolean
       validation?: ({
         data,
@@ -156,8 +178,26 @@ export type CommandArgumentConfig<
       }) => Promise<boolean | string>
     }
   | {
+      inputType: 'selectionMixed'
+      selectionTypes: Artifact['type'][]
+      selectionFilter?: EntityType_type[]
+      multiple: boolean
+      allowNoSelection?: boolean
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
+      selectionSource?: {
+        allowSceneSelection?: boolean
+        allowCodeSelection?: boolean
+      }
+    }
+  | {
       inputType: 'kcl'
-      createVariableByDefault?: boolean
+      createVariable?: 'byDefault' | 'force' | 'disallow'
       variableName?:
         | string
         | ((
@@ -205,10 +245,18 @@ export type CommandArgumentConfig<
 
 export type CommandArgument<
   OutputType,
-  T extends AnyStateMachine = AnyStateMachine
+  T extends AnyStateMachine = AnyStateMachine,
 > = {
+  displayName?: string
   description?: string
   required:
+    | boolean
+    | ((
+        commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
+        machineContext?: ContextFrom<T>
+      ) => boolean)
+  /** If `true`, arg is used as passed-through data, never for user input */
+  hidden?:
     | boolean
     | ((
         commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
@@ -242,6 +290,8 @@ export type CommandArgument<
   | {
       inputType: 'selection'
       selectionTypes: Artifact['type'][]
+      clearSelectionFirst?: boolean
+      selectionFilter?: EntityType_type[]
       multiple: boolean
       validation?: ({
         data,
@@ -252,8 +302,26 @@ export type CommandArgument<
       }) => Promise<boolean | string>
     }
   | {
+      inputType: 'selectionMixed'
+      selectionTypes: Artifact['type'][]
+      selectionFilter?: EntityType_type[]
+      multiple: boolean
+      allowNoSelection?: boolean
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
+      selectionSource?: {
+        allowSceneSelection?: boolean
+        allowCodeSelection?: boolean
+      }
+    }
+  | {
       inputType: 'kcl'
-      createVariableByDefault?: boolean
+      createVariable?: 'byDefault' | 'force' | 'disallow'
       variableName?:
         | string
         | ((
@@ -298,7 +366,7 @@ export type CommandArgument<
 
 export type CommandArgumentWithName<
   OutputType,
-  T extends AnyStateMachine = AnyStateMachine
+  T extends AnyStateMachine = AnyStateMachine,
 > = CommandArgument<OutputType, T> & {
   name: string
 }

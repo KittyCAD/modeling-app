@@ -1,0 +1,20 @@
+fn cube(length, center) {
+  l = length/2
+  x = center[0]
+  y = center[1]
+  p0 = [-l + x, -l + y]
+  p1 = [-l + x,  l + y]
+  p2 = [ l + x,  l + y]
+  p3 = [ l + x, -l + y]
+
+  return startSketchOn(XY)
+  |> startProfileAt(p0, %)
+  |> line(endAbsolute = p1)
+  |> line(endAbsolute = p2)
+  |> line(endAbsolute = p3)
+  |> line(endAbsolute = p0)
+  |> close()
+  |> extrude(length = length)
+}
+
+myCube = cube(40, [0,0])

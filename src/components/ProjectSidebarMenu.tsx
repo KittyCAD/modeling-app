@@ -1,20 +1,30 @@
 import { Popover, Transition } from '@headlessui/react'
-import { ActionButton, ActionButtonProps } from './ActionButton'
-import { type IndexLoaderData } from 'lib/types'
-import { PATHS } from 'lib/paths'
-import { isDesktop } from '../lib/isDesktop'
+import { useSelector } from '@xstate/react'
+import { Fragment, useContext, useMemo } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Fragment, useMemo, useContext } from 'react'
-import { Logo } from './Logo'
-import { APP_NAME } from 'lib/constants'
-import { useCommandsContext } from 'hooks/useCommandsContext'
-import { CustomIcon } from './CustomIcon'
-import { useLspContext } from './LspProvider'
-import { engineCommandManager, kclManager } from 'lib/singletons'
-import { MachineManagerContext } from 'components/MachineManagerProvider'
-import usePlatform from 'hooks/usePlatform'
-import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
-import Tooltip from './Tooltip'
+import type { SnapshotFrom } from 'xstate'
+
+import type { ActionButtonProps } from '@src/components/ActionButton'
+import { ActionButton } from '@src/components/ActionButton'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { Logo } from '@src/components/Logo'
+import { useLspContext } from '@src/components/LspProvider'
+import { MachineManagerContext } from '@src/components/MachineManagerProvider'
+import Tooltip from '@src/components/Tooltip'
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
+import usePlatform from '@src/hooks/usePlatform'
+import { APP_NAME } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import { copyFileShareLink } from '@src/lib/links'
+import { PATHS } from '@src/lib/paths'
+import {
+  codeManager,
+  engineCommandManager,
+  kclManager,
+} from '@src/lib/singletons'
+import { type IndexLoaderData } from '@src/lib/types'
+import { useToken } from '@src/machines/appMachine'
+import { commandBarActor } from '@src/machines/commandBarMachine'
 
 const ProjectSidebarMenu = ({
   project,
@@ -84,6 +94,9 @@ function AppLogoLink({
   )
 }
 
+const commandsSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
+  state.context.commands
+
 function ProjectMenuPopover({
   project,
   file,
@@ -95,17 +108,17 @@ function ProjectMenuPopover({
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
+  const token = useToken()
   const machineManager = useContext(MachineManagerContext)
+  const commands = useSelector(commandBarActor, commandsSelector)
 
-  const { commandBarState, commandBarSend } = useCommandsContext()
   const { onProjectClose } = useLspContext()
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
   const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
+  const shareCommandInfo = { name: 'share-file-link', groupId: 'code' }
   const findCommand = (obj: { name: string; groupId: string }) =>
     Boolean(
-      commandBarState.context.commands.find(
-        (c) => c.name === obj.name && c.groupId === obj.groupId
-      )
+      commands.find((c) => c.name === obj.name && c.groupId === obj.groupId)
     )
   const machineCount = machineManager.machines.length
 
@@ -150,12 +163,11 @@ function ProjectMenuPopover({
           ),
           disabled: !findCommand(exportCommandInfo),
           onClick: () =>
-            commandBarSend({
+            commandBarActor.send({
               type: 'Find and select command',
               data: exportCommandInfo,
             }),
         },
-        'break',
         {
           id: 'make',
           Element: 'button',
@@ -175,9 +187,22 @@ function ProjectMenuPopover({
           ),
           disabled: !findCommand(makeCommandInfo) || machineCount === 0,
           onClick: () => {
-            commandBarSend({
+            commandBarActor.send({
               type: 'Find and select command',
               data: makeCommandInfo,
+            })
+          },
+        },
+        {
+          id: 'share-link',
+          Element: 'button',
+          children: 'Share current part (via Zoo link)',
+          disabled: !findCommand(shareCommandInfo),
+          onClick: async () => {
+            await copyFileShareLink({
+              token: token ?? '',
+              code: codeManager.code,
+              name: project?.name || '',
             })
           },
         },
@@ -200,7 +225,7 @@ function ProjectMenuPopover({
     [
       platform,
       findCommand,
-      commandBarSend,
+      commandBarActor.send,
       engineCommandManager,
       onProjectClose,
       isDesktop,
@@ -240,7 +265,7 @@ function ProjectMenuPopover({
         as={Fragment}
       >
         <Popover.Panel
-          className={`z-10 absolute top-full left-0 mt-1 pb-1 w-48 bg-chalkboard-10 dark:bg-chalkboard-90
+          className={`z-10 absolute top-full left-0 mt-1 pb-1 w-52 bg-chalkboard-10 dark:bg-chalkboard-90
           border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
           shadow-lg`}
         >

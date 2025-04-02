@@ -1,0 +1,821 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing pipe-with-bend.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 209,
+        "declaration": {
+          "commentStart": 231,
+          "end": 0,
+          "id": {
+            "commentStart": 231,
+            "end": 0,
+            "name": "innerDiameter",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 247,
+            "end": 0,
+            "raw": "10",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 10.0,
+              "suffix": "None"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "preComments": [
+          "// Define constants"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 250,
+        "declaration": {
+          "commentStart": 250,
+          "end": 0,
+          "id": {
+            "commentStart": 250,
+            "end": 0,
+            "name": "outerDiameter",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 266,
+            "end": 0,
+            "raw": "20",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 20.0,
+              "suffix": "None"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 269,
+        "declaration": {
+          "commentStart": 269,
+          "end": 0,
+          "id": {
+            "commentStart": 269,
+            "end": 0,
+            "name": "bendRadius",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 282,
+            "end": 0,
+            "raw": "30",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 30.0,
+              "suffix": "None"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 285,
+        "declaration": {
+          "commentStart": 285,
+          "end": 0,
+          "id": {
+            "commentStart": 285,
+            "end": 0,
+            "name": "bendAngle",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 297,
+            "end": 0,
+            "raw": "90",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 90.0,
+              "suffix": "None"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 299,
+        "declaration": {
+          "commentStart": 338,
+          "end": 0,
+          "id": {
+            "commentStart": 338,
+            "end": 0,
+            "name": "sketch000",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "abs_path": false,
+                "commentStart": 364,
+                "end": 0,
+                "name": {
+                  "commentStart": 364,
+                  "end": 0,
+                  "name": "XZ",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
+              }
+            ],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 350,
+              "end": 0,
+              "name": {
+                "commentStart": 350,
+                "end": 0,
+                "name": "startSketchOn",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 350,
+            "end": 0,
+            "start": 0,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// create a sketch in the 'XZ' plane"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 367,
+        "declaration": {
+          "commentStart": 412,
+          "end": 0,
+          "id": {
+            "commentStart": 412,
+            "end": 0,
+            "name": "outerProfile",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 445,
+                  "end": 0,
+                  "name": "center",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 454,
+                  "elements": [
+                    {
+                      "abs_path": false,
+                      "commentStart": 455,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 455,
+                        "end": 0,
+                        "name": "bendRadius",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    {
+                      "commentStart": 467,
+                      "end": 0,
+                      "raw": "0",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    }
+                  ],
+                  "end": 0,
+                  "start": 0,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 471,
+                  "end": 0,
+                  "name": "radius",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 480,
+                  "end": 0,
+                  "left": {
+                    "abs_path": false,
+                    "commentStart": 480,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 480,
+                      "end": 0,
+                      "name": "outerDiameter",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
+                  "operator": "/",
+                  "right": {
+                    "commentStart": 496,
+                    "end": 0,
+                    "raw": "2",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "start": 0,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                }
+              }
+            ],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 427,
+              "end": 0,
+              "name": {
+                "commentStart": 427,
+                "end": 0,
+                "name": "circle",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 427,
+            "end": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "abs_path": false,
+              "commentStart": 434,
+              "end": 0,
+              "name": {
+                "commentStart": 434,
+                "end": 0,
+                "name": "sketch000",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// create a profile for the outer diameter"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 498,
+        "declaration": {
+          "commentStart": 543,
+          "end": 0,
+          "id": {
+            "commentStart": 543,
+            "end": 0,
+            "name": "innerProfile",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 576,
+                  "end": 0,
+                  "name": "center",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 585,
+                  "elements": [
+                    {
+                      "abs_path": false,
+                      "commentStart": 586,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 586,
+                        "end": 0,
+                        "name": "bendRadius",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    {
+                      "commentStart": 598,
+                      "end": 0,
+                      "raw": "0",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    }
+                  ],
+                  "end": 0,
+                  "start": 0,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 602,
+                  "end": 0,
+                  "name": "radius",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 611,
+                  "end": 0,
+                  "left": {
+                    "abs_path": false,
+                    "commentStart": 611,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 611,
+                      "end": 0,
+                      "name": "innerDiameter",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
+                  "operator": "/",
+                  "right": {
+                    "commentStart": 627,
+                    "end": 0,
+                    "raw": "2",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "start": 0,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                }
+              }
+            ],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 558,
+              "end": 0,
+              "name": {
+                "commentStart": 558,
+                "end": 0,
+                "name": "circle",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 558,
+            "end": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "abs_path": false,
+              "commentStart": 565,
+              "end": 0,
+              "name": {
+                "commentStart": 565,
+                "end": 0,
+                "name": "sketch000",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// create a profile for the inner diameter"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 629,
+        "declaration": {
+          "commentStart": 665,
+          "end": 0,
+          "id": {
+            "commentStart": 665,
+            "end": 0,
+            "name": "pipeProfile",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "abs_path": false,
+                "commentStart": 679,
+                "end": 0,
+                "name": {
+                  "commentStart": 679,
+                  "end": 0,
+                  "name": "outerProfile",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
+              },
+              {
+                "arguments": [
+                  {
+                    "abs_path": false,
+                    "commentStart": 702,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 702,
+                      "end": 0,
+                      "name": "innerProfile",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
+                  {
+                    "commentStart": 716,
+                    "end": 0,
+                    "start": 0,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 697,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 697,
+                    "end": 0,
+                    "name": "hole",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 697,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              }
+            ],
+            "commentStart": 679,
+            "end": 0,
+            "nonCodeMeta": {
+              "nonCodeNodes": {
+                "1": [
+                  {
+                    "commentStart": 718,
+                    "end": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "newLineBlockComment",
+                      "value": "revolve the pipe profile at the desired angle",
+                      "style": "line"
+                    }
+                  }
+                ]
+              },
+              "startNodes": []
+            },
+            "start": 0,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// create the profile of the pipe"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 769,
+        "declaration": {
+          "commentStart": 769,
+          "end": 0,
+          "id": {
+            "commentStart": 769,
+            "end": 0,
+            "name": "pipe",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 797,
+                  "end": 0,
+                  "name": "axis",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 804,
+                  "end": 0,
+                  "raw": "'Y'",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": "Y"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 809,
+                  "end": 0,
+                  "name": "angle",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "abs_path": false,
+                  "commentStart": 817,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 817,
+                    "end": 0,
+                    "name": "bendAngle",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
+              }
+            ],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 776,
+              "end": 0,
+              "name": {
+                "commentStart": 776,
+                "end": 0,
+                "name": "revolve",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 776,
+            "end": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "abs_path": false,
+              "commentStart": 784,
+              "end": 0,
+              "name": {
+                "commentStart": 784,
+                "end": 0,
+                "name": "pipeProfile",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "innerAttrs": [
+      {
+        "commentStart": 0,
+        "end": 0,
+        "name": {
+          "commentStart": 177,
+          "end": 0,
+          "name": "settings",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "preComments": [
+          "// Pipe with bend",
+          "// A tubular section or hollow cylinder, usually but not necessarily of circular cross-section, used mainly to convey substances that can flow.",
+          "",
+          "",
+          "// Set units"
+        ],
+        "properties": [
+          {
+            "commentStart": 186,
+            "end": 0,
+            "key": {
+              "commentStart": 186,
+              "end": 0,
+              "name": "defaultLengthUnit",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "abs_path": false,
+              "commentStart": 206,
+              "end": 0,
+              "name": {
+                "commentStart": 206,
+                "end": 0,
+                "name": "in",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          }
+        ],
+        "start": 0,
+        "type": "Annotation"
+      }
+    ],
+    "nonCodeMeta": {
+      "nonCodeNodes": {},
+      "startNodes": [
+        {
+          "commentStart": 209,
+          "end": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}
