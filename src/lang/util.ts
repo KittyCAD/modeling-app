@@ -15,8 +15,15 @@ import type { Selections } from '@src/lib/selections'
 import { isArray, isOverlap } from '@src/lib/utils'
 
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
-import { ARG_ANGLE, ARG_END_ABSOLUTE_X, ARG_END_ABSOLUTE_Y, ARG_LENGTH, ARG_LENGTH_X, ARG_LENGTH_Y } from './constants'
-import { createArrayExpression } from './create'
+import {
+  ARG_ANGLE,
+  ARG_END_ABSOLUTE_X,
+  ARG_END_ABSOLUTE_Y,
+  ARG_LENGTH,
+  ARG_LENGTH_X,
+  ARG_LENGTH_Y,
+} from '@src/lang/constants'
+import { createArrayExpression } from '@src/lang/create'
 
 /**
  * Create a SourceRange for the top-level module.
@@ -100,18 +107,18 @@ export function isCursorInSketchCommandRange(
     firstEntry?.type === 'segment'
       ? firstEntry.pathId
       : ((firstEntry?.type === 'plane' ||
-        firstEntry?.type === 'cap' ||
-        firstEntry?.type === 'wall') &&
-        firstEntry.pathIds?.length) ||
-        false
+            firstEntry?.type === 'cap' ||
+            firstEntry?.type === 'wall') &&
+            firstEntry.pathIds?.length) ||
+          false
         ? firstEntry.pathIds[0]
         : false
 
   return parentId
     ? parentId
     : [...overlappingEntries].find(
-      ([, artifact]) => artifact.type === 'path'
-    )?.[0] || false
+        ([, artifact]) => artifact.type === 'path'
+      )?.[0] || false
 }
 
 export function isCallExpression(e: any): e is CallExpression {
