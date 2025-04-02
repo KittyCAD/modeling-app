@@ -1,11 +1,7 @@
+@(lengthUnit = m)
 import "2-5-long-m8-chc-screw.stl" as screw
 
 screw
-  |> rotate(
-       %,
-       roll = 3.14,
-       pitch = 3.14,
-       yaw = 3.14,
-     )
+  |> rotate(%, roll = 3.14, pitch = 3.14, yaw = 3.14)
   |> translate(%, x = 3.14, y = 3.14, z = 3.14)
   |> scale(%, x = 3.14, y = 3.14, z = 3.14)

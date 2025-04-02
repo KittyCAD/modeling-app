@@ -6,8 +6,48 @@ description: Result of parsing import_transform.kcl
   "Ok": {
     "body": [
       {
-        "commentStart": 0,
+        "commentStart": 18,
         "end": 0,
+        "outerAttrs": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "name": null,
+            "properties": [
+              {
+                "commentStart": 2,
+                "end": 0,
+                "key": {
+                  "commentStart": 2,
+                  "end": 0,
+                  "name": "lengthUnit",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "start": 0,
+                "type": "ObjectProperty",
+                "value": {
+                  "abs_path": false,
+                  "commentStart": 15,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 15,
+                    "end": 0,
+                    "name": "m",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
+              }
+            ],
+            "start": 0,
+            "type": "Annotation"
+          }
+        ],
         "path": {
           "type": "Foreign",
           "path": "2-5-long-m8-chc-screw.stl"
@@ -15,7 +55,7 @@ description: Result of parsing import_transform.kcl
         "selector": {
           "type": "None",
           "alias": {
-            "commentStart": 38,
+            "commentStart": 56,
             "end": 0,
             "name": "screw",
             "start": 0,
@@ -27,16 +67,16 @@ description: Result of parsing import_transform.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 43,
+        "commentStart": 61,
         "end": 0,
         "expression": {
           "body": [
             {
               "abs_path": false,
-              "commentStart": 45,
+              "commentStart": 63,
               "end": 0,
               "name": {
-                "commentStart": 45,
+                "commentStart": 63,
                 "end": 0,
                 "name": "screw",
                 "start": 0,
@@ -52,14 +92,14 @@ description: Result of parsing import_transform.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 81,
+                    "commentStart": 84,
                     "end": 0,
                     "name": "roll",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 88,
+                    "commentStart": 91,
                     "end": 0,
                     "raw": "3.14",
                     "start": 0,
@@ -74,14 +114,14 @@ description: Result of parsing import_transform.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 101,
+                    "commentStart": 97,
                     "end": 0,
                     "name": "pitch",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 109,
+                    "commentStart": 105,
                     "end": 0,
                     "raw": "3.14",
                     "start": 0,
@@ -96,14 +136,14 @@ description: Result of parsing import_transform.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 122,
+                    "commentStart": 111,
                     "end": 0,
                     "name": "yaw",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 128,
+                    "commentStart": 117,
                     "end": 0,
                     "raw": "3.14",
                     "start": 0,
@@ -118,10 +158,10 @@ description: Result of parsing import_transform.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 56,
+                "commentStart": 74,
                 "end": 0,
                 "name": {
-                  "commentStart": 56,
+                  "commentStart": 74,
                   "end": 0,
                   "name": "rotate",
                   "start": 0,
@@ -131,13 +171,13 @@ description: Result of parsing import_transform.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 56,
+              "commentStart": 74,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
-                "commentStart": 71,
+                "commentStart": 81,
                 "end": 0,
                 "start": 0,
                 "type": "PipeSubstitution",
@@ -149,14 +189,14 @@ description: Result of parsing import_transform.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 159,
+                    "commentStart": 141,
                     "end": 0,
                     "name": "x",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 163,
+                    "commentStart": 145,
                     "end": 0,
                     "raw": "3.14",
                     "start": 0,
@@ -171,14 +211,14 @@ description: Result of parsing import_transform.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 169,
+                    "commentStart": 151,
                     "end": 0,
                     "name": "y",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 173,
+                    "commentStart": 155,
                     "end": 0,
                     "raw": "3.14",
                     "start": 0,
@@ -193,14 +233,14 @@ description: Result of parsing import_transform.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 179,
+                    "commentStart": 161,
                     "end": 0,
                     "name": "z",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 183,
+                    "commentStart": 165,
                     "end": 0,
                     "raw": "3.14",
                     "start": 0,
@@ -215,10 +255,10 @@ description: Result of parsing import_transform.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 146,
+                "commentStart": 128,
                 "end": 0,
                 "name": {
-                  "commentStart": 146,
+                  "commentStart": 128,
                   "end": 0,
                   "name": "translate",
                   "start": 0,
@@ -228,13 +268,13 @@ description: Result of parsing import_transform.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 146,
+              "commentStart": 128,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
-                "commentStart": 156,
+                "commentStart": 138,
                 "end": 0,
                 "start": 0,
                 "type": "PipeSubstitution",
@@ -246,14 +286,14 @@ description: Result of parsing import_transform.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 203,
+                    "commentStart": 185,
                     "end": 0,
                     "name": "x",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 207,
+                    "commentStart": 189,
                     "end": 0,
                     "raw": "3.14",
                     "start": 0,
@@ -268,14 +308,14 @@ description: Result of parsing import_transform.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 213,
+                    "commentStart": 195,
                     "end": 0,
                     "name": "y",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 217,
+                    "commentStart": 199,
                     "end": 0,
                     "raw": "3.14",
                     "start": 0,
@@ -290,14 +330,14 @@ description: Result of parsing import_transform.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 223,
+                    "commentStart": 205,
                     "end": 0,
                     "name": "z",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 227,
+                    "commentStart": 209,
                     "end": 0,
                     "raw": "3.14",
                     "start": 0,
@@ -312,10 +352,10 @@ description: Result of parsing import_transform.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 194,
+                "commentStart": 176,
                 "end": 0,
                 "name": {
-                  "commentStart": 194,
+                  "commentStart": 176,
                   "end": 0,
                   "name": "scale",
                   "start": 0,
@@ -325,13 +365,13 @@ description: Result of parsing import_transform.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 194,
+              "commentStart": 176,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
-                "commentStart": 200,
+                "commentStart": 182,
                 "end": 0,
                 "start": 0,
                 "type": "PipeSubstitution",
@@ -339,7 +379,7 @@ description: Result of parsing import_transform.kcl
               }
             }
           ],
-          "commentStart": 45,
+          "commentStart": 63,
           "end": 0,
           "start": 0,
           "type": "PipeExpression",
@@ -356,7 +396,7 @@ description: Result of parsing import_transform.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "commentStart": 43,
+            "commentStart": 61,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

@@ -123,7 +123,6 @@ export class SceneInfra {
   readonly camControls: CameraControls
   private readonly fov = 45
   isFovAnimationInProgress = false
-  _baseUnit: BaseUnit = 'mm'
   _baseUnitMultiplier = 1
   _theme: Themes = Themes.System
   readonly extraSegmentTexture: Texture
@@ -154,7 +153,6 @@ export class SceneInfra {
     this.selected = null // following selections between callbacks being set is too tricky
   }
   set baseUnit(unit: BaseUnit) {
-    this._baseUnit = unit
     this._baseUnitMultiplier = baseUnitTomm(unit)
     this.scene.scale.set(
       this._baseUnitMultiplier,
