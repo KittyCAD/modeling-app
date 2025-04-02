@@ -6,7 +6,7 @@ import { type BaseUnit, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { settingsActor, useSettings } from '@src/machines/appMachine'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
 
-import { useDismiss, useNextClick } from '.'
+import { useDismiss, useNextClick } from '@src/routes/Onboarding/utils'
 
 export default function Units() {
   const dismiss = useDismiss()

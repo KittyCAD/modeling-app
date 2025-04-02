@@ -69,19 +69,6 @@ export const onboardingRoutes = [
   },
 ]
 
-// Get the 1-indexed step number of the current onboarding step
-export function useStepNumber(
-  slug?: (typeof onboardingPaths)[keyof typeof onboardingPaths]
-) {
-  return slug
-    ? slug === onboardingPaths.INDEX
-      ? 1
-      : onboardingRoutes.findIndex(
-          (r) => r.path === makeUrlPathRelative(slug)
-        ) + 1
-    : 1
-}
-
 const Onboarding = () => {
   const dismiss = useDismiss()
   useHotkeys('esc', dismiss)

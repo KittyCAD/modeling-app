@@ -1,21 +1,39 @@
 import { useCallback, useEffect } from 'react'
-import {  useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { waitFor } from 'xstate'
 
+import { ActionButton } from '@src/components/ActionButton'
+import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import { PATHS } from '@src/lib/paths'
-import { reportRejection } from '@src/lib/trap'
-import { settingsActor } from '@src/machines/appMachine'
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
-import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
-import { bracket } from '@src/lib/exampleKcl'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
+import { bracket } from '@src/lib/exampleKcl'
+import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
+import { PATHS } from '@src/lib/paths'
+import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
+import { settingsActor } from '@src/machines/appMachine'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+import { onboardingRoutes } from '.'
 
 export const kbdClasses =
   'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
+
+// Get the 1-indexed step number of the current onboarding step
+function useStepNumber(
+  slug?: (typeof onboardingPaths)[keyof typeof onboardingPaths]
+) {
+  return slug
+    ? slug === onboardingPaths.INDEX
+      ? 1
+      : onboardingRoutes.findIndex(
+          (r) => r.path === makeUrlPathRelative(slug)
+        ) + 1
+    : 1
+}
 
 export function useDemoCode() {
   const { overallState, immediateState } = useNetworkContext()
