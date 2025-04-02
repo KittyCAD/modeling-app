@@ -10,6 +10,9 @@ import {
   openPane,
 } from '@e2e/playwright/test-utils'
 import { expect } from '@e2e/playwright/zoo-test'
+import { type baseUnitLabels } from '@src/lib/settings/settingsTypes'
+
+type LengthUnitLabel = (typeof baseUnitLabels)[keyof typeof baseUnitLabels]
 
 export class ToolbarFixture {
   public page: Page
@@ -235,6 +238,12 @@ export class ToolbarFixture {
   }
   async checkIfFeatureTreePaneIsOpen() {
     return this.checkIfPaneIsOpen(this.featureTreeId)
+  }
+  async selectUnit(unit: LengthUnitLabel) {
+    await this.page.getByTestId('units-menu').click()
+    const optionLocator = this.page.getByRole('button', { name: unit })
+    await expect(optionLocator).toBeVisible()
+    await optionLocator.click()
   }
 
   /**
