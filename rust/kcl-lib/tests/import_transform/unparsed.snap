@@ -2,6 +2,7 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing import_transform.kcl
 ---
+@(lengthUnit = m)
 import "2-5-long-m8-chc-screw.stl" as screw
 
 screw
