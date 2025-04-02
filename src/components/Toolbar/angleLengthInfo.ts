@@ -1,9 +1,9 @@
 import { toolTips } from '@src/lang/langHelpers'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getTransformInfos } from '@src/lang/std/sketchcombos'
-import { TransformInfo } from '@src/lang/std/stdTypes'
-import { Expr } from '@src/lang/wasm'
-import { Selections } from '@src/lib/selections'
+import type { TransformInfo } from '@src/lang/std/stdTypes'
+import type { Expr } from '@src/lang/wasm'
+import type { Selections } from '@src/lib/selections'
 import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 
