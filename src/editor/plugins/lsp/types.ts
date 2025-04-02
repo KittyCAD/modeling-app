@@ -1,4 +1,4 @@
-import { LspWorkerEventType } from '@kittycad/codemirror-lsp-client'
+import type { LspWorkerEventType } from '@kittycad/codemirror-lsp-client'
 
 export enum LspWorker {
   Kcl = 'kcl',

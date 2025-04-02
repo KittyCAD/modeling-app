@@ -1,8 +1,8 @@
-import { assertParse, initPromise } from './wasm'
-import { enginelessExecutor } from '../lib/testHelpers'
-
-import path from 'node:path'
 import fs from 'node:fs/promises'
+import path from 'node:path'
+
+import { assertParse, initPromise } from '@src/lang/wasm'
+import { enginelessExecutor } from '@src/lib/testHelpers'
 
 // The purpose of these tests is to act as a first line of defense
 // if something gets real screwy with our KCL ecosystem.

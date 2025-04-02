@@ -1,39 +1,41 @@
 import { useMachine } from '@xstate/react'
-import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
-import { useProjectsLoader } from 'hooks/useProjectsLoader'
-import { projectsMachine } from 'machines/projectsMachine'
 import { createContext, useCallback, useEffect, useState } from 'react'
-import { Actor, AnyStateMachine, fromPromise, Prop, StateFrom } from 'xstate'
-import { useLspContext } from './LspProvider'
 import toast from 'react-hot-toast'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { PATHS } from 'lib/paths'
-import {
-  createNewProjectDirectory,
-  listProjects,
-  renameProjectDirectory,
-} from 'lib/desktop'
-import {
-  getNextProjectIndex,
-  interpolateProjectNameWithIndex,
-  doesProjectNameNeedInterpolated,
-  getUniqueProjectName,
-  getNextFileName,
-} from 'lib/desktopFS'
-import useStateMachineCommands from 'hooks/useStateMachineCommands'
-import { projectsCommandBarConfig } from 'lib/commandBarConfigs/projectsCommandConfig'
-import { isDesktop } from 'lib/isDesktop'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { useSettings } from 'machines/appMachine'
+import type { Actor, AnyStateMachine, Prop, StateFrom } from 'xstate'
+import { fromPromise } from 'xstate'
+
+import { useLspContext } from '@src/components/LspProvider'
+import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
+import { useProjectsLoader } from '@src/hooks/useProjectsLoader'
+import useStateMachineCommands from '@src/hooks/useStateMachineCommands'
+import { newKclFile } from '@src/lang/project'
+import { projectsCommandBarConfig } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
   CREATE_FILE_URL_PARAM,
   FILE_EXT,
   PROJECT_ENTRYPOINT,
-} from 'lib/constants'
-import { codeManager, kclManager } from 'lib/singletons'
-import { Project } from 'lib/project'
-import { newKclFile } from 'lang/project'
-import { err } from 'lib/trap'
+} from '@src/lib/constants'
+import {
+  createNewProjectDirectory,
+  listProjects,
+  renameProjectDirectory,
+} from '@src/lib/desktop'
+import {
+  doesProjectNameNeedInterpolated,
+  getNextFileName,
+  getNextProjectIndex,
+  getUniqueProjectName,
+  interpolateProjectNameWithIndex,
+} from '@src/lib/desktopFS'
+import { isDesktop } from '@src/lib/isDesktop'
+import { PATHS } from '@src/lib/paths'
+import type { Project } from '@src/lib/project'
+import { codeManager, kclManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
+import { useSettings } from '@src/machines/appMachine'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import { projectsMachine } from '@src/machines/projectsMachine'
 
 type MachineContext<T extends AnyStateMachine> = {
   state?: StateFrom<T>
@@ -382,8 +384,8 @@ const ProjectsContextDesktop = ({
             input.method === 'newProject'
               ? PROJECT_ENTRYPOINT
               : input.name.endsWith(FILE_EXT)
-              ? input.name
-              : input.name + FILE_EXT
+                ? input.name
+                : input.name + FILE_EXT
           let message = 'File created successfully'
 
           const needsInterpolated = doesProjectNameNeedInterpolated(projectName)

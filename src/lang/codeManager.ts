@@ -1,16 +1,17 @@
 // A little class for updating the code state when we need to and explicitly
 // NOT updating the code state when we don't need to.
 // This prevents re-renders of the codemirror editor, when typing.
-import { bracket } from 'lib/exampleKcl'
-import { isDesktop } from 'lib/isDesktop'
-import toast from 'react-hot-toast'
-import { editorManager } from 'lib/singletons'
-import { Annotation, Transaction } from '@codemirror/state'
-import { EditorView, KeyBinding } from '@codemirror/view'
-import { recast, Program, parse } from 'lang/wasm'
-import { err, reportRejection } from 'lib/trap'
-import { Compartment } from '@codemirror/state'
 import { history } from '@codemirror/commands'
+import { Annotation, Compartment, Transaction } from '@codemirror/state'
+import type { EditorView, KeyBinding } from '@codemirror/view'
+import toast from 'react-hot-toast'
+
+import type { Program } from '@src/lang/wasm'
+import { parse, recast } from '@src/lang/wasm'
+import { bracket } from '@src/lib/exampleKcl'
+import { isDesktop } from '@src/lib/isDesktop'
+import { editorManager } from '@src/lib/singletons'
+import { err, reportRejection } from '@src/lib/trap'
 
 const PERSIST_CODE_KEY = 'persistCode'
 

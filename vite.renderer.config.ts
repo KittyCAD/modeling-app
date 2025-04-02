@@ -1,10 +1,11 @@
-import type { ConfigEnv, UserConfig } from 'vite'
-import { defineConfig } from 'vite'
-import { pluginExposeRenderer } from './vite.base.config'
-import viteTsconfigPaths from 'vite-tsconfig-paths'
-import topLevelAwait from 'vite-plugin-top-level-await'
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
+import type { ConfigEnv, UserConfig } from 'vite'
+import { defineConfig } from 'vite'
+import topLevelAwait from 'vite-plugin-top-level-await'
+import viteTsconfigPaths from 'vite-tsconfig-paths'
+
+import { pluginExposeRenderer } from './vite.base.config'
 
 // https://vitejs.dev/config
 export default defineConfig((env) => {

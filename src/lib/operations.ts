@@ -1,26 +1,27 @@
-import { CustomIconName } from 'components/CustomIcon'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+
+import type { CustomIconName } from '@src/components/CustomIcon'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
-  Artifact,
   getArtifactOfTypes,
   getCapCodeRef,
   getEdgeCutConsumedCodeRef,
   getSweepEdgeCodeRef,
   getWallCodeRef,
-} from 'lang/std/artifactGraph'
-import { Operation } from '@rust/kcl-lib/bindings/Operation'
-import { codeManager, kclManager, rustContext } from './singletons'
-import { err } from './trap'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { sourceRangeFromRust } from 'lang/wasm'
-import { CommandBarMachineEvent } from 'machines/commandBarMachine'
-import { stringToKclExpression } from './kclHelpers'
-import {
+} from '@src/lang/std/artifactGraph'
+import { sourceRangeFromRust } from '@src/lang/wasm'
+import type {
   HelixModes,
   ModelingCommandSchema,
-} from './commandBarConfigs/modelingCommandConfig'
-import { isDefaultPlaneStr } from './planes'
-import { Selection, Selections } from './selections'
-import { KclExpression } from './commandTypes'
+} from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import type { KclExpression } from '@src/lib/commandTypes'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
+import { isDefaultPlaneStr } from '@src/lib/planes'
+import type { Selection, Selections } from '@src/lib/selections'
+import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
+import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'

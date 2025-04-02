@@ -1,5 +1,5 @@
-import { CustomIconName } from 'components/CustomIcon'
-import { Project } from 'lib/project'
+import type { CustomIconName } from '@src/components/CustomIcon'
+import type { Project } from '@src/lib/project'
 
 const DESC = ':desc'
 

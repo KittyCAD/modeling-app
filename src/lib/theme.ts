@@ -1,4 +1,4 @@
-import { AppTheme } from '@rust/kcl-lib/bindings/AppTheme'
+import type { AppTheme } from '@rust/kcl-lib/bindings/AppTheme'
 
 /** A media query matcher for dark mode */
 export const darkModeMatcher =

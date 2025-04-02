@@ -1,31 +1,12 @@
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
 import {
-  CreatedSketchExprResult,
-  CreateStdLibSketchCallExpr,
-  InputArg,
-  InputArgs,
-  SimplifiedArgDetails,
-  TransformInfo,
-} from './stdTypes'
-import { ToolTip, toolTips } from 'lang/langHelpers'
-import { Selections } from 'lib/selections'
-import { cleanErrs, err } from 'lib/trap'
-import {
-  CallExpression,
-  CallExpressionKw,
-  Program,
-  Expr,
-  BinaryPart,
-  VariableDeclarator,
-  PathToNode,
-  sketchFromKclValue,
-  Literal,
-  SourceRange,
-  LiteralValue,
-  LabeledArg,
-  VariableMap,
-} from '../wasm'
-import { getNodeFromPath, getNodeFromPathCurry } from '../queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+  ARG_END,
+  ARG_END_ABSOLUTE,
+  ARG_LENGTH,
+  ARG_TAG,
+  DETERMINING_ARGS,
+} from '@src/lang/constants'
 import {
   createArrayExpression,
   createBinaryExpression,
@@ -40,31 +21,54 @@ import {
   createPipeSubstitution,
   createUnaryExpression,
   giveSketchFnCallTag,
-} from '../modifyAst'
+} from '@src/lang/create'
+import type { ToolTip } from '@src/lang/langHelpers'
+import { toolTips } from '@src/lang/langHelpers'
+import { getNodeFromPath, getNodeFromPathCurry } from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   createFirstArg,
-  getConstraintInfo,
-  getFirstArg,
-  getArgForEnd,
-  replaceSketchLine,
-  ARG_TAG,
-  ARG_END,
-  ARG_END_ABSOLUTE,
-  getConstraintInfoKw,
-  isAbsoluteLine,
-  getCircle,
-  ARG_LENGTH,
-  tooltipToFnName,
   fnNameToTooltip,
-  DETERMINING_ARGS,
-} from './sketch'
+  getArgForEnd,
+  getCircle,
+  getConstraintInfo,
+  getConstraintInfoKw,
+  getFirstArg,
+  isAbsoluteLine,
+  replaceSketchLine,
+  tooltipToFnName,
+} from '@src/lang/std/sketch'
 import {
   getSketchSegmentFromPathToNode,
   getSketchSegmentFromSourceRange,
-} from './sketchConstraints'
-import { getAngle, roundOff, normaliseAngle, isArray } from '../../lib/utils'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { findKwArg, findKwArgAny } from 'lang/util'
+} from '@src/lang/std/sketchConstraints'
+import type {
+  CreateStdLibSketchCallExpr,
+  CreatedSketchExprResult,
+  InputArg,
+  InputArgs,
+  SimplifiedArgDetails,
+  TransformInfo,
+} from '@src/lang/std/stdTypes'
+import { findKwArg, findKwArgAny } from '@src/lang/util'
+import type {
+  BinaryPart,
+  CallExpression,
+  CallExpressionKw,
+  Expr,
+  LabeledArg,
+  Literal,
+  LiteralValue,
+  PathToNode,
+  Program,
+  SourceRange,
+  VariableDeclarator,
+  VariableMap,
+} from '@src/lang/wasm'
+import { sketchFromKclValue } from '@src/lang/wasm'
+import type { Selections } from '@src/lib/selections'
+import { cleanErrs, err } from '@src/lib/trap'
+import { getAngle, isArray, normaliseAngle, roundOff } from '@src/lib/utils'
 
 export type LineInputsType =
   | 'xAbsolute'
@@ -322,8 +326,8 @@ const xyLineSetLength =
     const lineVal = forceValueUsedInTransform
       ? forceValueUsedInTransform
       : referenceSeg
-      ? segRef
-      : args[0].expr
+        ? segRef
+        : args[0].expr
     const literalArg = asNum(args[0].expr.value)
     if (err(literalArg)) return literalArg
     return createCallWrapper(xOrY, lineVal, tag, literalArg)
@@ -351,18 +355,18 @@ const basicAngledLineCreateNode =
       varValToUse === 'ang'
         ? inputs[0].expr
         : referenceSeg === 'ang'
-        ? getClosesAngleDirection(
-            argValue,
-            refAng,
-            createSegAngle(referenceSegName)
-          )
-        : args[0].expr
+          ? getClosesAngleDirection(
+              argValue,
+              refAng,
+              createSegAngle(referenceSegName)
+            )
+          : args[0].expr
     const nonForcedLen =
       varValToUse === 'len'
         ? inputs[1].expr
         : referenceSeg === 'len'
-        ? createSegLen(referenceSegName)
-        : args[1].expr
+          ? createSegLen(referenceSegName)
+          : args[1].expr
     const shouldForceAng = valToForce === 'ang' && forceValueUsedInTransform
     const shouldForceLen = valToForce === 'len' && forceValueUsedInTransform
     const literalArg = asNum(
@@ -678,13 +682,13 @@ const setAngleBetweenCreateNode =
       tranformToType === 'none'
         ? 'angledLine'
         : tranformToType === 'xAbs'
-        ? 'angledLineToX'
-        : 'angledLineToY',
+          ? 'angledLineToX'
+          : 'angledLineToY',
       tranformToType === 'none'
         ? [binExp, args[1].expr]
         : tranformToType === 'xAbs'
-        ? [binExp, inputs[0].expr]
-        : [binExp, inputs[1].expr],
+          ? [binExp, inputs[0].expr]
+          : [binExp, inputs[1].expr],
       tag,
       valueUsedInTransform
     )
@@ -2104,17 +2108,17 @@ export function transformAstSketchLines({
               ccw: true, // Default to counter-clockwise for circles
             }
           : seg.type === 'CircleThreePoint' || seg.type === 'ArcThreePoint'
-          ? {
-              type: 'circle-three-point-segment',
-              p1: seg.p1,
-              p2: seg.p2,
-              p3: seg.p3,
-            }
-          : {
-              type: 'straight-segment',
-              to,
-              from,
-            },
+            ? {
+                type: 'circle-three-point-segment',
+                p1: seg.p1,
+                p2: seg.p2,
+                p3: seg.p3,
+              }
+            : {
+                type: 'straight-segment',
+                to,
+                from,
+              },
 
       replaceExistingCallback: (rawArgs) =>
         callBack({

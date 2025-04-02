@@ -1,25 +1,30 @@
-import { IconDefinition, faBugSlash } from '@fortawesome/free-solid-svg-icons'
-import { KclEditorMenu } from 'components/ModelingSidebar/ModelingPanes/KclEditorMenu'
-import { CustomIconName } from 'components/CustomIcon'
-import { KclEditorPane } from 'components/ModelingSidebar/ModelingPanes/KclEditorPane'
-import { ModelingPaneHeader } from 'components/ModelingSidebar/ModelingPane'
-import { MouseEventHandler, ReactNode } from 'react'
-import { MemoryPane, MemoryPaneMenu } from './MemoryPane'
-import { LogsPane } from './LoggingPanes'
-import { DebugPane } from './DebugPane'
+import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
+import { faBugSlash } from '@fortawesome/free-solid-svg-icons'
+import type { MouseEventHandler, ReactNode } from 'react'
+import type { ContextFrom } from 'xstate'
+
+import type { CustomIconName } from '@src/components/CustomIcon'
 import {
   FileTreeInner,
   FileTreeMenu,
   FileTreeRoot,
   useFileTreeOperations,
-} from 'components/FileTree'
-import { useKclContext } from 'lang/KclProvider'
-import { editorManager } from 'lib/singletons'
-import { ContextFrom } from 'xstate'
-import { settingsMachine } from 'machines/settingsMachine'
-import { FeatureTreePane } from './FeatureTreePane'
-import { kclErrorsByFilename } from 'lang/errors'
-import { FeatureTreeMenu } from './FeatureTreeMenu'
+} from '@src/components/FileTree'
+import { ModelingPaneHeader } from '@src/components/ModelingSidebar/ModelingPane'
+import { DebugPane } from '@src/components/ModelingSidebar/ModelingPanes/DebugPane'
+import { FeatureTreeMenu } from '@src/components/ModelingSidebar/ModelingPanes/FeatureTreeMenu'
+import { FeatureTreePane } from '@src/components/ModelingSidebar/ModelingPanes/FeatureTreePane'
+import { KclEditorMenu } from '@src/components/ModelingSidebar/ModelingPanes/KclEditorMenu'
+import { KclEditorPane } from '@src/components/ModelingSidebar/ModelingPanes/KclEditorPane'
+import { LogsPane } from '@src/components/ModelingSidebar/ModelingPanes/LoggingPanes'
+import {
+  MemoryPane,
+  MemoryPaneMenu,
+} from '@src/components/ModelingSidebar/ModelingPanes/MemoryPane'
+import type { useKclContext } from '@src/lang/KclProvider'
+import { kclErrorsByFilename } from '@src/lang/errors'
+import { editorManager } from '@src/lib/singletons'
+import type { settingsMachine } from '@src/machines/settingsMachine'
 
 export type SidebarType =
   | 'code'

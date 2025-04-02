@@ -1,28 +1,29 @@
-import { useRef, useMemo, memo, useCallback, useState } from 'react'
-import { isCursorInSketchCommandRange } from 'lang/util'
-import { editorManager, kclManager } from 'lib/singletons'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { useNetworkContext } from 'hooks/useNetworkContext'
-import { NetworkHealthState } from 'hooks/useNetworkStatus'
-import { ActionButton } from 'components/ActionButton'
-import { useKclContext } from 'lang/KclProvider'
-import { ActionButtonDropdown } from 'components/ActionButtonDropdown'
+import { memo, useCallback, useMemo, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import Tooltip from 'components/Tooltip'
-import { useAppState } from 'AppState'
-import { CustomIcon } from 'components/CustomIcon'
-import {
-  toolbarConfig,
+
+import { useAppState } from '@src/AppState'
+import { ActionButton } from '@src/components/ActionButton'
+import { ActionButtonDropdown } from '@src/components/ActionButtonDropdown'
+import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import { useKclContext } from '@src/lang/KclProvider'
+import { isCursorInFunctionDefinition } from '@src/lang/queryAst'
+import { isCursorInSketchCommandRange } from '@src/lang/util'
+import { isDesktop } from '@src/lib/isDesktop'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { editorManager, kclManager } from '@src/lib/singletons'
+import type {
   ToolbarItem,
   ToolbarItemCallbackProps,
   ToolbarItemResolved,
   ToolbarModeName,
-} from 'lib/toolbar'
-import { isDesktop } from 'lib/isDesktop'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import { isCursorInFunctionDefinition } from 'lang/queryAst'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { isArray } from 'lib/utils'
+} from '@src/lib/toolbar'
+import { toolbarConfig } from '@src/lib/toolbar'
+import { isArray } from '@src/lib/utils'
+import { commandBarActor } from '@src/machines/commandBarMachine'
 
 export function Toolbar({
   className = '',

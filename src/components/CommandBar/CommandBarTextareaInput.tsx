@@ -1,7 +1,12 @@
-import { CommandArgument } from 'lib/commandTypes'
-import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
-import { RefObject, useEffect, useRef } from 'react'
+import type { RefObject } from 'react'
+import { useEffect, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
+
+import type { CommandArgument } from '@src/lib/commandTypes'
+import {
+  commandBarActor,
+  useCommandBarState,
+} from '@src/machines/commandBarMachine'
 
 function CommandBarTextareaInput({
   arg,

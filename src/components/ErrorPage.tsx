@@ -1,12 +1,13 @@
-import { isDesktop } from 'lib/isDesktop'
-import { useRouteError, isRouteErrorResponse } from 'react-router-dom'
-import { ActionButton } from './ActionButton'
 import {
   faBug,
   faHome,
   faRefresh,
   faTrash,
 } from '@fortawesome/free-solid-svg-icons'
+import { isRouteErrorResponse, useRouteError } from 'react-router-dom'
+
+import { ActionButton } from '@src/components/ActionButton'
+import { isDesktop } from '@src/lib/isDesktop'
 
 /** Type narrowing function of unknown error to a string */
 function errorMessage(error: unknown): string {

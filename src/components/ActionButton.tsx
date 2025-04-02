@@ -1,9 +1,12 @@
-import { ActionIcon, ActionIconProps } from './ActionIcon'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import React, { ForwardedRef, forwardRef } from 'react'
-import { PATHS } from 'lib/paths'
-import { Link } from 'react-router-dom'
+import type { ForwardedRef } from 'react'
+import React, { forwardRef } from 'react'
 import type { LinkProps } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+
+import type { ActionIconProps } from '@src/components/ActionIcon'
+import { ActionIcon } from '@src/components/ActionIcon'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { PATHS } from '@src/lib/paths'
 
 interface BaseActionButtonProps {
   iconStart?: ActionIconProps
@@ -47,8 +50,8 @@ export const ActionButton = forwardRef((props: ActionButtonProps, ref) => {
         ? 'px-0' // No padding if both icons are present
         : 'pr-2' // Padding on the right if only the start icon is present
       : props.iconEnd
-      ? 'pl-2' // Padding on the left if only the end icon is present
-      : 'px-2' // Padding on both sides if no icons are present
+        ? 'pl-2' // Padding on the left if only the end icon is present
+        : 'px-2' // Padding on both sides if no icons are present
   } ${props.className ? props.className : ''}`
 
   switch (props.Element) {

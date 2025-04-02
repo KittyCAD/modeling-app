@@ -1,5 +1,6 @@
 import { RadioGroup } from '@headlessui/react'
-import { SettingsTabButton } from './SettingsTabButton'
+
+import { SettingsTabButton } from '@src/components/Settings/SettingsTabButton'
 
 interface SettingsTabButtonProps {
   value: string

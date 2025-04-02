@@ -1,24 +1,29 @@
-import { test, expect } from './zoo-test'
+import {
+  PROJECT_SETTINGS_FILE_NAME,
+  SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
+import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
+import type { DeepPartial } from '@src/lib/types'
 import * as fsp from 'fs/promises'
 import { join } from 'path'
+
+import type { Settings } from '@rust/kcl-lib/bindings/Settings'
+
 import {
-  getUtils,
-  executorInputPath,
-  createProject,
-  tomlToSettings,
-  TEST_COLORS,
-  orRunWhenFullSuiteEnabled,
-} from './test-utils'
-import { SettingsLevel } from 'lib/settings/settingsTypes'
-import { SETTINGS_FILE_NAME, PROJECT_SETTINGS_FILE_NAME } from 'lib/constants'
-import {
-  TEST_SETTINGS_KEY,
-  TEST_SETTINGS_CORRUPTED,
   TEST_SETTINGS,
+  TEST_SETTINGS_CORRUPTED,
   TEST_SETTINGS_DEFAULT_THEME,
-} from './storageStates'
-import { DeepPartial } from 'lib/types'
-import { Settings } from '@rust/kcl-lib/bindings/Settings'
+  TEST_SETTINGS_KEY,
+} from '@e2e/playwright/storageStates'
+import {
+  TEST_COLORS,
+  createProject,
+  executorInputPath,
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+  tomlToSettings,
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Testing settings', () => {
   test('Stored settings are validated and fall back to defaults', async ({
@@ -45,12 +50,12 @@ test.describe('Testing settings', () => {
       )
     )
 
-    expect(storedSettings.settings?.app?.theme).toBe('dark')
+    expect(storedSettings.settings?.app?.appearance?.theme).toBe('dark')
 
     // Check that the invalid settings were changed to good defaults
     expect(storedSettings.settings?.modeling?.base_unit).toBe('in')
     expect(storedSettings.settings?.modeling?.mouse_controls).toBe('zoo')
-    expect(storedSettings.settings?.app?.project_directory).toBe('')
+    expect(storedSettings.settings?.project?.directory).toBe('')
     expect(storedSettings.settings?.project?.default_project_name).toBe(
       'project-$nnn'
     )
@@ -381,7 +386,9 @@ test.describe('Testing settings', () => {
       }
       await tronApp.cleanProjectDir({
         app: {
-          theme_color: '259',
+          appearance: {
+            color: 259,
+          },
         },
       })
 
@@ -413,9 +420,12 @@ test.describe('Testing settings', () => {
 
       await tronApp.cleanProjectDir({
         app: {
-          // Doesn't matter what you set it to. It will
-          // default to 264.5
-          theme_color: '0',
+          appearance: {
+            // Doesn't matter what you set it to. It will
+            // default to 264.5
+
+            color: 0,
+          },
         },
       })
 

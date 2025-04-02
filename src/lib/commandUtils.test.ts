@@ -1,4 +1,5 @@
-import { CommandWithDisabledState, sortCommands } from './commandUtils'
+import type { CommandWithDisabledState } from '@src/lib/commandUtils'
+import { sortCommands } from '@src/lib/commandUtils'
 
 function commandWithDisabled(
   name: string,

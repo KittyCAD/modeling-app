@@ -1,4 +1,4 @@
-import { isDesktop } from 'lib/isDesktop'
+import { isDesktop } from '@src/lib/isDesktop'
 
 function isWeb(): boolean {
   // Identify browser environment when following property is not present

@@ -1,16 +1,17 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
     "noErrorTruncation": true,
     "paths": {
       "@kittycad/codemirror-lsp-client": [
-        "../packages/codemirror-lsp-client/src/index.ts"
+        "./packages/codemirror-lsp-client/src/index.ts"
       ],
       "@kittycad/codemirror-lang-kcl": [
-        "../packages/codemirror-lang-kcl/src/index.ts"
+        "./packages/codemirror-lang-kcl/src/index.ts"
       ],
-      "@rust/*": ["../rust/*"],
-      "/*": ["src/*"]
+      "@rust/*": ["./rust/*"],
+      "@e2e/*": ["./e2e/*"],
+      "@src/*": ["./src/*"],
+      "@root/*": ["./*"]
     },
     "types": [
       "vite/client",

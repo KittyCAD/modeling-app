@@ -1,7 +1,9 @@
-import { Extension, Prec } from '@codemirror/state'
-import { EditorView, keymap, KeyBinding, ViewPlugin } from '@codemirror/view'
+import type { Extension } from '@codemirror/state'
+import { Prec } from '@codemirror/state'
+import type { EditorView, KeyBinding, ViewPlugin } from '@codemirror/view'
+import { keymap } from '@codemirror/view'
 
-import { LanguageServerPlugin } from './lsp'
+import type { LanguageServerPlugin } from './lsp'
 
 export default function lspFormatExt(
   plugin: ViewPlugin<LanguageServerPlugin>

@@ -1,6 +1,6 @@
-import { CustomIcon } from 'components/CustomIcon'
-import Tooltip from 'components/Tooltip'
-import { SettingsLevel } from 'lib/settings/settingsTypes'
+import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
+import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 
 interface SettingsSectionProps extends React.HTMLProps<HTMLDivElement> {
   title: string

@@ -1,8 +1,13 @@
-import { ASK_TO_OPEN_QUERY_PARAM, CREATE_FILE_URL_PARAM } from './constants'
-import { stringToBase64 } from './base64'
-import { VITE_KC_API_BASE_URL, VITE_KC_SITE_APP_URL } from 'env'
+import { VITE_KC_API_BASE_URL, VITE_KC_SITE_APP_URL } from '@src/env'
 import toast from 'react-hot-toast'
-import { err } from './trap'
+
+import { stringToBase64 } from '@src/lib/base64'
+import {
+  ASK_TO_OPEN_QUERY_PARAM,
+  CREATE_FILE_URL_PARAM,
+} from '@src/lib/constants'
+import { err } from '@src/lib/trap'
+
 export interface FileLinkParams {
   code: string
   name: string

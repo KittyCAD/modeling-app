@@ -1,5 +1,6 @@
-import { VITE_KC_SITE_APP_URL } from 'env'
-import { createCreateFileUrl } from './links'
+import { VITE_KC_SITE_APP_URL } from '@src/env'
+
+import { createCreateFileUrl } from '@src/lib/links'
 
 describe(`link creation tests`, () => {
   test(`createCreateFileUrl happy path`, async () => {

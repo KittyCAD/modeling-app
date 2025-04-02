@@ -1,8 +1,9 @@
-import { MachineManager } from 'components/MachineManagerProvider'
 import toast from 'react-hot-toast'
-import { components } from './machine-api'
-import ModelingAppFile from './modelingAppFile'
-import { MAKE_TOAST_MESSAGES } from './constants'
+
+import type { MachineManager } from '@src/components/MachineManagerProvider'
+import { MAKE_TOAST_MESSAGES } from '@src/lib/constants'
+import type { components } from '@src/lib/machine-api'
+import type ModelingAppFile from '@src/lib/modelingAppFile'
 
 // Make files locally from an export call.
 export async function exportMake({

@@ -1,21 +1,20 @@
+import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
+import type { ConstraintType } from '@src/lang/std/sketchcombos'
 import {
-  assertParse,
-  Sketch,
-  recast,
-  initPromise,
-  sketchFromKclValue,
-  SourceRange,
-  topLevelRange,
-} from '../wasm'
-import {
-  ConstraintType,
   getTransformInfos,
   transformAstSketchLines,
-} from './sketchcombos'
-import { getSketchSegmentFromSourceRange } from './sketchConstraints'
-import { enginelessExecutor } from '../../lib/testHelpers'
-import { err } from 'lib/trap'
-import { codeRefFromRange } from './artifactGraph'
+} from '@src/lang/std/sketchcombos'
+import { topLevelRange } from '@src/lang/util'
+import type { Sketch, SourceRange } from '@src/lang/wasm'
+import {
+  assertParse,
+  initPromise,
+  recast,
+  sketchFromKclValue,
+} from '@src/lang/wasm'
+import { enginelessExecutor } from '@src/lib/testHelpers'
+import { err } from '@src/lib/trap'
 
 beforeAll(async () => {
   await initPromise

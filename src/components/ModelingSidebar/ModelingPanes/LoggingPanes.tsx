@@ -1,6 +1,7 @@
 import ReactJson from 'react-json-view'
-import { useKclContext } from 'lang/KclProvider'
-import { useResolvedTheme } from 'hooks/useResolvedTheme'
+
+import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
+import { useKclContext } from '@src/lang/KclProvider'
 
 const ReactJsonTypeHack = ReactJson as any
 

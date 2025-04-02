@@ -1,14 +1,14 @@
-import { test, expect } from './zoo-test'
+import { uuidv4 } from '@src/lib/utils'
 import fsp from 'fs/promises'
-import { uuidv4 } from 'lib/utils'
+import { join } from 'path'
+
 import {
+  TEST_COLORS,
   executorInputPath,
   getUtils,
   orRunWhenFullSuiteEnabled,
-  TEST_COLORS,
-} from './test-utils'
-
-import { join } from 'path'
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
   test('can comment out code with ctrl+/', async ({ page, homePage }) => {

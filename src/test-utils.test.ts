@@ -1,4 +1,4 @@
-import { normaliseKclNumbers } from '../e2e/playwright/test-utils'
+import { normaliseKclNumbers } from '@e2e/playwright/test-utils'
 
 test('normaliseKclNumbers', () => {
   expect(

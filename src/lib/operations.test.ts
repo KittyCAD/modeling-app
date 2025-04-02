@@ -1,6 +1,7 @@
-import { defaultSourceRange } from 'lang/wasm'
-import { filterOperations } from './operations'
-import { Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+
+import { defaultSourceRange } from '@src/lang/wasm'
+import { filterOperations } from '@src/lib/operations'
 
 function stdlib(name: string): Operation {
   return {

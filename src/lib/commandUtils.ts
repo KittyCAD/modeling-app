@@ -2,8 +2,7 @@
 // That object also contains some metadata about what to do with the KCL expression,
 // such as whether we need to create a new variable for it.
 // This function extracts the value field from those arg payloads and returns
-
-import { Command } from './commandTypes'
+import type { Command } from '@src/lib/commandTypes'
 
 // The arg object with all its field as natural values that the command to be executed will expect.
 export function getCommandArgumentKclValuesOnly(args: Record<string, unknown>) {

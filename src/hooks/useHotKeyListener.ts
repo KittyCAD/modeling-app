@@ -1,5 +1,6 @@
-import { editorManager } from 'lib/singletons'
 import { useEffect } from 'react'
+
+import { editorManager } from '@src/lib/singletons'
 
 // Kurt's note: codeMirror styling overrides were needed to make this work
 // namely, the cursor needs to still be shown when the editor is not focused

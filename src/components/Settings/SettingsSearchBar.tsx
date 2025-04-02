@@ -1,13 +1,14 @@
 import { Combobox } from '@headlessui/react'
-import { CustomIcon } from 'components/CustomIcon'
 import decamelize from 'decamelize'
 import Fuse from 'fuse.js'
-import { interactionMap } from 'lib/settings/initialKeybindings'
-import { SettingsLevel } from 'lib/settings/settingsTypes'
-import { useSettings } from 'machines/appMachine'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useNavigate } from 'react-router-dom'
+
+import { CustomIcon } from '@src/components/CustomIcon'
+import { interactionMap } from '@src/lib/settings/initialKeybindings'
+import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
+import { useSettings } from '@src/machines/appMachine'
 
 type ExtendedSettingsLevel = SettingsLevel | 'keybindings'
 

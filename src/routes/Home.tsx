@@ -1,32 +1,35 @@
-import { FormEvent, useEffect, useRef, useState } from 'react'
-import { ActionButton } from 'components/ActionButton'
-import { AppHeader } from 'components/AppHeader'
-import ProjectCard from 'components/ProjectCard/ProjectCard'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Link } from 'react-router-dom'
+import type { FormEvent } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
-import Loading from 'components/Loading'
-import { PATHS } from 'lib/paths'
+import { useHotkeys } from 'react-hotkeys-hook'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+
+import { ActionButton } from '@src/components/ActionButton'
+import { AppHeader } from '@src/components/AppHeader'
+import Loading from '@src/components/Loading'
+import { LowerRightControls } from '@src/components/LowerRightControls'
+import ProjectCard from '@src/components/ProjectCard/ProjectCard'
+import {
+  ProjectSearchBar,
+  useProjectSearch,
+} from '@src/components/ProjectSearchBar'
+import { useCreateFileLinkQuery } from '@src/hooks/useCreateFileLinkQueryWatcher'
+import { useMenuListener } from '@src/hooks/useMenu'
+import { useProjectsContext } from '@src/hooks/useProjectsContext'
+import { isDesktop } from '@src/lib/isDesktop'
+import { PATHS } from '@src/lib/paths'
+import { markOnce } from '@src/lib/performance'
+import type { Project } from '@src/lib/project'
+import { kclManager } from '@src/lib/singletons'
 import {
   getNextSearchParams,
   getSortFunction,
   getSortIcon,
-} from '../lib/sorting'
-import { useHotkeys } from 'react-hotkeys-hook'
-import { isDesktop } from 'lib/isDesktop'
-import { kclManager } from 'lib/singletons'
-import { LowerRightControls } from 'components/LowerRightControls'
-import { ProjectSearchBar, useProjectSearch } from 'components/ProjectSearchBar'
-import { Project } from 'lib/project'
-import { markOnce } from 'lib/performance'
-import { useProjectsContext } from 'hooks/useProjectsContext'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { useCreateFileLinkQuery } from 'hooks/useCreateFileLinkQueryWatcher'
-import { useSettings } from 'machines/appMachine'
-import { reportRejection } from 'lib/trap'
-import { authActor } from 'machines/appMachine'
-import type { WebContentSendPayload } from '../menu/channels'
-import { useMenuListener } from 'hooks/useMenu'
+} from '@src/lib/sorting'
+import { reportRejection } from '@src/lib/trap'
+import { authActor, useSettings } from '@src/machines/appMachine'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import type { WebContentSendPayload } from '@src/menu/channels'
 
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.

@@ -1,8 +1,9 @@
-import { useModelingContext } from 'hooks/useModelingContext'
-import { kclManager } from 'lib/singletons'
-import { useKclContext } from 'lang/KclProvider'
-import { findAllPreviousVariables } from 'lang/queryAst'
 import { useEffect, useState } from 'react'
+
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useKclContext } from '@src/lang/KclProvider'
+import { findAllPreviousVariables } from '@src/lang/queryAst'
+import { kclManager } from '@src/lib/singletons'
 
 export function usePreviousVariables() {
   const { variables, code } = useKclContext()

@@ -1,8 +1,9 @@
 import { promises as fs } from 'fs'
-import path from 'path'
 import os from 'os'
+import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
-import getCurrentProjectFile from './getCurrentProjectFile'
+
+import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 
 describe('getCurrentProjectFile', () => {
   test('with explicit open file with space (URL encoded)', async () => {

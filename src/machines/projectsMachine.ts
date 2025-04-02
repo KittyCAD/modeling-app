@@ -1,7 +1,8 @@
 import { assign, fromPromise, setup } from 'xstate'
-import { ProjectsCommandSchema } from 'lib/commandBarConfigs/projectsCommandConfig'
-import { Project } from 'lib/project'
-import { isArray } from 'lib/utils'
+
+import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
+import type { Project } from '@src/lib/project'
+import { isArray } from '@src/lib/utils'
 
 export const projectsMachine = setup({
   types: {

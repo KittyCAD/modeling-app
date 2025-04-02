@@ -1,20 +1,20 @@
 /* eslint suggest-no-throw/suggest-no-throw: 0 */
 import * as vscode from 'vscode'
 import type * as lc from 'vscode-languageclient/node'
+import { TransportKind } from 'vscode-languageclient/node'
 
-import { Config, prepareVSCodeConfig } from './config'
+import { bootstrap } from './bootstrap'
 import { createClient } from './client'
-import {
-  isKclDocument,
-  isKclEditor,
-  LazyOutputChannel,
-  log,
-  type KclEditor,
-} from './util'
+import { Config, prepareVSCodeConfig } from './config'
 import type { ServerStatusParams } from './lsp_ext'
 import { PersistentState } from './persistent_state'
-import { bootstrap } from './bootstrap'
-import { TransportKind } from 'vscode-languageclient/node'
+import {
+  type KclEditor,
+  LazyOutputChannel,
+  isKclDocument,
+  isKclEditor,
+  log,
+} from './util'
 
 // We only support local folders, not eg. Live Share (`vlsl:` scheme), so don't activate if
 // only those are in use. We use "Empty" to represent these scenarios

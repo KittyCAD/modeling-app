@@ -9,17 +9,18 @@ import {
   prevSnippetField,
   startCompletion,
 } from '@codemirror/autocomplete'
-import { Prec, Extension } from '@codemirror/state'
-import { EditorView, keymap, KeyBinding, ViewPlugin } from '@codemirror/view'
-
+import { syntaxTree } from '@codemirror/language'
+import type { Extension } from '@codemirror/state'
+import { Prec } from '@codemirror/state'
+import type { EditorView, KeyBinding, ViewPlugin } from '@codemirror/view'
+import { keymap } from '@codemirror/view'
 import {
   CompletionItemKind,
   CompletionTriggerKind,
 } from 'vscode-languageserver-protocol'
 
-import { LanguageServerPlugin } from './lsp'
+import type { LanguageServerPlugin } from './lsp'
 import { offsetToPos } from './util'
-import { syntaxTree } from '@codemirror/language'
 
 export const CompletionItemKindMap = Object.fromEntries(
   Object.entries(CompletionItemKind).map(([key, value]) => [value, key])

@@ -1,0 +1,127 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "plugins": [
+    "react-perf",
+    "css-modules",
+    "jest",
+    "jsx-a11y",
+    "react",
+    "react-hooks",
+    "suggest-no-throw",
+    "testing-library",
+    "@typescript-eslint"
+  ],
+  "extends": [
+    "plugin:css-modules/recommended",
+    "plugin:jsx-a11y/recommended",
+    "plugin:react-hooks/recommended"
+  ],
+  "rules": {
+    "no-array-constructor": "off", // This is wrong; use the @typescript-eslint one instead.
+    "@typescript-eslint/no-array-constructor": "error",
+    "@typescript-eslint/no-array-delete": "error",
+    "@typescript-eslint/no-duplicate-enum-values": "error",
+    "@typescript-eslint/no-duplicate-type-constituents": "error",
+    "@typescript-eslint/no-empty-object-type": "error",
+    "@typescript-eslint/no-extra-non-null-assertion": "error",
+    "@typescript-eslint/no-floating-promises": "error",
+    "@typescript-eslint/no-for-in-array": "error",
+    "no-implied-eval": "off", // This is wrong; use the @typescript-eslint one instead.
+    "@typescript-eslint/no-implied-eval": "error",
+    "@typescript-eslint/no-misused-new": "error",
+    "@typescript-eslint/no-misused-promises": "error",
+    "@typescript-eslint/no-namespace": "error",
+    "@typescript-eslint/no-non-null-asserted-optional-chain": "error",
+    "@typescript-eslint/no-redundant-type-constituents": "error",
+    "@typescript-eslint/no-this-alias": "warn",
+    "@typescript-eslint/no-unnecessary-type-assertion": "error",
+    "@typescript-eslint/no-unnecessary-type-constraint": "error",
+    "no-unused-vars": "off", // This is wrong; use the @typescript-eslint one instead.
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "varsIgnorePattern": "^_",
+        "argsIgnorePattern": "^_",
+        "ignoreRestSiblings": true,
+        "vars": "all",
+        "args": "none"
+      }
+    ],
+    "@typescript-eslint/no-unsafe-unary-minus": "error",
+    "@typescript-eslint/no-wrapper-object-types": "error",
+    "no-throw-literal": "off", // Use @typescript-eslint/only-throw-error instead.
+    "@typescript-eslint/only-throw-error": "error",
+    "@typescript-eslint/prefer-as-const": "warn",
+    "@typescript-eslint/prefer-namespace-keyword": "error",
+    "@typescript-eslint/consistent-type-imports": "error",
+    "@typescript-eslint/restrict-plus-operands": "error",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "jsx-a11y/no-autofocus": "off",
+    "jsx-a11y/no-noninteractive-element-interactions": "off",
+    "no-restricted-globals": [
+      "error",
+      {
+        "name": "isNaN",
+        "message": "Use Number.isNaN() instead."
+      }
+    ],
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "CallExpression[callee.object.name='Array'][callee.property.name='isArray']",
+        "message": "Use isArray() in lib/utils.ts instead of Array.isArray()."
+      },
+      {
+        "selector": "CallExpression[callee.object.name='TOML'][callee.property.name='stringify']",
+        "message": "Do not use TOML.stringify directly. Use the wrappers in test-utils instead like settingsToToml."
+      },
+      {
+        "selector": "CallExpression[callee.object.name='TOML'][callee.property.name='parse']",
+        "message": "Do not use TOML.parse directly. Use the wrappers in test-utils instead like tomlToSettings."
+      }
+    ],
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          // Restrict all relative imports except for .css files.
+          {
+            "group": ["./*", "../*", "!./*.css", "!../*.css"],
+            "message": "Use absolute imports instead."
+          }
+        ]
+      }
+    ],
+    "semi": ["error", "never"],
+    "react-hooks/exhaustive-deps": "off",
+    "suggest-no-throw/suggest-no-throw": "error"
+  },
+  "overrides": [
+    {
+      "files": ["e2e/**/*.ts"], // Update the pattern based on your file structure
+      "extends": ["plugin:testing-library/react"],
+      "rules": {
+        "suggest-no-throw/suggest-no-throw": "off",
+        "testing-library/prefer-screen-queries": "off",
+        "jest/valid-expect": "off"
+      }
+    },
+    {
+      "files": ["src/**/*.test.ts"],
+      "extends": ["plugin:testing-library/react"],
+      "rules": {
+        "suggest-no-throw/suggest-no-throw": "off"
+      }
+    },
+    {
+      "files": ["packages/**/*.ts", "rust/**/*.ts"],
+      "extends": [],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ]
+}

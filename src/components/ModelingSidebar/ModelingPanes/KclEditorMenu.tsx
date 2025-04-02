@@ -1,15 +1,17 @@
-import { Menu } from '@headlessui/react'
-import { PropsWithChildren } from 'react'
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons'
-import { ActionIcon } from 'components/ActionIcon'
-import styles from './KclEditorMenu.module.css'
-import { useConvertToVariable } from 'hooks/useToolbarGuards'
-import { editorShortcutMeta } from './KclEditorPane'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { kclManager } from 'lib/singletons'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import { reportRejection } from 'lib/trap'
-import { commandBarActor } from 'machines/commandBarMachine'
+import { Menu } from '@headlessui/react'
+import type { PropsWithChildren } from 'react'
+
+import { ActionIcon } from '@src/components/ActionIcon'
+import { editorShortcutMeta } from '@src/components/ModelingSidebar/ModelingPanes/KclEditorPane'
+import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { kclManager } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+
+import styles from './KclEditorMenu.module.css'
 
 export const KclEditorMenu = ({ children }: PropsWithChildren) => {
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =

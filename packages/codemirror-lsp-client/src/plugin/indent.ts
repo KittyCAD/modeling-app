@@ -1,5 +1,5 @@
 import { indentService } from '@codemirror/language'
-import { Extension } from '@codemirror/state'
+import type { Extension } from '@codemirror/state'
 
 export default function lspIndentExt(): Extension {
   // Match the indentation of the previous line (if present).

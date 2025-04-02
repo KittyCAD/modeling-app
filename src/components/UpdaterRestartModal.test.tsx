@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { vi } from 'vitest'
-import { UpdaterRestartModal } from './UpdaterRestartModal'
+
+import { UpdaterRestartModal } from '@src/components/UpdaterRestartModal'
 
 describe('UpdaterRestartModal tests', () => {
   test('Renders the modal', () => {
