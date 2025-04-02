@@ -8,7 +8,10 @@ import {
 import { uuidv4, isOverlap, deferExecution } from 'lib/utils'
 import { EngineCommandManager } from './std/engineConnection'
 import { err, reportRejection } from 'lib/trap'
-import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
+import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
+} from 'lib/constants'
 import { buildArtifactIndex } from 'lib/artifactIndex'
 import { ArtifactIndex } from 'lib/artifactIndex'
 
@@ -43,7 +46,7 @@ import {
   ModelingCmdReq_type,
 } from '@kittycad/lib/dist/types/src/models'
 import { Operation } from '@rust/kcl-lib/bindings/Operation'
-import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
+import { BaseUnit, KclSettingsAnnotation } from 'lib/settings/settingsTypes'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -106,6 +109,7 @@ export class KclManager {
   private _diagnosticsCallback: (errors: Diagnostic[]) => void = () => {}
   private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
   private _executeCallback: () => void = () => {}
+  sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
 
   get ast() {
     return this._ast
@@ -776,6 +780,9 @@ export class KclManager {
 
   set fileSettings(settings: KclSettingsAnnotation) {
     this._fileSettings = settings
+    this.sceneInfraBaseUnitMultiplierSetter(
+      settings?.defaultLengthUnit || DEFAULT_DEFAULT_LENGTH_UNIT
+    )
   }
 }
 

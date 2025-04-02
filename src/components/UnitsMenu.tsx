@@ -23,6 +23,7 @@ export function UnitsMenu() {
       {({ close }) => (
         <>
           <Popover.Button
+            data-testid="units-menu"
             className={`flex items-center gap-2 px-3 py-1 
         text-xs text-primary bg-chalkboard-10/70 dark:bg-chalkboard-100/80 backdrop-blur-sm 
         border !border-primary/50 rounded-full`}

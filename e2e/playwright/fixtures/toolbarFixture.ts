@@ -235,6 +235,14 @@ export class ToolbarFixture {
   async checkIfFeatureTreePaneIsOpen() {
     return this.checkIfPaneIsOpen(this.featureTreeId)
   }
+  async selectUnit(
+    unit: 'Inches' | 'Feet' | 'Millimeters' | 'Meters' | 'Yards' | 'Centimeters'
+  ) {
+    await this.page.getByTestId('units-menu').click()
+    const optionLocator = this.page.getByRole('button', { name: unit })
+    await expect(optionLocator).toBeVisible()
+    await optionLocator.click()
+  }
 
   /**
    * Get a specific operation button from the Feature Tree pane.
