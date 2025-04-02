@@ -46,6 +46,7 @@ import { createLiteral, createLocalName } from '@src/lang/create'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   addHelix,
+  addImport,
   addOffsetPlane,
   addShell,
   addSweep,
@@ -338,6 +339,7 @@ export type ModelingMachineEvent =
       data: ModelingCommandSchema['event.parameter.edit']
     }
   | { type: 'Export'; data: ModelingCommandSchema['Export'] }
+  | { type: 'Import'; data: ModelingCommandSchema['Import'] }
   | {
       type: 'Boolean Subtract'
       data: ModelingCommandSchema['Boolean Subtract']
@@ -2686,6 +2688,33 @@ export const modelingMachine = setup({
         )
       }
     ),
+    importAstMod: fromPromise(
+      async ({ input }: { input?: ModelingCommandSchema['Import'] }) => {
+        if (!input) {
+          return new Error('No input provided')
+        }
+
+        const ast = kclManager.ast
+        const { path, localName } = input
+        const { modifiedAst, pathToNode } = addImport({
+          node: ast,
+          path,
+          localName,
+        })
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
     exportFromEngine: fromPromise(
       async ({}: { input?: ModelingCommandSchema['Export'] }) => {
         return undefined as Error | undefined
@@ -2832,6 +2861,11 @@ export const modelingMachine = setup({
         },
         'event.parameter.edit': {
           target: '#Modeling.parameter.editing',
+        },
+
+        Import: {
+          target: 'Importing',
+          reenter: true,
         },
 
         Export: {
@@ -4238,6 +4272,19 @@ export const modelingMachine = setup({
         id: 'appearanceAstMod',
         input: ({ event }) => {
           if (event.type !== 'Appearance') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    Importing: {
+      invoke: {
+        src: 'importAstMod',
+        id: 'importAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Import') return undefined
           return event.data
         },
         onDone: ['idle'],

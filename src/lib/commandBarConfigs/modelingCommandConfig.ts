@@ -48,6 +48,10 @@ export type HelixModes = 'Axis' | 'Edge' | 'Cylinder'
 
 export type ModelingCommandSchema = {
   'Enter sketch': { forceNewSketch?: boolean }
+  Import: {
+    path: string
+    localName: string
+  }
   Export: {
     type: OutputTypeKey
     storage?: StorageUnion
@@ -224,6 +228,21 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   ],
+  Import: {
+    description: 'Import a part from the current project directory',
+    icon: 'floppyDiskArrowIn',
+    needsReview: true,
+    args: {
+      path: {
+        inputType: 'string',
+        required: true,
+      },
+      localName: {
+        inputType: 'string',
+        required: true,
+      },
+    },
+  },
   Export: {
     description: 'Export the current model.',
     icon: 'floppyDiskArrow',

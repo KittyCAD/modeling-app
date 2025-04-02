@@ -9,7 +9,9 @@ import {
   createCallExpression,
   createCallExpressionStdLib,
   createCallExpressionStdLibKw,
+  createExpressionStatement,
   createIdentifier,
+  createImportStatement,
   createLabeledArg,
   createLiteral,
   createLocalName,
@@ -772,6 +774,47 @@ export function addOffsetPlane({
     ['init', 'VariableDeclarator'],
     ['unlabeled', UNLABELED_ARG],
   ]
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
+/**
+ * Add an import call to load a part
+ */
+export function addImport({
+  node,
+  path,
+  localName,
+}: {
+  node: Node<Program>
+  path: string
+  localName: string
+}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  const modifiedAst = structuredClone(node)
+  const importStatement = createImportStatement(
+    { type: 'None', alias: createIdentifier(localName) },
+    { type: 'Kcl', filename: path },
+    'default'
+  )
+  const expressionStatement = createExpressionStatement(
+    createLocalName(localName)
+  )
+  const insertAt = modifiedAst.body.length ? modifiedAst.body.length : 0
+  modifiedAst.body.push(importStatement)
+  modifiedAst.body.push(expressionStatement)
+  const argIndex = 0
+  const pathToNode: PathToNode = [
+    ['body', ''],
+    [insertAt, 'index'],
+    ['declaration', 'VariableDeclaration'],
+    ['init', 'VariableDeclarator'],
+    ['arguments', 'CallExpressionKw'],
+    [argIndex, ARG_INDEX_FIELD],
+    ['arg', LABELED_ARG_FIELD],
+  ]
+
   return {
     modifiedAst,
     pathToNode,

@@ -61,6 +61,18 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
 
   const sidebarActions: SidebarAction[] = [
     {
+      id: 'import',
+      title: 'Import part',
+      sidebarName: 'Import part',
+      icon: 'floppyDiskArrowIn',
+      keybinding: 'Ctrl + Shift + I',
+      action: () =>
+        commandBarActor.send({
+          type: 'Find and select command',
+          data: { name: 'Import', groupId: 'modeling' },
+        }),
+    },
+    {
       id: 'export',
       title: 'Export part',
       sidebarName: 'Export part',

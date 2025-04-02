@@ -493,6 +493,21 @@ const CustomIconMap = {
       />
     </svg>
   ),
+  floppyDiskArrowIn: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="floppy disk arrow"
+    >
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M4 4H4.5L7 4L13 4L13.2071 4L13.3536 4.14645L15.8536 6.64645L16 6.79289V7V11.3773C15.6992 11.1362 15.3628 10.9376 15 10.7908V7.20711L13.5 5.70711V7V7.5L13 7.5L7 7.5L6.5 7.5V7V5L5 5V15H6.5V10V9.5H7H13H13.5V10V10.5C13.1547 10.5 12.8196 10.5438 12.5 10.626V10.5H7.5V15H9.53095C9.57451 15.3493 9.66311 15.6847 9.79076 16H7H4.5H4V15.5V4.5V4ZM7.5 5V6.5L12.5 6.5V5L7.5 5ZM10.6096 14.8123L12.6096 17.3123L13.3904 16.6877L12.0403 15H16V14H12.0403L13.3904 12.3123L12.6096 11.6877L10.6096 14.1877L10.3597 14.5L10.6096 14.8123Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   folder: (
     <svg
       viewBox="0 0 20 20"
