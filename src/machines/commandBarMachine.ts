@@ -1,15 +1,17 @@
 import { useSelector } from '@xstate/react'
-import { MachineManager } from 'components/MachineManagerProvider'
-import { authCommands } from 'lib/commandBarConfigs/authCommandConfig'
-import {
+import toast from 'react-hot-toast'
+import type { SnapshotFrom } from 'xstate'
+import { assign, createActor, fromPromise, setup } from 'xstate'
+
+import type { MachineManager } from '@src/components/MachineManagerProvider'
+import { authCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
+import type {
   Command,
   CommandArgument,
   CommandArgumentWithName,
   KclCommandValue,
-} from 'lib/commandTypes'
-import { getCommandArgumentKclValuesOnly } from 'lib/commandUtils'
-import toast from 'react-hot-toast'
-import { SnapshotFrom, assign, createActor, fromPromise, setup } from 'xstate'
+} from '@src/lib/commandTypes'
+import { getCommandArgumentKclValuesOnly } from '@src/lib/commandUtils'
 
 export type CommandBarContext = {
   commands: Command[]

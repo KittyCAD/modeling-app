@@ -1,22 +1,24 @@
-import { Models } from '@kittycad/lib'
+import type { Models } from '@kittycad/lib'
+import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from '@src/env'
 import { BSON } from 'bson'
-import { MachineManager } from 'components/MachineManagerProvider'
-import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from 'env'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { KclManager } from 'lang/KclSingleton'
-import { EngineCommand, ResponseMap } from 'lang/std/artifactGraph'
-import { SourceRange, defaultSourceRange } from 'lang/wasm'
-import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
-import { markOnce } from 'lib/performance'
-import { SettingsViaQueryString } from 'lib/settings/settingsTypes'
+
+import type { MachineManager } from '@src/components/MachineManagerProvider'
+import type { useModelingContext } from '@src/hooks/useModelingContext'
+import type { KclManager } from '@src/lang/KclSingleton'
+import type { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
+import type { SourceRange } from '@src/lang/wasm'
+import { defaultSourceRange } from '@src/lang/wasm'
+import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
+import { markOnce } from '@src/lib/performance'
+import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import {
   Themes,
   darkModeMatcher,
   getOppositeTheme,
   getThemeColorForEngine,
-} from 'lib/theme'
-import { reportRejection } from 'lib/trap'
-import { binaryToUuid, uuidv4 } from 'lib/utils'
+} from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import { binaryToUuid, uuidv4 } from '@src/lib/utils'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 5_000

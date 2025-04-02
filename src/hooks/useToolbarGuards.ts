@@ -1,17 +1,18 @@
+import { useEffect, useState } from 'react'
+
 import {
   SetVarNameModal,
   createSetVarNameModal,
-} from 'components/SetVarNameModal'
-import { useKclContext } from 'lang/KclProvider'
-import { moveValueIntoNewVariable } from 'lang/modifyAst'
-import { isNodeSafeToReplace } from 'lang/queryAst'
-import { PathToNode, SourceRange, recast } from 'lang/wasm'
-import { codeManager, editorManager, kclManager } from 'lib/singletons'
-import { err, reportRejection, trap } from 'lib/trap'
-import { toSync } from 'lib/utils'
-import { useEffect, useState } from 'react'
-
-import { useModelingContext } from './useModelingContext'
+} from '@src/components/SetVarNameModal'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useKclContext } from '@src/lang/KclProvider'
+import { moveValueIntoNewVariable } from '@src/lang/modifyAst'
+import { isNodeSafeToReplace } from '@src/lang/queryAst'
+import type { PathToNode, SourceRange } from '@src/lang/wasm'
+import { recast } from '@src/lang/wasm'
+import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
+import { err, reportRejection, trap } from '@src/lib/trap'
+import { toSync } from '@src/lib/utils'
 
 export const getVarNameModal = createSetVarNameModal(SetVarNameModal)
 

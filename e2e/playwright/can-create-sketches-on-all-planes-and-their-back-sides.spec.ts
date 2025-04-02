@@ -1,11 +1,11 @@
-import { Page } from '@playwright/test'
-import { EngineCommand } from 'lang/std/artifactGraph'
-import { uuidv4 } from 'lib/utils'
+import type { Page } from '@playwright/test'
+import type { EngineCommand } from '@src/lang/std/artifactGraph'
+import { uuidv4 } from '@src/lib/utils'
 
-import { HomePageFixture } from './fixtures/homePageFixture'
-import { SceneFixture } from './fixtures/sceneFixture'
-import { getUtils } from './test-utils'
-import { expect, test } from './zoo-test'
+import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
+import { getUtils } from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe(
   'Can create sketches on all planes and their back sides',

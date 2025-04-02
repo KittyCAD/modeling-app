@@ -1,6 +1,7 @@
-import { defaultArtifactGraph, topLevelRange } from 'lang/wasm'
-
-import { KCLError, kclErrorsToDiagnostics } from './errors'
+import type { KCLError } from '@src/lang/errors'
+import { kclErrorsToDiagnostics } from '@src/lang/errors'
+import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
+import { topLevelRange } from '@src/lang/util'
 
 describe('test kclErrToDiagnostic', () => {
   it('converts KCL errors to CodeMirror diagnostics', () => {

@@ -1,10 +1,22 @@
-import { Diagnostic } from '@codemirror/lint'
-import {
+import type { Diagnostic } from '@codemirror/lint'
+import type {
   EntityType_type,
   ModelingCmdReq_type,
 } from '@kittycad/lib/dist/types/src/models'
-import { executeAst, executeAstMock, lintAst } from 'lang/langHelpers'
+
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+
+import type { KCLError } from '@src/lang/errors'
 import {
+  compilationErrorsToDiagnostics,
+  kclErrorsToDiagnostics,
+} from '@src/lang/errors'
+import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
+import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
+import type { EngineCommandManager } from '@src/lang/std/engineConnection'
+import { topLevelRange } from '@src/lang/util'
+import type {
   ArtifactGraph,
   ExecState,
   KclValue,
@@ -12,39 +24,30 @@ import {
   Program,
   SourceRange,
   VariableMap,
+} from '@src/lang/wasm'
+import {
   emptyExecState,
   getKclVersion,
   initPromise,
-  jsAppSettings,
   parse,
   recast,
-  topLevelRange,
-} from 'lang/wasm'
-import { buildArtifactIndex } from 'lib/artifactIndex'
-import { ArtifactIndex } from 'lib/artifactIndex'
-import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
-import { markOnce } from 'lib/performance'
-import { Selections, handleSelectionBatch } from 'lib/selections'
-import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
+} from '@src/lang/wasm'
+import type { ArtifactIndex } from '@src/lib/artifactIndex'
+import { buildArtifactIndex } from '@src/lib/artifactIndex'
+import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
+import { markOnce } from '@src/lib/performance'
+import type { Selections } from '@src/lib/selections'
+import { handleSelectionBatch } from '@src/lib/selections'
+import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import {
   codeManager,
   editorManager,
   rustContext,
   sceneInfra,
-} from 'lib/singletons'
-import { err, reportRejection } from 'lib/trap'
-import { deferExecution, isOverlap, uuidv4 } from 'lib/utils'
-
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { Operation } from '@rust/kcl-lib/bindings/Operation'
-
-import {
-  KCLError,
-  compilationErrorsToDiagnostics,
-  kclErrorsToDiagnostics,
-} from './errors'
-import { getNodeFromPath, getSettingsAnnotation } from './queryAst'
-import { EngineCommandManager } from './std/engineConnection'
+} from '@src/lib/singletons'
+import { err, reportRejection } from '@src/lib/trap'
+import { deferExecution, isOverlap, uuidv4 } from '@src/lib/utils'
 
 interface ExecuteArgs {
   ast?: Node<Program>

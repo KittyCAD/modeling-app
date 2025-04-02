@@ -1,16 +1,17 @@
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Menu } from '@headlessui/react'
-import { ActionIcon } from 'components/ActionIcon'
-import { useConvertToVariable } from 'hooks/useToolbarGuards'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import { kclManager } from 'lib/singletons'
-import { reportRejection } from 'lib/trap'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { PropsWithChildren } from 'react'
+import type { PropsWithChildren } from 'react'
+
+import { ActionIcon } from '@src/components/ActionIcon'
+import { editorShortcutMeta } from '@src/components/ModelingSidebar/ModelingPanes/KclEditorPane'
+import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { kclManager } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
+import { commandBarActor } from '@src/machines/commandBarMachine'
 
 import styles from './KclEditorMenu.module.css'
-import { editorShortcutMeta } from './KclEditorPane'
 
 export const KclEditorMenu = ({ children }: PropsWithChildren) => {
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =

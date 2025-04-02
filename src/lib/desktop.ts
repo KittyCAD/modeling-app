@@ -1,17 +1,15 @@
-import { Models } from '@kittycad/lib'
-import { newKclFile } from 'lang/project'
+import type { Models } from '@kittycad/lib'
+
+import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+
+import { newKclFile } from '@src/lang/project'
 import {
   defaultAppSettings,
   initPromise,
   parseAppSettings,
   parseProjectSettings,
-} from 'lang/wasm'
-import { FileEntry, Project } from 'lib/project'
-import { err } from 'lib/trap'
-
-import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
-
+} from '@src/lang/wasm'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
@@ -22,8 +20,10 @@ import {
   TELEMETRY_FILE_NAME,
   TELEMETRY_RAW_FILE_NAME,
   TOKEN_FILE_NAME,
-} from './constants'
-import { DeepPartial } from './types'
+} from '@src/lib/constants'
+import type { FileEntry, Project } from '@src/lib/project'
+import { err } from '@src/lib/trap'
+import type { DeepPartial } from '@src/lib/types'
 
 export async function renameProjectDirectory(
   projectPath: string,
@@ -68,9 +68,7 @@ export async function renameProjectDirectory(
 export async function ensureProjectDirectoryExists(
   config: DeepPartial<Configuration>
 ): Promise<string | undefined> {
-  const projectDir =
-    config.settings?.app?.project_directory ||
-    config.settings?.project?.directory
+  const projectDir = config.settings?.project?.directory
   if (!projectDir) {
     console.error('projectDir is falsey', config)
     return Promise.reject(new Error('projectDir is falsey'))
@@ -589,8 +587,7 @@ export const readAppSettingsFile = async () => {
     }
 
     const hasProjectDirectorySetting =
-      parsedAppConfig.settings?.project?.directory ||
-      parsedAppConfig.settings?.app?.project_directory
+      parsedAppConfig.settings?.project?.directory
 
     if (hasProjectDirectorySetting) {
       return parsedAppConfig

@@ -1,21 +1,13 @@
 import { Popover } from '@headlessui/react'
-import { SceneInfra } from 'clientSideScene/sceneInfra'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { AxisNames } from 'lib/constants'
-import { sceneInfra } from 'lib/singletons'
-import { reportRejection } from 'lib/trap'
-import { useSettings } from 'machines/appMachine'
-import { MutableRefObject, useEffect, useRef } from 'react'
+import type { MutableRefObject } from 'react'
+import { useEffect, useRef } from 'react'
+import type { Camera, ColorRepresentation, Intersection, Object3D } from 'three'
 import {
   BoxGeometry,
-  Camera,
   Clock,
   Color,
-  ColorRepresentation,
-  Intersection,
   Mesh,
   MeshBasicMaterial,
-  Object3D,
   OrthographicCamera,
   Quaternion,
   Raycaster,
@@ -25,11 +17,17 @@ import {
   WebGLRenderer,
 } from 'three'
 
-import { CustomIcon } from './CustomIcon'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { CustomIcon } from '@src/components/CustomIcon'
 import {
   ViewControlContextMenu,
   useViewControlMenuItems,
-} from './ViewControlMenu'
+} from '@src/components/ViewControlMenu'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { AxisNames } from '@src/lib/constants'
+import { sceneInfra } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
+import { useSettings } from '@src/machines/appMachine'
 
 const CANVAS_SIZE = 80
 const FRUSTUM_SIZE = 0.5

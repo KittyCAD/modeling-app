@@ -2,7 +2,7 @@
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
-import { configDefaults, defineConfig } from 'vitest/config'
+import { defineConfig } from 'vitest/config'
 
 const config = defineConfig({
   test: {

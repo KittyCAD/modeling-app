@@ -1,11 +1,12 @@
-import { base64ToString } from 'lib/base64'
-import { ProjectsCommandSchema } from 'lib/commandBarConfigs/projectsCommandConfig'
-import { CREATE_FILE_URL_PARAM, DEFAULT_FILE_NAME } from 'lib/constants'
-import { isDesktop } from 'lib/isDesktop'
-import { FileLinkParams } from 'lib/links'
-import { useSettings } from 'machines/appMachine'
 import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
+
+import { base64ToString } from '@src/lib/base64'
+import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
+import { CREATE_FILE_URL_PARAM, DEFAULT_FILE_NAME } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { FileLinkParams } from '@src/lib/links'
+import { useSettings } from '@src/machines/appMachine'
 
 // For initializing the command arguments, we actually want `method` to be undefined
 // so that we don't skip it in the command palette.

@@ -1,8 +1,5 @@
-import { filterArtifacts, getFaceCodeRef } from 'lang/std/artifactGraph'
-import { Selections } from 'lib/selections'
-import { isArray, isOverlap } from 'lib/utils'
-
-import {
+import { filterArtifacts, getFaceCodeRef } from '@src/lang/std/artifactGraph'
+import type {
   ArrayExpression,
   ArtifactGraph,
   BinaryExpression,
@@ -13,7 +10,26 @@ import {
   LiteralValue,
   NumericSuffix,
   PathToNode,
-} from './wasm'
+} from '@src/lang/wasm'
+import type { Selections } from '@src/lib/selections'
+import { isArray, isOverlap } from '@src/lib/utils'
+
+import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
+
+/**
+ * Create a SourceRange for the top-level module.
+ */
+export function topLevelRange(start: number, end: number): SourceRange {
+  return [start, end, 0]
+}
+
+/**
+ * Returns true if this source range is from the file being executed.  Returns
+ * false if it's from a file that was imported.
+ */
+export function isTopLevelModule(range: SourceRange): boolean {
+  return range[2] === 0
+}
 
 /**
  * Updates pathToNode body indices to account for the insertion of an expression

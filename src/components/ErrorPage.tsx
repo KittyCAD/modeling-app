@@ -4,10 +4,10 @@ import {
   faRefresh,
   faTrash,
 } from '@fortawesome/free-solid-svg-icons'
-import { isDesktop } from 'lib/isDesktop'
 import { isRouteErrorResponse, useRouteError } from 'react-router-dom'
 
-import { ActionButton } from './ActionButton'
+import { ActionButton } from '@src/components/ActionButton'
+import { isDesktop } from '@src/lib/isDesktop'
 
 /** Type narrowing function of unknown error to a string */
 function errorMessage(error: unknown): string {

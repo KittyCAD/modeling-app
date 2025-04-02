@@ -1,17 +1,17 @@
 import { Popover } from '@headlessui/react'
-import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
-import { useMenuListener } from 'hooks/useMenu'
-import { createAndOpenNewTutorialProject } from 'lib/desktopFS'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import { PATHS } from 'lib/paths'
-import { reportRejection } from 'lib/trap'
-import { settingsActor } from 'machines/appMachine'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import type { WebContentSendPayload } from '../menu/channels'
-import { CustomIcon } from './CustomIcon'
-import { useLspContext } from './LspProvider'
-import Tooltip from './Tooltip'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { useLspContext } from '@src/components/LspProvider'
+import Tooltip from '@src/components/Tooltip'
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
+import { useMenuListener } from '@src/hooks/useMenu'
+import { createAndOpenNewTutorialProject } from '@src/lib/desktopFS'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { PATHS } from '@src/lib/paths'
+import { reportRejection } from '@src/lib/trap'
+import { settingsActor } from '@src/machines/appMachine'
+import type { WebContentSendPayload } from '@src/menu/channels'
 
 const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />

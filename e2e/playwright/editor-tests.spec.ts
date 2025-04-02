@@ -1,5 +1,5 @@
+import { uuidv4 } from '@src/lib/utils'
 import fsp from 'fs/promises'
-import { uuidv4 } from 'lib/utils'
 import { join } from 'path'
 
 import {
@@ -7,8 +7,8 @@ import {
   executorInputPath,
   getUtils,
   orRunWhenFullSuiteEnabled,
-} from './test-utils'
-import { expect, test } from './zoo-test'
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
   test('can comment out code with ctrl+/', async ({ page, homePage }) => {

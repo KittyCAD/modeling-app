@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { expect, test } from './zoo-test'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Point and click for boolean workflows', () => {
   // Boolean operations to test

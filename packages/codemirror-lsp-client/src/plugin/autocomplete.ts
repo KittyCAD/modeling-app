@@ -10,14 +10,16 @@ import {
   startCompletion,
 } from '@codemirror/autocomplete'
 import { syntaxTree } from '@codemirror/language'
-import { Extension, Prec } from '@codemirror/state'
-import { EditorView, KeyBinding, ViewPlugin, keymap } from '@codemirror/view'
+import type { Extension } from '@codemirror/state'
+import { Prec } from '@codemirror/state'
+import type { EditorView, KeyBinding, ViewPlugin } from '@codemirror/view'
+import { keymap } from '@codemirror/view'
 import {
   CompletionItemKind,
   CompletionTriggerKind,
 } from 'vscode-languageserver-protocol'
 
-import { LanguageServerPlugin } from './lsp'
+import type { LanguageServerPlugin } from './lsp'
 import { offsetToPos } from './util'
 
 export const CompletionItemKindMap = Object.fromEntries(

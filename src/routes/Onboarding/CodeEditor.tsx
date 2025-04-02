@@ -1,6 +1,10 @@
-import { onboardingPaths } from 'routes/Onboarding/paths'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
 
-import { OnboardingButtons, kbdClasses, useDemoCode } from '.'
+import {
+  OnboardingButtons,
+  kbdClasses,
+  useDemoCode,
+} from '@src/routes/Onboarding/utils'
 
 export default function OnboardingCodeEditor() {
   useDemoCode()

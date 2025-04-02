@@ -1,15 +1,11 @@
 import fs from 'node:fs'
 
-import { enginelessExecutor } from '../lib/testHelpers'
-import { KCLError } from './errors'
-import {
-  Sketch,
-  assertParse,
-  defaultArtifactGraph,
-  initPromise,
-  sketchFromKclValue,
-  topLevelRange,
-} from './wasm'
+import { KCLError } from '@src/lang/errors'
+import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
+import { topLevelRange } from '@src/lang/util'
+import type { Sketch } from '@src/lang/wasm'
+import { assertParse, initPromise, sketchFromKclValue } from '@src/lang/wasm'
+import { enginelessExecutor } from '@src/lib/testHelpers'
 
 beforeAll(async () => {
   await initPromise

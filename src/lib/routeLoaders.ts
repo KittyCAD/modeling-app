@@ -1,22 +1,26 @@
-import { fileSystemManager } from 'lang/std/fileSystemManager'
-import { normalizeLineEndings } from 'lib/codeEditor'
+import type { LoaderFunction } from 'react-router-dom'
+import { redirect } from 'react-router-dom'
+import { waitFor } from 'xstate'
+
+import { fileSystemManager } from '@src/lang/std/fileSystemManager'
+import { normalizeLineEndings } from '@src/lib/codeEditor'
 import {
   BROWSER_FILE_NAME,
   BROWSER_PROJECT_NAME,
   FILE_EXT,
   PROJECT_ENTRYPOINT,
-} from 'lib/constants'
-import { BROWSER_PATH } from 'lib/paths'
-import { codeManager } from 'lib/singletons'
-import { settingsActor } from 'machines/appMachine'
-import { LoaderFunction, redirect } from 'react-router-dom'
-import { waitFor } from 'xstate'
-
-import { getProjectInfo } from './desktop'
-import { isDesktop } from './isDesktop'
-import { PATHS, getProjectMetaByRouteId } from './paths'
-import { loadAndValidateSettings } from './settings/settingsUtils'
-import { FileLoaderData, HomeLoaderData, IndexLoaderData } from './types'
+} from '@src/lib/constants'
+import { getProjectInfo } from '@src/lib/desktop'
+import { isDesktop } from '@src/lib/isDesktop'
+import { BROWSER_PATH, PATHS, getProjectMetaByRouteId } from '@src/lib/paths'
+import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
+import { codeManager } from '@src/lib/singletons'
+import type {
+  FileLoaderData,
+  HomeLoaderData,
+  IndexLoaderData,
+} from '@src/lib/types'
+import { settingsActor } from '@src/machines/appMachine'
 
 export const telemetryLoader: LoaderFunction = async ({
   params,

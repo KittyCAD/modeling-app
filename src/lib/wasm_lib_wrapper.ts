@@ -6,7 +6,7 @@
  * A way to bypass this is by reloading the entire .js file so the global wasm variable
  * gets reinitialized and we do not use that old reference
  */
-import {
+import type {
   base64_decode as Base64Decode,
   change_kcl_settings as ChangeKclSettings,
   coredump as CoreDump,
@@ -27,6 +27,7 @@ import {
   serialize_project_configuration as SerializeProjectConfiguration,
 } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 export type ModuleType = typeof import('@rust/kcl-wasm-lib/pkg/kcl_wasm_lib')
 
 // Stores the result of the import of the wasm_lib file
