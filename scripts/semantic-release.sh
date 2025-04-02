@@ -1,9 +1,9 @@
-# Requires access to an environment variable GH_TOKEN
-# If you are in the path of the git repository the gh release list will automatically point to that git repo
-# aka cd /some/path/modeling-app
-# $ gh release list
-# Get the latest semver tag from git
-latest_tag=$(gh release list --json name,isLatest --jq '.[] | select(.isLatest)|.name')
+#!/bin/bash
+set -euo pipefail
+
+# Fetch the latest release tag
+git fetch --all --tags
+latest_tag=$(git tag --sort=-v:refname | grep "^v[0-9]" | head -n 1)
 
 # Function to bump version numbers
 bump_version() {

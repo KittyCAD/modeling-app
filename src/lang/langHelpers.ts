@@ -1,15 +1,13 @@
-import {
-  Program,
-  kclLint,
-  emptyExecState,
-  ExecState,
-  jsAppSettings,
-} from 'lang/wasm'
-import { KCLError } from 'lang/errors'
-import { Diagnostic } from '@codemirror/lint'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import RustContext from 'lib/rustContext'
-import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from 'lib/constants'
+import type { Diagnostic } from '@codemirror/lint'
+
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import { KCLError } from '@src/lang/errors'
+import type { ExecState, Program } from '@src/lang/wasm'
+import { emptyExecState, kclLint } from '@src/lang/wasm'
+import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
+import type RustContext from '@src/lib/rustContext'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 export type ToolTip =
   | 'lineTo'

@@ -5,18 +5,18 @@
  * coordinate between different subsystems in the modeling app:
  * AST, code editor, file system and 3D engine.
  */
+import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { KclManager } from 'lang/KclSingleton'
-import { ExecutionType } from 'lib/constants'
+import type EditorManager from '@src/editor/manager'
+import type { KclManager } from '@src/lang/KclSingleton'
+import type CodeManager from '@src/lang/codeManager'
+import type { PathToNode, Program } from '@src/lang/wasm'
+import type { ExecutionType } from '@src/lib/constants'
 import {
   EXECUTION_TYPE_MOCK,
   EXECUTION_TYPE_NONE,
   EXECUTION_TYPE_REAL,
-} from 'lib/constants'
-import { PathToNode, Program } from 'lang/wasm'
-import EditorManager from 'editor/manager'
-import CodeManager from 'lang/codeManager'
+} from '@src/lib/constants'
 
 /**
  * Updates the complete modeling state:

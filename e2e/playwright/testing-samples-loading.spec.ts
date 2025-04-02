@@ -1,9 +1,10 @@
-import { test, expect } from './zoo-test'
-import { getUtils } from './test-utils'
-import { bracket } from 'lib/exampleKcl'
+import { FILE_EXT } from '@src/lib/constants'
+import { bracket } from '@src/lib/exampleKcl'
 import * as fsp from 'fs/promises'
 import { join } from 'path'
-import { FILE_EXT } from 'lib/constants'
+
+import { getUtils } from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Testing in-app sample loading', () => {
   /**

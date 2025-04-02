@@ -1,27 +1,33 @@
-import { MouseEventHandler, useEffect, useRef, useState } from 'react'
-import Loading from './Loading'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { useNetworkContext } from 'hooks/useNetworkContext'
-import { NetworkHealthState } from 'hooks/useNetworkStatus'
-import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
-import { btnName } from 'lib/cameraControls'
-import { sendSelectEventToEngine } from 'lib/selections'
-import { kclManager, engineCommandManager, sceneInfra } from 'lib/singletons'
-import { useAppStream } from 'AppState'
+import { useAppStream } from '@src/AppState'
+import type { MouseEventHandler } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useRouteLoaderData } from 'react-router-dom'
+
+import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
+import Loading from '@src/components/Loading'
+import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import {
+  DisconnectingType,
   EngineCommandManagerEvents,
   EngineConnectionStateType,
-  DisconnectingType,
-} from 'lang/std/engineConnection'
-import { useRouteLoaderData } from 'react-router-dom'
-import { PATHS } from 'lib/paths'
-import { IndexLoaderData } from 'lib/types'
-import { err, reportRejection } from 'lib/trap'
-import { getArtifactOfTypes } from 'lang/std/artifactGraph'
-import { ViewControlContextMenu } from './ViewControlMenu'
-import { useCommandBarState } from 'machines/commandBarMachine'
-import { useSettings } from 'machines/appMachine'
-import { uuidv4 } from 'lib/utils'
+} from '@src/lang/std/engineConnection'
+import { btnName } from '@src/lib/cameraControls'
+import { PATHS } from '@src/lib/paths'
+import { sendSelectEventToEngine } from '@src/lib/selections'
+import {
+  engineCommandManager,
+  kclManager,
+  sceneInfra,
+} from '@src/lib/singletons'
+import { err, reportRejection } from '@src/lib/trap'
+import type { IndexLoaderData } from '@src/lib/types'
+import { uuidv4 } from '@src/lib/utils'
+import { useSettings } from '@src/machines/appMachine'
+import { useCommandBarState } from '@src/machines/commandBarMachine'
 
 enum StreamState {
   Playing = 'playing',
@@ -75,7 +81,7 @@ export const Stream = () => {
         cmd: {
           type: 'zoom_to_fit',
           object_ids: [], // leave empty to zoom to all objects
-          padding: 0.2, // padding around the objects
+          padding: 0.1, // padding around the objects
           animated: false, // don't animate the zoom for now
         },
       })

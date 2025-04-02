@@ -1,16 +1,19 @@
 import { Popover } from '@headlessui/react'
+import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+
 import {
   changeKclSettings,
   unitAngleToUnitAng,
   unitLengthToUnitLen,
-} from 'lang/wasm'
-import { DEFAULT_DEFAULT_ANGLE_UNIT } from 'lib/constants'
-import { DEFAULT_DEFAULT_LENGTH_UNIT } from 'lib/constants'
-import { baseUnitLabels, baseUnitsUnion } from 'lib/settings/settingsTypes'
-import { codeManager, kclManager } from 'lib/singletons'
-import { err, reportRejection } from 'lib/trap'
-import { useEffect, useState } from 'react'
-import toast from 'react-hot-toast'
+} from '@src/lang/wasm'
+import {
+  DEFAULT_DEFAULT_ANGLE_UNIT,
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+} from '@src/lib/constants'
+import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
+import { codeManager, kclManager } from '@src/lib/singletons'
+import { err, reportRejection } from '@src/lib/trap'
 
 export function UnitsMenu() {
   const [fileSettings, setFileSettings] = useState(kclManager.fileSettings)

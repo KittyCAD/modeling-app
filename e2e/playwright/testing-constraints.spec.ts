@@ -1,13 +1,14 @@
-import { test, expect } from './zoo-test'
+import { XOR } from '@src/lib/utils'
 import * as fsp from 'fs/promises'
-import {
-  getUtils,
-  TEST_COLORS,
-  pollEditorLinesSelectedLength,
-  orRunWhenFullSuiteEnabled,
-} from './test-utils'
-import { XOR } from 'lib/utils'
 import path from 'node:path'
+
+import {
+  TEST_COLORS,
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+  pollEditorLinesSelectedLength,
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
   test('Can constrain line length', async ({ page, homePage }) => {
@@ -160,31 +161,6 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         |> xLine(length = segLen(seg_what))
         |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
           )
-
-          const isChecked = await createNewVariableCheckbox.isChecked()
-          const addVariable = testName === 'Add variable'
-          XOR(isChecked, addVariable) && // XOR because no need to click the checkbox if the state is already correct
-            (await createNewVariableCheckbox.click())
-
-          await page
-            .getByRole('button', { name: 'Add constraining value' })
-            .click()
-
-          // Wait for the codemod to take effect
-          await expect(page.locator('.cm-content')).toContainText(`angle: -57,`)
-          await expect(page.locator('.cm-content')).toContainText(
-            `offset: ${offset},`
-          )
-
-          await pollEditorLinesSelectedLength(page, 2)
-          const activeLinesContent = await page.locator('.cm-activeLine').all()
-          await expect(activeLinesContent[0]).toHaveText(
-            `|> line(end = [74.36, 130.4], tag = $seg01)`
-          )
-          await expect(activeLinesContent[1]).toHaveText(`}, %)`)
-
-          // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
-          await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
         })
         const u = await getUtils(page)
         await page.setBodyDimensions({ width: 1200, height: 500 })

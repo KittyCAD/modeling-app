@@ -1,30 +1,34 @@
-import { Models } from '@kittycad/lib'
-import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
-import { transformAstSketchLines } from 'lang/std/sketchcombos'
-import {
-  isPathToNode,
+import type { Models } from '@kittycad/lib'
+import { DEV } from '@src/env'
+
+import { angleLengthInfo } from '@src/components/Toolbar/setAngleLength'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
+import type {
   PathToNode,
   SourceRange,
   VariableDeclarator,
-} from 'lang/wasm'
-import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
-import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE } from 'lib/constants'
-import { components } from 'lib/machine-api'
-import { Selections } from 'lib/selections'
-import { codeManager, kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
-import { modelingMachine, SketchTool } from 'machines/modelingMachine'
+} from '@src/lang/wasm'
+import { isPathToNode } from '@src/lang/wasm'
 import {
   loftValidator,
   revolveAxisValidator,
   shellValidator,
   sweepValidator,
-} from './validators'
-import { getVariableDeclaration } from 'lang/queryAst/getVariableDeclaration'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { getNodeFromPath } from 'lang/queryAst'
-import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
-import { DEV } from 'env'
+} from '@src/lib/commandBarConfigs/validators'
+import type {
+  KclCommandValue,
+  StateMachineCommandSetConfig,
+} from '@src/lib/commandTypes'
+import { KCL_DEFAULT_DEGREE, KCL_DEFAULT_LENGTH } from '@src/lib/constants'
+import type { components } from '@src/lib/machine-api'
+import type { Selections } from '@src/lib/selections'
+import { codeManager, kclManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
+import type { SketchTool, modelingMachine } from '@src/machines/modelingMachine'
+import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/Settings'
 
 type OutputFormat = Models['OutputFormat3d_type']
 type OutputTypeKey = OutputFormat['type']
@@ -77,11 +81,15 @@ export type ModelingCommandSchema = {
     thickness: KclCommandValue
   }
   Revolve: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // Flow arg
+    axisOrEdge: 'Axis' | 'Edge'
+    // KCL stdlib arguments
     selection: Selections
     angle: KclCommandValue
-    axisOrEdge: 'Axis' | 'Edge'
-    axis: string
-    edge: Selections
+    axis: string | undefined
+    edge: Selections | undefined
   }
   Fillet: {
     // Enables editing workflow
@@ -472,6 +480,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'revolve',
     needsReview: true,
     args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
       selection: {
         inputType: 'selection',
         selectionTypes: ['solid2d', 'segment'],
@@ -500,6 +515,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'X Axis', isCurrent: true, value: 'X' },
           { name: 'Y Axis', isCurrent: false, value: 'Y' },
         ],
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       edge: {
         required: (commandContext) =>

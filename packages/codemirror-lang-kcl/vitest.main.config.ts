@@ -1,9 +1,8 @@
 // Overrides the test options from the modeling-app config.
-
-import viteTsconfigPaths from 'vite-tsconfig-paths'
-import { defineConfig, configDefaults } from 'vitest/config'
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
+import viteTsconfigPaths from 'vite-tsconfig-paths'
+import { defineConfig } from 'vitest/config'
 
 const config = defineConfig({
   test: {

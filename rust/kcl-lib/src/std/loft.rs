@@ -7,11 +7,12 @@ use kcl_derive_docs::stdlib;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 
+use super::DEFAULT_TOLERANCE;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{types::RuntimeType, ExecState, KclValue, Sketch, Solid},
     parsing::ast::types::TagNode,
-    std::{extrude::do_post_extrude, fillet::default_tolerance, Args},
+    std::{extrude::do_post_extrude, Args},
 };
 
 const DEFAULT_V_DEGREE: u32 = 2;
@@ -159,7 +160,7 @@ async fn inner_loft(
             section_ids: sketches.iter().map(|group| group.id).collect(),
             base_curve_index,
             bez_approximate_rational,
-            tolerance: LengthUnit(tolerance.unwrap_or_else(|| default_tolerance(&exec_state.length_unit().into()))),
+            tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
             v_degree,
         }),
     )

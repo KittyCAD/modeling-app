@@ -37,12 +37,22 @@ pub async fn execute_and_snapshot_ast(
     with_export_step: bool,
 ) -> Result<(ExecState, EnvironmentRef, image::DynamicImage, Option<Vec<u8>>), ExecErrorWithState> {
     let ctx = new_context(true, current_file).await?;
-    let (exec_state, env, img) = do_execute_and_snapshot(&ctx, ast).await?;
+    let (exec_state, env, img) = match do_execute_and_snapshot(&ctx, ast).await {
+        Ok((exec_state, env_ref, img)) => (exec_state, env_ref, img),
+        Err(err) => {
+            // If there was an error executing the program, return it.
+            // Close the context to avoid any resource leaks.
+            ctx.close().await;
+            return Err(err);
+        }
+    };
     let mut step = None;
     if with_export_step {
         let files = match ctx.export_step(true).await {
             Ok(f) => f,
             Err(err) => {
+                // Close the context to avoid any resource leaks.
+                ctx.close().await;
                 return Err(ExecErrorWithState::new(
                     ExecError::BadExport(format!("Export failed: {:?}", err)),
                     exec_state.clone(),

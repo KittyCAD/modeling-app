@@ -1,20 +1,21 @@
-import { ActionButton } from '../components/ActionButton'
-import { isDesktop } from '../lib/isDesktop'
-import { VITE_KC_SITE_BASE_URL, VITE_KC_API_BASE_URL } from '../env'
-import { Themes, getSystemTheme } from '../lib/theme'
-import { PATHS } from 'lib/paths'
-import { APP_NAME } from 'lib/constants'
-import { CSSProperties, useCallback, useState } from 'react'
-import { Logo } from 'components/Logo'
-import { CustomIcon } from 'components/CustomIcon'
-import { Link } from 'react-router-dom'
-import { APP_VERSION } from './Settings'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import { toSync } from 'lib/utils'
-import { reportRejection } from 'lib/trap'
+import type { CSSProperties } from 'react'
+import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
-import { authActor } from 'machines/appMachine'
-import { useSettings } from 'machines/appMachine'
+import { Link } from 'react-router-dom'
+
+import { ActionButton } from '@src/components/ActionButton'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { Logo } from '@src/components/Logo'
+import { VITE_KC_API_BASE_URL, VITE_KC_SITE_BASE_URL } from '@src/env'
+import { APP_NAME } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { PATHS } from '@src/lib/paths'
+import { Themes, getSystemTheme } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import { toSync } from '@src/lib/utils'
+import { authActor, useSettings } from '@src/machines/appMachine'
+import { APP_VERSION } from '@src/routes/Settings'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -38,7 +39,7 @@ const SignIn = () => {
   }?callbackUrl=${encodeURIComponent(
     typeof window !== 'undefined' && window.location.href.replace('signin', '')
   )}`
-  const kclSampleUrl = `${VITE_KC_SITE_BASE_URL}/docs/kcl-samples/car-wheel`
+  const kclSampleUrl = `${VITE_KC_SITE_BASE_URL}/docs/kcl-samples/car-wheel-assembly`
 
   const getThemeText = useCallback(
     (shouldContrast = true) =>
@@ -48,8 +49,8 @@ const SignIn = () => {
           ? '-dark'
           : ''
         : shouldContrast
-        ? ''
-        : '-dark',
+          ? ''
+          : '-dark',
     [theme.current]
   )
 
@@ -104,21 +105,11 @@ const SignIn = () => {
               </span>
             </div>
             <p className="my-4 text-lg xl:text-xl">
-              Thank you for using our hardware design application. It is built
-              on a novel CAD engine and crafted to help you create parametric,
-              version-controlled, and accurate parts ready for manufacturing.
-            </p>
-            <p className="my-4 text-lg xl:text-xl">
-              As alpha software, Zoo Modeling App is still in heavy development.
-              We encourage feedback and feature requests that align with{' '}
-              <a
-                href="https://github.com/KittyCAD/modeling-app/issues/729"
-                target="_blank"
-                rel="noreferrer"
-              >
-                our roadmap to v1.0
-              </a>
-              .
+              Thank you for using our CAD application. It is built on a novel
+              geometry engine and crafted to help you create robust parametric
+              designs. It represents your models as code, making it easy to
+              collaborate with ML tools like Zoo Text-To-CAD to design parts and
+              libraries fast.
             </p>
             {isDesktop() ? (
               <div className="flex flex-col gap-2">
@@ -206,7 +197,7 @@ const SignIn = () => {
           </Link>
           <div className="self-end h-min col-span-3 xl:row-span-2 grid grid-cols-2 gap-5">
             <div className={cardArea}>
-              <h2 className="text-xl">Built in the open</h2>
+              <h2 className="text-xl xl:text-2xl">Built in the open</h2>
               <p className="text-xs my-4">
                 Open-source and open discussions. Check our public code base and
                 join our Discord.
@@ -215,23 +206,26 @@ const SignIn = () => {
                 <ActionButton
                   Element="externalLink"
                   to="https://github.com/KittyCAD/modeling-app"
-                  iconStart={{ icon: 'code' }}
-                  className="border-chalkboard-30 dark:border-chalkboard-80"
+                  iconStart={{ icon: 'code', bgClassName: '!bg-transparent' }}
+                  className="!bg-primary !text-chalkboard-10 !border-transarent"
                 >
                   <span className="py-2 lg:py-0">Read our source code</span>
                 </ActionButton>
                 <ActionButton
                   Element="externalLink"
                   to="https://discord.gg/JQEpHR7Nt2"
-                  iconStart={{ icon: 'keyboard' }}
-                  className="border-chalkboard-30 dark:border-chalkboard-80"
+                  iconStart={{
+                    icon: 'keyboard',
+                    bgClassName: '!bg-transparent',
+                  }}
+                  className="!bg-primary !text-chalkboard-10 !border-transarent"
                 >
                   <span className="py-2 lg:py-0">Join our community</span>
                 </ActionButton>
               </div>
             </div>
             <div className={cardArea}>
-              <h2 className="text-xl">Ready for the future</h2>
+              <h2 className="text-xl xl:text-2xl">Ready for the future</h2>
               <p className="text-xs my-4">
                 Modern software ideas being brought together to create a
                 familiar modeling experience with new superpowers.
@@ -240,8 +234,11 @@ const SignIn = () => {
                 <ActionButton
                   Element="externalLink"
                   to="https://zoo.dev/docs/kcl-samples/a-parametric-bearing-pillow-block"
-                  iconStart={{ icon: 'settings' }}
-                  className="border-chalkboard-30 dark:border-chalkboard-80"
+                  iconStart={{
+                    icon: 'settings',
+                    bgClassName: '!bg-transparent',
+                  }}
+                  className="!bg-primary !text-chalkboard-10 !border-transarent"
                 >
                   <span className="py-2 lg:py-0">
                     Parametric design with KCL
@@ -250,15 +247,18 @@ const SignIn = () => {
                 <ActionButton
                   Element="externalLink"
                   to="https://zoo.dev/docs/tutorials/text-to-cad"
-                  iconStart={{ icon: 'sparkles' }}
-                  className="border-chalkboard-30 dark:border-chalkboard-80"
+                  iconStart={{
+                    icon: 'sparkles',
+                    bgClassName: '!bg-transparent',
+                  }}
+                  className="!bg-primary !text-chalkboard-10 !border-transarent"
                 >
                   <span className="py-2 lg:py-0">AI-unlocked CAD</span>
                 </ActionButton>
               </div>
             </div>
             <div className={cardArea + ' col-span-2'}>
-              <h2 className="text-xl">
+              <h2 className="text-xl xl:text-2xl">
                 Built on the first infrastructure for hardware design
               </h2>
               <p className="text-xs my-4">
@@ -270,16 +270,19 @@ const SignIn = () => {
                 <ActionButton
                   Element="externalLink"
                   to="https://zoo.dev/design-api"
-                  iconStart={{ icon: 'sketch' }}
-                  className="border-chalkboard-30 dark:border-chalkboard-80"
+                  iconStart={{ icon: 'sketch', bgClassName: '!bg-transparent' }}
+                  className="!bg-primary !text-chalkboard-10 !border-transarent"
                 >
                   <span className="py-2 lg:py-0">KittyCAD Design API</span>
                 </ActionButton>
                 <ActionButton
                   Element="externalLink"
                   to="https://zoo.dev/machine-learning-api"
-                  iconStart={{ icon: 'elephant' }}
-                  className="border-chalkboard-30 dark:border-chalkboard-80"
+                  iconStart={{
+                    icon: 'elephant',
+                    bgClassName: '!bg-transparent',
+                  }}
+                  className="!bg-primary !text-chalkboard-10 !border-transarent"
                 >
                   <span className="py-2 lg:py-0">
                     ML-ephant Machine Learning API
