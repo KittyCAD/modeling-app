@@ -116,6 +116,8 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// verifying fit, and analyzing overlapping geometries in assemblies.
 ///
 /// ```no_run
+/// // Intersect two cubes using the stdlib functions.
+///
 /// fn cube(center) {
 ///     return startSketchOn('XY')
 ///         |> startProfileAt([center[0] - 10, center[1] - 10], %)
@@ -131,6 +133,25 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///
 /// intersectedPart = intersect([part001, part002])
 /// ```
+///
+/// ```no_run
+/// // Intersect two cubes using operators.
+///
+/// fn cube(center) {
+///     return startSketchOn('XY')
+///         |> startProfileAt([center[0] - 10, center[1] - 10], %)
+///         |> line(endAbsolute = [center[0] + 10, center[1] - 10])
+///         |> line(endAbsolute = [center[0] + 10, center[1] + 10])
+///         |> line(endAbsolute = [center[0] - 10, center[1] + 10])
+///         |> close()
+///         |> extrude(length = 10)
+/// }
+///
+/// part001 = cube([0, 0])
+/// part002 = cube([8, 8])
+///
+/// intersectedPart = part001 & part002
+/// ```
 #[stdlib {
     name = "intersect",
     feature_tree_operation = true,
@@ -141,7 +162,11 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
         solids = {docs = "The solids to intersect."},
     }
 }]
-async fn inner_intersect(solids: Vec<Solid>, exec_state: &mut ExecState, args: Args) -> Result<Vec<Solid>, KclError> {
+pub(crate) async fn inner_intersect(
+    solids: Vec<Solid>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Vec<Solid>, KclError> {
     // Flush the fillets for the solids.
     args.flush_batch_for_solids(exec_state, &solids).await?;
 

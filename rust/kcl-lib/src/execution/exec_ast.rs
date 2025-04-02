@@ -917,6 +917,14 @@ impl Node<BinaryExpression> {
                         .await?;
                 return Ok(result.into());
             }
+        } else if self.operator == BinaryOperator::And {
+            // Check if we have solids.
+            if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
+                let args = crate::std::Args::new(Default::default(), self.into(), ctx.clone(), None);
+                let result =
+                    crate::std::csg::inner_intersect(vec![*left.clone(), *right.clone()], exec_state, args).await?;
+                return Ok(result.into());
+            }
         }
 
         // Check if we are doing logical operations on booleans.
