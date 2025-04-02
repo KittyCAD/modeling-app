@@ -40,7 +40,7 @@ pub enum Operation {
         is_error: bool,
     },
     #[serde(rename_all = "camelCase")]
-    UserDefinedFunctionCall {
+    GroupBegin {
         /// The name of the user-defined function being called.  Anonymous
         /// functions have no name.
         name: Option<String>,
@@ -54,7 +54,7 @@ pub enum Operation {
         /// The source range of the operation in the source code.
         source_range: SourceRange,
     },
-    UserDefinedFunctionReturn,
+    GroupEnd,
 }
 
 impl Operation {
@@ -63,7 +63,7 @@ impl Operation {
         match self {
             Self::StdLibCall { ref mut is_error, .. } => *is_error = is_err,
             Self::KclStdLibCall { ref mut is_error, .. } => *is_error = is_err,
-            Self::UserDefinedFunctionCall { .. } | Self::UserDefinedFunctionReturn => {}
+            Self::GroupBegin { .. } | Self::GroupEnd => {}
         }
     }
 }

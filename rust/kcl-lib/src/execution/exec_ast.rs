@@ -1349,7 +1349,7 @@ impl Node<CallExpressionKw> {
 
                 if matches!(fn_src, FunctionSource::User { .. }) && !ctx.is_isolated_execution().await {
                     // Track return operation.
-                    exec_state.global.operations.push(Operation::UserDefinedFunctionReturn);
+                    exec_state.global.operations.push(Operation::GroupEnd);
                 }
 
                 let result = return_value.ok_or_else(move || {
@@ -1459,7 +1459,7 @@ impl Node<CallExpression> {
 
                 if !ctx.is_isolated_execution().await {
                     // Track call operation.
-                    exec_state.global.operations.push(Operation::UserDefinedFunctionCall {
+                    exec_state.global.operations.push(Operation::GroupBegin {
                         name: Some(fn_name.to_string()),
                         function_source_range: func.function_def_source_range().unwrap_or_default(),
                         unlabeled_arg: None,
@@ -1498,7 +1498,7 @@ impl Node<CallExpression> {
 
                 if !ctx.is_isolated_execution().await {
                     // Track return operation.
-                    exec_state.global.operations.push(Operation::UserDefinedFunctionReturn);
+                    exec_state.global.operations.push(Operation::GroupEnd);
                 }
 
                 Ok(result)
@@ -2279,7 +2279,7 @@ impl FunctionSource {
                         .iter()
                         .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
                         .collect();
-                    exec_state.global.operations.push(Operation::UserDefinedFunctionCall {
+                    exec_state.global.operations.push(Operation::GroupBegin {
                         name: fn_name,
                         function_source_range: ast.as_source_range(),
                         unlabeled_arg: args

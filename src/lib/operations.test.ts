@@ -16,7 +16,7 @@ function stdlib(name: string): Operation {
 
 function userCall(name: string): Operation {
   return {
-    type: 'UserDefinedFunctionCall',
+    type: 'GroupBegin',
     name,
     functionSourceRange: defaultSourceRange(),
     unlabeledArg: null,
@@ -26,7 +26,7 @@ function userCall(name: string): Operation {
 }
 function userReturn(): Operation {
   return {
-    type: 'UserDefinedFunctionReturn',
+    type: 'GroupEnd',
   }
 }
 

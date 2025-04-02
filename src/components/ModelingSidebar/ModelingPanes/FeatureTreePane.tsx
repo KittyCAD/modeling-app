@@ -304,7 +304,7 @@ const OperationItem = (props: {
   }, [kclContext.diagnostics.length])
 
   function selectOperation() {
-    if (props.item.type === 'UserDefinedFunctionReturn') {
+    if (props.item.type === 'GroupEnd') {
       return
     }
     props.send({
@@ -352,7 +352,7 @@ const OperationItem = (props: {
   function deleteOperation() {
     if (
       props.item.type === 'StdLibCall' ||
-      props.item.type === 'UserDefinedFunctionCall' ||
+      props.item.type === 'GroupBegin' ||
       props.item.type === 'KclStdLibCall'
     ) {
       props.send({
@@ -368,7 +368,7 @@ const OperationItem = (props: {
     () => [
       <ContextMenuItem
         onClick={() => {
-          if (props.item.type === 'UserDefinedFunctionReturn') {
+          if (props.item.type === 'GroupEnd') {
             return
           }
           props.send({
@@ -381,11 +381,11 @@ const OperationItem = (props: {
       >
         View KCL source code
       </ContextMenuItem>,
-      ...(props.item.type === 'UserDefinedFunctionCall'
+      ...(props.item.type === 'GroupBegin'
         ? [
             <ContextMenuItem
               onClick={() => {
-                if (props.item.type !== 'UserDefinedFunctionCall') {
+                if (props.item.type !== 'GroupBegin') {
                   return
                 }
                 const functionRange = props.item.functionSourceRange

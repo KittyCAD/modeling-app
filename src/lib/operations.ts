@@ -1118,9 +1118,9 @@ export function getOperationLabel(op: Operation): string {
       return stdLibMap[op.name]?.label ?? op.name
     case 'KclStdLibCall':
       return stdLibMap[op.name]?.label ?? op.name
-    case 'UserDefinedFunctionCall':
+    case 'GroupBegin':
       return op.name ?? 'Anonymous custom function'
-    case 'UserDefinedFunctionReturn':
+    case 'GroupEnd':
       return 'User function return'
   }
 }
@@ -1157,9 +1157,9 @@ const operationFilters = [
 ]
 
 /**
- * A filter to exclude everything that occurs inside a UserDefinedFunctionCall
- * and its corresponding UserDefinedFunctionReturn from a list of operations.
- * This works even when there are nested function calls.
+ * A filter to exclude everything that occurs inside a GroupBegin and its
+ * corresponding GroupEnd from a list of operations. This works even when there
+ * are nested function calls.
  */
 function isNotInsideUserFunction(operations: Operation[]): Operation[] {
   const ops: Operation[] = []
@@ -1168,14 +1168,14 @@ function isNotInsideUserFunction(operations: Operation[]): Operation[] {
     if (depth === 0) {
       ops.push(op)
     }
-    if (op.type === 'UserDefinedFunctionCall') {
+    if (op.type === 'GroupBegin') {
       depth++
     }
-    if (op.type === 'UserDefinedFunctionReturn') {
+    if (op.type === 'GroupEnd') {
       depth--
       console.assert(
         depth >= 0,
-        'Unbalanced UserDefinedFunctionCall and UserDefinedFunctionReturn; too many returns'
+        'Unbalanced GroupBegin and GroupEnd; too many returns'
       )
     }
   }
@@ -1184,26 +1184,25 @@ function isNotInsideUserFunction(operations: Operation[]): Operation[] {
 }
 
 /**
- * A filter to exclude UserDefinedFunctionCall operations and their
- * corresponding UserDefinedFunctionReturn that don't have any operations inside
- * them from a list of operations.
+ * A filter to exclude GroupBegin operations and their corresponding GroupEnd
+ * that don't have any operations inside them from a list of operations.
  */
 function isNotUserFunctionWithNoOperations(
   operations: Operation[]
 ): Operation[] {
   return operations.filter((op, index) => {
     if (
-      op.type === 'UserDefinedFunctionCall' &&
+      op.type === 'GroupBegin' &&
       // If this is a call at the end of the array, it's preserved.
       index < operations.length - 1 &&
-      operations[index + 1].type === 'UserDefinedFunctionReturn'
+      operations[index + 1].type === 'GroupEnd'
     )
       return false
     if (
-      op.type === 'UserDefinedFunctionReturn' &&
+      op.type === 'GroupEnd' &&
       // If this return is at the beginning of the array, it's preserved.
       index > 0 &&
-      operations[index - 1].type === 'UserDefinedFunctionCall'
+      operations[index - 1].type === 'GroupBegin'
     )
       return false
 
@@ -1212,11 +1211,10 @@ function isNotUserFunctionWithNoOperations(
 }
 
 /**
- * A filter to exclude UserDefinedFunctionReturn operations from a list of
- * operations.
+ * A filter to exclude GroupEnd operations from a list of operations.
  */
 function isNotUserFunctionReturn(ops: Operation[]): Operation[] {
-  return ops.filter((op) => op.type !== 'UserDefinedFunctionReturn')
+  return ops.filter((op) => op.type !== 'GroupEnd')
 }
 
 export interface EnterEditFlowProps {
