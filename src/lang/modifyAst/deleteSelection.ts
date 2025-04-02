@@ -8,7 +8,7 @@ import {
   editorManager,
   kclManager,
   rustContext,
-    sceneEntitiesManager,
+  sceneEntitiesManager,
 } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 
