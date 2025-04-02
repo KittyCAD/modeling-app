@@ -7,7 +7,7 @@ import {
   createLocalName,
   createVariableDeclaration,
   findUniqueName,
-} from '@src/lang/modifyAst'
+} from '@src/lang/create'
 import {
   getEdgeTagCall,
   mutateAstWithTagForSketchSegment,

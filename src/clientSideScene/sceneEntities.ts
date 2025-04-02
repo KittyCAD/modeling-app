@@ -93,10 +93,6 @@ import {
 } from '@src/clientSideScene/segments'
 import type EditorManager from '@src/editor/manager'
 import type CodeManager from '@src/lang/codeManager'
-import type { KclManager } from '@src/lang/KclSingleton'
-import type { ToolTip } from '@src/lang/langHelpers'
-import { executeAstMock } from '@src/lang/langHelpers'
-import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   createArrayExpression,
   createCallExpressionStdLib,
@@ -104,11 +100,17 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
-  createNodeFromExprSnippet,
   createPipeExpression,
   createPipeSubstitution,
   createVariableDeclaration,
   findUniqueName,
+} from '@src/lang/create'
+import type { KclManager } from '@src/lang/KclSingleton'
+import type { ToolTip } from '@src/lang/langHelpers'
+import { executeAstMock } from '@src/lang/langHelpers'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
+import {
+  createNodeFromExprSnippet,
   getInsertIndex,
   insertNewStartProfileAt,
   updateSketchNodePathsWithInsertIndex,

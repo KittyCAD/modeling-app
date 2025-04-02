@@ -5,8 +5,8 @@ import {
   GetInfoModal,
   createInfoModal,
 } from '@src/components/SetHorVertDistanceModal'
+import { createVariableDeclaration } from '@src/lang/create'
 import { toolTips } from '@src/lang/langHelpers'
-import { createVariableDeclaration } from '@src/lang/modifyAst'
 import {
   getNodeFromPath,
   isLinesParallelAndConstrained,

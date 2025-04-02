@@ -6,7 +6,7 @@ import {
   createCallExpressionStdLib,
   createLiteral,
   createPipeSubstitution,
-} from '@src/lang/modifyAst'
+} from '@src/lang/create'
 import {
   doesSceneHaveExtrudedSketch,
   doesSceneHaveSweepableSketch,

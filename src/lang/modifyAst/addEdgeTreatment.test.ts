@@ -1,6 +1,6 @@
 import { VITE_KC_DEV_TOKEN } from '@src/env'
 
-import { createLiteral } from '@src/lang/modifyAst'
+import { createLiteral } from '@src/lang/create'
 import type {
   ChamferParameters,
   EdgeTreatmentParameters,

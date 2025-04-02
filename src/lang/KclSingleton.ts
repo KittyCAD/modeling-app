@@ -31,7 +31,6 @@ import {
   parse,
   recast,
 } from '@src/lang/wasm'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
@@ -39,6 +38,7 @@ import { markOnce } from '@src/lib/performance'
 import type { Selections } from '@src/lib/selections'
 import { handleSelectionBatch } from '@src/lib/selections'
 import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import {
   codeManager,
   editorManager,

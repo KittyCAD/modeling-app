@@ -1,7 +1,6 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
-  addSketchTo,
   createArrayExpression,
   createCallExpression,
   createIdentifier,
@@ -10,10 +9,13 @@ import {
   createPipeExpression,
   createPipeSubstitution,
   createVariableDeclaration,
-  deleteFromSelection,
-  deleteSegmentFromPipeExpression,
   findUniqueName,
   giveSketchFnCallTag,
+} from '@src/lang/create'
+import {
+  addSketchTo,
+  deleteFromSelection,
+  deleteSegmentFromPipeExpression,
   moveValueIntoNewVariable,
   removeSingleConstraintInfo,
   sketchOnExtrudedFace,

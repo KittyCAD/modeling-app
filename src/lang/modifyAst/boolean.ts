@@ -3,7 +3,6 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type EditorManager from '@src/editor/manager'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type CodeManager from '@src/lang/codeManager'
-import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   createArrayExpression,
   createCallExpressionStdLibKw,
@@ -11,7 +10,8 @@ import {
   createLocalName,
   createVariableDeclaration,
   findUniqueName,
-} from '@src/lang/modifyAst'
+} from '@src/lang/create'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { getFaceCodeRef } from '@src/lang/std/artifactGraph'

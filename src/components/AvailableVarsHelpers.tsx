@@ -2,7 +2,7 @@ import {
   createLiteral,
   createLocalName,
   createUnaryExpression,
-} from '@src/lang/modifyAst'
+} from '@src/lang/create'
 import type { PrevVariable } from '@src/lang/queryAst'
 import type { BinaryPart } from '@src/lang/wasm'
 

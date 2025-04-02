@@ -4,7 +4,6 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type EditorManager from '@src/editor/manager'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type CodeManager from '@src/lang/codeManager'
-import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   createArrayExpression,
   createCallExpressionStdLib,
@@ -12,7 +11,8 @@ import {
   createLabeledArg,
   createLocalName,
   createPipeExpression,
-} from '@src/lang/modifyAst'
+} from '@src/lang/create'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   getNodeFromPath,
   hasSketchPipeBeenExtruded,

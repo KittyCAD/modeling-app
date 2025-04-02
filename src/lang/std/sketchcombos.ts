@@ -1,7 +1,5 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import type { ToolTip } from '@src/lang/langHelpers'
-import { toolTips } from '@src/lang/langHelpers'
 import {
   createArrayExpression,
   createBinaryExpression,
@@ -16,7 +14,9 @@ import {
   createPipeSubstitution,
   createUnaryExpression,
   giveSketchFnCallTag,
-} from '@src/lang/modifyAst'
+} from '@src/lang/create'
+import type { ToolTip } from '@src/lang/langHelpers'
+import { toolTips } from '@src/lang/langHelpers'
 import { getNodeFromPath, getNodeFromPathCurry } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {

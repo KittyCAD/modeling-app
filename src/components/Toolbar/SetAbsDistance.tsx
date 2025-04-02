@@ -5,8 +5,8 @@ import {
   SetAngleLengthModal,
   createSetAngleLengthModal,
 } from '@src/components/SetAngleLengthModal'
+import { createName, createVariableDeclaration } from '@src/lang/create'
 import { toolTips } from '@src/lang/langHelpers'
-import { createName, createVariableDeclaration } from '@src/lang/modifyAst'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
 import {

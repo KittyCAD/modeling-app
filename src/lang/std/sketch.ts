@@ -4,8 +4,6 @@ import type { Name } from '@rust/kcl-lib/bindings/Name'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
 
-import type { ToolTip } from '@src/lang/langHelpers'
-import { toolTips } from '@src/lang/langHelpers'
 import {
   createArrayExpression,
   createCallExpression,
@@ -17,10 +15,14 @@ import {
   createPipeSubstitution,
   createTagDeclarator,
   findUniqueName,
+  nonCodeMetaEmpty,
+} from '@src/lang/create'
+import type { ToolTip } from '@src/lang/langHelpers'
+import { toolTips } from '@src/lang/langHelpers'
+import {
   mutateArrExp,
   mutateKwArg,
   mutateObjExpProp,
-  nonCodeMetaEmpty,
   removeKwArgs,
   splitPathAtPipeExpression,
 } from '@src/lang/modifyAst'

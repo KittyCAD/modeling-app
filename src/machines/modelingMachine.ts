@@ -42,14 +42,13 @@ import {
   horzVertDistanceInfo,
 } from '@src/components/Toolbar/SetHorzVertDistance'
 import { angleLengthInfo } from '@src/components/Toolbar/setAngleLength'
+import { createLiteral, createLocalName } from '@src/lang/create'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   addHelix,
   addOffsetPlane,
   addShell,
   addSweep,
-  createLiteral,
-  createLocalName,
   deleteNodeInExtrudePipe,
   extrudeSketch,
   insertNamedConstant,

@@ -9,7 +9,7 @@ import {
   createPipeSubstitution,
   createTagDeclarator,
   createUnaryExpression,
-} from '@src/lang/modifyAst'
+} from '@src/lang/create'
 import { ARG_END_ABSOLUTE } from '@src/lang/std/sketch'
 import {
   isArrayExpression,
