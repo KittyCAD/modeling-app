@@ -15,7 +15,7 @@ import {
 import {
   ARROWHEAD,
   DEBUG_SHOW_BOTH_SCENES,
-} from '@src/clientSideScene/sceneInfra'
+} from '@src/clientSideScene/sceneUtils'
 import { ActionButton } from '@src/components/ActionButton'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
