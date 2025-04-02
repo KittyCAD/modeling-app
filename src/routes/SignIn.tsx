@@ -1,20 +1,21 @@
-import { ActionButton } from '../components/ActionButton'
-import { isDesktop } from '../lib/isDesktop'
-import { VITE_KC_SITE_BASE_URL, VITE_KC_API_BASE_URL } from '../env'
-import { Themes, getSystemTheme } from '../lib/theme'
-import { PATHS } from 'lib/paths'
-import { APP_NAME } from 'lib/constants'
-import { CSSProperties, useCallback, useState } from 'react'
-import { Logo } from 'components/Logo'
-import { CustomIcon } from 'components/CustomIcon'
-import { Link } from 'react-router-dom'
-import { APP_VERSION } from './Settings'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import { toSync } from 'lib/utils'
-import { reportRejection } from 'lib/trap'
+import type { CSSProperties } from 'react'
+import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
-import { authActor } from 'machines/appMachine'
-import { useSettings } from 'machines/appMachine'
+import { Link } from 'react-router-dom'
+
+import { ActionButton } from '@src/components/ActionButton'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { Logo } from '@src/components/Logo'
+import { VITE_KC_API_BASE_URL, VITE_KC_SITE_BASE_URL } from '@src/env'
+import { APP_NAME } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { PATHS } from '@src/lib/paths'
+import { Themes, getSystemTheme } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import { toSync } from '@src/lib/utils'
+import { authActor, useSettings } from '@src/machines/appMachine'
+import { APP_VERSION } from '@src/routes/Settings'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -48,8 +49,8 @@ const SignIn = () => {
           ? '-dark'
           : ''
         : shouldContrast
-        ? ''
-        : '-dark',
+          ? ''
+          : '-dark',
     [theme.current]
   )
 

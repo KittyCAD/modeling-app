@@ -13,9 +13,9 @@ Translate is really useful for sketches if you want to move a sketch and then ro
 ```js
 translate(
   objects: SolidOrSketchOrImportedGeometry,
-  x: number,
-  y: number,
-  z: number,
+  x?: number,
+  y?: number,
+  z?: number,
   global?: bool,
 ): SolidOrSketchOrImportedGeometry
 ```
@@ -26,9 +26,9 @@ translate(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `objects` | [`SolidOrSketchOrImportedGeometry`](/docs/kcl/types/SolidOrSketchOrImportedGeometry) | The solid, sketch, or set of solids or sketches to move. | Yes |
-| `x` | [`number`](/docs/kcl/types/number) | The amount to move the solid or sketch along the x axis. | Yes |
-| `y` | [`number`](/docs/kcl/types/number) | The amount to move the solid or sketch along the y axis. | Yes |
-| `z` | [`number`](/docs/kcl/types/number) | The amount to move the solid or sketch along the z axis. | Yes |
+| `x` | [`number`](/docs/kcl/types/number) | The amount to move the solid or sketch along the x axis. Defaults to 0 if not provided. | No |
+| `y` | [`number`](/docs/kcl/types/number) | The amount to move the solid or sketch along the y axis. Defaults to 0 if not provided. | No |
+| `z` | [`number`](/docs/kcl/types/number) | The amount to move the solid or sketch along the z axis. Defaults to 0 if not provided. | No |
 | `global` | [`bool`](/docs/kcl/types/bool) | If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move. | No |
 
 ### Returns
@@ -134,7 +134,7 @@ fn square(length) {
 }
 
 square(10)
-  |> translate(x = 5, y = 5, z = 0)
+  |> translate(x = 5, y = 5)
   |> extrude(length = 10)
 ```
 
@@ -156,7 +156,7 @@ fn square() {
 profile001 = square()
 
 profile002 = square()
-  |> translate(x = 0, y = 0, z = 20)
+  |> translate(z = 20)
   |> rotate(axis = [0, 0, 1.0], angle = 45)
 
 loft([profile001, profile002])

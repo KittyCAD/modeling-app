@@ -1,9 +1,9 @@
 import {
+  orRunWhenFullSuiteEnabled,
   runningOnLinux,
   runningOnMac,
   runningOnWindows,
-  orRunWhenFullSuiteEnabled,
-} from './test-utils'
+} from '@e2e/playwright/test-utils'
 
 describe('platform detection utilities', () => {
   const originalPlatform = process.platform

@@ -1,13 +1,17 @@
 import { Dialog, Popover, Transition } from '@headlessui/react'
 import { Fragment, useEffect } from 'react'
-import CommandBarArgument from './CommandBarArgument'
-import CommandComboBox from '../CommandComboBox'
-import CommandBarReview from './CommandBarReview'
 import { useLocation } from 'react-router-dom'
-import useHotkeyWrapper from 'lib/hotkeyWrapper'
-import { CustomIcon } from 'components/CustomIcon'
-import Tooltip from 'components/Tooltip'
-import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
+
+import CommandBarArgument from '@src/components/CommandBar/CommandBarArgument'
+import CommandBarReview from '@src/components/CommandBar/CommandBarReview'
+import CommandComboBox from '@src/components/CommandComboBox'
+import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
+import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
+import {
+  commandBarActor,
+  useCommandBarState,
+} from '@src/machines/commandBarMachine'
 
 export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 

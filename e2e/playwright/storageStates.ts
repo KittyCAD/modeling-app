@@ -1,17 +1,19 @@
-import { Settings } from '@rust/kcl-lib/bindings/Settings'
-import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
-import { Themes } from 'lib/theme'
-import { DeepPartial } from 'lib/types'
-import { onboardingPaths } from 'routes/Onboarding/paths'
+import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
+import { Themes } from '@src/lib/theme'
+import type { DeepPartial } from '@src/lib/types'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
+import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
 export const IS_PLAYWRIGHT_KEY = 'playwright'
 
 export const TEST_SETTINGS_KEY = '/settings.toml'
 export const TEST_SETTINGS: DeepPartial<Settings> = {
   app: {
-    theme: Themes.Dark,
+    appearance: {
+      theme: Themes.Dark,
+    },
     onboarding_status: 'dismissed',
-    project_directory: '',
     show_debug_panel: true,
   },
   modeling: {
@@ -22,6 +24,7 @@ export const TEST_SETTINGS: DeepPartial<Settings> = {
   },
   project: {
     default_project_name: 'untitled',
+    directory: '',
   },
   text_editor: {
     text_wrapping: true,
@@ -54,7 +57,7 @@ export const TEST_SETTINGS_ONBOARDING_START: DeepPartial<Settings> = {
 
 export const TEST_SETTINGS_DEFAULT_THEME: DeepPartial<Settings> = {
   ...TEST_SETTINGS,
-  app: { ...TEST_SETTINGS.app, theme: Themes.System },
+  app: { ...TEST_SETTINGS.app, appearance: { theme: Themes.System } },
 }
 
 export const TEST_SETTINGS_CORRUPTED = {

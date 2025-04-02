@@ -1,5 +1,7 @@
-import { PerformanceMark, getMarks } from 'lib/performance'
-import { writeTelemetryFile, writeRawTelemetryFile } from 'lib/desktop'
+import { writeRawTelemetryFile, writeTelemetryFile } from '@src/lib/desktop'
+import type { PerformanceMark } from '@src/lib/performance'
+import { getMarks } from '@src/lib/performance'
+
 let args: any = null
 
 // Get the longest width of values or column name
