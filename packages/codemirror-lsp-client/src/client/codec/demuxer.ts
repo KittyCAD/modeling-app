@@ -1,10 +1,10 @@
 import * as vsrpc from 'vscode-jsonrpc'
 
-import { Codec } from '.'
 import Bytes from './bytes'
 import PromiseMap from './map'
 import Queue from './queue'
 import Tracer from './tracer'
+import { Codec } from './utils'
 
 export default class StreamDemuxer extends Queue<Uint8Array> {
   readonly responses: PromiseMap<number | string, vsrpc.ResponseMessage> =

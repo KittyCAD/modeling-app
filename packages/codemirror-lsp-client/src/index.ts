@@ -13,20 +13,18 @@ import {
 
 export { LanguageServerClient } from './client'
 export type { LanguageServerClientOptions } from './client'
+export { FromServer, IntoServer, LspWorkerEventType } from './client/codec'
+export { Codec } from './client/codec/utils'
 export {
-  Codec,
-  FromServer,
-  IntoServer,
-  LspWorkerEventType,
-} from './client/codec'
+  lspDiagnosticsEvent,
+  lspFormatCodeEvent,
+  lspSemanticTokensEvent,
+} from './plugin/annotation'
 export {
   LanguageServerPlugin,
   LanguageServerPluginSpec,
   docPathFacet,
   languageId,
-  lspDiagnosticsEvent,
-  lspFormatCodeEvent,
-  lspSemanticTokensEvent,
   workspaceFolders,
 } from './plugin/lsp'
 export type { LanguageServerOptions } from './plugin/lsp'

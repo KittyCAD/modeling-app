@@ -2,7 +2,7 @@ import * as jsrpc from 'json-rpc-2.0'
 import * as LSP from 'vscode-languageserver-protocol'
 
 import type { FromServer, IntoServer } from './codec'
-import { Codec } from './codec'
+import { Codec } from './codec/utils'
 import {
   registerServerCapability,
   unregisterServerCapability,

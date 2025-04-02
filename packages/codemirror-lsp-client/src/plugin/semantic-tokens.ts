@@ -6,7 +6,7 @@ import { Decoration, EditorView } from '@codemirror/view'
 import type { Tag } from '@lezer/highlight'
 import { tags } from '@lezer/highlight'
 
-import { lspSemanticTokensEvent } from './lsp'
+import { lspSemanticTokensEvent } from './annotation'
 
 export interface SemanticToken {
   from: number
