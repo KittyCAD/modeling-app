@@ -17,7 +17,9 @@ install: node_modules/.yarn-integrity $(CARGO) $(WASM_PACK) ## Install dependenc
 
 node_modules/.yarn-integrity: package.json yarn.lock
 	yarn install
+ifneq ($(OS),Windows_NT)
 	@ touch $@
+endif
 
 $(CARGO):
 ifeq ($(OS),Windows_NT)
