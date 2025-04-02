@@ -1,13 +1,13 @@
-import { SourceRange, topLevelRange } from '../lang/wasm'
 import {
-  hasDigitsLeftOfDecimal,
-  hasLeadingZero,
-  isClockwise,
   isOverlap,
-  onDragNumberCalculation,
   roundOff,
   simulateOnMouseDragMatch,
+  onDragNumberCalculation,
+  hasLeadingZero,
+  hasDigitsLeftOfDecimal,
+  isClockwise,
 } from './utils'
+import { SourceRange, topLevelRange } from '../lang/wasm'
 
 describe('testing isOverlapping', () => {
   testBothOrders(topLevelRange(0, 3), topLevelRange(3, 10))

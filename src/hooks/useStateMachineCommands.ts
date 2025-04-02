@@ -1,21 +1,20 @@
-import { useAppState } from 'AppState'
-import { useNetworkContext } from 'hooks/useNetworkContext'
-import { NetworkHealthState } from 'hooks/useNetworkStatus'
-import { useKclContext } from 'lang/KclProvider'
+import { useEffect } from 'react'
+import { AnyStateMachine, Actor, StateFrom, EventFrom } from 'xstate'
+import { createMachineCommand } from '../lib/createMachineCommand'
+import { modelingMachine } from 'machines/modelingMachine'
+import { authMachine } from 'machines/authMachine'
+import { settingsMachine } from 'machines/settingsMachine'
+import { projectsMachine } from 'machines/projectsMachine'
 import {
   Command,
   StateMachineCommandSetConfig,
   StateMachineCommandSetSchema,
 } from 'lib/commandTypes'
-import { authMachine } from 'machines/authMachine'
+import { useKclContext } from 'lang/KclProvider'
+import { useNetworkContext } from 'hooks/useNetworkContext'
+import { NetworkHealthState } from 'hooks/useNetworkStatus'
+import { useAppState } from 'AppState'
 import { commandBarActor } from 'machines/commandBarMachine'
-import { modelingMachine } from 'machines/modelingMachine'
-import { projectsMachine } from 'machines/projectsMachine'
-import { settingsMachine } from 'machines/settingsMachine'
-import { useEffect } from 'react'
-import { Actor, AnyStateMachine, EventFrom, StateFrom } from 'xstate'
-
-import { createMachineCommand } from '../lib/createMachineCommand'
 
 // This might not be necessary, AnyStateMachine from xstate is working
 export type AllMachines =
@@ -26,7 +25,7 @@ export type AllMachines =
 
 interface UseStateMachineCommandsArgs<
   T extends AllMachines,
-  S extends StateMachineCommandSetSchema<T>,
+  S extends StateMachineCommandSetSchema<T>
 > {
   machineId: T['id']
   state: StateFrom<T>
@@ -39,7 +38,7 @@ interface UseStateMachineCommandsArgs<
 
 export default function useStateMachineCommands<
   T extends AnyStateMachine,
-  S extends StateMachineCommandSetSchema<T>,
+  S extends StateMachineCommandSetSchema<T>
 >({
   machineId,
   state,

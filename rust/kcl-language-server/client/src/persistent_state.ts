@@ -1,6 +1,5 @@
 /* eslint suggest-no-throw/suggest-no-throw: 0 */
 import type * as vscode from 'vscode'
-
 import { log } from './util'
 
 export class PersistentState {

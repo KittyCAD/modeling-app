@@ -1,5 +1,4 @@
-import { expect, test } from './zoo-test'
-
+import { test, expect } from './zoo-test'
 /* eslint-disable jest/no-conditional-expect */
 
 /**

@@ -1,10 +1,4 @@
-import { useModelingContext } from 'hooks/useModelingContext'
-import { AxisNames, VIEW_NAMES_SEMANTIC } from 'lib/constants'
-import { sceneInfra } from 'lib/singletons'
 import { reportRejection } from 'lib/trap'
-import { useSettings } from 'machines/appMachine'
-import { useMemo } from 'react'
-
 import {
   ContextMenu,
   ContextMenuDivider,
@@ -12,6 +6,11 @@ import {
   ContextMenuItemRefresh,
   ContextMenuProps,
 } from './ContextMenu'
+import { AxisNames, VIEW_NAMES_SEMANTIC } from 'lib/constants'
+import { useModelingContext } from 'hooks/useModelingContext'
+import { useMemo } from 'react'
+import { sceneInfra } from 'lib/singletons'
+import { useSettings } from 'machines/appMachine'
 
 export function useViewControlMenuItems() {
   const { state: modelingState, send: modelingSend } = useModelingContext()

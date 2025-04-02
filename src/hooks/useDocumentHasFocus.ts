@@ -1,5 +1,5 @@
 // Based on https://learnersbucket.com/examples/interview/usehasfocus-hook-in-react/
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export const useDocumentHasFocus = () => {
   // get the initial state

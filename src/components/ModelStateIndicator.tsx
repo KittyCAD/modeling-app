@@ -1,7 +1,6 @@
-import { CustomIcon } from './CustomIcon'
 import { useEngineCommands } from './EngineCommands'
 import { Spinner } from './Spinner'
-
+import { CustomIcon } from './CustomIcon'
 export const ModelStateIndicator = () => {
   const [commands] = useEngineCommands()
   const lastCommandType = commands[commands.length - 1]?.type

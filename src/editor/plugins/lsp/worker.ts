@@ -4,21 +4,20 @@ import {
   IntoServer,
   LspWorkerEventType,
 } from '@kittycad/codemirror-lsp-client'
-import {
-  CopilotWorkerOptions,
-  KclWorkerOptions,
-  LspWorker,
-  LspWorkerEvent,
-} from 'editor/plugins/lsp/types'
-import * as jsrpc from 'json-rpc-2.0'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
-import { err, reportRejection } from 'lib/trap'
-
 import init, {
   LspServerConfig,
   lsp_run_copilot,
   lsp_run_kcl,
 } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+import * as jsrpc from 'json-rpc-2.0'
+import {
+  LspWorkerEvent,
+  LspWorker,
+  KclWorkerOptions,
+  CopilotWorkerOptions,
+} from 'editor/plugins/lsp/types'
+import { err, reportRejection } from 'lib/trap'
 
 const intoServer: IntoServer = new IntoServer()
 const fromServer: FromServer | Error = FromServer.create()

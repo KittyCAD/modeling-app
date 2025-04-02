@@ -1,11 +1,11 @@
 import { base64ToString } from 'lib/base64'
-import { ProjectsCommandSchema } from 'lib/commandBarConfigs/projectsCommandConfig'
 import { CREATE_FILE_URL_PARAM, DEFAULT_FILE_NAME } from 'lib/constants'
-import { isDesktop } from 'lib/isDesktop'
-import { FileLinkParams } from 'lib/links'
-import { useSettings } from 'machines/appMachine'
 import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { isDesktop } from 'lib/isDesktop'
+import { FileLinkParams } from 'lib/links'
+import { ProjectsCommandSchema } from 'lib/commandBarConfigs/projectsCommandConfig'
+import { useSettings } from 'machines/appMachine'
 
 // For initializing the command arguments, we actually want `method` to be undefined
 // so that we don't skip it in the command palette.
@@ -45,8 +45,8 @@ export function useCreateFileLinkQuery(
             ? params.name.replace('.kcl', '')
             : params.name
           : isDesktop()
-            ? settings.projects.defaultProjectName.current
-            : DEFAULT_FILE_NAME,
+          ? settings.projects.defaultProjectName.current
+          : DEFAULT_FILE_NAME,
         code: params.code || '',
         method: isDesktop() ? undefined : 'existingProject',
       }

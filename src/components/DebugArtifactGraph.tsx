@@ -1,8 +1,7 @@
-import { PlaneArtifactRich, expandPlane } from 'lang/std/artifactGraph'
-import { ArtifactGraph } from 'lang/wasm'
-import { kclManager } from 'lib/singletons'
 import { useMemo } from 'react'
-
+import { kclManager } from 'lib/singletons'
+import { expandPlane, PlaneArtifactRich } from 'lang/std/artifactGraph'
+import { ArtifactGraph } from 'lang/wasm'
 import { DebugDisplayArray, GenericObj } from './DebugDisplayObj'
 
 export function DebugArtifactGraph() {

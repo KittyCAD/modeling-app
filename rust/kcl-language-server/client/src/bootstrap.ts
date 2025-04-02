@@ -1,11 +1,10 @@
 /* eslint suggest-no-throw/suggest-no-throw: 0 */
-import { exec } from 'child_process'
-import * as os from 'os'
 import * as vscode from 'vscode'
-
+import * as os from 'os'
 import type { Config } from './config'
+import { log, isValidExecutable } from './util'
 import type { PersistentState } from './persistent_state'
-import { isValidExecutable, log } from './util'
+import { exec } from 'child_process'
 
 export async function bootstrap(
   context: vscode.ExtensionContext,

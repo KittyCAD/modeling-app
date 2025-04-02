@@ -1,18 +1,17 @@
 import { toolTips } from 'lang/langHelpers'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { TransformInfo } from 'lang/std/stdTypes'
 import { Selections } from 'lib/selections'
-import { kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
-
+import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
 import { getNodeFromPath } from '../../lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
-  PathToNodeMap,
-  getTransformInfos,
   transformSecondarySketchLinesTagFirst,
+  getTransformInfos,
+  PathToNodeMap,
 } from '../../lang/std/sketchcombos'
-import { Expr, Program, VariableDeclarator } from '../../lang/wasm'
+import { kclManager } from 'lib/singletons'
+import { err } from 'lib/trap'
+import { TransformInfo } from 'lang/std/stdTypes'
 
 export function equalAngleInfo({
   selectionRanges,

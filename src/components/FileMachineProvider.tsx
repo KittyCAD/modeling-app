@@ -1,33 +1,9 @@
 import { useMachine } from '@xstate/react'
-import { newKclFile } from 'lang/project'
-import { createNamedViewsCommand } from 'lib/commandBarConfigs/namedViewsConfig'
-import { createRouteCommands } from 'lib/commandBarConfigs/routeCommandConfig'
-import {
-  DEFAULT_DEFAULT_LENGTH_UNIT,
-  DEFAULT_FILE_NAME,
-  DEFAULT_PROJECT_KCL_FILE,
-  FILE_EXT,
-} from 'lib/constants'
-import { getProjectInfo } from 'lib/desktop'
-import { getNextDirName, getNextFileName } from 'lib/desktopFS'
-import {
-  KclSamplesManifestItem,
-  getKclSamplesManifest,
-} from 'lib/getKclSamplesManifest'
-import { isDesktop } from 'lib/isDesktop'
-import { kclCommands } from 'lib/kclCommands'
-import { BROWSER_PATH, PATHS } from 'lib/paths'
-import { markOnce } from 'lib/performance'
-import { codeManager, kclManager } from 'lib/singletons'
-import { err, reportRejection } from 'lib/trap'
+import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { type IndexLoaderData } from 'lib/types'
-import { useSettings } from 'machines/appMachine'
-import { useToken } from 'machines/appMachine'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { fileMachine } from 'machines/fileMachine'
+import { BROWSER_PATH, PATHS } from 'lib/paths'
 import React, { createContext, useEffect, useMemo } from 'react'
 import { toast } from 'react-hot-toast'
-import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
 import {
   Actor,
   AnyStateMachine,
@@ -36,6 +12,30 @@ import {
   StateFrom,
   fromPromise,
 } from 'xstate'
+import { fileMachine } from 'machines/fileMachine'
+import { isDesktop } from 'lib/isDesktop'
+import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  DEFAULT_FILE_NAME,
+  DEFAULT_PROJECT_KCL_FILE,
+  FILE_EXT,
+} from 'lib/constants'
+import { getProjectInfo } from 'lib/desktop'
+import { getNextDirName, getNextFileName } from 'lib/desktopFS'
+import { kclCommands } from 'lib/kclCommands'
+import { codeManager, kclManager } from 'lib/singletons'
+import {
+  getKclSamplesManifest,
+  KclSamplesManifestItem,
+} from 'lib/getKclSamplesManifest'
+import { markOnce } from 'lib/performance'
+import { commandBarActor } from 'machines/commandBarMachine'
+import { useSettings } from 'machines/appMachine'
+import { createRouteCommands } from 'lib/commandBarConfigs/routeCommandConfig'
+import { useToken } from 'machines/appMachine'
+import { createNamedViewsCommand } from 'lib/commandBarConfigs/namedViewsConfig'
+import { err, reportRejection } from 'lib/trap'
+import { newKclFile } from 'lang/project'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>

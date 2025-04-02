@@ -20,9 +20,7 @@
   /* The parts that will be transitioned */
   opacity: 0;
   transform: translate(var(--_x, 0), var(--_y, 0));
-  transition:
-    transform 0.15s ease-out,
-    opacity 0.11s ease-out;
+  transition: transform 0.15s ease-out, opacity 0.11s ease-out;
 }
 
 .tooltip {

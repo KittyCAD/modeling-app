@@ -1,5 +1,5 @@
-import { FileEntry, Project } from 'lib/project'
 import { assign, fromPromise, setup } from 'xstate'
+import { Project, FileEntry } from 'lib/project'
 
 type FileMachineContext = {
   project: Project

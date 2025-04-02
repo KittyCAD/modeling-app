@@ -1,6 +1,5 @@
-import * as path from 'path'
-
 import { parseProjectRoute } from './paths'
+import * as path from 'path'
 
 describe('testing parseProjectRoute', () => {
   it('should parse a project as a subpath of project dir', async () => {

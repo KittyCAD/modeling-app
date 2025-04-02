@@ -1,14 +1,13 @@
-import fsp from 'fs/promises'
-import { bracket } from 'lib/exampleKcl'
-import { join } from 'path'
-
-import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from './storageStates'
+import { test, expect } from './zoo-test'
 import {
-  executorInputPath,
-  getUtils,
   orRunWhenFullSuiteEnabled,
+  getUtils,
+  executorInputPath,
 } from './test-utils'
-import { expect, test } from './zoo-test'
+import { join } from 'path'
+import { bracket } from 'lib/exampleKcl'
+import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from './storageStates'
+import fsp from 'fs/promises'
 
 test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
   test('Typing KCL errors induces a badge on the code pane button', async ({

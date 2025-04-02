@@ -1,9 +1,8 @@
+import { Settings } from '@rust/kcl-lib/bindings/Settings'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { Themes } from 'lib/theme'
 import { DeepPartial } from 'lib/types'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-
-import { Settings } from '@rust/kcl-lib/bindings/Settings'
 
 export const IS_PLAYWRIGHT_KEY = 'playwright'
 
