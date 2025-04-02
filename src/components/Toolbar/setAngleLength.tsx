@@ -3,6 +3,7 @@ import {
   SetAngleLengthModal,
   createSetAngleLengthModal,
 } from '@src/components/SetAngleLengthModal'
+import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import {
   createBinaryExpressionWithUnary,
   createLocalName,
@@ -20,7 +21,6 @@ import type { Selections } from '@src/lib/selections'
 import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import { normaliseAngle } from '@src/lib/utils'
-import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 
 const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
 
