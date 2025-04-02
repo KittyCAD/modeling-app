@@ -4,6 +4,7 @@ import type {
   ModelingCmdReq_type,
 } from '@kittycad/lib/dist/types/src/models'
 
+import type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 
@@ -19,7 +20,6 @@ import { topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
   ExecState,
-  KclValue,
   PathToNode,
   Program,
   SourceRange,
@@ -34,11 +34,17 @@ import {
 } from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
-import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
+import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
+} from '@src/lib/constants'
 import { markOnce } from '@src/lib/performance'
 import type { Selections } from '@src/lib/selections'
 import { handleSelectionBatch } from '@src/lib/selections'
-import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
+import type {
+  BaseUnit,
+  KclSettingsAnnotation,
+} from '@src/lib/settings/settingsTypes'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import {
   codeManager,
@@ -105,6 +111,7 @@ export class KclManager {
   private _diagnosticsCallback: (errors: Diagnostic[]) => void = () => {}
   private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
   private _executeCallback: () => void = () => {}
+  sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
 
   get ast() {
     return this._ast
@@ -721,6 +728,9 @@ export class KclManager {
 
   set fileSettings(settings: KclSettingsAnnotation) {
     this._fileSettings = settings
+    this.sceneInfraBaseUnitMultiplierSetter(
+      settings?.defaultLengthUnit || DEFAULT_DEFAULT_LENGTH_UNIT
+    )
   }
 }
 

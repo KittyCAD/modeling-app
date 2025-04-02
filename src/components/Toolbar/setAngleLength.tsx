@@ -3,21 +3,18 @@ import {
   SetAngleLengthModal,
   createSetAngleLengthModal,
 } from '@src/components/SetAngleLengthModal'
+import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import {
   createBinaryExpressionWithUnary,
   createLocalName,
   createName,
   createVariableDeclaration,
 } from '@src/lang/create'
-import { toolTips } from '@src/lang/langHelpers'
-import { getNodeFromPath } from '@src/lang/queryAst'
 import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
 import {
-  getTransformInfos,
   isExprBinaryPart,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
-import type { TransformInfo } from '@src/lang/std/stdTypes'
 import type { Expr, Program } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { Selections } from '@src/lib/selections'
@@ -26,48 +23,6 @@ import { err } from '@src/lib/trap'
 import { normaliseAngle } from '@src/lib/utils'
 
 const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
-
-export function angleLengthInfo({
-  selectionRanges,
-  angleOrLength = 'setLength',
-}: {
-  selectionRanges: Selections
-  angleOrLength?: 'setLength' | 'setAngle'
-}):
-  | {
-      transforms: TransformInfo[]
-      enabled: boolean
-    }
-  | Error {
-  const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode, [
-      'CallExpression',
-      'CallExpressionKw',
-    ])
-  )
-  const _err1 = nodes.find(err)
-  if (_err1 instanceof Error) return _err1
-
-  const isAllTooltips = nodes.every((meta) => {
-    if (err(meta)) return false
-    return (
-      (meta.node?.type === 'CallExpressionKw' ||
-        meta.node?.type === 'CallExpression') &&
-      toolTips.includes(meta.node.callee.name.name as any)
-    )
-  })
-
-  const transforms = getTransformInfos(
-    selectionRanges,
-    kclManager.ast,
-    angleOrLength
-  )
-  const enabled =
-    selectionRanges.graphSelections.length <= 1 &&
-    isAllTooltips &&
-    transforms.every(Boolean)
-  return { enabled, transforms }
-}
 
 export async function applyConstraintLength({
   length,

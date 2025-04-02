@@ -1,7 +1,7 @@
 import type { Models } from '@kittycad/lib'
 import { DEV } from '@src/env'
 
-import { angleLengthInfo } from '@src/components/Toolbar/setAngleLength'
+import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
