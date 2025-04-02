@@ -1,7 +1,7 @@
 [package]
 name = "kcl-test-server"
 description = "A test server for KCL"
-version = "0.1.57"
+version = "0.1.58"
 edition = "2021"
 license = "MIT"
 

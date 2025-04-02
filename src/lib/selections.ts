@@ -10,7 +10,7 @@ import {
   SEGMENT_BODIES_PLUS_PROFILE_START,
   getParentGroup,
 } from '@src/clientSideScene/sceneConstants'
-import { AXIS_GROUP, X_AXIS } from '@src/clientSideScene/sceneInfra'
+import { AXIS_GROUP, X_AXIS } from '@src/clientSideScene/sceneUtils'
 import { getNodeFromPath, isSingleCursorInPipe } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact, ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'

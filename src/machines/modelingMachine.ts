@@ -4,13 +4,13 @@ import { assign, fromPromise, setup } from 'xstate'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import { deleteSegment } from '@src/clientSideScene/ClientSideSceneComp'
+import { deleteSegment } from '@src/clientSideScene/deleteSegment'
 import {
   orthoScale,
   quaternionFromUpNForward,
 } from '@src/clientSideScene/helpers'
 import { DRAFT_DASHED_LINE } from '@src/clientSideScene/sceneConstants'
-import { DRAFT_POINT } from '@src/clientSideScene/sceneInfra'
+import { DRAFT_POINT } from '@src/clientSideScene/sceneUtils'
 import { createProfileStartHandle } from '@src/clientSideScene/segments'
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import type { ModelingMachineContext } from '@src/components/ModelingMachineProvider'

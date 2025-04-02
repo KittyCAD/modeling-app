@@ -11,10 +11,11 @@ import {
   addLineHighlight,
   addLineHighlightEvent,
 } from '@src/editor/highlightextension'
+import type { KclManager } from '@src/lang/KclSingleton'
+import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import { markOnce } from '@src/lib/performance'
 import type { Selection, Selections } from '@src/lib/selections'
 import { processCodeMirrorRanges } from '@src/lib/selections'
-import { engineCommandManager, kclManager } from '@src/lib/singletons'
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
 import type {
   ModelingMachineEvent,
@@ -44,6 +45,8 @@ export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 
 export default class EditorManager {
   private _copilotEnabled: boolean = true
+  private engineCommandManager: EngineCommandManager
+  private kclManager: KclManager
 
   private _isAllTextSelected: boolean = false
   private _isShiftDown: boolean = false
@@ -63,6 +66,14 @@ export default class EditorManager {
   private _highlightRange: Array<[number, number]> = [[0, 0]]
 
   public _editorView: EditorView | null = null
+
+  constructor(
+    engineCommandManager: EngineCommandManager,
+    kclManager: KclManager
+  ) {
+    this.engineCommandManager = engineCommandManager
+    this.kclManager = kclManager
+  }
 
   setCopilotEnabled(enabled: boolean) {
     this._copilotEnabled = enabled
@@ -379,8 +390,8 @@ export default class EditorManager {
       codeMirrorRanges: viewUpdate.state.selection.ranges,
       selectionRanges: this._selectionRanges,
       isShiftDown: this._isShiftDown,
-      ast: kclManager.ast,
-      artifactGraph: kclManager.artifactGraph,
+      ast: this.kclManager.ast,
+      artifactGraph: this.kclManager.artifactGraph,
     })
 
     if (!eventInfo) {
@@ -407,7 +418,7 @@ export default class EditorManager {
     this._modelingSend(eventInfo.modelingEvent)
     eventInfo.engineEvents.forEach((event) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      engineCommandManager.sendSceneCommand(event)
+      this.engineCommandManager.sendSceneCommand(event)
     })
   }
 }

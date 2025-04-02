@@ -16,7 +16,7 @@ import type {
   StateMachineCommandSetSchema,
 } from '@src/lib/commandTypes'
 import { isDesktop } from '@src/lib/isDesktop'
-import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/Settings'
+import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 
 interface CreateMachineCommandProps<
   T extends AnyStateMachine,

@@ -13,7 +13,7 @@ import type { CoreDumpManager } from '@src/lib/coredump'
 import openWindow, { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
-import { APP_VERSION, getReleaseUrl } from '@src/routes/Settings'
+import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 
 export function LowerRightControls({
   children,
