@@ -1,4 +1,3 @@
-
 import toast from 'react-hot-toast'
 import type {
   Intersection,
@@ -50,6 +49,7 @@ import {
 import {
   ARC_ANGLE_END,
   ARC_SEGMENT,
+  ARC_SEGMENT_TYPES,
   CIRCLE_CENTER_HANDLE,
   CIRCLE_SEGMENT,
   CIRCLE_THREE_POINT_HANDLE1,
@@ -58,17 +58,18 @@ import {
   CIRCLE_THREE_POINT_SEGMENT,
   DRAFT_DASHED_LINE,
   EXTRA_SEGMENT_HANDLE,
+  getParentGroup,
   PROFILE_START,
   SEGMENT_BODIES,
   SEGMENT_BODIES_PLUS_PROFILE_START,
   SEGMENT_WIDTH_PX,
   STRAIGHT_SEGMENT,
   STRAIGHT_SEGMENT_DASH,
+  TAN_ARC_SEGMENT_TYPES,
   TANGENTIAL_ARC_TO_SEGMENT,
   THREE_POINT_ARC_HANDLE2,
   THREE_POINT_ARC_HANDLE3,
   THREE_POINT_ARC_SEGMENT,
-  getParentGroup, TAN_ARC_SEGMENT_TYPES, ARC_SEGMENT_TYPES,
 } from '@src/clientSideScene/sceneConstants'
 import type {
   OnClickCallbackArgs,
@@ -82,13 +83,13 @@ import {
   AXIS_GROUP,
   DRAFT_POINT,
   DRAFT_POINT_GROUP,
+  getSceneScale,
   INTERSECTION_PLANE_LAYER,
   RAYCASTABLE_PLANE,
   SKETCH_GROUP_SEGMENTS,
   SKETCH_LAYER,
   X_AXIS,
   Y_AXIS,
-  getSceneScale,
 } from '@src/clientSideScene/sceneInfra'
 import type { SegmentUtils } from '@src/clientSideScene/segments'
 import {
@@ -122,6 +123,7 @@ import {
   insertNewStartProfileAt,
   updateSketchNodePathsWithInsertIndex,
 } from '@src/lang/modifyAst'
+import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/addEdgeTreatment'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
@@ -139,14 +141,16 @@ import {
 } from '@src/lang/std/sketch'
 import type { SegmentInputs } from '@src/lang/std/stdTypes'
 import { topLevelRange } from '@src/lang/util'
-import { getTangentialArcToInfo, PathToNode, VariableMap } from '@src/lang/wasm'
 import {
   defaultSourceRange,
+  getTangentialArcToInfo,
   parse,
+  PathToNode,
   recast,
   resultIsOk,
   sketchFromKclValue,
   sourceRangeFromRust,
+  VariableMap,
 } from '@src/lang/wasm'
 import { EXECUTION_TYPE_MOCK } from '@src/lib/constants'
 import {
@@ -161,6 +165,7 @@ import type { Themes } from '@src/lib/theme'
 import { getThemeColorForThreeJs } from '@src/lib/theme'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
+import { closestPointOnRay } from '@src/lib/utils2d'
 import type {
   SegmentOverlayPayload,
   SketchDetails,
@@ -168,8 +173,6 @@ import type {
   SketchTool,
 } from '@src/machines/modelingMachine'
 import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
-import { closestPointOnRay } from '@src/lib/utils2d'
-import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/addEdgeTreatment'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -1096,7 +1099,7 @@ export class SceneEntities {
           }
 
           const tmp = addNewSketchLn({
-            node: this.kclManager.ast,
+            node: modifiedAst,
             variables: this.kclManager.variables,
             input: {
               type: 'straight-segment',
@@ -2808,7 +2811,9 @@ export class SceneEntities {
       intersects,
       mouseEvent
     )
-    let modifiedAst = draftInfo ? draftInfo.truncatedAst : { ...this.kclManager.ast }
+    let modifiedAst = draftInfo
+      ? draftInfo.truncatedAst
+      : { ...this.kclManager.ast }
 
     const nodePathWithCorrectedIndexForTruncatedAst =
       structuredClone(pathToNode)
