@@ -105,7 +105,7 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Circle so you actually see the scale.
 /// startSketchOn('XY')
 ///     |> circle(
-///         center = [0, 0],
+///         center = [-100, -100],
 ///         radius = 1.5,
 ///         )
 ///
@@ -288,17 +288,19 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// // Circle so you actually see the move.
 /// startSketchOn('XY')
 ///     |> circle(
-///         center = [0, 0],
-///         radius = 1.5,
+///         center = [-10, -10],
+///         radius = 10,
 ///         )
+///     |> extrude(
+///     length = 10,
+///     )
 ///
 /// cube
 ///     |> translate(
-///     x = 1.0,
-///     y = 1.0,
+///     x = 10.0,
+///     y = 10.0,
 ///     z = 2.5,
 ///     )
-///
 /// ```
 ///
 /// ```
