@@ -1,3 +1,13 @@
+import * as TWEEN from '@tweenjs/tween.js'
+import type {
+  Group,
+  Intersection,
+  Mesh,
+  MeshBasicMaterial,
+  Object3D,
+  Object3DEventMap,
+  Texture,
+} from 'three'
 import {
   AmbientLight,
   Color,
@@ -5,32 +15,29 @@ import {
   LineBasicMaterial,
   OrthographicCamera,
   PerspectiveCamera,
+  Raycaster,
   Scene,
+  TextureLoader,
+  Vector2,
   Vector3,
   WebGLRenderer,
-  Raycaster,
-  Vector2,
-  Group,
-  MeshBasicMaterial,
-  Mesh,
-  Intersection,
-  Object3D,
-  Object3DEventMap,
-  TextureLoader,
-  Texture,
 } from 'three'
-import { Coords2d, compareVec2Epsilon2 } from 'lang/std/sketch'
-import { useModelingContext } from 'hooks/useModelingContext'
-import * as TWEEN from '@tweenjs/tween.js'
-import { Axis, NonCodeSelection } from 'lib/selections'
-import { type BaseUnit } from 'lib/settings/settingsTypes'
-import { CameraControls } from './CameraControls'
-import { EngineCommandManager } from 'lang/std/engineConnection'
-import { MouseState, SegmentOverlayPayload } from 'machines/modelingMachine'
-import { getAngle, throttle } from 'lib/utils'
-import { Themes } from 'lib/theme'
 import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { orthoScale, perspScale } from './helpers'
+
+import { CameraControls } from '@src/clientSideScene/CameraControls'
+import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
+import type { useModelingContext } from '@src/hooks/useModelingContext'
+import type { EngineCommandManager } from '@src/lang/std/engineConnection'
+import type { Coords2d } from '@src/lang/std/sketch'
+import { compareVec2Epsilon2 } from '@src/lang/std/sketch'
+import type { Axis, NonCodeSelection } from '@src/lib/selections'
+import { type BaseUnit } from '@src/lib/settings/settingsTypes'
+import { Themes } from '@src/lib/theme'
+import { getAngle, throttle } from '@src/lib/utils'
+import type {
+  MouseState,
+  SegmentOverlayPayload,
+} from '@src/machines/modelingMachine'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 

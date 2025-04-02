@@ -1,13 +1,15 @@
-import { err } from 'lib/trap'
-import { Models } from '@kittycad/lib'
-import { Project, FileEntry } from 'lib/project'
+import type { Models } from '@kittycad/lib'
 
+import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+
+import { newKclFile } from '@src/lang/project'
 import {
   defaultAppSettings,
   initPromise,
   parseAppSettings,
   parseProjectSettings,
-} from 'lang/wasm'
+} from '@src/lang/wasm'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
@@ -18,11 +20,10 @@ import {
   TELEMETRY_FILE_NAME,
   TELEMETRY_RAW_FILE_NAME,
   TOKEN_FILE_NAME,
-} from './constants'
-import { DeepPartial } from './types'
-import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
-import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import { newKclFile } from 'lang/project'
+} from '@src/lib/constants'
+import type { FileEntry, Project } from '@src/lib/project'
+import { err } from '@src/lib/trap'
+import type { DeepPartial } from '@src/lib/types'
 
 export async function renameProjectDirectory(
   projectPath: string,

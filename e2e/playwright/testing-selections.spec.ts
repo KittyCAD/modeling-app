@@ -1,9 +1,13 @@
-import { test, expect } from './zoo-test'
+import type { Coords2d } from '@src/lang/std/sketch'
+import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
+import { uuidv4 } from '@src/lib/utils'
 
-import { commonPoints, getUtils, orRunWhenFullSuiteEnabled } from './test-utils'
-import { Coords2d } from 'lang/std/sketch'
-import { KCL_DEFAULT_LENGTH } from 'lib/constants'
-import { uuidv4 } from 'lib/utils'
+import {
+  commonPoints,
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
   test.setTimeout(90_000)
