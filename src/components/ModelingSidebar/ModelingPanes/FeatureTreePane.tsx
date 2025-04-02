@@ -289,10 +289,7 @@ const OperationItem = (props: {
   send: Prop<Actor<typeof featureTreeMachine>, 'send'>
 }) => {
   const kclContext = useKclContext()
-  const name =
-    'name' in props.item && props.item.name !== null
-      ? getOperationLabel(props.item)
-      : 'anonymous'
+  const name = getOperationLabel(props.item)
   const errors = useMemo(() => {
     return kclContext.diagnostics.filter(
       (diag) =>

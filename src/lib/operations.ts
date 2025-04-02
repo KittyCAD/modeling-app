@@ -1118,9 +1118,19 @@ export function getOperationLabel(op: Operation): string {
     case 'KclStdLibCall':
       return stdLibMap[op.name]?.label ?? op.name
     case 'GroupBegin':
-      return op.group.name ?? 'Anonymous custom function'
+      if (op.group.type === 'FunctionCall') {
+        return op.group.name ?? 'anonymous'
+      } else if (op.group.type === 'ModuleInstance') {
+        return op.group.name
+      } else {
+        const _exhaustiveCheck: never = op.group
+        return '' // unreachable
+      }
     case 'GroupEnd':
       return 'Group end'
+    default:
+      const _exhaustiveCheck: never = op
+      return '' // unreachable
   }
 }
 
