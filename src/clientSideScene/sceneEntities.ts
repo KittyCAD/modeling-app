@@ -24,6 +24,7 @@ import {
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { radToDeg } from 'three/src/math/MathUtils'
 
+import type { Models } from '@kittycad/lib/dist/types/src'
 import type { CallExpression } from '@rust/kcl-lib/bindings/CallExpression'
 import type { CallExpressionKw } from '@rust/kcl-lib/bindings/CallExpressionKw'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -35,6 +36,7 @@ import type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { VariableDeclaration } from '@rust/kcl-lib/bindings/VariableDeclaration'
 import type { VariableDeclarator } from '@rust/kcl-lib/bindings/VariableDeclarator'
+import { uuidv4 } from '@src/lib/utils'
 
 import {
   createGridHelper,
@@ -161,7 +163,6 @@ import type {
   SketchDetailsUpdate,
   SketchTool,
 } from '@src/machines/modelingMachine'
-import { getFaceDetails } from './sceneUtils'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -3329,6 +3330,88 @@ export class SceneEntities {
     })
   }
 
+  async getSketchOrientationDetails(sketch: Sketch): Promise<{
+    quat: Quaternion
+    sketchDetails: Omit<
+      SketchDetails & { faceId?: string },
+      'sketchNodePaths' | 'sketchEntryNodePath' | 'planeNodePath'
+    >
+  }> {
+    if (sketch.on.type === 'plane') {
+      const zAxis = sketch?.on.zAxis
+      return {
+        quat: getQuaternionFromZAxis(massageFormats(zAxis)),
+        sketchDetails: {
+          zAxis: [zAxis.x, zAxis.y, zAxis.z],
+          yAxis: [sketch.on.yAxis.x, sketch.on.yAxis.y, sketch.on.yAxis.z],
+          origin: [0, 0, 0],
+          faceId: sketch.on.id,
+        },
+      }
+    }
+    const faceInfo = await this.getFaceDetails(sketch.on.id)
+
+    if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
+      return Promise.reject('face info')
+    const { z_axis, y_axis, origin } = faceInfo
+    const quaternion = quaternionFromUpNForward(
+      new Vector3(y_axis.x, y_axis.y, y_axis.z),
+      new Vector3(z_axis.x, z_axis.y, z_axis.z)
+    )
+    return {
+      quat: quaternion,
+      sketchDetails: {
+        zAxis: [z_axis.x, z_axis.y, z_axis.z],
+        yAxis: [y_axis.x, y_axis.y, y_axis.z],
+        origin: [origin.x, origin.y, origin.z],
+        faceId: sketch.on.id,
+      },
+    }
+  }
+
+  /**
+   * Retrieves orientation details for a given entity representing a face (brep face or default plane).
+   * This function asynchronously fetches and returns the origin, x-axis, y-axis, and z-axis details
+   * for a specified entity ID. It is primarily used to obtain the orientation of a face in the scene,
+   * which is essential for calculating the correct positioning and alignment of the client side sketch.
+   *
+   * @param  entityId - The ID of the entity for which orientation details are being fetched.
+   * @returns A promise that resolves with the orientation details of the face.
+   */
+  async getFaceDetails(
+    entityId: string
+  ): Promise<Models['GetSketchModePlane_type']> {
+    // TODO mode engine connection to allow batching returns and batch the following
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'enable_sketch_mode',
+        adjust_camera: false,
+        animated: false,
+        ortho: false,
+        entity_id: entityId,
+      },
+    })
+    const resp = await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'get_sketch_mode_plane' },
+    })
+    const faceInfo =
+      resp?.success &&
+      resp?.resp.type === 'modeling' &&
+      resp?.resp?.data?.modeling_response?.type === 'get_sketch_mode_plane'
+        ? resp?.resp?.data?.modeling_response.data
+        : ({} as Models['GetSketchModePlane_type'])
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'sketch_mode_disable' },
+    })
+    return faceInfo
+  }
+
   drawDashedLine({ from, to }: { from: Coords2d; to: Coords2d }) {
     const baseColor = getThemeColorForThreeJs(this.sceneInfra._theme)
     const color = baseColor
@@ -3556,44 +3639,6 @@ export function getSketchQuaternion(
   if (!zAxis) return Error('Sketch zAxis not found')
 
   return getQuaternionFromZAxis(massageFormats(zAxis))
-}
-export async function getSketchOrientationDetails(sketch: Sketch): Promise<{
-  quat: Quaternion
-  sketchDetails: Omit<
-    SketchDetails & { faceId?: string },
-    'sketchNodePaths' | 'sketchEntryNodePath' | 'planeNodePath'
-  >
-}> {
-  if (sketch.on.type === 'plane') {
-    const zAxis = sketch?.on.zAxis
-    return {
-      quat: getQuaternionFromZAxis(massageFormats(zAxis)),
-      sketchDetails: {
-        zAxis: [zAxis.x, zAxis.y, zAxis.z],
-        yAxis: [sketch.on.yAxis.x, sketch.on.yAxis.y, sketch.on.yAxis.z],
-        origin: [0, 0, 0],
-        faceId: sketch.on.id,
-      },
-    }
-  }
-  const faceInfo = await getFaceDetails(sketch.on.id)
-
-  if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
-    return Promise.reject('face info')
-  const { z_axis, y_axis, origin } = faceInfo
-  const quaternion = quaternionFromUpNForward(
-    new Vector3(y_axis.x, y_axis.y, y_axis.z),
-    new Vector3(z_axis.x, z_axis.y, z_axis.z)
-  )
-  return {
-    quat: quaternion,
-    sketchDetails: {
-      zAxis: [z_axis.x, z_axis.y, z_axis.z],
-      yAxis: [y_axis.x, y_axis.y, y_axis.z],
-      origin: [origin.x, origin.y, origin.z],
-      faceId: sketch.on.id,
-    },
-  }
 }
 
 export function getQuaternionFromZAxis(zAxis: Vector3): Quaternion {

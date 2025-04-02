@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react'
 
-import { getFaceDetails } from '@src/clientSideScene/sceneUtils'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -21,6 +20,7 @@ import {
   engineCommandManager,
   kclManager,
   rustContext,
+  sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
@@ -148,7 +148,8 @@ export function useEngineConnectionSubscriptions() {
               const artifact = kclManager.artifactGraph.get(planeOrFaceId)
 
               if (artifact?.type === 'plane') {
-                const planeInfo = await getFaceDetails(planeOrFaceId)
+                const planeInfo =
+                  await sceneEntitiesManager.getFaceDetails(planeOrFaceId)
                 sceneInfra.modelingSend({
                   type: 'Select default plane',
                   data: {
@@ -202,7 +203,7 @@ export function useEngineConnectionSubscriptions() {
                     ? getWallCodeRef(artifact, kclManager.artifactGraph)
                     : artifact.codeRef
 
-              const faceInfo = await getFaceDetails(faceId)
+              const faceInfo = await sceneEntitiesManager.getFaceDetails(faceId)
               if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
                 return
               const { z_axis, y_axis, origin } = faceInfo

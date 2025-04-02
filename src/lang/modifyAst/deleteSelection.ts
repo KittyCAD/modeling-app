@@ -1,4 +1,3 @@
-import { getFaceDetails } from '@src/clientSideScene/sceneUtils'
 import { executeAstMock } from '@src/lang/langHelpers'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { deleteFromSelection } from '@src/lang/modifyAst'
@@ -9,6 +8,7 @@ import {
   editorManager,
   kclManager,
   rustContext,
+    sceneEntitiesManager,
 } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 
@@ -25,7 +25,7 @@ export async function deleteSelectionPromise(
     selection,
     kclManager.variables,
     kclManager.artifactGraph,
-    getFaceDetails
+    sceneEntitiesManager.getFaceDetails
   )
   if (err(modifiedAst)) {
     return new Error(deletionErrorMessage)

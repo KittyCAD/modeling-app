@@ -24,7 +24,6 @@ import {
   SEGMENT_BODIES,
   getParentGroup,
 } from '@src/clientSideScene/sceneConstants'
-import { getSketchOrientationDetails } from '@src/clientSideScene/sceneEntities'
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import { MachineManagerContext } from '@src/components/MachineManagerProvider'
 import { applyConstraintIntersect } from '@src/components/Toolbar/Intersect'
@@ -902,7 +901,9 @@ export const ModelingMachineProvider = ({
               }
               return Promise.reject(new Error('No sketch'))
             }
-            const info = await getSketchOrientationDetails(sketch.value)
+            const info = await sceneEntitiesManager.getSketchOrientationDetails(
+              sketch.value
+            )
             await letEngineAnimateAndSyncCamAfter(
               engineCommandManager,
               info?.sketchDetails?.faceId || ''
