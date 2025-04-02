@@ -24,6 +24,10 @@ import {
   TEST_SETTINGS_KEY,
 } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
+import type { baseUnitLabels } from '@src/lib/settings/settingsTypes'
+
+export type LengthUnitLabel =
+  (typeof baseUnitLabels)[keyof typeof baseUnitLabels]
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
