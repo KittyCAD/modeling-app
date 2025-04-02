@@ -103,7 +103,7 @@
     "lint-fix": "eslint --fix --ext .ts --ext .tsx src e2e packages/codemirror-lsp-client/src rust/kcl-language-server/client/src",
     "lint": "eslint --max-warnings 0 --ext .ts --ext .tsx src e2e packages/codemirror-lsp-client/src rust/kcl-language-server/client/src",
     "circular-deps": "dpdm --no-warning --no-tree -T --skip-dynamic-imports=circular src/index.tsx",
-    "diff-circular-deps": "yarn circular-deps > /tmp/circular-deps.txt && diff /tmp/circular-deps.txt ./known-circular.txt",
+    "diff-circular-deps": "yarn circular-deps | sed '$d' > /tmp/circular-deps.txt && diff /tmp/circular-deps.txt ./known-circular.txt",
     "files:set-version": "echo \"$(jq --arg v \"$VERSION\" '.version=$v' package.json --indent 2)\" > package.json",
     "files:set-notes": "./scripts/set-files-notes.sh",
     "files:flip-to-nightly": "./scripts/flip-files-to-nightly.sh",
