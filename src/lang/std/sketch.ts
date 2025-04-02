@@ -15,6 +15,7 @@ import {
 } from '@src/lang/constants'
 import {
   createArrayExpression,
+  createBinaryExpression,
   createCallExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
@@ -2181,11 +2182,22 @@ export const angledLine: SketchLineHelper = {
     if (err(_node1)) return _node1
     const { node: pipe } = _node1
 
-    // Note: we could use snaps.xAxis/yAxis and angledLineToX/Y instead of angledLine
+    // When snapping to previous arc's tangent direction, create this expression:
+    //  angledLine({ angle = tangentToEnd(arc001), length = 12 }, %)
+    // Or if snapping to the negative direction:
+    //  angledLine({ angle = tangentToEnd(arc001) + turns::HALF_TURN, length = 12 }, %)
     const newAngleVal = snaps?.previousArcTag
-      ? createCallExpression('tangentToEnd', [
-          createLocalName(snaps?.previousArcTag),
-        ])
+      ? snaps.negativeTangentDirection
+        ? createBinaryExpression([
+            createCallExpression('tangentToEnd', [
+              createLocalName(snaps?.previousArcTag),
+            ]),
+            '+',
+            createLocalName('turns::HALF_TURN'),
+          ])
+        : createCallExpression('tangentToEnd', [
+            createLocalName(snaps?.previousArcTag),
+          ])
       : createLiteral(roundOff(getAngle(from, to), 0))
     const newLengthVal = createLiteral(roundOff(getLength(from, to), 2))
     const newLine = createCallExpression('angledLine', [

@@ -21,8 +21,9 @@ export function getTangentPointFromPreviousArc(
 export function closestPointOnRay(
   rayOrigin: Coords2d,
   rayDirection: Coords2d,
-  pointToCheck: Coords2d
-): Coords2d {
+  pointToCheck: Coords2d,
+  allowNegative = false
+) {
   const dirMagnitude = Math.sqrt(
     rayDirection[0] * rayDirection[0] + rayDirection[1] * rayDirection[1]
   )
@@ -36,13 +37,18 @@ export function closestPointOnRay(
     pointToCheck[1] - rayOrigin[1],
   ]
 
-  const projection =
+  let t =
     originToPoint[0] * normalizedDir[0] + originToPoint[1] * normalizedDir[1]
 
-  const t = Math.max(0, projection)
+  if (!allowNegative) {
+    t = Math.max(0, t)
+  }
 
-  return [
-    rayOrigin[0] + normalizedDir[0] * t,
-    rayOrigin[1] + normalizedDir[1] * t,
-  ]
+  return {
+    closestPoint: [
+      rayOrigin[0] + normalizedDir[0] * t,
+      rayOrigin[1] + normalizedDir[1] * t,
+    ] as Coords2d,
+    t,
+  }
 }

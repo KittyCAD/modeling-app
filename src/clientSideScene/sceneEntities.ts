@@ -1034,6 +1034,7 @@ export class SceneEntities {
             snappedToTangent,
             intersectsXAxis,
             intersectsYAxis,
+            negativeTangentDirection,
           } = this.getSnappedDragPoint(
             intersection2d,
             args.intersects,
@@ -1057,6 +1058,7 @@ export class SceneEntities {
           let resolvedFunctionName: ToolTip = 'line'
           const snaps = {
             previousArcTag: '',
+            negativeTangentDirection,
             xAxis: !!intersectsXAxis,
             yAxis: !!intersectsYAxis,
           }
@@ -1086,6 +1088,7 @@ export class SceneEntities {
 
             modifiedAst = taggedAstResult.modifiedAst
             snaps.previousArcTag = taggedAstResult.tag
+            snaps.negativeTangentDirection
             resolvedFunctionName = 'angledLine'
           } else if (isHorizontal) {
             // If the angle between is 0 or 180 degrees (+/- the snapping angle), make the line an xLine
@@ -2620,6 +2623,7 @@ export class SceneEntities {
 
     // Snap to previous segment's tangent direction when drawing a straight segment
     let snappedToTangent = false
+    let negativeTangentDirection = false
 
     const disableTangentSnapping = mouseEvent.ctrlKey || mouseEvent.altKey
     const forceDirectionSnapping = mouseEvent.shiftKey
@@ -2634,12 +2638,14 @@ export class SceneEntities {
             const SNAP_TOLERANCE_PIXELS = 12 * window.devicePixelRatio
             const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
 
+            // See if snapDirection intersects with any of the axes
             if (intersectsXAxis || intersectsYAxis) {
-              // See if snapDirection intersects with any of the axes
               let intersectionPoint: Coords2d | undefined
               if (intersectsXAxis && intersectsYAxis) {
+                // Current mouse position intersects with both axes (origin) -> that has precedence over tangent so we snap to the origin.
                 intersectionPoint = [0, 0]
               } else {
+                // Intersects only one axis
                 const axisLine: [Coords2d, Coords2d] = intersectsXAxis
                   ? [
                       [0, 0],
@@ -2649,6 +2655,8 @@ export class SceneEntities {
                       [0, 0],
                       [0, 1],
                     ]
+                // See if that axis line intersects with the tangent direction
+                // Note: this includes both positive and negative tangent directions as it just checks 2 lines.
                 intersectionPoint = calculateIntersectionOfTwoLines({
                   line1: axisLine,
                   line2Angle: getAngle([0, 0], snapDirection),
@@ -2656,7 +2664,7 @@ export class SceneEntities {
                 })
               }
 
-              // If yes, see if that intersection point is within tolerance and snap to it if yes.
+              // If yes, see if that intersection point is within tolerance and if yes snap to it.
               if (
                 intersectionPoint &&
                 getLength(intersectionPoint, snappedPoint) / orthoFactor <
@@ -2667,11 +2675,12 @@ export class SceneEntities {
               }
             }
             if (!snappedToTangent) {
-              // Otherwise, snap to the tangent direction only
-              const closestPoint = closestPointOnRay(
+              // Otherwise, try to snap to the tangent direction, in both positive and negative directions
+              const { closestPoint, t } = closestPointOnRay(
                 prev.userData.to,
                 snapDirection,
-                snappedPoint
+                snappedPoint,
+                true
               )
               if (
                 forceDirectionSnapping ||
@@ -2680,6 +2689,7 @@ export class SceneEntities {
               ) {
                 snappedPoint = closestPoint
                 snappedToTangent = true
+                negativeTangentDirection = t < 0
               }
             }
           }
@@ -2698,6 +2708,7 @@ export class SceneEntities {
     return {
       isSnapped: !!(intersectsYAxis || intersectsXAxis || snappedToTangent),
       snappedToTangent,
+      negativeTangentDirection,
       snappedPoint,
       intersectsXAxis,
       intersectsYAxis,

@@ -85,9 +85,9 @@ export interface addCall extends ModifyAstBase {
   ) => CreatedSketchExprResult | Error
   referencedSegment?: Path
   spliceBetween?: boolean
-  angledLinePreviousArcTag?: string
   snaps?: {
     previousArcTag?: string
+    negativeTangentDirection: boolean
     xAxis?: boolean
     yAxis?: boolean
   }
