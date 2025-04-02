@@ -890,8 +890,8 @@ impl Node<BinaryExpression> {
         let mut meta = left_value.metadata();
         meta.extend(right_value.metadata());
 
-        // First check if we are doing string concatenation.
         if self.operator == BinaryOperator::Add {
+            // First check if we are doing string concatenation.
             if let (KclValue::String { value: left, meta: _ }, KclValue::String { value: right, meta: _ }) =
                 (&left_value, &right_value)
             {
@@ -899,6 +899,23 @@ impl Node<BinaryExpression> {
                     value: format!("{}{}", left, right),
                     meta,
                 });
+            }
+
+            // Then check if we have solids.
+            if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
+                let args = crate::std::Args::new(Default::default(), self.into(), ctx.clone(), None);
+                let result =
+                    crate::std::csg::inner_union(vec![*left.clone(), *right.clone()], exec_state, args).await?;
+                return Ok(result.into());
+            }
+        } else if self.operator == BinaryOperator::Sub {
+            // Check if we have solids.
+            if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
+                let args = crate::std::Args::new(Default::default(), self.into(), ctx.clone(), None);
+                let result =
+                    crate::std::csg::inner_subtract(vec![*left.clone()], vec![*right.clone()], exec_state, args)
+                        .await?;
+                return Ok(result.into());
             }
         }
 
