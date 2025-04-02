@@ -43,20 +43,12 @@ overwrite-sim-test test_name:
     EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --no-quiet -- tests::{{test_name}}::kcl_test_execute
     EXPECTORATE=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::{{test_name}}::test_after_engine
 
-<<<<<<< HEAD
 # Regenerate all the simulation test output.
 redo-sim-tests:
     EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests
-||||||| parent of afaad9c3c (Fix KCL examples)
-=======
-overwrite-sim-test-sample test_name:
-    EXPECTORATE=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::kcl_samples::parse_{{test_name}}
-    EXPECTORATE=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::kcl_samples::unparse_{{test_name}}
-    EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::kcl_samples::kcl_test_execute_{{test_name}}
->>>>>>> afaad9c3c (Fix KCL examples)
 
 test:
-    export RUST_BRACKTRACE="full" && cargo nextest run --workspace --no-fail-fast
+    export RUST_BRACKTRACE="full" && {{cnr}} --workspace --no-fail-fast
 
 bump-kcl-crate-versions bump='patch':
     # First build the kcl-bumper tool.

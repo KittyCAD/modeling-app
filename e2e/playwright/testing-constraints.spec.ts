@@ -58,13 +58,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       .click()
 
     await expect(page.locator('.cm-content')).toHaveText(
-<<<<<<< HEAD
-      `length001 = 20sketch001 = startSketchOn(XY)  |> startProfileAt([-10, -10], %)  |> line(end = [20, 0])  |> angledLine([90, length001], %)  |> xLine(length = -20)`
-||||||| parent of bcbec9f87 (Update KCL in JS project)
-      `length001 = 20sketch001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line(end = [20, 0])  |> angledLine([90, length001], %)  |> xLine(length = -20)`
-=======
-      `length001 = 20sketch001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line(end = [20, 0])  |> angledLine(angle = 90, length = length001)  |> xLine(length = -20)`
->>>>>>> bcbec9f87 (Update KCL in JS project)
+      `length001 = 20sketch001 = startSketchOn(XY)  |> startProfileAt([-10, -10], %)  |> line(end = [20, 0])  |> angledLine(angle = 90, length = length001)  |> xLine(length = -20)`
     )
 
     // Make sure we didn't pop out of sketch mode.
@@ -1156,7 +1150,9 @@ test.describe('Electron constraint tests', () => {
         await clickOnFirstSegmentLabel()
         await cmdBar.progressCmdBar()
         await editor.expectEditor.toContain('length001 = 15.3')
-        await editor.expectEditor.toContain('|> angledLine(angle = 9, length = length001)')
+        await editor.expectEditor.toContain(
+          '|> angledLine(angle = 9, length = length001)'
+        )
       })
 
       await test.step('Double click again and expect failure', async () => {
