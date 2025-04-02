@@ -45,6 +45,7 @@ interface WebRTCClientMetrics extends ClientMetrics {
   rtc_pli_count: number
   rtc_pause_count: number
   rtc_total_pauses_duration_sec: number
+  rtc_stun_rtt_sec: number
 }
 
 type Value<T, U> = U extends undefined
@@ -766,10 +767,10 @@ class EngineConnection extends EventTarget {
                 reject(new Error('too many video tracks to report'))
                 return
               }
+              const inboundVideoTrack = mediaStream.getVideoTracks()[0]
 
-              let videoTrack = mediaStream.getVideoTracks()[0]
-              void this.pc?.getStats(videoTrack).then((videoTrackStats) => {
-                let client_metrics: WebRTCClientMetrics = {
+              void this.pc?.getStats().then((stats) => {
+                let metrics: WebRTCClientMetrics = {
                   rtc_frames_decoded: 0,
                   rtc_frames_dropped: 0,
                   rtc_frames_received: 0,
@@ -784,46 +785,46 @@ class EngineConnection extends EventTarget {
                   rtc_pli_count: 0,
                   rtc_pause_count: 0,
                   rtc_total_pauses_duration_sec: 0.0,
+                  rtc_stun_rtt_sec: 0.0,
                 }
 
-                // TODO(paultag): Since we can technically have multiple WebRTC
-                // video tracks (even if the Server doesn't at the moment), we
-                // ought to send stats for every video track(?), and add the stream
-                // ID into it.  This raises the cardinality of collected metrics
-                // when/if we do, but for now, just report the one stream.
+                stats.forEach((report, _) => {
+                  if (report.type === 'candidate-pair') {
+                    if (report.state == 'succeeded') {
+                      const rtt = report.currentRoundTripTime
+                      metrics.rtc_stun_rtt_sec = rtt ? rtt * 1000 : 0.0
+                    }
+                  } else if (report.type === 'inbound-rtp') {
+                    // TODO(paultag): Since we can technically have multiple WebRTC
+                    // video tracks (even if the Server doesn't at the moment), we
+                    // ought to send stats for every video track(?), and add the stream
+                    // ID into it.  This raises the cardinality of collected metrics
+                    // when/if we do.
+                    // For now we just take one of the video tracks.
 
-                videoTrackStats.forEach((videoTrackReport) => {
-                  if (videoTrackReport.type === 'inbound-rtp') {
-                    client_metrics.rtc_frames_decoded =
-                      videoTrackReport.framesDecoded || 0
-                    client_metrics.rtc_frames_dropped =
-                      videoTrackReport.framesDropped || 0
-                    client_metrics.rtc_frames_received =
-                      videoTrackReport.framesReceived || 0
-                    client_metrics.rtc_frames_per_second =
-                      videoTrackReport.framesPerSecond || 0
-                    client_metrics.rtc_freeze_count =
-                      videoTrackReport.freezeCount || 0
-                    client_metrics.rtc_jitter_sec =
-                      videoTrackReport.jitter || 0.0
-                    client_metrics.rtc_keyframes_decoded =
-                      videoTrackReport.keyFramesDecoded || 0
-                    client_metrics.rtc_total_freezes_duration_sec =
-                      videoTrackReport.totalFreezesDuration || 0
-                    client_metrics.rtc_frame_height =
-                      videoTrackReport.frameHeight || 0
-                    client_metrics.rtc_frame_width =
-                      videoTrackReport.frameWidth || 0
-                    client_metrics.rtc_packets_lost =
-                      videoTrackReport.packetsLost || 0
-                    client_metrics.rtc_pli_count =
-                      videoTrackReport.pliCount || 0
-                  } else if (videoTrackReport.type === 'transport') {
-                    // videoTrackReport.bytesReceived,
-                    // videoTrackReport.bytesSent,
+                    if (report.id !== inboundVideoTrack.id) {
+                      return
+                    }
+
+                    metrics.rtc_frames_decoded = report.framesDecoded || 0
+                    metrics.rtc_frames_dropped = report.framesDropped || 0
+                    metrics.rtc_frames_received = report.framesReceived || 0
+                    metrics.rtc_frames_per_second = report.framesPerSecond || 0
+                    metrics.rtc_freeze_count = report.freezeCount || 0
+                    metrics.rtc_jitter_sec = report.jitter || 0
+                    metrics.rtc_keyframes_decoded = report.keyFramesDecoded || 0
+                    metrics.rtc_total_freezes_duration_sec =
+                      report.totalFreezesDuration || 0
+                    metrics.rtc_frame_height = report.frameHeight || 0
+                    metrics.rtc_frame_width = report.frameWidth || 0
+                    metrics.rtc_packets_lost = report.packetsLost || 0
+                    metrics.rtc_pli_count = report.pliCount || 0
                   }
+                  // The following report types exist, but are unused:
+                  // data-channel, transport, certificate, peer-connection, local-candidate, remote-candidate, codec
                 })
-                resolve(client_metrics)
+
+                resolve(metrics)
               })
             })
           }
