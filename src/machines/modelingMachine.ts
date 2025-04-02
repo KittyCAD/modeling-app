@@ -15,6 +15,7 @@ import { createProfileStartHandle } from '@src/clientSideScene/segments'
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import type { ModelingMachineContext } from '@src/components/ModelingMachineProvider'
 import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
+import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import {
   applyConstraintEqualAngle,
   equalAngleInfo,
@@ -41,7 +42,6 @@ import {
   applyConstraintHorzVertAlign,
   horzVertDistanceInfo,
 } from '@src/components/Toolbar/SetHorzVertDistance'
-import { angleLengthInfo } from '@src/components/Toolbar/setAngleLength'
 import { createLiteral, createLocalName } from '@src/lang/create'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {

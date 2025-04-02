@@ -73,6 +73,7 @@ import {
   SEGMENT_LENGTH_LABEL_OFFSET_PX,
   SEGMENT_LENGTH_LABEL_TEXT,
 } from '@src/clientSideScene/sceneInfra'
+import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import type { Coords2d } from '@src/lang/std/sketch'
 import type { SegmentInputs } from '@src/lang/std/stdTypes'
 import type { PathToNode } from '@src/lang/wasm'
@@ -89,6 +90,7 @@ import type {
   SegmentOverlayPayload,
   SegmentOverlays,
 } from '@src/machines/modelingMachine'
+import toast from 'react-hot-toast'
 
 const ANGLE_INDICATOR_RADIUS = 30 // in px
 interface CreateSegmentArgs {
@@ -1740,6 +1742,7 @@ function createLengthIndicator({
       console.error('Unable to dimension segment when clicking the label.')
       return
     }
+
     sceneInfra.modelingSend({
       type: 'Set selection',
       data: {
@@ -1747,6 +1750,20 @@ function createLengthIndicator({
         selection: selection.graphSelections[0],
       },
     })
+
+    const canConstrainLength = angleLengthInfo({
+      selectionRanges: {
+        ...selection,
+        graphSelections: [selection.graphSelections[0]],
+      },
+      angleOrLength: 'setLength',
+    })
+    if (err(canConstrainLength) || !canConstrainLength.enabled) {
+      toast.error(
+        'Unable to constrain the length of this segment. Check the KCL code'
+      )
+      return
+    }
 
     // Command Bar
     commandBarActor.send({

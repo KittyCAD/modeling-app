@@ -2,6 +2,7 @@ import { DEV } from '@src/env'
 import type { EventFrom, StateFrom } from 'xstate'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
+import { createLiteral } from '@src/lang/create'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
@@ -621,7 +622,22 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'constraint-length',
-          disabled: (state) => !state.matches({ Sketch: 'SketchIdle' }),
+          disabled: (state) =>
+            !(
+              state.matches({ Sketch: 'SketchIdle' }) &&
+              state.can({
+                type: 'Constrain length',
+                data: {
+                  selection: state.context.selectionRanges,
+                  // dummy data is okay for checking if the constrain is possible
+                  length: {
+                    valueAst: createLiteral(1),
+                    valueText: '1',
+                    valueCalculated: '1',
+                  },
+                },
+              })
+            ),
           onClick: () =>
             commandBarActor.send({
               type: 'Find and select command',
