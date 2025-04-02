@@ -3,7 +3,7 @@ import usePlatform from '@src/hooks/usePlatform'
 import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
 
-import { OnboardingButtons, kbdClasses } from '.'
+import { OnboardingButtons, kbdClasses } from '@src/routes/Onboarding/utils'
 
 export default function CmdK() {
   const platformName = usePlatform()

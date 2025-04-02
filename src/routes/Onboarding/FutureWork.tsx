@@ -5,7 +5,7 @@ import { APP_NAME } from '@src/lib/constants'
 import { sceneInfra } from '@src/lib/singletons'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
 
-import { OnboardingButtons, useDemoCode } from '.'
+import { OnboardingButtons, useDemoCode } from '@src/routes/Onboarding/utils'
 
 export default function FutureWork() {
   const { send } = useModelingContext()

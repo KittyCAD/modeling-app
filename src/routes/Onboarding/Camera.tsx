@@ -4,7 +4,11 @@ import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import { settingsActor, useSettings } from '@src/machines/appMachine'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
 
-import { OnboardingButtons, useDismiss, useNextClick } from '.'
+import {
+  OnboardingButtons,
+  useDismiss,
+  useNextClick,
+} from '@src/routes/Onboarding/utils'
 
 export default function Units() {
   useDismiss()

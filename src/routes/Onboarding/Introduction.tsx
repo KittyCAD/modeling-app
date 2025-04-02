@@ -16,7 +16,7 @@ import type { IndexLoaderData } from '@src/lib/types'
 import { useSettings } from '@src/machines/appMachine'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
 
-import { OnboardingButtons, useDemoCode } from '.'
+import { OnboardingButtons, useDemoCode } from '@src/routes/Onboarding/utils'
 
 /**
  * Show either a welcome screen or a warning screen
