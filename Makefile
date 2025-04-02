@@ -17,7 +17,9 @@ install: node_modules/.yarn-integrity $(CARGO) $(WASM_PACK) ## Install dependenc
 
 node_modules/.yarn-integrity: package.json yarn.lock
 	yarn install
-ifneq ($(OS),Windows_NT)
+ifeq ($(OS),Windows_NT)
+	@ type nul > $@
+else
 	@ touch $@
 endif
 
@@ -130,15 +132,23 @@ test-e2e-desktop: install build-desktop ## Run the desktop e2e tests
 
 .PHONY: clean
 clean: ## Delete all artifacts
+ifeq ($(OS),Windows_NT)
+	git clean --force -d -X
+else
 	rm -rf .vite/ build/
 	rm -rf trace.zip playwright-report/ test-results/
 	rm -rf public/kcl_wasm_lib_bg.wasm
 	rm -rf rust/*/bindings/ rust/*/pkg/ rust/target/
 	rm -rf node_modules/ rust/*/node_modules/
+endif
 
 .PHONY: help
 help: install
+ifeq ($(OS),Windows_NT)
+	@ powershell -Command "Get-Content $(MAKEFILE_LIST) | Select-String -Pattern '^[^\s]+:.*##\s.*$$' | ForEach-Object { $$line = $$_.Line -split ':.*?##\s+'; Write-Host -NoNewline $$line[0].PadRight(30) -ForegroundColor Cyan; Write-Host $$line[1] }"
+else
 	@ grep -E '^[^[:space:]]+:.*## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+endif
 
 .DEFAULT_GOAL := help
 
