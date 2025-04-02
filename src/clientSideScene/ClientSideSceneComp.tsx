@@ -1,28 +1,43 @@
 import { Dialog, Popover, Transition } from '@headlessui/react'
-import { ActionButton } from 'components/ActionButton'
-import { CustomIcon, CustomIconName } from 'components/CustomIcon'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { executeAstMock } from 'lang/langHelpers'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
+import type { InstanceProps } from 'react-modal-promise'
+import { create } from 'react-modal-promise'
+
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import type { ReactCameraProperties } from '@src/clientSideScene/CameraControls'
+import {
+  EXTRA_SEGMENT_HANDLE,
+  PROFILE_START,
+  getParentGroup,
+} from '@src/clientSideScene/sceneConstants'
+import {
+  ARROWHEAD,
+  DEBUG_SHOW_BOTH_SCENES,
+} from '@src/clientSideScene/sceneInfra'
+import { ActionButton } from '@src/components/ActionButton'
+import type { CustomIconName } from '@src/components/CustomIcon'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { executeAstMock } from '@src/lang/langHelpers'
 import {
   deleteSegmentFromPipeExpression,
   removeSingleConstraintInfo,
-} from 'lang/modifyAst'
-import { findUsesOfTagInPipe, getNodeFromPath } from 'lang/queryAst'
-import { getConstraintInfo, getConstraintInfoKw } from 'lang/std/sketch'
-import { ConstrainInfo } from 'lang/std/stdTypes'
-import {
+} from '@src/lang/modifyAst'
+import { findUsesOfTagInPipe, getNodeFromPath } from '@src/lang/queryAst'
+import { getConstraintInfo, getConstraintInfoKw } from '@src/lang/std/sketch'
+import type { ConstrainInfo } from '@src/lang/std/stdTypes'
+import { topLevelRange } from '@src/lang/util'
+import type {
   CallExpression,
   CallExpressionKw,
   Expr,
   PathToNode,
   Program,
-  defaultSourceRange,
-  parse,
-  recast,
-  resultIsOk,
-  topLevelRange,
-} from 'lang/wasm'
-import { cameraMouseDragGuards } from 'lib/cameraControls'
+} from '@src/lang/wasm'
+import { defaultSourceRange, parse, recast, resultIsOk } from '@src/lang/wasm'
+import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import {
   codeManager,
   editorManager,
@@ -31,25 +46,15 @@ import {
   rustContext,
   sceneEntitiesManager,
   sceneInfra,
-} from 'lib/singletons'
-import { err, reportRejection, trap } from 'lib/trap'
-import { throttle, toSync } from 'lib/utils'
-import { useSettings } from 'machines/appMachine'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { SegmentOverlay, SketchDetails } from 'machines/modelingMachine'
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
-import toast from 'react-hot-toast'
-import { InstanceProps, create } from 'react-modal-promise'
-
-import { Node } from '@rust/kcl-lib/bindings/Node'
-
-import { ReactCameraProperties } from './CameraControls'
-import {
-  EXTRA_SEGMENT_HANDLE,
-  PROFILE_START,
-  getParentGroup,
-} from './sceneEntities'
-import { ARROWHEAD, DEBUG_SHOW_BOTH_SCENES } from './sceneInfra'
+} from '@src/lib/singletons'
+import { err, reportRejection, trap } from '@src/lib/trap'
+import { throttle, toSync } from '@src/lib/utils'
+import type { useSettings } from '@src/machines/appMachine'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import type {
+  SegmentOverlay,
+  SketchDetails,
+} from '@src/machines/modelingMachine'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)

@@ -1,22 +1,22 @@
-import { Models } from '@kittycad/lib'
+import type { Models } from '@kittycad/lib'
+import { VITE_KC_API_BASE_URL } from '@src/env'
+import toast from 'react-hot-toast'
+import type { NavigateFunction } from 'react-router-dom'
+import type { ContextFrom, EventFrom } from 'xstate'
+
 import {
   ToastTextToCadError,
   ToastTextToCadSuccess,
-} from 'components/ToastTextToCad'
-import { VITE_KC_API_BASE_URL } from 'env'
-import { isDesktop } from 'lib/isDesktop'
-import { fileMachine } from 'machines/fileMachine'
-import toast from 'react-hot-toast'
-import { NavigateFunction } from 'react-router-dom'
-import { ContextFrom, EventFrom } from 'xstate'
-
-import { FILE_EXT } from './constants'
-import crossPlatformFetch from './crossPlatformFetch'
-import { getNextFileName } from './desktopFS'
-import { kclManager } from './singletons'
-import { Themes } from './theme'
-import { reportRejection } from './trap'
-import { toSync } from './utils'
+} from '@src/components/ToastTextToCad'
+import { FILE_EXT } from '@src/lib/constants'
+import crossPlatformFetch from '@src/lib/crossPlatformFetch'
+import { getNextFileName } from '@src/lib/desktopFS'
+import { isDesktop } from '@src/lib/isDesktop'
+import { kclManager } from '@src/lib/singletons'
+import type { Themes } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import { toSync } from '@src/lib/utils'
+import type { fileMachine } from '@src/machines/fileMachine'
 
 async function submitTextToCadPrompt(
   prompt: string,

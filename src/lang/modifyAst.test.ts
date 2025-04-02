@@ -1,11 +1,6 @@
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { err } from 'lib/trap'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import { Node } from '@rust/kcl-lib/bindings/Node'
-
-import { enginelessExecutor } from '../lib/testHelpers'
 import {
-  addSketchTo,
   createArrayExpression,
   createCallExpression,
   createIdentifier,
@@ -14,27 +9,28 @@ import {
   createPipeExpression,
   createPipeSubstitution,
   createVariableDeclaration,
-  deleteFromSelection,
-  deleteSegmentFromPipeExpression,
   findUniqueName,
   giveSketchFnCallTag,
+} from '@src/lang/create'
+import {
+  addSketchTo,
+  deleteFromSelection,
+  deleteSegmentFromPipeExpression,
   moveValueIntoNewVariable,
   removeSingleConstraintInfo,
   sketchOnExtrudedFace,
   splitPipedProfile,
-} from './modifyAst'
-import { findUsesOfTagInPipe } from './queryAst'
-import { Artifact, codeRefFromRange } from './std/artifactGraph'
-import { SimplifiedArgDetails } from './std/stdTypes'
-import {
-  Identifier,
-  Literal,
-  LiteralValue,
-  assertParse,
-  initPromise,
-  recast,
-  topLevelRange,
-} from './wasm'
+} from '@src/lang/modifyAst'
+import { findUsesOfTagInPipe } from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import type { Artifact } from '@src/lang/std/artifactGraph'
+import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import type { SimplifiedArgDetails } from '@src/lang/std/stdTypes'
+import { topLevelRange } from '@src/lang/util'
+import type { Identifier, Literal, LiteralValue } from '@src/lang/wasm'
+import { assertParse, initPromise, recast } from '@src/lang/wasm'
+import { enginelessExecutor } from '@src/lib/testHelpers'
+import { err } from '@src/lib/trap'
 
 beforeAll(async () => {
   await initPromise

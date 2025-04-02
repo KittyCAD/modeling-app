@@ -1,5 +1,5 @@
-import { getUtils, orRunWhenFullSuiteEnabled } from './test-utils'
-import { expect, test } from './zoo-test'
+import { getUtils, orRunWhenFullSuiteEnabled } from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Test toggling perspective', () => {
   test('via command palette and toggle', async ({ page, homePage }) => {

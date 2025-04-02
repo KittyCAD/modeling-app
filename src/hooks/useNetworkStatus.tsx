@@ -1,17 +1,19 @@
 import { useEffect, useState } from 'react'
 
-import {
+import type {
   ConnectingType,
+  EngineConnectionState,
+  ErrorType,
+} from '@src/lang/std/engineConnection'
+import {
   ConnectingTypeGroup,
   DisconnectingType,
   EngineCommandManagerEvents,
   EngineConnectionEvents,
-  EngineConnectionState,
   EngineConnectionStateType,
-  ErrorType,
   initialConnectingTypeGroupState,
-} from '../lang/std/engineConnection'
-import { engineCommandManager } from '../lib/singletons'
+} from '@src/lang/std/engineConnection'
+import { engineCommandManager } from '@src/lib/singletons'
 
 export enum NetworkHealthState {
   Ok,

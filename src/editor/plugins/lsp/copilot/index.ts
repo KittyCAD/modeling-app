@@ -3,41 +3,40 @@
 /// still grateful.
 import { completionStatus } from '@codemirror/autocomplete'
 import { indentUnit } from '@codemirror/language'
+import type { Extension } from '@codemirror/state'
 import {
   Annotation,
   EditorState,
-  Extension,
   Prec,
   StateEffect,
   StateField,
   Transaction,
 } from '@codemirror/state'
-import {
-  Decoration,
+import type {
   DecorationSet,
-  EditorView,
   KeyBinding,
   PluginValue,
-  ViewPlugin,
   ViewUpdate,
-  keymap,
 } from '@codemirror/view'
-import {
+import { Decoration, EditorView, ViewPlugin, keymap } from '@codemirror/view'
+import type {
   LanguageServerClient,
   LanguageServerOptions,
+} from '@kittycad/codemirror-lsp-client'
+import {
   docPathFacet,
   languageId,
   offsetToPos,
   posToOffset,
 } from '@kittycad/codemirror-lsp-client'
-import { editorManager } from 'lib/singletons'
-import { reportRejection } from 'lib/trap'
-import { deferExecution } from 'lib/utils'
+import { editorManager } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
+import { deferExecution } from '@src/lib/utils'
 
-import { CopilotAcceptCompletionParams } from '@rust/kcl-lib/bindings/CopilotAcceptCompletionParams'
-import { CopilotCompletionResponse } from '@rust/kcl-lib/bindings/CopilotCompletionResponse'
-import { CopilotLspCompletionParams } from '@rust/kcl-lib/bindings/CopilotLspCompletionParams'
-import { CopilotRejectCompletionParams } from '@rust/kcl-lib/bindings/CopilotRejectCompletionParams'
+import type { CopilotAcceptCompletionParams } from '@rust/kcl-lib/bindings/CopilotAcceptCompletionParams'
+import type { CopilotCompletionResponse } from '@rust/kcl-lib/bindings/CopilotCompletionResponse'
+import type { CopilotLspCompletionParams } from '@rust/kcl-lib/bindings/CopilotLspCompletionParams'
+import type { CopilotRejectCompletionParams } from '@rust/kcl-lib/bindings/CopilotRejectCompletionParams'
 
 const copilotPluginAnnotation = Annotation.define<boolean>()
 export const copilotPluginEvent = copilotPluginAnnotation.of(true)

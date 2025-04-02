@@ -1,7 +1,8 @@
 import { Menu } from '@headlessui/react'
-import { ActionIcon } from 'components/ActionIcon'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { PropsWithChildren } from 'react'
+import type { PropsWithChildren } from 'react'
+
+import { ActionIcon } from '@src/components/ActionIcon'
+import { commandBarActor } from '@src/machines/commandBarMachine'
 
 import styles from './KclEditorMenu.module.css'
 

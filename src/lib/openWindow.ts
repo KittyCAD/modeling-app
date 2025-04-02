@@ -1,7 +1,7 @@
-import { isDesktop } from 'lib/isDesktop'
-import { MouseEventHandler } from 'react'
+import type { MouseEventHandler } from 'react'
 
-import { reportRejection } from './trap'
+import { isDesktop } from '@src/lib/isDesktop'
+import { reportRejection } from '@src/lib/trap'
 
 export const openExternalBrowserIfDesktop = (to?: string) =>
   function (e) {

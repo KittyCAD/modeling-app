@@ -1,11 +1,11 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { BrowserRouter } from 'react-router-dom'
 
 import {
   NETWORK_HEALTH_TEXT,
   NetworkHealthIndicator,
-} from './NetworkHealthIndicator'
+} from '@src/components/NetworkHealthIndicator'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 
 function TestWrap({ children }: { children: React.ReactNode }) {
   // wrap in router and xState context

@@ -1,10 +1,10 @@
+import { DEFAULT_PROJECT_KCL_FILE } from '@src/lib/constants'
 import fs from 'fs'
 import fsp from 'fs/promises'
-import { DEFAULT_PROJECT_KCL_FILE } from 'lib/constants'
 import path from 'path'
 
+import type { Paths } from '@e2e/playwright/test-utils'
 import {
-  Paths,
   createProject,
   doExport,
   executorInputPath,
@@ -13,8 +13,8 @@ import {
   isOutOfViewInScrollContainer,
   orRunWhenFullSuiteEnabled,
   runningOnWindows,
-} from './test-utils'
-import { expect, test } from './zoo-test'
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test(
   'projects reload if a new one is created, deleted, or renamed externally',

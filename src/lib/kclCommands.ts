@@ -1,24 +1,24 @@
-import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
-import { CommandBarOverwriteWarning } from 'components/CommandBarOverwriteWarning'
+import type { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
+import toast from 'react-hot-toast'
+
+import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
 import {
   changeKclSettings,
   unitAngleToUnitAng,
   unitLengthToUnitLen,
-} from 'lang/wasm'
-import toast from 'react-hot-toast'
-
-import { Command, CommandArgumentOption } from './commandTypes'
+} from '@src/lang/wasm'
+import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
   DEFAULT_DEFAULT_ANGLE_UNIT,
   DEFAULT_DEFAULT_LENGTH_UNIT,
   FILE_EXT,
-} from './constants'
-import { isDesktop } from './isDesktop'
-import { copyFileShareLink } from './links'
-import { baseUnitsUnion } from './settings/settingsTypes'
-import { codeManager, kclManager } from './singletons'
-import { err, reportRejection } from './trap'
-import { IndexLoaderData } from './types'
+} from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import { copyFileShareLink } from '@src/lib/links'
+import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
+import { codeManager, kclManager } from '@src/lib/singletons'
+import { err, reportRejection } from '@src/lib/trap'
+import type { IndexLoaderData } from '@src/lib/types'
 
 interface OnSubmitProps {
   sampleName: string

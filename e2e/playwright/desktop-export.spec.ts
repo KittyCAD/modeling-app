@@ -5,8 +5,8 @@ import {
   executorInputPath,
   getPlaywrightDownloadDir,
   getUtils,
-} from './test-utils'
-import { expect, test } from './zoo-test'
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test(
   'export works on the first try',

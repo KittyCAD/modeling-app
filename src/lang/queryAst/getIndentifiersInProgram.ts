@@ -1,7 +1,7 @@
-import { traverse } from 'lang/queryAst'
-import { Expr, Name, Program } from 'lang/wasm'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import { Node } from '@rust/kcl-lib/bindings/Node'
+import { traverse } from '@src/lang/queryAst'
+import type { Expr, Name, Program } from '@src/lang/wasm'
 
 /**
  * Given an AST `Program`, return an array of

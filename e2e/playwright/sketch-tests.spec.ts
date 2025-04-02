@@ -1,20 +1,20 @@
-import { Page } from '@playwright/test'
-import { roundOff, uuidv4 } from 'lib/utils'
+import type { Page } from '@playwright/test'
+import { roundOff, uuidv4 } from '@src/lib/utils'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { CmdBarFixture } from './fixtures/cmdBarFixture'
-import { HomePageFixture } from './fixtures/homePageFixture'
-import { SceneFixture } from './fixtures/sceneFixture'
-import { ToolbarFixture } from './fixtures/toolbarFixture'
+import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
+import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
+import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import {
   PERSIST_MODELING_CONTEXT,
   TEST_COLORS,
   getMovementUtils,
   getUtils,
   orRunWhenFullSuiteEnabled,
-} from './test-utils'
-import { expect, test } from './zoo-test'
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
   test('multi-sketch file shows multiple Edit Sketch buttons', async ({

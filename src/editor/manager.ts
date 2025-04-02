@@ -1,20 +1,25 @@
 import { redo, undo } from '@codemirror/commands'
 import { syntaxTree } from '@codemirror/language'
-import {
-  Diagnostic,
-  forEachDiagnostic,
-  setDiagnosticsEffect,
-} from '@codemirror/lint'
+import type { Diagnostic } from '@codemirror/lint'
+import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint'
 import { Annotation, EditorSelection, Transaction } from '@codemirror/state'
-import { EditorView, ViewUpdate } from '@codemirror/view'
-import { markOnce } from 'lib/performance'
-import { Selection, Selections, processCodeMirrorRanges } from 'lib/selections'
-import { engineCommandManager, kclManager } from 'lib/singletons'
-import { kclEditorActor } from 'machines/kclEditorMachine'
-import { ModelingMachineEvent, modelingMachine } from 'machines/modelingMachine'
-import { StateFrom } from 'xstate'
+import type { ViewUpdate } from '@codemirror/view'
+import { EditorView } from '@codemirror/view'
+import type { StateFrom } from 'xstate'
 
-import { addLineHighlight, addLineHighlightEvent } from './highlightextension'
+import {
+  addLineHighlight,
+  addLineHighlightEvent,
+} from '@src/editor/highlightextension'
+import { markOnce } from '@src/lib/performance'
+import type { Selection, Selections } from '@src/lib/selections'
+import { processCodeMirrorRanges } from '@src/lib/selections'
+import { engineCommandManager, kclManager } from '@src/lib/singletons'
+import { kclEditorActor } from '@src/machines/kclEditorMachine'
+import type {
+  ModelingMachineEvent,
+  modelingMachine,
+} from '@src/machines/modelingMachine'
 
 declare global {
   interface Window {

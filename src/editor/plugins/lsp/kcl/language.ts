@@ -1,14 +1,14 @@
 // Code mirror language implementation for kcl.
 import { LanguageSupport } from '@codemirror/language'
 import { KclLanguage } from '@kittycad/codemirror-lang-kcl'
-import {
+import type {
   LanguageServerClient,
   LanguageServerPlugin,
 } from '@kittycad/codemirror-lsp-client'
 import type * as LSP from 'vscode-languageserver-protocol'
 
-import { kclPlugin } from '.'
-import { colorPicker } from './colors'
+import { kclPlugin } from '@src/editor/plugins/lsp/kcl'
+import { colorPicker } from '@src/editor/plugins/lsp/kcl/colors'
 
 export interface LanguageOptions {
   workspaceFolders: LSP.WorkspaceFolder[]

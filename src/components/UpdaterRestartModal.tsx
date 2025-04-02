@@ -1,6 +1,7 @@
-import { InstanceProps, create } from 'react-modal-promise'
+import type { InstanceProps } from 'react-modal-promise'
+import { create } from 'react-modal-promise'
 
-import { ActionButton } from './ActionButton'
+import { ActionButton } from '@src/components/ActionButton'
 
 type ModalResolve = {
   wantRestart: boolean

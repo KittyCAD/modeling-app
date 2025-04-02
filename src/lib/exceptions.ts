@@ -1,8 +1,8 @@
-import { kclManager } from 'lib/singletons'
-import { getModule, reloadModule } from 'lib/wasm_lib_wrapper'
 import toast from 'react-hot-toast'
 
-import { reportRejection } from './trap'
+import { kclManager } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
+import { getModule, reloadModule } from '@src/lib/wasm_lib_wrapper'
 
 let initialized = false
 

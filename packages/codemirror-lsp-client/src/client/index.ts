@@ -1,7 +1,7 @@
 import type * as LSP from 'vscode-languageserver-protocol'
 
-import { LanguageServerPlugin } from '../plugin/lsp'
-import { FromServer, IntoServer } from './codec'
+import type { LanguageServerPlugin } from '../plugin/lsp'
+import type { FromServer, IntoServer } from './codec'
 import Client from './jsonrpc'
 
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/

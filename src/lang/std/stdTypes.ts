@@ -1,8 +1,8 @@
-import { ToolTip } from 'lang/langHelpers'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import { Node } from '@rust/kcl-lib/bindings/Node'
-
-import {
+import type { ToolTip } from '@src/lang/langHelpers'
+import type { LineInputsType } from '@src/lang/std/sketchcombos'
+import type {
   BinaryPart,
   CallExpression,
   CallExpressionKw,
@@ -13,8 +13,7 @@ import {
   Program,
   SourceRange,
   VariableMap,
-} from '../wasm'
-import { LineInputsType } from './sketchcombos'
+} from '@src/lang/wasm'
 
 export interface ModifyAstBase {
   node: Node<Program>

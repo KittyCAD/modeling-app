@@ -1,6 +1,7 @@
-import { DEV } from 'env'
+import { DEV } from '@src/env'
 import isomorphicFetch from 'isomorphic-fetch'
-import { isDesktop } from 'lib/isDesktop'
+
+import { isDesktop } from '@src/lib/isDesktop'
 
 // TODO I not sure this file should exist
 

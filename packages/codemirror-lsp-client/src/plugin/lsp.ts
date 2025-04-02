@@ -5,36 +5,32 @@ import type {
 } from '@codemirror/autocomplete'
 import { completeFromList, snippetCompletion } from '@codemirror/autocomplete'
 import { linter } from '@codemirror/lint'
-import {
-  Annotation,
-  Extension,
-  Facet,
-  StateEffect,
-  Transaction,
-} from '@codemirror/state'
+import type { Extension, StateEffect } from '@codemirror/state'
+import { Facet, Transaction } from '@codemirror/state'
 import type {
+  EditorView,
   PluginSpec,
   PluginValue,
+  Tooltip,
   ViewPlugin,
   ViewUpdate,
 } from '@codemirror/view'
-import { EditorView, Tooltip } from '@codemirror/view'
-import type { PublishDiagnosticsParams } from 'vscode-languageserver-protocol'
 import type * as LSP from 'vscode-languageserver-protocol'
-import {
+import type {
   CompletionTriggerKind,
-  DiagnosticSeverity,
+  PublishDiagnosticsParams,
 } from 'vscode-languageserver-protocol'
+import { DiagnosticSeverity } from 'vscode-languageserver-protocol'
 import { URI } from 'vscode-uri'
 
-import { LanguageServerClient } from '../client'
-import { CompletionItemKindMap } from './autocomplete'
-import lspAutocompleteExt from './autocomplete'
+import type { LanguageServerClient } from '../client'
+import { lspFormatCodeEvent, lspSemanticTokensEvent } from './annotation'
+import lspAutocompleteExt, { CompletionItemKindMap } from './autocomplete'
 import lspFormatExt from './format'
 import lspHoverExt from './hover'
 import lspIndentExt from './indent'
-import { SemanticToken, addToken } from './semantic-tokens'
-import lspSemanticTokensExt from './semantic-tokens'
+import type { SemanticToken } from './semantic-tokens'
+import lspSemanticTokensExt, { addToken } from './semantic-tokens'
 import { formatMarkdownContents, posToOffset } from './util'
 
 const useLast = (values: readonly any[]) => values.reduce((_, v) => v, '')
@@ -46,17 +42,6 @@ export const workspaceFolders = Facet.define<
   LSP.WorkspaceFolder[],
   LSP.WorkspaceFolder[]
 >({ combine: useLast })
-
-export enum LspAnnotation {
-  SemanticTokens = 'semantic-tokens',
-  FormatCode = 'format-code',
-  Diagnostics = 'diagnostics',
-}
-
-const lspEvent = Annotation.define<LspAnnotation>()
-export const lspSemanticTokensEvent = lspEvent.of(LspAnnotation.SemanticTokens)
-export const lspFormatCodeEvent = lspEvent.of(LspAnnotation.FormatCode)
-export const lspDiagnosticsEvent = lspEvent.of(LspAnnotation.Diagnostics)
 
 export interface LanguageServerOptions {
   // We assume this is the main project directory, we are currently working in.

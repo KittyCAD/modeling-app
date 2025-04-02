@@ -1,5 +1,6 @@
-import { writeRawTelemetryFile, writeTelemetryFile } from 'lib/desktop'
-import { PerformanceMark, getMarks } from 'lib/performance'
+import { writeRawTelemetryFile, writeTelemetryFile } from '@src/lib/desktop'
+import type { PerformanceMark } from '@src/lib/performance'
+import { getMarks } from '@src/lib/performance'
 
 let args: any = null
 

@@ -1,5 +1,5 @@
+import { XOR } from '@src/lib/utils'
 import * as fsp from 'fs/promises'
-import { XOR } from 'lib/utils'
 import path from 'node:path'
 
 import {
@@ -7,8 +7,8 @@ import {
   getUtils,
   orRunWhenFullSuiteEnabled,
   pollEditorLinesSelectedLength,
-} from './test-utils'
-import { expect, test } from './zoo-test'
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
   test('Can constrain line length', async ({ page, homePage }) => {

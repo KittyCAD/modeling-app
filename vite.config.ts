@@ -63,6 +63,9 @@ const config = defineConfig({
       '@kittycad/codemirror-lsp-client': '/packages/codemirror-lsp-client/src',
       '@kittycad/codemirror-lang-kcl': '/packages/codemirror-lang-kcl/src',
       '@rust': '/rust',
+      '@e2e': '/e2e',
+      '@src': '/src',
+      '@root': '/',
     },
   },
   plugins: [

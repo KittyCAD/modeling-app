@@ -1,7 +1,7 @@
 import * as fsp from 'fs/promises'
 import { join } from 'path'
 
-import { expect, test } from './zoo-test'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 const FEATURE_TREE_EXAMPLE_CODE = `export fn timesFive(x) {
   return 5 * x

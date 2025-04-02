@@ -1,15 +1,15 @@
+import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import * as fsp from 'fs/promises'
-import { PROJECT_SETTINGS_FILE_NAME } from 'lib/constants'
 import { join } from 'path'
 
-import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
+import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 
 import {
   createProject,
   perProjectsettingsToToml,
   tomlToPerProjectSettings,
-} from './test-utils'
-import { expect, test } from './zoo-test'
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 // Helper function to determine if the file path on disk exists
 // Specifically this is used to check if project.toml exists on disk

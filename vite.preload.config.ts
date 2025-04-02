@@ -1,7 +1,6 @@
 import type { ConfigEnv, UserConfig } from 'vite'
 import { defineConfig, mergeConfig } from 'vite'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
-import { configDefaults } from 'vitest/config'
 
 import {
   external,

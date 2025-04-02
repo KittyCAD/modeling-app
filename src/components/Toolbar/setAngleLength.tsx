@@ -1,30 +1,29 @@
-import { toolTips } from 'lang/langHelpers'
-import { TransformInfo } from 'lang/std/stdTypes'
-import { KclCommandValue } from 'lib/commandTypes'
-import { Selections } from 'lib/selections'
-import { kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
-
+import { removeDoubleNegatives } from '@src/components/AvailableVarsHelpers'
+import {
+  SetAngleLengthModal,
+  createSetAngleLengthModal,
+} from '@src/components/SetAngleLengthModal'
 import {
   createBinaryExpressionWithUnary,
   createLocalName,
   createName,
   createVariableDeclaration,
-} from '../../lang/modifyAst'
-import { getNodeFromPath } from '../../lang/queryAst'
+} from '@src/lang/create'
+import { toolTips } from '@src/lang/langHelpers'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
 import {
-  PathToNodeMap,
   getTransformInfos,
   isExprBinaryPart,
   transformAstSketchLines,
-} from '../../lang/std/sketchcombos'
-import { Expr, Program } from '../../lang/wasm'
-import { normaliseAngle } from '../../lib/utils'
-import { removeDoubleNegatives } from '../AvailableVarsHelpers'
-import {
-  SetAngleLengthModal,
-  createSetAngleLengthModal,
-} from '../SetAngleLengthModal'
+} from '@src/lang/std/sketchcombos'
+import type { TransformInfo } from '@src/lang/std/stdTypes'
+import type { Expr, Program } from '@src/lang/wasm'
+import type { KclCommandValue } from '@src/lib/commandTypes'
+import type { Selections } from '@src/lib/selections'
+import { kclManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
+import { normaliseAngle } from '@src/lib/utils'
 
 const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
 

@@ -1,17 +1,12 @@
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { addCallExpressionsToPipe, addCloseToPipe } from 'lang/std/sketch'
-import { err } from 'lib/trap'
+import type { Name } from '@rust/kcl-lib/bindings/Name'
 
-import { Name } from '@rust/kcl-lib/bindings/Name'
-
-import { enginelessExecutor } from '../lib/testHelpers'
 import {
   createArrayExpression,
   createCallExpression,
   createCallExpressionStdLib,
   createLiteral,
   createPipeSubstitution,
-} from './modifyAst'
+} from '@src/lang/create'
 import {
   doesSceneHaveExtrudedSketch,
   doesSceneHaveSweepableSketch,
@@ -23,16 +18,15 @@ import {
   isNodeSafeToReplace,
   isTypeInValue,
   traverse,
-} from './queryAst'
-import { codeRefFromRange } from './std/artifactGraph'
-import {
-  Identifier,
-  PathToNode,
-  assertParse,
-  initPromise,
-  recast,
-  topLevelRange,
-} from './wasm'
+} from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import { addCallExpressionsToPipe, addCloseToPipe } from '@src/lang/std/sketch'
+import { topLevelRange } from '@src/lang/util'
+import type { Identifier, PathToNode } from '@src/lang/wasm'
+import { assertParse, initPromise, recast } from '@src/lang/wasm'
+import { enginelessExecutor } from '@src/lib/testHelpers'
+import { err } from '@src/lib/trap'
 
 beforeAll(async () => {
   await initPromise

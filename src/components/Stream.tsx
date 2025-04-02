@@ -1,27 +1,32 @@
-import { useAppStream } from 'AppState'
-import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { useNetworkContext } from 'hooks/useNetworkContext'
-import { NetworkHealthState } from 'hooks/useNetworkStatus'
-import { getArtifactOfTypes } from 'lang/std/artifactGraph'
+import { useAppStream } from '@src/AppState'
+import type { MouseEventHandler } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useRouteLoaderData } from 'react-router-dom'
+
+import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
+import Loading from '@src/components/Loading'
+import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import {
   DisconnectingType,
   EngineCommandManagerEvents,
   EngineConnectionStateType,
-} from 'lang/std/engineConnection'
-import { btnName } from 'lib/cameraControls'
-import { PATHS } from 'lib/paths'
-import { sendSelectEventToEngine } from 'lib/selections'
-import { engineCommandManager, kclManager, sceneInfra } from 'lib/singletons'
-import { err, reportRejection } from 'lib/trap'
-import { IndexLoaderData } from 'lib/types'
-import { useSettings } from 'machines/appMachine'
-import { useCommandBarState } from 'machines/commandBarMachine'
-import { MouseEventHandler, useEffect, useRef, useState } from 'react'
-import { useRouteLoaderData } from 'react-router-dom'
-
-import Loading from './Loading'
-import { ViewControlContextMenu } from './ViewControlMenu'
+} from '@src/lang/std/engineConnection'
+import { btnName } from '@src/lib/cameraControls'
+import { PATHS } from '@src/lib/paths'
+import { sendSelectEventToEngine } from '@src/lib/selections'
+import {
+  engineCommandManager,
+  kclManager,
+  sceneInfra,
+} from '@src/lib/singletons'
+import { err, reportRejection } from '@src/lib/trap'
+import type { IndexLoaderData } from '@src/lib/types'
+import { useSettings } from '@src/machines/appMachine'
+import { useCommandBarState } from '@src/machines/commandBarMachine'
 
 enum StreamState {
   Playing = 'playing',

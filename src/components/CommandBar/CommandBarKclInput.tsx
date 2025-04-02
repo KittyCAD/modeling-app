@@ -1,33 +1,39 @@
+import type { Completion } from '@codemirror/autocomplete'
 import {
-  Completion,
   closeBrackets,
   closeBracketsKeymap,
   completionKeymap,
   completionStatus,
 } from '@codemirror/autocomplete'
-import { EditorView, ViewUpdate, keymap } from '@codemirror/view'
+import type { ViewUpdate } from '@codemirror/view'
+import { EditorView, keymap } from '@codemirror/view'
 import { useSelector } from '@xstate/react'
-import { CustomIcon } from 'components/CustomIcon'
-import { useCodeMirror } from 'components/ModelingSidebar/ModelingPanes/CodeEditor'
-import { Spinner } from 'components/Spinner'
-import { createLocalName, createVariableDeclaration } from 'lang/modifyAst'
-import { getNodeFromPath } from 'lang/queryAst'
-import { SourceRange, VariableDeclarator, isPathToNode } from 'lang/wasm'
-import { CommandArgument, KclCommandValue } from 'lib/commandTypes'
-import { kclManager } from 'lib/singletons'
-import { getSystemTheme } from 'lib/theme'
-import { err } from 'lib/trap'
-import { useCalculateKclExpression } from 'lib/useCalculateKclExpression'
-import { roundOff } from 'lib/utils'
-import { varMentions } from 'lib/varCompletionExtension'
-import { useSettings } from 'machines/appMachine'
-import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { AnyStateMachine, SnapshotFrom } from 'xstate'
+import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 
-import { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import { CustomIcon } from '@src/components/CustomIcon'
+import { useCodeMirror } from '@src/components/ModelingSidebar/ModelingPanes/CodeEditor'
+import { Spinner } from '@src/components/Spinner'
+import { createLocalName, createVariableDeclaration } from '@src/lang/create'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import type { SourceRange, VariableDeclarator } from '@src/lang/wasm'
+import { isPathToNode } from '@src/lang/wasm'
+import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
+import { kclManager } from '@src/lib/singletons'
+import { getSystemTheme } from '@src/lib/theme'
+import { err } from '@src/lib/trap'
+import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
+import { roundOff } from '@src/lib/utils'
+import { varMentions } from '@src/lib/varCompletionExtension'
+import { useSettings } from '@src/machines/appMachine'
+import {
+  commandBarActor,
+  useCommandBarState,
+} from '@src/machines/commandBarMachine'
 
 import styles from './CommandBarKclInput.module.css'
 

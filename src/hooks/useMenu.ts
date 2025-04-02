@@ -1,7 +1,7 @@
-import { isDesktop } from 'lib/isDesktop'
 import { useEffect } from 'react'
 
-import type { WebContentSendPayload } from '../menu/channels'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { WebContentSendPayload } from '@src/menu/channels'
 
 export function useMenuListener(
   callback: (data: WebContentSendPayload) => void

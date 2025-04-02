@@ -1,28 +1,29 @@
-import { useAppState } from 'AppState'
-import { ActionButton } from 'components/ActionButton'
-import { ActionButtonDropdown } from 'components/ActionButtonDropdown'
-import { CustomIcon } from 'components/CustomIcon'
-import Tooltip from 'components/Tooltip'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { useNetworkContext } from 'hooks/useNetworkContext'
-import { NetworkHealthState } from 'hooks/useNetworkStatus'
-import { useKclContext } from 'lang/KclProvider'
-import { isCursorInFunctionDefinition } from 'lang/queryAst'
-import { isCursorInSketchCommandRange } from 'lang/util'
-import { isDesktop } from 'lib/isDesktop'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import { editorManager, kclManager } from 'lib/singletons'
-import {
+import { memo, useCallback, useMemo, useRef, useState } from 'react'
+import { useHotkeys } from 'react-hotkeys-hook'
+
+import { useAppState } from '@src/AppState'
+import { ActionButton } from '@src/components/ActionButton'
+import { ActionButtonDropdown } from '@src/components/ActionButtonDropdown'
+import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import { useKclContext } from '@src/lang/KclProvider'
+import { isCursorInFunctionDefinition } from '@src/lang/queryAst'
+import { isCursorInSketchCommandRange } from '@src/lang/util'
+import { isDesktop } from '@src/lib/isDesktop'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { editorManager, kclManager } from '@src/lib/singletons'
+import type {
   ToolbarItem,
   ToolbarItemCallbackProps,
   ToolbarItemResolved,
   ToolbarModeName,
-  toolbarConfig,
-} from 'lib/toolbar'
-import { isArray } from 'lib/utils'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { memo, useCallback, useMemo, useRef, useState } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
+} from '@src/lib/toolbar'
+import { toolbarConfig } from '@src/lib/toolbar'
+import { isArray } from '@src/lib/utils'
+import { commandBarActor } from '@src/machines/commandBarMachine'
 
 export function Toolbar({
   className = '',

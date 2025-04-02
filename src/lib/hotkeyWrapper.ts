@@ -1,8 +1,9 @@
 import { useEffect } from 'react'
-import { Options, useHotkeys } from 'react-hotkeys-hook'
+import type { Options } from 'react-hotkeys-hook'
+import { useHotkeys } from 'react-hotkeys-hook'
 
-import { codeManager } from './singletons'
-import { Platform } from './utils'
+import { codeManager } from '@src/lib/singletons'
+import type { Platform } from '@src/lib/utils'
 
 // Hotkey wrapper wraps hotkeys for the app (outside of the editor)
 // with hotkeys inside the editor.

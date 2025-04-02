@@ -26,7 +26,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@headlessui/react": "^1.7.19",
     "@headlessui/tailwindcss": "^0.2.2",
-    "@kittycad/lib": "2.0.23",
+    "@kittycad/lib": "2.0.25",
     "@lezer/highlight": "^1.2.1",
     "@lezer/lr": "^1.4.1",
     "@react-hook/resize-observer": "^2.0.1",
@@ -88,9 +88,9 @@
     "simpleserver:ci": "yarn pretest && http-server ./public --cors -p 3000 &",
     "simpleserver:bg": "yarn pretest && http-server ./public --cors -p 3000 &",
     "simpleserver:stop": "kill-port 3000",
-    "fmt": "prettier --write ./src *.ts *.json *.js ./e2e ./packages ./rust/kcl-language-server ./rust/kcl-lib/bindings ./rust/kcl-wasm-lib/pkg",
-    "fmt:generated": "prettier --write *.ts *.json *.js ./rust/kcl-lib/bindings ./rust/kcl-wasm-lib/pkg",
-    "fmt-check": "prettier --check ./src *.ts *.json *.js ./e2e ./packages ./rust/kcl-language-server",
+    "fmt": "prettier --write .eslintrc.json ./src *.ts *.json *.js ./e2e ./packages ./rust/kcl-language-server ./rust/kcl-lib/bindings ./rust/kcl-wasm-lib/pkg",
+    "fmt:generated": "prettier --write .eslintrc.json *.ts *.json *.js ./rust/kcl-lib/bindings ./rust/kcl-wasm-lib/pkg",
+    "fmt-check": "prettier --check .eslintrc.json ./src *.ts *.json *.js ./e2e ./packages ./rust/kcl-language-server",
     "fetch:wasm": "./scripts/get-latest-wasm-bundle.sh",
     "fetch:wasm:windows": "./scripts/get-latest-wasm-bundle.ps1",
     "fetch:samples": "rm -rf public/kcl-samples* && curl -L -o public/kcl-samples.zip https://github.com/KittyCAD/kcl-samples/archive/refs/heads/achalmers/kw-args-xylineto.zip && unzip -o public/kcl-samples.zip -d public && mv public/kcl-samples-* public/kcl-samples",
@@ -102,6 +102,7 @@
     "remove-importmeta": "sed -i 's/import.meta.url/window.location.origin/g' \"./rust/kcl-wasm-lib/pkg/kcl_wasm_lib.js\"; sed -i '' 's/import.meta.url/window.location.origin/g' \"./rust/kcl-wasm-lib/pkg/kcl_wasm_lib.js\" || echo \"sed for both mac and linux\"",
     "lint-fix": "eslint --fix --ext .ts --ext .tsx src e2e packages/codemirror-lsp-client/src rust/kcl-language-server/client/src",
     "lint": "eslint --max-warnings 0 --ext .ts --ext .tsx src e2e packages/codemirror-lsp-client/src rust/kcl-language-server/client/src",
+    "circular-deps": "dpdm --no-warning --no-tree -T --skip-dynamic-imports=circular src/index.tsx",
     "files:set-version": "echo \"$(jq --arg v \"$VERSION\" '.version=$v' package.json --indent 2)\" > package.json",
     "files:set-notes": "./scripts/set-files-notes.sh",
     "files:flip-to-nightly": "./scripts/flip-files-to-nightly.sh",
@@ -134,6 +135,25 @@
     "test:playwright:electron:ubuntu:engine:local": "yarn tronb:vite:dev && NODE_ENV=development playwright test --config=playwright.electron.config.ts --grep-invert='@skipLinux|@snapshot|@skipLocalEngine'",
     "test:unit:local": "yarn simpleserver:bg && yarn test:unit; kill-port 3000",
     "test:unit:kcl-samples:local": "yarn simpleserver:bg && yarn test:unit:kcl-samples; kill-port 3000"
+  },
+  "prettier": {
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "semi": false,
+    "singleQuote": true,
+    "importOrder": [
+      "<THIRD_PARTY_MODULES>",
+      "^@rust/(.*)$",
+      "^@e2e/(.*)$",
+      "^@src/(.*)$",
+      "^[./]"
+    ],
+    "importOrderSeparation": true,
+    "importOrderSortSpecifiers": true,
+    "plugins": [
+      "@trivago/prettier-plugin-sort-imports",
+      "prettier-plugin-organize-imports"
+    ]
   },
   "browserslist": {
     "production": [
@@ -182,6 +202,7 @@
     "@vitest/web-worker": "^1.5.0",
     "@xstate/cli": "^0.5.17",
     "autoprefixer": "^10.4.21",
+    "dpdm": "^3.14.0",
     "electron": "^34.1.1",
     "electron-builder": "^26.0.12",
     "eslint": "^8.0.1",
@@ -204,6 +225,7 @@
     "postcss": "^8.4.43",
     "postinstall-postinstall": "^2.1.0",
     "prettier": "^3.5.3",
+    "prettier-plugin-organize-imports": "^4.1.0",
     "setimmediate": "^1.0.5",
     "tailwindcss": "^3.4.17",
     "ts-node": "^10.0.0",

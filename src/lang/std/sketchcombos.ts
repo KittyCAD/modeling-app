@@ -1,12 +1,12 @@
-import { ToolTip, toolTips } from 'lang/langHelpers'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { findKwArg, findKwArgAny } from 'lang/util'
-import { Selections } from 'lib/selections'
-import { cleanErrs, err } from 'lib/trap'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import { Node } from '@rust/kcl-lib/bindings/Node'
-
-import { getAngle, isArray, normaliseAngle, roundOff } from '../../lib/utils'
+import {
+  ARG_END,
+  ARG_END_ABSOLUTE,
+  ARG_LENGTH,
+  ARG_TAG,
+  DETERMINING_ARGS,
+} from '@src/lang/constants'
 import {
   createArrayExpression,
   createBinaryExpression,
@@ -21,9 +21,37 @@ import {
   createPipeSubstitution,
   createUnaryExpression,
   giveSketchFnCallTag,
-} from '../modifyAst'
-import { getNodeFromPath, getNodeFromPathCurry } from '../queryAst'
+} from '@src/lang/create'
+import type { ToolTip } from '@src/lang/langHelpers'
+import { toolTips } from '@src/lang/langHelpers'
+import { getNodeFromPath, getNodeFromPathCurry } from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
+  createFirstArg,
+  fnNameToTooltip,
+  getArgForEnd,
+  getCircle,
+  getConstraintInfo,
+  getConstraintInfoKw,
+  getFirstArg,
+  isAbsoluteLine,
+  replaceSketchLine,
+  tooltipToFnName,
+} from '@src/lang/std/sketch'
+import {
+  getSketchSegmentFromPathToNode,
+  getSketchSegmentFromSourceRange,
+} from '@src/lang/std/sketchConstraints'
+import type {
+  CreateStdLibSketchCallExpr,
+  CreatedSketchExprResult,
+  InputArg,
+  InputArgs,
+  SimplifiedArgDetails,
+  TransformInfo,
+} from '@src/lang/std/stdTypes'
+import { findKwArg, findKwArgAny } from '@src/lang/util'
+import type {
   BinaryPart,
   CallExpression,
   CallExpressionKw,
@@ -36,37 +64,11 @@ import {
   SourceRange,
   VariableDeclarator,
   VariableMap,
-  sketchFromKclValue,
-} from '../wasm'
-import {
-  ARG_END,
-  ARG_END_ABSOLUTE,
-  ARG_LENGTH,
-  ARG_TAG,
-  DETERMINING_ARGS,
-  createFirstArg,
-  fnNameToTooltip,
-  getArgForEnd,
-  getCircle,
-  getConstraintInfo,
-  getConstraintInfoKw,
-  getFirstArg,
-  isAbsoluteLine,
-  replaceSketchLine,
-  tooltipToFnName,
-} from './sketch'
-import {
-  getSketchSegmentFromPathToNode,
-  getSketchSegmentFromSourceRange,
-} from './sketchConstraints'
-import {
-  CreateStdLibSketchCallExpr,
-  CreatedSketchExprResult,
-  InputArg,
-  InputArgs,
-  SimplifiedArgDetails,
-  TransformInfo,
-} from './stdTypes'
+} from '@src/lang/wasm'
+import { sketchFromKclValue } from '@src/lang/wasm'
+import type { Selections } from '@src/lib/selections'
+import { cleanErrs, err } from '@src/lib/trap'
+import { getAngle, isArray, normaliseAngle, roundOff } from '@src/lib/utils'
 
 export type LineInputsType =
   | 'xAbsolute'

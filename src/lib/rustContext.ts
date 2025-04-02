@@ -1,27 +1,29 @@
-import { EngineCommandManager } from 'lang/std/engineConnection'
-import { fileSystemManager } from 'lang/std/fileSystemManager'
+import toast from 'react-hot-toast'
+
+import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
+import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
+import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Program } from '@rust/kcl-lib/bindings/Program'
+import type { Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+
+import type { EngineCommandManager } from '@src/lang/std/engineConnection'
+import { fileSystemManager } from '@src/lang/std/fileSystemManager'
+import type { ExecState } from '@src/lang/wasm'
 import {
-  ExecState,
   errFromErrWithOutputs,
   execStateFromRust,
   initPromise,
   mockExecStateFromRust,
-} from 'lang/wasm'
-import { DefaultPlaneStr, defaultPlaneStrToKey } from 'lib/planes'
-import { err } from 'lib/trap'
-import { DeepPartial } from 'lib/types'
-import { ModuleType, getModule } from 'lib/wasm_lib_wrapper'
-import toast from 'react-hot-toast'
-
-import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
-import { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
-import { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import type { Program } from '@rust/kcl-lib/bindings/Program'
-import { Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
-
-import ModelingAppFile from './modelingAppFile'
+} from '@src/lang/wasm'
+import type ModelingAppFile from '@src/lib/modelingAppFile'
+import type { DefaultPlaneStr } from '@src/lib/planes'
+import { defaultPlaneStrToKey } from '@src/lib/planes'
+import { err } from '@src/lib/trap'
+import type { DeepPartial } from '@src/lib/types'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { getModule } from '@src/lib/wasm_lib_wrapper'
 
 export default class RustContext {
   private wasmInitFailed: boolean = true

@@ -1,6 +1,5 @@
-import { ParseResult } from 'lang/wasm'
-
-import { getCalculatedKclExpressionValue } from './kclHelpers'
+import type { ParseResult } from '@src/lang/wasm'
+import { getCalculatedKclExpressionValue } from '@src/lib/kclHelpers'
 
 describe('KCL expression calculations', () => {
   it('calculates a simple expression', async () => {
