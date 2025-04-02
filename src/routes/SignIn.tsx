@@ -15,7 +15,7 @@ import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import { authActor, useSettings } from '@src/machines/appMachine'
-import { APP_VERSION } from '@src/routes/Settings'
+import { APP_VERSION, IS_NIGHTLY } from '@src/routes/Settings'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
