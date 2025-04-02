@@ -10,19 +10,11 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
           "type": "String",
           "value": "XZ"
         },
-        "sourceRange": [
-          26,
-          30,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      12,
-      31,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,19 +34,11 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
             }
           }
         },
-        "sourceRange": [
-          487,
-          490,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      459,
-      491,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -63,11 +47,7 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        467,
-        476,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -86,11 +66,7 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
             }
           }
         },
-        "sourceRange": [
-          513,
-          515,
-          0
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -103,19 +79,11 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
             }
           ]
         },
-        "sourceRange": [
-          524,
-          531,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      497,
-      532,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -124,11 +92,7 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        497,
-        532,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -147,22 +111,14 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
             }
           }
         },
-        "sourceRange": [
-          555,
-          557,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "TagDeclarator",
           "name": "seg03"
         },
-        "sourceRange": [
-          598,
-          604,
-          0
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -174,19 +130,11 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
             }
           ]
         },
-        "sourceRange": [
-          566,
-          590,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "chamfer",
-    "sourceRange": [
-      538,
-      605,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -195,11 +143,7 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        538,
-        605,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -218,22 +162,14 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
             }
           }
         },
-        "sourceRange": [
-          628,
-          630,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "TagDeclarator",
           "name": "seg04"
         },
-        "sourceRange": [
-          654,
-          660,
-          0
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -246,19 +182,11 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
             }
           ]
         },
-        "sourceRange": [
-          639,
-          646,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "chamfer",
-    "sourceRange": [
-      611,
-      661,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -267,11 +195,7 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        611,
-        661,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -283,11 +207,7 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          689,
-          699,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
@@ -295,19 +215,11 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
           "value": "seg04",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          701,
-          706,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      675,
-      707,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -320,11 +232,7 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1148,
-          1158,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
@@ -332,19 +240,11 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
           "value": "seg03",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          1160,
-          1165,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1134,
-      1166,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -364,19 +264,11 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
             }
           }
         },
-        "sourceRange": [
-          1624,
-          1626,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1596,
-      1627,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -385,11 +277,7 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1604,
-        1613,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

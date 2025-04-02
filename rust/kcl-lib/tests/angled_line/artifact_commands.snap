@@ -5,11 +5,7 @@ description: Artifact commands angled_line.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,23 +13,7 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +22,7 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +31,7 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      10,
-      29,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -84,11 +56,7 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      35,
-      67,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -104,22 +72,14 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      35,
-      67,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      35,
-      67,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -132,22 +92,14 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      35,
-      67,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      73,
-      97,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -164,11 +116,7 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      103,
-      142,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -185,11 +133,7 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      148,
-      174,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -206,11 +150,7 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      180,
-      229,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -227,11 +167,7 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      235,
-      262,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -248,11 +184,7 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      268,
-      275,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -260,11 +192,7 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      281,
-      300,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -280,11 +208,7 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      281,
-      300,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -294,22 +218,14 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      281,
-      300,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      281,
-      300,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -317,11 +233,7 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      281,
-      300,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -330,11 +242,7 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      281,
-      300,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -344,11 +252,7 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      281,
-      300,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -358,11 +262,7 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      281,
-      300,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -372,11 +272,7 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      281,
-      300,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -386,11 +282,7 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      281,
-      300,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -400,11 +292,7 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      281,
-      300,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -414,11 +302,7 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      281,
-      300,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -428,11 +312,7 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      281,
-      300,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -442,11 +322,7 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      281,
-      300,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -456,11 +332,7 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      281,
-      300,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -470,11 +342,7 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      281,
-      300,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -484,11 +352,7 @@ description: Artifact commands angled_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      281,
-      300,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",

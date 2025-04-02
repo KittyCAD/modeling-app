@@ -484,9 +484,9 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 681,
-                "end": 687,
-                "start": 681,
+                "commentStart": 699,
+                "end": 705,
+                "start": 699,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -497,9 +497,9 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 730,
-                "end": 736,
-                "start": 730,
+                "commentStart": 748,
+                "end": 754,
+                "start": 748,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -510,9 +510,9 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 806,
-                "end": 812,
-                "start": 806,
+                "commentStart": 824,
+                "end": 830,
+                "start": 824,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -558,9 +558,9 @@ description: Variables in memory after executing keyboard.kcl
                   0.68
                 ],
                 "tag": {
-                  "commentStart": 681,
-                  "end": 687,
-                  "start": 681,
+                  "commentStart": 699,
+                  "end": 705,
+                  "start": 699,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -583,9 +583,9 @@ description: Variables in memory after executing keyboard.kcl
                   1.399
                 ],
                 "tag": {
-                  "commentStart": 730,
-                  "end": 736,
-                  "start": 730,
+                  "commentStart": 748,
+                  "end": 754,
+                  "start": 748,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -608,9 +608,9 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 806,
-                  "end": 812,
-                  "start": 806,
+                  "commentStart": 824,
+                  "end": 830,
+                  "start": 824,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -855,9 +855,9 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 681,
-                "end": 687,
-                "start": 681,
+                "commentStart": 699,
+                "end": 705,
+                "start": 699,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -868,9 +868,9 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 730,
-                "end": 736,
-                "start": 730,
+                "commentStart": 748,
+                "end": 754,
+                "start": 748,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -881,9 +881,9 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 806,
-                "end": 812,
-                "start": 806,
+                "commentStart": 824,
+                "end": 830,
+                "start": 824,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -929,9 +929,9 @@ description: Variables in memory after executing keyboard.kcl
                   0.68
                 ],
                 "tag": {
-                  "commentStart": 681,
-                  "end": 687,
-                  "start": 681,
+                  "commentStart": 699,
+                  "end": 705,
+                  "start": 699,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -954,9 +954,9 @@ description: Variables in memory after executing keyboard.kcl
                   1.399
                 ],
                 "tag": {
-                  "commentStart": 730,
-                  "end": 736,
-                  "start": 730,
+                  "commentStart": 748,
+                  "end": 754,
+                  "start": 748,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -979,9 +979,9 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 806,
-                  "end": 812,
-                  "start": 806,
+                  "commentStart": 824,
+                  "end": 830,
+                  "start": 824,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -1226,9 +1226,9 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 681,
-                "end": 687,
-                "start": 681,
+                "commentStart": 699,
+                "end": 705,
+                "start": 699,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -1239,9 +1239,9 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 730,
-                "end": 736,
-                "start": 730,
+                "commentStart": 748,
+                "end": 754,
+                "start": 748,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -1252,9 +1252,9 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 806,
-                "end": 812,
-                "start": 806,
+                "commentStart": 824,
+                "end": 830,
+                "start": 824,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -1300,9 +1300,9 @@ description: Variables in memory after executing keyboard.kcl
                   0.68
                 ],
                 "tag": {
-                  "commentStart": 681,
-                  "end": 687,
-                  "start": 681,
+                  "commentStart": 699,
+                  "end": 705,
+                  "start": 699,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -1325,9 +1325,9 @@ description: Variables in memory after executing keyboard.kcl
                   1.399
                 ],
                 "tag": {
-                  "commentStart": 730,
-                  "end": 736,
-                  "start": 730,
+                  "commentStart": 748,
+                  "end": 754,
+                  "start": 748,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -1350,9 +1350,9 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 806,
-                  "end": 812,
-                  "start": 806,
+                  "commentStart": 824,
+                  "end": 830,
+                  "start": 824,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -1597,9 +1597,9 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 681,
-                "end": 687,
-                "start": 681,
+                "commentStart": 699,
+                "end": 705,
+                "start": 699,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -1610,9 +1610,9 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 730,
-                "end": 736,
-                "start": 730,
+                "commentStart": 748,
+                "end": 754,
+                "start": 748,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -1623,9 +1623,9 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 806,
-                "end": 812,
-                "start": 806,
+                "commentStart": 824,
+                "end": 830,
+                "start": 824,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -1671,9 +1671,9 @@ description: Variables in memory after executing keyboard.kcl
                   0.68
                 ],
                 "tag": {
-                  "commentStart": 681,
-                  "end": 687,
-                  "start": 681,
+                  "commentStart": 699,
+                  "end": 705,
+                  "start": 699,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -1696,9 +1696,9 @@ description: Variables in memory after executing keyboard.kcl
                   1.399
                 ],
                 "tag": {
-                  "commentStart": 730,
-                  "end": 736,
-                  "start": 730,
+                  "commentStart": 748,
+                  "end": 754,
+                  "start": 748,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -1721,9 +1721,9 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 806,
-                  "end": 812,
-                  "start": 806,
+                  "commentStart": 824,
+                  "end": 830,
+                  "start": 824,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -1980,9 +1980,9 @@ description: Variables in memory after executing keyboard.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 681,
-            "end": 687,
-            "start": 681,
+            "commentStart": 699,
+            "end": 705,
+            "start": 699,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1993,9 +1993,9 @@ description: Variables in memory after executing keyboard.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 730,
-            "end": 736,
-            "start": 730,
+            "commentStart": 748,
+            "end": 754,
+            "start": 748,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -2006,9 +2006,9 @@ description: Variables in memory after executing keyboard.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 806,
-            "end": 812,
-            "start": 806,
+            "commentStart": 824,
+            "end": 830,
+            "start": 824,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -2054,9 +2054,9 @@ description: Variables in memory after executing keyboard.kcl
               0.68
             ],
             "tag": {
-              "commentStart": 681,
-              "end": 687,
-              "start": 681,
+              "commentStart": 699,
+              "end": 705,
+              "start": 699,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -2079,9 +2079,9 @@ description: Variables in memory after executing keyboard.kcl
               1.399
             ],
             "tag": {
-              "commentStart": 730,
-              "end": 736,
-              "start": 730,
+              "commentStart": 748,
+              "end": 754,
+              "start": 748,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -2104,9 +2104,9 @@ description: Variables in memory after executing keyboard.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 806,
-              "end": 812,
-              "start": 806,
+              "commentStart": 824,
+              "end": 830,
+              "start": 824,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -2292,9 +2292,9 @@ description: Variables in memory after executing keyboard.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 681,
-              "end": 687,
-              "start": 681,
+              "commentStart": 699,
+              "end": 705,
+              "start": 699,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -2305,9 +2305,9 @@ description: Variables in memory after executing keyboard.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 730,
-              "end": 736,
-              "start": 730,
+              "commentStart": 748,
+              "end": 754,
+              "start": 748,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -2318,9 +2318,9 @@ description: Variables in memory after executing keyboard.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 806,
-              "end": 812,
-              "start": 806,
+              "commentStart": 824,
+              "end": 830,
+              "start": 824,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -2366,9 +2366,9 @@ description: Variables in memory after executing keyboard.kcl
                 0.68
               ],
               "tag": {
-                "commentStart": 681,
-                "end": 687,
-                "start": 681,
+                "commentStart": 699,
+                "end": 705,
+                "start": 699,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -2391,9 +2391,9 @@ description: Variables in memory after executing keyboard.kcl
                 1.399
               ],
               "tag": {
-                "commentStart": 730,
-                "end": 736,
-                "start": 730,
+                "commentStart": 748,
+                "end": 754,
+                "start": 748,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -2416,9 +2416,9 @@ description: Variables in memory after executing keyboard.kcl
                 0.0
               ],
               "tag": {
-                "commentStart": 806,
-                "end": 812,
-                "start": 806,
+                "commentStart": 824,
+                "end": 830,
+                "start": 824,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },

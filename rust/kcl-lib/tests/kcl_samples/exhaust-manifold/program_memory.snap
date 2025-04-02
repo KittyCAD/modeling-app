@@ -26,14 +26,11 @@ description: Variables in memory after executing exhaust-manifold.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1895,
-            1929,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 1928,
-            "start": 1922,
+            "commentStart": 1810,
+            "end": 1816,
+            "start": 1810,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -42,47 +39,32 @@ description: Variables in memory after executing exhaust-manifold.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1935,
-            1982,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1988,
-            2034,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2040,
-            2087,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2093,
-            2127,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 2126,
-            "start": 2120,
+            "commentStart": 2008,
+            "end": 2014,
+            "start": 2008,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -91,14 +73,11 @@ description: Variables in memory after executing exhaust-manifold.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2133,
-            2176,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 2175,
-            "start": 2169,
+            "commentStart": 2057,
+            "end": 2063,
+            "start": 2057,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -107,14 +86,11 @@ description: Variables in memory after executing exhaust-manifold.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2182,
-            2215,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 2214,
-            "start": 2208,
+            "commentStart": 2096,
+            "end": 2102,
+            "start": 2096,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -123,47 +99,32 @@ description: Variables in memory after executing exhaust-manifold.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2221,
-            2268,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2274,
-            2321,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2327,
-            2374,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2380,
-            2423,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 2422,
-            "start": 2416,
+            "commentStart": 2304,
+            "end": 2310,
+            "start": 2304,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -172,14 +133,11 @@ description: Variables in memory after executing exhaust-manifold.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2429,
-            2480,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 2479,
-            "start": 2473,
+            "commentStart": 2361,
+            "end": 2367,
+            "start": 2361,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -188,14 +146,11 @@ description: Variables in memory after executing exhaust-manifold.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2486,
-            2530,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 2529,
-            "start": 2523,
+            "commentStart": 2411,
+            "end": 2417,
+            "start": 2411,
             "type": "TagDeclarator",
             "value": "seg09"
           },
@@ -204,33 +159,21 @@ description: Variables in memory after executing exhaust-manifold.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2536,
-            2583,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2589,
-            2635,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2641,
-            2697,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         }
@@ -242,19 +185,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1895,
-                1929,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.3,
               -1.25
             ],
             "tag": {
-              "end": 1928,
-              "start": 1922,
+              "commentStart": 1810,
+              "end": 1816,
+              "start": 1810,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -270,11 +210,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1935,
-                1982,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": false,
             "center": [
@@ -298,11 +234,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1988,
-                2034,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -326,11 +258,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2040,
-                2087,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": false,
             "center": [
@@ -354,19 +282,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2093,
-                2127,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.1573,
               -1.25
             ],
             "tag": {
-              "end": 2126,
-              "start": 2120,
+              "commentStart": 2008,
+              "end": 2014,
+              "start": 2008,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -382,19 +307,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2133,
-                2176,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -1.2427,
               -1.25
             ],
             "tag": {
-              "end": 2175,
-              "start": 2169,
+              "commentStart": 2057,
+              "end": 2063,
+              "start": 2057,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -410,19 +332,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2182,
-                2215,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -1.2427,
               1.35
             ],
             "tag": {
-              "end": 2214,
-              "start": 2208,
+              "commentStart": 2096,
+              "end": 2102,
+              "start": 2096,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -438,11 +357,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2221,
-                2268,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": false,
             "center": [
@@ -466,11 +381,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2274,
-                2321,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -494,11 +405,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2327,
-                2374,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": false,
             "center": [
@@ -522,19 +429,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2380,
-                2423,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.1713,
               1.35
             ],
             "tag": {
-              "end": 2422,
-              "start": 2416,
+              "commentStart": 2304,
+              "end": 2310,
+              "start": 2304,
               "type": "TagDeclarator",
               "value": "seg07"
             },
@@ -550,19 +454,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2429,
-                2480,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.2713,
               1.35
             ],
             "tag": {
-              "end": 2479,
-              "start": 2473,
+              "commentStart": 2361,
+              "end": 2367,
+              "start": 2361,
               "type": "TagDeclarator",
               "value": "seg08"
             },
@@ -578,19 +479,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2486,
-                2530,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.2713,
               -1.25
             ],
             "tag": {
-              "end": 2529,
-              "start": 2523,
+              "commentStart": 2411,
+              "end": 2417,
+              "start": 2411,
               "type": "TagDeclarator",
               "value": "seg09"
             },
@@ -606,11 +504,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2536,
-                2583,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": false,
             "center": [
@@ -634,11 +528,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2589,
-                2635,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -662,11 +552,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2641,
-                2697,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": false,
             "center": [
@@ -690,11 +576,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2703,
-                2710,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.3,
@@ -755,11 +637,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1854,
-              1889,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {

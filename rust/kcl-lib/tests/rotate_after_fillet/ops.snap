@@ -23,7 +23,7 @@ description: Operations executed rotate_after_fillet.kcl
     "name": "bolt",
     "functionSourceRange": [
       264,
-      1573,
+      1553,
       0
     ],
     "unlabeledArg": null,

@@ -43,34 +43,22 @@ export fn case() {
          -width / 2 + offset + caseTolerance,
          height / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45)))
        ], %)
-    |> angledLineToY({
-         angle = 45,
-         to = height / 2 - (offset + caseTolerance)
-       }, %)
+    |> angledLine(angle = 45, endAbsoluteY = height / 2 - (offset + caseTolerance))
     |> line(endAbsolute = [
          width / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45))),
          height / 2 - (offset + caseTolerance)
        ])
-    |> angledLineToX({
-         angle = -45,
-         to = width / 2 - (offset + caseTolerance)
-       }, %)
+    |> angledLine(angle = -45, endAbsoluteX = width / 2 - (offset + caseTolerance))
     |> line(endAbsolute = [
          width / 2 - (offset + caseTolerance),
          -(height / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45))))
        ])
-    |> angledLineToY({
-         angle = -135,
-         to = -height / 2 + offset + caseTolerance
-       }, %)
+    |> angledLine(angle = -135, endAbsoluteY = -height / 2 + offset + caseTolerance)
     |> line(endAbsolute = [
          -(width / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45)))),
          -height / 2 + offset + caseTolerance
        ])
-    |> angledLineToX({
-         angle = -225,
-         to = -width / 2 + offset + caseTolerance
-       }, %)
+    |> angledLine(angle = -225, endAbsoluteX = -width / 2 + offset + caseTolerance)
     |> close()
     |> hole(sketch006, %)
     |> hole(squareHolePatternSketch, %)

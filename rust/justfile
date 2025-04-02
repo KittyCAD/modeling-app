@@ -30,18 +30,11 @@ new-sim-test test_name render_to_png="true":
     cat kcl-lib/tests/simtest.tmpl | sed "s/TEST_NAME_HERE/{{test_name}}/" | sed "s/RENDER_TO_PNG/{{render_to_png}}/" >> kcl-lib/src/simulation_tests.rs
 
 # Run a KCL deterministic simulation test case and accept output.
-run-sim-test test_name:
-    # Run all the tests for the first time, in the right order.
-    {{cita}} -p kcl-lib -- simulation_tests::{{test_name}}::parse
-    {{cita}} -p kcl-lib -- simulation_tests::{{test_name}}::unparse
-    {{cita}} -p kcl-lib -- tests::{{test_name}}::kcl_test_execute
-    {{cita}} -p kcl-lib -- simulation_tests::{{test_name}}::test_after_engine
+overwrite-sim-test-sample test_name:
+    EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::kcl_samples::kcl_test_execute_{{test_name}}
 
 overwrite-sim-test test_name:
-    EXPECTORATE=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::{{test_name}}::parse
-    EXPECTORATE=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::{{test_name}}::unparse
-    EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --no-quiet -- tests::{{test_name}}::kcl_test_execute
-    EXPECTORATE=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::{{test_name}}::test_after_engine
+    EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::{{test_name}}::kcl_test_execute
 
 # Regenerate all the simulation test output.
 redo-sim-tests:

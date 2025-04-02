@@ -10,19 +10,11 @@ description: Operations executed pentagon_fillet_sugar.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          152,
-          156,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      138,
-      157,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,19 +34,11 @@ description: Operations executed pentagon_fillet_sugar.kcl
             }
           }
         },
-        "sourceRange": [
-          393,
-          407,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      376,
-      408,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -63,11 +47,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        376,
-        408,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -80,11 +60,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      575,
-      589,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -95,11 +71,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          453,
-          454,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
@@ -107,19 +79,11 @@ description: Operations executed pentagon_fillet_sugar.kcl
           "value": "c",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          456,
-          460,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      439,
-      461,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -142,19 +106,11 @@ description: Operations executed pentagon_fillet_sugar.kcl
             }
           }
         },
-        "sourceRange": [
-          626,
-          636,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      609,
-      637,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -163,11 +119,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        609,
-        637,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -186,11 +138,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
             }
           }
         },
-        "sourceRange": [
-          667,
-          668,
-          0
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -207,19 +155,11 @@ description: Operations executed pentagon_fillet_sugar.kcl
             }
           ]
         },
-        "sourceRange": [
-          684,
-          762,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      643,
-      770,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -228,11 +168,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        643,
-        770,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -245,11 +181,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      776,
-      789,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -260,11 +192,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          453,
-          454,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
@@ -272,19 +200,11 @@ description: Operations executed pentagon_fillet_sugar.kcl
           "value": "a",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          456,
-          460,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      439,
-      461,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -307,19 +227,11 @@ description: Operations executed pentagon_fillet_sugar.kcl
             }
           }
         },
-        "sourceRange": [
-          826,
-          836,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      809,
-      837,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -328,11 +240,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        809,
-        837,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -351,11 +259,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
             }
           }
         },
-        "sourceRange": [
-          867,
-          868,
-          0
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -372,19 +276,11 @@ description: Operations executed pentagon_fillet_sugar.kcl
             }
           ]
         },
-        "sourceRange": [
-          884,
-          962,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      843,
-      970,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -393,11 +289,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        843,
-        970,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

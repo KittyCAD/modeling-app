@@ -949,74 +949,52 @@ description: Result of parsing scale_after_fillet.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 761,
-                              "end": 0,
-                              "properties": [
-                                {
-                                  "commentStart": 772,
-                                  "end": 0,
-                                  "key": {
-                                    "commentStart": 772,
-                                    "end": 0,
-                                    "name": "angle",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "commentStart": 780,
-                                    "end": 0,
-                                    "raw": "270",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 270.0,
-                                      "suffix": "None"
-                                    }
-                                  }
-                                },
-                                {
-                                  "commentStart": 794,
-                                  "end": 0,
-                                  "key": {
-                                    "commentStart": 794,
-                                    "end": 0,
-                                    "name": "length",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "abs_path": false,
-                                    "commentStart": 803,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 803,
-                                      "end": 0,
-                                      "name": "boltHexFlatLength",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  }
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 771,
+                                "end": 0,
+                                "name": "angle",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "commentStart": 779,
+                                "end": 0,
+                                "raw": "270",
+                                "start": 0,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 270.0,
+                                  "suffix": "None"
                                 }
-                              ],
-                              "start": 0,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
+                              }
                             },
                             {
-                              "commentStart": 831,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 793,
+                                "end": 0,
+                                "name": "length",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "abs_path": false,
+                                "commentStart": 802,
+                                "end": 0,
+                                "name": {
+                                  "commentStart": 802,
+                                  "end": 0,
+                                  "name": "boltHexFlatLength",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              }
                             }
                           ],
                           "callee": {
@@ -1037,88 +1015,67 @@ description: Result of parsing scale_after_fillet.kcl
                           "commentStart": 750,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         },
                         {
                           "arguments": [
                             {
-                              "commentStart": 852,
-                              "end": 0,
-                              "properties": [
-                                {
-                                  "commentStart": 863,
-                                  "end": 0,
-                                  "key": {
-                                    "commentStart": 863,
-                                    "end": 0,
-                                    "name": "angle",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "commentStart": 871,
-                                    "end": 0,
-                                    "raw": "210",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 210.0,
-                                      "suffix": "None"
-                                    }
-                                  }
-                                },
-                                {
-                                  "commentStart": 885,
-                                  "end": 0,
-                                  "key": {
-                                    "commentStart": 885,
-                                    "end": 0,
-                                    "name": "length",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "abs_path": false,
-                                    "commentStart": 894,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 894,
-                                      "end": 0,
-                                      "name": "boltHexFlatLength",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  }
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 858,
+                                "end": 0,
+                                "name": "angle",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "commentStart": 866,
+                                "end": 0,
+                                "raw": "210",
+                                "start": 0,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 210.0,
+                                  "suffix": "None"
                                 }
-                              ],
-                              "start": 0,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
+                              }
                             },
                             {
-                              "commentStart": 922,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 880,
+                                "end": 0,
+                                "name": "length",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "abs_path": false,
+                                "commentStart": 889,
+                                "end": 0,
+                                "name": {
+                                  "commentStart": 889,
+                                  "end": 0,
+                                  "name": "boltHexFlatLength",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              }
                             }
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 841,
+                            "commentStart": 837,
                             "end": 0,
                             "name": {
-                              "commentStart": 841,
+                              "commentStart": 837,
                               "end": 0,
                               "name": "angledLine",
                               "start": 0,
@@ -1128,91 +1085,70 @@ description: Result of parsing scale_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 841,
+                          "commentStart": 837,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         },
                         {
                           "arguments": [
                             {
-                              "commentStart": 943,
-                              "end": 0,
-                              "properties": [
-                                {
-                                  "commentStart": 954,
-                                  "end": 0,
-                                  "key": {
-                                    "commentStart": 954,
-                                    "end": 0,
-                                    "name": "angle",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "commentStart": 962,
-                                    "end": 0,
-                                    "raw": "150",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 150.0,
-                                      "suffix": "None"
-                                    }
-                                  }
-                                },
-                                {
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 945,
+                                "end": 0,
+                                "name": "angle",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "commentStart": 953,
+                                "end": 0,
+                                "raw": "150",
+                                "start": 0,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 150.0,
+                                  "suffix": "None"
+                                }
+                              }
+                            },
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 967,
+                                "end": 0,
+                                "name": "length",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "abs_path": false,
+                                "commentStart": 976,
+                                "end": 0,
+                                "name": {
                                   "commentStart": 976,
                                   "end": 0,
-                                  "key": {
-                                    "commentStart": 976,
-                                    "end": 0,
-                                    "name": "length",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
+                                  "name": "boltHexFlatLength",
                                   "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "abs_path": false,
-                                    "commentStart": 985,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 985,
-                                      "end": 0,
-                                      "name": "boltHexFlatLength",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  }
-                                }
-                              ],
-                              "start": 0,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
-                            },
-                            {
-                              "commentStart": 1013,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              }
                             }
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 932,
+                            "commentStart": 924,
                             "end": 0,
                             "name": {
-                              "commentStart": 932,
+                              "commentStart": 924,
                               "end": 0,
                               "name": "angledLine",
                               "start": 0,
@@ -1222,91 +1158,70 @@ description: Result of parsing scale_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 932,
+                          "commentStart": 924,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         },
                         {
                           "arguments": [
                             {
-                              "commentStart": 1034,
-                              "end": 0,
-                              "properties": [
-                                {
-                                  "commentStart": 1045,
-                                  "end": 0,
-                                  "key": {
-                                    "commentStart": 1045,
-                                    "end": 0,
-                                    "name": "angle",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "commentStart": 1053,
-                                    "end": 0,
-                                    "raw": "90",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 90.0,
-                                      "suffix": "None"
-                                    }
-                                  }
-                                },
-                                {
-                                  "commentStart": 1066,
-                                  "end": 0,
-                                  "key": {
-                                    "commentStart": 1066,
-                                    "end": 0,
-                                    "name": "length",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "abs_path": false,
-                                    "commentStart": 1075,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 1075,
-                                      "end": 0,
-                                      "name": "boltHexFlatLength",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  }
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 1032,
+                                "end": 0,
+                                "name": "angle",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "commentStart": 1040,
+                                "end": 0,
+                                "raw": "90",
+                                "start": 0,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 90.0,
+                                  "suffix": "None"
                                 }
-                              ],
-                              "start": 0,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
+                              }
                             },
                             {
-                              "commentStart": 1103,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 1053,
+                                "end": 0,
+                                "name": "length",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "abs_path": false,
+                                "commentStart": 1062,
+                                "end": 0,
+                                "name": {
+                                  "commentStart": 1062,
+                                  "end": 0,
+                                  "name": "boltHexFlatLength",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              }
                             }
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1023,
+                            "commentStart": 1011,
                             "end": 0,
                             "name": {
-                              "commentStart": 1023,
+                              "commentStart": 1011,
                               "end": 0,
                               "name": "angledLine",
                               "start": 0,
@@ -1316,91 +1231,70 @@ description: Result of parsing scale_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1023,
+                          "commentStart": 1011,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         },
                         {
                           "arguments": [
                             {
-                              "commentStart": 1124,
-                              "end": 0,
-                              "properties": [
-                                {
-                                  "commentStart": 1135,
-                                  "end": 0,
-                                  "key": {
-                                    "commentStart": 1135,
-                                    "end": 0,
-                                    "name": "angle",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "commentStart": 1143,
-                                    "end": 0,
-                                    "raw": "30",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 30.0,
-                                      "suffix": "None"
-                                    }
-                                  }
-                                },
-                                {
-                                  "commentStart": 1156,
-                                  "end": 0,
-                                  "key": {
-                                    "commentStart": 1156,
-                                    "end": 0,
-                                    "name": "length",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "abs_path": false,
-                                    "commentStart": 1165,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 1165,
-                                      "end": 0,
-                                      "name": "boltHexFlatLength",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  }
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 1118,
+                                "end": 0,
+                                "name": "angle",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "commentStart": 1126,
+                                "end": 0,
+                                "raw": "30",
+                                "start": 0,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 30.0,
+                                  "suffix": "None"
                                 }
-                              ],
-                              "start": 0,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
+                              }
                             },
                             {
-                              "commentStart": 1193,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 1139,
+                                "end": 0,
+                                "name": "length",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "abs_path": false,
+                                "commentStart": 1148,
+                                "end": 0,
+                                "name": {
+                                  "commentStart": 1148,
+                                  "end": 0,
+                                  "name": "boltHexFlatLength",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              }
                             }
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1113,
+                            "commentStart": 1097,
                             "end": 0,
                             "name": {
-                              "commentStart": 1113,
+                              "commentStart": 1097,
                               "end": 0,
                               "name": "angledLine",
                               "start": 0,
@@ -1410,20 +1304,21 @@ description: Result of parsing scale_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1113,
+                          "commentStart": 1097,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         },
                         {
                           "arguments": [],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1203,
+                            "commentStart": 1183,
                             "end": 0,
                             "name": {
-                              "commentStart": 1203,
+                              "commentStart": 1183,
                               "end": 0,
                               "name": "close",
                               "start": 0,
@@ -1433,7 +1328,7 @@ description: Result of parsing scale_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1203,
+                          "commentStart": 1183,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1444,22 +1339,22 @@ description: Result of parsing scale_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1226,
+                                "commentStart": 1206,
                                 "end": 0,
                                 "name": "length",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1235,
+                                "commentStart": 1215,
                                 "end": 0,
                                 "left": {
                                   "argument": {
                                     "abs_path": false,
-                                    "commentStart": 1236,
+                                    "commentStart": 1216,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 1236,
+                                      "commentStart": 1216,
                                       "end": 0,
                                       "name": "boltHeadLength",
                                       "start": 0,
@@ -1470,7 +1365,7 @@ description: Result of parsing scale_after_fillet.kcl
                                     "type": "Name",
                                     "type": "Name"
                                   },
-                                  "commentStart": 1235,
+                                  "commentStart": 1215,
                                   "end": 0,
                                   "operator": "-",
                                   "start": 0,
@@ -1479,7 +1374,7 @@ description: Result of parsing scale_after_fillet.kcl
                                 },
                                 "operator": "*",
                                 "right": {
-                                  "commentStart": 1253,
+                                  "commentStart": 1233,
                                   "end": 0,
                                   "raw": "0.75",
                                   "start": 0,
@@ -1498,10 +1393,10 @@ description: Result of parsing scale_after_fillet.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1218,
+                            "commentStart": 1198,
                             "end": 0,
                             "name": {
-                              "commentStart": 1218,
+                              "commentStart": 1198,
                               "end": 0,
                               "name": "extrude",
                               "start": 0,
@@ -1511,7 +1406,7 @@ description: Result of parsing scale_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1218,
+                          "commentStart": 1198,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -1535,12 +1430,12 @@ description: Result of parsing scale_after_fillet.kcl
                   "type": "VariableDeclaration"
                 },
                 {
-                  "commentStart": 1258,
+                  "commentStart": 1238,
                   "declaration": {
-                    "commentStart": 1262,
+                    "commentStart": 1242,
                     "end": 0,
                     "id": {
-                      "commentStart": 1262,
+                      "commentStart": 1242,
                       "end": 0,
                       "name": "boltBody",
                       "start": 0,
@@ -1552,10 +1447,10 @@ description: Result of parsing scale_after_fillet.kcl
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 1287,
+                              "commentStart": 1267,
                               "end": 0,
                               "name": {
-                                "commentStart": 1287,
+                                "commentStart": 1267,
                                 "end": 0,
                                 "name": "boltHead",
                                 "start": 0,
@@ -1567,7 +1462,7 @@ description: Result of parsing scale_after_fillet.kcl
                               "type": "Name"
                             },
                             {
-                              "commentStart": 1297,
+                              "commentStart": 1277,
                               "end": 0,
                               "raw": "'end'",
                               "start": 0,
@@ -1578,10 +1473,10 @@ description: Result of parsing scale_after_fillet.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1273,
+                            "commentStart": 1253,
                             "end": 0,
                             "name": {
-                              "commentStart": 1273,
+                              "commentStart": 1253,
                               "end": 0,
                               "name": "startSketchOn",
                               "start": 0,
@@ -1591,7 +1486,7 @@ description: Result of parsing scale_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1273,
+                          "commentStart": 1253,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1602,17 +1497,17 @@ description: Result of parsing scale_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1318,
+                                "commentStart": 1298,
                                 "end": 0,
                                 "name": "center",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1327,
+                                "commentStart": 1307,
                                 "elements": [
                                   {
-                                    "commentStart": 1328,
+                                    "commentStart": 1308,
                                     "end": 0,
                                     "raw": "0",
                                     "start": 0,
@@ -1624,7 +1519,7 @@ description: Result of parsing scale_after_fillet.kcl
                                     }
                                   },
                                   {
-                                    "commentStart": 1331,
+                                    "commentStart": 1311,
                                     "end": 0,
                                     "raw": "0",
                                     "start": 0,
@@ -1645,21 +1540,21 @@ description: Result of parsing scale_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1335,
+                                "commentStart": 1315,
                                 "end": 0,
                                 "name": "radius",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1344,
+                                "commentStart": 1324,
                                 "end": 0,
                                 "left": {
                                   "abs_path": false,
-                                  "commentStart": 1344,
+                                  "commentStart": 1324,
                                   "end": 0,
                                   "name": {
-                                    "commentStart": 1344,
+                                    "commentStart": 1324,
                                     "end": 0,
                                     "name": "boltDiameter",
                                     "start": 0,
@@ -1672,7 +1567,7 @@ description: Result of parsing scale_after_fillet.kcl
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "commentStart": 1359,
+                                  "commentStart": 1339,
                                   "end": 0,
                                   "raw": "2",
                                   "start": 0,
@@ -1691,14 +1586,14 @@ description: Result of parsing scale_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1362,
+                                "commentStart": 1342,
                                 "end": 0,
                                 "name": "tag",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1368,
+                                "commentStart": 1348,
                                 "end": 0,
                                 "start": 0,
                                 "type": "TagDeclarator",
@@ -1709,10 +1604,10 @@ description: Result of parsing scale_after_fillet.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1311,
+                            "commentStart": 1291,
                             "end": 0,
                             "name": {
-                              "commentStart": 1311,
+                              "commentStart": 1291,
                               "end": 0,
                               "name": "circle",
                               "start": 0,
@@ -1722,7 +1617,7 @@ description: Result of parsing scale_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1311,
+                          "commentStart": 1291,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -1734,7 +1629,7 @@ description: Result of parsing scale_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1396,
+                                "commentStart": 1376,
                                 "end": 0,
                                 "name": "length",
                                 "start": 0,
@@ -1742,10 +1637,10 @@ description: Result of parsing scale_after_fillet.kcl
                               },
                               "arg": {
                                 "abs_path": false,
-                                "commentStart": 1405,
+                                "commentStart": 1385,
                                 "end": 0,
                                 "name": {
-                                  "commentStart": 1405,
+                                  "commentStart": 1385,
                                   "end": 0,
                                   "name": "boltLength",
                                   "start": 0,
@@ -1760,10 +1655,10 @@ description: Result of parsing scale_after_fillet.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1388,
+                            "commentStart": 1368,
                             "end": 0,
                             "name": {
-                              "commentStart": 1388,
+                              "commentStart": 1368,
                               "end": 0,
                               "name": "extrude",
                               "start": 0,
@@ -1773,7 +1668,7 @@ description: Result of parsing scale_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1388,
+                          "commentStart": 1368,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -1785,14 +1680,14 @@ description: Result of parsing scale_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1431,
+                                "commentStart": 1411,
                                 "end": 0,
                                 "name": "radius",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1440,
+                                "commentStart": 1420,
                                 "end": 0,
                                 "raw": ".020",
                                 "start": 0,
@@ -1807,23 +1702,23 @@ description: Result of parsing scale_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1446,
+                                "commentStart": 1426,
                                 "end": 0,
                                 "name": "tags",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1453,
+                                "commentStart": 1433,
                                 "elements": [
                                   {
                                     "arguments": [
                                       {
                                         "abs_path": false,
-                                        "commentStart": 1470,
+                                        "commentStart": 1450,
                                         "end": 0,
                                         "name": {
-                                          "commentStart": 1470,
+                                          "commentStart": 1450,
                                           "end": 0,
                                           "name": "filletEdge",
                                           "start": 0,
@@ -1837,10 +1732,10 @@ description: Result of parsing scale_after_fillet.kcl
                                     ],
                                     "callee": {
                                       "abs_path": false,
-                                      "commentStart": 1454,
+                                      "commentStart": 1434,
                                       "end": 0,
                                       "name": {
-                                        "commentStart": 1454,
+                                        "commentStart": 1434,
                                         "end": 0,
                                         "name": "getOppositeEdge",
                                         "start": 0,
@@ -1850,7 +1745,7 @@ description: Result of parsing scale_after_fillet.kcl
                                       "start": 0,
                                       "type": "Name"
                                     },
-                                    "commentStart": 1454,
+                                    "commentStart": 1434,
                                     "end": 0,
                                     "start": 0,
                                     "type": "CallExpression",
@@ -1866,10 +1761,10 @@ description: Result of parsing scale_after_fillet.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1424,
+                            "commentStart": 1404,
                             "end": 0,
                             "name": {
-                              "commentStart": 1424,
+                              "commentStart": 1404,
                               "end": 0,
                               "name": "fillet",
                               "start": 0,
@@ -1879,7 +1774,7 @@ description: Result of parsing scale_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1424,
+                          "commentStart": 1404,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -1891,14 +1786,14 @@ description: Result of parsing scale_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1502,
+                                "commentStart": 1482,
                                 "end": 0,
                                 "name": "color",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1510,
+                                "commentStart": 1490,
                                 "end": 0,
                                 "raw": "\"#4dd043\"",
                                 "start": 0,
@@ -1910,14 +1805,14 @@ description: Result of parsing scale_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1521,
+                                "commentStart": 1501,
                                 "end": 0,
                                 "name": "metalness",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1533,
+                                "commentStart": 1513,
                                 "end": 0,
                                 "raw": "90",
                                 "start": 0,
@@ -1932,14 +1827,14 @@ description: Result of parsing scale_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1537,
+                                "commentStart": 1517,
                                 "end": 0,
                                 "name": "roughness",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1549,
+                                "commentStart": 1529,
                                 "end": 0,
                                 "raw": "90",
                                 "start": 0,
@@ -1954,10 +1849,10 @@ description: Result of parsing scale_after_fillet.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1491,
+                            "commentStart": 1471,
                             "end": 0,
                             "name": {
-                              "commentStart": 1491,
+                              "commentStart": 1471,
                               "end": 0,
                               "name": "appearance",
                               "start": 0,
@@ -1967,7 +1862,7 @@ description: Result of parsing scale_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1491,
+                          "commentStart": 1471,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -1975,7 +1870,7 @@ description: Result of parsing scale_after_fillet.kcl
                           "unlabeled": null
                         }
                       ],
-                      "commentStart": 1273,
+                      "commentStart": 1253,
                       "end": 0,
                       "start": 0,
                       "type": "PipeExpression",
@@ -1993,10 +1888,10 @@ description: Result of parsing scale_after_fillet.kcl
                 {
                   "argument": {
                     "abs_path": false,
-                    "commentStart": 1563,
+                    "commentStart": 1543,
                     "end": 0,
                     "name": {
-                      "commentStart": 1563,
+                      "commentStart": 1543,
                       "end": 0,
                       "name": "boltBody",
                       "start": 0,
@@ -2007,7 +1902,7 @@ description: Result of parsing scale_after_fillet.kcl
                     "type": "Name",
                     "type": "Name"
                   },
-                  "commentStart": 1552,
+                  "commentStart": 1532,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
@@ -2020,7 +1915,7 @@ description: Result of parsing scale_after_fillet.kcl
                 "nonCodeNodes": {
                   "1": [
                     {
-                      "commentStart": 1258,
+                      "commentStart": 1238,
                       "end": 0,
                       "start": 0,
                       "type": "NonCodeNode",
@@ -2031,7 +1926,7 @@ description: Result of parsing scale_after_fillet.kcl
                   ],
                   "2": [
                     {
-                      "commentStart": 1552,
+                      "commentStart": 1532,
                       "end": 0,
                       "start": 0,
                       "type": "NonCodeNode",
@@ -2063,7 +1958,7 @@ description: Result of parsing scale_after_fillet.kcl
         "visibility": "export"
       },
       {
-        "commentStart": 1573,
+        "commentStart": 1553,
         "end": 0,
         "expression": {
           "body": [
@@ -2071,10 +1966,10 @@ description: Result of parsing scale_after_fillet.kcl
               "arguments": [],
               "callee": {
                 "abs_path": false,
-                "commentStart": 1575,
+                "commentStart": 1555,
                 "end": 0,
                 "name": {
-                  "commentStart": 1575,
+                  "commentStart": 1555,
                   "end": 0,
                   "name": "bolt",
                   "start": 0,
@@ -2084,7 +1979,7 @@ description: Result of parsing scale_after_fillet.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 1575,
+              "commentStart": 1555,
               "end": 0,
               "start": 0,
               "type": "CallExpression",
@@ -2095,9 +1990,53 @@ description: Result of parsing scale_after_fillet.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1593,
+                    "commentStart": 1573,
                     "end": 0,
                     "name": "x",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 1577,
+                    "end": 0,
+                    "raw": "3.14",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 3.14,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 1583,
+                    "end": 0,
+                    "name": "y",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 1587,
+                    "end": 0,
+                    "raw": "3.14",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 3.14,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 1593,
+                    "end": 0,
+                    "name": "z",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -2113,58 +2052,14 @@ description: Result of parsing scale_after_fillet.kcl
                       "suffix": "None"
                     }
                   }
-                },
-                {
-                  "type": "LabeledArg",
-                  "label": {
-                    "commentStart": 1603,
-                    "end": 0,
-                    "name": "y",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "arg": {
-                    "commentStart": 1607,
-                    "end": 0,
-                    "raw": "3.14",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 3.14,
-                      "suffix": "None"
-                    }
-                  }
-                },
-                {
-                  "type": "LabeledArg",
-                  "label": {
-                    "commentStart": 1613,
-                    "end": 0,
-                    "name": "z",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "arg": {
-                    "commentStart": 1617,
-                    "end": 0,
-                    "raw": "3.14",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 3.14,
-                      "suffix": "None"
-                    }
-                  }
                 }
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 1587,
+                "commentStart": 1567,
                 "end": 0,
                 "name": {
-                  "commentStart": 1587,
+                  "commentStart": 1567,
                   "end": 0,
                   "name": "scale",
                   "start": 0,
@@ -2174,7 +2069,7 @@ description: Result of parsing scale_after_fillet.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 1587,
+              "commentStart": 1567,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
@@ -2182,13 +2077,13 @@ description: Result of parsing scale_after_fillet.kcl
               "unlabeled": null
             }
           ],
-          "commentStart": 1575,
+          "commentStart": 1555,
           "end": 0,
           "nonCodeMeta": {
             "nonCodeNodes": {
               "1": [
                 {
-                  "commentStart": 1622,
+                  "commentStart": 1602,
                   "end": 0,
                   "start": 0,
                   "type": "NonCodeNode",
@@ -2228,7 +2123,7 @@ description: Result of parsing scale_after_fillet.kcl
         ],
         "7": [
           {
-            "commentStart": 1573,
+            "commentStart": 1553,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

@@ -7,167 +7,136 @@ description: Operations executed poopy-shoe.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "-YZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          272,
-          277,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      258,
-      278,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
   {
     "labeledArgs": {
-      "data": {
+      "angle": {
+        "value": {
+          "type": "Number",
+          "value": 90.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "axis": {
         "value": {
           "type": "Object",
           "value": {
-            "angle": {
-              "type": "Number",
-              "value": 90.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "axis": {
+            "custom": {
               "type": "Object",
               "value": {
-                "custom": {
-                  "type": "Object",
-                  "value": {
-                    "axis": {
-                      "type": "Array",
-                      "value": [
-                        {
-                          "type": "Number",
-                          "value": 1.0,
-                          "ty": {
-                            "type": "Default",
-                            "len": {
-                              "type": "Inches"
-                            },
-                            "angle": {
-                              "type": "Degrees"
-                            }
-                          }
+                "axis": {
+                  "type": "Array",
+                  "value": [
+                    {
+                      "type": "Number",
+                      "value": 1.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
                         },
-                        {
-                          "type": "Number",
-                          "value": 0.0,
-                          "ty": {
-                            "type": "Default",
-                            "len": {
-                              "type": "Inches"
-                            },
-                            "angle": {
-                              "type": "Degrees"
-                            }
-                          }
+                        "angle": {
+                          "type": "Degrees"
                         }
-                      ]
+                      }
                     },
-                    "origin": {
-                      "type": "Array",
-                      "value": [
-                        {
-                          "type": "Number",
-                          "value": 0.0,
-                          "ty": {
-                            "type": "Default",
-                            "len": {
-                              "type": "Inches"
-                            },
-                            "angle": {
-                              "type": "Degrees"
-                            }
-                          }
+                    {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
                         },
-                        {
-                          "type": "Number",
-                          "value": 5.1251,
-                          "ty": {
-                            "type": "Default",
-                            "len": {
-                              "type": "Inches"
-                            },
-                            "angle": {
-                              "type": "Degrees"
-                            }
-                          }
+                        "angle": {
+                          "type": "Degrees"
                         }
-                      ]
+                      }
                     }
-                  }
+                  ]
+                },
+                "origin": {
+                  "type": "Array",
+                  "value": [
+                    {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    {
+                      "type": "Number",
+                      "value": 5.1251,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
           }
         },
-        "sourceRange": [
-          927,
-          1042,
-          0
-        ]
-      },
-      "sketches": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          1044,
-          1053,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "revolve",
-    "sourceRange": [
-      919,
-      1054,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "-YZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          1082,
-          1087,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1068,
-      1088,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -187,19 +156,11 @@ description: Operations executed poopy-shoe.kcl
             }
           }
         },
-        "sourceRange": [
-          1741,
-          1760,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1724,
-      1761,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -208,11 +169,7 @@ description: Operations executed poopy-shoe.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1724,
-        1761,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -398,19 +355,11 @@ description: Operations executed poopy-shoe.kcl
             }
           }
         },
-        "sourceRange": [
-          2032,
-          2043,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      2018,
-      2044,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -430,19 +379,11 @@ description: Operations executed poopy-shoe.kcl
             }
           }
         },
-        "sourceRange": [
-          2213,
-          2226,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2196,
-      2227,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -451,11 +392,7 @@ description: Operations executed poopy-shoe.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        2196,
-        2227,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -467,30 +404,18 @@ description: Operations executed poopy-shoe.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2255,
-          2264,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          2266,
-          2271,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      2241,
-      2272,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -510,19 +435,11 @@ description: Operations executed poopy-shoe.kcl
             }
           }
         },
-        "sourceRange": [
-          2945,
-          2958,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2928,
-      2959,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -531,11 +448,7 @@ description: Operations executed poopy-shoe.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        2928,
-        2959,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -721,19 +634,11 @@ description: Operations executed poopy-shoe.kcl
             }
           }
         },
-        "sourceRange": [
-          3231,
-          3243,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      3217,
-      3244,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -753,19 +658,11 @@ description: Operations executed poopy-shoe.kcl
             }
           }
         },
-        "sourceRange": [
-          3604,
-          3617,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      3587,
-      3618,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -774,11 +671,7 @@ description: Operations executed poopy-shoe.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        3587,
-        3618,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -790,11 +683,7 @@ description: Operations executed poopy-shoe.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          3646,
-          3655,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
@@ -802,19 +691,11 @@ description: Operations executed poopy-shoe.kcl
           "value": "seg03",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          3657,
-          3662,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      3632,
-      3663,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -834,19 +715,11 @@ description: Operations executed poopy-shoe.kcl
             }
           }
         },
-        "sourceRange": [
-          3854,
-          3867,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      3837,
-      3868,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -855,11 +728,7 @@ description: Operations executed poopy-shoe.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        3837,
-        3868,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -871,30 +740,18 @@ description: Operations executed poopy-shoe.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          3896,
-          3905,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          3907,
-          3912,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      3882,
-      3913,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -908,19 +765,11 @@ description: Operations executed poopy-shoe.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          4081,
-          4112,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      4064,
-      4114,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -929,11 +778,7 @@ description: Operations executed poopy-shoe.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        4064,
-        4114,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1119,19 +964,11 @@ description: Operations executed poopy-shoe.kcl
             }
           }
         },
-        "sourceRange": [
-          4399,
-          4411,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      4385,
-      4412,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1151,19 +988,11 @@ description: Operations executed poopy-shoe.kcl
             }
           }
         },
-        "sourceRange": [
-          4635,
-          4649,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      4618,
-      4650,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1172,11 +1001,7 @@ description: Operations executed poopy-shoe.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        4618,
-        4650,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

@@ -16,23 +16,17 @@ Fy = 0.5
 sketch001 = startSketchOn(-YZ)
   |> startProfileAt([back_walls_width / 2, 0], %)
   |> xLine(length = wall_thickness / 2)
-  |> angledLineToX({ angle = 45, to = back_walls_width }, %, $seg01)
+  |> angledLine(angle = 45, endAbsoluteX = back_walls_width, tag = $seg01)
   |> yLine(endAbsolute = height)
   |> xLine(length = -wall_thickness)
   |> yLine(endAbsolute = segEndY(seg01))
-  |> angledLineToX({
-       angle = 45,
-       to = back_walls_width / 2 + wall_thickness / 2
-     }, %)
+  |> angledLine(angle = 45, endAbsoluteX = back_walls_width / 2 + wall_thickness / 2)
   |> xLine(length = -wall_thickness)
-  |> angledLineToX({
-       angle = 180 - 45,
-       to = wall_thickness
-     }, %)
+  |> angledLine(angle = 180 - 45, endAbsoluteX = wall_thickness)
   |> yLine(endAbsolute = height)
   |> xLine(endAbsolute = 0)
   |> yLine(endAbsolute = segEndY(seg01))
-  |> angledLineToY({ angle = 180 - 45, to = 0 }, %)
+  |> angledLine(angle = 180 - 45, endAbsoluteY = 0)
   |> close(%)
 part001 = revolve(
   sketch001,
@@ -48,22 +42,16 @@ part001 = revolve(
 sketch002 = startSketchOn(-YZ)
   |> startProfileAt([back_walls_width / 2, 0], %)
   |> xLine(length = wall_thickness / 2)
-  |> angledLineToX({ angle = 45, to = back_walls_width }, %, $seg02)
+  |> angledLine(angle = 45, endAbsoluteX = back_walls_width, tag = $seg02)
   |> yLine(endAbsolute = height)
   |> xLine(length = -wall_thickness)
   |> yLine(endAbsolute = segEndY(seg01))
-  |> angledLineToX({
-       angle = 45,
-       to = back_walls_width / 2 + wall_thickness / 2
-     }, %)
+  |> angledLine(angle = 45, endAbsoluteX = back_walls_width / 2 + wall_thickness / 2)
   |> xLine(length = -wall_thickness)
-  |> angledLineToX({
-       angle = 180 - 45,
-       to = wall_thickness
-     }, %)
+  |> angledLine(angle = 180 - 45, endAbsoluteX = wall_thickness)
   |> yLine(endAbsolute = height)
   |> xLine(endAbsolute = 0)
   |> yLine(endAbsolute = segEndY(seg02))
-  |> angledLineToY({ angle = 180 - 45, to = 0 }, %)
+  |> angledLine(angle = 180 - 45, endAbsoluteY = 0)
   |> close(%)
   |> extrude(length = back_length - height)

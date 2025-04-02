@@ -10,19 +10,11 @@ description: Operations executed angled_line.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          24,
-          28,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      10,
-      29,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,19 +34,11 @@ description: Operations executed angled_line.kcl
             }
           }
         },
-        "sourceRange": [
-          298,
-          299,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      281,
-      300,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -63,11 +47,7 @@ description: Operations executed angled_line.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        281,
-        300,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

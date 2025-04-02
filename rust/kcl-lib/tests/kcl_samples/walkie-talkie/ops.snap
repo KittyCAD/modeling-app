@@ -4,25 +4,29 @@ description: Operations executed walkie-talkie.kcl
 ---
 [
   {
+    "type": "UserDefinedFunctionCall",
+    "name": "body",
+    "functionSourceRange": [
+      359,
+      2736,
+      6
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XZ"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          287,
-          291,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      273,
-      292,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,19 +46,11 @@ description: Operations executed walkie-talkie.kcl
             }
           }
         },
-        "sourceRange": [
-          548,
-          557,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      519,
-      558,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -63,11 +59,7 @@ description: Operations executed walkie-talkie.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        527,
-        537,
-        3
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -86,11 +78,7 @@ description: Operations executed walkie-talkie.kcl
             }
           }
         },
-        "sourceRange": [
-          589,
-          602,
-          3
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -114,19 +102,11 @@ description: Operations executed walkie-talkie.kcl
             }
           ]
         },
-        "sourceRange": [
-          618,
-          787,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "chamfer",
-    "sourceRange": [
-      564,
-      794,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -135,11 +115,7 @@ description: Operations executed walkie-talkie.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        564,
-        794,
-        3
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -151,30 +127,18 @@ description: Operations executed walkie-talkie.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          863,
-          874,
-          3
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          876,
-          881,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      849,
-      882,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -188,11 +152,7 @@ description: Operations executed walkie-talkie.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      983,
-      1001,
-      3
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -207,11 +167,7 @@ description: Operations executed walkie-talkie.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1153,
-      1171,
-      3
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -226,11 +182,7 @@ description: Operations executed walkie-talkie.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1378,
-      1396,
-      3
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -245,11 +197,7 @@ description: Operations executed walkie-talkie.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1573,
-      1591,
-      3
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -270,19 +218,11 @@ description: Operations executed walkie-talkie.kcl
             }
           }
         },
-        "sourceRange": [
-          1773,
-          1780,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1745,
-      1781,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -291,11 +231,7 @@ description: Operations executed walkie-talkie.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1753,
-        1762,
-        3
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -307,30 +243,18 @@ description: Operations executed walkie-talkie.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1845,
-          1855,
-          3
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "start"
         },
-        "sourceRange": [
-          1857,
-          1864,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1831,
-      1865,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -350,19 +274,11 @@ description: Operations executed walkie-talkie.kcl
             }
           }
         },
-        "sourceRange": [
-          2160,
-          2171,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2132,
-      2172,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -371,11 +287,7 @@ description: Operations executed walkie-talkie.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        2140,
-        2149,
-        3
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -387,30 +299,18 @@ description: Operations executed walkie-talkie.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2226,
-          2236,
-          3
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "start"
         },
-        "sourceRange": [
-          2238,
-          2245,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      2212,
-      2246,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -430,19 +330,11 @@ description: Operations executed walkie-talkie.kcl
             }
           }
         },
-        "sourceRange": [
-          2445,
-          2448,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2417,
-      2449,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -451,19 +343,45 @@ description: Operations executed walkie-talkie.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        2425,
-        2434,
-        3
-      ]
+      "sourceRange": []
     }
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "antenna",
+    "functionSourceRange": [
+      266,
+      1051,
+      9
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
       "offset": {
         "value": {
           "type": "Number",
-          "value": 1.0,
+          "value": 3.0,
           "ty": {
             "type": "Default",
             "len": {
@@ -474,72 +392,18 @@ description: Operations executed walkie-talkie.kcl
             }
           }
         },
-        "sourceRange": [
-          382,
-          383,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "offsetPlane",
-    "sourceRange": [
-      355,
-      384,
-      5
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "String",
-        "value": "XZ"
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
-      "sourceRange": [
-        367,
-        371,
-        5
-      ]
-    }
-  },
-  {
-    "labeledArgs": {
-      "offset": {
-        "value": {
-          "type": "Number",
-          "value": 1.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": [
-          1364,
-          1365,
-          5
-        ]
-      }
-    },
-    "name": "offsetPlane",
-    "sourceRange": [
-      1337,
-      1366,
-      5
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "String",
-        "value": "XZ"
-      },
-      "sourceRange": [
-        1349,
-        1353,
-        5
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -549,19 +413,144 @@ description: Operations executed walkie-talkie.kcl
           "type": "Plane",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          1337,
-          1366,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1323,
-      1367,
-      5
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "sketches": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "loft",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "case",
+    "functionSourceRange": [
+      454,
+      3183,
+      7
     ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -575,11 +564,7 @@ description: Operations executed walkie-talkie.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1502,
-      1520,
-      5
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -594,11 +579,7 @@ description: Operations executed walkie-talkie.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1730,
-      1748,
-      5
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -613,11 +594,7 @@ description: Operations executed walkie-talkie.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      2049,
-      2067,
-      5
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -632,53 +609,7 @@ description: Operations executed walkie-talkie.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      2278,
-      2296,
-      5
-    ]
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "screenHole",
-    "functionSourceRange": [
-      399,
-      725,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
-    "sourceRange": [
-      2479,
-      2496,
-      5
-    ]
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": [
-          443,
-          454,
-          5
-        ]
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [
-      429,
-      455,
-      5
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -692,11 +623,7 @@ description: Operations executed walkie-talkie.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2479,
-          2496,
-          5
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -705,63 +632,13 @@ description: Operations executed walkie-talkie.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2498,
-          2499,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      2474,
-      2500,
-      5
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "squareHolePattern",
-    "functionSourceRange": [
-      747,
-      1310,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
-    "sourceRange": [
-      2511,
-      2546,
-      5
-    ]
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": [
-          938,
-          943,
-          5
-        ]
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [
-      924,
-      944,
-      5
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -1629,11 +1506,7 @@ description: Operations executed walkie-talkie.kcl
             }
           ]
         },
-        "sourceRange": [
-          2511,
-          2546,
-          5
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -1642,19 +1515,26 @@ description: Operations executed walkie-talkie.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2548,
-          2549,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      2506,
-      2550,
-      5
-    ],
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1663,16 +1543,12 @@ description: Operations executed walkie-talkie.kcl
     "name": "zLogo",
     "functionSourceRange": [
       69,
-      1119,
-      10
+      1018,
+      8
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      2561,
-      2594,
-      5
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -1686,11 +1562,7 @@ description: Operations executed walkie-talkie.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2561,
-          2594,
-          5
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -1699,19 +1571,26 @@ description: Operations executed walkie-talkie.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2596,
-          2597,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      2556,
-      2598,
-      5
-    ],
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1719,17 +1598,13 @@ description: Operations executed walkie-talkie.kcl
     "type": "UserDefinedFunctionCall",
     "name": "oLogo",
     "functionSourceRange": [
-      1177,
-      1680,
-      10
+      1076,
+      1579,
+      8
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      2609,
-      2643,
-      5
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -1743,11 +1618,7 @@ description: Operations executed walkie-talkie.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2609,
-          2643,
-          5
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -1756,19 +1627,26 @@ description: Operations executed walkie-talkie.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2645,
-          2646,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      2604,
-      2647,
-      5
-    ],
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1776,17 +1654,13 @@ description: Operations executed walkie-talkie.kcl
     "type": "UserDefinedFunctionCall",
     "name": "oLogo2",
     "functionSourceRange": [
-      1698,
-      2201,
-      10
+      1597,
+      2100,
+      8
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      2658,
-      2693,
-      5
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -1800,11 +1674,7 @@ description: Operations executed walkie-talkie.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2658,
-          2693,
-          5
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -1813,19 +1683,26 @@ description: Operations executed walkie-talkie.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2695,
-          2696,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      2653,
-      2697,
-      5
-    ],
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1833,17 +1710,13 @@ description: Operations executed walkie-talkie.kcl
     "type": "UserDefinedFunctionCall",
     "name": "oLogo",
     "functionSourceRange": [
-      1177,
-      1680,
-      10
+      1076,
+      1579,
+      8
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      2708,
-      2741,
-      5
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -1857,11 +1730,7 @@ description: Operations executed walkie-talkie.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2708,
-          2741,
-          5
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -1870,19 +1739,26 @@ description: Operations executed walkie-talkie.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2743,
-          2744,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      2703,
-      2745,
-      5
-    ],
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1890,17 +1766,13 @@ description: Operations executed walkie-talkie.kcl
     "type": "UserDefinedFunctionCall",
     "name": "oLogo2",
     "functionSourceRange": [
-      1698,
-      2201,
-      10
+      1597,
+      2100,
+      8
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      2756,
-      2790,
-      5
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -1914,11 +1786,7 @@ description: Operations executed walkie-talkie.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2756,
-          2790,
-          5
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -1927,19 +1795,11 @@ description: Operations executed walkie-talkie.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2792,
-          2793,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      2751,
-      2794,
-      5
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1959,19 +1819,11 @@ description: Operations executed walkie-talkie.kcl
             }
           }
         },
-        "sourceRange": [
-          2824,
-          2831,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2796,
-      2832,
-      5
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1980,556 +1832,23 @@ description: Operations executed walkie-talkie.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        2804,
-        2813,
-        5
-      ]
-    }
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Object",
-          "value": {
-            "plane": {
-              "type": "Object",
-              "value": {
-                "origin": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 2.0,
-                      "ty": {
-                        "type": "Unknown"
-                      }
-                    }
-                  }
-                },
-                "xAxis": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  }
-                },
-                "yAxis": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  }
-                },
-                "zAxis": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "sourceRange": [
-          573,
-          585,
-          4
-        ]
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [
-      559,
-      586,
-      4
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "offset": {
-        "value": {
-          "type": "Number",
-          "value": 5.0,
-          "ty": {
-            "type": "Unknown"
-          }
-        },
-        "sourceRange": [
-          840,
-          854,
-          4
-        ]
-      }
-    },
-    "name": "offsetPlane",
-    "sourceRange": [
-      813,
-      855,
-      4
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "String",
-        "value": "XY"
-      },
-      "sourceRange": [
-        825,
-        829,
-        4
-      ]
-    }
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": [
-          883,
-          892,
-          4
-        ]
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [
-      869,
-      893,
-      4
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "sketches": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Sketch",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Sketch",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            }
-          ]
-        },
-        "sourceRange": [
-          1220,
-          1242,
-          4
-        ]
-      }
-    },
-    "name": "loft",
-    "sourceRange": [
-      1215,
-      1243,
-      4
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "offset": {
-        "value": {
-          "type": "Number",
-          "value": 1.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": [
-          865,
-          874,
-          0
-        ]
-      }
-    },
-    "name": "offsetPlane",
-    "sourceRange": [
-      838,
-      875,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "String",
-        "value": "XZ"
-      },
-      "sourceRange": [
-        850,
-        854,
-        0
-      ]
-    }
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "button",
-    "functionSourceRange": [
-      241,
-      960,
-      8
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
-    "sourceRange": [
-      771,
-      876,
-      0
-    ]
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": [
-          300,
-          305,
-          8
-        ]
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [
-      286,
-      306,
-      8
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 0.04,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": [
-          727,
-          742,
-          8
-        ]
-      }
-    },
-    "name": "extrude",
-    "sourceRange": [
-      696,
-      743,
-      8
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": [
-        704,
-        716,
-        8
-      ]
-    }
-  },
-  {
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 0.05,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": [
-          778,
-          782,
-          8
-        ]
-      },
-      "tags": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Uuid",
-              "value": "[uuid]"
-            },
-            {
-              "type": "Uuid",
-              "value": "[uuid]"
-            }
-          ]
-        },
-        "sourceRange": [
-          800,
-          887,
-          8
-        ]
-      }
-    },
-    "name": "chamfer",
-    "sourceRange": [
-      751,
-      896,
-      8
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": [
-        751,
-        896,
-        8
-      ]
+      "sourceRange": []
     }
   },
   {
     "type": "UserDefinedFunctionReturn"
   },
   {
-    "labeledArgs": {
-      "offset": {
-        "value": {
-          "type": "Number",
-          "value": 1.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": [
-          992,
-          1001,
-          0
-        ]
-      }
-    },
-    "name": "offsetPlane",
-    "sourceRange": [
-      965,
-      1002,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "String",
-        "value": "XZ"
-      },
-      "sourceRange": [
-        977,
-        981,
-        0
-      ]
-    }
-  },
-  {
     "type": "UserDefinedFunctionCall",
-    "name": "button",
+    "name": "talkButton",
     "functionSourceRange": [
-      241,
-      960,
-      8
+      202,
+      1023,
+      10
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      877,
-      1003,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -2538,707 +1857,11 @@ description: Operations executed walkie-talkie.kcl
           "type": "Plane",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          300,
-          305,
-          8
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      286,
-      306,
-      8
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 0.04,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": [
-          727,
-          742,
-          8
-        ]
-      }
-    },
-    "name": "extrude",
-    "sourceRange": [
-      696,
-      743,
-      8
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": [
-        704,
-        716,
-        8
-      ]
-    }
-  },
-  {
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 0.05,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": [
-          778,
-          782,
-          8
-        ]
-      },
-      "tags": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Uuid",
-              "value": "[uuid]"
-            },
-            {
-              "type": "Uuid",
-              "value": "[uuid]"
-            }
-          ]
-        },
-        "sourceRange": [
-          800,
-          887,
-          8
-        ]
-      }
-    },
-    "name": "chamfer",
-    "sourceRange": [
-      751,
-      896,
-      8
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": [
-        751,
-        896,
-        8
-      ]
-    }
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "labeledArgs": {
-      "offset": {
-        "value": {
-          "type": "Number",
-          "value": 1.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": [
-          1112,
-          1121,
-          0
-        ]
-      }
-    },
-    "name": "offsetPlane",
-    "sourceRange": [
-      1085,
-      1122,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "String",
-        "value": "XZ"
-      },
-      "sourceRange": [
-        1097,
-        1101,
-        0
-      ]
-    }
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "button",
-    "functionSourceRange": [
-      241,
-      960,
-      8
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
-    "sourceRange": [
-      1004,
-      1123,
-      0
-    ]
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": [
-          300,
-          305,
-          8
-        ]
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [
-      286,
-      306,
-      8
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 0.04,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": [
-          727,
-          742,
-          8
-        ]
-      }
-    },
-    "name": "extrude",
-    "sourceRange": [
-      696,
-      743,
-      8
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": [
-        704,
-        716,
-        8
-      ]
-    }
-  },
-  {
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 0.05,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": [
-          778,
-          782,
-          8
-        ]
-      },
-      "tags": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Uuid",
-              "value": "[uuid]"
-            },
-            {
-              "type": "Uuid",
-              "value": "[uuid]"
-            }
-          ]
-        },
-        "sourceRange": [
-          800,
-          887,
-          8
-        ]
-      }
-    },
-    "name": "chamfer",
-    "sourceRange": [
-      751,
-      896,
-      8
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": [
-        751,
-        896,
-        8
-      ]
-    }
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "labeledArgs": {
-      "offset": {
-        "value": {
-          "type": "Number",
-          "value": 1.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": [
-          1238,
-          1247,
-          0
-        ]
-      }
-    },
-    "name": "offsetPlane",
-    "sourceRange": [
-      1211,
-      1248,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "String",
-        "value": "XZ"
-      },
-      "sourceRange": [
-        1223,
-        1227,
-        0
-      ]
-    }
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "button",
-    "functionSourceRange": [
-      241,
-      960,
-      8
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
-    "sourceRange": [
-      1124,
-      1249,
-      0
-    ]
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": [
-          300,
-          305,
-          8
-        ]
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [
-      286,
-      306,
-      8
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 0.04,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": [
-          727,
-          742,
-          8
-        ]
-      }
-    },
-    "name": "extrude",
-    "sourceRange": [
-      696,
-      743,
-      8
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": [
-        704,
-        716,
-        8
-      ]
-    }
-  },
-  {
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 0.05,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": [
-          778,
-          782,
-          8
-        ]
-      },
-      "tags": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Uuid",
-              "value": "[uuid]"
-            },
-            {
-              "type": "Uuid",
-              "value": "[uuid]"
-            }
-          ]
-        },
-        "sourceRange": [
-          800,
-          887,
-          8
-        ]
-      }
-    },
-    "name": "chamfer",
-    "sourceRange": [
-      751,
-      896,
-      8
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": [
-        751,
-        896,
-        8
-      ]
-    }
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Object",
-          "value": {
-            "plane": {
-              "type": "Object",
-              "value": {
-                "origin": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 1.25,
-                      "ty": {
-                        "type": "Unknown"
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": -0.5,
-                      "ty": {
-                        "type": "Unknown"
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 0.5,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  }
-                },
-                "xAxis": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  }
-                },
-                "yAxis": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  }
-                },
-                "zAxis": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "sourceRange": [
-          481,
-          496,
-          6
-        ]
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [
-      467,
-      497,
-      6
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -3258,19 +1881,11 @@ description: Operations executed walkie-talkie.kcl
             }
           }
         },
-        "sourceRange": [
-          868,
-          884,
-          6
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      833,
-      885,
-      6
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -3279,11 +1894,7 @@ description: Operations executed walkie-talkie.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        841,
-        857,
-        6
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -3302,11 +1913,7 @@ description: Operations executed walkie-talkie.kcl
             }
           }
         },
-        "sourceRange": [
-          915,
-          920,
-          6
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -3330,19 +1937,11 @@ description: Operations executed walkie-talkie.kcl
             }
           ]
         },
-        "sourceRange": [
-          936,
-          1089,
-          6
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      891,
-      1096,
-      6
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -3351,239 +1950,503 @@ description: Operations executed walkie-talkie.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        891,
-        1096,
-        6
-      ]
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "knob",
+    "functionSourceRange": [
+      298,
+      748,
+      11
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "axis": {
+        "value": {
+          "type": "String",
+          "value": "Y"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "revolve",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "button",
+    "functionSourceRange": [
+      221,
+      818,
+      12
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 0.04,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
     }
   },
   {
     "labeledArgs": {
-      "data": {
+      "length": {
         "value": {
-          "type": "Object",
-          "value": {
-            "plane": {
-              "type": "Object",
-              "value": {
-                "origin": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 0.55,
-                      "ty": {
-                        "type": "Unknown"
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": -0.5,
-                      "ty": {
-                        "type": "Unknown"
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 2.0,
-                      "ty": {
-                        "type": "Unknown"
-                      }
-                    }
-                  }
-                },
-                "xAxis": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  }
-                },
-                "yAxis": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  }
-                },
-                "zAxis": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
+          "type": "Number",
+          "value": 0.05,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
             }
           }
         },
-        "sourceRange": [
-          508,
-          517,
-          7
-        ]
+        "sourceRange": []
+      },
+      "tags": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
+        },
+        "sourceRange": []
       }
     },
-    "name": "startSketchOn",
-    "sourceRange": [
-      494,
-      518,
-      7
-    ],
+    "name": "chamfer",
+    "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "button",
+    "functionSourceRange": [
+      221,
+      818,
+      12
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "Object",
-          "value": {
-            "axis": {
-              "type": "String",
-              "value": "Y"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 0.04,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
             }
           }
         },
-        "sourceRange": [
-          778,
-          792,
-          7
-        ]
-      },
-      "sketches": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          794,
-          795,
-          7
-        ]
+        "sourceRange": []
       }
     },
-    "name": "revolve",
-    "sourceRange": [
-      770,
-      796,
-      7
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 0.05,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "tags": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "chamfer",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "button",
+    "functionSourceRange": [
+      221,
+      818,
+      12
     ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 0.04,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 0.05,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "tags": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "chamfer",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "button",
+    "functionSourceRange": [
+      221,
+      818,
+      12
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 0.04,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 0.05,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "tags": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "chamfer",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   }
 ]

@@ -19,17 +19,11 @@ pipeSketch = startSketchOn(XY)
   |> startProfileAt([pipeSmallDia - (thickness / 2), 38], %)
   |> line(end = [thickness, 0])
   |> line(end = [0, -pipeSmallDiaLength])
-  |> angledLine(
-       angle = -60,
-       lengthY = pipeTransitionLength
-     )
+  |> angledLine(angle = -60, lengthY = pipeTransitionLength)
   |> line(end = [0, -pipeLargeDiaLength])
   |> xLine(length = -thickness)
   |> line(end = [0, pipeLargeDiaLength])
-  |> angledLine(
-       angle = -pipeTransitionAngle + 180,
-       endAbsoluteX = pipeSmallDia - (thickness / 2)
-     )
+  |> angledLine(angle = -pipeTransitionAngle + 180, endAbsoluteX = pipeSmallDia - (thickness / 2))
   |> close()
 
 // Revolve the sketch to create the pipe

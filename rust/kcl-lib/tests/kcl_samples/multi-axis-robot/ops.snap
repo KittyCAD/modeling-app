@@ -4,101 +4,17 @@ description: Operations executed multi-axis-robot.kcl
 ---
 [
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "sin",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
-    "sourceRange": [
-      867,
-      889,
-      7
-    ]
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "cos",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
-    "sourceRange": [
-      899,
-      921,
-      7
-    ]
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "sin",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
-    "sourceRange": [
-      1149,
-      1171,
-      7
-    ]
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "cos",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
-    "sourceRange": [
-      1181,
-      1203,
-      7
-    ]
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          217,
-          221,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      203,
-      222,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -118,19 +34,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          814,
-          832,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      786,
-      833,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -139,11 +47,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        794,
-        803,
-        3
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -162,11 +66,7 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          864,
-          875,
-          3
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -190,19 +90,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           ]
         },
-        "sourceRange": [
-          891,
-          1108,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "chamfer",
-    "sourceRange": [
-      839,
-      1115,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -211,11 +103,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        839,
-        1115,
-        3
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -227,32 +115,93 @@ description: Operations executed multi-axis-robot.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1183,
-          1193,
-          3
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          1195,
-          1200,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1169,
-      1201,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 4.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "tag": {
+        "value": {
+          "type": "TagDeclarator",
+          "name": "referenceEdge"
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -270,19 +219,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          1306,
-          1343,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1278,
-      1344,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -291,11 +232,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1286,
-        1295,
-        3
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -314,11 +251,7 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          1374,
-          1377,
-          3
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -330,19 +263,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           ]
         },
-        "sourceRange": [
-          1393,
-          1425,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      1350,
-      1432,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -351,11 +276,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1350,
-        1432,
-        3
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -367,32 +288,86 @@ description: Operations executed multi-axis-robot.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1459,
-          1469,
-          3
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          1471,
-          1476,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1445,
-      1477,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -410,19 +385,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          1562,
-          1563,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1534,
-      1564,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -431,11 +398,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1542,
-        1551,
-        3
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -447,32 +410,86 @@ description: Operations executed multi-axis-robot.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1628,
-          1638,
-          3
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          1640,
-          1645,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1614,
-      1646,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": -4.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": -2.5,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.4,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -490,19 +507,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          1965,
-          1984,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1938,
-      1985,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -534,11 +543,7 @@ description: Operations executed multi-axis-robot.kcl
           }
         ]
       },
-      "sourceRange": [
-        1946,
-        1954,
-        3
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -550,32 +555,86 @@ description: Operations executed multi-axis-robot.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2012,
-          2022,
-          3
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          2024,
-          2029,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1998,
-      2030,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": -2.5,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": -4.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.4,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -593,19 +652,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          2337,
-          2356,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2310,
-      2357,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -637,11 +688,7 @@ description: Operations executed multi-axis-robot.kcl
           }
         ]
       },
-      "sourceRange": [
-        2318,
-        2326,
-        3
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -833,21 +880,86 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          190,
-          198,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      176,
-      199,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 3.9,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "tag": {
+        "value": {
+          "type": "TagDeclarator",
+          "name": "referenceEdge1"
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -865,19 +977,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          307,
-          316,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      279,
-      317,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -886,11 +990,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        287,
-        296,
-        4
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -909,11 +1009,7 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          347,
-          350,
-          4
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -925,19 +1021,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           ]
         },
-        "sourceRange": [
-          366,
-          399,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      323,
-      406,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -946,11 +1034,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        323,
-        406,
-        4
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1132,19 +1216,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          501,
-          509,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      487,
-      510,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1164,19 +1240,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          862,
-          863,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      834,
-      864,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1185,11 +1253,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        842,
-        851,
-        4
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1201,30 +1265,18 @@ description: Operations executed multi-axis-robot.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          892,
-          902,
-          4
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          904,
-          909,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      878,
-      910,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1238,11 +1290,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      958,
-      980,
-      4
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -1257,11 +1305,74 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      987,
-      1009,
-      4
-    ]
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 1.7499999999999998,
+              "ty": {
+                "type": "Unknown"
+              }
+            },
+            {
+              "type": "Number",
+              "value": 8.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 2.75,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "tag": {
+        "value": {
+          "type": "TagDeclarator",
+          "name": "referenceEdge2"
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -1282,19 +1393,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          1126,
-          1129,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1098,
-      1130,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1303,11 +1406,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1106,
-        1115,
-        4
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1326,11 +1425,7 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          1160,
-          1163,
-          4
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -1342,19 +1437,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           ]
         },
-        "sourceRange": [
-          1179,
-          1212,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      1136,
-      1219,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1363,11 +1450,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1136,
-        1219,
-        4
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1379,30 +1462,18 @@ description: Operations executed multi-axis-robot.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1285,
-          1295,
-          4
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          1297,
-          1302,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1271,
-      1303,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1416,11 +1487,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1351,
-      1373,
-      4
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -1435,11 +1502,67 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1380,
-      1402,
-      4
-    ]
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 1.7499999999999998,
+              "ty": {
+                "type": "Unknown"
+              }
+            },
+            {
+              "type": "Number",
+              "value": 6.75,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.2,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -1454,11 +1577,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1514,
-      1536,
-      4
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -1473,11 +1592,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1543,
-      1565,
-      4
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -1498,19 +1613,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          1715,
-          1718,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1687,
-      1719,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1542,11 +1649,7 @@ description: Operations executed multi-axis-robot.kcl
           }
         ]
       },
-      "sourceRange": [
-        1695,
-        1704,
-        4
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1558,30 +1661,18 @@ description: Operations executed multi-axis-robot.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1747,
-          1757,
-          4
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          1759,
-          1764,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1733,
-      1765,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1595,11 +1686,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1813,
-      1835,
-      4
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -1614,11 +1701,74 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1842,
-      1864,
-      4
-    ]
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 1.7499999999999998,
+              "ty": {
+                "type": "Unknown"
+              }
+            },
+            {
+              "type": "Number",
+              "value": 8.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "tag": {
+        "value": {
+          "type": "TagDeclarator",
+          "name": "referenceEdge3"
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -1639,19 +1789,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          1978,
-          1982,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1950,
-      1983,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1660,11 +1802,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1958,
-        1967,
-        4
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1683,11 +1821,7 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          2013,
-          2016,
-          4
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -1699,19 +1833,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           ]
         },
-        "sourceRange": [
-          2032,
-          2065,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      1989,
-      2072,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1720,11 +1846,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1989,
-        2072,
-        4
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1906,21 +2028,79 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          2167,
-          2175,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      2153,
-      2176,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 1.75,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 8.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.3,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -1938,19 +2118,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          2252,
-          2254,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2224,
-      2255,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1959,11 +2131,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        2232,
-        2241,
-        4
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -2145,19 +2313,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          238,
-          246,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      224,
-      247,
-      5
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -2171,11 +2331,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      306,
-      328,
-      5
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -2190,11 +2346,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      363,
-      385,
-      5
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -2215,19 +2367,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          837,
-          856,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      809,
-      857,
-      5
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2236,11 +2380,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        817,
-        826,
-        5
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -2252,32 +2392,93 @@ description: Operations executed multi-axis-robot.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          885,
-          895,
-          5
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "START"
         },
-        "sourceRange": [
-          897,
-          904,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      871,
-      905,
-      5
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": -1.75,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 8.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 1.9,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "tag": {
+        "value": {
+          "type": "TagDeclarator",
+          "name": "referenceEdge4"
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -2295,19 +2496,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          1018,
-          1022,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      990,
-      1023,
-      5
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2316,11 +2509,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        998,
-        1007,
-        5
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -2339,11 +2528,7 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          1053,
-          1056,
-          5
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -2355,19 +2540,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           ]
         },
-        "sourceRange": [
-          1072,
-          1105,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      1029,
-      1112,
-      5
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2376,11 +2553,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1029,
-        1112,
-        5
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -2392,30 +2565,18 @@ description: Operations executed multi-axis-robot.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1139,
-          1149,
-          5
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "START"
         },
-        "sourceRange": [
-          1151,
-          1158,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1125,
-      1159,
-      5
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -2429,11 +2590,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1225,
-      1247,
-      5
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -2448,11 +2605,80 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1281,
-      1303,
-      5
-    ]
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 8.85262444309573,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 37.130471244363164,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 1.9,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "tag": {
+        "value": {
+          "type": "TagDeclarator",
+          "name": "referenceEdge5"
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -2473,19 +2699,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          1403,
-          1404,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1375,
-      1405,
-      5
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2494,11 +2712,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1383,
-        1392,
-        5
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -2517,11 +2731,7 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          1435,
-          1438,
-          5
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -2533,19 +2743,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           ]
         },
-        "sourceRange": [
-          1454,
-          1487,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      1411,
-      1494,
-      5
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2554,11 +2756,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1411,
-        1494,
-        5
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -2570,32 +2768,86 @@ description: Operations executed multi-axis-robot.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1560,
-          1570,
-          5
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          1572,
-          1577,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1546,
-      1578,
-      5
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": -1.75,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 6.75,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.2,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -2613,19 +2865,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          1808,
-          1812,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1780,
-      1813,
-      5
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2681,11 +2925,7 @@ description: Operations executed multi-axis-robot.kcl
           }
         ]
       },
-      "sourceRange": [
-        1788,
-        1797,
-        5
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -2697,30 +2937,18 @@ description: Operations executed multi-axis-robot.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1841,
-          1851,
-          5
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          1853,
-          1858,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1827,
-      1859,
-      5
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -2734,11 +2962,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1933,
-      1955,
-      5
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -2753,11 +2977,73 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1997,
-      2019,
-      5
-    ]
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 8.510604299770062,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 35.7209323131843,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.2,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -2772,11 +3058,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      2135,
-      2157,
-      5
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -2791,11 +3073,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      2191,
-      2213,
-      5
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -2816,19 +3094,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          2351,
-          2355,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2323,
-      2356,
-      5
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2860,11 +3130,7 @@ description: Operations executed multi-axis-robot.kcl
           }
         ]
       },
-      "sourceRange": [
-        2331,
-        2340,
-        5
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -2876,30 +3142,18 @@ description: Operations executed multi-axis-robot.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2384,
-          2394,
-          5
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          2396,
-          2401,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      2370,
-      2402,
-      5
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -2913,11 +3167,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      2468,
-      2490,
-      5
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -2932,11 +3182,73 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      2523,
-      2545,
-      5
-    ]
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": -8.85262444309573,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 37.130471244363164,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.3,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -2957,19 +3269,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          2612,
-          2613,
-          5
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2584,
-      2614,
-      5
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2978,11 +3282,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        2592,
-        2601,
-        5
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -3164,19 +3464,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          258,
-          266,
-          6
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      244,
-      267,
-      6
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -3190,11 +3482,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      322,
-      344,
-      6
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -3209,11 +3497,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      370,
-      393,
-      6
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -3228,11 +3512,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      425,
-      447,
-      6
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -3247,11 +3527,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      472,
-      495,
-      6
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -3272,19 +3548,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          969,
-          988,
-          6
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      941,
-      989,
-      6
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -3293,11 +3561,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        949,
-        958,
-        6
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -3309,30 +3573,18 @@ description: Operations executed multi-axis-robot.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1017,
-          1027,
-          6
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          1029,
-          1034,
-          6
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1003,
-      1035,
-      6
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -3346,11 +3598,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1101,
-      1123,
-      6
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -3365,11 +3613,74 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1156,
-      1178,
-      6
-    ]
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": -8.85262444309573,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 37.130471244363164,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 1.85,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      },
+      "tag": {
+        "value": {
+          "type": "TagDeclarator",
+          "name": "referenceEdge6"
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -3390,19 +3701,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          1284,
-          1288,
-          6
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1256,
-      1289,
-      6
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -3411,11 +3714,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1264,
-        1273,
-        6
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -3434,11 +3733,7 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          1319,
-          1322,
-          6
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -3450,19 +3745,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           ]
         },
-        "sourceRange": [
-          1338,
-          1371,
-          6
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      1295,
-      1378,
-      6
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -3471,11 +3758,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1295,
-        1378,
-        6
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -3487,30 +3770,18 @@ description: Operations executed multi-axis-robot.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1443,
-          1453,
-          6
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          1455,
-          1460,
-          6
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1429,
-      1461,
-      6
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -3524,11 +3795,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1533,
-      1555,
-      6
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -3543,11 +3810,73 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1596,
-      1618,
-      6
-    ]
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": -8.510604299770062,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 35.7209323131843,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.2,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -3562,11 +3891,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1732,
-      1754,
-      6
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -3581,11 +3906,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1787,
-      1809,
-      6
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -3606,19 +3927,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          1947,
-          1951,
-          6
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1919,
-      1952,
-      6
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -3674,11 +3987,7 @@ description: Operations executed multi-axis-robot.kcl
           }
         ]
       },
-      "sourceRange": [
-        1927,
-        1936,
-        6
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -3690,30 +3999,18 @@ description: Operations executed multi-axis-robot.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2049,
-          2059,
-          6
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "START"
         },
-        "sourceRange": [
-          2061,
-          2068,
-          6
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      2035,
-      2069,
-      6
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -3727,11 +4024,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      2137,
-      2159,
-      6
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -3746,11 +4039,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      2183,
-      2206,
-      6
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -3765,11 +4054,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      2240,
-      2262,
-      6
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -3784,11 +4069,67 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      2284,
-      2307,
-      6
-    ]
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": -10.84353061714843,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 33.657507691024556,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 1.875,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -3809,19 +4150,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          2402,
-          2406,
-          6
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2374,
-      2407,
-      6
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -3830,11 +4163,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        2382,
-        2391,
-        6
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -3846,30 +4175,18 @@ description: Operations executed multi-axis-robot.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2435,
-          2445,
-          6
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": [
-          2447,
-          2452,
-          6
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      2421,
-      2453,
-      6
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -3883,11 +4200,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      2519,
-      2541,
-      6
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -3902,11 +4215,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      2563,
-      2586,
-      6
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -3921,11 +4230,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      2619,
-      2641,
-      6
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -3940,11 +4245,67 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      2663,
-      2686,
-      6
-    ]
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 10.84353061714843,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 33.657507691024556,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 1.865671641791045,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -3965,19 +4326,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          2785,
-          2789,
-          6
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2757,
-      2790,
-      6
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -3986,11 +4339,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        2765,
-        2774,
-        6
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -4002,32 +4351,86 @@ description: Operations executed multi-axis-robot.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2870,
-          2880,
-          6
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "START"
         },
-        "sourceRange": [
-          2882,
-          2889,
-          6
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      2856,
-      2890,
-      6
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circle",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.1,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -4045,19 +4448,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          2977,
-          2982,
-          6
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2949,
-      2983,
-      6
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -4066,11 +4461,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        2957,
-        2966,
-        6
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -4082,30 +4473,18 @@ description: Operations executed multi-axis-robot.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          3038,
-          3048,
-          6
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "START"
         },
-        "sourceRange": [
-          3050,
-          3057,
-          6
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      3024,
-      3058,
-      6
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -4119,11 +4498,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      3113,
-      3135,
-      6
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -4138,11 +4513,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      3157,
-      3180,
-      6
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -4157,11 +4528,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      3211,
-      3233,
-      6
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -4176,11 +4543,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      3255,
-      3278,
-      6
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -4201,19 +4564,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          4058,
-          4062,
-          6
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      4030,
-      4063,
-      6
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -4222,11 +4577,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        4038,
-        4047,
-        6
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -4238,30 +4589,18 @@ description: Operations executed multi-axis-robot.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          4118,
-          4128,
-          6
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "START"
         },
-        "sourceRange": [
-          4130,
-          4137,
-          6
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      4104,
-      4138,
-      6
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -4275,11 +4614,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      4193,
-      4215,
-      6
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -4294,11 +4629,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      4237,
-      4260,
-      6
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -4313,11 +4644,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      4291,
-      4313,
-      6
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -4332,11 +4659,7 @@ description: Operations executed multi-axis-robot.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      4335,
-      4358,
-      6
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -4357,19 +4680,11 @@ description: Operations executed multi-axis-robot.kcl
             }
           }
         },
-        "sourceRange": [
-          5140,
-          5144,
-          6
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      5112,
-      5145,
-      6
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -4378,11 +4693,7 @@ description: Operations executed multi-axis-robot.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        5120,
-        5129,
-        6
-      ]
+      "sourceRange": []
     }
   }
 ]

@@ -22,7 +22,7 @@ row6 = row5 + keyHeight + spacing
 sketch001 = startSketchOn(YZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [-0.14, 0.68], tag = $seg01)
-  |> angledLine([7, row6 + 3 * spacing + keyHeight], %, $seg02)
+  |> angledLine(angle = 7, length = row6 + 3 * spacing + keyHeight, tag = $seg02)
   |> line(endAbsolute = [5.13, 0], tag = $seg03)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg04)
   |> close()
@@ -73,17 +73,11 @@ fn keyFn(originStart, keyWidth, keyHeight, repeats, color) {
          angleEnd = 270,
          radius = 0.1
        }, %)
-    |> angledLine([0, keyWidth - .2], %, $rectangleSegmentA001)
+    |> angledLine(angle = 0, length = keyWidth - .2, tag = $rectangleSegmentA001)
     |> tangentialArc({ radius = 0.1, offset = 90 }, %)
-    |> angledLine([
-         segAng(rectangleSegmentA001) + 90,
-         keyHeight - .2
-       ], %, $rectangleSegmentB001)
+    |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = keyHeight - .2, tag = $rectangleSegmentB001)
     |> tangentialArc({ radius = 0.1, offset = 90 }, %)
-    |> angledLine([
-         segAng(rectangleSegmentA001),
-         -segLen(rectangleSegmentA001)
-       ], %, $rectangleSegmentC001)
+    |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
     |> tangentialArc({ radius = 0.1, offset = 90 }, %)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
     |> close()
@@ -151,24 +145,15 @@ fn z(origin, scale, depth) {
        ], %)
     |> yLine(length = -0.15 * scale)
     |> xLine(length = 0.15 * scale)
-    |> angledLineToX({
-         angle = 47.15,
-         to = 0.3 * scale + origin[0]
-       }, %, $seg1)
+    |> angledLine(angle = 47.15, endAbsoluteX = 0.3 * scale + origin[0], tag = $seg1)
     |> yLine(endAbsolute = 0 + origin[1], tag = $seg3)
     |> xLine(length = 0.63 * scale)
     |> yLine(length = 0.225 * scale)
     |> xLine(length = -0.57 * scale)
-    |> angledLineToX({
-         angle = 47.15,
-         to = 0.93 * scale + origin[0]
-       }, %)
+    |> angledLine(angle = 47.15, endAbsoluteX = 0.93 * scale + origin[0])
     |> yLine(length = 0.15 * scale)
     |> xLine(length = -0.15 * scale)
-    |> angledLine({
-         angle = 47.15,
-         length = -segLen(seg1)
-       }, %, $seg2)
+    |> angledLine(angle = 47.15, length = -segLen(seg1), tag = $seg2)
     |> yLine(length = segLen(seg3))
     |> xLine(endAbsolute = 0 + origin[0])
     |> yLine(length = -0.225 * scale)
@@ -195,7 +180,7 @@ fn o(origin, scale, depth) {
          angleEnd = 47.15 - 6 + 180,
          radius = .525 * scale
        }, %)
-    |> angledLine({ angle = 47.15, length = .24 * scale }, %)
+    |> angledLine(angle = 47.15, length = .24 * scale)
     |> arc({
          angleStart = 47.15 - 11 + 180,
          angleEnd = 47.15 + 11,
@@ -215,7 +200,7 @@ fn o(origin, scale, depth) {
          angleEnd = 47.15 - 6,
          radius = .525 * scale
        }, %)
-    |> angledLine({ angle = 47.15, length = -.24 * scale }, %)
+    |> angledLine(angle = 47.15, length = -.24 * scale)
     |> arc({
          angleStart = 47.15 - 11,
          angleEnd = 47.15 + 11 - 180,

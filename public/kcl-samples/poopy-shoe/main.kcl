@@ -19,10 +19,7 @@ sketch001 = startSketchOn(-YZ)
   |> yLine(endAbsolute = height)
   |> xLine(length = -wallThickness)
   |> yLine(endAbsolute = segEndY(seg01))
-  |> angledLine(
-       angle = 60,
-       endAbsoluteX = wallsWidth / 2 + wallThickness / 2,
-     )
+  |> angledLine(angle = 60, endAbsoluteX = wallsWidth / 2 + wallThickness / 2)
   |> xLine(length = -wallThickness)
   |> angledLine(angle = 180 - 60, endAbsoluteX = wallThickness)
   |> yLine(endAbsolute = height)
@@ -48,10 +45,7 @@ sketch002 = startSketchOn(-YZ)
   |> yLine(endAbsolute = height)
   |> xLine(length = -wallThickness)
   |> yLine(endAbsolute = segEndY(seg01))
-  |> angledLine(
-       angle = 60,
-       endAbsoluteX = wallsWidth / 2 + wallThickness / 2,
-     )
+  |> angledLine(angle = 60, endAbsoluteX = wallsWidth / 2 + wallThickness / 2)
   |> xLine(length = -wallThickness)
   |> angledLine(angle = 180 - 60, endAbsoluteX = wallThickness)
   |> yLine(endAbsolute = height)
@@ -85,10 +79,7 @@ sketch004 = startSketchOn(sketch002, 'END')
   |> yLine(endAbsolute = height)
   |> xLine(endAbsolute = wallThickness)
   |> yLine(endAbsolute = segEndY(seg01))
-  |> angledLine(
-       angle = 180 - 60,
-       endAbsoluteX = wallsWidth / 2 - (wallThickness / 2),
-     )
+  |> angledLine(angle = 180 - 60, endAbsoluteX = wallsWidth / 2 - (wallThickness / 2))
   |> xLine(length = wallThickness)
   |> angledLine(angle = 60, endAbsoluteY = segEndY(seg01))
   |> yLine(endAbsolute = height)

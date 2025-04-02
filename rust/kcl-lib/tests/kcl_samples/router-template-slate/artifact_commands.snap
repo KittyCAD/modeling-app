@@ -5,11 +5,7 @@ description: Artifact commands router-template-slate.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,23 +13,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +22,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +31,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      93,
-      126,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -67,11 +39,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      484,
-      503,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -96,11 +64,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      509,
-      552,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -116,22 +80,14 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      509,
-      552,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      509,
-      552,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -144,22 +100,14 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      509,
-      552,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      558,
-      597,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -176,11 +124,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      603,
-      701,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -205,11 +149,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      707,
-      783,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -226,11 +166,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      789,
-      858,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -247,11 +183,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      864,
-      904,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -268,11 +200,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      910,
-      949,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -289,11 +217,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      989,
-      1019,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -310,11 +234,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1025,
-      1054,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -331,11 +251,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1060,
-      1089,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -352,11 +268,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1095,
-      1124,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -373,11 +285,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1130,
-      1230,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -402,11 +310,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1236,
-      1292,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -423,11 +327,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1298,
-      1305,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -435,11 +335,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -455,11 +351,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -469,22 +361,14 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -492,11 +376,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -505,11 +385,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -519,11 +395,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -533,11 +405,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -547,11 +415,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -561,11 +425,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -575,11 +435,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -589,11 +445,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -603,11 +455,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -617,11 +465,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -631,11 +475,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -645,11 +485,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -659,11 +495,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -673,11 +505,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -687,11 +515,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -701,11 +525,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -715,11 +535,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -729,11 +545,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -743,11 +555,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -757,11 +565,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -771,11 +575,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -785,11 +585,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -799,11 +595,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1348,
-      1378,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -813,11 +605,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1460,
-      1560,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -829,22 +617,14 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1460,
-      1560,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1460,
-      1560,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -857,22 +637,14 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1460,
-      1560,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1566,
-      1613,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -889,11 +661,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1619,
-      1760,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -910,11 +678,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1766,
-      1912,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -931,11 +695,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1918,
-      1974,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -952,11 +712,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1980,
-      1987,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -964,11 +720,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2031,
-      2063,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -980,11 +732,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2031,
-      2063,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -994,22 +742,14 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2031,
-      2063,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2031,
-      2063,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1017,11 +757,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2031,
-      2063,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1030,11 +766,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2031,
-      2063,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1044,11 +776,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2031,
-      2063,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1058,11 +786,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2031,
-      2063,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1072,11 +796,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2031,
-      2063,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1086,11 +806,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2031,
-      2063,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1100,11 +816,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2031,
-      2063,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1114,11 +826,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2031,
-      2063,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1128,11 +836,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2031,
-      2063,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1142,11 +846,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2144,
-      2243,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1158,22 +858,14 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2144,
-      2243,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2144,
-      2243,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1186,22 +878,14 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2144,
-      2243,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2249,
-      2295,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1218,11 +902,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2301,
-      2406,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1239,11 +919,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2412,
-      2522,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1260,11 +936,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2528,
-      2584,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1281,11 +953,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2590,
-      2597,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1293,11 +961,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2640,
-      2672,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1309,11 +973,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2640,
-      2672,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1323,22 +983,14 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2640,
-      2672,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2640,
-      2672,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1346,11 +998,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2640,
-      2672,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1359,11 +1007,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2640,
-      2672,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1373,11 +1017,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2640,
-      2672,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1387,11 +1027,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2640,
-      2672,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1401,11 +1037,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2640,
-      2672,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1415,11 +1047,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2640,
-      2672,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1429,11 +1057,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2640,
-      2672,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1443,11 +1067,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2640,
-      2672,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1457,11 +1077,7 @@ description: Artifact commands router-template-slate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2640,
-      2672,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
