@@ -1,5 +1,3 @@
-import { TEST } from '@src/env'
-
 import type {
   ArtifactCommand,
   ArtifactId,
@@ -40,7 +38,6 @@ import {
 } from '@src/lib/constants'
 import type { CoreDumpManager } from '@src/lib/coredump'
 import openWindow from '@src/lib/openWindow'
-import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
 import { Reason, err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
@@ -409,19 +406,6 @@ export function sketchFromKclValue(
     return result.toError()
   }
   return result
-}
-
-export const jsAppSettings = async () => {
-  let jsAppSettings = default_app_settings()
-  if (!TEST) {
-    const settings = await import('@src/machines/appMachine').then((module) =>
-      module.getSettings()
-    )
-    if (settings) {
-      jsAppSettings = getAllCurrentSettings(settings)
-    }
-  }
-  return jsAppSettings
 }
 
 export const errFromErrWithOutputs = (e: any): KCLError => {

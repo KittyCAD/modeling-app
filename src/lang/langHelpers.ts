@@ -4,9 +4,10 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { KCLError } from '@src/lang/errors'
 import type { ExecState, Program } from '@src/lang/wasm'
-import { emptyExecState, jsAppSettings, kclLint } from '@src/lang/wasm'
+import { emptyExecState, kclLint } from '@src/lang/wasm'
 import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 export type ToolTip =
   | 'lineTo'

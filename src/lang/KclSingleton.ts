@@ -28,10 +28,10 @@ import {
   emptyExecState,
   getKclVersion,
   initPromise,
-  jsAppSettings,
   parse,
   recast,
 } from '@src/lang/wasm'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'

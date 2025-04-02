@@ -1,6 +1,8 @@
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+import { default_app_settings } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+import { TEST } from '@src/env'
 
 import {
   defaultAppSettings,
@@ -444,4 +446,17 @@ export function getSettingInputType(setting: Setting) {
   if (setting.commandConfig)
     return setting.commandConfig.inputType as 'string' | 'options' | 'boolean'
   return typeof setting.default as 'string' | 'boolean'
+}
+
+export const jsAppSettings = async () => {
+  let jsAppSettings = default_app_settings()
+  if (!TEST) {
+    const settings = await import('@src/machines/appMachine').then((module) =>
+      module.getSettings()
+    )
+    if (settings) {
+      jsAppSettings = getAllCurrentSettings(settings)
+    }
+  }
+  return jsAppSettings
 }
