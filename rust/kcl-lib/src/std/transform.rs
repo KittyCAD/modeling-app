@@ -28,10 +28,18 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         ]),
         exec_state,
     )?;
-    let scale_x = args.get_kw_arg("x")?;
-    let scale_y = args.get_kw_arg("y")?;
-    let scale_z = args.get_kw_arg("z")?;
+    let scale_x = args.get_kw_arg_opt("x")?;
+    let scale_y = args.get_kw_arg_opt("y")?;
+    let scale_z = args.get_kw_arg_opt("z")?;
     let global = args.get_kw_arg_opt("global")?;
+
+    // Ensure at least one scale value is provided.
+    if scale_x.is_none() && scale_y.is_none() && scale_z.is_none() {
+        return Err(KclError::Semantic(KclErrorDetails {
+            message: "Expected `x`, `y`, or `z` to be provided.".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
 
     let objects = inner_scale(objects, scale_x, scale_y, scale_z, global, exec_state, args).await?;
     Ok(objects.into())
@@ -85,8 +93,6 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> hole(pipeHole, %)
 ///     |> sweep(path = sweepPath)   
 ///     |> scale(
-///     x = 1.0,
-///     y = 1.0,
 ///     z = 2.5,
 ///     )
 /// ```
@@ -98,8 +104,6 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// cube
 ///     |> scale(
-///     x = 1.0,
-///     y = 1.0,
 ///     z = 2.5,
 ///     )
 /// ```
@@ -135,7 +139,7 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// parts = sweep([rectangleSketch, circleSketch], path = sweepPath)
 ///
 /// // Scale the sweep.
-/// scale(parts, x = 1.0, y = 1.0, z = 0.5)
+/// scale(parts, z = 0.5)
 /// ```
 #[stdlib {
     name = "scale",
@@ -144,17 +148,17 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     unlabeled_first = true,
     args = {
         objects = {docs = "The solid, sketch, or set of solids or sketches to scale."},
-        x = {docs = "The scale factor for the x axis."},
-        y = {docs = "The scale factor for the y axis."},
-        z = {docs = "The scale factor for the z axis."},
+        x = {docs = "The scale factor for the x axis. Default is 1 if not provided.", include_in_snippet = true},
+        y = {docs = "The scale factor for the y axis. Default is 1 if not provided.", include_in_snippet = true},
+        z = {docs = "The scale factor for the z axis. Default is 1 if not provided.", include_in_snippet = true},
         global = {docs = "If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move."}
     }
 }]
 async fn inner_scale(
     objects: SolidOrSketchOrImportedGeometry,
-    x: f64,
-    y: f64,
-    z: f64,
+    x: Option<f64>,
+    y: Option<f64>,
+    z: Option<f64>,
     global: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
@@ -174,7 +178,11 @@ async fn inner_scale(
                 object_id,
                 transforms: vec![shared::ComponentTransform {
                     scale: Some(shared::TransformBy::<Point3d<f64>> {
-                        property: Point3d { x, y, z },
+                        property: Point3d {
+                            x: x.unwrap_or(1.0),
+                            y: y.unwrap_or(1.0),
+                            z: z.unwrap_or(1.0),
+                        },
                         set: false,
                         is_local: !global.unwrap_or(false),
                     }),
@@ -201,10 +209,18 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
         ]),
         exec_state,
     )?;
-    let translate_x = args.get_kw_arg("x")?;
-    let translate_y = args.get_kw_arg("y")?;
-    let translate_z = args.get_kw_arg("z")?;
+    let translate_x = args.get_kw_arg_opt("x")?;
+    let translate_y = args.get_kw_arg_opt("y")?;
+    let translate_z = args.get_kw_arg_opt("z")?;
     let global = args.get_kw_arg_opt("global")?;
+
+    // Ensure at least one translation value is provided.
+    if translate_x.is_none() && translate_y.is_none() && translate_z.is_none() {
+        return Err(KclError::Semantic(KclErrorDetails {
+            message: "Expected `x`, `y`, or `z` to be provided.".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
 
     let objects = inner_translate(objects, translate_x, translate_y, translate_z, global, exec_state, args).await?;
     Ok(objects.into())
@@ -326,7 +342,6 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///     |> translate(
 ///         x = 5,
 ///         y = 5,
-///         z = 0,
 ///     )
 ///     |> extrude(
 ///         length = 10,
@@ -349,7 +364,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// profile001 = square()
 ///
 /// profile002 = square()
-///     |> translate(x = 0, y = 0, z = 20)
+///     |> translate(z = 20)
 ///     |> rotate(axis = [0, 0, 1.0], angle = 45)
 ///
 /// loft([profile001, profile002])
@@ -361,17 +376,17 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
     unlabeled_first = true,
     args = {
         objects = {docs = "The solid, sketch, or set of solids or sketches to move."},
-        x = {docs = "The amount to move the solid or sketch along the x axis."},
-        y = {docs = "The amount to move the solid or sketch along the y axis."},
-        z = {docs = "The amount to move the solid or sketch along the z axis."},
+        x = {docs = "The amount to move the solid or sketch along the x axis. Defaults to 0 if not provided.", include_in_snippet = true},
+        y = {docs = "The amount to move the solid or sketch along the y axis. Defaults to 0 if not provided.", include_in_snippet = true},
+        z = {docs = "The amount to move the solid or sketch along the z axis. Defaults to 0 if not provided.", include_in_snippet = true},
         global = {docs = "If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move."}
     }
 }]
 async fn inner_translate(
     objects: SolidOrSketchOrImportedGeometry,
-    x: f64,
-    y: f64,
-    z: f64,
+    x: Option<f64>,
+    y: Option<f64>,
+    z: Option<f64>,
     global: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
@@ -392,9 +407,9 @@ async fn inner_translate(
                 transforms: vec![shared::ComponentTransform {
                     translate: Some(shared::TransformBy::<Point3d<LengthUnit>> {
                         property: shared::Point3d {
-                            x: LengthUnit(x),
-                            y: LengthUnit(y),
-                            z: LengthUnit(z),
+                            x: LengthUnit(x.unwrap_or_default()),
+                            y: LengthUnit(y.unwrap_or_default()),
+                            z: LengthUnit(z.unwrap_or_default()),
                         },
                         set: false,
                         is_local: !global.unwrap_or(false),
@@ -999,6 +1014,36 @@ sweepSketch = startSketchOn('XY')
             result.unwrap_err().message(),
             r#"Expected `axis` and `angle` to not be provided when `roll`, `pitch`, and `yaw` are provided."#
                 .to_string()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_translate_no_args() {
+        let ast = PIPE.to_string()
+            + r#"
+    |> translate(
+    )
+"#;
+        let result = parse_execute(&ast).await;
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().message(),
+            r#"Expected `x`, `y`, or `z` to be provided."#.to_string()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_scale_no_args() {
+        let ast = PIPE.to_string()
+            + r#"
+    |> scale(
+    )
+"#;
+        let result = parse_execute(&ast).await;
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().message(),
+            r#"Expected `x`, `y`, or `z` to be provided."#.to_string()
         );
     }
 }

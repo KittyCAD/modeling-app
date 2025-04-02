@@ -6,28 +6,28 @@
  * A way to bypass this is by reloading the entire .js file so the global wasm variable
  * gets reinitialized and we do not use that old reference
  */
-
-import {
-  parse_wasm as ParseWasm,
-  recast_wasm as RecastWasm,
-  format_number as FormatNumber,
-  kcl_lint as KclLint,
-  is_points_ccw as IsPointsCcw,
-  get_tangential_arc_to_info as GetTangentialArcToInfo,
+import type {
+  base64_decode as Base64Decode,
+  change_kcl_settings as ChangeKclSettings,
   coredump as CoreDump,
   default_app_settings as DefaultAppSettings,
+  default_project_settings as DefaultProjectSettings,
+  format_number as FormatNumber,
+  get_kcl_version as GetKclVersion,
+  get_tangential_arc_to_info as GetTangentialArcToInfo,
+  is_kcl_empty_or_only_settings as IsKclEmptyOrOnlySettings,
+  is_points_ccw as IsPointsCcw,
+  kcl_lint as KclLint,
+  kcl_settings as KclSettings,
   parse_app_settings as ParseAppSettings,
   parse_project_settings as ParseProjectSettings,
-  default_project_settings as DefaultProjectSettings,
-  base64_decode as Base64Decode,
-  kcl_settings as KclSettings,
-  change_kcl_settings as ChangeKclSettings,
-  is_kcl_empty_or_only_settings as IsKclEmptyOrOnlySettings,
-  get_kcl_version as GetKclVersion,
+  parse_wasm as ParseWasm,
+  recast_wasm as RecastWasm,
   serialize_configuration as SerializeConfiguration,
   serialize_project_configuration as SerializeProjectConfiguration,
 } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 export type ModuleType = typeof import('@rust/kcl-wasm-lib/pkg/kcl_wasm_lib')
 
 // Stores the result of the import of the wasm_lib file

@@ -113,15 +113,19 @@ pub struct AppSettings {
     pub onboarding_status: OnboardingStatus,
     /// Backwards compatible project directory setting.
     #[serde(default, alias = "projectDirectory", skip_serializing_if = "Option::is_none")]
+    #[ts(skip)]
     pub project_directory: Option<std::path::PathBuf>,
     /// Backwards compatible theme setting.
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(skip)]
     pub theme: Option<AppTheme>,
     /// The hue of the primary theme color for the app.
     #[serde(default, skip_serializing_if = "Option::is_none", alias = "themeColor")]
+    #[ts(skip)]
     pub theme_color: Option<FloatOrInt>,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     #[serde(default, alias = "enableSSAO", skip_serializing_if = "Option::is_none")]
+    #[ts(skip)]
     pub enable_ssao: Option<bool>,
     /// Permanently dismiss the banner warning to download the desktop app.
     /// This setting only applies to the web app. And is temporary until we have Linux support.
@@ -285,6 +289,7 @@ pub struct ModelingSettings {
     /// of the app to aid in development.
     /// Remove this when we remove backwards compatibility with the old settings file.
     #[serde(default, alias = "showDebugPanel", skip_serializing_if = "is_default")]
+    #[ts(skip)]
     pub show_debug_panel: bool,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     #[serde(default, skip_serializing_if = "is_default")]

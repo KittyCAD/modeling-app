@@ -1,5 +1,6 @@
-import { isArray, isNonNullable } from 'lib/utils'
 import { useRef, useState } from 'react'
+
+import { isArray, isNonNullable } from '@src/lib/utils'
 
 type Primitive = string | number | bigint | boolean | symbol | null | undefined
 

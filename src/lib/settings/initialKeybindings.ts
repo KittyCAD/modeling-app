@@ -1,5 +1,5 @@
-import { isDesktop } from 'lib/isDesktop'
-import { platform } from 'lib/utils'
+import { isDesktop } from '@src/lib/isDesktop'
+import { platform } from '@src/lib/utils'
 
 export type InteractionMapItem = {
   name: string
