@@ -4,18 +4,34 @@ all: install build check
 ###############################################################################
 # INSTALL
 
-WASM_PACK ?= ~/.cargo/bin/wasm-pack
+ifeq ($(OS),Windows_NT)
+	CARGO ?= ~/.cargo/bin/cargo.exe
+	WASM_PACK ?= ~/.cargo/bin/wasm-pack.exe
+else
+	CARGO ?= ~/.cargo/bin/cargo
+	WASM_PACK ?= ~/.cargo/bin/wasm-pack
+endif
 
 .PHONY: install
-install: node_modules/.yarn-integrity $(WASM_PACK) ## Install dependencies
+install: node_modules/.yarn-integrity $(CARGO) $(WASM_PACK) ## Install dependencies
 
 node_modules/.yarn-integrity: package.json yarn.lock
 	yarn install
 	@ touch $@
 
-$(WASM_PACK):
+$(CARGO):
+ifeq ($(OS),Windows_NT)
+	yarn install:rust:windows
+else
 	yarn install:rust
+endif
+
+$(WASM_PACK):
+ifeq ($(OS),Windows_NT)
+	yarn install:wasm-pack:cargo
+else
 	yarn install:wasm-pack:sh
+endif
 
 ###############################################################################
 # BUILD
@@ -31,13 +47,17 @@ VITE_SOURCES := $(wildcard vite.*) $(wildcard vite/**/*.tsx)
 build: build-web build-desktop
 
 .PHONY: build-web
-build-web: public/kcl_wasm_lib_bg.wasm build/index.html
+build-web: install public/kcl_wasm_lib_bg.wasm build/index.html
 
 .PHONY: build-desktop
-build-desktop: public/kcl_wasm_lib_bg.wasm .vite/build/main.js
+build-desktop: install public/kcl_wasm_lib_bg.wasm .vite/build/main.js
 
 public/kcl_wasm_lib_bg.wasm: $(CARGO_SOURCES)$(RUST_SOURCES)
+ifeq ($(OS),Windows_NT)
+	yarn build:wasm:dev:windows
+else
 	yarn build:wasm:dev
+endif
 
 build/index.html: $(REACT_SOURCES) $(TYPESCRIPT_SOURCES) $(VITE_SOURCES)
 	yarn build:local
@@ -63,8 +83,10 @@ lint: install ## Lint the code
 ###############################################################################
 # RUN
 
+TARGET ?= web
+
 .PHONY: run
-run: run-web
+run: run-$(TARGET)
 
 .PHONY: run-web
 run-web: install build-web ## Start the web app
@@ -90,7 +112,7 @@ test-unit: install ## Run the unit tests
 	yarn test:unit
 
 .PHONY: test-e2e
-test-e2e: test-e2e-desktop
+test-e2e: test-e2e-$(TARGET)
 
 .PHONY: test-e2e-web
 test-e2e-web: install build-web ## Run the web e2e tests
