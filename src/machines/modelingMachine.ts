@@ -4,7 +4,7 @@ import { assign, fromPromise, setup } from 'xstate'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import { deleteSegment } from '@src/clientSideScene/ClientSideSceneComp'
+import { deleteSegment } from '@src/clientSideScene/deleteSegment'
 import {
   orthoScale,
   quaternionFromUpNForward,
