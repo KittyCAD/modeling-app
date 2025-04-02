@@ -223,8 +223,8 @@ class StraightSegment implements SegmentUtils {
       })
       snapLine.name = STRAIGHT_SEGMENT_SNAP_LINE
       segmentGroup.add(snapLine)
-      segmentGroup.add(mesh, extraSegmentGroup)
     }
+    segmentGroup.add(mesh, extraSegmentGroup)
 
     let updateOverlaysCallback = this.update({
       prevSegment,
