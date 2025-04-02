@@ -23,7 +23,7 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import { getSweepArtifactFromSelection } from '@src/lang/std/artifactGraph'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
-import type {
+import {
   addTagForSketchOnFace,
   getTagFromCallExpression,
   sketchLineHelperMap,
