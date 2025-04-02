@@ -1119,7 +1119,7 @@ export function getOperationLabel(op: Operation): string {
     case 'KclStdLibCall':
       return stdLibMap[op.name]?.label ?? op.name
     case 'GroupBegin':
-      return op.name ?? 'Anonymous custom function'
+      return op.group.name ?? 'Anonymous custom function'
     case 'GroupEnd':
       return 'User function return'
   }

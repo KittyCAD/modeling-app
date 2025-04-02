@@ -388,7 +388,7 @@ const OperationItem = (props: {
                 if (props.item.type !== 'GroupBegin') {
                   return
                 }
-                const functionRange = props.item.functionSourceRange
+                const functionRange = props.item.group.functionSourceRange
                 // For some reason, the cursor goes to the end of the source
                 // range we select.  So set the end equal to the beginning.
                 functionRange[1] = functionRange[0]

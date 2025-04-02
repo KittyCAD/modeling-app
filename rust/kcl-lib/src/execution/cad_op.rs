@@ -41,16 +41,8 @@ pub enum Operation {
     },
     #[serde(rename_all = "camelCase")]
     GroupBegin {
-        /// The name of the user-defined function being called.  Anonymous
-        /// functions have no name.
-        name: Option<String>,
-        /// The location of the function being called so that there's enough
-        /// info to go to its definition.
-        function_source_range: SourceRange,
-        /// The unlabeled argument to the function.
-        unlabeled_arg: Option<OpArg>,
-        /// The labeled keyword arguments to the function.
-        labeled_args: IndexMap<String, OpArg>,
+        /// The details of the group.
+        group: Group,
         /// The source range of the operation in the source code.
         source_range: SourceRange,
     },
@@ -66,6 +58,25 @@ impl Operation {
             Self::GroupBegin { .. } | Self::GroupEnd => {}
         }
     }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[serde(tag = "type")]
+pub enum Group {
+    /// A function call.
+    #[serde(rename_all = "camelCase")]
+    FunctionCall {
+        /// The name of the user-defined function being called.  Anonymous
+        /// functions have no name.
+        name: Option<String>,
+        /// The location of the function being called so that there's enough
+        /// info to go to its definition.
+        function_source_range: SourceRange,
+        /// The unlabeled argument to the function.
+        unlabeled_arg: Option<OpArg>,
+        /// The labeled keyword arguments to the function.
+        labeled_args: IndexMap<String, OpArg>,
+    },
 }
 
 /// An argument to a CAD modeling operation.

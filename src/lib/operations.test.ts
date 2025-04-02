@@ -17,10 +17,13 @@ function stdlib(name: string): Operation {
 function userCall(name: string): Operation {
   return {
     type: 'GroupBegin',
-    name,
-    functionSourceRange: defaultSourceRange(),
-    unlabeledArg: null,
-    labeledArgs: {},
+    group: {
+      type: 'FunctionCall',
+      name,
+      functionSourceRange: defaultSourceRange(),
+      unlabeledArg: null,
+      labeledArgs: {},
+    },
     sourceRange: defaultSourceRange(),
   }
 }

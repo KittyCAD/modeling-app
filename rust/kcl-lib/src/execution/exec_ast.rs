@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
-use super::{kcl_value::TypeDef, types::PrimitiveType};
+use super::{cad_op::Group, kcl_value::TypeDef, types::PrimitiveType};
 use crate::{
     engine::ExecutionKind,
     errors::{KclError, KclErrorDetails},
@@ -1460,11 +1460,13 @@ impl Node<CallExpression> {
                 if !ctx.is_isolated_execution().await {
                     // Track call operation.
                     exec_state.global.operations.push(Operation::GroupBegin {
-                        name: Some(fn_name.to_string()),
-                        function_source_range: func.function_def_source_range().unwrap_or_default(),
-                        unlabeled_arg: None,
-                        // TODO: Add the arguments for legacy positional parameters.
-                        labeled_args: Default::default(),
+                        group: Group::FunctionCall {
+                            name: Some(fn_name.to_string()),
+                            function_source_range: func.function_def_source_range().unwrap_or_default(),
+                            unlabeled_arg: None,
+                            // TODO: Add the arguments for legacy positional parameters.
+                            labeled_args: Default::default(),
+                        },
                         source_range: callsite,
                     });
                 }
@@ -2280,14 +2282,16 @@ impl FunctionSource {
                         .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
                         .collect();
                     exec_state.global.operations.push(Operation::GroupBegin {
-                        name: fn_name,
-                        function_source_range: ast.as_source_range(),
-                        unlabeled_arg: args
-                            .kw_args
-                            .unlabeled
-                            .as_ref()
-                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
-                        labeled_args: op_labeled_args,
+                        group: Group::FunctionCall {
+                            name: fn_name,
+                            function_source_range: ast.as_source_range(),
+                            unlabeled_arg: args
+                                .kw_args
+                                .unlabeled
+                                .as_ref()
+                                .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
+                            labeled_args: op_labeled_args,
+                        },
                         source_range: callsite,
                     });
                 }
