@@ -1,8 +1,9 @@
-import { useUser } from 'machines/appMachine'
 import { useEffect, useState } from 'react'
-import { onboardingPaths } from 'routes/Onboarding/paths'
 
-import { OnboardingButtons } from '.'
+import { useUser } from '@src/machines/appMachine'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
+import { OnboardingButtons } from '@src/routes/Onboarding/utils'
 
 export default function UserMenu() {
   const user = useUser()

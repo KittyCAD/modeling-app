@@ -1,23 +1,21 @@
-import {
-  deleteSelectionPromise,
-  deletionErrorMessage,
-} from 'lang/modifyAst/deleteSelection'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { Artifact, getArtifactFromRange } from 'lang/std/artifactGraph'
-import { SourceRange } from 'lang/wasm'
-import {
-  EnterEditFlowProps,
-  enterAppearanceFlow,
-  enterEditFlow,
-} from 'lib/operations'
-import { kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
 import toast from 'react-hot-toast'
 import { assign, fromPromise, setup } from 'xstate'
 
-import { Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 
-import { commandBarActor } from './commandBarMachine'
+import {
+  deleteSelectionPromise,
+  deletionErrorMessage,
+} from '@src/lang/modifyAst/deleteSelection'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import type { Artifact } from '@src/lang/std/artifactGraph'
+import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
+import type { SourceRange } from '@src/lang/wasm'
+import type { EnterEditFlowProps } from '@src/lib/operations'
+import { enterAppearanceFlow, enterEditFlow } from '@src/lib/operations'
+import { kclManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
+import { commandBarActor } from '@src/machines/commandBarMachine'
 
 type FeatureTreeEvent =
   | {

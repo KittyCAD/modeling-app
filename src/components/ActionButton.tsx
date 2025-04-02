@@ -1,10 +1,12 @@
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import { PATHS } from 'lib/paths'
-import React, { ForwardedRef, forwardRef } from 'react'
-import { Link } from 'react-router-dom'
+import type { ForwardedRef } from 'react'
+import React, { forwardRef } from 'react'
 import type { LinkProps } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
-import { ActionIcon, ActionIconProps } from './ActionIcon'
+import type { ActionIconProps } from '@src/components/ActionIcon'
+import { ActionIcon } from '@src/components/ActionIcon'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { PATHS } from '@src/lib/paths'
 
 interface BaseActionButtonProps {
   iconStart?: ActionIconProps

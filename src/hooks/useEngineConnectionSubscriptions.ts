@@ -1,29 +1,33 @@
-import { getFaceDetails } from 'clientSideScene/sceneEntities'
-import { getNodeFromPath } from 'lang/queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import { useEffect, useRef } from 'react'
+
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import type { SegmentArtifact } from '@src/lang/std/artifactGraph'
 import {
-  SegmentArtifact,
   getArtifactOfTypes,
   getCapCodeRef,
   getCodeRefsByArtifactId,
   getSweepFromSuspectedSweepSurface,
   getWallCodeRef,
-} from 'lang/std/artifactGraph'
-import { CallExpression, CallExpressionKw, defaultSourceRange } from 'lang/wasm'
-import { DefaultPlaneStr } from 'lib/planes'
-import { getEventForSelectWithPoint } from 'lib/selections'
+} from '@src/lang/std/artifactGraph'
+import type { CallExpression, CallExpressionKw } from '@src/lang/wasm'
+import { defaultSourceRange } from '@src/lang/wasm'
+import type { DefaultPlaneStr } from '@src/lib/planes'
+import { getEventForSelectWithPoint } from '@src/lib/selections'
 import {
   editorManager,
   engineCommandManager,
   kclManager,
+  rustContext,
+  sceneEntitiesManager,
   sceneInfra,
-} from 'lib/singletons'
-import { rustContext } from 'lib/singletons'
-import { err, reportRejection } from 'lib/trap'
-import { EdgeCutInfo, ExtrudeFacePlane } from 'machines/modelingMachine'
-import { useEffect, useRef } from 'react'
-
-import { useModelingContext } from './useModelingContext'
+} from '@src/lib/singletons'
+import { err, reportRejection } from '@src/lib/trap'
+import type {
+  EdgeCutInfo,
+  ExtrudeFacePlane,
+} from '@src/machines/modelingMachine'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
@@ -144,7 +148,8 @@ export function useEngineConnectionSubscriptions() {
               const artifact = kclManager.artifactGraph.get(planeOrFaceId)
 
               if (artifact?.type === 'plane') {
-                const planeInfo = await getFaceDetails(planeOrFaceId)
+                const planeInfo =
+                  await sceneEntitiesManager.getFaceDetails(planeOrFaceId)
                 sceneInfra.modelingSend({
                   type: 'Select default plane',
                   data: {
@@ -198,7 +203,7 @@ export function useEngineConnectionSubscriptions() {
                     ? getWallCodeRef(artifact, kclManager.artifactGraph)
                     : artifact.codeRef
 
-              const faceInfo = await getFaceDetails(faceId)
+              const faceInfo = await sceneEntitiesManager.getFaceDetails(faceId)
               if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
                 return
               const { z_axis, y_axis, origin } = faceInfo

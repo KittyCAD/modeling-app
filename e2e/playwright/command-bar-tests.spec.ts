@@ -1,13 +1,13 @@
+import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
 import * as fsp from 'fs/promises'
-import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import path, { join } from 'path'
 
 import {
   executorInputPath,
   getUtils,
   orRunWhenFullSuiteEnabled,
-} from './test-utils'
-import { expect, test } from './zoo-test'
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
   test('Extrude from command bar selects extrude line after', async ({

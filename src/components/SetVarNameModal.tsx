@@ -1,11 +1,11 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { useCalculateKclExpression } from 'lib/useCalculateKclExpression'
 import { Fragment } from 'react'
 import { toast } from 'react-hot-toast'
 import { type InstanceProps, create } from 'react-modal-promise'
 
-import { ActionButton } from './ActionButton'
-import { CreateNewVariable } from './AvailableVarsHelpers'
+import { ActionButton } from '@src/components/ActionButton'
+import { CreateNewVariable } from '@src/components/AvailableVarsHelpers'
+import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 
 type ModalResolve = { variableName: string }
 type ModalReject = boolean

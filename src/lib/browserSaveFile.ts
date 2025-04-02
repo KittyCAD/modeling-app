@@ -3,7 +3,7 @@
 // the file, but in case of where the File System Access API is supported, the
 import toast from 'react-hot-toast'
 
-import { EXPORT_TOAST_MESSAGES } from './constants'
+import { EXPORT_TOAST_MESSAGES } from '@src/lib/constants'
 
 // user will get a file save dialog where they can choose where the file should be saved.
 export const browserSaveFile = async (

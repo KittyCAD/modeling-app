@@ -2,7 +2,9 @@
 // template that ElectronJS provides.
 // @ts-ignore: TS1343
 import * as kittycad from '@kittycad/lib/import'
-import { Bonjour, Service } from 'bonjour-service'
+import * as packageJSON from '@root/package.json'
+import type { Service } from 'bonjour-service'
+import { Bonjour } from 'bonjour-service'
 import dotenv from 'dotenv'
 import {
   BrowserWindow,
@@ -17,26 +19,25 @@ import {
   systemPreferences,
 } from 'electron'
 import electronUpdater, { type AppUpdater } from 'electron-updater'
-import { ZOO_STUDIO_PROTOCOL } from 'lib/constants'
-import getCurrentProjectFile from 'lib/getCurrentProjectFile'
-import { reportRejection } from 'lib/trap'
 import os from 'node:os'
 import { Issuer } from 'openid-client'
 import path from 'path'
 
-import * as packageJSON from '../package.json'
 import {
   argvFromYargs,
   getPathOrUrlFromArgs,
   parseCLIArgs,
-} from './commandLineArgs'
+} from '@src/commandLineArgs'
+import { ZOO_STUDIO_PROTOCOL } from '@src/lib/constants'
+import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
+import { reportRejection } from '@src/lib/trap'
 import {
   buildAndSetMenuForFallback,
   buildAndSetMenuForModelingPage,
   buildAndSetMenuForProjectPage,
   disableMenu,
   enableMenu,
-} from './menu'
+} from '@src/menu'
 
 let mainWindow: BrowserWindow | null = null
 

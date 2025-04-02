@@ -1,13 +1,13 @@
-import { RefreshButton } from 'components/RefreshButton'
-import UserSidebarMenu from 'components/UserSidebarMenu'
-import { isDesktop } from 'lib/isDesktop'
-import { type IndexLoaderData } from 'lib/types'
-import { useUser } from 'machines/appMachine'
+import { Toolbar } from '@src/Toolbar'
+import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
+import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
+import { RefreshButton } from '@src/components/RefreshButton'
+import UserSidebarMenu from '@src/components/UserSidebarMenu'
+import { isDesktop } from '@src/lib/isDesktop'
+import { type IndexLoaderData } from '@src/lib/types'
+import { useUser } from '@src/machines/appMachine'
 
-import { Toolbar } from '../Toolbar'
 import styles from './AppHeader.module.css'
-import { CommandBarOpenButton } from './CommandBarOpenButton'
-import ProjectSidebarMenu from './ProjectSidebarMenu'
 
 interface AppHeaderProps extends React.PropsWithChildren {
   showToolbar?: boolean

@@ -1,10 +1,11 @@
-import { Marked, MarkedOptions, escape, unescape } from '@ts-stack/markdown'
-import { SafeRenderer } from 'lib/markdown'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
+import type { MarkedOptions } from '@ts-stack/markdown'
+import { Marked, escape, unescape } from '@ts-stack/markdown'
 import toast from 'react-hot-toast'
-import { getReleaseUrl } from 'routes/Settings'
 
-import { ActionButton } from './ActionButton'
+import { ActionButton } from '@src/components/ActionButton'
+import { SafeRenderer } from '@src/lib/markdown'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { getReleaseUrl } from '@src/routes/Settings'
 
 export function ToastUpdate({
   version,

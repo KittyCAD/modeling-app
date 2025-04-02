@@ -1,15 +1,18 @@
-import { EntityType_type } from '@kittycad/lib/dist/types/src/models'
-import { CustomIconName } from 'components/CustomIcon'
-import { MachineManager } from 'components/MachineManagerProvider'
-import { AllMachines } from 'hooks/useStateMachineCommands'
-import { Artifact } from 'lang/std/artifactGraph'
-import { Expr, Name, VariableDeclaration } from 'lang/wasm'
-import { commandBarMachine } from 'machines/commandBarMachine'
-import { CommandBarContext } from 'machines/commandBarMachine'
-import { ReactNode } from 'react'
-import { Actor, AnyStateMachine, ContextFrom, EventFrom } from 'xstate'
+import type { EntityType_type } from '@kittycad/lib/dist/types/src/models'
+import type { ReactNode } from 'react'
+import type { Actor, AnyStateMachine, ContextFrom, EventFrom } from 'xstate'
 
-import { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import type { CustomIconName } from '@src/components/CustomIcon'
+import type { MachineManager } from '@src/components/MachineManagerProvider'
+import type { AllMachines } from '@src/hooks/useStateMachineCommands'
+import type { Artifact } from '@src/lang/std/artifactGraph'
+import type { Expr, Name, VariableDeclaration } from '@src/lang/wasm'
+import type {
+  CommandBarContext,
+  commandBarMachine,
+} from '@src/machines/commandBarMachine'
 
 type Icon = CustomIconName
 const _PLATFORMS = ['both', 'web', 'desktop'] as const

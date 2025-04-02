@@ -1,32 +1,33 @@
-import { LanguageSupport } from '@codemirror/language'
-import { Extension } from '@codemirror/state'
+import type { LanguageSupport } from '@codemirror/language'
+import type { Extension } from '@codemirror/state'
+import type { LanguageServerPlugin } from '@kittycad/codemirror-lsp-client'
 import {
   FromServer,
   IntoServer,
   LanguageServerClient,
-  LanguageServerPlugin,
   LspWorkerEventType,
 } from '@kittycad/codemirror-lsp-client'
-import { copilotPlugin } from 'editor/plugins/lsp/copilot'
-import { kcl } from 'editor/plugins/lsp/kcl/language'
-import {
-  CopilotWorkerOptions,
-  KclWorkerOptions,
-  LspWorker,
-} from 'editor/plugins/lsp/types'
-import Worker from 'editor/plugins/lsp/worker.ts?worker'
-import { TEST, VITE_KC_API_BASE_URL } from 'env'
-import { wasmUrl } from 'lang/wasm'
-import { PROJECT_ENTRYPOINT } from 'lib/constants'
-import { isDesktop } from 'lib/isDesktop'
-import { PATHS } from 'lib/paths'
-import { FileEntry } from 'lib/project'
-import { codeManager } from 'lib/singletons'
-import { err } from 'lib/trap'
-import { useToken } from 'machines/appMachine'
+import { TEST, VITE_KC_API_BASE_URL } from '@src/env'
 import React, { createContext, useContext, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type * as LSP from 'vscode-languageserver-protocol'
+
+import { copilotPlugin } from '@src/editor/plugins/lsp/copilot'
+import { kcl } from '@src/editor/plugins/lsp/kcl/language'
+import type {
+  CopilotWorkerOptions,
+  KclWorkerOptions,
+} from '@src/editor/plugins/lsp/types'
+import { LspWorker } from '@src/editor/plugins/lsp/types'
+import Worker from '@src/editor/plugins/lsp/worker.ts?worker'
+import { wasmUrl } from '@src/lang/wasm'
+import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import { PATHS } from '@src/lib/paths'
+import type { FileEntry } from '@src/lib/project'
+import { codeManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
+import { useToken } from '@src/machines/appMachine'
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []

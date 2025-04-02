@@ -1,4 +1,4 @@
-import { FileEntry, Project } from 'lib/project'
+import type { FileEntry, Project } from '@src/lib/project'
 
 export type IndexLoaderData = {
   code: string | null

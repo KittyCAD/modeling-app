@@ -1,9 +1,9 @@
-import { getBodyIndex, traverse } from 'lang/queryAst'
-import { Expr, Program } from 'lang/wasm'
-import { err } from 'lib/trap'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
 
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
+import { getBodyIndex, traverse } from '@src/lang/queryAst'
+import type { Expr, Program } from '@src/lang/wasm'
+import { err } from '@src/lib/trap'
 
 type TagWithBodyIndex = { tag: TagDeclarator; bodyIndex: number }
 

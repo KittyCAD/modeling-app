@@ -1,9 +1,8 @@
-import { Expr, Program } from 'lang/wasm'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import { Node } from '@rust/kcl-lib/bindings/Node'
-
-import { getIdentifiersInProgram } from './getIndentifiersInProgram'
-import { getTagDeclaratorsInProgram } from './getTagDeclaratorsInProgram'
+import { getIdentifiersInProgram } from '@src/lang/queryAst/getIndentifiersInProgram'
+import { getTagDeclaratorsInProgram } from '@src/lang/queryAst/getTagDeclaratorsInProgram'
+import type { Expr, Program } from '@src/lang/wasm'
 
 /**
  * Given a target expression, return the body index of the last-used variable

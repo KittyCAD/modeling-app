@@ -1,15 +1,5 @@
-import { useAuthNavigation } from 'hooks/useAuthNavigation'
-import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
-import { getAppSettingsFilePath } from 'lib/desktop'
-import { isDesktop } from 'lib/isDesktop'
-import { PATHS } from 'lib/paths'
-import { markOnce } from 'lib/performance'
-import { loadAndValidateSettings } from 'lib/settings/settingsUtils'
-import { trap } from 'lib/trap'
-import { IndexLoaderData } from 'lib/types'
-import { useSettings } from 'machines/appMachine'
-import { settingsActor } from 'machines/appMachine'
-import { ReactNode, createContext, useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
+import { createContext, useEffect, useState } from 'react'
 import {
   useLocation,
   useNavigate,
@@ -17,7 +7,18 @@ import {
   useRouteLoaderData,
 } from 'react-router-dom'
 
-import { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
+import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
+
+import { useAuthNavigation } from '@src/hooks/useAuthNavigation'
+import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
+import { getAppSettingsFilePath } from '@src/lib/desktop'
+import { isDesktop } from '@src/lib/isDesktop'
+import { PATHS } from '@src/lib/paths'
+import { markOnce } from '@src/lib/performance'
+import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
+import { trap } from '@src/lib/trap'
+import type { IndexLoaderData } from '@src/lib/types'
+import { settingsActor, useSettings } from '@src/machines/appMachine'
 
 export const RouteProviderContext = createContext({})
 

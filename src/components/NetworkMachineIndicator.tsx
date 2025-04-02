@@ -1,11 +1,11 @@
 import { Popover } from '@headlessui/react'
-import { MachineManagerContext } from 'components/MachineManagerProvider'
-import { isDesktop } from 'lib/isDesktop'
-import { components } from 'lib/machine-api'
 import { useContext } from 'react'
 
-import { CustomIcon } from './CustomIcon'
-import Tooltip from './Tooltip'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { MachineManagerContext } from '@src/components/MachineManagerProvider'
+import Tooltip from '@src/components/Tooltip'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { components } from '@src/lib/machine-api'
 
 export const NetworkMachineIndicator = ({
   className,

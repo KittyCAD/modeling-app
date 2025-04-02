@@ -1,16 +1,16 @@
-import { useAppState, useAppStream } from 'AppState'
-import { useNetworkContext } from 'hooks/useNetworkContext'
+import { useAppState, useAppStream } from '@src/AppState'
+import { useEffect, useLayoutEffect, useRef } from 'react'
+
+import type { useModelingContext } from '@src/hooks/useModelingContext'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import {
   DisconnectingType,
   EngineConnectionStateType,
-} from 'lang/std/engineConnection'
-import { SettingsViaQueryString } from 'lib/settings/settingsTypes'
-import { engineCommandManager } from 'lib/singletons'
-import { Themes } from 'lib/theme'
-import { deferExecution } from 'lib/utils'
-import { useEffect, useLayoutEffect, useRef } from 'react'
-
-import { useModelingContext } from './useModelingContext'
+} from '@src/lang/std/engineConnection'
+import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
+import { engineCommandManager } from '@src/lib/singletons'
+import { Themes } from '@src/lib/theme'
+import { deferExecution } from '@src/lib/utils'
 
 export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,

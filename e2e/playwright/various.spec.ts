@@ -3,8 +3,8 @@ import {
   getUtils,
   makeTemplate,
   orRunWhenFullSuiteEnabled,
-} from './test-utils'
-import { expect, test } from './zoo-test'
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test('Units menu', async ({ page, homePage }) => {
   test.fixme(orRunWhenFullSuiteEnabled())

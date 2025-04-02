@@ -1,25 +1,22 @@
-import { ToolTip } from 'lang/langHelpers'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { Selection, Selections } from 'lib/selections'
-import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
-import { Reason, err } from 'lib/trap'
+import type { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpression'
+import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
 
-import { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpression'
-import { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
-
-import { getAngle, isArray } from '../lib/utils'
-import { createLocalName, splitPathAtLastIndex } from './modifyAst'
-import { codeRefFromRange } from './std/artifactGraph'
-import { ARG_TAG, getArgForEnd, getFirstArg } from './std/sketch'
-import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
+import { ARG_TAG } from '@src/lang/constants'
+import { createLocalName } from '@src/lang/create'
+import type { ToolTip } from '@src/lang/langHelpers'
+import { splitPathAtLastIndex } from '@src/lang/modifyAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import { getArgForEnd, getFirstArg } from '@src/lang/std/sketch'
+import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
 import {
   getConstraintLevelFromSourceRange,
   getConstraintType,
-} from './std/sketchcombos'
-import { findKwArg } from './util'
-import {
+} from '@src/lang/std/sketchcombos'
+import { findKwArg, topLevelRange } from '@src/lang/util'
+import type {
   ArrayExpression,
   ArtifactGraph,
   BinaryExpression,
@@ -39,18 +36,21 @@ import {
   VariableDeclaration,
   VariableDeclarator,
   VariableMap,
+} from '@src/lang/wasm'
+import {
   kclSettings,
   recast,
   sketchFromKclValue,
   sketchFromKclValueOptional,
-  topLevelRange,
   unitAngToUnitAngle,
   unitLenToUnitLength,
-} from './wasm'
+} from '@src/lang/wasm'
+import type { Selection, Selections } from '@src/lib/selections'
+import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
+import { Reason, err } from '@src/lib/trap'
+import { getAngle, isArray } from '@src/lib/utils'
 
-export const LABELED_ARG_FIELD = 'LabeledArg -> Arg'
-export const UNLABELED_ARG = 'unlabeled first arg'
-export const ARG_INDEX_FIELD = 'arg index'
+import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.

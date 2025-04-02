@@ -1,34 +1,29 @@
 import * as TOML from '@iarna/toml'
 import type { Models } from '@kittycad/lib'
-import {
-  BrowserContext,
-  Locator,
-  Page,
-  TestInfo,
-  expect,
-} from '@playwright/test'
+import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
+import { expect } from '@playwright/test'
+import type { EngineCommand } from '@src/lang/std/artifactGraph'
+import type { Configuration } from '@src/lang/wasm'
+import { COOKIE_NAME } from '@src/lib/constants'
+import { reportRejection } from '@src/lib/trap'
+import type { DeepPartial } from '@src/lib/types'
+import { isArray } from '@src/lib/utils'
 import fsp from 'fs/promises'
-import { EngineCommand } from 'lang/std/artifactGraph'
-import { Configuration } from 'lang/wasm'
-import { COOKIE_NAME } from 'lib/constants'
-import { reportRejection } from 'lib/trap'
-import { DeepPartial } from 'lib/types'
-import { isArray } from 'lib/utils'
 import path from 'path'
 import pixelMatch from 'pixelmatch'
-import { Protocol } from 'playwright-core/types/protocol'
+import type { Protocol } from 'playwright-core/types/protocol'
 import { PNG } from 'pngjs'
 
-import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
-import { isErrorWhitelisted } from './lib/console-error-whitelist'
-import { secrets } from './secrets'
+import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
+import { secrets } from '@e2e/playwright/secrets'
 import {
   IS_PLAYWRIGHT_KEY,
   TEST_SETTINGS,
   TEST_SETTINGS_KEY,
-} from './storageStates'
-import { test } from './zoo-test'
+} from '@e2e/playwright/storageStates'
+import { test } from '@e2e/playwright/zoo-test'
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
@@ -905,15 +900,21 @@ export async function setup(
         settings: {
           ...TEST_SETTINGS,
           app: {
+            appearance: {
+              ...TEST_SETTINGS.app?.appearance,
+              theme: 'dark',
+            },
             ...TEST_SETTINGS.project,
-            project_directory: TEST_SETTINGS.app?.project_directory,
             onboarding_status: 'dismissed',
-            theme: 'dark',
+          },
+          project: {
+            ...TEST_SETTINGS.project,
+            directory: TEST_SETTINGS.project?.directory,
           },
         },
       }),
       IS_PLAYWRIGHT_KEY,
-      PLAYWRIGHT_TEST_DIR: TEST_SETTINGS.app?.project_directory || '',
+      PLAYWRIGHT_TEST_DIR: TEST_SETTINGS.project?.directory || '',
       PERSIST_MODELING_CONTEXT,
     }
   )
@@ -1114,21 +1115,25 @@ export async function pollEditorLinesSelectedLength(page: Page, lines: number) {
 }
 
 export function settingsToToml(settings: DeepPartial<Configuration>) {
+  // eslint-disable-next-line no-restricted-syntax
   return TOML.stringify(settings as any)
 }
 
 export function tomlToSettings(toml: string): DeepPartial<Configuration> {
+  // eslint-disable-next-line no-restricted-syntax
   return TOML.parse(toml)
 }
 
 export function tomlToPerProjectSettings(
   toml: string
 ): DeepPartial<ProjectConfiguration> {
+  // eslint-disable-next-line no-restricted-syntax
   return TOML.parse(toml)
 }
 
 export function perProjectsettingsToToml(
   settings: DeepPartial<ProjectConfiguration>
 ) {
+  // eslint-disable-next-line no-restricted-syntax
   return TOML.stringify(settings as any)
 }

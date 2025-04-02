@@ -1,7 +1,9 @@
-import { ActionButton } from 'components/ActionButton'
-import Tooltip from 'components/Tooltip'
-import { Project } from 'lib/project'
-import { HTMLProps, forwardRef } from 'react'
+import type { HTMLProps } from 'react'
+import { forwardRef } from 'react'
+
+import { ActionButton } from '@src/components/ActionButton'
+import Tooltip from '@src/components/Tooltip'
+import type { Project } from '@src/lib/project'
 
 interface ProjectCardRenameFormProps extends HTMLProps<HTMLFormElement> {
   project: Project

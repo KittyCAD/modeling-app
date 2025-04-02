@@ -1,6 +1,16 @@
-import { Models } from '@kittycad/lib'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import {
+import type { Models } from '@kittycad/lib'
+
+import type {
+  Cap,
+  CapSubType,
+  Plane,
+  StartSketchOnFace,
+  StartSketchOnPlane,
+  Wall,
+} from '@rust/kcl-lib/bindings/Artifact'
+
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import type {
   Artifact,
   ArtifactGraph,
   ArtifactId,
@@ -17,20 +27,15 @@ import {
   SweepArtifact,
   SweepEdge,
   WallArtifact,
-} from 'lang/wasm'
-import { Selection } from 'lib/selections'
-import { err } from 'lib/trap'
+} from '@src/lang/wasm'
+import type { Selection } from '@src/lib/selections'
+import { err } from '@src/lib/trap'
 
-import {
-  Cap,
-  Plane,
-  StartSketchOnFace,
-  StartSketchOnPlane,
-  Wall,
-} from '@rust/kcl-lib/bindings/Artifact'
-import { CapSubType } from '@rust/kcl-lib/bindings/Artifact'
+export type { Artifact, ArtifactId, SegmentArtifact } from '@src/lang/wasm'
 
-export type { Artifact, ArtifactId, SegmentArtifact } from 'lang/wasm'
+export function defaultArtifactGraph(): ArtifactGraph {
+  return new Map()
+}
 
 interface BaseArtifact {
   id: ArtifactId

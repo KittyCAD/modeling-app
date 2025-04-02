@@ -1,28 +1,22 @@
 import * as TWEEN from '@tweenjs/tween.js'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { EngineCommandManager } from 'lang/std/engineConnection'
-import { Coords2d, compareVec2Epsilon2 } from 'lang/std/sketch'
-import { Axis, NonCodeSelection } from 'lib/selections'
-import { type BaseUnit } from 'lib/settings/settingsTypes'
-import { Themes } from 'lib/theme'
-import { getAngle, throttle } from 'lib/utils'
-import { MouseState, SegmentOverlayPayload } from 'machines/modelingMachine'
-import {
-  AmbientLight,
-  Color,
-  GridHelper,
+import type {
   Group,
   Intersection,
-  LineBasicMaterial,
   Mesh,
   MeshBasicMaterial,
   Object3D,
   Object3DEventMap,
+  Texture,
+} from 'three'
+import {
+  AmbientLight,
+  Color,
+  GridHelper,
+  LineBasicMaterial,
   OrthographicCamera,
   PerspectiveCamera,
   Raycaster,
   Scene,
-  Texture,
   TextureLoader,
   Vector2,
   Vector3,
@@ -30,8 +24,20 @@ import {
 } from 'three'
 import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
-import { CameraControls } from './CameraControls'
-import { orthoScale, perspScale } from './helpers'
+import { CameraControls } from '@src/clientSideScene/CameraControls'
+import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
+import type { useModelingContext } from '@src/hooks/useModelingContext'
+import type { EngineCommandManager } from '@src/lang/std/engineConnection'
+import type { Coords2d } from '@src/lang/std/sketch'
+import { compareVec2Epsilon2 } from '@src/lang/std/sketch'
+import type { Axis, NonCodeSelection } from '@src/lib/selections'
+import { type BaseUnit } from '@src/lib/settings/settingsTypes'
+import { Themes } from '@src/lib/theme'
+import { getAngle, throttle } from '@src/lib/utils'
+import type {
+  MouseState,
+  SegmentOverlayPayload,
+} from '@src/machines/modelingMachine'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 

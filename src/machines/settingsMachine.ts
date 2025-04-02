@@ -1,48 +1,7 @@
 import decamelize from 'decamelize'
-import {
-  createSettingsCommand,
-  settingsWithCommandConfigs,
-} from 'lib/commandBarConfigs/settingsCommandConfig'
-import { Command } from 'lib/commandTypes'
-import { Project } from 'lib/project'
-import {
-  SettingsType,
-  createSettings,
-  settings,
-} from 'lib/settings/initialSettings'
-import {
-  BaseUnit,
-  SetEventTypes,
-  SettingsLevel,
-  SettingsPaths,
-  WildcardSetEvent,
-} from 'lib/settings/settingsTypes'
-import {
-  clearSettingsAtLevel,
-  configurationToSettingsPayload,
-  loadAndValidateSettings,
-  projectConfigurationToSettingsPayload,
-  saveSettings,
-  setSettingsAtLevel,
-} from 'lib/settings/settingsUtils'
-import {
-  codeManager,
-  engineCommandManager,
-  kclManager,
-  sceneEntitiesManager,
-  sceneInfra,
-} from 'lib/singletons'
-import {
-  Themes,
-  darkModeMatcher,
-  getOppositeTheme,
-  getSystemTheme,
-  setThemeClass,
-} from 'lib/theme'
-import { reportRejection } from 'lib/trap'
 import toast from 'react-hot-toast'
+import type { AnyActorRef } from 'xstate'
 import {
-  AnyActorRef,
   assign,
   enqueueActions,
   fromCallback,
@@ -51,9 +10,47 @@ import {
   setup,
 } from 'xstate'
 
-import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
+import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 
-import { commandBarActor } from './commandBarMachine'
+import {
+  createSettingsCommand,
+  settingsWithCommandConfigs,
+} from '@src/lib/commandBarConfigs/settingsCommandConfig'
+import type { Command } from '@src/lib/commandTypes'
+import type { Project } from '@src/lib/project'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
+import { createSettings, settings } from '@src/lib/settings/initialSettings'
+import type {
+  BaseUnit,
+  SetEventTypes,
+  SettingsLevel,
+  SettingsPaths,
+  WildcardSetEvent,
+} from '@src/lib/settings/settingsTypes'
+import {
+  clearSettingsAtLevel,
+  configurationToSettingsPayload,
+  loadAndValidateSettings,
+  projectConfigurationToSettingsPayload,
+  saveSettings,
+  setSettingsAtLevel,
+} from '@src/lib/settings/settingsUtils'
+import {
+  codeManager,
+  engineCommandManager,
+  kclManager,
+  sceneEntitiesManager,
+  sceneInfra,
+} from '@src/lib/singletons'
+import {
+  Themes,
+  darkModeMatcher,
+  getOppositeTheme,
+  getSystemTheme,
+  setThemeClass,
+} from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import { commandBarActor } from '@src/machines/commandBarMachine'
 
 type SettingsMachineContext = SettingsType & {
   currentProject?: Project

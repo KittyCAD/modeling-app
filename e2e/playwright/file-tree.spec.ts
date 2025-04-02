@@ -1,6 +1,6 @@
+import { FILE_EXT } from '@src/lib/constants'
 import * as fs from 'fs'
 import * as fsp from 'fs/promises'
-import { FILE_EXT } from 'lib/constants'
 import { join } from 'path'
 
 import {
@@ -9,8 +9,8 @@ import {
   getUtils,
   orRunWhenFullSuiteEnabled,
   runningOnWindows,
-} from './test-utils'
-import { expect, test } from './zoo-test'
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('integrations tests', () => {
   test(

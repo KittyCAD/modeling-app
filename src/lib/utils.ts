@@ -1,10 +1,10 @@
-import { Binary as BSONBinary } from 'bson'
+import type { Binary as BSONBinary } from 'bson'
 import { v4 } from 'uuid'
-import { AnyMachineSnapshot } from 'xstate'
+import type { AnyMachineSnapshot } from 'xstate'
 
-import { SourceRange } from '../lang/wasm'
-import { isDesktop } from './isDesktop'
-import { AsyncFn } from './types'
+import type { SourceRange } from '@src/lang/wasm'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { AsyncFn } from '@src/lib/types'
 
 export const uuidv4 = v4
 
