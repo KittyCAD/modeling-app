@@ -93,6 +93,7 @@ import {
 } from '@src/clientSideScene/segments'
 import type EditorManager from '@src/editor/manager'
 import type CodeManager from '@src/lang/codeManager'
+import { ARG_END_ABSOLUTE } from '@src/lang/constants'
 import {
   createArrayExpression,
   createCallExpressionStdLib,
@@ -124,7 +125,6 @@ import {
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import type { Coords2d } from '@src/lang/std/sketch'
 import {
-  ARG_END_ABSOLUTE,
   addCallExpressionsToPipe,
   addCloseToPipe,
   addNewSketchLn,

@@ -4,6 +4,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type EditorManager from '@src/editor/manager'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type CodeManager from '@src/lang/codeManager'
+import { ARG_TAG } from '@src/lang/constants'
 import {
   createArrayExpression,
   createCallExpressionStdLib,
@@ -22,8 +23,7 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import { getSweepArtifactFromSelection } from '@src/lang/std/artifactGraph'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
-import {
-  ARG_TAG,
+import type {
   addTagForSketchOnFace,
   getTagFromCallExpression,
   sketchLineHelperMap,

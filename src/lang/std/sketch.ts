@@ -5,6 +5,15 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
 
 import {
+  ARG_CIRCLE_CENTER,
+  ARG_CIRCLE_RADIUS,
+  ARG_END,
+  ARG_END_ABSOLUTE,
+  ARG_LENGTH,
+  ARG_TAG,
+  DETERMINING_ARGS,
+} from '@src/lang/constants'
+import {
   createArrayExpression,
   createCallExpression,
   createCallExpressionStdLibKw,
@@ -72,14 +81,6 @@ import { sketchFromKclValue } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 import { getAngle, getLength, isArray, roundOff } from '@src/lib/utils'
 import type { EdgeCutInfo } from '@src/machines/modelingMachine'
-
-export const ARG_TAG = 'tag'
-export const ARG_END = 'end'
-export const ARG_LENGTH = 'length'
-export const ARG_END_ABSOLUTE = 'endAbsolute'
-export const ARG_CIRCLE_CENTER = 'center'
-export const ARG_CIRCLE_RADIUS = 'radius'
-export const DETERMINING_ARGS = [ARG_LENGTH, ARG_END, ARG_END_ABSOLUTE]
 
 const STRAIGHT_SEGMENT_ERR = new Error(
   'Invalid input, expected "straight-segment"'

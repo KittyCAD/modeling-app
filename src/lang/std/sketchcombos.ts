@@ -1,6 +1,13 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
+  ARG_END,
+  ARG_END_ABSOLUTE,
+  ARG_LENGTH,
+  ARG_TAG,
+  DETERMINING_ARGS,
+} from '@src/lang/constants'
+import {
   createArrayExpression,
   createBinaryExpression,
   createBinaryExpressionWithUnary,
@@ -20,11 +27,6 @@ import { toolTips } from '@src/lang/langHelpers'
 import { getNodeFromPath, getNodeFromPathCurry } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
-  ARG_END,
-  ARG_END_ABSOLUTE,
-  ARG_LENGTH,
-  ARG_TAG,
-  DETERMINING_ARGS,
   createFirstArg,
   fnNameToTooltip,
   getArgForEnd,

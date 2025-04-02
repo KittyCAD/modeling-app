@@ -2,9 +2,9 @@ import type { Name } from '@rust/kcl-lib/bindings/Name'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
 
+import { ARG_TAG } from '@src/lang/constants'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import { ARG_TAG } from '@src/lang/std/sketch'
 import { findKwArg } from '@src/lang/util'
 import type {
   ArrayExpression,

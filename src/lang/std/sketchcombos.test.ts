@@ -1,11 +1,7 @@
+import { ARG_END, ARG_END_ABSOLUTE } from '@src/lang/constants'
 import type { ToolTip } from '@src/lang/langHelpers'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
-import {
-  ARG_END,
-  ARG_END_ABSOLUTE,
-  getArgForEnd,
-  isAbsoluteLine,
-} from '@src/lang/std/sketch'
+import { getArgForEnd, isAbsoluteLine } from '@src/lang/std/sketch'
 import type {
   ConstraintLevel,
   ConstraintType,
