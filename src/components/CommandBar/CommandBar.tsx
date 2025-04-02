@@ -12,6 +12,8 @@ import {
   commandBarActor,
   useCommandBarState,
 } from '@src/machines/commandBarMachine'
+import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
 
 export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 

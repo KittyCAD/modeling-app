@@ -8,7 +8,7 @@ import React, {
 } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
+import { useLoaderData, useNavigate } from 'react-router-dom'
 import type { Actor, ContextFrom, Prop, SnapshotFrom, StateFrom } from 'xstate'
 import { assign, fromPromise } from 'xstate'
 
@@ -45,7 +45,6 @@ import {
   useSketchModeMenuEnableDisable,
 } from '@src/hooks/useMenu'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
-import { useSetupEngineManager } from '@src/hooks/useSetupEngineManager'
 import useStateMachineCommands from '@src/hooks/useStateMachineCommands'
 import { useKclContext } from '@src/lang/KclProvider'
 import { updateModelingState } from '@src/lang/modelingWorkflows'

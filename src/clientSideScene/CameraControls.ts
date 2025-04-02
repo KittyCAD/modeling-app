@@ -1,4 +1,4 @@
-import type { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
+import type { CameraViewState_type, CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
 import * as TWEEN from '@tweenjs/tween.js'
 import {
   Euler,
@@ -39,6 +39,7 @@ import {
   uuidv4,
 } from '@src/lib/utils'
 import { deg2Rad } from '@src/lib/utils2d'
+import { engineStreamActor } from '@src/machines/appMachine'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30

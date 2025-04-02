@@ -4,6 +4,7 @@ import { uuidv4 } from '@src/lib/utils'
 
 import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
+import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 

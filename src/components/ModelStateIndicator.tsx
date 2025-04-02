@@ -1,6 +1,6 @@
-import { CustomIcon } from '@src/components/CustomIcon'
-import { useEngineCommands } from '@src/components/EngineCommands'
-import { Spinner } from '@src/components/Spinner'
+import { EngineStreamState } from '@src/machines/engineStreamMachine'
+import { engineStreamActor } from '@src/machines/appMachine'
+import { useSelector } from '@xstate/react'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlay, faPause, faSpinner } from '@fortawesome/free-solid-svg-icons'

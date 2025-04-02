@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
@@ -6,6 +6,7 @@ import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 
 import { CustomIcon } from '@src/components/CustomIcon'
+import { Toggle } from '@src/components/Toggle/Toggle'
 import Tooltip from '@src/components/Tooltip'
 import type { CameraSystem } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
@@ -264,7 +265,7 @@ export function createSettings() {
                 offLabel="Off"
                 onLabel="On"
                 checked={settingValueInStorage !== undefined}
-                onChange={(event) => {
+                onChange={(event: React.SyntheticEvent<HTMLInputElement>) => {
                   if (timeoutId) {
                     return
                   }

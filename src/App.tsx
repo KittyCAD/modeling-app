@@ -6,6 +6,7 @@ import {
   useLoaderData,
   useNavigate,
   useRouteLoaderData,
+  useSearchParams,
 } from 'react-router-dom'
 
 import { AppHeader } from '@src/components/AppHeader'
@@ -15,7 +16,6 @@ import Gizmo from '@src/components/Gizmo'
 import { LowerRightControls } from '@src/components/LowerRightControls'
 import { useLspContext } from '@src/components/LspProvider'
 import { ModelingSidebar } from '@src/components/ModelingSidebar/ModelingSidebar'
-import { Stream } from '@src/components/Stream'
 import { UnitsMenu } from '@src/components/UnitsMenu'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useCreateFileLinkQuery } from '@src/hooks/useCreateFileLinkQueryWatcher'
@@ -34,14 +34,15 @@ import {
 } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { type IndexLoaderData } from '@src/lib/types'
-import { useSettings, useToken } from '@src/machines/appMachine'
+import { engineStreamActor, useSettings, useToken } from '@src/machines/appMachine'
+import { EngineStreamTransition } from '@src/machines/engineStreamMachine'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
 
 maybeWriteToDisk()
   .then(() => {})
   .catch(() => {})
-import { EngineStream } from 'components/EngineStream'
+import { EngineStream } from '@src/components/EngineStream'
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData

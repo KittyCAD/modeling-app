@@ -44,6 +44,7 @@ import {
   uuidv4,
 } from '@src/lib/utils'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
+import { engineStreamActor } from '@src/machines/appMachine'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'

@@ -1,3 +1,4 @@
+import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 
 import { createSettings } from '@src/lib/settings/initialSettings'
