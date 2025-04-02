@@ -81,9 +81,7 @@ function CommandBarSelectionInput({
 
     return () => {
       toSync(() => {
-        const promises = [
-          new Promise(() => kclManager.defaultSelectionFilter(selection)),
-        ]
+        const promises = [kclManager.defaultSelectionFilter(selection)]
         if (!kclManager._isAstEmpty(kclManager.ast)) {
           promises.push(kclManager.hidePlanes())
         }
@@ -130,7 +128,10 @@ function CommandBarSelectionInput({
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
     arg.selectionFilter && kclManager.setSelectionFilter(arg.selectionFilter)
-    return () => kclManager.defaultSelectionFilter(selection)
+    // TODO: We shouldn't use async here.
+    return toSync(async () => {
+      await kclManager.defaultSelectionFilter(selection)
+    }, reportRejection)
   }, [arg.selectionFilter])
 
   return (

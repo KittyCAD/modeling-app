@@ -8,6 +8,8 @@ import {
   getSelectionCountByType,
 } from '@src/lib/selections'
 import { kclManager } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
+import { toSync } from '@src/lib/utils'
 import {
   commandBarActor,
   useCommandBarState,
@@ -64,7 +66,10 @@ export default function CommandBarSelectionMixedInput({
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
     arg.selectionFilter && kclManager.setSelectionFilter(arg.selectionFilter)
-    return () => kclManager.defaultSelectionFilter(selection)
+    // TODO: We shouldn't use async here.
+    return toSync(async () => {
+      await kclManager.defaultSelectionFilter(selection)
+    }, reportRejection)
   }, [arg.selectionFilter])
 
   function handleChange() {
