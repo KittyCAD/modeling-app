@@ -1098,7 +1098,7 @@ test.describe('Electron constraint tests', () => {
   test(
     'Able to double click label to set constraint',
     { tag: '@electron' },
-    async ({ page, context, homePage, scene, editor, toolbar }) => {
+    async ({ page, context, homePage, scene, editor, toolbar, cmdBar }) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = path.join(dir, 'test-sample')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -1132,6 +1132,14 @@ test.describe('Electron constraint tests', () => {
         await scene.waitForExecutionDone()
       })
 
+      async function clickOnFirstSegmentLabel() {
+        const child = page
+          .locator('.segment-length-label-text')
+          .first()
+          .locator('xpath=..')
+        await child.dblclick()
+      }
+
       await test.step('Double click to constrain', async () => {
         // Enter sketch edit mode via feature tree
         await toolbar.openPane('feature-tree')
@@ -1139,21 +1147,19 @@ test.describe('Electron constraint tests', () => {
         await op.dblclick()
         await toolbar.closePane('feature-tree')
 
-        const child = page
-          .locator('.segment-length-label-text')
-          .first()
-          .locator('xpath=..')
-        await child.dblclick()
-        const cmdBarSubmitButton = page.getByRole('button', {
-          name: 'arrow right Continue',
-        })
-        await cmdBarSubmitButton.click()
-        await expect(page.locator('.cm-content')).toContainText(
-          'length001 = 15.3'
-        )
-        await expect(page.locator('.cm-content')).toContainText(
-          '|> angledLine([9, length001], %)'
-        )
+        await clickOnFirstSegmentLabel()
+        await cmdBar.progressCmdBar()
+        await editor.expectEditor.toContain('length001 = 15.3')
+        await editor.expectEditor.toContain('|> angledLine([9, length001], %)')
+      })
+
+      await test.step('Double click again and expect failure', async () => {
+        await clickOnFirstSegmentLabel()
+
+        await expect(
+          page.getByText('Unable to constrain the length of this segment')
+        ).toBeVisible()
+
         await page.getByRole('button', { name: 'Exit Sketch' }).click()
       })
     }
