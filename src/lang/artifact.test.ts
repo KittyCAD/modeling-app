@@ -133,6 +133,7 @@ const mySketch001 = startSketchOn(XY)
           ],
         },
         height: 2,
+        sectional: false,
         startCapId: expect.any(String),
         endCapId: expect.any(String),
         units: {
@@ -263,6 +264,7 @@ const sk2 = startSketchOn(XY)
             ],
           },
           height: 2,
+          sectional: false,
           startCapId: expect.any(String),
           endCapId: expect.any(String),
           units: {
@@ -364,6 +366,7 @@ const sk2 = startSketchOn(XY)
             ],
           },
           height: 2,
+          sectional: false,
           startCapId: expect.any(String),
           endCapId: expect.any(String),
           units: {

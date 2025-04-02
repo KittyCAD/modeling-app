@@ -383,6 +383,7 @@ pub(crate) async fn do_post_extrude<'a>(
         units: sketch.units,
         sketch,
         height: length,
+        sectional,
         start_cap_id,
         end_cap_id,
         edge_cuts: vec![],
