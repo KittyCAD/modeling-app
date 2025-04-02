@@ -4,9 +4,9 @@ import type {
   ModelingCmdReq_type,
 } from '@kittycad/lib/dist/types/src/models'
 
+import type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
-import type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
 
 import type { KCLError } from '@src/lang/errors'
 import {
@@ -34,11 +34,17 @@ import {
 } from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
-import { DEFAULT_DEFAULT_LENGTH_UNIT, EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
+import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
+} from '@src/lib/constants'
 import { markOnce } from '@src/lib/performance'
 import type { Selections } from '@src/lib/selections'
 import { handleSelectionBatch } from '@src/lib/selections'
-import type { BaseUnit, KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
+import type {
+  BaseUnit,
+  KclSettingsAnnotation,
+} from '@src/lib/settings/settingsTypes'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import {
   codeManager,
