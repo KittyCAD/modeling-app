@@ -8,7 +8,7 @@ import React, {
 } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
+import { useLoaderData, useNavigate } from 'react-router-dom'
 import type { Actor, ContextFrom, Prop, SnapshotFrom, StateFrom } from 'xstate'
 import { assign, fromPromise } from 'xstate'
 
@@ -38,7 +38,6 @@ import {
   applyConstraintLength,
 } from '@src/components/Toolbar/setAngleLength'
 import { useFileContext } from '@src/hooks/useFileContext'
-import { useSetupEngineManager } from '@src/hooks/useSetupEngineManager'
 import useStateMachineCommands from '@src/hooks/useStateMachineCommands'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {

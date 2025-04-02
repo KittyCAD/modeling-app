@@ -1,12 +1,12 @@
-import { jsAppSettings } from 'lang/wasm'
-import { MutableRefObject } from 'react'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import type { MutableRefObject } from 'react'
 import { setup, assign, fromPromise } from 'xstate'
 import {
   rustContext,
   kclManager,
   sceneInfra,
   engineCommandManager,
-} from 'lib/singletons'
+} from '@src/lib/singletons'
 
 export enum EngineStreamState {
   Off = 'off',
@@ -192,7 +192,7 @@ export const engineStreamMachine = setup({
         window.requestAnimationFrame(() => {
           engineCommandManager.start({
             setMediaStream: event.onMediaStream,
-            setIsStreamReady: (isStreamReady) => {
+            setIsStreamReady: (isStreamReady: boolean) => {
               event.setAppState({ isStreamReady })
             },
             width,

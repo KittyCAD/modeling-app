@@ -910,7 +910,6 @@ export async function setup(
               theme: 'dark',
             },
             ...TEST_SETTINGS.project,
-            project_directory: testDir,
             onboarding_status: 'dismissed',
           },
           project: {

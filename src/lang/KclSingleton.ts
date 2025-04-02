@@ -16,6 +16,7 @@ import {
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
+import { CommandLogType } from '@src/lang/std/engineConnection'
 import { topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
