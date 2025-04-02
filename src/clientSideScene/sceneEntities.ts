@@ -65,7 +65,6 @@ import {
   SEGMENT_WIDTH_PX,
   STRAIGHT_SEGMENT,
   STRAIGHT_SEGMENT_DASH,
-  TAN_ARC_SEGMENT_TYPES,
   TANGENTIAL_ARC_TO_SEGMENT,
   THREE_POINT_ARC_HANDLE2,
   THREE_POINT_ARC_HANDLE3,
@@ -3864,10 +3863,10 @@ function isGroupStartProfileForCurrentProfile(sketchEntryNodePath: PathToNode) {
   }
 }
 
-// Return the 2d tangent direction at the end of the segmentGroup if it's an arc.
+// Returns the 2D tangent direction vector at the end of the segmentGroup if it's an arc.
 function findTangentDirection(segmentGroup: Group) {
   let tangentDirection: Coords2d | undefined
-  if (TAN_ARC_SEGMENT_TYPES.includes(segmentGroup.userData.type)) {
+  if (segmentGroup.userData.type === TANGENTIAL_ARC_TO_SEGMENT) {
     const prevSegment = segmentGroup.userData.prevSegment
     const arcInfo = getTangentialArcToInfo({
       arcStartPoint: segmentGroup.userData.from,
@@ -3878,13 +3877,21 @@ function findTangentDirection(segmentGroup: Group) {
     const tangentAngle =
       arcInfo.endAngle + (Math.PI / 2) * (arcInfo.ccw ? 1 : -1)
     tangentDirection = [Math.cos(tangentAngle), Math.sin(tangentAngle)]
-  } else if (segmentGroup.userData.type === ARC_SEGMENT) {
+  } else if (
+    segmentGroup.userData.type === ARC_SEGMENT ||
+    segmentGroup.userData.type === THREE_POINT_ARC_SEGMENT
+  ) {
     const tangentAngle =
       (getAngle(segmentGroup.userData.center, segmentGroup.userData.to) *
         Math.PI) /
         180 +
       (Math.PI / 2) * (segmentGroup.userData.ccw ? 1 : -1)
     tangentDirection = [Math.cos(tangentAngle), Math.sin(tangentAngle)]
+  } else {
+    console.warn(
+      'Unsupported segment type for tangent direction calculation: ',
+      segmentGroup.userData.type
+    )
   }
   return tangentDirection
 }

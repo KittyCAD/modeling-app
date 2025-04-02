@@ -63,11 +63,11 @@ export const SEGMENT_BODIES_PLUS_PROFILE_START = [
   PROFILE_START,
 ]
 
-export const TAN_ARC_SEGMENT_TYPES = [
+export const ARC_SEGMENT_TYPES = [
   TANGENTIAL_ARC_TO_SEGMENT,
   THREE_POINT_ARC_SEGMENT,
+  ARC_SEGMENT,
 ]
-export const ARC_SEGMENT_TYPES = [...TAN_ARC_SEGMENT_TYPES, ARC_SEGMENT]
 
 // Helper functions
 export function getParentGroup(
