@@ -67,7 +67,11 @@ impl Artifact {
     /// the graph.  This should be disjoint with `child_ids`.
     pub(crate) fn back_edges(&self) -> Vec<ArtifactId> {
         match self {
-            Artifact::CompositeSolid(a) => a.solid_ids.clone(),
+            Artifact::CompositeSolid(a) => {
+                let mut ids = a.solid_ids.clone();
+                ids.extend(a.tool_solid_ids.iter());
+                ids
+            }
             Artifact::Plane(_) => Vec::new(),
             Artifact::Path(a) => vec![a.plane_id],
             Artifact::Segment(a) => vec![a.path_id],
@@ -89,7 +93,8 @@ impl Artifact {
     pub(crate) fn child_ids(&self) -> Vec<ArtifactId> {
         match self {
             Artifact::CompositeSolid(_) => {
-                // Note: Don't include these since they're parents: solid_ids.
+                // Note: Don't include these since they're parents: solid_ids,
+                // tool_solid_ids.
                 Vec::new()
             }
             Artifact::Plane(a) => a.path_ids.clone(),
