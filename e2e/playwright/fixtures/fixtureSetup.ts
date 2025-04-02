@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-
 import type {
   BrowserContext,
   ElectronApplication,
@@ -9,10 +8,9 @@ import type {
 
 import { _electron as electron } from '@playwright/test'
 
-import * as TOML from '@iarna/toml'
 import { TEST_SETTINGS } from '../storageStates'
 import { SETTINGS_FILE_NAME } from 'lib/constants'
-import { getUtils, setup } from '../test-utils'
+import { getUtils, setup, settingsToToml } from '../test-utils'
 import fsp from 'fs/promises'
 import fs from 'node:fs'
 import path from 'path'
@@ -287,26 +285,30 @@ export class ElectronZoo {
     let settingsOverridesToml = ''
 
     if (appSettings) {
-      settingsOverridesToml = TOML.stringify({
-        // @ts-expect-error
+      settingsOverridesToml = settingsToToml({
         settings: {
           ...TEST_SETTINGS,
           ...appSettings,
           app: {
             ...TEST_SETTINGS.app,
-            project_directory: this.projectDirName,
             ...appSettings.app,
+          },
+          project: {
+            ...TEST_SETTINGS.project,
+            directory: this.projectDirName,
           },
         },
       })
     } else {
-      settingsOverridesToml = TOML.stringify({
-        // @ts-expect-error
+      settingsOverridesToml = settingsToToml({
         settings: {
           ...TEST_SETTINGS,
           app: {
             ...TEST_SETTINGS.app,
-            project_directory: this.projectDirName,
+          },
+          project: {
+            ...TEST_SETTINGS.project,
+            directory: this.projectDirName,
           },
         },
       })

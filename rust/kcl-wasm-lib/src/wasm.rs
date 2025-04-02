@@ -176,6 +176,8 @@ pub fn serialize_configuration(val: JsValue) -> Result<JsValue, String> {
     let config: kcl_lib::Configuration = val.into_serde().map_err(|e| e.to_string())?;
 
     let toml_str = toml::to_string_pretty(&config).map_err(|e| e.to_string())?;
+    let settings = kcl_lib::Configuration::backwards_compatible_toml_parse(&toml_str).map_err(|e| e.to_string())?;
+    let toml_str = toml::to_string_pretty(&settings).map_err(|e| e.to_string())?;
 
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
@@ -190,6 +192,9 @@ pub fn serialize_project_configuration(val: JsValue) -> Result<JsValue, String> 
     let config: kcl_lib::ProjectConfiguration = val.into_serde().map_err(|e| e.to_string())?;
 
     let toml_str = toml::to_string_pretty(&config).map_err(|e| e.to_string())?;
+    let settings =
+        kcl_lib::ProjectConfiguration::backwards_compatible_toml_parse(&toml_str).map_err(|e| e.to_string())?;
+    let toml_str = toml::to_string_pretty(&settings).map_err(|e| e.to_string())?;
 
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.

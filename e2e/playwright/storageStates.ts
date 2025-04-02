@@ -9,9 +9,10 @@ export const IS_PLAYWRIGHT_KEY = 'playwright'
 export const TEST_SETTINGS_KEY = '/settings.toml'
 export const TEST_SETTINGS: DeepPartial<Settings> = {
   app: {
-    theme: Themes.Dark,
+    appearance: {
+      theme: Themes.Dark,
+    },
     onboarding_status: 'dismissed',
-    project_directory: '',
     show_debug_panel: true,
   },
   modeling: {
@@ -22,6 +23,7 @@ export const TEST_SETTINGS: DeepPartial<Settings> = {
   },
   project: {
     default_project_name: 'project-$nnn',
+    directory: '',
   },
   text_editor: {
     text_wrapping: true,
@@ -54,7 +56,7 @@ export const TEST_SETTINGS_ONBOARDING_START: DeepPartial<Settings> = {
 
 export const TEST_SETTINGS_DEFAULT_THEME: DeepPartial<Settings> = {
   ...TEST_SETTINGS,
-  app: { ...TEST_SETTINGS.app, theme: Themes.System },
+  app: { ...TEST_SETTINGS.app, appearance: { theme: Themes.System } },
 }
 
 export const TEST_SETTINGS_CORRUPTED = {
