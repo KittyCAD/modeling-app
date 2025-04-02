@@ -39,7 +39,7 @@ kittycad = { version = "0.3.36", default-features = false, features = ["js", "re
 kittycad-modeling-cmds = { version = "0.2.108", features = ["ts-rs", "websocket"] }
 lazy_static = "1.5.0"
 miette = "7.5.0"
-pyo3 = { version = "0.24.0" }
+pyo3 = { version = "0.24.1" }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
 slog = "2.7.0"
