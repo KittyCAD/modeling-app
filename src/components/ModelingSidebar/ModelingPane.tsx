@@ -1,12 +1,14 @@
-import { ReactNode } from 'react'
+import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
+import type { ReactNode } from 'react'
+
+import { ActionButton } from '@src/components/ActionButton'
+import { ActionIcon } from '@src/components/ActionIcon'
+import type { CustomIconName } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
+import { useSettings } from '@src/machines/appMachine'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
 import styles from './ModelingPane.module.css'
-import { ActionButton } from 'components/ActionButton'
-import Tooltip from 'components/Tooltip'
-import { CustomIconName } from 'components/CustomIcon'
-import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
-import { ActionIcon } from 'components/ActionIcon'
-import { onboardingPaths } from 'routes/Onboarding/paths'
-import { useSettings } from 'machines/appMachine'
 
 export interface ModelingPaneProps {
   id: string

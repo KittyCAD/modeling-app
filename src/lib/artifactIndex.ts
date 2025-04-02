@@ -1,5 +1,10 @@
-import { ArtifactGraph, ArtifactId, SourceRange, Artifact } from 'lang/wasm'
-import { getFaceCodeRef } from 'lang/std/artifactGraph'
+import { getFaceCodeRef } from '@src/lang/std/artifactGraph'
+import type {
+  Artifact,
+  ArtifactGraph,
+  ArtifactId,
+  SourceRange,
+} from '@src/lang/wasm'
 
 // Index artifacts in an ordered list for binary search
 export type ArtifactEntry = { artifact: Artifact; id: ArtifactId }

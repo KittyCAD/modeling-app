@@ -1,26 +1,26 @@
+import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { Resizable } from 're-resizable'
-import {
-  MouseEventHandler,
-  useCallback,
-  useEffect,
-  useMemo,
-  useContext,
-} from 'react'
+import type { MouseEventHandler } from 'react'
+import { useCallback, useContext, useEffect, useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { SidebarAction, SidebarType, sidebarPanes } from './ModelingPanes'
-import Tooltip from 'components/Tooltip'
-import { ActionIcon } from 'components/ActionIcon'
-import { ModelingPane } from './ModelingPane'
-import { isDesktop } from 'lib/isDesktop'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { CustomIconName } from 'components/CustomIcon'
-import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
-import { useKclContext } from 'lang/KclProvider'
-import { MachineManagerContext } from 'components/MachineManagerProvider'
-import { onboardingPaths } from 'routes/Onboarding/paths'
-import { SIDEBAR_BUTTON_SUFFIX } from 'lib/constants'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { useSettings } from 'machines/appMachine'
+
+import { ActionIcon } from '@src/components/ActionIcon'
+import type { CustomIconName } from '@src/components/CustomIcon'
+import { MachineManagerContext } from '@src/components/MachineManagerProvider'
+import { ModelingPane } from '@src/components/ModelingSidebar/ModelingPane'
+import type {
+  SidebarAction,
+  SidebarType,
+} from '@src/components/ModelingSidebar/ModelingPanes'
+import { sidebarPanes } from '@src/components/ModelingSidebar/ModelingPanes'
+import Tooltip from '@src/components/Tooltip'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useKclContext } from '@src/lang/KclProvider'
+import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import { useSettings } from '@src/machines/appMachine'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -113,17 +113,20 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   )
 
   const paneBadgeMap: Record<SidebarType, BadgeInfoComputed> = useMemo(() => {
-    return filteredPanes.reduce((acc, pane) => {
-      if (pane.showBadge) {
-        acc[pane.id] = {
-          value: pane.showBadge.value(paneCallbackProps),
-          onClick: pane.showBadge.onClick,
-          className: pane.showBadge.className,
-          title: pane.showBadge.title,
+    return filteredPanes.reduce(
+      (acc, pane) => {
+        if (pane.showBadge) {
+          acc[pane.id] = {
+            value: pane.showBadge.value(paneCallbackProps),
+            onClick: pane.showBadge.onClick,
+            className: pane.showBadge.className,
+            title: pane.showBadge.title,
+          }
         }
-      }
-      return acc
-    }, {} as Record<SidebarType, BadgeInfoComputed>)
+        return acc
+      },
+      {} as Record<SidebarType, BadgeInfoComputed>
+    )
   }, [paneCallbackProps])
 
   // Clear any hidden panes from the `openPanes` array
