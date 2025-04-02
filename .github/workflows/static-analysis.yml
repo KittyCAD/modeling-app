@@ -164,7 +164,7 @@ jobs:
           mkdir rust/kcl-lib/bindings
           cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
-      - run: yarn circular-deps
+      - run: yarn diff-circular-deps
 
   python-codespell:
     runs-on: ubuntu-22.04
