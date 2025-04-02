@@ -1,10 +1,10 @@
+import type { MaxWidth } from '@src/lib/telemetry'
 import {
   columnWidth,
-  MaxWidth,
-  printHeader,
   printDivider,
+  printHeader,
   printRow,
-} from 'lib/telemetry'
+} from '@src/lib/telemetry'
 
 describe('Telemetry', () => {
   describe('columnWidth', () => {

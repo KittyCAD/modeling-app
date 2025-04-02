@@ -1,5 +1,7 @@
+import decamelize from 'decamelize'
+import toast from 'react-hot-toast'
+import type { AnyActorRef } from 'xstate'
 import {
-  AnyActorRef,
   assign,
   enqueueActions,
   fromCallback,
@@ -7,25 +9,24 @@ import {
   sendTo,
   setup,
 } from 'xstate'
+
+import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
+
 import {
-  Themes,
-  darkModeMatcher,
-  getOppositeTheme,
-  getSystemTheme,
-  setThemeClass,
-} from 'lib/theme'
-import {
-  createSettings,
-  settings,
-  SettingsType,
-} from 'lib/settings/initialSettings'
-import {
+  createSettingsCommand,
+  settingsWithCommandConfigs,
+} from '@src/lib/commandBarConfigs/settingsCommandConfig'
+import type { Command } from '@src/lib/commandTypes'
+import type { Project } from '@src/lib/project'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
+import { createSettings, settings } from '@src/lib/settings/initialSettings'
+import type {
   BaseUnit,
   SetEventTypes,
   SettingsLevel,
   SettingsPaths,
   WildcardSetEvent,
-} from 'lib/settings/settingsTypes'
+} from '@src/lib/settings/settingsTypes'
 import {
   clearSettingsAtLevel,
   configurationToSettingsPayload,
@@ -33,25 +34,23 @@ import {
   projectConfigurationToSettingsPayload,
   saveSettings,
   setSettingsAtLevel,
-} from 'lib/settings/settingsUtils'
-import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
+} from '@src/lib/settings/settingsUtils'
 import {
   codeManager,
   engineCommandManager,
   kclManager,
   sceneEntitiesManager,
   sceneInfra,
-} from 'lib/singletons'
-import toast from 'react-hot-toast'
-import decamelize from 'decamelize'
-import { reportRejection } from 'lib/trap'
-import { Project } from 'lib/project'
+} from '@src/lib/singletons'
 import {
-  createSettingsCommand,
-  settingsWithCommandConfigs,
-} from 'lib/commandBarConfigs/settingsCommandConfig'
-import { Command } from 'lib/commandTypes'
-import { commandBarActor } from './commandBarMachine'
+  Themes,
+  darkModeMatcher,
+  getOppositeTheme,
+  getSystemTheme,
+  setThemeClass,
+} from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import { commandBarActor } from '@src/machines/commandBarMachine'
 
 type SettingsMachineContext = SettingsType & {
   currentProject?: Project
@@ -198,7 +197,7 @@ export const settingsMachine = setup({
       if (!('data' in event)) return
       const eventParts = event.type.replace(/^set./, '').split('.') as [
         keyof typeof settings,
-        string
+        string,
       ]
       const truncatedNewValue = event.data.value?.toString().slice(0, 28)
       const message =

@@ -1,32 +1,29 @@
-import {
-  expect,
-  BrowserContext,
-  TestInfo,
-  Locator,
-  Page,
-} from '@playwright/test'
-import { test } from './zoo-test'
-import { EngineCommand } from 'lang/std/artifactGraph'
+import * as TOML from '@iarna/toml'
+import type { Models } from '@kittycad/lib'
+import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
+import { expect } from '@playwright/test'
+import type { EngineCommand } from '@src/lang/std/artifactGraph'
+import type { Configuration } from '@src/lang/wasm'
+import { COOKIE_NAME } from '@src/lib/constants'
+import { reportRejection } from '@src/lib/trap'
+import type { DeepPartial } from '@src/lib/types'
+import { isArray } from '@src/lib/utils'
 import fsp from 'fs/promises'
 import path from 'path'
 import pixelMatch from 'pixelmatch'
+import type { Protocol } from 'playwright-core/types/protocol'
 import { PNG } from 'pngjs'
-import { Protocol } from 'playwright-core/types/protocol'
-import type { Models } from '@kittycad/lib'
-import { COOKIE_NAME } from 'lib/constants'
-import { secrets } from './secrets'
+
+import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+
+import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
+import { secrets } from '@e2e/playwright/secrets'
 import {
-  TEST_SETTINGS_KEY,
-  TEST_SETTINGS,
   IS_PLAYWRIGHT_KEY,
-} from './storageStates'
-import * as TOML from '@iarna/toml'
-import { isErrorWhitelisted } from './lib/console-error-whitelist'
-import { isArray } from 'lib/utils'
-import { reportRejection } from 'lib/trap'
-import { DeepPartial } from 'lib/types'
-import { Configuration } from 'lang/wasm'
-import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+  TEST_SETTINGS,
+  TEST_SETTINGS_KEY,
+} from '@e2e/playwright/storageStates'
+import { test } from '@e2e/playwright/zoo-test'
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
@@ -683,8 +680,8 @@ const _makeTemplate = (
           isArray(currentOptions)
             ? currentOptions[i]
             : typeof currentOptions === 'number'
-            ? currentOptions
-            : ''
+              ? currentOptions
+              : ''
         )
       )
     })

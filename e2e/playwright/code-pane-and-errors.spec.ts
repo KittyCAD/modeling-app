@@ -1,13 +1,14 @@
-import { test, expect } from './zoo-test'
-import {
-  orRunWhenFullSuiteEnabled,
-  getUtils,
-  executorInputPath,
-} from './test-utils'
-import { join } from 'path'
-import { bracket } from 'lib/exampleKcl'
-import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from './storageStates'
+import { bracket } from '@src/lib/exampleKcl'
 import fsp from 'fs/promises'
+import { join } from 'path'
+
+import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from '@e2e/playwright/storageStates'
+import {
+  executorInputPath,
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
   test('Typing KCL errors induces a badge on the code pane button', async ({

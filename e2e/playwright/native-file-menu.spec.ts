@@ -1,4 +1,4 @@
-import { test, expect } from './zoo-test'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 /**
  * Not all menu actions are tested. Some are default electron menu actions.
