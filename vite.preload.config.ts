@@ -1,11 +1,11 @@
 import type { ConfigEnv, UserConfig } from 'vite'
 import { defineConfig, mergeConfig } from 'vite'
-import { configDefaults } from 'vitest/config'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
+
 import {
+  external,
   getBuildConfig,
   getBuildDefine,
-  external,
   pluginHotRestart,
 } from './vite.base.config'
 

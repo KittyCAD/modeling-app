@@ -1,4 +1,4 @@
-import { parseEngineErrorMessage } from './validators'
+import { parseEngineErrorMessage } from '@src/lib/commandBarConfigs/validators'
 
 describe('parseEngineErrorMessage', () => {
   it('takes an engine error string and parses its json message', () => {

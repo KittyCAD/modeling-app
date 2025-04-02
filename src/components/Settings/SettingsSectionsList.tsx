@@ -1,8 +1,9 @@
 import decamelize from 'decamelize'
-import { Setting } from 'lib/settings/initialSettings'
-import { SettingsLevel } from 'lib/settings/settingsTypes'
-import { shouldHideSetting } from 'lib/settings/settingsUtils'
-import { useSettings } from 'machines/appMachine'
+
+import type { Setting } from '@src/lib/settings/initialSettings'
+import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
+import { shouldHideSetting } from '@src/lib/settings/settingsUtils'
+import { useSettings } from '@src/machines/appMachine'
 
 interface SettingsSectionsListProps {
   searchParamTab: SettingsLevel

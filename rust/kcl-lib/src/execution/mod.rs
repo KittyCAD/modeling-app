@@ -497,9 +497,13 @@ impl ExecutorContext {
         self.context_type == ContextType::Mock || self.context_type == ContextType::MockCustomForwarded
     }
 
+    pub async fn is_isolated_execution(&self) -> bool {
+        self.engine.execution_kind().await.is_isolated()
+    }
+
     /// Returns true if we should not send engine commands for any reason.
     pub async fn no_engine_commands(&self) -> bool {
-        self.is_mock() || self.engine.execution_kind().await.is_isolated()
+        self.is_mock() || self.is_isolated_execution().await
     }
 
     pub async fn send_clear_scene(

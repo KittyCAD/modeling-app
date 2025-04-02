@@ -1,6 +1,6 @@
 /* eslint suggest-no-throw/suggest-no-throw: 0 */
-import * as lc from 'vscode-languageclient/node'
 import type * as vscode from 'vscode'
+import * as lc from 'vscode-languageclient/node'
 
 export async function createClient(
   traceOutputChannel: vscode.OutputChannel,
