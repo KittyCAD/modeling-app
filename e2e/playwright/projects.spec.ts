@@ -940,7 +940,7 @@ test.describe(`Project management commands`, () => {
       const commandButton = page.getByRole('button', { name: 'Commands' })
       const commandOption = page.getByRole('option', { name: 'rename project' })
       const projectNameOption = page.getByRole('option', { name: projectName })
-      const projectRenamedName = `project-000`
+      const projectRenamedName = `untitled`
       const commandContinueButton = page.getByRole('button', {
         name: 'Continue',
       })
