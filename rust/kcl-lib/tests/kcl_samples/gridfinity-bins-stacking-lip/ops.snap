@@ -34,15 +34,18 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "face",
-    "functionSourceRange": [
-      1133,
-      1506,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "face",
+      "functionSourceRange": [
+        1133,
+        1506,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -61,7 +64,7 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -257,15 +260,18 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "face",
-    "functionSourceRange": [
-      1133,
-      1506,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "face",
+      "functionSourceRange": [
+        1133,
+        1506,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -284,7 +290,7 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "type": "KclStdLibCall",
@@ -1569,15 +1575,18 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "lipFace",
-    "functionSourceRange": [
-      5302,
-      5960,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "lipFace",
+      "functionSourceRange": [
+        5302,
+        5960,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1772,7 +1781,7 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -1801,15 +1810,18 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "lipFace",
-    "functionSourceRange": [
-      5302,
-      5960,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "lipFace",
+      "functionSourceRange": [
+        5302,
+        5960,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -2004,7 +2016,7 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -2307,15 +2319,18 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "lipFace",
-    "functionSourceRange": [
-      5302,
-      5960,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "lipFace",
+      "functionSourceRange": [
+        5302,
+        5960,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -2510,7 +2525,7 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "type": "KclStdLibCall",
@@ -2620,15 +2635,18 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "lipFace",
-    "functionSourceRange": [
-      5302,
-      5960,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "lipFace",
+      "functionSourceRange": [
+        5302,
+        5960,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -2817,7 +2835,7 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "type": "KclStdLibCall",
