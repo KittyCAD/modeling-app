@@ -56,7 +56,7 @@ test(
     // And you will need to have the KittyCAD CLI installed
     const u = await getUtils(page)
     await context.addInitScript(async () => {
-      ; (window as any).playwrightSkipFilePicker = true
+      ;(window as any).playwrightSkipFilePicker = true
       localStorage.setItem(
         'persistCode',
         `topAng = 25

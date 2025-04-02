@@ -2375,7 +2375,7 @@ profile003 = circle(sketch001, center = [6.92, -4.2], radius = 3.16)
         await page.waitForTimeout(600)
       })
 
-      await test.step('select and delete code for a profile', async () => { })
+      await test.step('select and delete code for a profile', async () => {})
       await page.getByText('close()').click()
       await page.keyboard.down('Shift')
       for (let i = 0; i < 11; i++) {
