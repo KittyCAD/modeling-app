@@ -1,15 +1,17 @@
-import { assign, createActor, fromPromise, setup, SnapshotFrom } from 'xstate'
-import {
+import { useSelector } from '@xstate/react'
+import toast from 'react-hot-toast'
+import type { SnapshotFrom } from 'xstate'
+import { assign, createActor, fromPromise, setup } from 'xstate'
+
+import type { MachineManager } from '@src/components/MachineManagerProvider'
+import { authCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
+import type {
   Command,
   CommandArgument,
   CommandArgumentWithName,
   KclCommandValue,
-} from 'lib/commandTypes'
-import { getCommandArgumentKclValuesOnly } from 'lib/commandUtils'
-import { MachineManager } from 'components/MachineManagerProvider'
-import toast from 'react-hot-toast'
-import { useSelector } from '@xstate/react'
-import { authCommands } from 'lib/commandBarConfigs/authCommandConfig'
+} from '@src/lib/commandTypes'
+import { getCommandArgumentKclValuesOnly } from '@src/lib/commandUtils'
 
 export type CommandBarContext = {
   commands: Command[]
@@ -134,10 +136,11 @@ export const commandBarMachine = setup({
         // that is, the first argument that is not already in the argumentsToSubmit
         // or hidden, or that is not undefined, or that is not marked as "skippable".
         // TODO validate the type of the existing arguments
-        const nonHiddenArgs = Object.entries(selectedCommand.args).filter((a) =>
-          a[1].hidden && typeof a[1].hidden === 'function'
-            ? !a[1].hidden(context)
-            : !a[1].hidden
+        const nonHiddenArgs = Object.entries(selectedCommand.args).filter(
+          (a) =>
+            a[1].hidden && typeof a[1].hidden === 'function'
+              ? !a[1].hidden(context)
+              : !a[1].hidden
         )
         let argIndex = 0
 
@@ -241,8 +244,8 @@ export const commandBarMachine = setup({
             argName in event.data.argDefaultValues
               ? event.data.argDefaultValues[argName]
               : arg.skip && 'defaultValue' in arg
-              ? arg.defaultValue
-              : undefined
+                ? arg.defaultValue
+                : undefined
         }
         return args
       },
@@ -366,6 +369,7 @@ export const commandBarMachine = setup({
                 !(argConfig.inputType === 'kcl' || argConfig.skip)
               const hasInvalidKclValue =
                 argConfig.inputType === 'kcl' &&
+                isRequired &&
                 !(argValue as Partial<KclCommandValue> | undefined)?.valueAst
               const hasInvalidOptionsValue =
                 isRequired &&

@@ -1,11 +1,14 @@
-import { getSystemTheme, Themes } from 'lib/theme'
-import { ZOO_STUDIO_PROTOCOL } from 'lib/constants'
-import { isDesktop } from 'lib/isDesktop'
-import { useSearchParams } from 'react-router-dom'
-import { ASK_TO_OPEN_QUERY_PARAM } from 'lib/constants'
-import { VITE_KC_SITE_BASE_URL } from 'env'
-import { ActionButton } from './ActionButton'
 import { Transition } from '@headlessui/react'
+import { VITE_KC_SITE_BASE_URL } from '@src/env'
+import { useSearchParams } from 'react-router-dom'
+
+import { ActionButton } from '@src/components/ActionButton'
+import {
+  ASK_TO_OPEN_QUERY_PARAM,
+  ZOO_STUDIO_PROTOCOL,
+} from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import { Themes, getSystemTheme } from '@src/lib/theme'
 
 /**
  * This component is a handler that checks if a certain query parameter

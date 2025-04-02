@@ -1,4 +1,5 @@
-import { cameraMouseDragGuards, MouseGuard } from 'lib/cameraControls'
+import type { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
+import * as TWEEN from '@tweenjs/tween.js'
 import {
   Euler,
   MathUtils,
@@ -10,26 +11,34 @@ import {
   Vector2,
   Vector3,
 } from 'three'
+
+import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+
+import { isQuaternionVertical } from '@src/clientSideScene/helpers'
 import {
   DEBUG_SHOW_INTERSECTION_PLANE,
   INTERSECTION_PLANE_LAYER,
   SKETCH_LAYER,
   ZOOM_MAGIC_NUMBER,
-} from './sceneInfra'
-import {
-  Subscription,
+} from '@src/clientSideScene/sceneInfra'
+import type { EngineCommand } from '@src/lang/std/artifactGraph'
+import type {
   EngineCommandManager,
+  Subscription,
   UnreliableSubscription,
-} from 'lang/std/engineConnection'
-import { EngineCommand } from 'lang/std/artifactGraph'
-import { toSync, uuidv4, getNormalisedCoordinates } from 'lib/utils'
-import { deg2Rad } from 'lib/utils2d'
-import { isReducedMotion, roundOff, throttle } from 'lib/utils'
-import * as TWEEN from '@tweenjs/tween.js'
-import { isQuaternionVertical } from './helpers'
-import { reportRejection } from 'lib/trap'
-import { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
-import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
+} from '@src/lang/std/engineConnection'
+import type { MouseGuard } from '@src/lib/cameraControls'
+import { cameraMouseDragGuards } from '@src/lib/cameraControls'
+import { reportRejection } from '@src/lib/trap'
+import {
+  getNormalisedCoordinates,
+  isReducedMotion,
+  roundOff,
+  throttle,
+  toSync,
+  uuidv4,
+} from '@src/lib/utils'
+import { deg2Rad } from '@src/lib/utils2d'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30

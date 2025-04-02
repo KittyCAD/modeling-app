@@ -1,24 +1,25 @@
-import { Program, Expr } from '../../lang/wasm'
-import { Selections } from 'lib/selections'
-import {
-  PathToNodeMap,
-  isExprBinaryPart,
-  transformAstSketchLines,
-} from '../../lang/std/sketchcombos'
+import { removeDoubleNegatives } from '@src/components/AvailableVarsHelpers'
 import {
   SetAngleLengthModal,
   createSetAngleLengthModal,
-} from '../SetAngleLengthModal'
+} from '@src/components/SetAngleLengthModal'
 import {
   createBinaryExpressionWithUnary,
   createLocalName,
+  createName,
   createVariableDeclaration,
-} from '../../lang/modifyAst'
-import { removeDoubleNegatives } from '../AvailableVarsHelpers'
-import { normaliseAngle } from '../../lib/utils'
-import { kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
-import { KclCommandValue } from 'lib/commandTypes'
+} from '@src/lang/create'
+import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
+import {
+  isExprBinaryPart,
+  transformAstSketchLines,
+} from '@src/lang/std/sketchcombos'
+import type { Expr, Program } from '@src/lang/wasm'
+import type { KclCommandValue } from '@src/lib/commandTypes'
+import type { Selections } from '@src/lib/selections'
+import { kclManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
+import { normaliseAngle } from '@src/lib/utils'
 import { angleLengthInfo } from './angleLengthInfo'
 
 const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
@@ -122,14 +123,16 @@ export async function applyConstraintAngleLength({
     isReferencingXAxis && angleOrLength === 'setAngle'
 
   let forceVal = valueUsedInTransform || 0
-  let calcIdentifier = createLocalName('ZERO')
+  let calcIdentifier = createName(['turns'], 'ZERO')
   if (isReferencingYAxisAngle) {
-    calcIdentifier = createLocalName(
+    calcIdentifier = createName(
+      ['turns'],
       forceVal < 0 ? 'THREE_QUARTER_TURN' : 'QUARTER_TURN'
     )
     forceVal = normaliseAngle(forceVal + (forceVal < 0 ? 90 : -90))
   } else if (isReferencingXAxisAngle) {
-    calcIdentifier = createLocalName(
+    calcIdentifier = createName(
+      ['turns'],
       Math.abs(forceVal) > 90 ? 'HALF_TURN' : 'ZERO'
     )
     forceVal =

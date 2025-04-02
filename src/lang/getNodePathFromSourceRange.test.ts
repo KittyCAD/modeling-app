@@ -1,8 +1,12 @@
-import { getNodeFromPath, LABELED_ARG_FIELD, ARG_INDEX_FIELD } from './queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { assertParse, initPromise, Parameter, topLevelRange } from './wasm'
-import { err } from 'lib/trap'
-import { Name } from '@rust/kcl-lib/bindings/Name'
+import type { Name } from '@rust/kcl-lib/bindings/Name'
+
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { topLevelRange } from '@src/lang/util'
+import type { Parameter } from '@src/lang/wasm'
+import { assertParse, initPromise } from '@src/lang/wasm'
+import { err } from '@src/lib/trap'
 
 beforeAll(async () => {
   await initPromise

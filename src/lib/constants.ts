@@ -1,4 +1,6 @@
-import { Models } from '@kittycad/lib/dist/types/src'
+import type { Models } from '@kittycad/lib/dist/types/src'
+
+import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 
 export const APP_NAME = 'Modeling App'
 /** Search string in new project names to increment as an index */
@@ -28,7 +30,7 @@ export const FILE_EXT = '.kcl'
 /** Default file to open when a project is opened */
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */
-export const PROJECT_IMAGE_NAME = `thumbnail.png` as const
+export const PROJECT_IMAGE_NAME = `thumbnail.png`
 /** The localStorage key for last-opened projects */
 export const FILE_PERSIST_KEY = `${PROJECT_FOLDER}-last-opened` as const
 /** The default name given to new kcl files in a project */
@@ -168,12 +170,24 @@ export const ZOO_STUDIO_PROTOCOL = 'zoo-studio'
  */
 export const ASK_TO_OPEN_QUERY_PARAM = 'ask-open-desktop'
 
+/**
+ * When no annotation is in the KCL file to specify the defaults, we use these
+ * default units.
+ */
+export const DEFAULT_DEFAULT_ANGLE_UNIT: UnitAngle = 'degrees'
+
+/**
+ * When no annotation is in the KCL file to specify the defaults, we use these
+ * default units.
+ */
+export const DEFAULT_DEFAULT_LENGTH_UNIT: UnitLength = 'mm'
+
 /** Real execution. */
-export const EXECUTION_TYPE_REAL = 'real' as const
+export const EXECUTION_TYPE_REAL = 'real'
 /** Mock execution. */
-export const EXECUTION_TYPE_MOCK = 'mock' as const
+export const EXECUTION_TYPE_MOCK = 'mock'
 /** No execution. */
-export const EXECUTION_TYPE_NONE = 'none' as const
+export const EXECUTION_TYPE_NONE = 'none'
 /**
  * Enum of engine execution kinds.
  */

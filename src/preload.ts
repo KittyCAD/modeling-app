@@ -1,11 +1,20 @@
-import { ipcRenderer, contextBridge } from 'electron'
-import path from 'path'
+import packageJson from '@root/package.json'
+import type { MachinesListing } from '@src/components/MachineManagerProvider'
+import chokidar from 'chokidar'
+import type { IpcRendererEvent } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
+import fsSync from 'node:fs'
 import fs from 'node:fs/promises'
 import os from 'node:os'
-import fsSync from 'node:fs'
-import packageJson from '../package.json'
-import { MachinesListing } from 'components/MachineManagerProvider'
-import chokidar from 'chokidar'
+import path from 'path'
+
+import type { Channel } from '@src/channels'
+import type { WebContentSendPayload } from '@src/menu/channels'
+
+const typeSafeIpcRendererOn = (
+  channel: Channel,
+  listener: (event: IpcRendererEvent, ...args: any[]) => void
+) => ipcRenderer.on(channel, listener)
 
 const resizeWindow = (width: number, height: number) =>
   ipcRenderer.invoke('app.resizeWindow', [width, height])
@@ -156,11 +165,63 @@ const listMachines = async (
   })
 }
 
-const getMachineApiIp = async (): Promise<String | null> =>
+const getMachineApiIp = async (): Promise<string | null> =>
   ipcRenderer.invoke('find_machine_api')
 
 const getArgvParsed = () => {
   return ipcRenderer.invoke('argv.parser')
+}
+
+// Creating a menu will refresh the state of the menu
+// Anything that was enabled will be reset to the hard coded state of the original menu
+const createHomePageMenu = async (): Promise<any> => {
+  return ipcRenderer.invoke('create-menu', { page: 'project' })
+}
+
+// Creating a menu will refresh the state of the menu
+// Anything that was enabled will be reset to the hard coded state of the original menu
+const createModelingPageMenu = async (): Promise<any> => {
+  return ipcRenderer.invoke('create-menu', { page: 'modeling' })
+}
+
+// Creating a menu will refresh the state of the menu
+// Anything that was enabled will be reset to the hard coded state of the original menu
+const createFallbackMenu = async (): Promise<any> => {
+  return ipcRenderer.invoke('create-menu', { page: 'fallback' })
+}
+
+// Given the application menu, try to enable the menu
+const enableMenu = async (menuId: string): Promise<any> => {
+  return ipcRenderer.invoke('enable-menu', {
+    menuId,
+  })
+}
+
+// Given the application menu, try to disable the menu
+const disableMenu = async (menuId: string): Promise<any> => {
+  return ipcRenderer.invoke('disable-menu', {
+    menuId,
+  })
+}
+
+/**
+ * Gotcha: Even if the callback function is the same function in JS memory
+ * when passing it over the IPC layer it will not map to the same function.
+ * this means your .on and .off with the same callback function in memory will
+ * not be removed.
+ * To remove the listener call the return value of menuOn. It builds a closure
+ * of the subscription on the electron side and it will let you remove the listener correctly.
+ */
+const menuOn = (callback: (payload: WebContentSendPayload) => void) => {
+  // Build a new subscription function for the closure below
+  const subscription = (event: IpcRendererEvent, data: WebContentSendPayload) =>
+    callback(data)
+  typeSafeIpcRendererOn('menu-action-clicked', subscription)
+
+  // This is the only way to remove the event listener from the JS side
+  return () => {
+    ipcRenderer.removeListener('menu-action-clicked', subscription)
+  }
 }
 
 contextBridge.exposeInMainWorld('electron', {
@@ -237,5 +298,11 @@ contextBridge.exposeInMainWorld('electron', {
   appCheckForUpdates,
   getArgvParsed,
   resizeWindow,
+  createHomePageMenu,
+  createModelingPageMenu,
+  createFallbackMenu,
+  enableMenu,
+  disableMenu,
+  menuOn,
   canReadWriteDirectory,
 })

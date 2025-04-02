@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react'
-import {
+
+import type {
   ConnectingType,
+  EngineConnectionState,
+  ErrorType,
+} from '@src/lang/std/engineConnection'
+import {
   ConnectingTypeGroup,
   DisconnectingType,
   EngineCommandManagerEvents,
   EngineConnectionEvents,
   EngineConnectionStateType,
-  EngineConnectionState,
-  ErrorType,
   initialConnectingTypeGroupState,
-} from '../lang/std/engineConnection'
-import { engineCommandManager } from '../lib/singletons'
+} from '@src/lang/std/engineConnection'
+import { engineCommandManager } from '@src/lib/singletons'
 
 export enum NetworkHealthState {
   Ok,
@@ -69,10 +72,10 @@ export function useNetworkStatus() {
       !internetConnected
         ? NetworkHealthState.Disconnected
         : hasIssues || hasIssues === undefined
-        ? NetworkHealthState.Issue
-        : pingPongHealth === 'TIMEOUT'
-        ? NetworkHealthState.Weak
-        : NetworkHealthState.Ok
+          ? NetworkHealthState.Issue
+          : pingPongHealth === 'TIMEOUT'
+            ? NetworkHealthState.Weak
+            : NetworkHealthState.Ok
     )
   }, [hasIssues, internetConnected, pingPongHealth])
 

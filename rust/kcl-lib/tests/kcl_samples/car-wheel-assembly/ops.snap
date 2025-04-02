@@ -1848,7 +1848,7 @@ description: Operations executed car-wheel-assembly.kcl
     "functionSourceRange": [
       2620,
       4193,
-      4
+      5
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -2235,7 +2235,7 @@ description: Operations executed car-wheel-assembly.kcl
     "functionSourceRange": [
       2620,
       4193,
-      4
+      5
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -2660,7 +2660,7 @@ description: Operations executed car-wheel-assembly.kcl
     "functionSourceRange": [
       664,
       1291,
-      7
+      8
     ],
     "unlabeledArg": null,
     "labeledArgs": {},

@@ -1,3 +1,13 @@
+import * as TWEEN from '@tweenjs/tween.js'
+import type {
+  Group,
+  Intersection,
+  Mesh,
+  MeshBasicMaterial,
+  Object3D,
+  Object3DEventMap,
+  Texture,
+} from 'three'
 import {
   AmbientLight,
   Color,
@@ -5,32 +15,29 @@ import {
   LineBasicMaterial,
   OrthographicCamera,
   PerspectiveCamera,
+  Raycaster,
   Scene,
+  TextureLoader,
+  Vector2,
   Vector3,
   WebGLRenderer,
-  Raycaster,
-  Vector2,
-  Group,
-  MeshBasicMaterial,
-  Mesh,
-  Intersection,
-  Object3D,
-  Object3DEventMap,
-  TextureLoader,
-  Texture,
 } from 'three'
-import { Coords2d, compareVec2Epsilon2 } from 'lang/std/sketch'
-import { useModelingContext } from 'hooks/useModelingContext'
-import * as TWEEN from '@tweenjs/tween.js'
-import { Axis, NonCodeSelection } from 'lib/selections'
-import { type BaseUnit } from 'lib/settings/settingsTypes'
-import { CameraControls } from './CameraControls'
-import { EngineCommandManager } from 'lang/std/engineConnection'
-import { MouseState, SegmentOverlayPayload } from 'machines/modelingMachine'
-import { getAngle, throttle } from 'lib/utils'
-import { Themes } from 'lib/theme'
 import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { orthoScale, perspScale } from './helpers'
+
+import { CameraControls } from '@src/clientSideScene/CameraControls'
+import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
+import type { useModelingContext } from '@src/hooks/useModelingContext'
+import type { EngineCommandManager } from '@src/lang/std/engineConnection'
+import type { Coords2d } from '@src/lang/std/sketch'
+import { compareVec2Epsilon2 } from '@src/lang/std/sketch'
+import type { Axis, NonCodeSelection } from '@src/lib/selections'
+import { type BaseUnit } from '@src/lib/settings/settingsTypes'
+import { Themes } from '@src/lib/theme'
+import { getAngle, throttle } from '@src/lib/utils'
+import type {
+  MouseState,
+  SegmentOverlayPayload,
+} from '@src/machines/modelingMachine'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -43,8 +50,8 @@ export const INTERSECTION_PLANE_LAYER = 1
 export const SKETCH_LAYER = 2
 
 // redundant types so that it can be changed temporarily but CI will catch the wrong type
-export const DEBUG_SHOW_INTERSECTION_PLANE: false = false
-export const DEBUG_SHOW_BOTH_SCENES: false = false
+export const DEBUG_SHOW_INTERSECTION_PLANE = false
+export const DEBUG_SHOW_BOTH_SCENES = false
 
 export const RAYCASTABLE_PLANE = 'raycastable-plane'
 
@@ -261,7 +268,7 @@ export class SceneInfra {
     return null
   }
 
-  hoveredObject: null | any = null
+  hoveredObject: null | Object3D<Object3DEventMap> = null
   raycaster = new Raycaster()
   planeRaycaster = new Raycaster()
   currentMouseVector = new Vector2()
@@ -487,11 +494,13 @@ export class SceneInfra {
       if (this.hoveredObject !== firstIntersectObject) {
         const hoveredObj = this.hoveredObject
         this.hoveredObject = null
-        await this.onMouseLeave({
-          selected: hoveredObj,
-          mouseEvent: mouseEvent,
-          intersectionPoint,
-        })
+        if (hoveredObj) {
+          await this.onMouseLeave({
+            selected: hoveredObj,
+            mouseEvent: mouseEvent,
+            intersectionPoint,
+          })
+        }
         this.hoveredObject = firstIntersectObject
         await this.onMouseEnter({
           selected: this.hoveredObject,

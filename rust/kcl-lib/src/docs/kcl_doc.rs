@@ -9,7 +9,7 @@ use tower_lsp::lsp_types::{
 use crate::{
     execution::annotations,
     parsing::{
-        ast::types::{Annotation, Node, PrimitiveType, Type, VariableKind},
+        ast::types::{Annotation, ImportSelector, Node, PrimitiveType, Type, VariableKind},
         token::NumericSuffix,
     },
     ModuleId,
@@ -17,7 +17,7 @@ use crate::{
 
 pub fn walk_prelude() -> Vec<DocData> {
     let mut visitor = CollectionVisitor::default();
-    visitor.visit_module("prelude").unwrap();
+    visitor.visit_module("prelude", "").unwrap();
     visitor.result
 }
 
@@ -29,7 +29,7 @@ struct CollectionVisitor {
 }
 
 impl CollectionVisitor {
-    fn visit_module(&mut self, name: &str) -> Result<(), String> {
+    fn visit_module(&mut self, name: &str, preferred_prefix: &str) -> Result<(), String> {
         let old_name = std::mem::replace(&mut self.name, name.to_owned());
         let source = crate::modules::read_std(name).unwrap();
         let parsed = crate::parsing::parse_str(source, ModuleId::from_usize(self.id))
@@ -40,14 +40,16 @@ impl CollectionVisitor {
         for n in &parsed.body {
             match n {
                 crate::parsing::ast::types::BodyItem::ImportStatement(import) if !import.visibility.is_default() => {
-                    // Only supports glob imports for now.
-                    assert!(matches!(
-                        import.selector,
-                        crate::parsing::ast::types::ImportSelector::Glob(..)
-                    ));
                     match &import.path {
                         crate::parsing::ast::types::ImportPath::Std { path } => {
-                            self.visit_module(&path[1])?;
+                            match import.selector {
+                                ImportSelector::Glob(..) => self.visit_module(&path[1], "")?,
+                                ImportSelector::None { .. } => {
+                                    self.visit_module(&path[1], &format!("{}::", import.module_name().unwrap()))?
+                                }
+                                // Only supports glob or whole-module imports for now.
+                                _ => unimplemented!(),
+                            }
                         }
                         p => return Err(format!("Unexpected import: `{p}`")),
                     }
@@ -59,8 +61,8 @@ impl CollectionVisitor {
                         format!("std::{}::", self.name)
                     };
                     let mut dd = match var.kind {
-                        VariableKind::Fn => DocData::Fn(FnData::from_ast(var, qual_name)),
-                        VariableKind::Const => DocData::Const(ConstData::from_ast(var, qual_name)),
+                        VariableKind::Fn => DocData::Fn(FnData::from_ast(var, qual_name, preferred_prefix)),
+                        VariableKind::Const => DocData::Const(ConstData::from_ast(var, qual_name, preferred_prefix)),
                     };
 
                     dd.with_meta(&var.outer_attrs);
@@ -77,7 +79,7 @@ impl CollectionVisitor {
                     } else {
                         format!("std::{}::", self.name)
                     };
-                    let mut dd = DocData::Ty(TyData::from_ast(ty, qual_name));
+                    let mut dd = DocData::Ty(TyData::from_ast(ty, qual_name, preferred_prefix));
 
                     dd.with_meta(&ty.outer_attrs);
                     for a in &ty.outer_attrs {
@@ -200,6 +202,8 @@ impl DocData {
 #[derive(Debug, Clone)]
 pub struct ConstData {
     pub name: String,
+    /// How the const is indexed, etc.
+    pub preferred_name: String,
     /// The fully qualified name.
     pub qual_name: String,
     pub value: Option<String>,
@@ -216,7 +220,11 @@ pub struct ConstData {
 }
 
 impl ConstData {
-    fn from_ast(var: &crate::parsing::ast::types::VariableDeclaration, mut qual_name: String) -> Self {
+    fn from_ast(
+        var: &crate::parsing::ast::types::VariableDeclaration,
+        mut qual_name: String,
+        preferred_prefix: &str,
+    ) -> Self {
         assert_eq!(var.kind, crate::parsing::ast::types::VariableKind::Const);
 
         let (value, ty) = match &var.declaration.init {
@@ -240,6 +248,7 @@ impl ConstData {
         let name = var.declaration.id.name.clone();
         qual_name.push_str(&name);
         ConstData {
+            preferred_name: format!("{preferred_prefix}{name}"),
             name,
             qual_name,
             value,
@@ -272,7 +281,7 @@ impl ConstData {
             detail.push_str(ty);
         }
         CompletionItem {
-            label: self.name.clone(),
+            label: self.preferred_name.clone(),
             label_details: Some(CompletionItemLabelDetails {
                 detail: self.value.clone(),
                 description: None,
@@ -306,6 +315,8 @@ impl ConstData {
 pub struct FnData {
     /// The name of the function.
     pub name: String,
+    /// How the function is indexed, etc.
+    pub preferred_name: String,
     /// The fully qualified name.
     pub qual_name: String,
     /// The args of the function.
@@ -326,7 +337,11 @@ pub struct FnData {
 }
 
 impl FnData {
-    fn from_ast(var: &crate::parsing::ast::types::VariableDeclaration, mut qual_name: String) -> Self {
+    fn from_ast(
+        var: &crate::parsing::ast::types::VariableDeclaration,
+        mut qual_name: String,
+        preferred_prefix: &str,
+    ) -> Self {
         assert_eq!(var.kind, crate::parsing::ast::types::VariableKind::Fn);
         let crate::parsing::ast::types::Expr::FunctionExpression(expr) = &var.declaration.init else {
             unreachable!();
@@ -345,6 +360,7 @@ impl FnData {
         }
 
         FnData {
+            preferred_name: format!("{preferred_prefix}{name}"),
             name,
             qual_name,
             args: expr.params.iter().map(ArgData::from_ast).collect(),
@@ -443,7 +459,7 @@ impl FnData {
         }
         // We end with ${} so you can jump to the end of the snippet.
         // After the last argument.
-        format!("{}({})${{}}", self.name, args.join(", "))
+        format!("{}({})${{}}", self.preferred_name, args.join(", "))
     }
 
     fn to_signature_help(&self) -> SignatureHelp {
@@ -452,7 +468,7 @@ impl FnData {
 
         SignatureHelp {
             signatures: vec![SignatureInformation {
-                label: self.name.clone(),
+                label: self.preferred_name.clone(),
                 documentation: self.short_docs().map(|s| {
                     Documentation::MarkupContent(MarkupContent {
                         kind: MarkupKind::Markdown,
@@ -580,6 +596,8 @@ impl ArgKind {
 pub struct TyData {
     /// The name of the function.
     pub name: String,
+    /// How the type is indexed, etc.
+    pub preferred_name: String,
     /// The fully qualified name.
     pub qual_name: String,
     pub properties: Properties,
@@ -597,7 +615,11 @@ pub struct TyData {
 }
 
 impl TyData {
-    fn from_ast(ty: &crate::parsing::ast::types::TypeDeclaration, mut qual_name: String) -> Self {
+    fn from_ast(
+        ty: &crate::parsing::ast::types::TypeDeclaration,
+        mut qual_name: String,
+        preferred_prefix: &str,
+    ) -> Self {
         let name = ty.name.name.clone();
         qual_name.push_str(&name);
         let mut referenced_types = HashSet::new();
@@ -606,6 +628,7 @@ impl TyData {
         }
 
         TyData {
+            preferred_name: format!("{preferred_prefix}{name}"),
             name,
             qual_name,
             properties: Properties {
@@ -641,7 +664,7 @@ impl TyData {
 
     fn to_completion_item(&self) -> CompletionItem {
         CompletionItem {
-            label: self.name.clone(),
+            label: self.preferred_name.clone(),
             label_details: self.alias.as_ref().map(|t| CompletionItemLabelDetails {
                 detail: Some(format!("type {} = {t}", self.name)),
                 description: None,
@@ -658,7 +681,7 @@ impl TyData {
             preselect: None,
             sort_text: None,
             filter_text: None,
-            insert_text: Some(self.name.clone()),
+            insert_text: Some(self.preferred_name.clone()),
             insert_text_format: Some(InsertTextFormat::SNIPPET),
             insert_text_mode: None,
             text_edit: None,
@@ -987,20 +1010,17 @@ mod test {
         let std = walk_prelude();
         for d in std {
             for (i, eg) in d.examples().enumerate() {
-                let result =
-                    match crate::test_server::execute_and_snapshot(eg, crate::settings::types::UnitLength::Mm, None)
-                        .await
-                    {
-                        Err(crate::errors::ExecError::Kcl(e)) => {
-                            return Err(miette::Report::new(crate::errors::Report {
-                                error: e.error,
-                                filename: format!("{}{i}", d.name()),
-                                kcl_source: eg.to_string(),
-                            }));
-                        }
-                        Err(other_err) => panic!("{}", other_err),
-                        Ok(img) => img,
-                    };
+                let result = match crate::test_server::execute_and_snapshot(eg, None).await {
+                    Err(crate::errors::ExecError::Kcl(e)) => {
+                        return Err(miette::Report::new(crate::errors::Report {
+                            error: e.error,
+                            filename: format!("{}{i}", d.name()),
+                            kcl_source: eg.to_string(),
+                        }));
+                    }
+                    Err(other_err) => panic!("{}", other_err),
+                    Ok(img) => img,
+                };
                 twenty_twenty::assert_image(
                     format!("tests/outputs/serial_test_example_{}{i}.png", d.example_name()),
                     &result,

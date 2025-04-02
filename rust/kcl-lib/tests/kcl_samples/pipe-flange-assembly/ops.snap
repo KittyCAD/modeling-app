@@ -5,41 +5,11 @@ description: Operations executed pipe-flange-assembly.kcl
 [
   {
     "type": "UserDefinedFunctionCall",
-    "name": "cos",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "cos",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "type": "UserDefinedFunctionCall",
     "name": "flange",
     "functionSourceRange": [
       451,
       1670,
-      5
+      6
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -657,7 +627,7 @@ description: Operations executed pipe-flange-assembly.kcl
     "functionSourceRange": [
       451,
       1670,
-      5
+      6
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -1275,7 +1245,7 @@ description: Operations executed pipe-flange-assembly.kcl
     "functionSourceRange": [
       414,
       870,
-      6
+      7
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -1523,9 +1493,9 @@ description: Operations executed pipe-flange-assembly.kcl
     "type": "UserDefinedFunctionCall",
     "name": "washer",
     "functionSourceRange": [
-      275,
-      696,
-      7
+      274,
+      695,
+      8
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -2022,9 +1992,9 @@ description: Operations executed pipe-flange-assembly.kcl
     "type": "UserDefinedFunctionCall",
     "name": "bolt",
     "functionSourceRange": [
-      365,
-      1664,
-      8
+      364,
+      1663,
+      9
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -2524,7 +2494,7 @@ description: Operations executed pipe-flange-assembly.kcl
     "functionSourceRange": [
       297,
       1231,
-      9
+      10
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -2839,7 +2809,7 @@ description: Operations executed pipe-flange-assembly.kcl
     "functionSourceRange": [
       244,
       658,
-      10
+      11
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -3083,7 +3053,7 @@ description: Operations executed pipe-flange-assembly.kcl
     "functionSourceRange": [
       244,
       658,
-      10
+      11
     ],
     "unlabeledArg": null,
     "labeledArgs": {},

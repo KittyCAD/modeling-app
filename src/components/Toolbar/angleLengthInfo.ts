@@ -1,11 +1,11 @@
-import { toolTips } from 'lang/langHelpers'
-import { Selections } from 'lib/selections'
-import { getNodeFromPath } from '../../lang/queryAst'
-import { getTransformInfos } from '../../lang/std/sketchcombos'
-import { TransformInfo } from 'lang/std/stdTypes'
-import { kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
-import { Expr } from 'lang/wasm'
+import { toolTips } from '@src/lang/langHelpers'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getTransformInfos } from '@src/lang/std/sketchcombos'
+import { TransformInfo } from '@src/lang/std/stdTypes'
+import { Expr } from '@src/lang/wasm'
+import { Selections } from '@src/lib/selections'
+import { kclManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
 
 export function angleLengthInfo({
   selectionRanges,

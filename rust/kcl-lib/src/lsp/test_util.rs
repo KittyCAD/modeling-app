@@ -42,7 +42,6 @@ pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
         can_execute: Arc::new(tokio::sync::RwLock::new(can_execute)),
         is_initialized: Default::default(),
     })
-    .custom_method("kcl/updateUnits", crate::lsp::kcl::Backend::update_units)
     .custom_method("kcl/updateCanExecute", crate::lsp::kcl::Backend::update_can_execute)
     .finish();
 

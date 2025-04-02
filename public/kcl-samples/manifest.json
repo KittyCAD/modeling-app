@@ -64,6 +64,13 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "dual-basin-utility-sink/main.kcl",
+    "multipleFiles": false,
+    "title": "Dual-Basin Utility Sink",
+    "description": "A stainless steel sink unit with dual rectangular basins and six under-counter storage compartments."
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "enclosure/main.kcl",
     "multipleFiles": false,
     "title": "Enclosure",
@@ -180,6 +187,13 @@
     "multipleFiles": false,
     "title": "Lego Brick",
     "description": "A standard Lego brick. This is a small, plastic construction block toy that can be interlocked with other blocks to build various structures, models, and figures. There are a lot of hacks used in this code."
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "makeup-mirror/main.kcl",
+    "multipleFiles": false,
+    "title": "Makeup Mirror",
+    "description": "A circular vanity mirror mounted on a swiveling arm with pivot joints, used for personal grooming."
   },
   {
     "file": "main.kcl",

@@ -1,15 +1,16 @@
-import { test, expect } from './zoo-test'
-import * as fsp from 'fs/promises'
+import { FILE_EXT } from '@src/lib/constants'
 import * as fs from 'fs'
+import * as fsp from 'fs/promises'
+import { join } from 'path'
+
 import {
   createProject,
   executorInputPath,
   getUtils,
   orRunWhenFullSuiteEnabled,
   runningOnWindows,
-} from './test-utils'
-import { join } from 'path'
-import { FILE_EXT } from 'lib/constants'
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('integrations tests', () => {
   test(

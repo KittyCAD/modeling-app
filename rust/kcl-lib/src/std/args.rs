@@ -72,7 +72,7 @@ impl KwArgs {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct TyF64 {
@@ -95,6 +95,16 @@ impl TyF64 {
     pub fn map(mut self, n: f64) -> Self {
         self.n = n;
         self
+    }
+}
+
+impl JsonSchema for TyF64 {
+    fn schema_name() -> String {
+        "TyF64".to_string()
+    }
+
+    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+        gen.subschema_for::<f64>()
     }
 }
 

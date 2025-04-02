@@ -1,22 +1,23 @@
-import { test, expect } from './zoo-test'
-import { join } from 'path'
+import { bracket } from '@src/lib/exampleKcl'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
 import fsp from 'fs/promises'
-import {
-  getUtils,
-  executorInputPath,
-  createProject,
-  settingsToToml,
-  orRunWhenFullSuiteEnabled,
-} from './test-utils'
-import { bracket } from 'lib/exampleKcl'
-import { onboardingPaths } from 'routes/Onboarding/paths'
+import { join } from 'path'
+
+import { expectPixelColor } from '@e2e/playwright/fixtures/sceneFixture'
 import {
   TEST_SETTINGS_KEY,
-  TEST_SETTINGS_ONBOARDING_START,
   TEST_SETTINGS_ONBOARDING_EXPORT,
+  TEST_SETTINGS_ONBOARDING_START,
   TEST_SETTINGS_ONBOARDING_USER_MENU,
-} from './storageStates'
-import { expectPixelColor } from './fixtures/sceneFixture'
+} from '@e2e/playwright/storageStates'
+import {
+  createProject,
+  executorInputPath,
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+  settingsToToml,
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 // Because our default test settings have the onboardingStatus set to 'dismissed',
 // we must set it to empty for the tests where we want to see the onboarding immediately.
@@ -230,9 +231,9 @@ test.describe('Onboarding tests', () => {
 
     // Override beforeEach test setup
     await context.addInitScript(
-      async ({ settingsKey, settings }) => {
+      async ({ settingsKey, settings, code }) => {
         // Give some initial code, so we can test that it's cleared
-        localStorage.setItem('persistCode', originalCode)
+        localStorage.setItem('persistCode', code)
         localStorage.setItem(settingsKey, settings)
       },
       {
@@ -240,6 +241,7 @@ test.describe('Onboarding tests', () => {
         settings: settingsToToml({
           settings: TEST_SETTINGS_ONBOARDING_EXPORT,
         }),
+        code: originalCode,
       }
     )
 
