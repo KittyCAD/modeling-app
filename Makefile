@@ -54,7 +54,7 @@ build-web: install public/kcl_wasm_lib_bg.wasm build/index.html
 .PHONY: build-desktop
 build-desktop: install public/kcl_wasm_lib_bg.wasm .vite/build/main.js
 
-public/kcl_wasm_lib_bg.wasm: $(CARGO_SOURCES)$(RUST_SOURCES)
+public/kcl_wasm_lib_bg.wasm: $(CARGO_SOURCES) $(RUST_SOURCES)
 ifeq ($(OS),Windows_NT)
 	yarn build:wasm:dev:windows
 else

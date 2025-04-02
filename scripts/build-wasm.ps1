@@ -5,7 +5,9 @@ $PSNativeCommandUseErrorActionPreference = $true
 
 rm -Recurse -Force rust/kcl-wasm-lib/pkg
 mkdir -p rust/kcl-wasm-lib/pkg
-rm -Recurse -Force rust/kcl-lib/bindings
+if (Test-Path rust/kcl-lib/bindings) {
+    rm -Recurse -Force rust/kcl-lib/bindings
+}
 
 cd rust
 $env:RUSTFLAGS='--cfg getrandom_backend="wasm_js"'
