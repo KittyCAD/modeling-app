@@ -118,6 +118,27 @@ impl CodeRef {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
+pub struct CompositeSolid {
+    pub id: ArtifactId,
+    pub sub_type: CompositeSolidSubType,
+    /// Constituent solids of the composite solid.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub solid_ids: Vec<ArtifactId>,
+    pub code_ref: CodeRef,
+}
+
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub enum CompositeSolidSubType {
+    Intersect,
+    Subtract,
+    Union,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
 pub struct Plane {
     pub id: ArtifactId,
     pub path_ids: Vec<ArtifactId>,
@@ -318,6 +339,7 @@ pub struct Helix {
 #[ts(export_to = "Artifact.ts")]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum Artifact {
+    CompositeSolid(CompositeSolid),
     Plane(Plane),
     Path(Path),
     Segment(Segment),
@@ -336,6 +358,7 @@ pub enum Artifact {
 impl Artifact {
     pub(crate) fn id(&self) -> ArtifactId {
         match self {
+            Artifact::CompositeSolid(a) => a.id,
             Artifact::Plane(a) => a.id,
             Artifact::Path(a) => a.id,
             Artifact::Segment(a) => a.id,
@@ -355,6 +378,7 @@ impl Artifact {
     #[expect(dead_code)]
     pub(crate) fn code_ref(&self) -> Option<&CodeRef> {
         match self {
+            Artifact::CompositeSolid(a) => Some(&a.code_ref),
             Artifact::Plane(a) => Some(&a.code_ref),
             Artifact::Path(a) => Some(&a.code_ref),
             Artifact::Segment(a) => Some(&a.code_ref),
@@ -375,6 +399,7 @@ impl Artifact {
     /// type, return the new artifact which should be used as a replacement.
     fn merge(&mut self, new: Artifact) -> Option<Artifact> {
         match self {
+            Artifact::CompositeSolid(a) => a.merge(new),
             Artifact::Plane(a) => a.merge(new),
             Artifact::Path(a) => a.merge(new),
             Artifact::Segment(a) => a.merge(new),
@@ -389,6 +414,17 @@ impl Artifact {
             Artifact::EdgeCutEdge(_) => Some(new),
             Artifact::Helix(_) => Some(new),
         }
+    }
+}
+
+impl CompositeSolid {
+    fn merge(&mut self, new: Artifact) -> Option<Artifact> {
+        let Artifact::CompositeSolid(new) = new else {
+            return Some(new);
+        };
+        merge_ids(&mut self.solid_ids, new.solid_ids);
+
+        None
     }
 }
 
@@ -1047,6 +1083,23 @@ fn artifacts_to_update(
             // the helix here, but it's not useful right now.
             return Ok(return_arr);
         }
+        // ModelingCmd::BooleanIntersect(_) | ModelingCmd::BooleanSubtract(_) | ModelingCmd::BooleanUnion(_) => {
+        //     let sub_type = match cmd {
+        //         ModelingCmd::BooleanIntersect(_) => CompositeSolidSubType::Intersect,
+        //         ModelingCmd::BooleanSubtract(_) => CompositeSolidSubType::Subtract,
+        //         ModelingCmd::BooleanUnion(_) => CompositeSolidSubType::Union,
+        //         _ => unreachable!(),
+        //     };
+        //     let solid_ids = cmd.solid_ids.iter().copied().map(ArtifactId::new).collect();
+        //     let return_arr = vec![Artifact::CompositeSolid(CompositeSolid {
+        //         id,
+        //         sub_type,
+        //         solid_ids,
+        //         code_ref: CodeRef { range, path_to_node },
+        //     })];
+        //     // TODO: Should we add the reverse graph edges?
+        //     return Ok(return_arr);
+        // }
         _ => {}
     }
 
