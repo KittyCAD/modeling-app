@@ -14,7 +14,6 @@ import {
   GridHelper,
   LineBasicMaterial,
   OrthographicCamera,
-  PerspectiveCamera,
   Raycaster,
   Scene,
   TextureLoader,
@@ -26,6 +25,16 @@ import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 import { CameraControls } from '@src/clientSideScene/CameraControls'
 import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
+import {
+  AXIS_GROUP,
+  DEBUG_SHOW_INTERSECTION_PLANE,
+  INTERSECTION_PLANE_LAYER,
+  RAYCASTABLE_PLANE,
+  SKETCH_LAYER,
+  X_AXIS,
+  Y_AXIS,
+  getSceneScale,
+} from '@src/clientSideScene/sceneUtils'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import type { Coords2d } from '@src/lang/std/sketch'
@@ -40,37 +49,6 @@ import type {
 } from '@src/machines/modelingMachine'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
-
-// 63.5 is definitely a bit of a magic number, play with it until it looked right
-// if it were 64, that would feel like it's something in the engine where a random
-// power of 2 is used, but it's the 0.5 seems to make things look much more correct
-export const ZOOM_MAGIC_NUMBER = 63.5
-
-export const INTERSECTION_PLANE_LAYER = 1
-export const SKETCH_LAYER = 2
-
-// redundant types so that it can be changed temporarily but CI will catch the wrong type
-export const DEBUG_SHOW_INTERSECTION_PLANE = false
-export const DEBUG_SHOW_BOTH_SCENES = false
-
-export const RAYCASTABLE_PLANE = 'raycastable-plane'
-
-export const X_AXIS = 'xAxis'
-export const Y_AXIS = 'yAxis'
-/** If a segment angle is less than this many degrees off a meanginful angle it'll snap to it */
-export const ANGLE_SNAP_THRESHOLD_DEGREES = 3
-/** the THREEjs representation of the group surrounding a "snapped" point that is not yet placed */
-export const DRAFT_POINT_GROUP = 'draft-point-group'
-/** the THREEjs representation of a "snapped" point that is not yet placed */
-export const DRAFT_POINT = 'draft-point'
-export const AXIS_GROUP = 'axisGroup'
-export const SKETCH_GROUP_SEGMENTS = 'sketch-group-segments'
-export const ARROWHEAD = 'arrowhead'
-export const SEGMENT_LENGTH_LABEL = 'segment-length-label'
-export const SEGMENT_LENGTH_LABEL_TEXT = 'segment-length-label-text'
-export const SEGMENT_LENGTH_LABEL_OFFSET_PX = 30
-export const CIRCLE_3_POINT_DRAFT_POINT = 'circle-3-point-draft-point'
-export const CIRCLE_3_POINT_DRAFT_CIRCLE = 'circle-3-point-draft-circle'
 
 export interface OnMouseEnterLeaveArgs {
   selected: Object3D<Object3DEventMap>
@@ -123,7 +101,6 @@ export class SceneInfra {
   readonly camControls: CameraControls
   private readonly fov = 45
   isFovAnimationInProgress = false
-  _baseUnit: BaseUnit = 'mm'
   _baseUnitMultiplier = 1
   _theme: Themes = Themes.System
   readonly extraSegmentTexture: Texture
@@ -154,7 +131,6 @@ export class SceneInfra {
     this.selected = null // following selections between callbacks being set is too tricky
   }
   set baseUnit(unit: BaseUnit) {
-    this._baseUnit = unit
     this._baseUnitMultiplier = baseUnitTomm(unit)
     this.scene.scale.set(
       this._baseUnitMultiplier,
@@ -689,24 +665,6 @@ export class SceneInfra {
       }
     })
   }
-}
-
-export function getSceneScale(
-  camera: PerspectiveCamera | OrthographicCamera,
-  target: Vector3
-): number {
-  const distance =
-    camera instanceof PerspectiveCamera
-      ? camera.position.distanceTo(target)
-      : 63.7942123 / camera.zoom
-
-  if (distance <= 20) return 0.1
-  else if (distance > 20 && distance <= 200) return 1
-  else if (distance > 200 && distance <= 2000) return 10
-  else if (distance > 2000 && distance <= 20000) return 100
-  else if (distance > 20000) return 1000
-
-  return 1
 }
 
 function baseUnitTomm(baseUnit: BaseUnit) {
