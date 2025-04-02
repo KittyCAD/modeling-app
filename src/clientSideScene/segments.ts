@@ -85,6 +85,7 @@ import { sceneInfra } from 'lib/singletons'
 import { Selections } from 'lib/selections'
 import { calculate_circle_from_3_points } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { commandBarActor } from 'machines/commandBarMachine'
+import { angleLengthInfo } from 'components/Toolbar/angleLengthInfo'
 
 const ANGLE_INDICATOR_RADIUS = 30 // in px
 interface CreateSegmentArgs {
@@ -1708,6 +1709,18 @@ function createLengthIndicator({
         selection: selection.graphSelections[0],
       },
     })
+
+    const canConstrainLength = angleLengthInfo({
+      selectionRanges: {
+        ...selection,
+        graphSelections: [selection.graphSelections[0]],
+      },
+      angleOrLength: 'setLength',
+    })
+    if (err(canConstrainLength) || !canConstrainLength.enabled) {
+      // toast error message?
+      return
+    }
 
     // Command Bar
     commandBarActor.send({
