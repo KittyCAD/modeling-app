@@ -102,16 +102,9 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// import "tests/inputs/cube.sldprt" as cube
 ///
-/// // Circle so you actually see the scale.
-/// startSketchOn('XY')
-///     |> circle(
-///         center = [-100, -100],
-///         radius = 1.5,
-///         )
-///
 /// cube
 ///     |> scale(
-///     z = 2.5,
+///     y = 2.5,
 ///     )
 /// ```
 ///
