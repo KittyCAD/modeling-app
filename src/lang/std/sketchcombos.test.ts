@@ -1,7 +1,11 @@
 import { ARG_END, ARG_END_ABSOLUTE } from '@src/lang/constants'
 import type { ToolTip } from '@src/lang/langHelpers'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
-import { fnNameToTooltip, getArgForEnd, isAbsoluteLine } from '@src/lang/std/sketch'
+import {
+  fnNameToTooltip,
+  getArgForEnd,
+  isAbsoluteLine,
+} from '@src/lang/std/sketch'
 import type {
   ConstraintLevel,
   ConstraintType,
@@ -13,7 +17,7 @@ import {
   transformAstSketchLines,
   transformSecondarySketchLinesTagFirst,
 } from '@src/lang/std/sketchcombos'
-import { findKwArg, topLevelRange } from '@src/lang/util'
+import { findAngleLengthPair, findKwArg, topLevelRange } from '@src/lang/util'
 import type { Expr, Program } from '@src/lang/wasm'
 import { assertParse, initPromise, recast } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/lib/selections'
@@ -93,7 +97,7 @@ function getConstraintTypeFromSourceHelper(
         )
       }
       const args = arg.elements as [Expr, Expr]
-      const fnName = expr.callee.name as ToolTip
+      const fnName = expr.callee.name.name as ToolTip
       return getConstraintType(args, fnName, false)
     }
     case 'CallExpressionKw': {
@@ -104,7 +108,7 @@ function getConstraintTypeFromSourceHelper(
         return new Error("couldn't find either end or endAbsolute in KW call")
       }
       const isAbsolute = endAbsolute ? true : false
-      const fnName = fnNameToTooltip(allLabels(expr), expr.callee.name)
+      const fnName = fnNameToTooltip(allLabels(expr), expr.callee.name.name)
       if (err(fnName)) {
         return fnName
       }

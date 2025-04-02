@@ -5,11 +5,16 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
 
 import {
+  ARG_ANGLE,
   ARG_CIRCLE_CENTER,
   ARG_CIRCLE_RADIUS,
   ARG_END,
   ARG_END_ABSOLUTE,
+  ARG_END_ABSOLUTE_X,
+  ARG_END_ABSOLUTE_Y,
   ARG_LENGTH,
+  ARG_LENGTH_X,
+  ARG_LENGTH_Y,
   ARG_TAG,
   DETERMINING_ARGS,
 } from '@src/lang/constants'
@@ -79,7 +84,13 @@ import type {
 } from '@src/lang/wasm'
 import { sketchFromKclValue } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
-import { getAngle, getLength, isArray, roundOff } from '@src/lib/utils'
+import {
+  allLabels,
+  getAngle,
+  getLength,
+  isArray,
+  roundOff,
+} from '@src/lib/utils'
 import type { EdgeCutInfo } from '@src/machines/modelingMachine'
 
 const STRAIGHT_SEGMENT_ERR = new Error(

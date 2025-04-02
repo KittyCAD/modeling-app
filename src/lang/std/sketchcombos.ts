@@ -1,16 +1,16 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
+  ARG_ANGLE,
   ARG_END,
   ARG_END_ABSOLUTE,
-  ARG_LENGTH,
-  ARG_TAG,
-  ARG_ANGLE,
-  DETERMINING_ARGS,
   ARG_END_ABSOLUTE_X,
   ARG_END_ABSOLUTE_Y,
+  ARG_LENGTH,
   ARG_LENGTH_X,
   ARG_LENGTH_Y,
+  ARG_TAG,
+  DETERMINING_ARGS,
 } from '@src/lang/constants'
 import {
   createArrayExpression,
@@ -34,6 +34,7 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   createFirstArg,
   fnNameToTooltip,
+  getAngledLine,
   getArgForEnd,
   getCircle,
   getConstraintInfo,
@@ -73,7 +74,13 @@ import type {
 import { sketchFromKclValue } from '@src/lang/wasm'
 import type { Selections } from '@src/lib/selections'
 import { cleanErrs, err } from '@src/lib/trap'
-import { getAngle, isArray, normaliseAngle, roundOff } from '@src/lib/utils'
+import {
+  allLabels,
+  getAngle,
+  isArray,
+  normaliseAngle,
+  roundOff,
+} from '@src/lib/utils'
 
 export type LineInputsType =
   | 'xAbsolute'
@@ -363,17 +370,17 @@ type TransformMap = {
 
 const xyLineSetLength =
   (xOrY: 'xLine' | 'yLine', referenceSeg = false): CreateStdLibSketchCallExpr =>
-    ({ referenceSegName, tag, forceValueUsedInTransform, rawArgs: args }) => {
-      const segRef = createSegLen(referenceSegName)
-      const lineVal = forceValueUsedInTransform
-        ? forceValueUsedInTransform
-        : referenceSeg
-          ? segRef
-          : args[0].expr
-      const literalArg = asNum(args[0].expr.value)
-      if (err(literalArg)) return literalArg
-      return createCallWrapper(xOrY, lineVal, tag, literalArg)
-    }
+  ({ referenceSegName, tag, forceValueUsedInTransform, rawArgs: args }) => {
+    const segRef = createSegLen(referenceSegName)
+    const lineVal = forceValueUsedInTransform
+      ? forceValueUsedInTransform
+      : referenceSeg
+        ? segRef
+        : args[0].expr
+    const literalArg = asNum(args[0].expr.value)
+    if (err(literalArg)) return literalArg
+    return createCallWrapper(xOrY, lineVal, tag, literalArg)
+  }
 
 type AngLenNone = 'ang' | 'len' | 'none'
 const basicAngledLineCreateNode =
@@ -382,49 +389,49 @@ const basicAngledLineCreateNode =
     valToForce: AngLenNone = 'none',
     varValToUse: AngLenNone = 'none'
   ): CreateStdLibSketchCallExpr =>
-    ({
-      referenceSegName,
-      tag,
-      forceValueUsedInTransform,
-      inputs,
-      rawArgs: args,
-      referencedSegment: path,
-    }) => {
-      const refAng = path ? getAngle(path?.from, path?.to) : 0
-      const argValue = asNum(args[0].expr.value)
-      if (err(argValue)) return argValue
-      const nonForcedAng =
-        varValToUse === 'ang'
-          ? inputs[0].expr
-          : referenceSeg === 'ang'
-            ? getClosesAngleDirection(
+  ({
+    referenceSegName,
+    tag,
+    forceValueUsedInTransform,
+    inputs,
+    rawArgs: args,
+    referencedSegment: path,
+  }) => {
+    const refAng = path ? getAngle(path?.from, path?.to) : 0
+    const argValue = asNum(args[0].expr.value)
+    if (err(argValue)) return argValue
+    const nonForcedAng =
+      varValToUse === 'ang'
+        ? inputs[0].expr
+        : referenceSeg === 'ang'
+          ? getClosesAngleDirection(
               argValue,
               refAng,
               createSegAngle(referenceSegName)
             )
-            : args[0].expr
-      const nonForcedLen =
-        varValToUse === 'len'
-          ? inputs[1].expr
-          : referenceSeg === 'len'
-            ? createSegLen(referenceSegName)
-            : args[1].expr
-      const shouldForceAng = valToForce === 'ang' && forceValueUsedInTransform
-      const shouldForceLen = valToForce === 'len' && forceValueUsedInTransform
-      const literalArg = asNum(
-        valToForce === 'ang' ? args[0].expr.value : args[1].expr.value
-      )
-      if (err(literalArg)) return literalArg
-      return createCallWrapper(
-        'angledLine',
-        [
-          shouldForceAng ? forceValueUsedInTransform : nonForcedAng,
-          shouldForceLen ? forceValueUsedInTransform : nonForcedLen,
-        ],
-        tag,
-        literalArg
-      )
-    }
+          : args[0].expr
+    const nonForcedLen =
+      varValToUse === 'len'
+        ? inputs[1].expr
+        : referenceSeg === 'len'
+          ? createSegLen(referenceSegName)
+          : args[1].expr
+    const shouldForceAng = valToForce === 'ang' && forceValueUsedInTransform
+    const shouldForceLen = valToForce === 'len' && forceValueUsedInTransform
+    const literalArg = asNum(
+      valToForce === 'ang' ? args[0].expr.value : args[1].expr.value
+    )
+    if (err(literalArg)) return literalArg
+    return createCallWrapper(
+      'angledLine',
+      [
+        shouldForceAng ? forceValueUsedInTransform : nonForcedAng,
+        shouldForceLen ? forceValueUsedInTransform : nonForcedLen,
+      ],
+      tag,
+      literalArg
+    )
+  }
 const angledLineAngleCreateNode: CreateStdLibSketchCallExpr = ({
   referenceSegName,
   inputs,
@@ -495,57 +502,57 @@ function getClosesAngleDirection(
 
 const setHorzVertDistanceCreateNode =
   (xOrY: 'x' | 'y', index = xOrY === 'x' ? 0 : 1): CreateStdLibSketchCallExpr =>
-    ({
-      referenceSegName,
-      tag,
-      forceValueUsedInTransform,
-      rawArgs: args,
-      referencedSegment,
-    }) => {
-      const refNum = referencedSegment?.to?.[index]
-      const literalArg = asNum(args?.[index].expr.value)
-      if (isUndef(refNum) || err(literalArg)) return REF_NUM_ERR
+  ({
+    referenceSegName,
+    tag,
+    forceValueUsedInTransform,
+    rawArgs: args,
+    referencedSegment,
+  }) => {
+    const refNum = referencedSegment?.to?.[index]
+    const literalArg = asNum(args?.[index].expr.value)
+    if (isUndef(refNum) || err(literalArg)) return REF_NUM_ERR
 
-      const valueUsedInTransform = roundOff(literalArg - refNum, 2)
-      let finalValue: Node<Expr> = createBinaryExpressionWithUnary([
-        createSegEnd(referenceSegName, !index),
-        forceValueUsedInTransform || createLiteral(valueUsedInTransform),
-      ])
-      if (isValueZero(forceValueUsedInTransform)) {
-        finalValue = createSegEnd(referenceSegName, !index)
-      }
-      return createCallWrapper(
-        'lineTo',
-        !index ? [finalValue, args[1].expr] : [args[0].expr, finalValue],
-        tag,
-        valueUsedInTransform
-      )
+    const valueUsedInTransform = roundOff(literalArg - refNum, 2)
+    let finalValue: Node<Expr> = createBinaryExpressionWithUnary([
+      createSegEnd(referenceSegName, !index),
+      forceValueUsedInTransform || createLiteral(valueUsedInTransform),
+    ])
+    if (isValueZero(forceValueUsedInTransform)) {
+      finalValue = createSegEnd(referenceSegName, !index)
     }
+    return createCallWrapper(
+      'lineTo',
+      !index ? [finalValue, args[1].expr] : [args[0].expr, finalValue],
+      tag,
+      valueUsedInTransform
+    )
+  }
 const setHorzVertDistanceForAngleLineCreateNode =
   (xOrY: 'x' | 'y', index = xOrY === 'x' ? 0 : 1): CreateStdLibSketchCallExpr =>
-    ({
-      referenceSegName,
+  ({
+    referenceSegName,
+    tag,
+    forceValueUsedInTransform,
+    inputs,
+    rawArgs: args,
+    referencedSegment,
+  }) => {
+    const refNum = referencedSegment?.to?.[index]
+    const literalArg = asNum(args?.[1].expr.value)
+    if (isUndef(refNum) || err(literalArg)) return REF_NUM_ERR
+    const valueUsedInTransform = roundOff(literalArg - refNum, 2)
+    const binExp = createBinaryExpressionWithUnary([
+      createSegEnd(referenceSegName, !index),
+      forceValueUsedInTransform || createLiteral(valueUsedInTransform),
+    ])
+    return createCallWrapper(
+      xOrY === 'x' ? 'angledLineToX' : 'angledLineToY',
+      [inputs[0].expr, binExp],
       tag,
-      forceValueUsedInTransform,
-      inputs,
-      rawArgs: args,
-      referencedSegment,
-    }) => {
-      const refNum = referencedSegment?.to?.[index]
-      const literalArg = asNum(args?.[1].expr.value)
-      if (isUndef(refNum) || err(literalArg)) return REF_NUM_ERR
-      const valueUsedInTransform = roundOff(literalArg - refNum, 2)
-      const binExp = createBinaryExpressionWithUnary([
-        createSegEnd(referenceSegName, !index),
-        forceValueUsedInTransform || createLiteral(valueUsedInTransform),
-      ])
-      return createCallWrapper(
-        xOrY === 'x' ? 'angledLineToX' : 'angledLineToY',
-        [inputs[0].expr, binExp],
-        tag,
-        valueUsedInTransform
-      )
-    }
+      valueUsedInTransform
+    )
+  }
 
 const setAbsDistanceCreateNode =
   (
@@ -553,94 +560,94 @@ const setAbsDistanceCreateNode =
     isXOrYLine = false,
     index = xOrY === 'x' ? 0 : 1
   ): CreateStdLibSketchCallExpr =>
-    ({ tag, forceValueUsedInTransform, rawArgs: args }) => {
-      const literalArg = asNum(args?.[index].expr.value)
-      if (err(literalArg)) return literalArg
-      const valueUsedInTransform = roundOff(literalArg, 2)
-      const val = forceValueUsedInTransform || createLiteral(valueUsedInTransform)
-      if (isXOrYLine) {
-        return createCallWrapper(
-          xOrY === 'x' ? 'xLineTo' : 'yLineTo',
-          val,
-          tag,
-          valueUsedInTransform
-        )
-      }
+  ({ tag, forceValueUsedInTransform, rawArgs: args }) => {
+    const literalArg = asNum(args?.[index].expr.value)
+    if (err(literalArg)) return literalArg
+    const valueUsedInTransform = roundOff(literalArg, 2)
+    const val = forceValueUsedInTransform || createLiteral(valueUsedInTransform)
+    if (isXOrYLine) {
       return createCallWrapper(
-        'lineTo',
-        !index ? [val, args[1].expr] : [args[0].expr, val],
+        xOrY === 'x' ? 'xLineTo' : 'yLineTo',
+        val,
         tag,
         valueUsedInTransform
       )
     }
+    return createCallWrapper(
+      'lineTo',
+      !index ? [val, args[1].expr] : [args[0].expr, val],
+      tag,
+      valueUsedInTransform
+    )
+  }
 const setAbsDistanceForAngleLineCreateNode =
   (xOrY: 'x' | 'y'): CreateStdLibSketchCallExpr =>
-    ({ tag, forceValueUsedInTransform, inputs, rawArgs: args }) => {
-      const literalArg = asNum(args?.[1].expr.value)
-      if (err(literalArg)) return literalArg
-      const valueUsedInTransform = roundOff(literalArg, 2)
-      const val = forceValueUsedInTransform || createLiteral(valueUsedInTransform)
-      return createCallWrapper(
-        xOrY === 'x' ? 'angledLineToX' : 'angledLineToY',
-        [inputs[0].expr, val],
-        tag,
-        valueUsedInTransform
-      )
-    }
+  ({ tag, forceValueUsedInTransform, inputs, rawArgs: args }) => {
+    const literalArg = asNum(args?.[1].expr.value)
+    if (err(literalArg)) return literalArg
+    const valueUsedInTransform = roundOff(literalArg, 2)
+    const val = forceValueUsedInTransform || createLiteral(valueUsedInTransform)
+    return createCallWrapper(
+      xOrY === 'x' ? 'angledLineToX' : 'angledLineToY',
+      [inputs[0].expr, val],
+      tag,
+      valueUsedInTransform
+    )
+  }
 
 const setHorVertDistanceForXYLines =
   (xOrY: 'x' | 'y'): CreateStdLibSketchCallExpr =>
-    ({
-      referenceSegName,
+  ({
+    referenceSegName,
+    tag,
+    forceValueUsedInTransform,
+    rawArgs: args,
+    referencedSegment,
+  }) => {
+    const index = xOrY === 'x' ? 0 : 1
+    const refNum = referencedSegment?.to?.[index]
+    const literalArg = asNum(args?.[index].expr.value)
+    if (isUndef(refNum) || err(literalArg)) return REF_NUM_ERR
+    const valueUsedInTransform = roundOff(literalArg - refNum, 2)
+    const makeBinExp = createBinaryExpressionWithUnary([
+      createSegEnd(referenceSegName, xOrY === 'x'),
+      forceValueUsedInTransform || createLiteral(valueUsedInTransform),
+    ])
+    return createCallWrapper(
+      xOrY === 'x' ? 'xLineTo' : 'yLineTo',
+      makeBinExp,
       tag,
-      forceValueUsedInTransform,
-      rawArgs: args,
-      referencedSegment,
-    }) => {
-      const index = xOrY === 'x' ? 0 : 1
-      const refNum = referencedSegment?.to?.[index]
-      const literalArg = asNum(args?.[index].expr.value)
-      if (isUndef(refNum) || err(literalArg)) return REF_NUM_ERR
-      const valueUsedInTransform = roundOff(literalArg - refNum, 2)
-      const makeBinExp = createBinaryExpressionWithUnary([
-        createSegEnd(referenceSegName, xOrY === 'x'),
-        forceValueUsedInTransform || createLiteral(valueUsedInTransform),
-      ])
-      return createCallWrapper(
-        xOrY === 'x' ? 'xLineTo' : 'yLineTo',
-        makeBinExp,
-        tag,
-        valueUsedInTransform
-      )
-    }
+      valueUsedInTransform
+    )
+  }
 
 const setHorzVertDistanceConstraintLineCreateNode =
   (isX: boolean): CreateStdLibSketchCallExpr =>
-    ({ referenceSegName, tag, inputs, rawArgs: args, referencedSegment }) => {
-      let varVal = isX ? inputs[1].expr : inputs[0].expr
-      varVal = isExprBinaryPart(varVal) ? varVal : createLiteral(0)
-      const varValBinExp = createBinaryExpressionWithUnary([
-        createLastSeg(!isX),
-        varVal,
-      ])
+  ({ referenceSegName, tag, inputs, rawArgs: args, referencedSegment }) => {
+    let varVal = isX ? inputs[1].expr : inputs[0].expr
+    varVal = isExprBinaryPart(varVal) ? varVal : createLiteral(0)
+    const varValBinExp = createBinaryExpressionWithUnary([
+      createLastSeg(!isX),
+      varVal,
+    ])
 
-      const makeBinExp = (index: 0 | 1) => {
-        const arg = asNum(args?.[index].expr.value)
-        const refNum = referencedSegment?.to?.[index]
-        if (err(arg) || isUndef(refNum)) return REF_NUM_ERR
-        return createBinaryExpressionWithUnary([
-          createSegEnd(referenceSegName, isX),
-          createLiteral(roundOff(arg - refNum, 2)),
-        ])
-      }
-      const binExpr = isX ? makeBinExp(0) : makeBinExp(1)
-      if (err(binExpr)) return new Error('Invalid value for distance')
-      return createCallWrapper(
-        'lineTo',
-        isX ? [binExpr, varValBinExp] : [varValBinExp, binExpr],
-        tag
-      )
+    const makeBinExp = (index: 0 | 1) => {
+      const arg = asNum(args?.[index].expr.value)
+      const refNum = referencedSegment?.to?.[index]
+      if (err(arg) || isUndef(refNum)) return REF_NUM_ERR
+      return createBinaryExpressionWithUnary([
+        createSegEnd(referenceSegName, isX),
+        createLiteral(roundOff(arg - refNum, 2)),
+      ])
     }
+    const binExpr = isX ? makeBinExp(0) : makeBinExp(1)
+    if (err(binExpr)) return new Error('Invalid value for distance')
+    return createCallWrapper(
+      'lineTo',
+      isX ? [binExpr, varValBinExp] : [varValBinExp, binExpr],
+      tag
+    )
+  }
 
 const setAngledIntersectLineForLines: CreateStdLibSketchCallExpr = ({
   referenceSegName,
@@ -693,48 +700,48 @@ const setAngledIntersectForAngledLines: CreateStdLibSketchCallExpr = ({
 
 const setAngleBetweenCreateNode =
   (tranformToType: 'none' | 'xAbs' | 'yAbs'): CreateStdLibSketchCallExpr =>
-    ({
-      referenceSegName,
-      tag,
-      forceValueUsedInTransform,
-      inputs,
-      rawArgs: args,
-      referencedSegment,
-    }) => {
-      const refAngle = referencedSegment
-        ? getAngle(referencedSegment?.from, referencedSegment?.to)
-        : 0
-      const val = asNum(args[0].expr.value)
-      if (err(val)) return val
-      let valueUsedInTransform = roundOff(normaliseAngle(val - refAngle))
-      let firstHalfValue = createSegAngle(referenceSegName)
-      if (Math.abs(valueUsedInTransform) > 90) {
-        firstHalfValue = createBinaryExpression([
-          firstHalfValue,
-          '+',
-          createName(['turns'], 'HALF_TURN'),
-        ])
-        valueUsedInTransform = normaliseAngle(valueUsedInTransform - 180)
-      }
-      const binExp = createBinaryExpressionWithUnary([
+  ({
+    referenceSegName,
+    tag,
+    forceValueUsedInTransform,
+    inputs,
+    rawArgs: args,
+    referencedSegment,
+  }) => {
+    const refAngle = referencedSegment
+      ? getAngle(referencedSegment?.from, referencedSegment?.to)
+      : 0
+    const val = asNum(args[0].expr.value)
+    if (err(val)) return val
+    let valueUsedInTransform = roundOff(normaliseAngle(val - refAngle))
+    let firstHalfValue = createSegAngle(referenceSegName)
+    if (Math.abs(valueUsedInTransform) > 90) {
+      firstHalfValue = createBinaryExpression([
         firstHalfValue,
-        forceValueUsedInTransform || createLiteral(valueUsedInTransform),
+        '+',
+        createName(['turns'], 'HALF_TURN'),
       ])
-      return createCallWrapper(
-        tranformToType === 'none'
-          ? 'angledLine'
-          : tranformToType === 'xAbs'
-            ? 'angledLineToX'
-            : 'angledLineToY',
-        tranformToType === 'none'
-          ? [binExp, args[1].expr]
-          : tranformToType === 'xAbs'
-            ? [binExp, inputs[0].expr]
-            : [binExp, inputs[1].expr],
-        tag,
-        valueUsedInTransform
-      )
+      valueUsedInTransform = normaliseAngle(valueUsedInTransform - 180)
     }
+    const binExp = createBinaryExpressionWithUnary([
+      firstHalfValue,
+      forceValueUsedInTransform || createLiteral(valueUsedInTransform),
+    ])
+    return createCallWrapper(
+      tranformToType === 'none'
+        ? 'angledLine'
+        : tranformToType === 'xAbs'
+          ? 'angledLineToX'
+          : 'angledLineToY',
+      tranformToType === 'none'
+        ? [binExp, args[1].expr]
+        : tranformToType === 'xAbs'
+          ? [binExp, inputs[0].expr]
+          : [binExp, inputs[1].expr],
+      tag,
+      valueUsedInTransform
+    )
+  }
 
 /**
   IMO, the transformMap is a nested structure that maps like this:
@@ -1548,7 +1555,7 @@ export function removeSingleConstraint({
               rawValue.type === 'arrayInObject' &&
               rawValue.key === currentArg.key &&
               rawValue.index ===
-              (currentArg.type === 'arrayInObject' ? currentArg.index : -1)
+                (currentArg.type === 'arrayInObject' ? currentArg.index : -1)
           )
           const rawLiteralObjProp = rawArgs.find(
             (rawValue) =>
@@ -1654,10 +1661,10 @@ function getTransformMapPath(
   constraintType: ConstraintType
 ):
   | {
-    toolTip: ToolTip
-    lineInputType: LineInputsType | 'free'
-    constraintType: ConstraintType
-  }
+      toolTip: ToolTip
+      lineInputType: LineInputsType | 'free'
+      constraintType: ConstraintType
+    }
   | false {
   const name = sketchFnExp.callee.name.name as ToolTip
   if (!toolTips.includes(name)) {
@@ -1711,10 +1718,10 @@ function getTransformMapPathKw(
   constraintType: ConstraintType
 ):
   | {
-    toolTip: ToolTip
-    lineInputType: LineInputsType | 'free'
-    constraintType: ConstraintType
-  }
+      toolTip: ToolTip
+      lineInputType: LineInputsType | 'free'
+      constraintType: ConstraintType
+    }
   | false {
   const name = sketchFnExp.callee.name.name as ToolTip
   if (name === 'circleThreePoint') {
@@ -1916,14 +1923,14 @@ export function transformSecondarySketchLinesTagFirst({
   forceValueUsedInTransform?: BinaryPart
 }):
   | {
-    modifiedAst: Node<Program>
-    valueUsedInTransform?: number
-    pathToNodeMap: PathToNodeMap
-    tagInfo: {
-      tag: string
-      isTagExisting: boolean
+      modifiedAst: Node<Program>
+      valueUsedInTransform?: number
+      pathToNodeMap: PathToNodeMap
+      tagInfo: {
+        tag: string
+        isTagExisting: boolean
+      }
     }
-  }
   | Error {
   // let node = structuredClone(ast)
 
@@ -1995,10 +2002,10 @@ export function transformAstSketchLines({
   forceValueUsedInTransform?: BinaryPart
 }):
   | {
-    modifiedAst: Node<Program>
-    valueUsedInTransform?: number
-    pathToNodeMap: PathToNodeMap
-  }
+      modifiedAst: Node<Program>
+      valueUsedInTransform?: number
+      pathToNodeMap: PathToNodeMap
+    }
   | Error {
   // deep clone since we are mutating in a loop, of which any could fail
   let node = structuredClone(ast)
@@ -2143,25 +2150,25 @@ export function transformAstSketchLines({
       segmentInput:
         seg.type === 'Circle'
           ? {
-            type: 'arc-segment',
-            center: seg.center,
-            radius: seg.radius,
-            from,
-            to: from, // For a full circle, to is the same as from
-            ccw: true, // Default to counter-clockwise for circles
-          }
+              type: 'arc-segment',
+              center: seg.center,
+              radius: seg.radius,
+              from,
+              to: from, // For a full circle, to is the same as from
+              ccw: true, // Default to counter-clockwise for circles
+            }
           : seg.type === 'CircleThreePoint' || seg.type === 'ArcThreePoint'
             ? {
-              type: 'circle-three-point-segment',
-              p1: seg.p1,
-              p2: seg.p2,
-              p3: seg.p3,
-            }
+                type: 'circle-three-point-segment',
+                p1: seg.p1,
+                p2: seg.p2,
+                p3: seg.p3,
+              }
             : {
-              type: 'straight-segment',
-              to,
-              from,
-            },
+                type: 'straight-segment',
+                to,
+                from,
+              },
 
       replaceExistingCallback: (rawArgs) =>
         callBack({
