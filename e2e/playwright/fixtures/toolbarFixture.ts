@@ -7,10 +7,12 @@ import {
   checkIfPaneIsOpen,
   closePane,
   doAndWaitForImageDiff,
-  type LengthUnitLabel,
   openPane,
 } from '@e2e/playwright/test-utils'
 import { expect } from '@e2e/playwright/zoo-test'
+import { type baseUnitLabels } from '@src/lib/settings/settingsTypes'
+
+type LengthUnitLabel = (typeof baseUnitLabels)[keyof typeof baseUnitLabels]
 
 export class ToolbarFixture {
   public page: Page
