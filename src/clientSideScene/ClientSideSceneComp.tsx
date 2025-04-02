@@ -28,6 +28,7 @@ import {
 import { findUsesOfTagInPipe, getNodeFromPath } from '@src/lang/queryAst'
 import { getConstraintInfo, getConstraintInfoKw } from '@src/lang/std/sketch'
 import type { ConstrainInfo } from '@src/lang/std/stdTypes'
+import { topLevelRange } from '@src/lang/util'
 import type {
   CallExpression,
   CallExpressionKw,
@@ -35,13 +36,7 @@ import type {
   PathToNode,
   Program,
 } from '@src/lang/wasm'
-import {
-  defaultSourceRange,
-  parse,
-  recast,
-  resultIsOk,
-  topLevelRange,
-} from '@src/lang/wasm'
+import { defaultSourceRange, parse, recast, resultIsOk } from '@src/lang/wasm'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import {
   codeManager,

@@ -31,7 +31,6 @@ import {
   jsAppSettings,
   parse,
   recast,
-  topLevelRange,
 } from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
@@ -48,6 +47,7 @@ import {
 } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { deferExecution, isOverlap, uuidv4 } from '@src/lib/utils'
+import { topLevelRange } from './util'
 
 interface ExecuteArgs {
   ast?: Node<Program>

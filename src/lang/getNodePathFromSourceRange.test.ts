@@ -7,8 +7,9 @@ import {
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Parameter } from '@src/lang/wasm'
-import { assertParse, initPromise, topLevelRange } from '@src/lang/wasm'
+import { assertParse, initPromise } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
+import { topLevelRange } from './util'
 
 beforeAll(async () => {
   await initPromise

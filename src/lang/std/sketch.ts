@@ -54,6 +54,7 @@ import {
   findKwArgAny,
   findKwArgAnyIndex,
   findKwArgWithIndex,
+  topLevelRange,
 } from '@src/lang/util'
 import type {
   CallExpression,
@@ -69,7 +70,7 @@ import type {
   VariableDeclarator,
   VariableMap,
 } from '@src/lang/wasm'
-import { sketchFromKclValue, topLevelRange } from '@src/lang/wasm'
+import { sketchFromKclValue } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 import { getAngle, getLength, isArray, roundOff } from '@src/lib/utils'
 import type { EdgeCutInfo } from '@src/machines/modelingMachine'

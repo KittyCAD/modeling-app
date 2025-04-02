@@ -130,6 +130,7 @@ import {
   updateStartProfileAtArgs,
 } from '@src/lang/std/sketch'
 import type { SegmentInputs } from '@src/lang/std/stdTypes'
+import { topLevelRange } from '@src/lang/util'
 import type { PathToNode, VariableMap } from '@src/lang/wasm'
 import {
   defaultSourceRange,
@@ -138,7 +139,6 @@ import {
   resultIsOk,
   sketchFromKclValue,
   sourceRangeFromRust,
-  topLevelRange,
 } from '@src/lang/wasm'
 import { EXECUTION_TYPE_MOCK } from '@src/lib/constants'
 import {

@@ -17,9 +17,9 @@ import {
   transformAstSketchLines,
   transformSecondarySketchLinesTagFirst,
 } from '@src/lang/std/sketchcombos'
-import { findKwArg } from '@src/lang/util'
+import { findKwArg, topLevelRange } from '@src/lang/util'
 import type { Expr, Program } from '@src/lang/wasm'
-import { assertParse, initPromise, recast, topLevelRange } from '@src/lang/wasm'
+import { assertParse, initPromise, recast } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/lib/selections'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'

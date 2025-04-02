@@ -14,6 +14,23 @@ import type {
 import type { Selections } from '@src/lib/selections'
 import { isArray, isOverlap } from '@src/lib/utils'
 
+import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
+
+/**
+ * Create a SourceRange for the top-level module.
+ */
+export function topLevelRange(start: number, end: number): SourceRange {
+  return [start, end, 0]
+}
+
+/**
+ * Returns true if this source range is from the file being executed.  Returns
+ * false if it's from a file that was imported.
+ */
+export function isTopLevelModule(range: SourceRange): boolean {
+  return range[2] === 0
+}
+
 /**
  * Updates pathToNode body indices to account for the insertion of an expression
  * PathToNode expression is after the insertion index, that the body index is incremented

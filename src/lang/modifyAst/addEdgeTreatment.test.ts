@@ -17,6 +17,7 @@ import {
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import { topLevelRange } from '@src/lang/util'
 import type {
   CallExpression,
   CallExpressionKw,
@@ -26,7 +27,7 @@ import type {
   SourceRange,
   VariableDeclarator,
 } from '@src/lang/wasm'
-import { assertParse, initPromise, recast, topLevelRange } from '@src/lang/wasm'
+import { assertParse, initPromise, recast } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/lib/selections'
 import {
   codeManager,

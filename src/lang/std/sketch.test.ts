@@ -12,8 +12,9 @@ import {
   getXComponent,
   getYComponent,
 } from '@src/lang/std/sketch'
+import { topLevelRange } from '@src/lang/util'
 import type { CallExpression, CallExpressionKw } from '@src/lang/wasm'
-import { assertParse, initPromise, recast, topLevelRange } from '@src/lang/wasm'
+import { assertParse, initPromise, recast } from '@src/lang/wasm'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 

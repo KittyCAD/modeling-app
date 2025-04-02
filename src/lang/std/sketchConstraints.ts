@@ -4,7 +4,7 @@ import type { ToolTip } from '@src/lang/langHelpers'
 import { toolTips } from '@src/lang/langHelpers'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { DETERMINING_ARGS } from '@src/lang/std/sketch'
-import { findKwArgAny } from '@src/lang/util'
+import { findKwArgAny, topLevelRange } from '@src/lang/util'
 import type {
   CallExpression,
   CallExpressionKw,
@@ -17,7 +17,6 @@ import type {
   SourceRange,
   VariableDeclarator,
 } from '@src/lang/wasm'
-import { topLevelRange } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 
 export function getSketchSegmentFromPathToNode(

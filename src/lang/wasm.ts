@@ -29,7 +29,10 @@ import type { UnitLen } from '@rust/kcl-lib/bindings/UnitLen'
 
 import { KCLError } from '@src/lang/errors'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import type { Artifact } from '@src/lang/std/artifactGraph'
+import {
+  defaultArtifactGraph,
+  type Artifact,
+} from '@src/lang/std/artifactGraph'
 import type { Coords2d } from '@src/lang/std/sketch'
 import {
   DEFAULT_DEFAULT_ANGLE_UNIT,
@@ -149,21 +152,6 @@ export function sourceRangeFromRust(s: SourceRange): SourceRange {
  */
 export function defaultSourceRange(): SourceRange {
   return [0, 0, 0]
-}
-
-/**
- * Create a SourceRange for the top-level module.
- */
-export function topLevelRange(start: number, end: number): SourceRange {
-  return [start, end, 0]
-}
-
-/**
- * Returns true if this source range is from the file being executed.  Returns
- * false if it's from a file that was imported.
- */
-export function isTopLevelModule(range: SourceRange): boolean {
-  return range[2] === 0
 }
 
 function firstSourceRange(error: RustKclError): SourceRange {
@@ -387,10 +375,6 @@ function rustArtifactGraphToMap(
   }
 
   return map
-}
-
-export function defaultArtifactGraph(): ArtifactGraph {
-  return new Map()
 }
 
 // TODO: In the future, make the parameter be a KclValue.

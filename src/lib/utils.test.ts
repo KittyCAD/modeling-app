@@ -1,5 +1,5 @@
-import type { SourceRange } from '@src/lang/wasm'
-import { topLevelRange } from '@src/lang/wasm'
+import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
+import { topLevelRange } from '@src/lang/util'
 import {
   hasDigitsLeftOfDecimal,
   hasLeadingZero,

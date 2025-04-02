@@ -25,9 +25,10 @@ import type { Artifact } from '@src/lang/std/artifactGraph'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import type { SimplifiedArgDetails } from '@src/lang/std/stdTypes'
 import type { Identifier, Literal, LiteralValue } from '@src/lang/wasm'
-import { assertParse, initPromise, recast, topLevelRange } from '@src/lang/wasm'
+import { assertParse, initPromise, recast } from '@src/lang/wasm'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
+import { topLevelRange } from './util'
 
 beforeAll(async () => {
   await initPromise

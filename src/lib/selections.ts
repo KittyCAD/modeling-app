@@ -16,7 +16,7 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact, ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
-import { isCursorInSketchCommandRange } from '@src/lang/util'
+import { isCursorInSketchCommandRange, topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
   CallExpression,
@@ -25,7 +25,7 @@ import type {
   Program,
   SourceRange,
 } from '@src/lang/wasm'
-import { defaultSourceRange, topLevelRange } from '@src/lang/wasm'
+import { defaultSourceRange } from '@src/lang/wasm'
 import type { ArtifactEntry, ArtifactIndex } from '@src/lib/artifactIndex'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import type { DefaultPlaneStr } from '@src/lib/planes'

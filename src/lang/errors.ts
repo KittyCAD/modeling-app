@@ -10,12 +10,11 @@ import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 
-import type {
-  ArtifactCommand,
-  ArtifactGraph,
-  SourceRange,
-} from '@src/lang/wasm'
-import { defaultArtifactGraph, isTopLevelModule } from '@src/lang/wasm'
+import type { ArtifactCommand } from '@rust/kcl-lib/bindings/Artifact'
+import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
+import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
+import { isTopLevelModule } from '@src/lang/util'
+import type { ArtifactGraph } from '@src/lang/wasm'
 
 type ExtractKind<T> = T extends { kind: infer K } ? K : never
 export class KCLError extends Error {

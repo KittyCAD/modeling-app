@@ -33,6 +33,10 @@ import { err } from '@src/lib/trap'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from '@src/lang/wasm'
 
+export function defaultArtifactGraph(): ArtifactGraph {
+  return new Map()
+}
+
 interface BaseArtifact {
   id: ArtifactId
 }

@@ -13,7 +13,7 @@ import {
   getConstraintLevelFromSourceRange,
   getConstraintType,
 } from '@src/lang/std/sketchcombos'
-import { findKwArg } from '@src/lang/util'
+import { findKwArg, topLevelRange } from '@src/lang/util'
 import type {
   ArrayExpression,
   ArtifactGraph,
@@ -40,7 +40,6 @@ import {
   recast,
   sketchFromKclValue,
   sketchFromKclValueOptional,
-  topLevelRange,
   unitAngToUnitAngle,
   unitLenToUnitLength,
 } from '@src/lang/wasm'

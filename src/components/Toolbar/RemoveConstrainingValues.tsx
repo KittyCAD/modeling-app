@@ -9,8 +9,8 @@ import {
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
 import type { TransformInfo } from '@src/lang/std/stdTypes'
+import { topLevelRange } from '@src/lang/util'
 import type { Expr, PathToNode, Program } from '@src/lang/wasm'
-import { topLevelRange } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/lib/selections'
 import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
