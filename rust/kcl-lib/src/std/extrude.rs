@@ -32,8 +32,20 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let length = args.get_kw_arg("length")?;
     let tag_start = args.get_kw_arg_opt("tagStart")?;
     let tag_end = args.get_kw_arg_opt("tagEnd")?;
+    let symmetric = args.get_kw_arg_opt("symmetric")?;
+    let bidirectional_distance = args.get_kw_arg_opt("bidirectional")?;
 
-    let result = inner_extrude(sketches, length, tag_start, tag_end, exec_state, args).await?;
+    let result = inner_extrude(
+        sketches,
+        length,
+        tag_start,
+        tag_end,
+        symmetric,
+        bidirectional_distance,
+        exec_state,
+        args,
+    )
+    .await?;
 
     Ok(result.into())
 }
@@ -97,6 +109,8 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         length = { docs = "How far to extrude the given sketches"},
         tag_start = { docs = "A named tag for the face at the start of the extrusion, i.e. the original sketch" },
         tag_end = { docs = "A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch" },
+        symmetric = { docs = ""},
+        bidirectional_distance = { docs = ""},
     }
 }]
 #[allow(clippy::too_many_arguments)]
@@ -105,11 +119,19 @@ async fn inner_extrude(
     length: f64,
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
+    symmetric: Option<bool>,
+    bidirectional_distance: Option<f64>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     // Extrude the element(s).
     let mut solids = Vec::new();
+    let bidirection = if bidirectional_distance.is_some() {
+        Some(LengthUnit(bidirectional_distance.unwrap()))
+    } else {
+        None
+    };
+
     for sketch in &sketches {
         let id = exec_state.next_uuid();
         args.batch_modeling_cmds(&sketch.build_sketch_mode_cmds(
@@ -120,6 +142,8 @@ async fn inner_extrude(
                     target: sketch.id.into(),
                     distance: LengthUnit(length),
                     faces: Default::default(),
+                    symmetric: symmetric.unwrap_or_default(),
+                    bidirectional_distance: bidirection,
                 }),
             },
         ))

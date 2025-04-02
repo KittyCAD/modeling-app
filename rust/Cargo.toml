@@ -60,6 +60,6 @@ lossy_float_literal = "warn"
 result_large_err = "allow"
 
 # Example: how to point modeling-app at a different repo (e.g. a branch or a local clone)
-#[patch.crates-io]
-#kittycad-modeling-cmds = { path = "../../../modeling-api/modeling-cmds" }
+[patch.crates-io]
+kittycad-modeling-cmds = { path = "../../modeling-api/modeling-cmds" }
 #kittycad-modeling-session = { path = "../../../modeling-api/modeling-session" }
