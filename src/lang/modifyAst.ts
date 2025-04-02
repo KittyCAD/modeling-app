@@ -10,9 +10,6 @@ import {
   locateExtrudeDeclarator,
 } from '@src/lang/modifyAst/addEdgeTreatment'
 import {
-  ARG_INDEX_FIELD,
-  LABELED_ARG_FIELD,
-  UNLABELED_ARG,
   findAllPreviousVariables,
   findAllPreviousVariablesPath,
   getBodyIndex,
@@ -22,6 +19,11 @@ import {
   isNodeSafeToReplacePath,
   traverse,
 } from '@src/lang/queryAst'
+import {
+  ARG_INDEX_FIELD,
+  LABELED_ARG_FIELD,
+  UNLABELED_ARG,
+} from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {

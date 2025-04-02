@@ -48,9 +48,7 @@ import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { Reason, err } from '@src/lib/trap'
 import { getAngle, isArray } from '@src/lib/utils'
 
-export const LABELED_ARG_FIELD = 'LabeledArg -> Arg'
-export const UNLABELED_ARG = 'unlabeled first arg'
-export const ARG_INDEX_FIELD = 'arg index'
+import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from './queryAstConstants'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.

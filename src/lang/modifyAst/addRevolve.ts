@@ -12,12 +12,9 @@ import {
   getEdgeTagCall,
   mutateAstWithTagForSketchSegment,
 } from '@src/lang/modifyAst/addEdgeTreatment'
-import {
-  ARG_INDEX_FIELD,
-  LABELED_ARG_FIELD,
-  getNodeFromPath,
-} from '@src/lang/queryAst'
+import { getNodeFromPath } from '@src/lang/queryAst'
 import { getSafeInsertIndex } from '@src/lang/queryAst/getSafeInsertIndex'
+import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type {
   Expr,

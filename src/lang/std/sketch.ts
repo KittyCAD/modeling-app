@@ -24,12 +24,8 @@ import {
   removeKwArgs,
   splitPathAtPipeExpression,
 } from '@src/lang/modifyAst'
-import {
-  ARG_INDEX_FIELD,
-  LABELED_ARG_FIELD,
-  getNodeFromPath,
-  getNodeFromPathCurry,
-} from '@src/lang/queryAst'
+import { getNodeFromPath, getNodeFromPathCurry } from '@src/lang/queryAst'
+import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   isLiteralArrayOrStatic,
