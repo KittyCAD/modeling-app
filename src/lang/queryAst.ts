@@ -50,7 +50,7 @@ import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { Reason, err } from '@src/lib/trap'
 import { getAngle, isArray } from '@src/lib/utils'
 
-import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from './queryAstConstants'
+import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.

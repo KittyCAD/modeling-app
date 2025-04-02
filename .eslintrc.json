@@ -89,7 +89,7 @@
         "patterns": [
           // Restrict all relative imports except for .css files.
           {
-            "group": ["./*/", "../*", "!./*.css", "!../*.css"],
+            "group": ["./*", "../*", "^.$", "!./*.css", "!../*.css"],
             "message": "Use absolute imports instead."
           }
         ]

@@ -16,8 +16,8 @@ import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import { settingsActor } from '@src/machines/appMachine'
+import { onboardingRoutes } from '@src/routes/Onboarding'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
-import { onboardingRoutes } from '.'
 
 export const kbdClasses =
   'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
