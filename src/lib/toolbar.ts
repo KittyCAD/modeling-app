@@ -8,6 +8,7 @@ import {
 } from 'machines/modelingMachine'
 import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
 import { EventFrom, StateFrom } from 'xstate'
+import { createLiteral } from 'lang/modifyAst'
 
 export type ToolbarModeName = 'modeling' | 'sketching'
 
@@ -608,7 +609,22 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'constraint-length',
-          disabled: (state) => !state.matches({ Sketch: 'SketchIdle' }),
+          disabled: (state) =>
+            !(
+              state.matches({ Sketch: 'SketchIdle' }) &&
+              state.can({
+                type: 'Constrain length',
+                data: {
+                  selection: state.context.selectionRanges,
+                  // dummy data is okay for checking if the constrain is possible
+                  length: {
+                    valueAst: createLiteral(1),
+                    valueText: '1',
+                    valueCalculated: '1',
+                  },
+                },
+              })
+            ),
           onClick: () =>
             commandBarActor.send({
               type: 'Find and select command',

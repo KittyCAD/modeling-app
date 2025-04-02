@@ -25,7 +25,7 @@ import {
 } from 'three'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { Expr, PathToNode, Sketch, getTangentialArcToInfo } from 'lang/wasm'
+import { PathToNode, Sketch, getTangentialArcToInfo } from 'lang/wasm'
 import {
   CIRCLE_CENTER_HANDLE,
   CIRCLE_SEGMENT,
@@ -81,12 +81,12 @@ import {
 } from 'machines/modelingMachine'
 import { SegmentInputs } from 'lang/std/stdTypes'
 import { err } from 'lib/trap'
-import { engineCommandManager, sceneInfra } from 'lib/singletons'
-import { Selection, Selections } from 'lib/selections'
+import { sceneInfra } from 'lib/singletons'
+import { Selections } from 'lib/selections'
 import { calculate_circle_from_3_points } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { commandBarActor } from 'machines/commandBarMachine'
-import { getNodeFromPath } from 'lang/queryAst'
 import toast from 'react-hot-toast'
+import { angleLengthInfo } from 'components/Toolbar/angleLengthInfo'
 
 const ANGLE_INDICATOR_RADIUS = 30 // in px
 interface CreateSegmentArgs {
@@ -1704,34 +1704,6 @@ function createLengthIndicator({
       return
     }
 
-    if (engineCommandManager.kclManager !== null) {
-      if (
-        selection.graphSelections &&
-        selection.graphSelections[0] &&
-        selection.graphSelections[0].codeRef
-      ) {
-        const graphSelection = selection.graphSelections[0] as Selection
-        const node = getNodeFromPath<Expr>(
-          engineCommandManager.kclManager.ast,
-          graphSelection.codeRef.pathToNode,
-          ['CallExpressionKw']
-        )
-        if (!err(node)) {
-          const hasEndAbsolute =
-            node.node.type === 'CallExpressionKw' &&
-            node.node.arguments[0] &&
-            node.node.arguments[0].label.name === 'endAbsolute'
-          if (hasEndAbsolute) {
-            // Won't be able to constrain that length
-            toast.error(
-              'Unable to constrain the length of a segment with endAbsolute'
-            )
-            return
-          }
-        }
-      }
-    }
-
     sceneInfra.modelingSend({
       type: 'Set selection',
       data: {
@@ -1739,6 +1711,18 @@ function createLengthIndicator({
         selection: selection.graphSelections[0],
       },
     })
+
+    const canConstrainLength = angleLengthInfo({
+      selectionRanges: {
+        ...selection,
+        graphSelections: [selection.graphSelections[0]],
+      },
+      angleOrLength: 'setLength',
+    })
+    if (err(canConstrainLength) || !canConstrainLength.enabled) {
+      toast.error('Unable to constrain the length of this segment. Check the KCL code')
+      return
+    }
 
     // Command Bar
     commandBarActor.send({

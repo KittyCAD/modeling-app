@@ -1,14 +1,10 @@
-import { toolTips } from 'lang/langHelpers'
 import { Program, Expr } from '../../lang/wasm'
 import { Selections } from 'lib/selections'
-import { getNodeFromPath } from '../../lang/queryAst'
 import {
   PathToNodeMap,
-  getTransformInfos,
   isExprBinaryPart,
   transformAstSketchLines,
 } from '../../lang/std/sketchcombos'
-import { TransformInfo } from 'lang/std/stdTypes'
 import {
   SetAngleLengthModal,
   createSetAngleLengthModal,
@@ -23,50 +19,9 @@ import { normaliseAngle } from '../../lib/utils'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 import { KclCommandValue } from 'lib/commandTypes'
+import { angleLengthInfo } from './angleLengthInfo'
 
 const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
-
-export function angleLengthInfo({
-  selectionRanges,
-  angleOrLength = 'setLength',
-}: {
-  selectionRanges: Selections
-  angleOrLength?: 'setLength' | 'setAngle'
-}):
-  | {
-      transforms: TransformInfo[]
-      enabled: boolean
-    }
-  | Error {
-  const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode, [
-      'CallExpression',
-      'CallExpressionKw',
-    ])
-  )
-  const _err1 = nodes.find(err)
-  if (_err1 instanceof Error) return _err1
-
-  const isAllTooltips = nodes.every((meta) => {
-    if (err(meta)) return false
-    return (
-      (meta.node?.type === 'CallExpressionKw' ||
-        meta.node?.type === 'CallExpression') &&
-      toolTips.includes(meta.node.callee.name.name as any)
-    )
-  })
-
-  const transforms = getTransformInfos(
-    selectionRanges,
-    kclManager.ast,
-    angleOrLength
-  )
-  const enabled =
-    selectionRanges.graphSelections.length <= 1 &&
-    isAllTooltips &&
-    transforms.every(Boolean)
-  return { enabled, transforms }
-}
 
 export async function applyConstraintLength({
   length,

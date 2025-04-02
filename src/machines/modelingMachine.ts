@@ -36,7 +36,7 @@ import {
   horzVertDistanceInfo,
 } from 'components/Toolbar/SetHorzVertDistance'
 import { angleBetweenInfo } from 'components/Toolbar/SetAngleBetween'
-import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
+import { angleLengthInfo } from 'components/Toolbar/angleLengthInfo'
 import {
   applyConstraintEqualLength,
   setEqualLengthInfo,
