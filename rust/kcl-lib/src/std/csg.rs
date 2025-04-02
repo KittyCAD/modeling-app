@@ -48,6 +48,8 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// ```no_run
 /// // Union two cubes using operators.
+/// // NOTE: This will not work when using codemods through the UI.
+/// // Codemods will generate the stdlib function call instead.
 ///
 /// fn cube(center) {
 ///     return startSketchOn('XY')
@@ -136,6 +138,8 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///
 /// ```no_run
 /// // Intersect two cubes using operators.
+/// // NOTE: This will not work when using codemods through the UI.
+/// // Codemods will generate the stdlib function call instead.
 ///
 /// fn cube(center) {
 ///     return startSketchOn('XY')
@@ -150,6 +154,7 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// part001 = cube([0, 0])
 /// part002 = cube([8, 8])
 ///
+/// // This is the equivalent of: intersect([part001, part002])
 /// intersectedPart = part001 & part002
 /// ```
 #[stdlib {
@@ -218,6 +223,8 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 ///
 /// ```no_run
 /// // Subtract a cylinder from a cube using operators.
+/// // NOTE: This will not work when using codemods through the UI.
+/// // Codemods will generate the stdlib function call instead.
 ///
 /// fn cube(center) {
 ///     return startSketchOn('XY')

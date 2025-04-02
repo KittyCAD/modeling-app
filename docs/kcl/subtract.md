@@ -58,6 +58,8 @@ subtractedPart = subtract([part001], tools = [part002])
 
 ```js
 // Subtract a cylinder from a cube using operators.
+// NOTE: This will not work when using codemods through the UI.
+// Codemods will generate the stdlib function call instead.
 
 
 fn cube(center) {

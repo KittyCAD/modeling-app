@@ -52,6 +52,8 @@ unionedPart = union([part001, part002])
 
 ```js
 // Union two cubes using operators.
+// NOTE: This will not work when using codemods through the UI.
+// Codemods will generate the stdlib function call instead.
 
 
 fn cube(center) {
