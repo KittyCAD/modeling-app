@@ -20,7 +20,7 @@ use crate::{
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
-        CallExpression, CallExpressionKw, Expr, FunctionExpression, IfExpression, ImportPath, ImportSelector,
+        BoxNode, CallExpression, CallExpressionKw, Expr, FunctionExpression, IfExpression, ImportPath, ImportSelector,
         ItemVisibility, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, Node, NodeRef,
         ObjectExpression, PipeExpression, Program, TagDeclarator, Type, UnaryExpression, UnaryOperator,
     },
@@ -512,10 +512,19 @@ impl ExecutorContext {
     async fn exec_module_for_result(
         &self,
         module_id: ModuleId,
+        module_name: &BoxNode<Name>,
         exec_state: &mut ExecState,
         exec_kind: ExecutionKind,
         source_range: SourceRange,
     ) -> Result<Option<KclValue>, KclError> {
+        exec_state.global.operations.push(Operation::GroupBegin {
+            group: Group::ModuleInstance {
+                name: module_name.to_string(),
+                module_id,
+            },
+            source_range,
+        });
+
         let path = exec_state.global.module_infos[&module_id].path.clone();
         let mut repr = exec_state.global.module_infos[&module_id].take_repr();
         // DON'T EARLY RETURN! We need to restore the module repr
@@ -541,6 +550,9 @@ impl ExecutorContext {
         };
 
         exec_state.global.module_infos[&module_id].restore_repr(repr);
+
+        exec_state.global.operations.push(Operation::GroupEnd);
+
         result
     }
 
@@ -592,7 +604,7 @@ impl ExecutorContext {
             Expr::Name(name) => {
                 let value = name.get_result(exec_state, self).await?.clone();
                 if let KclValue::Module { value: module_id, meta } = value {
-                    self.exec_module_for_result(module_id, exec_state, ExecutionKind::Normal, metadata.source_range)
+                    self.exec_module_for_result(module_id, name, exec_state, ExecutionKind::Normal, metadata.source_range)
                         .await?
                         .unwrap_or_else(|| {
                             exec_state.warn(CompilationError::err(

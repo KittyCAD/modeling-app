@@ -381,11 +381,16 @@ const OperationItem = (props: {
       >
         View KCL source code
       </ContextMenuItem>,
-      ...(props.item.type === 'GroupBegin'
+      ...(props.item.type === 'GroupBegin' &&
+      props.item.group.type === 'FunctionCall'
         ? [
             <ContextMenuItem
               onClick={() => {
                 if (props.item.type !== 'GroupBegin') {
+                  return
+                }
+                if (props.item.group.type !== 'FunctionCall') {
+                  // TODO: Add module instance support.
                   return
                 }
                 const functionRange = props.item.group.functionSourceRange

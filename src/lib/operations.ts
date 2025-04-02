@@ -1121,7 +1121,7 @@ export function getOperationLabel(op: Operation): string {
     case 'GroupBegin':
       return op.group.name ?? 'Anonymous custom function'
     case 'GroupEnd':
-      return 'User function return'
+      return 'Group end'
   }
 }
 
@@ -1151,17 +1151,17 @@ export function filterOperations(operations: Operation[]): Operation[] {
  * for use in the feature tree UI
  */
 const operationFilters = [
-  isNotUserFunctionWithNoOperations,
-  isNotInsideUserFunction,
-  isNotUserFunctionReturn,
+  isNotGroupWithNoOperations,
+  isNotInsideGroup,
+  isNotGroupEnd,
 ]
 
 /**
  * A filter to exclude everything that occurs inside a GroupBegin and its
  * corresponding GroupEnd from a list of operations. This works even when there
- * are nested function calls.
+ * are nested function calls and module instances.
  */
-function isNotInsideUserFunction(operations: Operation[]): Operation[] {
+function isNotInsideGroup(operations: Operation[]): Operation[] {
   const ops: Operation[] = []
   let depth = 0
   for (const op of operations) {
@@ -1175,7 +1175,7 @@ function isNotInsideUserFunction(operations: Operation[]): Operation[] {
       depth--
       console.assert(
         depth >= 0,
-        'Unbalanced GroupBegin and GroupEnd; too many returns'
+        'Unbalanced GroupBegin and GroupEnd; too many ends'
       )
     }
   }
@@ -1187,20 +1187,18 @@ function isNotInsideUserFunction(operations: Operation[]): Operation[] {
  * A filter to exclude GroupBegin operations and their corresponding GroupEnd
  * that don't have any operations inside them from a list of operations.
  */
-function isNotUserFunctionWithNoOperations(
-  operations: Operation[]
-): Operation[] {
+function isNotGroupWithNoOperations(operations: Operation[]): Operation[] {
   return operations.filter((op, index) => {
     if (
       op.type === 'GroupBegin' &&
-      // If this is a call at the end of the array, it's preserved.
+      // If this is a begin at the end of the array, it's preserved.
       index < operations.length - 1 &&
       operations[index + 1].type === 'GroupEnd'
     )
       return false
     if (
       op.type === 'GroupEnd' &&
-      // If this return is at the beginning of the array, it's preserved.
+      // If this is an end at the beginning of the array, it's preserved.
       index > 0 &&
       operations[index - 1].type === 'GroupBegin'
     )
@@ -1213,7 +1211,7 @@ function isNotUserFunctionWithNoOperations(
 /**
  * A filter to exclude GroupEnd operations from a list of operations.
  */
-function isNotUserFunctionReturn(ops: Operation[]): Operation[] {
+function isNotGroupEnd(ops: Operation[]): Operation[] {
   return ops.filter((op) => op.type !== 'GroupEnd')
 }
 
@@ -1228,7 +1226,7 @@ export async function enterEditFlow({
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
   if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
     return new Error(
-      'Feature tree editing not yet supported for user-defined functions. Please edit in the code editor.'
+      'Feature tree editing not yet supported for user-defined functions or modules. Please edit in the code editor.'
     )
   }
   const stdLibInfo = stdLibMap[operation.name]
@@ -1267,7 +1265,7 @@ export async function enterAppearanceFlow({
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
   if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
     return new Error(
-      'Appearance setting not yet supported for user-defined functions. Please edit in the code editor.'
+      'Appearance setting not yet supported for user-defined functions or modules. Please edit in the code editor.'
     )
   }
   const stdLibInfo = stdLibMap[operation.name]

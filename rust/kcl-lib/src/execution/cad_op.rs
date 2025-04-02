@@ -3,7 +3,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use super::{types::NumericType, ArtifactId, KclValue};
-use crate::{docs::StdLibFn, std::get_stdlib_fn, SourceRange};
+use crate::{docs::StdLibFn, std::get_stdlib_fn, ModuleId, SourceRange};
 
 /// A CAD modeling operation for display in the feature tree, AKA operations
 /// timeline.
@@ -76,6 +76,14 @@ pub enum Group {
         unlabeled_arg: Option<OpArg>,
         /// The labeled keyword arguments to the function.
         labeled_args: IndexMap<String, OpArg>,
+    },
+    /// A whole-module import use.
+    #[serde(rename_all = "camelCase")]
+    ModuleInstance {
+        /// The name of the module being used.
+        name: String,
+        /// The ID of the module which can be used to determine its path.
+        module_id: ModuleId,
     },
 }
 
