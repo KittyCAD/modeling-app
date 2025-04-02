@@ -8,7 +8,7 @@ use crate::{docs::StdLibFn, std::get_stdlib_fn, ModuleId, SourceRange};
 /// A CAD modeling operation for display in the feature tree, AKA operations
 /// timeline.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[ts(export_to = "Operation.ts")]
 #[serde(tag = "type")]
 pub enum Operation {
     #[serde(rename_all = "camelCase")]
@@ -61,6 +61,7 @@ impl Operation {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export_to = "Operation.ts")]
 #[serde(tag = "type")]
 pub enum Group {
     /// A function call.
@@ -89,7 +90,7 @@ pub enum Group {
 
 /// An argument to a CAD modeling operation.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpArg {
     /// The runtime value of the argument.  Instead of using [`KclValue`], we
@@ -109,7 +110,7 @@ impl OpArg {
 /// A reference to a standard library function.  This exists to implement
 /// `PartialEq` and `Eq` for `Operation`.
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct StdLibFnRef {
     // The following doc comment gets inlined into Operation, overriding what's
@@ -173,7 +174,7 @@ fn is_false(b: &bool) -> bool {
 /// A KCL value used in Operations.  `ArtifactId`s are used to refer to the
 /// actual scene objects.  Any data not needed in the UI may be omitted.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[ts(export_to = "Operation.ts")]
 #[serde(tag = "type")]
 pub enum OpKclValue {
     Uuid {
@@ -231,21 +232,21 @@ pub enum OpKclValue {
 pub type OpKclObjectFields = IndexMap<String, OpKclValue>;
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpSketch {
     artifact_id: ArtifactId,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpSolid {
     artifact_id: ArtifactId,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpHelix {
     artifact_id: ArtifactId,

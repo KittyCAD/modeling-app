@@ -1,5 +1,4 @@
-import type { Operation } from '@rust/kcl-lib/bindings/Operation'
-import type { OpKclValue } from '@rust/kcl-lib/bindings/OpKclValue'
+import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
