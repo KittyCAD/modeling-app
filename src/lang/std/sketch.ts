@@ -158,22 +158,26 @@ const constrainInfo = (
   g: AbbreviatedInput,
   d: ConstrainInfo['sourceRange'],
   e: ConstrainInfo['pathToNode']
-): ConstrainInfo => ({
-  type: a,
-  isConstrained: b,
-  value: c,
-  sourceRange: d,
-  argPosition:
+): ConstrainInfo => {
+  const argPosition: SimplifiedArgDetails | undefined =
     g === 'singleValue'
       ? { type: 'singleValue' }
       : typeof g === 'number'
         ? { type: 'arrayItem', index: g }
         : typeof g === 'string'
           ? { type: 'objectProperty', key: g }
-          : undefined,
-  pathToNode: e,
-  stdLibFnName: f,
-})
+          : undefined
+
+  return {
+    type: a,
+    isConstrained: b,
+    value: c,
+    sourceRange: d,
+    argPosition,
+    pathToNode: e,
+    stdLibFnName: f,
+  }
+}
 
 const commonConstraintInfoHelper = (
   callExp: CallExpression | CallExpressionKw,
@@ -183,10 +187,12 @@ const commonConstraintInfoHelper = (
     {
       arrayInput?: 0 | 1
       objInput?: ObjectPropertyInput<any>['key']
+      type?: 'singleValue'
     },
     {
       arrayInput?: 0 | 1
       objInput?: ObjectPropertyInput<any>['key']
+      type?: 'singleValue'
     },
   ],
   code: string,
@@ -367,7 +373,7 @@ const commonConstraintInfoHelper = (
       isNotLiteralArrayOrStatic(argValue),
       code.slice(argValue.start, argValue.end),
       stdLibFnName,
-      abbreviatedInputs[1].objInput,
+      abbreviatedInputs[i].type,
       topLevelRange(argValue.start, argValue.end),
       pathToArg
     )
@@ -2326,10 +2332,8 @@ export const angledLine: SketchLineHelperKw = {
       callExp,
       ['angle', 'length'],
       'angledLine',
-      [
-        { arrayInput: 0, objInput: 'angle' },
-        { arrayInput: 1, objInput: 'length' },
-      ],
+      [{ type: 'singleValue' }, { type: 'singleValue' }],
+
       ...args
     )
 
@@ -2449,10 +2453,7 @@ export const angledLineOfXLength: SketchLineHelperKw = {
       callExp,
       ['angle', 'xRelative'],
       'angledLineOfXLength',
-      [
-        { arrayInput: 0, objInput: 'angle' },
-        { arrayInput: 1, objInput: 'length' },
-      ],
+      [{ type: 'singleValue' }, { type: 'singleValue' }],
       ...args
     ),
 }
@@ -2566,10 +2567,7 @@ export const angledLineOfYLength: SketchLineHelperKw = {
       callExp,
       ['angle', 'yRelative'],
       'angledLineOfYLength',
-      [
-        { arrayInput: 0, objInput: 'angle' },
-        { arrayInput: 1, objInput: 'length' },
-      ],
+      [{ type: 'singleValue' }, { type: 'singleValue' }],
       ...args
     ),
 }
@@ -2658,10 +2656,7 @@ export const angledLineToX: SketchLineHelperKw = {
       callExp,
       ['angle', 'xAbsolute'],
       'angledLineToX',
-      [
-        { arrayInput: 0, objInput: 'angle' },
-        { arrayInput: 1, objInput: 'to' },
-      ],
+      [{ type: 'singleValue' }, { type: 'singleValue' }],
       ...args
     ),
 }
@@ -2752,10 +2747,7 @@ export const angledLineToY: SketchLineHelperKw = {
       callExp,
       ['angle', 'yAbsolute'],
       'angledLineToY',
-      [
-        { arrayInput: 0, objInput: 'angle' },
-        { arrayInput: 1, objInput: 'to' },
-      ],
+      [{ type: 'singleValue' }, { type: 'singleValue' }],
       ...args
     ),
 }
@@ -3211,7 +3203,6 @@ export function getConstraintInfoKw(
     console.error(tooltip)
     return []
   }
-  console.warn('ADAM: tooltip is', tooltip)
   return sketchLineHelperMapKw[tooltip].getConstraintInfo(
     callExpression,
     code,
