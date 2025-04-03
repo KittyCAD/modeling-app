@@ -1,5 +1,4 @@
 import { useSelector } from '@xstate/react'
-import type { ActorRefFrom } from 'xstate'
 import { createActor, setup, spawnChild } from 'xstate'
 
 import { createSettings } from '@src/lib/settings/initialSettings'
@@ -34,6 +33,11 @@ const appMachine = setup({
 })
 
 export const appActor = createActor(appMachine)
+/**
+ * GOTCHA: the type coercion of this actor works because it is spawned for
+ * the lifetime of {appActor}, but would not work if it were invoked
+ * or if it were destroyed under any conditions during {appActor}'s life
+ */
 export const authActor = appActor.getSnapshot().children.auth!
 export const useAuthState = () => useSelector(authActor, (state) => state)
 export const useToken = () =>
@@ -41,6 +45,11 @@ export const useToken = () =>
 export const useUser = () =>
   useSelector(authActor, (state) => state.context.user)
 
+/**
+ * GOTCHA: the type coercion of this actor works because it is spawned for
+ * the lifetime of {appActor}, but would not work if it were invoked
+ * or if it were destroyed under any conditions during {appActor}'s life
+ */
 export const settingsActor = appActor.getSnapshot().children.settings!
 export const getSettings = () => {
   const { currentProject: _, ...settings } = settingsActor.getSnapshot().context
