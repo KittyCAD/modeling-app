@@ -23,7 +23,7 @@ export const TEST_SETTINGS: DeepPartial<Settings> = {
     camera_projection: 'perspective',
   },
   project: {
-    default_project_name: 'project-$nnn',
+    default_project_name: 'untitled',
     directory: '',
   },
   text_editor: {
