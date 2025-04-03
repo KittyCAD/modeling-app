@@ -902,6 +902,33 @@ impl Node<BinaryExpression> {
             }
         }
 
+        // Then check if we have solids.
+        if self.operator == BinaryOperator::Add || self.operator == BinaryOperator::Or {
+            if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
+                let args = crate::std::Args::new(Default::default(), self.into(), ctx.clone(), None);
+                let result =
+                    crate::std::csg::inner_union(vec![*left.clone(), *right.clone()], exec_state, args).await?;
+                return Ok(result.into());
+            }
+        } else if self.operator == BinaryOperator::Sub {
+            // Check if we have solids.
+            if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
+                let args = crate::std::Args::new(Default::default(), self.into(), ctx.clone(), None);
+                let result =
+                    crate::std::csg::inner_subtract(vec![*left.clone()], vec![*right.clone()], exec_state, args)
+                        .await?;
+                return Ok(result.into());
+            }
+        } else if self.operator == BinaryOperator::And {
+            // Check if we have solids.
+            if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
+                let args = crate::std::Args::new(Default::default(), self.into(), ctx.clone(), None);
+                let result =
+                    crate::std::csg::inner_intersect(vec![*left.clone(), *right.clone()], exec_state, args).await?;
+                return Ok(result.into());
+            }
+        }
+
         // Check if we are doing logical operations on booleans.
         if self.operator == BinaryOperator::Or || self.operator == BinaryOperator::And {
             let KclValue::Bool {

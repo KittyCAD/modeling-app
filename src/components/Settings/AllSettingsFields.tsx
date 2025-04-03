@@ -30,7 +30,7 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import { settingsActor, useSettings } from '@src/machines/appMachine'
-import { APP_VERSION, IS_NIGHTLY, getReleaseUrl } from '@src/routes/Settings'
+import { APP_VERSION, IS_NIGHTLY, getReleaseUrl } from '@src/routes/utils'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
@@ -96,8 +96,7 @@ export const AllSettingsFields = forwardRef(
           }
         }
       }
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      navigateToOnboardingStart()
+      navigateToOnboardingStart().catch(reportRejection)
     }, [
       isFileSettings,
       navigate,
