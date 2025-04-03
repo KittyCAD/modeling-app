@@ -1724,7 +1724,7 @@ function getTransformMapPathKw(
       constraintType: ConstraintType
     }
   | false {
-  const name = sketchFnExp.callee.name.name as ToolTip
+  const name = sketchFnExp.callee.name.name
   if (name === 'circleThreePoint') {
     const info = transformMap?.circleThreePoint?.free?.[constraintType]
     if (info)
@@ -1736,6 +1736,7 @@ function getTransformMapPathKw(
     return false
   }
   const tooltip = fnNameToTooltip(allLabels(sketchFnExp), name)
+  console.warn('ADAM: allLabels, tooltip', allLabels(sketchFnExp), tooltip)
   if (err(tooltip)) {
     return false
   }
@@ -1745,6 +1746,7 @@ function getTransformMapPathKw(
 
   // check if the function is locked down and so can't be transformed
   const argForEnd = getArgForEnd(sketchFnExp)
+  console.warn('ADAM: argForEnd', argForEnd)
   if (err(argForEnd)) {
     return false
   }
@@ -1767,7 +1769,13 @@ function getTransformMapPathKw(
 
   // check what constraints the function has
   const isAbsolute = findKwArg(ARG_END_ABSOLUTE, sketchFnExp) !== undefined
-  const lineInputType = getConstraintType(argForEnd.val, name, isAbsolute)
+  const lineInputType = getConstraintType(argForEnd.val, tooltip, isAbsolute)
+  console.warn(
+    'ADAM: tooltip, lineInputType, constraintType',
+    tooltip,
+    lineInputType,
+    constraintType
+  )
   if (lineInputType) {
     const info = transformMap?.[tooltip]?.[lineInputType]?.[constraintType]
     if (info) {
@@ -1798,10 +1806,14 @@ export function getTransformInfoKw(
   sketchFnExp: CallExpressionKw,
   constraintType: ConstraintType
 ): TransformInfo | false {
+  console.warn('ADAM: sketchFnExp.callee', sketchFnExp.callee.name.name)
+  console.warn('ADAM: constraintType', constraintType)
   const path = getTransformMapPathKw(sketchFnExp, constraintType)
+  console.warn('ADAM: path', path)
   if (!path) return false
   const { toolTip, lineInputType, constraintType: _constraintType } = path
   const info = transformMap?.[toolTip]?.[lineInputType]?.[_constraintType]
+  console.warn('ADAM: info', info)
   if (!info) return false
   return info
 }
@@ -1856,6 +1868,7 @@ export function getTransformInfos(
 
   try {
     const theTransforms = nodes.map((nodeMeta) => {
+      // console.warn('ADAM: nodeMeta is', nodeMeta)
       if (err(nodeMeta)) {
         console.error(nodeMeta)
         return false
@@ -2014,6 +2027,8 @@ export function transformAstSketchLines({
   const pathToNodeMap: PathToNodeMap = {}
 
   const processSelection = (_pathToNode: PathToNode, index: number) => {
+    console.warn('ADAM: transformInfos is', transformInfos)
+    console.warn('ADAM: index is', index)
     const callBack = transformInfos?.[index].createNode
     const transformTo = transformInfos?.[index].tooltip
 
