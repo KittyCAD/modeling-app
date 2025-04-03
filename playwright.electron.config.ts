@@ -15,7 +15,7 @@ export default defineConfig({
   /* Do not retry */
   retries: 0,
   /* Different amount of parallelism on CI and local. */
-  workers: platform() === 'win32' ? 1 : 2,
+  workers: platform() === 'win32' ? 1 : 6,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['dot'],

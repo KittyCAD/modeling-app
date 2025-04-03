@@ -151,10 +151,28 @@ export class ElectronZoo {
     // Do this once and then reuse window on subsequent calls.
     if (!this.electron) {
       this.electron = await electron.launch(options)
-    }
+      this.page = await this.electron.firstWindow()
+      this.context = this.electron.context()
 
-    this.page = await this.electron.firstWindow()
-    this.context = this.electron.context()
+      // We need to patch this because addInitScript will bind too late in our
+      // electron tests, never running. We need to call reload() after each call
+      // to guarantee it runs.
+      const oldContextAddInitScript = this.context.addInitScript
+      this.context.addInitScript = async function (a, b) {
+        // @ts-ignore pretty sure way out of tsc's type checking capabilities.
+        // This code works perfectly fine.
+        await oldContextAddInitScript.apply(this, [a, b])
+        await that.page.reload()
+      }
+
+      const oldPageAddInitScript = this.page.addInitScript
+      this.page.addInitScript = async function (a: any, b: any) {
+        // @ts-ignore pretty sure way out of tsc's type checking capabilities.
+        // This code works perfectly fine.
+        await oldPageAddInitScript.apply(this, [a, b])
+        await that.page.reload()
+      }
+    }
 
     // THIS IS ABSOLUTELY NECESSARY TO CHANGE THE PROJECT DIRECTORY BETWEEN
     // TESTS BECAUSE OF THE ELECTRON INSTANCE REUSE.
@@ -199,29 +217,6 @@ export class ElectronZoo {
         .then(() => ({
           dir: that.projectDirName,
         }))
-    }
-
-    if (!this.electron) {
-      // We need to patch this because addInitScript will bind too late in our
-      // electron tests, never running. We need to call reload() after each call
-      // to guarantee it runs.
-      const oldContextAddInitScript = this.context.addInitScript
-      this.context.addInitScript = async function (a, b) {
-        // @ts-ignore pretty sure way out of tsc's type checking capabilities.
-        // This code works perfectly fine.
-        await oldContextAddInitScript.apply(this, [a, b])
-        await that.page.reload()
-      }
-    }
-
-    if (!this.electron || !this.page.addInitScript) {
-      const oldPageAddInitScript = this.page.addInitScript
-      this.page.addInitScript = async function (a: any, b: any) {
-        // @ts-ignore pretty sure way out of tsc's type checking capabilities.
-        // This code works perfectly fine.
-        await oldPageAddInitScript.apply(this, [a, b])
-        await that.page.reload()
-      }
     }
 
     if (!this.firstUrl) {
