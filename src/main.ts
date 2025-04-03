@@ -40,7 +40,7 @@ import {
 } from '@src/menu'
 
 
-if os.platform() !== 'win32' {
+if (os.platform() !== 'win32') {
   import 'win-ca'
 }
 
