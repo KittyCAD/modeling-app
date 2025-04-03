@@ -1399,120 +1399,98 @@ description: Result of parsing gridfinity-baseplate.kcl
                 "key": {
                   "commentStart": 1485,
                   "end": 0,
-                  "name": "custom",
+                  "name": "direction",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "start": 0,
                 "type": "ObjectProperty",
                 "value": {
-                  "commentStart": 1494,
-                  "end": 0,
-                  "properties": [
+                  "commentStart": 1497,
+                  "elements": [
                     {
-                      "commentStart": 1500,
+                      "commentStart": 1498,
                       "end": 0,
-                      "key": {
-                        "commentStart": 1500,
-                        "end": 0,
-                        "name": "axis",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
+                      "raw": "0.0",
                       "start": 0,
-                      "type": "ObjectProperty",
+                      "type": "Literal",
+                      "type": "Literal",
                       "value": {
-                        "commentStart": 1507,
-                        "elements": [
-                          {
-                            "commentStart": 1508,
-                            "end": 0,
-                            "raw": "0.0",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 0.0,
-                              "suffix": "None"
-                            }
-                          },
-                          {
-                            "commentStart": 1513,
-                            "end": 0,
-                            "raw": "1.0",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 1.0,
-                              "suffix": "None"
-                            }
-                          }
-                        ],
-                        "end": 0,
-                        "start": 0,
-                        "type": "ArrayExpression",
-                        "type": "ArrayExpression"
+                        "value": 0.0,
+                        "suffix": "None"
                       }
                     },
                     {
-                      "commentStart": 1523,
+                      "commentStart": 1503,
                       "end": 0,
-                      "key": {
-                        "commentStart": 1523,
-                        "end": 0,
-                        "name": "origin",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
+                      "raw": "1.0",
                       "start": 0,
-                      "type": "ObjectProperty",
+                      "type": "Literal",
+                      "type": "Literal",
                       "value": {
-                        "commentStart": 1532,
-                        "elements": [
-                          {
-                            "abs_path": false,
-                            "commentStart": 1533,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1533,
-                              "end": 0,
-                              "name": "cornerRadius",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
-                          {
-                            "abs_path": false,
-                            "commentStart": 1547,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1547,
-                              "end": 0,
-                              "name": "cornerRadius",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          }
-                        ],
-                        "end": 0,
-                        "start": 0,
-                        "type": "ArrayExpression",
-                        "type": "ArrayExpression"
+                        "value": 1.0,
+                        "suffix": "None"
                       }
                     }
                   ],
+                  "end": 0,
                   "start": 0,
-                  "type": "ObjectExpression",
-                  "type": "ObjectExpression"
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "commentStart": 1511,
+                "end": 0,
+                "key": {
+                  "commentStart": 1511,
+                  "end": 0,
+                  "name": "origin",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "start": 0,
+                "type": "ObjectProperty",
+                "value": {
+                  "commentStart": 1520,
+                  "elements": [
+                    {
+                      "abs_path": false,
+                      "commentStart": 1521,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 1521,
+                        "end": 0,
+                        "name": "cornerRadius",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    {
+                      "abs_path": false,
+                      "commentStart": 1535,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 1535,
+                        "end": 0,
+                        "name": "cornerRadius",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    }
+                  ],
+                  "end": 0,
+                  "start": 0,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
                 }
               }
             ],
@@ -1535,12 +1513,12 @@ description: Result of parsing gridfinity-baseplate.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1566,
+        "commentStart": 1550,
         "declaration": {
-          "commentStart": 1605,
+          "commentStart": 1589,
           "end": 0,
           "id": {
-            "commentStart": 1605,
+            "commentStart": 1589,
             "end": 0,
             "name": "singleCorner",
             "start": 0,
@@ -1551,7 +1529,7 @@ description: Result of parsing gridfinity-baseplate.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 1674,
+                  "commentStart": 1658,
                   "end": 0,
                   "name": "angle",
                   "start": 0,
@@ -1559,7 +1537,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                 },
                 "arg": {
                   "argument": {
-                    "commentStart": 1683,
+                    "commentStart": 1667,
                     "end": 0,
                     "raw": "90",
                     "start": 0,
@@ -1570,7 +1548,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                       "suffix": "None"
                     }
                   },
-                  "commentStart": 1682,
+                  "commentStart": 1666,
                   "end": 0,
                   "operator": "-",
                   "start": 0,
@@ -1581,7 +1559,7 @@ description: Result of parsing gridfinity-baseplate.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 1687,
+                  "commentStart": 1671,
                   "end": 0,
                   "name": "axis",
                   "start": 0,
@@ -1589,10 +1567,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                 },
                 "arg": {
                   "abs_path": false,
-                  "commentStart": 1694,
+                  "commentStart": 1678,
                   "end": 0,
                   "name": {
-                    "commentStart": 1694,
+                    "commentStart": 1678,
                     "end": 0,
                     "name": "axis000",
                     "start": 0,
@@ -1607,10 +1585,10 @@ description: Result of parsing gridfinity-baseplate.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 1620,
+              "commentStart": 1604,
               "end": 0,
               "name": {
-                "commentStart": 1620,
+                "commentStart": 1604,
                 "end": 0,
                 "name": "revolve",
                 "start": 0,
@@ -1620,7 +1598,7 @@ description: Result of parsing gridfinity-baseplate.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 1620,
+            "commentStart": 1604,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
@@ -1632,7 +1610,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                     {
                       "type": "LabeledArg",
                       "label": {
-                        "commentStart": 1649,
+                        "commentStart": 1633,
                         "end": 0,
                         "name": "offset",
                         "start": 0,
@@ -1640,10 +1618,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                       },
                       "arg": {
                         "abs_path": false,
-                        "commentStart": 1658,
+                        "commentStart": 1642,
                         "end": 0,
                         "name": {
-                          "commentStart": 1658,
+                          "commentStart": 1642,
                           "end": 0,
                           "name": "cornerRadius",
                           "start": 0,
@@ -1658,10 +1636,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                   ],
                   "callee": {
                     "abs_path": false,
-                    "commentStart": 1633,
+                    "commentStart": 1617,
                     "end": 0,
                     "name": {
-                      "commentStart": 1633,
+                      "commentStart": 1617,
                       "end": 0,
                       "name": "offsetPlane",
                       "start": 0,
@@ -1671,17 +1649,17 @@ description: Result of parsing gridfinity-baseplate.kcl
                     "start": 0,
                     "type": "Name"
                   },
-                  "commentStart": 1633,
+                  "commentStart": 1617,
                   "end": 0,
                   "start": 0,
                   "type": "CallExpressionKw",
                   "type": "CallExpressionKw",
                   "unlabeled": {
                     "abs_path": false,
-                    "commentStart": 1645,
+                    "commentStart": 1629,
                     "end": 0,
                     "name": {
-                      "commentStart": 1645,
+                      "commentStart": 1629,
                       "end": 0,
                       "name": "YZ",
                       "start": 0,
@@ -1696,10 +1674,10 @@ description: Result of parsing gridfinity-baseplate.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 1628,
+                "commentStart": 1612,
                 "end": 0,
                 "name": {
-                  "commentStart": 1628,
+                  "commentStart": 1612,
                   "end": 0,
                   "name": "face",
                   "start": 0,
@@ -1709,7 +1687,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 1628,
+              "commentStart": 1612,
               "end": 0,
               "start": 0,
               "type": "CallExpression",
@@ -1731,12 +1709,12 @@ description: Result of parsing gridfinity-baseplate.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1702,
+        "commentStart": 1686,
         "declaration": {
-          "commentStart": 1737,
+          "commentStart": 1721,
           "end": 0,
           "id": {
-            "commentStart": 1737,
+            "commentStart": 1721,
             "end": 0,
             "name": "corners",
             "start": 0,
@@ -1747,14 +1725,14 @@ description: Result of parsing gridfinity-baseplate.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 1784,
+                  "commentStart": 1768,
                   "end": 0,
                   "name": "arcDegrees",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 1797,
+                  "commentStart": 1781,
                   "end": 0,
                   "raw": "360",
                   "start": 0,
@@ -1769,17 +1747,17 @@ description: Result of parsing gridfinity-baseplate.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 1804,
+                  "commentStart": 1788,
                   "end": 0,
                   "name": "axis",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 1811,
+                  "commentStart": 1795,
                   "elements": [
                     {
-                      "commentStart": 1812,
+                      "commentStart": 1796,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -1791,7 +1769,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                       }
                     },
                     {
-                      "commentStart": 1815,
+                      "commentStart": 1799,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -1803,7 +1781,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                       }
                     },
                     {
-                      "commentStart": 1818,
+                      "commentStart": 1802,
                       "end": 0,
                       "raw": "1",
                       "start": 0,
@@ -1824,24 +1802,24 @@ description: Result of parsing gridfinity-baseplate.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 1824,
+                  "commentStart": 1808,
                   "end": 0,
                   "name": "center",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 1833,
+                  "commentStart": 1817,
                   "elements": [
                     {
-                      "commentStart": 1834,
+                      "commentStart": 1818,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 1834,
+                        "commentStart": 1818,
                         "end": 0,
                         "name": {
-                          "commentStart": 1834,
+                          "commentStart": 1818,
                           "end": 0,
                           "name": "binLength",
                           "start": 0,
@@ -1854,7 +1832,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                       },
                       "operator": "/",
                       "right": {
-                        "commentStart": 1846,
+                        "commentStart": 1830,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -1870,14 +1848,14 @@ description: Result of parsing gridfinity-baseplate.kcl
                       "type": "BinaryExpression"
                     },
                     {
-                      "commentStart": 1849,
+                      "commentStart": 1833,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 1849,
+                        "commentStart": 1833,
                         "end": 0,
                         "name": {
-                          "commentStart": 1849,
+                          "commentStart": 1833,
                           "end": 0,
                           "name": "binLength",
                           "start": 0,
@@ -1890,7 +1868,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                       },
                       "operator": "/",
                       "right": {
-                        "commentStart": 1861,
+                        "commentStart": 1845,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -1906,7 +1884,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                       "type": "BinaryExpression"
                     },
                     {
-                      "commentStart": 1864,
+                      "commentStart": 1848,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -1927,14 +1905,14 @@ description: Result of parsing gridfinity-baseplate.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 1870,
+                  "commentStart": 1854,
                   "end": 0,
                   "name": "instances",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 1882,
+                  "commentStart": 1866,
                   "end": 0,
                   "raw": "4",
                   "start": 0,
@@ -1949,14 +1927,14 @@ description: Result of parsing gridfinity-baseplate.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 1887,
+                  "commentStart": 1871,
                   "end": 0,
                   "name": "rotateDuplicates",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 1906,
+                  "commentStart": 1890,
                   "end": 0,
                   "raw": "true",
                   "start": 0,
@@ -1968,10 +1946,10 @@ description: Result of parsing gridfinity-baseplate.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 1747,
+              "commentStart": 1731,
               "end": 0,
               "name": {
-                "commentStart": 1747,
+                "commentStart": 1731,
                 "end": 0,
                 "name": "patternCircular3d",
                 "start": 0,
@@ -1981,17 +1959,17 @@ description: Result of parsing gridfinity-baseplate.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 1747,
+            "commentStart": 1731,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
               "abs_path": false,
-              "commentStart": 1768,
+              "commentStart": 1752,
               "end": 0,
               "name": {
-                "commentStart": 1768,
+                "commentStart": 1752,
                 "end": 0,
                 "name": "singleCorner",
                 "start": 0,
@@ -2018,12 +1996,12 @@ description: Result of parsing gridfinity-baseplate.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1913,
+        "commentStart": 1897,
         "declaration": {
-          "commentStart": 1959,
+          "commentStart": 1943,
           "end": 0,
           "id": {
-            "commentStart": 1959,
+            "commentStart": 1943,
             "end": 0,
             "name": "basePlateSides",
             "start": 0,
@@ -2036,17 +2014,17 @@ description: Result of parsing gridfinity-baseplate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2014,
+                      "commentStart": 1998,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2021,
+                      "commentStart": 2005,
                       "elements": [
                         {
-                          "commentStart": 2022,
+                          "commentStart": 2006,
                           "end": 0,
                           "raw": "1.0",
                           "start": 0,
@@ -2058,7 +2036,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                           }
                         },
                         {
-                          "commentStart": 2027,
+                          "commentStart": 2011,
                           "end": 0,
                           "raw": "0.0",
                           "start": 0,
@@ -2070,7 +2048,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                           }
                         },
                         {
-                          "commentStart": 2032,
+                          "commentStart": 2016,
                           "end": 0,
                           "raw": "0.0",
                           "start": 0,
@@ -2091,7 +2069,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2045,
+                      "commentStart": 2029,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
@@ -2099,10 +2077,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 2057,
+                      "commentStart": 2041,
                       "end": 0,
                       "name": {
-                        "commentStart": 2057,
+                        "commentStart": 2041,
                         "end": 0,
                         "name": "countBinWidth",
                         "start": 0,
@@ -2117,7 +2095,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2079,
+                      "commentStart": 2063,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
@@ -2125,10 +2103,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 2090,
+                      "commentStart": 2074,
                       "end": 0,
                       "name": {
-                        "commentStart": 2090,
+                        "commentStart": 2074,
                         "end": 0,
                         "name": "binLength",
                         "start": 0,
@@ -2143,10 +2121,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1976,
+                  "commentStart": 1960,
                   "end": 0,
                   "name": {
-                    "commentStart": 1976,
+                    "commentStart": 1960,
                     "end": 0,
                     "name": "patternLinear3d",
                     "start": 0,
@@ -2156,17 +2134,17 @@ description: Result of parsing gridfinity-baseplate.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1976,
+                "commentStart": 1960,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
                   "abs_path": false,
-                  "commentStart": 2000,
+                  "commentStart": 1984,
                   "end": 0,
                   "name": {
-                    "commentStart": 2000,
+                    "commentStart": 1984,
                     "end": 0,
                     "name": "sides",
                     "start": 0,
@@ -2183,17 +2161,17 @@ description: Result of parsing gridfinity-baseplate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2129,
+                      "commentStart": 2113,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2136,
+                      "commentStart": 2120,
                       "elements": [
                         {
-                          "commentStart": 2137,
+                          "commentStart": 2121,
                           "end": 0,
                           "raw": "0.0",
                           "start": 0,
@@ -2205,7 +2183,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                           }
                         },
                         {
-                          "commentStart": 2142,
+                          "commentStart": 2126,
                           "end": 0,
                           "raw": "1.0",
                           "start": 0,
@@ -2217,7 +2195,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                           }
                         },
                         {
-                          "commentStart": 2147,
+                          "commentStart": 2131,
                           "end": 0,
                           "raw": "0.0",
                           "start": 0,
@@ -2238,7 +2216,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2153,
+                      "commentStart": 2137,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
@@ -2246,10 +2224,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 2165,
+                      "commentStart": 2149,
                       "end": 0,
                       "name": {
-                        "commentStart": 2165,
+                        "commentStart": 2149,
                         "end": 0,
                         "name": "countBinLength",
                         "start": 0,
@@ -2264,7 +2242,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2181,
+                      "commentStart": 2165,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
@@ -2272,10 +2250,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 2192,
+                      "commentStart": 2176,
                       "end": 0,
                       "name": {
-                        "commentStart": 2192,
+                        "commentStart": 2176,
                         "end": 0,
                         "name": "binLength",
                         "start": 0,
@@ -2290,10 +2268,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2113,
+                  "commentStart": 2097,
                   "end": 0,
                   "name": {
-                    "commentStart": 2113,
+                    "commentStart": 2097,
                     "end": 0,
                     "name": "patternLinear3d",
                     "start": 0,
@@ -2303,7 +2281,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2113,
+                "commentStart": 2097,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2311,13 +2289,13 @@ description: Result of parsing gridfinity-baseplate.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 1976,
+            "commentStart": 1960,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
-                    "commentStart": 2202,
+                    "commentStart": 2186,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -2350,12 +2328,12 @@ description: Result of parsing gridfinity-baseplate.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 2269,
+        "commentStart": 2253,
         "declaration": {
-          "commentStart": 2269,
+          "commentStart": 2253,
           "end": 0,
           "id": {
-            "commentStart": 2269,
+            "commentStart": 2253,
             "end": 0,
             "name": "basePlateCorners",
             "start": 0,
@@ -2368,17 +2346,17 @@ description: Result of parsing gridfinity-baseplate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2328,
+                      "commentStart": 2312,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2335,
+                      "commentStart": 2319,
                       "elements": [
                         {
-                          "commentStart": 2336,
+                          "commentStart": 2320,
                           "end": 0,
                           "raw": "1.0",
                           "start": 0,
@@ -2390,7 +2368,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                           }
                         },
                         {
-                          "commentStart": 2341,
+                          "commentStart": 2325,
                           "end": 0,
                           "raw": "0.0",
                           "start": 0,
@@ -2402,7 +2380,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                           }
                         },
                         {
-                          "commentStart": 2346,
+                          "commentStart": 2330,
                           "end": 0,
                           "raw": "0.0",
                           "start": 0,
@@ -2423,7 +2401,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2359,
+                      "commentStart": 2343,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
@@ -2431,10 +2409,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 2371,
+                      "commentStart": 2355,
                       "end": 0,
                       "name": {
-                        "commentStart": 2371,
+                        "commentStart": 2355,
                         "end": 0,
                         "name": "countBinWidth",
                         "start": 0,
@@ -2449,7 +2427,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2393,
+                      "commentStart": 2377,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
@@ -2457,10 +2435,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 2404,
+                      "commentStart": 2388,
                       "end": 0,
                       "name": {
-                        "commentStart": 2404,
+                        "commentStart": 2388,
                         "end": 0,
                         "name": "binLength",
                         "start": 0,
@@ -2475,10 +2453,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2288,
+                  "commentStart": 2272,
                   "end": 0,
                   "name": {
-                    "commentStart": 2288,
+                    "commentStart": 2272,
                     "end": 0,
                     "name": "patternLinear3d",
                     "start": 0,
@@ -2488,17 +2466,17 @@ description: Result of parsing gridfinity-baseplate.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2288,
+                "commentStart": 2272,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
                   "abs_path": false,
-                  "commentStart": 2312,
+                  "commentStart": 2296,
                   "end": 0,
                   "name": {
-                    "commentStart": 2312,
+                    "commentStart": 2296,
                     "end": 0,
                     "name": "corners",
                     "start": 0,
@@ -2515,17 +2493,17 @@ description: Result of parsing gridfinity-baseplate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2443,
+                      "commentStart": 2427,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2450,
+                      "commentStart": 2434,
                       "elements": [
                         {
-                          "commentStart": 2451,
+                          "commentStart": 2435,
                           "end": 0,
                           "raw": "0.0",
                           "start": 0,
@@ -2537,7 +2515,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                           }
                         },
                         {
-                          "commentStart": 2456,
+                          "commentStart": 2440,
                           "end": 0,
                           "raw": "1.0",
                           "start": 0,
@@ -2549,7 +2527,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                           }
                         },
                         {
-                          "commentStart": 2461,
+                          "commentStart": 2445,
                           "end": 0,
                           "raw": "0.0",
                           "start": 0,
@@ -2570,7 +2548,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2467,
+                      "commentStart": 2451,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
@@ -2578,10 +2556,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 2479,
+                      "commentStart": 2463,
                       "end": 0,
                       "name": {
-                        "commentStart": 2479,
+                        "commentStart": 2463,
                         "end": 0,
                         "name": "countBinLength",
                         "start": 0,
@@ -2596,7 +2574,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2495,
+                      "commentStart": 2479,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
@@ -2604,10 +2582,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 2506,
+                      "commentStart": 2490,
                       "end": 0,
                       "name": {
-                        "commentStart": 2506,
+                        "commentStart": 2490,
                         "end": 0,
                         "name": "binLength",
                         "start": 0,
@@ -2622,10 +2600,10 @@ description: Result of parsing gridfinity-baseplate.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2427,
+                  "commentStart": 2411,
                   "end": 0,
                   "name": {
-                    "commentStart": 2427,
+                    "commentStart": 2411,
                     "end": 0,
                     "name": "patternLinear3d",
                     "start": 0,
@@ -2635,7 +2613,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2427,
+                "commentStart": 2411,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2643,7 +2621,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 2288,
+            "commentStart": 2272,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
