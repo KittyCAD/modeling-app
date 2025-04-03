@@ -136,6 +136,7 @@ export const modelingFileRole = (
       },
       {
         label: 'Open project',
+        id: 'File.Open project',
         accelerator: 'CommandOrControl+P',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -148,6 +149,7 @@ export const modelingFileRole = (
       { type: 'separator' },
       {
         label: 'Load a sample model',
+        id: 'File.Load a sample model',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'File.Load a sample model',

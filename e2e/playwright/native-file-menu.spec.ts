@@ -1,3 +1,8 @@
+import {
+  throwAppOrApplicationMenuMissing,
+  throwMissingMenuItemById,
+  throwTronAppMissing,
+} from '@e2e/playwright/lib/electron-helpers'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 /**
@@ -7,7 +12,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 test.describe('Native file menu', { tag: ['@electron'] }, () => {
   test.describe('Home page', () => {
     test.describe('File role', () => {
-      test('File.Create project', async ({ tronApp, cmdBar, page }) => {
+      test('Home.File.Create project', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -27,7 +32,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         const expectedArgument = 'project-$nnn'
         expect(actualArgument).toBe(expectedArgument)
       })
-      test('File.Open project', async ({ tronApp, cmdBar, page }) => {
+      test('Home.File.Open project', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -47,7 +52,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         const expected = 'Open project'
         expect(actual).toBe(expected)
       })
-      test('File.Preferences.User settings', async ({
+      test('Home.File.Preferences.User settings', async ({
         tronApp,
         cmdBar,
         page,
@@ -71,7 +76,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         )
         await expect(actualText).toBeVisible()
       })
-      test('File.Preferences.Keybindings', async ({
+      test('Home.File.Preferences.Keybindings', async ({
         tronApp,
         cmdBar,
         page,
@@ -93,7 +98,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         const enterSketchMode = settings.locator('#enter-sketch-mode')
         await expect(enterSketchMode).toBeVisible()
       })
-      test('File.Preferences.User default units', async ({
+      test('Home.File.Preferences.User default units', async ({
         tronApp,
         cmdBar,
         page,
@@ -114,7 +119,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         const defaultUnit = settings.locator('#defaultUnit')
         await expect(defaultUnit).toBeVisible()
       })
-      test('File.Preferences.Theme', async ({ tronApp, cmdBar, page }) => {
+      test('Home.File.Preferences.Theme', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -135,7 +140,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         const expected = 'Settings · app · theme'
         expect(actual).toBe(expected)
       })
-      test('File.Preferences.Theme color', async ({
+      test('Home.File.Preferences.Theme color', async ({
         tronApp,
         cmdBar,
         page,
@@ -156,7 +161,11 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         const defaultUnit = settings.locator('#themeColor')
         await expect(defaultUnit).toBeVisible()
       })
-      test('File.Preferences.Sign out', async ({ tronApp, cmdBar, page }) => {
+      test('Home.File.Preferences.Sign out', async ({
+        tronApp,
+        cmdBar,
+        page,
+      }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -175,7 +184,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
     })
 
     test.describe('Edit role', () => {
-      test('Edit.Rename project', async ({ tronApp, cmdBar, page }) => {
+      test('Home.Edit.Rename project', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -194,7 +203,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         const expected = 'Rename project'
         expect(actual).toBe(expected)
       })
-      test('Edit.Delete project', async ({ tronApp, cmdBar, page }) => {
+      test('Home.Edit.Delete project', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -213,7 +222,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         const expected = 'Delete project'
         expect(actual).toBe(expected)
       })
-      test('Edit.Change project directory', async ({
+      test('Home.Edit.Change project directory', async ({
         tronApp,
         cmdBar,
         page,
@@ -236,7 +245,11 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       })
     })
     test.describe('View role', () => {
-      test('View.Command Palette...', async ({ tronApp, cmdBar, page }) => {
+      test('Home.View.Command Palette...', async ({
+        tronApp,
+        cmdBar,
+        page,
+      }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -254,7 +267,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       })
     })
     test.describe('Help role', () => {
-      test('Help.Show all commands', async ({ tronApp, cmdBar, page }) => {
+      test('Home.Help.Show all commands', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -270,7 +283,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         const actual = cmdBar.cmdBarElement.getByTestId('cmd-bar-search')
         await expect(actual).toBeVisible()
       })
-      test('Help.KCL code samples', async ({ tronApp, cmdBar, page }) => {
+      test('Home.Help.KCL code samples', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -282,7 +295,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           if (!menu) fail()
         })
       })
-      test('Help.Refresh and report a bug', async ({
+      test('Home.Help.Refresh and report a bug', async ({
         tronApp,
         cmdBar,
         page,
@@ -305,7 +318,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         )
         await expect(actual).toBeVisible()
       })
-      test('Help.Reset onboarding', async ({ tronApp, cmdBar, page }) => {
+      test('Home.Help.Reset onboarding', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -323,6 +336,116 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         )
         await expect(actual).toBeVisible()
       })
+    })
+  })
+  test.describe('Modeling page', () => {
+    test.describe('File Role', () => {
+      test('Modeling.File.Create project', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) fail()
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) fail()
+          const newProject =
+            app.applicationMenu.getMenuItemById('File.New project')
+          if (!newProject) fail()
+          newProject.click()
+        })
+        // Check that the command bar is opened
+        await expect(cmdBar.cmdBarElement).toBeVisible()
+        // Check the placeholder project name exists
+        const actualArgument = await cmdBar.cmdBarElement
+          .getByTestId('cmd-bar-arg-value')
+          .inputValue()
+        const expectedArgument = 'project-$nnn'
+        expect(actualArgument).toBe(expectedArgument)
+      })
+    })
+    test('Modeling.File.Open project', async ({
+      tronApp,
+      cmdBar,
+      page,
+      homePage,
+      scene,
+    }) => {
+      if (!tronApp) {
+        throwTronAppMissing()
+        return
+      }
+      await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
+
+      // Run electron snippet to find the Menu!
+      await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+      await tronApp.electron.evaluate(async ({ app }) => {
+        if (!app || !app.applicationMenu) {
+          throwAppOrApplicationMenuMissing()
+          return
+        }
+        const openProject =
+          app.applicationMenu.getMenuItemById('File.Open project')
+        if (!openProject) {
+          throwMissingMenuItemById('File.Open project')
+          return
+        }
+        openProject.click()
+      })
+      // Check that the command bar is opened
+      await expect(cmdBar.cmdBarElement).toBeVisible()
+      // Check the placeholder project name exists
+      const actual = await cmdBar.cmdBarElement
+        .getByTestId('command-name')
+        .textContent()
+      const expected = 'Open project'
+      expect(actual).toBe(expected)
+    })
+    test('Modeling.File.Load a sample model', async ({
+      tronApp,
+      cmdBar,
+      page,
+      homePage,
+      scene,
+    }) => {
+      if (!tronApp) {
+        throwTronAppMissing()
+        return
+      }
+      await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
+
+      // Run electron snippet to find the Menu!
+      await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+      await tronApp.electron.evaluate(async ({ app }) => {
+        if (!app || !app.applicationMenu) {
+          throwAppOrApplicationMenuMissing()
+          return
+        }
+        const openProject = app.applicationMenu.getMenuItemById(
+          'File.Load a sample model'
+        )
+        if (!openProject) {
+          throwMissingMenuItemById('File.Load a sample model')
+          return
+        }
+        openProject.click()
+      })
+      // Check that the command bar is opened
+      await expect(cmdBar.cmdBarElement).toBeVisible()
+      // Check the placeholder project name exists
+      const actual = await cmdBar.cmdBarElement
+        .getByTestId('command-name')
+        .textContent()
+      const expected = 'Open sample'
+      expect(actual).toBe(expected)
     })
   })
 })
