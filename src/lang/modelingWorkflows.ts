@@ -2,7 +2,7 @@
  * Modeling Workflows
  *
  * This module contains higher-level CAD operation workflows that
- * coordinate between different subsystems in the Design Studio:
+ * coordinate between different subsystems in the app
  * AST, code editor, file system and 3D engine.
  */
 import type { Node } from '@rust/kcl-lib/bindings/Node'
