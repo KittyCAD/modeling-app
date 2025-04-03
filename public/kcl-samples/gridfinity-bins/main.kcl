@@ -58,13 +58,11 @@ sides = patternCircular3d(
 
 // Define an axis axis000
 axis000 = {
-  custom = {
-    axis = [0.0, 1.0],
-    origin = [
-      cornerRadius + binTol,
-      cornerRadius + binTol
-    ]
-  }
+  direction = [0.0, 1.0],
+  origin = [
+    cornerRadius + binTol,
+    cornerRadius + binTol
+  ]
 }
 
 // Create a single corner of the bin

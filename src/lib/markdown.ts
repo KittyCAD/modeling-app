@@ -1,6 +1,7 @@
-import { MarkedOptions, Renderer, unescape } from '@ts-stack/markdown'
+import type { MarkedOptions } from '@ts-stack/markdown'
+import { Renderer, unescape } from '@ts-stack/markdown'
 
-import { openExternalBrowserIfDesktop } from './openWindow'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 
 /**
  * Main goal of this custom renderer is to prevent links from changing the current location

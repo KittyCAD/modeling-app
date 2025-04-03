@@ -1,8 +1,9 @@
-import { EngineCommandManagerEvents } from 'lang/std/engineConnection'
-import { engineCommandManager, sceneInfra } from 'lib/singletons'
-import { reportRejection } from 'lib/trap'
-import { isReducedMotion, throttle } from 'lib/utils'
 import { useEffect, useState } from 'react'
+
+import { EngineCommandManagerEvents } from '@src/lang/std/engineConnection'
+import { engineCommandManager, sceneInfra } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
+import { isReducedMotion, throttle } from '@src/lib/utils'
 
 const updateDollyZoom = throttle(
   (newFov: number) => sceneInfra.camControls.dollyZoom(newFov),

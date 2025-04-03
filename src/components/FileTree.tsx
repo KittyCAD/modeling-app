@@ -1,31 +1,34 @@
 import { faChevronRight, faPencil } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Disclosure } from '@headlessui/react'
-import { useFileContext } from 'hooks/useFileContext'
-import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
-import { useModelingContext } from 'hooks/useModelingContext'
-import usePlatform from 'hooks/usePlatform'
-import { useKclContext } from 'lang/KclProvider'
-import { KCLError, kclErrorsByFilename } from 'lang/errors'
-import { normalizeLineEndings } from 'lib/codeEditor'
-import { FILE_EXT } from 'lib/constants'
-import { sortFilesAndDirectories } from 'lib/desktopFS'
-import useHotkeyWrapper from 'lib/hotkeyWrapper'
-import { PATHS } from 'lib/paths'
-import { FileEntry } from 'lib/project'
-import { codeManager, kclManager } from 'lib/singletons'
-import { reportRejection } from 'lib/trap'
-import type { IndexLoaderData } from 'lib/types'
-import { Dispatch, useCallback, useRef, useState } from 'react'
+import type { Dispatch } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 
-import { ActionButton } from './ActionButton'
-import { ContextMenu, ContextMenuItem } from './ContextMenu'
-import { CustomIcon } from './CustomIcon'
+import { ActionButton } from '@src/components/ActionButton'
+import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { useLspContext } from '@src/components/LspProvider'
+import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
+import Tooltip from '@src/components/Tooltip'
+import { useFileContext } from '@src/hooks/useFileContext'
+import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import usePlatform from '@src/hooks/usePlatform'
+import { useKclContext } from '@src/lang/KclProvider'
+import type { KCLError } from '@src/lang/errors'
+import { kclErrorsByFilename } from '@src/lang/errors'
+import { normalizeLineEndings } from '@src/lib/codeEditor'
+import { FILE_EXT } from '@src/lib/constants'
+import { sortFilesAndDirectories } from '@src/lib/desktopFS'
+import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
+import { PATHS } from '@src/lib/paths'
+import type { FileEntry } from '@src/lib/project'
+import { codeManager, kclManager } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
+import type { IndexLoaderData } from '@src/lib/types'
+
 import styles from './FileTree.module.css'
-import { useLspContext } from './LspProvider'
-import { DeleteConfirmationDialog } from './ProjectCard/DeleteProjectDialog'
-import Tooltip from './Tooltip'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -270,7 +273,7 @@ const FileTreeItem = ({
       await codeManager.writeToFile()
 
       // Prevent seeing the model built one piece at a time when changing files
-      await kclManager.executeCode(true)
+      await kclManager.executeCode()
     } else {
       // Let the lsp servers know we closed a file.
       onFileClose(currentFile?.path || null, project?.path || null)

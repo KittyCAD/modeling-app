@@ -1,27 +1,26 @@
-import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
-import { ActionIcon } from 'components/ActionIcon'
-import { CustomIconName } from 'components/CustomIcon'
-import { MachineManagerContext } from 'components/MachineManagerProvider'
-import Tooltip from 'components/Tooltip'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { useKclContext } from 'lang/KclProvider'
-import { SIDEBAR_BUTTON_SUFFIX } from 'lib/constants'
-import { isDesktop } from 'lib/isDesktop'
-import { useSettings } from 'machines/appMachine'
-import { commandBarActor } from 'machines/commandBarMachine'
+import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { Resizable } from 're-resizable'
-import {
-  MouseEventHandler,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-} from 'react'
+import type { MouseEventHandler } from 'react'
+import { useCallback, useContext, useEffect, useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { onboardingPaths } from 'routes/Onboarding/paths'
 
-import { ModelingPane } from './ModelingPane'
-import { SidebarAction, SidebarType, sidebarPanes } from './ModelingPanes'
+import { ActionIcon } from '@src/components/ActionIcon'
+import type { CustomIconName } from '@src/components/CustomIcon'
+import { MachineManagerContext } from '@src/components/MachineManagerProvider'
+import { ModelingPane } from '@src/components/ModelingSidebar/ModelingPane'
+import type {
+  SidebarAction,
+  SidebarType,
+} from '@src/components/ModelingSidebar/ModelingPanes'
+import { sidebarPanes } from '@src/components/ModelingSidebar/ModelingPanes'
+import Tooltip from '@src/components/Tooltip'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useKclContext } from '@src/lang/KclProvider'
+import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import { useSettings } from '@src/machines/appMachine'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'

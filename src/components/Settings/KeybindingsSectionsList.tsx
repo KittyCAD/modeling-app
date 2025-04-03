@@ -1,7 +1,7 @@
 import {
   interactionMap,
   sortInteractionMapByCategory,
-} from 'lib/settings/initialKeybindings'
+} from '@src/lib/settings/initialKeybindings'
 
 interface KeybindingSectionsListProps {
   scrollRef: React.RefObject<HTMLDivElement>

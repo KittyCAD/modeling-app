@@ -1,93 +1,4 @@
 import { useMachine, useSelector } from '@xstate/react'
-import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
-import {
-  SEGMENT_BODIES,
-  getParentGroup,
-  getSketchOrientationDetails,
-} from 'clientSideScene/sceneEntities'
-import {
-  MachineManager,
-  MachineManagerContext,
-} from 'components/MachineManagerProvider'
-import { useFileContext } from 'hooks/useFileContext'
-import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
-import useStateMachineCommands from 'hooks/useStateMachineCommands'
-import { updateModelingState } from 'lang/modelingWorkflows'
-import {
-  insertNamedConstant,
-  replaceValueAtNodePath,
-  sketchOnExtrudedFace,
-  sketchOnOffsetPlane,
-  splitPipedProfile,
-  startSketchOnDefault,
-} from 'lang/modifyAst'
-import {
-  artifactIsPlaneWithPaths,
-  doesSketchPipeNeedSplitting,
-  getNodeFromPath,
-  isCursorInFunctionDefinition,
-  traverse,
-} from 'lang/queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import {
-  getFaceCodeRef,
-  getPathsFromArtifact,
-  getPlaneFromArtifact,
-} from 'lang/std/artifactGraph'
-import {
-  EngineConnectionEvents,
-  EngineConnectionStateType,
-} from 'lang/std/engineConnection'
-import {
-  isCursorInSketchCommandRange,
-  updateSketchDetailsNodePaths,
-} from 'lang/util'
-import {
-  KclValue,
-  PathToNode,
-  PipeExpression,
-  Program,
-  VariableDeclaration,
-  parse,
-  recast,
-  resultIsOk,
-} from 'lang/wasm'
-import {
-  ModelingCommandSchema,
-  modelingMachineCommandConfig,
-} from 'lib/commandBarConfigs/modelingCommandConfig'
-import { EXPORT_TOAST_MESSAGES, MAKE_TOAST_MESSAGES } from 'lib/constants'
-import { EXECUTION_TYPE_MOCK } from 'lib/constants'
-import { exportMake } from 'lib/exportMake'
-import { exportSave } from 'lib/exportSave'
-import { promptToEditFlow } from 'lib/promptToEdit'
-import {
-  Selections,
-  handleSelectionBatch,
-  updateSelections,
-} from 'lib/selections'
-import {
-  codeManager,
-  editorManager,
-  engineCommandManager,
-  kclManager,
-  rustContext,
-  sceneEntitiesManager,
-  sceneInfra,
-} from 'lib/singletons'
-import { submitAndAwaitTextToKcl } from 'lib/textToCad'
-import { err, reject, reportRejection, trap } from 'lib/trap'
-import { IndexLoaderData } from 'lib/types'
-import { platform, uuidv4 } from 'lib/utils'
-import { useToken } from 'machines/appMachine'
-import { useSettings } from 'machines/appMachine'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { kclEditorActor } from 'machines/kclEditorMachine'
-import {
-  getPersistedContext,
-  modelingMachine,
-  modelingMachineDefaultContext,
-} from 'machines/modelingMachine'
 import React, {
   createContext,
   useContext,
@@ -98,31 +9,108 @@ import React, {
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
+import type { Actor, ContextFrom, Prop, SnapshotFrom, StateFrom } from 'xstate'
+import { assign, fromPromise } from 'xstate'
+
+import type {
+  OutputFormat3d,
+  Point3d,
+} from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Plane } from '@rust/kcl-lib/bindings/Plane'
+
+import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
 import {
-  Actor,
-  ContextFrom,
-  Prop,
-  SnapshotFrom,
-  StateFrom,
-  assign,
-  fromPromise,
-} from 'xstate'
-
-import { OutputFormat3d, Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { Plane } from '@rust/kcl-lib/bindings/Plane'
-
-import { applyConstraintIntersect } from './Toolbar/Intersect'
-import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
+  SEGMENT_BODIES,
+  getParentGroup,
+} from '@src/clientSideScene/sceneConstants'
+import type { MachineManager } from '@src/components/MachineManagerProvider'
+import { MachineManagerContext } from '@src/components/MachineManagerProvider'
+import { applyConstraintIntersect } from '@src/components/Toolbar/Intersect'
+import { applyConstraintAbsDistance } from '@src/components/Toolbar/SetAbsDistance'
 import {
   angleBetweenInfo,
   applyConstraintAngleBetween,
-} from './Toolbar/SetAngleBetween'
-import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
+} from '@src/components/Toolbar/SetAngleBetween'
+import { applyConstraintHorzVertDistance } from '@src/components/Toolbar/SetHorzVertDistance'
 import {
   applyConstraintAngleLength,
   applyConstraintLength,
-} from './Toolbar/setAngleLength'
+} from '@src/components/Toolbar/setAngleLength'
+import { useFileContext } from '@src/hooks/useFileContext'
+import { useSetupEngineManager } from '@src/hooks/useSetupEngineManager'
+import useStateMachineCommands from '@src/hooks/useStateMachineCommands'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
+import {
+  insertNamedConstant,
+  replaceValueAtNodePath,
+  sketchOnExtrudedFace,
+  sketchOnOffsetPlane,
+  splitPipedProfile,
+  startSketchOnDefault,
+} from '@src/lang/modifyAst'
+import {
+  artifactIsPlaneWithPaths,
+  doesSketchPipeNeedSplitting,
+  getNodeFromPath,
+  isCursorInFunctionDefinition,
+  traverse,
+} from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import {
+  getFaceCodeRef,
+  getPathsFromArtifact,
+  getPlaneFromArtifact,
+} from '@src/lang/std/artifactGraph'
+import {
+  EngineConnectionEvents,
+  EngineConnectionStateType,
+} from '@src/lang/std/engineConnection'
+import {
+  isCursorInSketchCommandRange,
+  updateSketchDetailsNodePaths,
+} from '@src/lang/util'
+import type {
+  KclValue,
+  PathToNode,
+  PipeExpression,
+  Program,
+  VariableDeclaration,
+} from '@src/lang/wasm'
+import { parse, recast, resultIsOk } from '@src/lang/wasm'
+import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import {
+  EXECUTION_TYPE_MOCK,
+  EXPORT_TOAST_MESSAGES,
+  MAKE_TOAST_MESSAGES,
+} from '@src/lib/constants'
+import { exportMake } from '@src/lib/exportMake'
+import { exportSave } from '@src/lib/exportSave'
+import { promptToEditFlow } from '@src/lib/promptToEdit'
+import type { Selections } from '@src/lib/selections'
+import { handleSelectionBatch, updateSelections } from '@src/lib/selections'
+import {
+  codeManager,
+  editorManager,
+  engineCommandManager,
+  kclManager,
+  rustContext,
+  sceneEntitiesManager,
+  sceneInfra,
+} from '@src/lib/singletons'
+import { submitAndAwaitTextToKcl } from '@src/lib/textToCad'
+import { err, reject, reportRejection, trap } from '@src/lib/trap'
+import type { IndexLoaderData } from '@src/lib/types'
+import { platform, uuidv4 } from '@src/lib/utils'
+import { useSettings, useToken } from '@src/machines/appMachine'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import { kclEditorActor } from '@src/machines/kclEditorMachine'
+import {
+  getPersistedContext,
+  modelingMachine,
+  modelingMachineDefaultContext,
+} from '@src/machines/modelingMachine'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -457,10 +445,15 @@ export const ModelingMachineProvider = ({
                   },
                 })
               }
+
+              // If there are engine commands that need sent off, send them
+              // TODO: This should be handled outside of an action as its own
+              // actor, so that the system state is more controlled.
               engineEvents &&
                 engineEvents.forEach((event) => {
-                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                  engineCommandManager.sendSceneCommand(event)
+                  engineCommandManager
+                    .sendSceneCommand(event)
+                    .catch(reportRejection)
                 })
               updateSceneObjectColors()
 
@@ -913,7 +906,9 @@ export const ModelingMachineProvider = ({
               }
               return Promise.reject(new Error('No sketch'))
             }
-            const info = await getSketchOrientationDetails(sketch.value)
+            const info = await sceneEntitiesManager.getSketchOrientationDetails(
+              sketch.value
+            )
             await letEngineAnimateAndSyncCamAfter(
               engineCommandManager,
               info?.sketchDetails?.faceId || ''
@@ -1576,9 +1571,7 @@ export const ModelingMachineProvider = ({
               data
             )
             if (err(result)) return reject(result)
-
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+            await codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
 
             return result
           }

@@ -1,5 +1,7 @@
 import type { Locator, Page } from '@playwright/test'
-import { isArray, uuidv4 } from 'lib/utils'
+import { isArray, uuidv4 } from '@src/lib/utils'
+
+import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 
 import {
   closeDebugPanel,
@@ -8,9 +10,8 @@ import {
   getUtils,
   openAndClearDebugPanel,
   sendCustomCmd,
-} from '../test-utils'
-import { expect } from '../zoo-test'
-import { CmdBarFixture } from './cmdBarFixture'
+} from '@e2e/playwright/test-utils'
+import { expect } from '@e2e/playwright/zoo-test'
 
 type MouseParams = {
   pixelDiff?: number

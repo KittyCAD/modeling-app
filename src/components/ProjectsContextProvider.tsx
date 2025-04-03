@@ -1,40 +1,41 @@
 import { useMachine } from '@xstate/react'
-import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
-import { useProjectsLoader } from 'hooks/useProjectsLoader'
-import useStateMachineCommands from 'hooks/useStateMachineCommands'
-import { newKclFile } from 'lang/project'
-import { projectsCommandBarConfig } from 'lib/commandBarConfigs/projectsCommandConfig'
+import { createContext, useCallback, useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import type { Actor, AnyStateMachine, Prop, StateFrom } from 'xstate'
+import { fromPromise } from 'xstate'
+
+import { useLspContext } from '@src/components/LspProvider'
+import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
+import { useProjectsLoader } from '@src/hooks/useProjectsLoader'
+import useStateMachineCommands from '@src/hooks/useStateMachineCommands'
+import { newKclFile } from '@src/lang/project'
+import { projectsCommandBarConfig } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
   CREATE_FILE_URL_PARAM,
   FILE_EXT,
   PROJECT_ENTRYPOINT,
-} from 'lib/constants'
+} from '@src/lib/constants'
 import {
   createNewProjectDirectory,
   listProjects,
   renameProjectDirectory,
-} from 'lib/desktop'
+} from '@src/lib/desktop'
 import {
   doesProjectNameNeedInterpolated,
   getNextFileName,
   getNextProjectIndex,
   getUniqueProjectName,
   interpolateProjectNameWithIndex,
-} from 'lib/desktopFS'
-import { isDesktop } from 'lib/isDesktop'
-import { PATHS } from 'lib/paths'
-import { Project } from 'lib/project'
-import { codeManager, kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
-import { useSettings } from 'machines/appMachine'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { projectsMachine } from 'machines/projectsMachine'
-import { createContext, useCallback, useEffect, useState } from 'react'
-import toast from 'react-hot-toast'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { Actor, AnyStateMachine, Prop, StateFrom, fromPromise } from 'xstate'
-
-import { useLspContext } from './LspProvider'
+} from '@src/lib/desktopFS'
+import { isDesktop } from '@src/lib/isDesktop'
+import { PATHS } from '@src/lib/paths'
+import type { Project } from '@src/lib/project'
+import { codeManager, kclManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
+import { useSettings } from '@src/machines/appMachine'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import { projectsMachine } from '@src/machines/projectsMachine'
 
 type MachineContext<T extends AnyStateMachine> = {
   state?: StateFrom<T>
@@ -131,7 +132,7 @@ const ProjectsContextWeb = ({ children }: { children: React.ReactNode }) => {
           if (err(codeToWrite)) return Promise.reject(codeToWrite)
           codeManager.updateCodeStateEditor(codeToWrite)
           await codeManager.writeToFile()
-          await kclManager.executeCode(true)
+          await kclManager.executeCode()
 
           return {
             message: 'File overwritten successfully',

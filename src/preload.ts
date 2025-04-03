@@ -1,14 +1,15 @@
+import packageJson from '@root/package.json'
+import type { MachinesListing } from '@src/components/MachineManagerProvider'
 import chokidar from 'chokidar'
-import { MachinesListing } from 'components/MachineManagerProvider'
-import { IpcRendererEvent, contextBridge, ipcRenderer } from 'electron'
+import type { IpcRendererEvent } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 import fsSync from 'node:fs'
 import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'path'
 
-import packageJson from '../package.json'
-import type { Channel } from './channels'
-import type { WebContentSendPayload } from './menu/channels'
+import type { Channel } from '@src/channels'
+import type { WebContentSendPayload } from '@src/menu/channels'
 
 const typeSafeIpcRendererOn = (
   channel: Channel,

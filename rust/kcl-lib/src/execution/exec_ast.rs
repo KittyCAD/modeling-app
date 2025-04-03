@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
-use super::kcl_value::TypeDef;
+use super::{kcl_value::TypeDef, types::PrimitiveType};
 use crate::{
     engine::ExecutionKind,
     errors::{KclError, KclErrorDetails},
@@ -902,6 +902,33 @@ impl Node<BinaryExpression> {
             }
         }
 
+        // Then check if we have solids.
+        if self.operator == BinaryOperator::Add || self.operator == BinaryOperator::Or {
+            if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
+                let args = crate::std::Args::new(Default::default(), self.into(), ctx.clone(), None);
+                let result =
+                    crate::std::csg::inner_union(vec![*left.clone(), *right.clone()], exec_state, args).await?;
+                return Ok(result.into());
+            }
+        } else if self.operator == BinaryOperator::Sub {
+            // Check if we have solids.
+            if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
+                let args = crate::std::Args::new(Default::default(), self.into(), ctx.clone(), None);
+                let result =
+                    crate::std::csg::inner_subtract(vec![*left.clone()], vec![*right.clone()], exec_state, args)
+                        .await?;
+                return Ok(result.into());
+            }
+        } else if self.operator == BinaryOperator::And {
+            // Check if we have solids.
+            if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
+                let args = crate::std::Args::new(Default::default(), self.into(), ctx.clone(), None);
+                let result =
+                    crate::std::csg::inner_intersect(vec![*left.clone(), *right.clone()], exec_state, args).await?;
+                return Ok(result.into());
+            }
+        }
+
         // Check if we are doing logical operations on booleans.
         if self.operator == BinaryOperator::Or || self.operator == BinaryOperator::And {
             let KclValue::Bool {
@@ -1032,6 +1059,15 @@ impl Node<UnaryExpression> {
         }
 
         let value = &self.argument.get_result(exec_state, ctx).await?;
+        let err = || {
+            KclError::Semantic(KclErrorDetails {
+                message: format!(
+                    "You can only negate numbers, planes, or lines, but this is a {}",
+                    value.human_friendly_type()
+                ),
+                source_ranges: vec![self.into()],
+            })
+        };
         match value {
             KclValue::Number { value, ty, .. } => {
                 let meta = vec![Metadata {
@@ -1053,13 +1089,63 @@ impl Node<UnaryExpression> {
                 plane.id = exec_state.next_uuid();
                 Ok(KclValue::Plane { value: plane })
             }
-            _ => Err(KclError::Semantic(KclErrorDetails {
-                message: format!(
-                    "You can only negate numbers or planes, but this is a {}",
-                    value.human_friendly_type()
-                ),
-                source_ranges: vec![self.into()],
-            })),
+            KclValue::Object { value: values, meta } => {
+                // Special-case for negating line-like objects.
+                let Some(direction) = values.get("direction") else {
+                    return Err(err());
+                };
+
+                let direction = match direction {
+                    KclValue::MixedArray { value: values, meta } => {
+                        let values = values
+                            .iter()
+                            .map(|v| match v {
+                                KclValue::Number { value, ty, meta } => Ok(KclValue::Number {
+                                    value: *value * -1.0,
+                                    ty: ty.clone(),
+                                    meta: meta.clone(),
+                                }),
+                                _ => Err(err()),
+                            })
+                            .collect::<Result<Vec<_>, _>>()?;
+
+                        KclValue::MixedArray {
+                            value: values,
+                            meta: meta.clone(),
+                        }
+                    }
+                    KclValue::HomArray {
+                        value: values,
+                        ty: ty @ RuntimeType::Primitive(PrimitiveType::Number(_)),
+                    } => {
+                        let values = values
+                            .iter()
+                            .map(|v| match v {
+                                KclValue::Number { value, ty, meta } => Ok(KclValue::Number {
+                                    value: *value * -1.0,
+                                    ty: ty.clone(),
+                                    meta: meta.clone(),
+                                }),
+                                _ => Err(err()),
+                            })
+                            .collect::<Result<Vec<_>, _>>()?;
+
+                        KclValue::HomArray {
+                            value: values,
+                            ty: ty.clone(),
+                        }
+                    }
+                    _ => return Err(err()),
+                };
+
+                let mut value = values.clone();
+                value.insert("direction".to_owned(), direction);
+                Ok(KclValue::Object {
+                    value,
+                    meta: meta.clone(),
+                })
+            }
+            _ => Err(err()),
         }
     }
 }
@@ -1175,7 +1261,7 @@ impl Node<CallExpressionKw> {
                     ));
                 }
 
-                let op = if func.feature_tree_operation() {
+                let op = if func.feature_tree_operation() && !ctx.is_isolated_execution().await {
                     let op_labeled_args = args
                         .kw_args
                         .labeled
@@ -1245,25 +1331,6 @@ impl Node<CallExpressionKw> {
                 // exec_state.
                 let func = fn_name.get_result(exec_state, ctx).await?.clone();
 
-                // Track call operation.
-                let op_labeled_args = args
-                    .kw_args
-                    .labeled
-                    .iter()
-                    .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
-                    .collect();
-                exec_state.global.operations.push(Operation::UserDefinedFunctionCall {
-                    name: Some(fn_name.to_string()),
-                    function_source_range: func.function_def_source_range().unwrap_or_default(),
-                    unlabeled_arg: args
-                        .kw_args
-                        .unlabeled
-                        .as_ref()
-                        .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
-                    labeled_args: op_labeled_args,
-                    source_range: callsite,
-                });
-
                 let Some(fn_src) = func.as_fn() else {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: "cannot call this because it isn't a function".to_string(),
@@ -1271,11 +1338,19 @@ impl Node<CallExpressionKw> {
                     }));
                 };
 
-                let return_value = fn_src.call_kw(exec_state, ctx, args, callsite).await.map_err(|e| {
-                    // Add the call expression to the source ranges.
-                    // TODO currently ignored by the frontend
-                    e.add_source_ranges(vec![callsite])
-                })?;
+                let return_value = fn_src
+                    .call_kw(Some(fn_name.to_string()), exec_state, ctx, args, callsite)
+                    .await
+                    .map_err(|e| {
+                        // Add the call expression to the source ranges.
+                        // TODO currently ignored by the frontend
+                        e.add_source_ranges(vec![callsite])
+                    })?;
+
+                if matches!(fn_src, FunctionSource::User { .. }) && !ctx.is_isolated_execution().await {
+                    // Track return operation.
+                    exec_state.global.operations.push(Operation::UserDefinedFunctionReturn);
+                }
 
                 let result = return_value.ok_or_else(move || {
                     let mut source_ranges: Vec<SourceRange> = vec![callsite];
@@ -1288,9 +1363,6 @@ impl Node<CallExpressionKw> {
                         source_ranges,
                     })
                 })?;
-
-                // Track return operation.
-                exec_state.global.operations.push(Operation::UserDefinedFunctionReturn);
 
                 Ok(result)
             }
@@ -1327,7 +1399,7 @@ impl Node<CallExpression> {
                     ));
                 }
 
-                let op = if func.feature_tree_operation() {
+                let op = if func.feature_tree_operation() && !ctx.is_isolated_execution().await {
                     let op_labeled_args = func
                         .args(false)
                         .iter()
@@ -1385,15 +1457,17 @@ impl Node<CallExpression> {
                 // exec_state.
                 let func = fn_name.get_result(exec_state, ctx).await?.clone();
 
-                // Track call operation.
-                exec_state.global.operations.push(Operation::UserDefinedFunctionCall {
-                    name: Some(fn_name.to_string()),
-                    function_source_range: func.function_def_source_range().unwrap_or_default(),
-                    unlabeled_arg: None,
-                    // TODO: Add the arguments for legacy positional parameters.
-                    labeled_args: Default::default(),
-                    source_range: callsite,
-                });
+                if !ctx.is_isolated_execution().await {
+                    // Track call operation.
+                    exec_state.global.operations.push(Operation::UserDefinedFunctionCall {
+                        name: Some(fn_name.to_string()),
+                        function_source_range: func.function_def_source_range().unwrap_or_default(),
+                        unlabeled_arg: None,
+                        // TODO: Add the arguments for legacy positional parameters.
+                        labeled_args: Default::default(),
+                        source_range: callsite,
+                    });
+                }
 
                 let Some(fn_src) = func.as_fn() else {
                     return Err(KclError::Semantic(KclErrorDetails {
@@ -1401,11 +1475,14 @@ impl Node<CallExpression> {
                         source_ranges: vec![source_range],
                     }));
                 };
-                let return_value = fn_src.call(exec_state, ctx, fn_args, source_range).await.map_err(|e| {
-                    // Add the call expression to the source ranges.
-                    // TODO currently ignored by the frontend
-                    e.add_source_ranges(vec![source_range])
-                })?;
+                let return_value = fn_src
+                    .call(Some(fn_name.to_string()), exec_state, ctx, fn_args, source_range)
+                    .await
+                    .map_err(|e| {
+                        // Add the call expression to the source ranges.
+                        // TODO currently ignored by the frontend
+                        e.add_source_ranges(vec![source_range])
+                    })?;
 
                 let result = return_value.ok_or_else(move || {
                     let mut source_ranges: Vec<SourceRange> = vec![source_range];
@@ -1419,8 +1496,10 @@ impl Node<CallExpression> {
                     })
                 })?;
 
-                // Track return operation.
-                exec_state.global.operations.push(Operation::UserDefinedFunctionReturn);
+                if !ctx.is_isolated_execution().await {
+                    // Track return operation.
+                    exec_state.global.operations.push(Operation::UserDefinedFunctionReturn);
+                }
 
                 Ok(result)
             }
@@ -2029,6 +2108,7 @@ async fn call_user_defined_function_kw(
 impl FunctionSource {
     pub async fn call(
         &self,
+        fn_name: Option<String>,
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
         mut args: Vec<Arg>,
@@ -2046,7 +2126,7 @@ impl FunctionSource {
                         ctx.clone(),
                         exec_state.mod_local.pipe_value.clone().map(|v| Arg::new(v, callsite)),
                     );
-                    self.call_kw(exec_state, ctx, args, callsite).await
+                    self.call_kw(fn_name, exec_state, ctx, args, callsite).await
                 } else {
                     Err(KclError::Semantic(KclErrorDetails {
                         message: format!("{} requires its arguments to be labelled", props.name),
@@ -2063,6 +2143,7 @@ impl FunctionSource {
 
     pub async fn call_kw(
         &self,
+        fn_name: Option<String>,
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
         mut args: crate::std::Args,
@@ -2146,6 +2227,26 @@ impl FunctionSource {
                     }
                 }
 
+                let op = if props.include_in_feature_tree && !ctx.is_isolated_execution().await {
+                    let op_labeled_args = args
+                        .kw_args
+                        .labeled
+                        .iter()
+                        .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
+                        .collect();
+                    Some(Operation::KclStdLibCall {
+                        name: fn_name.unwrap_or_default(),
+                        unlabeled_arg: args
+                            .unlabeled_kw_arg_unconverted()
+                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
+                        labeled_args: op_labeled_args,
+                        source_range: callsite,
+                        is_error: false,
+                    })
+                } else {
+                    None
+                };
+
                 // Attempt to call the function.
                 exec_state.mut_stack().push_new_env_for_rust_call();
                 let mut result = {
@@ -2153,7 +2254,15 @@ impl FunctionSource {
                     let result = func(exec_state, args).await;
                     exec_state.mut_stack().pop_env();
 
-                    // TODO support recording op into the feature tree
+                    if let Some(mut op) = op {
+                        op.set_std_lib_call_is_error(result.is_err());
+                        // Track call operation.  We do this after the call
+                        // since things like patternTransform may call user code
+                        // before running, and we will likely want to use the
+                        // return value. The call takes ownership of the args,
+                        // so we need to build the op before the call.
+                        exec_state.global.operations.push(op);
+                    }
                     result
                 }?;
 
@@ -2162,6 +2271,27 @@ impl FunctionSource {
                 Ok(Some(result))
             }
             FunctionSource::User { ast, memory, .. } => {
+                if !ctx.is_isolated_execution().await {
+                    // Track call operation.
+                    let op_labeled_args = args
+                        .kw_args
+                        .labeled
+                        .iter()
+                        .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
+                        .collect();
+                    exec_state.global.operations.push(Operation::UserDefinedFunctionCall {
+                        name: fn_name,
+                        function_source_range: ast.as_source_range(),
+                        unlabeled_arg: args
+                            .kw_args
+                            .unlabeled
+                            .as_ref()
+                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
+                        labeled_args: op_labeled_args,
+                        source_range: callsite,
+                    });
+                }
+
                 call_user_defined_function_kw(args.kw_args, *memory, ast, exec_state, ctx).await
             }
             FunctionSource::None => unreachable!(),

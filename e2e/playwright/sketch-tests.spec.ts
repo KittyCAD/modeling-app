@@ -1,20 +1,20 @@
-import { Page } from '@playwright/test'
-import { roundOff, uuidv4 } from 'lib/utils'
+import type { Page } from '@playwright/test'
+import { roundOff, uuidv4 } from '@src/lib/utils'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { CmdBarFixture } from './fixtures/cmdBarFixture'
-import { HomePageFixture } from './fixtures/homePageFixture'
-import { SceneFixture } from './fixtures/sceneFixture'
-import { ToolbarFixture } from './fixtures/toolbarFixture'
+import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
+import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
+import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import {
   PERSIST_MODELING_CONTEXT,
   TEST_COLORS,
   getMovementUtils,
   getUtils,
   orRunWhenFullSuiteEnabled,
-} from './test-utils'
-import { expect, test } from './zoo-test'
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
   test('multi-sketch file shows multiple Edit Sketch buttons', async ({
@@ -479,7 +479,8 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn(XZ)
+        `@settings(defaultLengthUnit=in)
+sketch001 = startSketchOn(XZ)
     |> circle(center = [4.61, -5.01], radius = 8)`
       )
     })
@@ -564,12 +565,14 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
   test('Can edit a sketch that has been extruded in the same pipe', async ({
     page,
     homePage,
+    editor,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn(XZ)
+        `@settings(defaultLengthUnit=in)
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -10.01], %)
   |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -0.38], %)
@@ -654,31 +657,34 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
     await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
 
     // expect the code to have changed
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn(XZ)
+    await editor.expectEditor.toContain(
+      `sketch001 = startSketchOn(XZ)
     |> startProfileAt([7.12, -12.68], %)
     |> line(end = [12.68, -1.09])
     |> tangentialArcTo([24.89, 0.68], %)
     |> close()
-    |> extrude(length = 5)
-  `)
+    |> extrude(length = 5)`,
+      { shouldNormalise: true }
+    )
   })
 
   test('Can edit a sketch that has been revolved in the same pipe', async ({
     page,
     homePage,
     scene,
+    editor,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn(XZ)
+        `@settings(defaultLengthUnit=in)
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -14.01], %)
   |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -5.38], %)
   |> close()
-  |> revolve(axis = "X")`
+  |> revolve(axis = X)`
       )
     })
 
@@ -758,14 +764,16 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
     await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
 
     // expect the code to have changed
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn(XZ)
+    await editor.expectEditor.toContain(
+      `sketch001 = startSketchOn(XZ)
   |> startProfileAt([6.44, -12.07], %)
   |> line(end = [14.72, 1.97])
   |> tangentialArcTo([24.95, -5.38], %)
   |> line(end = [1.97, 2.06])
   |> close()
-  |> revolve(axis = "X")`)
+  |> revolve(axis = X)`,
+      { shouldNormalise: true }
+    )
   })
   test('Can add multiple sketches', async ({ page, homePage }) => {
     const u = await getUtils(page)
@@ -1215,7 +1223,7 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
           |> xLine(endAbsolute = 0 + .001)
           |> yLine(endAbsolute = 0)
           |> close()
-          |> revolve(axis = "Y")
+          |> revolve(axis = Y)
 
         return lugSketch
       }

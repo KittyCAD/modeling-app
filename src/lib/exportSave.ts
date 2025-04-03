@@ -1,10 +1,10 @@
 import JSZip from 'jszip'
 import toast from 'react-hot-toast'
 
-import { browserSaveFile } from './browserSaveFile'
-import { EXPORT_TOAST_MESSAGES } from './constants'
-import { isDesktop } from './isDesktop'
-import ModelingAppFile from './modelingAppFile'
+import { browserSaveFile } from '@src/lib/browserSaveFile'
+import { EXPORT_TOAST_MESSAGES } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import type ModelingAppFile from '@src/lib/modelingAppFile'
 
 const save_ = async (file: ModelingAppFile, toastId: string) => {
   try {

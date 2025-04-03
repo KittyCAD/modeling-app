@@ -1,29 +1,29 @@
-import { CustomIcon } from 'components/CustomIcon'
-import Tooltip from 'components/Tooltip'
+import { useRef } from 'react'
+
+import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
+import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
+import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
+
+import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
+import type { CameraSystem } from '@src/lib/cameraControls'
+import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import {
-  CameraSystem,
-  cameraMouseDragGuards,
-  cameraSystems,
-} from 'lib/cameraControls'
-import { DEFAULT_PROJECT_NAME } from 'lib/constants'
-import { DEFAULT_DEFAULT_LENGTH_UNIT } from 'lib/constants'
-import { isDesktop } from 'lib/isDesktop'
-import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  DEFAULT_PROJECT_NAME,
+} from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import type {
   BaseUnit,
   SettingProps,
   SettingsLevel,
-  baseUnitsUnion,
-} from 'lib/settings/settingsTypes'
-import { Themes } from 'lib/theme'
-import { reportRejection } from 'lib/trap'
-import { isEnumMember } from 'lib/types'
-import { isArray, toSync } from 'lib/utils'
-import { useRef } from 'react'
-
-import { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
-import { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
-import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
-import { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
+} from '@src/lib/settings/settingsTypes'
+import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
+import { Themes } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import { isEnumMember } from '@src/lib/types'
+import { isArray, toSync } from '@src/lib/utils'
 
 /**
  * A setting that can be set at the user or project level

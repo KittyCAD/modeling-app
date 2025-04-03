@@ -20,7 +20,8 @@ import {
 } from '@codemirror/language'
 import { diagnosticCount, lintGutter, lintKeymap } from '@codemirror/lint'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
-import { EditorState, Extension, Prec, Transaction } from '@codemirror/state'
+import type { Extension } from '@codemirror/state'
+import { EditorState, Prec, Transaction } from '@codemirror/state'
 import {
   EditorView,
   drawSelection,
@@ -33,25 +34,25 @@ import {
   rectangularSelection,
 } from '@codemirror/view'
 import interact from '@replit/codemirror-interact'
+import { TEST } from '@src/env'
 import { useSelector } from '@xstate/react'
-import { useLspContext } from 'components/LspProvider'
-import { lineHighlightField } from 'editor/highlightextension'
-import { modelingMachineEvent } from 'editor/manager'
-import { TEST } from 'env'
-import { codeManagerHistoryCompartment } from 'lang/codeManager'
-import { codeManager, editorManager, kclManager } from 'lib/singletons'
-import { Themes, getSystemTheme } from 'lib/theme'
-import { onMouseDragMakeANewNumber, onMouseDragRegex } from 'lib/utils'
-import { useSettings } from 'machines/appMachine'
+import { useEffect, useMemo, useRef } from 'react'
+import { useHotkeys } from 'react-hotkeys-hook'
+
+import { useLspContext } from '@src/components/LspProvider'
+import CodeEditor from '@src/components/ModelingSidebar/ModelingPanes/CodeEditor'
+import { lineHighlightField } from '@src/editor/highlightextension'
+import { modelingMachineEvent } from '@src/editor/manager'
+import { codeManagerHistoryCompartment } from '@src/lang/codeManager'
+import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
+import { Themes, getSystemTheme } from '@src/lib/theme'
+import { onMouseDragMakeANewNumber, onMouseDragRegex } from '@src/lib/utils'
+import { useSettings } from '@src/machines/appMachine'
 import {
   editorIsMountedSelector,
   kclEditorActor,
   selectionEventSelector,
-} from 'machines/kclEditorMachine'
-import { useEffect, useMemo, useRef } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
-
-import CodeEditor from './CodeEditor'
+} from '@src/machines/kclEditorMachine'
 
 export const editorShortcutMeta = {
   formatCode: {

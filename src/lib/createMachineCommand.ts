@@ -1,6 +1,5 @@
-import { DEV } from 'env'
-import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
-import {
+import { DEV } from '@src/env'
+import type {
   Actor,
   AnyStateMachine,
   ContextFrom,
@@ -8,15 +7,16 @@ import {
   StateFrom,
 } from 'xstate'
 
-import {
+import type {
   Command,
   CommandArgument,
   CommandArgumentConfig,
   CommandConfig,
   StateMachineCommandSetConfig,
   StateMachineCommandSetSchema,
-} from './commandTypes'
-import { isDesktop } from './isDesktop'
+} from '@src/lib/commandTypes'
+import { isDesktop } from '@src/lib/isDesktop'
+import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 
 interface CreateMachineCommandProps<
   T extends AnyStateMachine,

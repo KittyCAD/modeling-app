@@ -1,48 +1,7 @@
 import decamelize from 'decamelize'
-import {
-  createSettingsCommand,
-  settingsWithCommandConfigs,
-} from 'lib/commandBarConfigs/settingsCommandConfig'
-import { Command } from 'lib/commandTypes'
-import { Project } from 'lib/project'
-import {
-  SettingsType,
-  createSettings,
-  settings,
-} from 'lib/settings/initialSettings'
-import {
-  BaseUnit,
-  SetEventTypes,
-  SettingsLevel,
-  SettingsPaths,
-  WildcardSetEvent,
-} from 'lib/settings/settingsTypes'
-import {
-  clearSettingsAtLevel,
-  configurationToSettingsPayload,
-  loadAndValidateSettings,
-  projectConfigurationToSettingsPayload,
-  saveSettings,
-  setSettingsAtLevel,
-} from 'lib/settings/settingsUtils'
-import {
-  codeManager,
-  engineCommandManager,
-  kclManager,
-  sceneEntitiesManager,
-  sceneInfra,
-} from 'lib/singletons'
-import {
-  Themes,
-  darkModeMatcher,
-  getOppositeTheme,
-  getSystemTheme,
-  setThemeClass,
-} from 'lib/theme'
-import { reportRejection } from 'lib/trap'
 import toast from 'react-hot-toast'
+import type { AnyActorRef } from 'xstate'
 import {
-  AnyActorRef,
   assign,
   enqueueActions,
   fromCallback,
@@ -51,9 +10,47 @@ import {
   setup,
 } from 'xstate'
 
-import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
+import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 
-import { commandBarActor } from './commandBarMachine'
+import {
+  createSettingsCommand,
+  settingsWithCommandConfigs,
+} from '@src/lib/commandBarConfigs/settingsCommandConfig'
+import type { Command } from '@src/lib/commandTypes'
+import type { Project } from '@src/lib/project'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
+import { createSettings, settings } from '@src/lib/settings/initialSettings'
+import type {
+  BaseUnit,
+  SetEventTypes,
+  SettingsLevel,
+  SettingsPaths,
+  WildcardSetEvent,
+} from '@src/lib/settings/settingsTypes'
+import {
+  clearSettingsAtLevel,
+  configurationToSettingsPayload,
+  loadAndValidateSettings,
+  projectConfigurationToSettingsPayload,
+  saveSettings,
+  setSettingsAtLevel,
+} from '@src/lib/settings/settingsUtils'
+import {
+  codeManager,
+  engineCommandManager,
+  kclManager,
+  sceneEntitiesManager,
+  sceneInfra,
+} from '@src/lib/singletons'
+import {
+  Themes,
+  darkModeMatcher,
+  getOppositeTheme,
+  getSystemTheme,
+  setThemeClass,
+} from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import { commandBarActor } from '@src/machines/commandBarMachine'
 
 type SettingsMachineContext = SettingsType & {
   currentProject?: Project
@@ -177,14 +174,6 @@ export const settingsMachine = setup({
     }),
   },
   actions: {
-    setClientSideSceneUnits: ({ context, event }) => {
-      const newBaseUnit =
-        event.type === 'set.modeling.defaultUnit'
-          ? (event.data.value as BaseUnit)
-          : context.modeling.defaultUnit.current
-      if (!sceneInfra) return
-      sceneInfra.baseUnit = newBaseUnit
-    },
     setEngineTheme: ({ context }) => {
       if (engineCommandManager && context.app.theme.current) {
         engineCommandManager
@@ -256,7 +245,7 @@ export const settingsMachine = setup({
 
         if (shouldExecute) {
           // Unit changes requires a re-exec of code
-          kclManager.executeCode(true).catch(reportRejection)
+          kclManager.executeCode().catch(reportRejection)
         } else {
           // For any future logging we'd like to do
           // console.log(
@@ -375,7 +364,7 @@ export const settingsMachine = setup({
   ],
   states: {
     idle: {
-      entry: ['setThemeClass', 'setClientSideSceneUnits', 'sendThemeToWatcher'],
+      entry: ['setThemeClass', 'sendThemeToWatcher'],
 
       on: {
         '*': {
@@ -418,12 +407,7 @@ export const settingsMachine = setup({
         'set.modeling.defaultUnit': {
           target: 'persisting settings',
 
-          actions: [
-            'setSettingAtLevel',
-            'toastSuccess',
-            'setClientSideSceneUnits',
-            'Execute AST',
-          ],
+          actions: ['setSettingAtLevel', 'toastSuccess', 'Execute AST'],
         },
 
         'set.app.theme': {
@@ -477,7 +461,6 @@ export const settingsMachine = setup({
             'resetSettings',
             'setThemeClass',
             'setEngineTheme',
-            'setClientSideSceneUnits',
             'setThemeColor',
             'Execute AST',
             'setClientTheme',
@@ -491,7 +474,6 @@ export const settingsMachine = setup({
             'setAllSettings',
             'setThemeClass',
             'setEngineTheme',
-            'setClientSideSceneUnits',
             'setThemeColor',
             'Execute AST',
             'setClientTheme',
@@ -552,7 +534,6 @@ export const settingsMachine = setup({
             'setAllSettings',
             'setThemeClass',
             'setEngineTheme',
-            'setClientSideSceneUnits',
             'setThemeColor',
             'setClientTheme',
             'setAllowOrbitInSketchMode',
@@ -582,7 +563,6 @@ export const settingsMachine = setup({
             'setAllSettings',
             'setThemeClass',
             'setEngineTheme',
-            'setClientSideSceneUnits',
             'setThemeColor',
             'Execute AST',
             'setClientTheme',

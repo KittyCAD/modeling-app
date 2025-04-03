@@ -1,12 +1,13 @@
 import { Popover } from '@headlessui/react'
-import { reportRejection } from 'lib/trap'
-import { toSync } from 'lib/utils'
 
-import { useNetworkContext } from '../hooks/useNetworkContext'
-import { NetworkHealthState } from '../hooks/useNetworkStatus'
-import { ConnectingTypeGroup } from '../lang/std/engineConnection'
-import { ActionIcon, ActionIconProps } from './ActionIcon'
-import Tooltip from './Tooltip'
+import type { ActionIconProps } from '@src/components/ActionIcon'
+import { ActionIcon } from '@src/components/ActionIcon'
+import Tooltip from '@src/components/Tooltip'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import type { ConnectingTypeGroup } from '@src/lang/std/engineConnection'
+import { reportRejection } from '@src/lib/trap'
+import { toSync } from '@src/lib/utils'
 
 export const NETWORK_HEALTH_TEXT: Record<NetworkHealthState, string> = {
   [NetworkHealthState.Ok]: 'Connected',

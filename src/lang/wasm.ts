@@ -1,15 +1,46 @@
-import { TEST } from 'env'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import type {
+  ArtifactCommand,
+  ArtifactId,
+  ArtifactGraph as RustArtifactGraph,
+} from '@rust/kcl-lib/bindings/Artifact'
+import type { CompilationError } from '@rust/kcl-lib/bindings/CompilationError'
+import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import type { CoreDumpInfo } from '@rust/kcl-lib/bindings/CoreDumpInfo'
+import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
+import type { Discovered } from '@rust/kcl-lib/bindings/Discovered'
+import type { ExecOutcome as RustExecOutcome } from '@rust/kcl-lib/bindings/ExecOutcome'
+import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
+import type { KclErrorWithOutputs } from '@rust/kcl-lib/bindings/KclErrorWithOutputs'
+import type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
+import type { MetaSettings } from '@rust/kcl-lib/bindings/MetaSettings'
+import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { Program } from '@rust/kcl-lib/bindings/Program'
+import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+import type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
+import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
+import type { UnitAngle as UnitAng } from '@rust/kcl-lib/bindings/UnitAngle'
+import type { UnitLen } from '@rust/kcl-lib/bindings/UnitLen'
+
+import { KCLError } from '@src/lang/errors'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import {
+  defaultArtifactGraph,
+  type Artifact,
+} from '@src/lang/std/artifactGraph'
+import type { Coords2d } from '@src/lang/std/sketch'
 import {
   DEFAULT_DEFAULT_ANGLE_UNIT,
   DEFAULT_DEFAULT_LENGTH_UNIT,
-} from 'lib/constants'
-import { CoreDumpManager } from 'lib/coredump'
-import openWindow from 'lib/openWindow'
-import { getAllCurrentSettings } from 'lib/settings/settingsUtils'
-import { Reason, err } from 'lib/trap'
-import { DeepPartial } from 'lib/types'
-import { isArray } from 'lib/utils'
+} from '@src/lib/constants'
+import type { CoreDumpManager } from '@src/lib/coredump'
+import openWindow from '@src/lib/openWindow'
+import { Reason, err } from '@src/lib/trap'
+import type { DeepPartial } from '@src/lib/types'
+import { isArray } from '@src/lib/utils'
 import {
   base64_decode,
   change_kcl_settings,
@@ -31,76 +62,49 @@ import {
   reloadModule,
   serialize_configuration,
   serialize_project_configuration,
-} from 'lib/wasm_lib_wrapper'
+} from '@src/lib/wasm_lib_wrapper'
 
-import { ArtifactId } from '@rust/kcl-lib/bindings/Artifact'
-import { ArtifactCommand } from '@rust/kcl-lib/bindings/Artifact'
-import { ArtifactGraph as RustArtifactGraph } from '@rust/kcl-lib/bindings/Artifact'
-import { CompilationError } from '@rust/kcl-lib/bindings/CompilationError'
-import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import { CoreDumpInfo } from '@rust/kcl-lib/bindings/CoreDumpInfo'
-import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
-import { Discovered } from '@rust/kcl-lib/bindings/Discovered'
-import { ExecOutcome as RustExecOutcome } from '@rust/kcl-lib/bindings/ExecOutcome'
-import { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
-import { KclErrorWithOutputs } from '@rust/kcl-lib/bindings/KclErrorWithOutputs'
-import { KclValue } from '@rust/kcl-lib/bindings/KclValue'
-import { MetaSettings } from '@rust/kcl-lib/bindings/MetaSettings'
-import { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
-import { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
-import { Operation } from '@rust/kcl-lib/bindings/Operation'
-import type { Program } from '@rust/kcl-lib/bindings/Program'
-import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
-import { Sketch } from '@rust/kcl-lib/bindings/Sketch'
-import { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
-import { UnitAngle as UnitAng } from '@rust/kcl-lib/bindings/UnitAngle'
-import { UnitLen } from '@rust/kcl-lib/bindings/UnitLen'
-
-import { KCLError } from './errors'
-import { Artifact } from './std/artifactGraph'
-import { Coords2d } from './std/sketch'
-
-export type { Artifact } from '@rust/kcl-lib/bindings/Artifact'
-export type { ArtifactCommand } from '@rust/kcl-lib/bindings/Artifact'
-export type { ArtifactId } from '@rust/kcl-lib/bindings/Artifact'
-export type { Cap as CapArtifact } from '@rust/kcl-lib/bindings/Artifact'
-export type { CodeRef } from '@rust/kcl-lib/bindings/Artifact'
-export type { EdgeCut } from '@rust/kcl-lib/bindings/Artifact'
-export type { Path as PathArtifact } from '@rust/kcl-lib/bindings/Artifact'
-export type { Plane as PlaneArtifact } from '@rust/kcl-lib/bindings/Artifact'
-export type { Segment as SegmentArtifact } from '@rust/kcl-lib/bindings/Artifact'
-export type { Solid2d as Solid2dArtifact } from '@rust/kcl-lib/bindings/Artifact'
-export type { Sweep as SweepArtifact } from '@rust/kcl-lib/bindings/Artifact'
-export type { SweepEdge } from '@rust/kcl-lib/bindings/Artifact'
-export type { Wall as WallArtifact } from '@rust/kcl-lib/bindings/Artifact'
-export type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-export type { Program } from '@rust/kcl-lib/bindings/Program'
-export type { Expr } from '@rust/kcl-lib/bindings/Expr'
-export type { ObjectExpression } from '@rust/kcl-lib/bindings/ObjectExpression'
-export type { ObjectProperty } from '@rust/kcl-lib/bindings/ObjectProperty'
-export type { MemberExpression } from '@rust/kcl-lib/bindings/MemberExpression'
-export type { PipeExpression } from '@rust/kcl-lib/bindings/PipeExpression'
-export type { VariableDeclaration } from '@rust/kcl-lib/bindings/VariableDeclaration'
-export type { Parameter } from '@rust/kcl-lib/bindings/Parameter'
-export type { PipeSubstitution } from '@rust/kcl-lib/bindings/PipeSubstitution'
-export type { Identifier } from '@rust/kcl-lib/bindings/Identifier'
-export type { Name } from '@rust/kcl-lib/bindings/Name'
-export type { UnaryExpression } from '@rust/kcl-lib/bindings/UnaryExpression'
+export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
+export type {
+  Artifact,
+  ArtifactCommand,
+  ArtifactId,
+  Cap as CapArtifact,
+  CodeRef,
+  EdgeCut,
+  Path as PathArtifact,
+  Plane as PlaneArtifact,
+  Segment as SegmentArtifact,
+  Solid2d as Solid2dArtifact,
+  Sweep as SweepArtifact,
+  SweepEdge,
+  Wall as WallArtifact,
+} from '@rust/kcl-lib/bindings/Artifact'
 export type { BinaryExpression } from '@rust/kcl-lib/bindings/BinaryExpression'
-export type { ReturnStatement } from '@rust/kcl-lib/bindings/ReturnStatement'
-export type { ExpressionStatement } from '@rust/kcl-lib/bindings/ExpressionStatement'
+export type { BinaryPart } from '@rust/kcl-lib/bindings/BinaryPart'
 export type { CallExpression } from '@rust/kcl-lib/bindings/CallExpression'
 export type { CallExpressionKw } from '@rust/kcl-lib/bindings/CallExpressionKw'
+export type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+export type { Expr } from '@rust/kcl-lib/bindings/Expr'
+export type { ExpressionStatement } from '@rust/kcl-lib/bindings/ExpressionStatement'
+export type { Identifier } from '@rust/kcl-lib/bindings/Identifier'
 export type { LabeledArg } from '@rust/kcl-lib/bindings/LabeledArg'
-export type { VariableDeclarator } from '@rust/kcl-lib/bindings/VariableDeclarator'
-export type { BinaryPart } from '@rust/kcl-lib/bindings/BinaryPart'
 export type { Literal } from '@rust/kcl-lib/bindings/Literal'
 export type { LiteralValue } from '@rust/kcl-lib/bindings/LiteralValue'
-export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
-export type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
+export type { MemberExpression } from '@rust/kcl-lib/bindings/MemberExpression'
+export type { Name } from '@rust/kcl-lib/bindings/Name'
 export type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
+export type { ObjectExpression } from '@rust/kcl-lib/bindings/ObjectExpression'
+export type { ObjectProperty } from '@rust/kcl-lib/bindings/ObjectProperty'
+export type { Parameter } from '@rust/kcl-lib/bindings/Parameter'
+export type { PipeExpression } from '@rust/kcl-lib/bindings/PipeExpression'
+export type { PipeSubstitution } from '@rust/kcl-lib/bindings/PipeSubstitution'
+export type { Program } from '@rust/kcl-lib/bindings/Program'
+export type { ReturnStatement } from '@rust/kcl-lib/bindings/ReturnStatement'
+export type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
+export type { UnaryExpression } from '@rust/kcl-lib/bindings/UnaryExpression'
+export type { VariableDeclaration } from '@rust/kcl-lib/bindings/VariableDeclaration'
+export type { VariableDeclarator } from '@rust/kcl-lib/bindings/VariableDeclarator'
 
 export type SyntaxType =
   | 'Program'
@@ -124,11 +128,11 @@ export type SyntaxType =
   | 'NonCodeNode'
   | 'UnaryExpression'
 
+export type { ExtrudeSurface } from '@rust/kcl-lib/bindings/ExtrudeSurface'
+export type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
 export type { Path } from '@rust/kcl-lib/bindings/Path'
 export type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
 export type { Solid } from '@rust/kcl-lib/bindings/Solid'
-export type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
-export type { ExtrudeSurface } from '@rust/kcl-lib/bindings/ExtrudeSurface'
 
 /**
  * Convert a SourceRange as used inside the KCL interpreter into the above one for use in the
@@ -145,21 +149,6 @@ export function sourceRangeFromRust(s: SourceRange): SourceRange {
  */
 export function defaultSourceRange(): SourceRange {
   return [0, 0, 0]
-}
-
-/**
- * Create a SourceRange for the top-level module.
- */
-export function topLevelRange(start: number, end: number): SourceRange {
-  return [start, end, 0]
-}
-
-/**
- * Returns true if this source range is from the file being executed.  Returns
- * false if it's from a file that was imported.
- */
-export function isTopLevelModule(range: SourceRange): boolean {
-  return range[2] === 0
 }
 
 function firstSourceRange(error: RustKclError): SourceRange {
@@ -385,10 +374,6 @@ function rustArtifactGraphToMap(
   return map
 }
 
-export function defaultArtifactGraph(): ArtifactGraph {
-  return new Map()
-}
-
 // TODO: In the future, make the parameter be a KclValue.
 export function sketchFromKclValueOptional(
   obj: any,
@@ -421,19 +406,6 @@ export function sketchFromKclValue(
     return result.toError()
   }
   return result
-}
-
-export const jsAppSettings = async () => {
-  let jsAppSettings = default_app_settings()
-  if (!TEST) {
-    const settings = await import('machines/appMachine').then((module) =>
-      module.getSettings()
-    )
-    if (settings) {
-      jsAppSettings = getAllCurrentSettings(settings)
-    }
-  }
-  return jsAppSettings
 }
 
 export const errFromErrWithOutputs = (e: any): KCLError => {

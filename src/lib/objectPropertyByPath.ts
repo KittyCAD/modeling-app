@@ -1,4 +1,4 @@
-import { PathValue, Paths } from './types'
+import type { PathValue, Paths } from '@src/lib/types'
 
 export function setPropertyByPath<
   T extends { [key: string]: any },

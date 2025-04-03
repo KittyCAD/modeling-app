@@ -1,25 +1,30 @@
 import { Popover, Transition } from '@headlessui/react'
 import { useSelector } from '@xstate/react'
-import { MachineManagerContext } from 'components/MachineManagerProvider'
-import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
-import usePlatform from 'hooks/usePlatform'
-import { APP_NAME } from 'lib/constants'
-import { copyFileShareLink } from 'lib/links'
-import { PATHS } from 'lib/paths'
-import { codeManager, engineCommandManager, kclManager } from 'lib/singletons'
-import { type IndexLoaderData } from 'lib/types'
-import { useToken } from 'machines/appMachine'
-import { commandBarActor } from 'machines/commandBarMachine'
 import { Fragment, useContext, useMemo } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { SnapshotFrom } from 'xstate'
+import type { SnapshotFrom } from 'xstate'
 
-import { isDesktop } from '../lib/isDesktop'
-import { ActionButton, ActionButtonProps } from './ActionButton'
-import { CustomIcon } from './CustomIcon'
-import { Logo } from './Logo'
-import { useLspContext } from './LspProvider'
-import Tooltip from './Tooltip'
+import type { ActionButtonProps } from '@src/components/ActionButton'
+import { ActionButton } from '@src/components/ActionButton'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { Logo } from '@src/components/Logo'
+import { useLspContext } from '@src/components/LspProvider'
+import { MachineManagerContext } from '@src/components/MachineManagerProvider'
+import Tooltip from '@src/components/Tooltip'
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
+import usePlatform from '@src/hooks/usePlatform'
+import { APP_NAME } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import { copyFileShareLink } from '@src/lib/links'
+import { PATHS } from '@src/lib/paths'
+import {
+  codeManager,
+  engineCommandManager,
+  kclManager,
+} from '@src/lib/singletons'
+import { type IndexLoaderData } from '@src/lib/types'
+import { useToken } from '@src/machines/appMachine'
+import { commandBarActor } from '@src/machines/commandBarMachine'
 
 const ProjectSidebarMenu = ({
   project,

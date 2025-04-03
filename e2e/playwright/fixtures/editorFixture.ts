@@ -6,7 +6,7 @@ import {
   closePane,
   openPane,
   sansWhitespace,
-} from '../test-utils'
+} from '@e2e/playwright/test-utils'
 
 interface EditorState {
   activeLines: Array<string>

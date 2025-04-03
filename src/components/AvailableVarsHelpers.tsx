@@ -2,9 +2,9 @@ import {
   createLiteral,
   createLocalName,
   createUnaryExpression,
-} from '../lang/modifyAst'
-import { PrevVariable } from '../lang/queryAst'
-import { BinaryPart } from '../lang/wasm'
+} from '@src/lang/create'
+import type { PrevVariable } from '@src/lang/queryAst'
+import type { BinaryPart } from '@src/lang/wasm'
 
 export const AvailableVars = ({
   onVarClick,

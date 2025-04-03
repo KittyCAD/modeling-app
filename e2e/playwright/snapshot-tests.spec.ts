@@ -1,22 +1,22 @@
-import { Models } from '@kittycad/lib'
+import type { Models } from '@kittycad/lib'
+import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
 import { spawn } from 'child_process'
 import fsp from 'fs/promises'
 import JSZip from 'jszip'
-import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import path from 'path'
 
-import { CmdBarFixture } from './fixtures/cmdBarFixture'
-import { SceneFixture } from './fixtures/sceneFixture'
-import { secrets } from './secrets'
-import { TEST_SETTINGS, TEST_SETTINGS_KEY } from './storageStates'
+import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
+import { secrets } from '@e2e/playwright/secrets'
+import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
+import type { Paths } from '@e2e/playwright/test-utils'
 import {
-  Paths,
   doExport,
   getUtils,
   orRunWhenFullSuiteEnabled,
   settingsToToml,
-} from './test-utils'
-import { expect, test } from './zoo-test'
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.beforeEach(async ({ page, context }) => {
   // Make the user avatar image always 404
@@ -346,7 +346,9 @@ const extrudeDefaultPlane = async (
           app: {
             onboarding_status: 'dismissed',
             show_debug_panel: true,
-            theme: 'dark',
+            appearance: {
+              theme: 'dark',
+            },
           },
           project: {
             default_project_name: 'project-$nnn',
@@ -453,7 +455,7 @@ test(
     await page.waitForTimeout(700) // TODO detect animation ending, or disable animation
 
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-    code += `profile001 = startProfileAt([7.19, -9.7], sketch001)`
+    code += `profile001 = startProfileAt([182.59, -246.32], sketch001)`
     await expect(page.locator('.cm-content')).toHaveText(code)
     await page.waitForTimeout(100)
 
@@ -471,7 +473,7 @@ test(
     await page.waitForTimeout(500)
 
     code += `
-  |> xLine(length = 7.25)`
+  |> xLine(length = 184.3)`
     await expect(page.locator('.cm-content')).toHaveText(code)
 
     await page
@@ -629,7 +631,7 @@ test(
       mask: [page.getByTestId('model-state-indicator')],
     })
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)profile001 = circle(sketch001, center = [14.44, -2.44], radius = 1)`
+      `sketch001 = startSketchOn(XZ)profile001 = circle(sketch001, center = [366.89, -62.01], radius = 1)`
     )
   }
 )
@@ -666,7 +668,7 @@ test.describe(
 
       const startXPx = 600
       await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-      code += `profile001 = startProfileAt([7.19, -9.7], sketch001)`
+      code += `profile001 = startProfileAt([182.59, -246.32], sketch001)`
       await expect(u.codeLocator).toHaveText(code)
       await page.waitForTimeout(100)
 
@@ -674,7 +676,7 @@ test.describe(
       await page.waitForTimeout(100)
 
       code += `
-  |> xLine(length = 7.25)`
+  |> xLine(length = 184.3)`
       await expect(u.codeLocator).toHaveText(code)
 
       await page
@@ -689,7 +691,7 @@ test.describe(
       await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
       code += `
-  |> tangentialArcTo([21.7, -2.44], %)`
+  |> tangentialArcTo([551.2, -62.01], %)`
       await expect(u.codeLocator).toHaveText(code)
 
       // click tangential arc tool again to unequip it

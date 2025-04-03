@@ -1,4 +1,4 @@
-import { expect, test } from './zoo-test'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 /* eslint-disable jest/no-conditional-expect */
 

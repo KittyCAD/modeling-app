@@ -1,19 +1,24 @@
-import { VITE_KC_DEV_TOKEN } from 'env'
-import { createLiteral } from 'lang/modifyAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { codeRefFromRange } from 'lang/std/artifactGraph'
-import { Selection, Selections } from 'lib/selections'
-import {
-  codeManager,
-  editorManager,
-  engineCommandManager,
-  kclManager,
-} from 'lib/singletons'
-import { err } from 'lib/trap'
-import { isOverlap } from 'lib/utils'
+import { VITE_KC_DEV_TOKEN } from '@src/env'
 
-import { getNodeFromPath } from '../queryAst'
+import { createLiteral } from '@src/lang/create'
+import type {
+  ChamferParameters,
+  EdgeTreatmentParameters,
+  FilletParameters,
+} from '@src/lang/modifyAst/addEdgeTreatment'
 import {
+  EdgeTreatmentType,
+  deleteEdgeTreatment,
+  getPathToExtrudeForSegmentSelection,
+  hasValidEdgeTreatmentSelection,
+  isTagUsedInEdgeTreatment,
+  modifyAstWithEdgeTreatmentAndTag,
+} from '@src/lang/modifyAst/addEdgeTreatment'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import { topLevelRange } from '@src/lang/util'
+import type {
   CallExpression,
   CallExpressionKw,
   PathToNode,
@@ -21,22 +26,17 @@ import {
   Program,
   SourceRange,
   VariableDeclarator,
-  assertParse,
-  initPromise,
-  recast,
-  topLevelRange,
-} from '../wasm'
+} from '@src/lang/wasm'
+import { assertParse, initPromise, recast } from '@src/lang/wasm'
+import type { Selection, Selections } from '@src/lib/selections'
 import {
-  ChamferParameters,
-  EdgeTreatmentParameters,
-  EdgeTreatmentType,
-  FilletParameters,
-  deleteEdgeTreatment,
-  getPathToExtrudeForSegmentSelection,
-  hasValidEdgeTreatmentSelection,
-  isTagUsedInEdgeTreatment,
-  modifyAstWithEdgeTreatmentAndTag,
-} from './addEdgeTreatment'
+  codeManager,
+  editorManager,
+  engineCommandManager,
+  kclManager,
+} from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
+import { isOverlap } from '@src/lib/utils'
 
 beforeAll(async () => {
   await initPromise

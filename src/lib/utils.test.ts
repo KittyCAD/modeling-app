@@ -1,4 +1,5 @@
-import { SourceRange, topLevelRange } from '../lang/wasm'
+import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
+import { topLevelRange } from '@src/lang/util'
 import {
   hasDigitsLeftOfDecimal,
   hasLeadingZero,
@@ -7,7 +8,7 @@ import {
   onDragNumberCalculation,
   roundOff,
   simulateOnMouseDragMatch,
-} from './utils'
+} from '@src/lib/utils'
 
 describe('testing isOverlapping', () => {
   testBothOrders(topLevelRange(0, 3), topLevelRange(3, 10))

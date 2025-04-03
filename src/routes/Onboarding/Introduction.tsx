@@ -1,21 +1,22 @@
-import { useLspContext } from 'components/LspProvider'
-import { useFileContext } from 'hooks/useFileContext'
-import { isKclEmptyOrOnlySettings } from 'lang/wasm'
-import { APP_NAME } from 'lib/constants'
-import { createAndOpenNewTutorialProject } from 'lib/desktopFS'
-import { bracket } from 'lib/exampleKcl'
-import { isDesktop } from 'lib/isDesktop'
-import { PATHS } from 'lib/paths'
-import { codeManager, kclManager } from 'lib/singletons'
-import { Themes, getSystemTheme } from 'lib/theme'
-import { reportRejection } from 'lib/trap'
-import { IndexLoaderData } from 'lib/types'
-import { useSettings } from 'machines/appMachine'
 import { useEffect, useState } from 'react'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
-import { onboardingPaths } from 'routes/Onboarding/paths'
 
-import { OnboardingButtons, useDemoCode } from '.'
+import { useLspContext } from '@src/components/LspProvider'
+import { useFileContext } from '@src/hooks/useFileContext'
+import { isKclEmptyOrOnlySettings } from '@src/lang/wasm'
+import { APP_NAME } from '@src/lib/constants'
+import { createAndOpenNewTutorialProject } from '@src/lib/desktopFS'
+import { bracket } from '@src/lib/exampleKcl'
+import { isDesktop } from '@src/lib/isDesktop'
+import { PATHS } from '@src/lib/paths'
+import { codeManager, kclManager } from '@src/lib/singletons'
+import { Themes, getSystemTheme } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import type { IndexLoaderData } from '@src/lib/types'
+import { useSettings } from '@src/machines/appMachine'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
+import { OnboardingButtons, useDemoCode } from '@src/routes/Onboarding/utils'
 
 /**
  * Show either a welcome screen or a warning screen
@@ -96,7 +97,7 @@ function OnboardingWarningWeb(props: OnboardingResetWarningProps) {
       codeManager.updateCodeStateEditor(bracket)
       await codeManager.writeToFile()
 
-      await kclManager.executeCode(true)
+      await kclManager.executeCode()
       props.setShouldShowWarning(false)
     }
     return () => {

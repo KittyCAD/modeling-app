@@ -1,9 +1,12 @@
 import { highlightingFor } from '@codemirror/language'
-import { Extension, StateEffect, StateField } from '@codemirror/state'
-import { Decoration, DecorationSet, EditorView } from '@codemirror/view'
-import { Tag, tags } from '@lezer/highlight'
+import type { Extension } from '@codemirror/state'
+import { StateEffect, StateField } from '@codemirror/state'
+import type { DecorationSet } from '@codemirror/view'
+import { Decoration, EditorView } from '@codemirror/view'
+import type { Tag } from '@lezer/highlight'
+import { tags } from '@lezer/highlight'
 
-import { lspSemanticTokensEvent } from './lsp'
+import { lspSemanticTokensEvent } from './annotation'
 
 export interface SemanticToken {
   from: number

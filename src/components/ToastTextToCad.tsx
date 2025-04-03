@@ -1,20 +1,10 @@
-import {
+import type {
   TextToCadIteration_type,
   TextToCad_type,
 } from '@kittycad/lib/dist/types/src/models'
-import { useFileContext } from 'hooks/useFileContext'
-import { base64Decode } from 'lang/wasm'
-import { isDesktop } from 'lib/isDesktop'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import { PATHS } from 'lib/paths'
-import { codeManager, kclManager } from 'lib/singletons'
-import { sendTelemetry } from 'lib/textToCad'
-import { Themes } from 'lib/theme'
-import { reportRejection } from 'lib/trap'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { fileMachine } from 'machines/fileMachine'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
+import type { Mesh } from 'three'
 import {
   Box3,
   Color,
@@ -22,7 +12,6 @@ import {
   EdgesGeometry,
   LineBasicMaterial,
   LineSegments,
-  Mesh,
   MeshBasicMaterial,
   OrthographicCamera,
   Scene,
@@ -32,9 +21,20 @@ import {
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { EventFrom } from 'xstate'
+import type { EventFrom } from 'xstate'
 
-import { ActionButton } from './ActionButton'
+import { ActionButton } from '@src/components/ActionButton'
+import type { useFileContext } from '@src/hooks/useFileContext'
+import { base64Decode } from '@src/lang/wasm'
+import { isDesktop } from '@src/lib/isDesktop'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { PATHS } from '@src/lib/paths'
+import { codeManager, kclManager } from '@src/lib/singletons'
+import { sendTelemetry } from '@src/lib/textToCadTelemetry'
+import type { Themes } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import type { fileMachine } from '@src/machines/fileMachine'
 
 const CANVAS_SIZE = 128
 const PROMPT_TRUNCATE_LENGTH = 128

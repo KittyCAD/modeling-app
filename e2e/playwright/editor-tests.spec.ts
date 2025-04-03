@@ -1,5 +1,5 @@
+import { uuidv4 } from '@src/lib/utils'
 import fsp from 'fs/promises'
-import { uuidv4 } from 'lib/utils'
 import { join } from 'path'
 
 import {
@@ -7,8 +7,8 @@ import {
   executorInputPath,
   getUtils,
   orRunWhenFullSuiteEnabled,
-} from './test-utils'
-import { expect, test } from './zoo-test'
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
   test('can comment out code with ctrl+/', async ({ page, homePage }) => {
@@ -985,12 +985,13 @@ sketch001 = startSketchOn(XZ)
   test(
     'Can undo a sketch modification with ctrl+z',
     { tag: ['@skipWin'] },
-    async ({ page, homePage }) => {
+    async ({ page, homePage, editor }) => {
       const u = await getUtils(page)
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `sketch001 = startSketchOn(XZ)
+          `@settings(defaultLengthUnit=in)
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -10.01], %)
   |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -0.38], %)
@@ -1080,41 +1081,45 @@ sketch001 = startSketchOn(XZ)
       await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
 
       // expect the code to have changed
-      await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn(XZ)
+      await editor.expectEditor.toContain(
+        `sketch001 = startSketchOn(XZ)
     |> startProfileAt([2.71, -2.71], %)
     |> line(end = [15.4, -2.78])
     |> tangentialArcTo([27.6, -3.05], %)
     |> close()
-    |> extrude(length = 5)
-  `)
+    |> extrude(length = 5)`,
+        { shouldNormalise: true }
+      )
 
       // Hit undo
       await page.keyboard.down('Control')
       await page.keyboard.press('KeyZ')
       await page.keyboard.up('Control')
 
-      await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn(XZ)
+      await editor.expectEditor.toContain(
+        `sketch001 = startSketchOn(XZ)
     |> startProfileAt([2.71, -2.71], %)
     |> line(end = [15.4, -2.78])
     |> tangentialArcTo([24.95, -0.38], %)
     |> close()
-    |> extrude(length = 5)`)
+    |> extrude(length = 5)`,
+        { shouldNormalise: true }
+      )
 
       // Hit undo again.
       await page.keyboard.down('Control')
       await page.keyboard.press('KeyZ')
       await page.keyboard.up('Control')
 
-      await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn(XZ)
+      await editor.expectEditor.toContain(
+        `sketch001 = startSketchOn(XZ)
     |> startProfileAt([2.71, -2.71], %)
     |> line(end = [12.73, -0.09])
     |> tangentialArcTo([24.95, -0.38], %)
     |> close()
-    |> extrude(length = 5)
-  `)
+    |> extrude(length = 5)`,
+        { shouldNormalise: true }
+      )
 
       // Hit undo again.
       await page.keyboard.down('Control')
@@ -1122,13 +1127,15 @@ sketch001 = startSketchOn(XZ)
       await page.keyboard.up('Control')
 
       await page.waitForTimeout(100)
-      await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn(XZ)
-  |> startProfileAt([4.61, -10.01], %)
-  |> line(end = [12.73, -0.09])
-  |> tangentialArcTo([24.95, -0.38], %)
-  |> close()
-  |> extrude(length = 5)`)
+      await editor.expectEditor.toContain(
+        `sketch001 = startSketchOn(XZ)
+    |> startProfileAt([4.61, -10.01], %)
+    |> line(end = [12.73, -0.09])
+    |> tangentialArcTo([24.95, -0.38], %)
+    |> close()
+    |> extrude(length = 5)`,
+        { shouldNormalise: true }
+      )
     }
   )
 

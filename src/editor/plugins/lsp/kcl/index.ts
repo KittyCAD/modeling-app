@@ -1,22 +1,22 @@
-import { Extension } from '@codemirror/state'
-import { PluginValue, ViewPlugin, ViewUpdate } from '@codemirror/view'
-import {
+import type { Extension } from '@codemirror/state'
+import type { PluginValue, ViewUpdate } from '@codemirror/view'
+import { ViewPlugin } from '@codemirror/view'
+import type {
   LanguageServerClient,
   LanguageServerOptions,
-  lspFormatCodeEvent,
-  lspPlugin,
 } from '@kittycad/codemirror-lsp-client'
-import { updateOutsideEditorEvent } from 'editor/manager'
-import { codeManagerUpdateEvent } from 'lang/codeManager'
-import { codeManager, editorManager, kclManager } from 'lib/singletons'
-import { deferExecution } from 'lib/utils'
+import { lspFormatCodeEvent, lspPlugin } from '@kittycad/codemirror-lsp-client'
+import { updateOutsideEditorEvent } from '@src/editor/manager'
+import { codeManagerUpdateEvent } from '@src/lang/codeManager'
+import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
+import { deferExecution } from '@src/lib/utils'
 
-import { UpdateCanExecuteParams } from '@rust/kcl-lib/bindings/UpdateCanExecuteParams'
-import { UpdateCanExecuteResponse } from '@rust/kcl-lib/bindings/UpdateCanExecuteResponse'
-import { UpdateUnitsParams } from '@rust/kcl-lib/bindings/UpdateUnitsParams'
-import { UpdateUnitsResponse } from '@rust/kcl-lib/bindings/UpdateUnitsResponse'
+import type { UpdateCanExecuteParams } from '@rust/kcl-lib/bindings/UpdateCanExecuteParams'
+import type { UpdateCanExecuteResponse } from '@rust/kcl-lib/bindings/UpdateCanExecuteResponse'
+import type { UpdateUnitsParams } from '@rust/kcl-lib/bindings/UpdateUnitsParams'
+import type { UpdateUnitsResponse } from '@rust/kcl-lib/bindings/UpdateUnitsResponse'
 
-import { copilotPluginEvent } from '../copilot'
+import { copilotPluginEvent } from '@src/editor/plugins/lsp/copilot'
 
 const changesDelay = 600
 

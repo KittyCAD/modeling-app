@@ -1,46 +1,18 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { CustomIcon } from 'components/CustomIcon'
-import { AllKeybindingsFields } from 'components/Settings/AllKeybindingsFields'
-import { AllSettingsFields } from 'components/Settings/AllSettingsFields'
-import { KeybindingsSectionsList } from 'components/Settings/KeybindingsSectionsList'
-import { SettingsSearchBar } from 'components/Settings/SettingsSearchBar'
-import { SettingsSectionsList } from 'components/Settings/SettingsSectionsList'
-import { SettingsTabs } from 'components/Settings/SettingsTabs'
-import { NODE_ENV } from 'env'
-import { useDotDotSlash } from 'hooks/useDotDotSlash'
-import { isDesktop } from 'lib/isDesktop'
-import { PATHS } from 'lib/paths'
-import { SettingsLevel } from 'lib/settings/settingsTypes'
 import { Fragment, useEffect, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
-import { IS_PLAYWRIGHT_KEY } from '../../e2e/playwright/storageStates'
-
-const isTestEnv = window?.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
-
-export const APP_VERSION =
-  isTestEnv && NODE_ENV === 'development'
-    ? '11.22.33'
-    : isDesktop()
-      ? // @ts-ignore
-        window.electron.packageJson.version
-      : 'main'
-
-export const PACKAGE_NAME = isDesktop()
-  ? window.electron.packageJson.name
-  : 'zoo-modeling-app'
-
-export const IS_NIGHTLY = PACKAGE_NAME.indexOf('-nightly') > -1
-
-export const IS_NIGHTLY_OR_DEBUG =
-  IS_NIGHTLY || APP_VERSION === '0.0.0' || APP_VERSION === '11.22.33'
-
-export function getReleaseUrl(version: string = APP_VERSION) {
-  return `https://github.com/KittyCAD/modeling-app/releases/tag/${
-    IS_NIGHTLY ? 'nightly-' : ''
-  }v${version}`
-}
+import { CustomIcon } from '@src/components/CustomIcon'
+import { AllKeybindingsFields } from '@src/components/Settings/AllKeybindingsFields'
+import { AllSettingsFields } from '@src/components/Settings/AllSettingsFields'
+import { KeybindingsSectionsList } from '@src/components/Settings/KeybindingsSectionsList'
+import { SettingsSearchBar } from '@src/components/Settings/SettingsSearchBar'
+import { SettingsSectionsList } from '@src/components/Settings/SettingsSectionsList'
+import { SettingsTabs } from '@src/components/Settings/SettingsTabs'
+import { useDotDotSlash } from '@src/hooks/useDotDotSlash'
+import { PATHS } from '@src/lib/paths'
+import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 
 export const Settings = () => {
   const navigate = useNavigate()

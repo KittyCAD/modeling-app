@@ -1,7 +1,7 @@
-import { isDesktop } from 'lib/isDesktop'
-import { onboardingPaths } from 'routes/Onboarding/paths'
+import { isDesktop } from '@src/lib/isDesktop'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
 
-import { OnboardingButtons } from '.'
+import { OnboardingButtons } from '@src/routes/Onboarding/utils'
 
 export default function ProjectMenu() {
   const onDesktop = isDesktop()

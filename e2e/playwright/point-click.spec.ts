@@ -1,13 +1,12 @@
-import { Page } from '@playwright/test'
-import { Locator } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { EditorFixture } from './fixtures/editorFixture'
-import { SceneFixture } from './fixtures/sceneFixture'
-import { ToolbarFixture } from './fixtures/toolbarFixture'
-import { getUtils, orRunWhenFullSuiteEnabled } from './test-utils'
-import { expect, test } from './zoo-test'
+import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
+import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
+import { getUtils, orRunWhenFullSuiteEnabled } from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
@@ -1085,8 +1084,8 @@ openSketch = startSketchOn(XY)
   }) => {
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 620, y: 257 }
-    const expectedOutput = `helix001 = helix(  axis = 'X',  radius = 5,  length = 5,  revolutions = 1,  angleStart = 360,  ccw = false,)`
-    const expectedLine = `axis='X',`
+    const expectedOutput = `helix001 = helix(  axis = X,  radius = 5,  length = 5,  revolutions = 1,  angleStart = 360,  ccw = false,)`
+    const expectedLine = `axis=X,`
 
     await homePage.goToModelingScene()
 
@@ -1218,7 +1217,7 @@ openSketch = startSketchOn(XY)
         cmdBar,
       }) => {
         page.on('console', console.log)
-        const initialCode = `sketch001 = startSketchOn('XZ')
+        const initialCode = `sketch001 = startSketchOn(XZ)
   profile001 = startProfileAt([0, 0], sketch001)
     |> yLine(length = 100)
     |> line(endAbsolute = [100, 0])
@@ -3475,7 +3474,7 @@ segAng(rectangleSegmentA002),
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
 
-      const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360, axis = 'X')`
+      const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360, axis = X)`
       expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
 
       // Edit flow

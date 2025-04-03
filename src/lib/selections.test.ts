@@ -1,14 +1,16 @@
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { Artifact } from 'lang/std/artifactGraph'
-import { ArtifactGraph, SourceRange, assertParse, initPromise } from 'lang/wasm'
 import { expect } from 'vitest'
 
-import { ArtifactIndex, buildArtifactIndex } from './artifactIndex'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import type { Artifact } from '@src/lang/std/artifactGraph'
+import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
+import { assertParse, initPromise } from '@src/lang/wasm'
+import type { ArtifactIndex } from '@src/lib/artifactIndex'
+import { buildArtifactIndex } from '@src/lib/artifactIndex'
+import type { Selection } from '@src/lib/selections'
 import {
-  Selection,
   codeToIdSelections,
   findLastRangeStartingBefore,
-} from './selections'
+} from '@src/lib/selections'
 
 beforeAll(async () => {
   await initPromise

@@ -1,7 +1,7 @@
 import * as fsp from 'fs/promises'
 import { join } from 'path'
 
-import { expect, test } from './zoo-test'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 const FEATURE_TREE_EXAMPLE_CODE = `export fn timesFive(x) {
   return 5 * x
@@ -22,7 +22,7 @@ sketch001 = startSketchOn(XZ)
   |> angledLine([-45, length001], %)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-revolve001 = revolve(sketch001, axis = "X")
+revolve001 = revolve(sketch001, axis = X)
 triangle()
   |> extrude(length = 30)
 plane001 = offsetPlane(XY, offset = 10)
@@ -127,7 +127,7 @@ test.describe('Feature Tree pane', () => {
       await testViewSource({
         operationName: 'Revolve',
         operationIndex: 0,
-        expectedActiveLine: 'revolve001 = revolve(sketch001, axis = "X")',
+        expectedActiveLine: 'revolve001 = revolve(sketch001, axis = X)',
       })
       await testViewSource({
         operationName: 'Triangle',

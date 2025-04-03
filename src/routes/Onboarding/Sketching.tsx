@@ -1,15 +1,16 @@
-import { codeManager, kclManager } from 'lib/singletons'
 import { useEffect } from 'react'
-import { onboardingPaths } from 'routes/Onboarding/paths'
 
-import { OnboardingButtons } from '.'
+import { codeManager, kclManager } from '@src/lib/singletons'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
+import { OnboardingButtons } from '@src/routes/Onboarding/utils'
 
 export default function Sketching() {
   useEffect(() => {
     async function clearEditor() {
       // We do want to update both the state and editor here.
       codeManager.updateCodeStateEditor('')
-      await kclManager.executeCode(true)
+      await kclManager.executeCode()
     }
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises

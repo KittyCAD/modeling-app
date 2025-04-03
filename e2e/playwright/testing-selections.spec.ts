@@ -1,9 +1,13 @@
-import { Coords2d } from 'lang/std/sketch'
-import { KCL_DEFAULT_LENGTH } from 'lib/constants'
-import { uuidv4 } from 'lib/utils'
+import type { Coords2d } from '@src/lang/std/sketch'
+import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
+import { uuidv4 } from '@src/lib/utils'
 
-import { commonPoints, getUtils, orRunWhenFullSuiteEnabled } from './test-utils'
-import { expect, test } from './zoo-test'
+import {
+  commonPoints,
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
   test.setTimeout(90_000)
@@ -320,7 +324,7 @@ part009 = startSketchOn(XY)
   |> line(end = [0, pipeLength])
   |> angledLineToX({ angle = 60, to = pipeLargeDia }, %)
   |> close()
-rev = revolve(part009, axis = 'y')
+rev = revolve(part009, axis = Y)
 sketch006 = startSketchOn(XY)
 profile001 = circle(
   sketch006,
@@ -377,7 +381,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await page.waitForTimeout(200)
 
     await expect(u.codeLocator).not.toContainText(
-      `rev = revolve(part009, axis: 'y')`
+      `rev = revolve(part009, axis: Y)`
     )
 
     // FIXME (commented section below), this test would select a wall that had a sketch on it, and delete the underlying extrude

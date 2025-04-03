@@ -4,21 +4,22 @@ import {
   IntoServer,
   LspWorkerEventType,
 } from '@kittycad/codemirror-lsp-client'
-import {
-  CopilotWorkerOptions,
-  KclWorkerOptions,
-  LspWorker,
-  LspWorkerEvent,
-} from 'editor/plugins/lsp/types'
-import * as jsrpc from 'json-rpc-2.0'
-import { fileSystemManager } from 'lang/std/fileSystemManager'
-import { err, reportRejection } from 'lib/trap'
+import type * as jsrpc from 'json-rpc-2.0'
 
 import init, {
   LspServerConfig,
   lsp_run_copilot,
   lsp_run_kcl,
 } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+
+import type {
+  CopilotWorkerOptions,
+  KclWorkerOptions,
+  LspWorkerEvent,
+} from '@src/editor/plugins/lsp/types'
+import { LspWorker } from '@src/editor/plugins/lsp/types'
+import { fileSystemManager } from '@src/lang/std/fileSystemManager'
+import { err, reportRejection } from '@src/lib/trap'
 
 const intoServer: IntoServer = new IntoServer()
 const fromServer: FromServer | Error = FromServer.create()
@@ -101,11 +102,14 @@ onmessage = function (event: MessageEvent) {
       intoServer.enqueue(data)
       const json: jsrpc.JSONRPCRequest = Codec.decode(data)
       if (null != json.id) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises, @typescript-eslint/no-non-null-assertion
-        fromServer.responses.get(json.id)!.then((response) => {
-          const encoded = Codec.encode(response as jsrpc.JSONRPCResponse)
-          postMessage(encoded)
-        })
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        fromServer.responses
+          .get(json.id)!
+          .then((response) => {
+            const encoded = Codec.encode(response as jsrpc.JSONRPCResponse)
+            postMessage(encoded)
+          })
+          .catch(reportRejection)
       }
       break
     default:

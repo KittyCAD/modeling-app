@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import * as TOML from '@iarna/toml'
 import type {
   BrowserContext,
   ElectronApplication,
@@ -7,21 +6,23 @@ import type {
   TestInfo,
 } from '@playwright/test'
 import { _electron as electron } from '@playwright/test'
+
+import { SETTINGS_FILE_NAME } from '@src/lib/constants'
+import type { DeepPartial } from '@src/lib/types'
 import fsp from 'fs/promises'
-import { SETTINGS_FILE_NAME } from 'lib/constants'
-import { DeepPartial } from 'lib/types'
 import fs from 'node:fs'
 import path from 'path'
 
-import { Settings } from '@rust/kcl-lib/bindings/Settings'
+import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
-import { TEST_SETTINGS } from '../storageStates'
-import { getUtils, setup } from '../test-utils'
-import { CmdBarFixture } from './cmdBarFixture'
-import { EditorFixture } from './editorFixture'
-import { HomePageFixture } from './homePageFixture'
-import { SceneFixture } from './sceneFixture'
-import { ToolbarFixture } from './toolbarFixture'
+import { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
+import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
+import { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
+import { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
+import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
+
+import { TEST_SETTINGS } from '@e2e/playwright/storageStates'
+import { getUtils, settingsToToml, setup } from '@e2e/playwright/test-utils'
 
 export class AuthenticatedApp {
   public readonly page: Page
@@ -286,26 +287,30 @@ export class ElectronZoo {
     let settingsOverridesToml = ''
 
     if (appSettings) {
-      settingsOverridesToml = TOML.stringify({
-        // @ts-expect-error
+      settingsOverridesToml = settingsToToml({
         settings: {
           ...TEST_SETTINGS,
           ...appSettings,
           app: {
             ...TEST_SETTINGS.app,
-            project_directory: this.projectDirName,
             ...appSettings.app,
+          },
+          project: {
+            ...TEST_SETTINGS.project,
+            directory: this.projectDirName,
           },
         },
       })
     } else {
-      settingsOverridesToml = TOML.stringify({
-        // @ts-expect-error
+      settingsOverridesToml = settingsToToml({
         settings: {
           ...TEST_SETTINGS,
           app: {
             ...TEST_SETTINGS.app,
-            project_directory: this.projectDirName,
+          },
+          project: {
+            ...TEST_SETTINGS.project,
+            directory: this.projectDirName,
           },
         },
       })

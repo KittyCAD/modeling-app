@@ -41,5 +41,5 @@ tireSketch = startSketchOn(XY)
   |> close()
 
 // Revolve the sketch to create the tire
-revolve(tireSketch, axis = "Y")
+revolve(tireSketch, axis = Y)
   |> appearance(color = "#0f0f0f", roughness = 80)

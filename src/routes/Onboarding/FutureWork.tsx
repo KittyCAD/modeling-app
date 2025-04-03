@@ -1,10 +1,11 @@
-import { useModelingContext } from 'hooks/useModelingContext'
-import { APP_NAME } from 'lib/constants'
-import { sceneInfra } from 'lib/singletons'
 import { useEffect } from 'react'
 
-import { OnboardingButtons, useDemoCode } from '.'
-import { onboardingPaths } from './paths'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { APP_NAME } from '@src/lib/constants'
+import { sceneInfra } from '@src/lib/singletons'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
+import { OnboardingButtons, useDemoCode } from '@src/routes/Onboarding/utils'
 
 export default function FutureWork() {
   const { send } = useModelingContext()

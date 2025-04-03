@@ -1,28 +1,28 @@
-import { CustomIconName } from 'components/CustomIcon'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { OpKclValue } from '@rust/kcl-lib/bindings/OpKclValue'
+
+import type { CustomIconName } from '@src/components/CustomIcon'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
-  Artifact,
   getArtifactOfTypes,
   getCapCodeRef,
   getEdgeCutConsumedCodeRef,
   getSweepEdgeCodeRef,
   getWallCodeRef,
-} from 'lang/std/artifactGraph'
-import { sourceRangeFromRust } from 'lang/wasm'
-import { CommandBarMachineEvent } from 'machines/commandBarMachine'
-
-import { Operation } from '@rust/kcl-lib/bindings/Operation'
-
-import {
+} from '@src/lang/std/artifactGraph'
+import { sourceRangeFromRust } from '@src/lang/wasm'
+import type {
   HelixModes,
   ModelingCommandSchema,
-} from './commandBarConfigs/modelingCommandConfig'
-import { KclExpression } from './commandTypes'
-import { stringToKclExpression } from './kclHelpers'
-import { isDefaultPlaneStr } from './planes'
-import { Selection, Selections } from './selections'
-import { codeManager, kclManager, rustContext } from './singletons'
-import { err } from './trap'
+} from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import type { KclExpression } from '@src/lib/commandTypes'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
+import { isDefaultPlaneStr } from '@src/lib/planes'
+import type { Selection, Selections } from '@src/lib/selections'
+import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
+import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -62,7 +62,7 @@ const prepareToEditExtrude: PrepareToEditCallback =
     if (
       !artifact ||
       !('pathId' in artifact) ||
-      operation.type !== 'StdLibCall'
+      (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall')
     ) {
       return baseCommand
     }
@@ -145,7 +145,7 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
     groupId: 'modeling',
   }
   if (
-    operation.type !== 'StdLibCall' ||
+    (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
     !operation.labeledArgs ||
     (!isChamfer && !isFillet)
   ) {
@@ -256,7 +256,7 @@ const prepareToEditShell: PrepareToEditCallback =
     }
 
     if (
-      operation.type !== 'StdLibCall' ||
+      (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
       !operation.labeledArgs ||
       !operation.unlabeledArg ||
       operation.unlabeledArg.value.type !== 'Solid' ||
@@ -366,7 +366,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
     groupId: 'modeling',
   }
   if (
-    operation.type !== 'StdLibCall' ||
+    (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
     !operation.labeledArgs ||
     !operation.unlabeledArg ||
     !('offset' in operation.labeledArgs) ||
@@ -440,7 +440,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
     groupId: 'modeling',
   }
   if (
-    operation.type !== 'StdLibCall' ||
+    (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
     !operation.labeledArgs ||
     !operation.unlabeledArg ||
     !('sectional' in operation.labeledArgs) ||
@@ -448,7 +448,11 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
   ) {
     return baseCommand
   }
-  if (!artifact || !('pathId' in artifact) || operation.type !== 'StdLibCall') {
+  if (
+    !artifact ||
+    !('pathId' in artifact) ||
+    (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall')
+  ) {
     return baseCommand
   }
 
@@ -568,12 +572,20 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
   }
 }
 
+const nonZero = (val: OpKclValue): number => {
+  if (val.type === 'Number') {
+    return val.value
+  } else {
+    return 0
+  }
+}
+
 const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   const baseCommand = {
     name: 'Helix',
     groupId: 'modeling',
   }
-  if (operation.type !== 'StdLibCall' || !operation.labeledArgs) {
+  if (operation.type !== 'KclStdLibCall' || !operation.labeledArgs) {
     return { reason: 'Wrong operation type or arguments' }
   }
 
@@ -593,10 +605,22 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   if ('axis' in operation.labeledArgs && operation.labeledArgs.axis) {
     // axis options string or selection arg
     const axisValue = operation.labeledArgs.axis.value
-    if (axisValue.type === 'String') {
-      // default axis casee
+    if (axisValue.type === 'Object') {
+      // default axis case
       mode = 'Axis'
-      axis = axisValue.value
+      const direction = axisValue.value['direction']
+      if (!direction || direction.type !== 'Array') {
+        return { reason: 'No direction vector for axis' }
+      }
+      if (nonZero(direction.value[0])) {
+        axis = 'X'
+      } else if (nonZero(direction.value[1])) {
+        axis = 'Y'
+      } else if (nonZero(direction.value[2])) {
+        axis = 'Z'
+      } else {
+        return { reason: 'Bad direction vector for axis' }
+      }
     } else if (axisValue.type === 'TagIdentifier' && axisValue.artifact_id) {
       // segment case
       mode = 'Edge'
@@ -813,7 +837,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
   if (
     !artifact ||
     !('pathId' in artifact) ||
-    operation.type !== 'StdLibCall' ||
+    operation.type !== 'KclStdLibCall' ||
     !operation.labeledArgs
   ) {
     return { reason: 'Wrong operation type or artifact' }
@@ -866,10 +890,20 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
   let axisOrEdge: 'Axis' | 'Edge' | undefined
   let axis: string | undefined
   let edge: Selections | undefined
-  if (axisValue.type === 'String') {
+  if (axisValue.type === 'Object') {
     // default axis casee
     axisOrEdge = 'Axis'
-    axis = axisValue.value
+    const direction = axisValue.value['direction']
+    if (!direction || direction.type !== 'Array') {
+      return { reason: 'No direction vector for axis' }
+    }
+    if (nonZero(direction.value[0])) {
+      axis = 'X'
+    } else if (nonZero(direction.value[1])) {
+      axis = 'Y'
+    } else {
+      return { reason: 'Bad direction vector for axis' }
+    }
   } else if (axisValue.type === 'TagIdentifier' && axisValue.artifact_id) {
     // segment case
     axisOrEdge = 'Edge'
@@ -1082,6 +1116,8 @@ export function getOperationLabel(op: Operation): string {
   switch (op.type) {
     case 'StdLibCall':
       return stdLibMap[op.name]?.label ?? op.name
+    case 'KclStdLibCall':
+      return stdLibMap[op.name]?.label ?? op.name
     case 'UserDefinedFunctionCall':
       return op.name ?? 'Anonymous custom function'
     case 'UserDefinedFunctionReturn':
@@ -1095,6 +1131,8 @@ export function getOperationLabel(op: Operation): string {
 export function getOperationIcon(op: Operation): CustomIconName {
   switch (op.type) {
     case 'StdLibCall':
+      return stdLibMap[op.name]?.icon ?? 'questionMark'
+    case 'KclStdLibCall':
       return stdLibMap[op.name]?.icon ?? 'questionMark'
     default:
       return 'make-variable'
@@ -1190,7 +1228,7 @@ export async function enterEditFlow({
   operation,
   artifact,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  if (operation.type !== 'StdLibCall') {
+  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
     return new Error(
       'Feature tree editing not yet supported for user-defined functions. Please edit in the code editor.'
     )
@@ -1229,7 +1267,7 @@ export async function enterAppearanceFlow({
   operation,
   artifact,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  if (operation.type !== 'StdLibCall') {
+  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
     return new Error(
       'Appearance setting not yet supported for user-defined functions. Please edit in the code editor.'
     )

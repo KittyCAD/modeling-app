@@ -1,18 +1,18 @@
-import { Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
+import { bracket } from '@src/lib/exampleKcl'
+import { reportRejection } from '@src/lib/trap'
 import * as fsp from 'fs/promises'
-import { bracket } from 'lib/exampleKcl'
-import { reportRejection } from 'lib/trap'
 import path from 'path'
 
-import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from './storageStates'
+import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from '@e2e/playwright/storageStates'
+import type { TestColor } from '@e2e/playwright/test-utils'
 import {
   TEST_COLORS,
-  TestColor,
   executorInputPath,
   getUtils,
   orRunWhenFullSuiteEnabled,
-} from './test-utils'
-import { expect, test } from './zoo-test'
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Regression tests', { tag: ['@skipWin'] }, () => {
   // bugs we found that don't fit neatly into other categories
@@ -798,6 +798,74 @@ plane002 = offsetPlane(XZ, offset = -2 * x)`
       await page.getByTestId('custom-cmd-send-button').click()
     }
   )
+
+  test('scale other than default works with sketch mode', async ({
+    page,
+    homePage,
+    toolbar,
+    editor,
+    scene,
+  }) => {
+    await test.step('Load the washer code', async () => {
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `@settings(defaultLengthUnit = in)
+
+innerDiameter = 0.203
+outerDiameter = 0.438
+thicknessMax = 0.038
+thicknessMin = 0.024
+washerSketch = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = outerDiameter / 2)
+
+washer = extrude(washerSketch, length = thicknessMax)`
+        )
+      })
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+    })
+    const [circleCenterClick] = scene.makeMouseHelpers(650, 300)
+    const [circleRadiusClick] = scene.makeMouseHelpers(800, 320)
+    const [washerFaceClick] = scene.makeMouseHelpers(657, 286)
+
+    await page.waitForTimeout(100)
+    await test.step('Start sketching on the washer face', async () => {
+      await toolbar.startSketchPlaneSelection()
+      await washerFaceClick()
+      await page.waitForTimeout(600) // engine animation
+      await toolbar.expectToolbarMode.toBe('sketching')
+    })
+
+    await test.step('Draw a circle and verify code', async () => {
+      // select circle tool
+      await expect
+        .poll(async () => {
+          await toolbar.circleBtn.click()
+          return toolbar.circleBtn.getAttribute('aria-pressed')
+        })
+        .toBe('true')
+      await page.waitForTimeout(100)
+      await circleCenterClick()
+      // this number will be different if the scale is not set correctly for inches
+      await editor.expectEditor.toContain(
+        'circle(sketch001, center = [0.06, -0.06]'
+      )
+      await circleRadiusClick()
+
+      await editor.expectEditor.toContain(
+        'circle(sketch001, center = [0.06, -0.06], radius = 0.18'
+      )
+    })
+
+    await test.step('Exit sketch mode', async () => {
+      await toolbar.exitSketch()
+      await toolbar.expectToolbarMode.toBe('modeling')
+
+      await toolbar.selectUnit('Yards')
+      await editor.expectEditor.toContain('@settings(defaultLengthUnit = yd)')
+    })
+  })
 })
 
 async function clickExportButton(page: Page) {

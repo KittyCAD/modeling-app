@@ -1,4 +1,4 @@
-import { decoder, encoder } from '../codec'
+import { decoder, encoder } from './encode-decode'
 
 export default class Bytes {
   static encode(input: string): Uint8Array {

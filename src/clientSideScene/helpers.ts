@@ -1,14 +1,12 @@
-import { compareVec2Epsilon2 } from 'lang/std/sketch'
+import type { Group, Mesh, OrthographicCamera, Quaternion } from 'three'
 import {
   GridHelper,
-  Group,
   LineBasicMaterial,
-  Mesh,
-  OrthographicCamera,
   PerspectiveCamera,
-  Quaternion,
   Vector3,
 } from 'three'
+
+import { compareVec2Epsilon2 } from '@src/lang/std/sketch'
 
 export function createGridHelper({
   size,
