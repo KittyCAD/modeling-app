@@ -303,27 +303,15 @@ myAng2 = 134
 part001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(end = [1, 3.82], tag = $seg01) // ln-should-get-tag
-  |> angledLineToX([
-       -angleToMatchLengthX(seg01, myVar, %),
-       myVar
-     ], %) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
-  |> angledLineToY([
-       -angleToMatchLengthY(seg01, myVar, %),
-       myVar
-     ], %) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper
+  |> angledLine(angle = -angleToMatchLengthX(seg01, myVar, %), endAbsoluteX = myVar) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
+  |> angledLine(angle = -angleToMatchLengthY(seg01, myVar, %), endAbsoluteY = myVar) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper
   |> angledLine(angle = 45, length = segLen(seg01)) // ln-lineTo-free should become angledLine
   |> angledLine(angle = 45, length = segLen(seg01)) // ln-angledLineToX-free should become angledLine
   |> angledLine(angle = myAng, length = segLen(seg01)) // ln-angledLineToX-angle should become angledLine
-  |> angledLineToX([
-       angleToMatchLengthX(seg01, myVar2, %),
-       myVar2
-     ], %) // ln-angledLineToX-xAbsolute should use angleToMatchLengthX to get angle
+  |> angledLine(angle = angleToMatchLengthX(seg01, myVar2, %), endAbsoluteX = myVar2) // ln-angledLineToX-xAbsolute should use angleToMatchLengthX to get angle
   |> angledLine(angle = -45, length = segLen(seg01)) // ln-angledLineToY-free should become angledLine
   |> angledLine(angle = myAng2, length = segLen(seg01)) // ln-angledLineToY-angle should become angledLine
-  |> angledLineToY([
-       angleToMatchLengthY(seg01, myVar3, %),
-       myVar3
-     ], %) // ln-angledLineToY-yAbsolute should use angleToMatchLengthY to get angle
+  |> angledLine(angle = angleToMatchLengthY(seg01, myVar3, %), endAbsoluteY = myVar3) // ln-angledLineToY-yAbsolute should use angleToMatchLengthY to get angle
   |> line(end = [
        min(segLen(seg01), myVar),
        legLen(segLen(seg01), myVar)
@@ -336,14 +324,8 @@ part001 = startSketchOn(XY)
   |> angledLine(angle = myVar, length = segLen(seg01)) // ln-use segLen for second arg
   |> angledLine(angle = 45, length = segLen(seg01)) // ln-segLen again
   |> angledLine(angle = 54, length = segLen(seg01)) // ln-should be transformed to angledLine
-  |> angledLineOfXLength([
-       legAngX(segLen(seg01), myVar),
-       min(segLen(seg01), myVar)
-     ], %) // ln-should use legAngX to calculate angle
-  |> angledLineOfXLength([
-       180 + legAngX(segLen(seg01), myVar),
-       min(segLen(seg01), myVar)
-     ], %) // ln-same as above but should have + 180 to match original quadrant
+  |> angledLine(angle = legAngX(segLen(seg01), myVar), lengthX = min(segLen(seg01), myVar)) // ln-should use legAngX to calculate angle
+  |> angledLine(angle = 180 + legAngX(segLen(seg01), myVar), lengthX = min(segLen(seg01), myVar)) // ln-same as above but should have + 180 to match original quadrant
   |> line(end = [
        legLen(segLen(seg01), myVar),
        min(segLen(seg01), myVar)
@@ -354,14 +336,8 @@ part001 = startSketchOn(XY)
      ]) // ln-negative legLen yRelative
   |> angledLine(angle = 58, length = segLen(seg01)) // ln-angledLineOfYLength-free should become angledLine
   |> angledLine(angle = myAng, length = segLen(seg01)) // ln-angledLineOfYLength-angle should become angledLine
-  |> angledLineOfXLength([
-       legAngY(segLen(seg01), myVar),
-       min(segLen(seg01), myVar)
-     ], %) // ln-angledLineOfYLength-yRelative use legAngY
-  |> angledLineOfXLength([
-       270 + legAngY(segLen(seg01), myVar),
-       min(segLen(seg01), myVar)
-     ], %) // ln-angledLineOfYLength-yRelative with angle > 90 use binExp
+  |> angledLine(angle = legAngY(segLen(seg01), myVar), lengthX = min(segLen(seg01), myVar)) // ln-angledLineOfYLength-yRelative use legAngY
+  |> angledLine(angle = 270 + legAngY(segLen(seg01), myVar), lengthX = min(segLen(seg01), myVar)) // ln-angledLineOfYLength-yRelative with angle > 90 use binExp
   |> xLine(length = segLen(seg01)) // ln-xLine-free should sub in segLen
   |> yLine(length = segLen(seg01)) // ln-yLine-free should sub in segLen
   |> xLine(length = segLen(seg01)) // ln-xLineTo-free should convert to xLine
