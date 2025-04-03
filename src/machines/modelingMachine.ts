@@ -1779,11 +1779,6 @@ export const modelingMachine = setup({
         },
         {
           focusPath: [pathToExtrudeArg],
-          zoomToFit: true,
-          zoomOnRangeAndType: {
-            range: selection.graphSelections[0]?.codeRef.range,
-            type: 'path',
-          },
         }
       )
     }),
@@ -1860,11 +1855,6 @@ export const modelingMachine = setup({
         },
         {
           focusPath: [pathToRevolveArg],
-          zoomToFit: true,
-          zoomOnRangeAndType: {
-            range: selection.graphSelections[0]?.codeRef.range,
-            type: 'path',
-          },
         }
       )
     }),
