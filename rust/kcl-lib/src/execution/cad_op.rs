@@ -63,6 +63,7 @@ impl Operation {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export_to = "Operation.ts")]
 #[serde(tag = "type")]
+#[expect(clippy::large_enum_variant)]
 pub enum Group {
     /// A function call.
     #[serde(rename_all = "camelCase")]
