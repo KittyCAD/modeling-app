@@ -1,6 +1,6 @@
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { MutableRefObject } from 'react'
-import { setup, assign, fromPromise } from 'xstate'
+import { setup, assign, fromPromise, ActorRefFrom } from 'xstate'
 import {
   rustContext,
   kclManager,
@@ -317,3 +317,5 @@ export const engineStreamMachine = setup({
     },
   },
 })
+
+export type EngineStreamActor = ActorRefFrom<typeof engineStreamMachine>
