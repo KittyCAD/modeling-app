@@ -1705,24 +1705,6 @@ export function splitPipedProfile(
   profileBrokenIntoItsOwnVar.declaration.init.nonCodeMeta.nonCodeNodes =
     decrementedNonCodeMeta
 
-  console.log(
-    profileBrokenIntoItsOwnVar.declaration.init.nonCodeMeta.nonCodeNodes
-  )
-  // if (
-  //   profileBrokenIntoItsOwnVar.declaration.init.nonCodeMeta.nonCodeNodes[
-  //     profileBrokenIntoItsOwnVar.declaration.init.body.length
-  //   ]
-  // ) {
-  //   profileBrokenIntoItsOwnVar.declaration.init.nonCodeMeta.nonCodeNodes[
-  //     profileBrokenIntoItsOwnVar.declaration.init.body.length - 1
-  //   ] =
-  //     profileBrokenIntoItsOwnVar.declaration.init.nonCodeMeta.nonCodeNodes[
-  //       profileBrokenIntoItsOwnVar.declaration.init.body.length
-  //     ]
-  //   delete profileBrokenIntoItsOwnVar.declaration.init.nonCodeMeta.nonCodeNodes[
-  //     profileBrokenIntoItsOwnVar.declaration.init.body.length
-  //   ]
-  // }
   const index = getBodyIndex(pathToPipe)
   if (err(index)) return index
   _ast.body.splice(index + 1, 0, profileBrokenIntoItsOwnVar)
