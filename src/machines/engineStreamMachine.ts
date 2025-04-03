@@ -5,6 +5,7 @@ import {
   rustContext,
   sceneInfra,
 } from '@src/lib/singletons'
+import { uuidv4 } from '@src/lib/utils'
 import type { MutableRefObject } from 'react'
 import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
@@ -120,6 +121,19 @@ export const engineStreamMachine = setup({
           .catch(console.warn)
 
         await kclManager.executeCode()
+
+        if (params.zoomToFit) {
+          await engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'zoom_to_fit',
+              object_ids: [], // leave empty to zoom to all objects
+              padding: 0.1, // padding around the objects
+              animated: false, // don't animate the zoom for now
+            },
+          })
+        }
       }
     ),
     [EngineStreamTransition.Pause]: fromPromise(
