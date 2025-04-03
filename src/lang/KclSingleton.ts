@@ -1,3 +1,7 @@
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type EditorManager from '@src/editor/manager'
+import type CodeManager from '@src/lang/codeManager'
+import type RustContext from '@src/lib/rustContext'
 import type { Diagnostic } from '@codemirror/lint'
 import type {
   EntityType_type,
@@ -47,18 +51,22 @@ import type {
   KclSettingsAnnotation,
 } from '@src/lib/settings/settingsTypes'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import {
-  codeManager,
-  editorManager,
-  rustContext,
-  sceneInfra,
-} from '@src/lib/singletons'
+
 import { err, reportRejection } from '@src/lib/trap'
 import { deferExecution, isOverlap, uuidv4 } from '@src/lib/utils'
 
 interface ExecuteArgs {
   ast?: Node<Program>
   executionId?: number
+}
+
+// Each of our singletons has dependencies on _other_ singletons, so importing
+// can easily become cyclic. Each will have its own Singletons type.
+interface Singletons {
+  rustContext: RustContext
+  codeManager: CodeManager
+  editorManager: EditorManager
+  sceneInfra: SceneInfra
 }
 
 export class KclManager {
@@ -99,6 +107,7 @@ export class KclManager {
   private _switchedFiles = false
   private _fileSettings: KclSettingsAnnotation = {}
   private _kclVersion: string | undefined = undefined
+  private singletons: Singletons
 
   engineCommandManager: EngineCommandManager
 
@@ -189,7 +198,7 @@ export class KclManager {
   }
 
   setDiagnosticsForCurrentErrors() {
-    editorManager?.setDiagnostics(this.diagnostics)
+    this.singletons.editorManager?.setDiagnostics(this.diagnostics)
     this._diagnosticsCallback(this.diagnostics)
   }
 
@@ -226,12 +235,13 @@ export class KclManager {
     this._wasmInitFailedCallback(wasmInitFailed)
   }
 
-  constructor(engineCommandManager: EngineCommandManager) {
+  constructor(engineCommandManager: EngineCommandManager, singletons: Singletons) {
     this.engineCommandManager = engineCommandManager
+    this.singletons = singletons
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.ensureWasmInit().then(async () => {
-      await this.safeParse(codeManager.code).then((ast) => {
+      await this.safeParse(this.singletons.codeManager.code).then((ast) => {
         if (ast) {
           this.ast = ast
         }
@@ -297,9 +307,9 @@ export class KclManager {
     // If we were switching files and we hit an error on parse we need to bust
     // the cache and clear the scene.
     if (this._astParseFailed && this._switchedFiles) {
-      await rustContext.clearSceneAndBustCache(
+      await this.singletons.rustContext.clearSceneAndBustCache(
         { settings: await jsAppSettings() },
-        codeManager.currentFilePath || undefined
+        this.singletons.codeManager.currentFilePath || undefined
       )
     } else if (this._switchedFiles) {
       // Reset the switched files boolean.
@@ -422,8 +432,8 @@ export class KclManager {
     await this.ensureWasmInit()
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
-      path: codeManager.currentFilePath || undefined,
-      rustContext,
+      path: this.singletons.codeManager.currentFilePath || undefined,
+      rustContext: this.singletons.rustContext,
     })
 
     // Program was not interrupted, setup the scene
@@ -471,7 +481,7 @@ export class KclManager {
     await this.updateArtifactGraph(execState.artifactGraph)
     this._executeCallback()
     if (!isInterrupted) {
-      sceneInfra.modelingSend({ type: 'code edit during sketch' })
+      this.singletons.sceneInfra.modelingSend({ type: 'code edit during sketch' })
     }
     this.engineCommandManager.addCommandLog({
       type: CommandLogType.ExecutionDone,
@@ -519,7 +529,7 @@ export class KclManager {
 
     const { logs, errors, execState } = await executeAstMock({
       ast: newAst,
-      rustContext,
+      rustContext: this.singletons.rustContext,
     })
 
     this._logs = logs
@@ -536,7 +546,7 @@ export class KclManager {
     })
   }
   async executeCode(): Promise<void> {
-    const ast = await this.safeParse(codeManager.code)
+    const ast = await this.safeParse(this.singletons.codeManager.code)
 
     if (!ast) {
       // By clearing the AST we indicate to our callers that there was an issue with execution and
@@ -550,7 +560,7 @@ export class KclManager {
   }
 
   async format() {
-    const originalCode = codeManager.code
+    const originalCode = this.singletons.codeManager.code
     const ast = await this.safeParse(originalCode)
     if (!ast) {
       this.clearAst()
@@ -564,10 +574,10 @@ export class KclManager {
     if (originalCode === code) return
 
     // Update the code state and the editor.
-    codeManager.updateCodeStateEditor(code)
+    this.singletons.codeManager.updateCodeStateEditor(code)
 
     // Write back to the file system.
-    void codeManager
+    void this.singletons.codeManager
       .writeToFile()
       .then(() => this.executeCode())
       .catch(reportRejection)
@@ -643,7 +653,7 @@ export class KclManager {
   }
 
   get defaultPlanes() {
-    return rustContext.defaultPlanes
+    return this.singletons.rustContext.defaultPlanes
   }
 
   showPlanes(all = false) {

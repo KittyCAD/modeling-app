@@ -10,8 +10,8 @@ import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { BaseUnit } from '@src/lib/settings/settingsTypes'
 
 export const codeManager = new CodeManager()
-
 export const engineCommandManager = new EngineCommandManager()
+export const rustContext = new RustContext(engineCommandManager)
 
 declare global {
   interface Window {
@@ -23,20 +23,30 @@ declare global {
 // Accessible for tests mostly
 window.engineCommandManager = engineCommandManager
 
-// This needs to be after codeManager is created.
-export const kclManager = new KclManager(engineCommandManager)
-engineCommandManager.kclManager = kclManager
-
 export const sceneInfra = new SceneInfra(engineCommandManager)
 engineCommandManager.camControlsCameraChange = sceneInfra.onCameraChange
+
+// This needs to be after sceneInfra and engineCommandManager are is created.
+export const editorManager = new EditorManager(engineCommandManager)
+
+// This needs to be after codeManager is created.
+// (lee: what??? why?)
+export const kclManager = new KclManager(engineCommandManager, {
+  rustContext,
+  codeManager,
+  editorManager,
+  sceneInfra,
+})
+
+// The most obvious of cyclic dependencies.
+// This is because the   handleOnViewUpdate(viewUpdate: ViewUpdate): void {
+// method requires it for the current ast.
+editorManager.kclManager = kclManager
+
+engineCommandManager.kclManager = kclManager
 kclManager.sceneInfraBaseUnitMultiplierSetter = (unit: BaseUnit) => {
   sceneInfra.baseUnit = unit
 }
-
-// This needs to be after sceneInfra and engineCommandManager are is created.
-export const editorManager = new EditorManager(engineCommandManager, kclManager)
-
-export const rustContext = new RustContext(engineCommandManager)
 
 export const sceneEntitiesManager = new SceneEntities(
   engineCommandManager,
