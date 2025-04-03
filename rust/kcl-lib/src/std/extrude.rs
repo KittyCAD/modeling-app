@@ -109,8 +109,9 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         length = { docs = "How far to extrude the given sketches"},
         tag_start = { docs = "A named tag for the face at the start of the extrusion, i.e. the original sketch" },
         tag_end = { docs = "A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch" },
-        symmetric = { docs = ""},
-        bidirectional_distance = { docs = ""},
+        symmetric = { docs = "If true, the extrusion will happen symmetrically around the sketch. Otherwise, the
+            extrusion will happen on only one side of the sketch." },
+        bidirectional_distance = { docs = "If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored."},
     }
 }]
 #[allow(clippy::too_many_arguments)]
@@ -126,11 +127,16 @@ async fn inner_extrude(
 ) -> Result<Vec<Solid>, KclError> {
     // Extrude the element(s).
     let mut solids = Vec::new();
-    let bidirection = if bidirectional_distance.is_some() {
-        Some(LengthUnit(bidirectional_distance.unwrap()))
-    } else {
-        None
-    };
+
+    if symmetric.is_some() && symmetric.unwrap() && bidirectional_distance.is_some() {
+        return Err(KclError::Semantic(KclErrorDetails {
+            source_ranges: vec![args.source_range],
+            message: "You cannot give both `symmetric` and `bidirectional` params, you have to choose one or the other"
+                .to_owned(),
+        }));
+    }
+
+    let bidirection = bidirectional_distance.map(LengthUnit);
 
     for sketch in &sketches {
         let id = exec_state.next_uuid();

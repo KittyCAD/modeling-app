@@ -193,6 +193,8 @@ impl EngineConnection {
                 distance,
                 target,
                 faces: _, // Engine team: start using this once the frontend and engine both use it.
+                symmetric: false,
+                bidirectional_distance: None,
             }) => {
                 format!(
                     r#"
@@ -208,6 +210,8 @@ impl EngineConnection {
                 origin,
                 target,
                 tolerance,
+                symmetric: false,
+                bidirectional_angle: None,
             }) => {
                 let ox = origin.x.0;
                 let oy = origin.y.0;

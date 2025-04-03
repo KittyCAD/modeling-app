@@ -21,8 +21,22 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let tolerance = args.get_kw_arg_opt("tolerance")?;
     let tag_start = args.get_kw_arg_opt("tagStart")?;
     let tag_end = args.get_kw_arg_opt("tagEnd")?;
+    let symmetric = args.get_kw_arg_opt("symmetric")?;
+    let bidirectional_angle = args.get_kw_arg_opt("bidirectional")?;
 
-    let value = inner_revolve(sketches, axis, angle, tolerance, tag_start, tag_end, exec_state, args).await?;
+    let value = inner_revolve(
+        sketches,
+        axis,
+        angle,
+        tolerance,
+        tag_start,
+        tag_end,
+        symmetric,
+        bidirectional_angle,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(value.into())
 }
 
@@ -233,6 +247,9 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         tolerance = { docs = "Tolerance for the revolve operation." },
         tag_start = { docs = "A named tag for the face at the start of the revolve, i.e. the original sketch" },
         tag_end = { docs = "A named tag for the face at the end of the revolve" },
+        symmetric = { docs = "If true, the extrusion will happen symmetrically around the sketch. Otherwise, the
+            extrusion will happen on only one side of the sketch." },
+        bidirectional_angle = { docs = "If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored."},
     }
 }]
 #[allow(clippy::too_many_arguments)]
@@ -243,6 +260,8 @@ async fn inner_revolve(
     tolerance: Option<f64>,
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
+    symmetric: Option<bool>,
+    bidirectional_angle: Option<f64>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
@@ -258,7 +277,21 @@ async fn inner_revolve(
         }
     }
 
+    if symmetric.is_some() && symmetric.unwrap() && bidirectional_angle.is_some() {
+        return Err(KclError::Semantic(KclErrorDetails {
+            source_ranges: vec![args.source_range],
+            message: "You cannot give both `symmetric` and `bidirectional` params, you have to choose one or the other"
+                .to_owned(),
+        }));
+    }
+
     let angle = Angle::from_degrees(angle.unwrap_or(360.0));
+
+    let bidirectional_angle: Option<Angle> = if let Some(bidirectional_angle) = bidirectional_angle {
+        Some(Angle::from_degrees(bidirectional_angle))
+    } else {
+        None
+    };
 
     let mut solids = Vec::new();
     for sketch in &sketches {
@@ -276,6 +309,8 @@ async fn inner_revolve(
                         origin,
                         tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
                         axis_is_2d: true,
+                        symmetric: symmetric.unwrap_or_default(),
+                        bidirectional_angle,
                     }),
                 )
                 .await?;
@@ -289,6 +324,8 @@ async fn inner_revolve(
                         target: sketch.id.into(),
                         edge_id,
                         tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
+                        symmetric: symmetric.unwrap_or_default(),
+                        bidirectional_angle,
                     }),
                 )
                 .await?;
