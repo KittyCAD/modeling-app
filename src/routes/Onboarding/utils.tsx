@@ -53,7 +53,7 @@ export function useDemoCode() {
     setTimeout(
       toSync(async () => {
         codeManager.updateCodeStateEditor(bracket)
-        await kclManager.executeCode(true)
+        await kclManager.executeCode()
         await codeManager.writeToFile()
       }, reportRejection)
     )
