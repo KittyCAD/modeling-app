@@ -86,7 +86,7 @@ import {
   X_AXIS,
   Y_AXIS,
   getSceneScale,
-} from '@src/clientSideScene/sceneInfra'
+} from '@src/clientSideScene/sceneUtils'
 import type { SegmentUtils } from '@src/clientSideScene/segments'
 import {
   createProfileStartHandle,

@@ -77,7 +77,7 @@ async fn call_map_closure(
     ctxt: &ExecutorContext,
 ) -> Result<KclValue, KclError> {
     let output = map_fn
-        .call(exec_state, ctxt, vec![Arg::synthetic(input)], source_range)
+        .call(None, exec_state, ctxt, vec![Arg::synthetic(input)], source_range)
         .await?;
     let source_ranges = vec![source_range];
     let output = output.ok_or_else(|| {
@@ -202,7 +202,9 @@ async fn call_reduce_closure(
 ) -> Result<KclValue, KclError> {
     // Call the reduce fn for this repetition.
     let reduce_fn_args = vec![Arg::synthetic(elem), Arg::synthetic(start)];
-    let transform_fn_return = reduce_fn.call(exec_state, ctxt, reduce_fn_args, source_range).await?;
+    let transform_fn_return = reduce_fn
+        .call(None, exec_state, ctxt, reduce_fn_args, source_range)
+        .await?;
 
     // Unpack the returned transform object.
     let source_ranges = vec![source_range];
