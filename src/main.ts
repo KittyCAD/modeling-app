@@ -39,6 +39,11 @@ import {
   enableMenu,
 } from '@src/menu'
 
+
+if os.platform() !== 'win32' {
+  import 'win-ca'
+}
+
 let mainWindow: BrowserWindow | null = null
 
 // Preemptive code, GC may delete a menu while a user is using it as seen in VSCode
