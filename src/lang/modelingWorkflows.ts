@@ -65,9 +65,10 @@ export async function updateModelingState(
     newAst: Node<Program>
     selections?: Selections
   } = { newAst: ast }
-  // Step 1: Update AST without executing (prepare selections)
-  // TODO: understand why this skip flag is needed for importAstMod
+  // TODO: understand why this skip flag is needed for importAstMod.
+  // It's unclear why we double casts the AST
   if (!options?.skipUpdateAst) {
+    // Step 1: Update AST without executing (prepare selections)
     updatedAst = await dependencies.kclManager.updateAst(
       ast,
       // false == mock execution. Is this what we want?
