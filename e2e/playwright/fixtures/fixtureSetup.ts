@@ -175,9 +175,6 @@ export class ElectronZoo {
       }
     }
 
-    this.page = await this.electron.firstWindow()
-    this.context = this.electron.context()
-
     // THIS IS ABSOLUTELY NECESSARY TO CHANGE THE PROJECT DIRECTORY BETWEEN
     // TESTS BECAUSE OF THE ELECTRON INSTANCE REUSE.
     await this.electron?.evaluate(({ app }, projectDirName) => {
