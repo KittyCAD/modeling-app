@@ -103,6 +103,7 @@ export const modelingEditRole = (
       },
       {
         label: 'Edit parameter',
+        id: 'Edit.Edit parameter',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'Edit.Edit parameter',
@@ -111,6 +112,7 @@ export const modelingEditRole = (
       },
       {
         label: 'Format code',
+        id: 'Edit.Format code',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'Edit.Format code',
@@ -120,6 +122,7 @@ export const modelingEditRole = (
       { type: 'separator' },
       {
         label: 'Rename project',
+        id: 'Edit.Rename project',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'Edit.Rename project',
@@ -128,6 +131,7 @@ export const modelingEditRole = (
       },
       {
         label: 'Delete project',
+        id: 'Edit.Delete project',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'Edit.Delete project',
@@ -137,6 +141,7 @@ export const modelingEditRole = (
       { type: 'separator' },
       {
         label: 'Change project directory',
+        id: 'Edit.Change project directory',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'Edit.Change project directory',
