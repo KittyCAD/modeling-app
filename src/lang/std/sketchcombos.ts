@@ -1443,20 +1443,22 @@ export function removeSingleConstraint({
 
       if (inputToReplace.type === 'arrayItem') {
         const values = inputs.map((arg) => {
+          const argExpr = arg.overrideExpr ?? arg.expr
           if (
             !(
               (arg.type === 'arrayItem' || arg.type === 'arrayOrObjItem') &&
               arg.index === inputToReplace.index
             )
           )
-            return arg.expr
-          const literal = rawArgs.find(
+            return argExpr
+          const rawArg = rawArgs.find(
             (rawValue) =>
               (rawValue.type === 'arrayItem' ||
                 rawValue.type === 'arrayOrObjItem') &&
               rawValue.index === inputToReplace.index
-          )?.expr
-          return (arg.index === inputToReplace.index && literal) || arg.expr
+          )
+          const literal = rawArg?.overrideExpr ?? rawArg?.expr
+          return (arg.index === inputToReplace.index && literal) || argExpr
         })
         if (callExp.node.type === 'CallExpression') {
           return createStdlibCallExpression(
@@ -1494,6 +1496,7 @@ export function removeSingleConstraint({
         const objInput: Parameters<typeof createObjectExpression>[0] = {}
         const kwArgInput: ReturnType<typeof createLabeledArg>[] = []
         inputs.forEach((currentArg) => {
+          const currentArgExpr = currentArg.overrideExpr ?? currentArg.expr
           if (
             // should be one of these, return early to make TS happy.
             currentArg.type !== 'objectProperty' &&
@@ -1524,8 +1527,11 @@ export function removeSingleConstraint({
             if (!arrayInput[currentArg.key]) {
               arrayInput[currentArg.key] = []
             }
-            arrayInput[inputToReplace.key][inputToReplace.index] =
+            const rawLiteralArrayInObjectExpr =
+              rawLiteralArrayInObject.overrideExpr ??
               rawLiteralArrayInObject.expr
+            arrayInput[inputToReplace.key][inputToReplace.index] =
+              rawLiteralArrayInObjectExpr
             let existingKwgForKey = kwArgInput.find(
               (kwArg) => kwArg.label.name === currentArg.key
             )
@@ -1538,7 +1544,7 @@ export function removeSingleConstraint({
             }
             if (existingKwgForKey.arg.type === 'ArrayExpression') {
               existingKwgForKey.arg.elements[inputToReplace.index] =
-                rawLiteralArrayInObject.expr
+                rawLiteralArrayInObjectExpr
             }
           } else if (
             inputToReplace.type === 'objectProperty' &&
@@ -1547,10 +1553,11 @@ export function removeSingleConstraint({
             rawLiteralObjProp?.key === inputToReplace.key &&
             currentArg.key === inputToReplace.key
           ) {
-            objInput[inputToReplace.key] = rawLiteralObjProp.expr
+            objInput[inputToReplace.key] =
+              rawLiteralObjProp.overrideExpr ?? rawLiteralObjProp.expr
           } else if (currentArg.type === 'arrayInObject') {
             if (!arrayInput[currentArg.key]) arrayInput[currentArg.key] = []
-            arrayInput[currentArg.key][currentArg.index] = currentArg.expr
+            arrayInput[currentArg.key][currentArg.index] = currentArgExpr
             let existingKwgForKey = kwArgInput.find(
               (kwArg) => kwArg.label.name === currentArg.key
             )
@@ -1562,10 +1569,10 @@ export function removeSingleConstraint({
               kwArgInput.push(existingKwgForKey)
             }
             if (existingKwgForKey.arg.type === 'ArrayExpression') {
-              existingKwgForKey.arg.elements[currentArg.index] = currentArg.expr
+              existingKwgForKey.arg.elements[currentArg.index] = currentArgExpr
             }
           } else if (currentArg.type === 'objectProperty') {
-            objInput[currentArg.key] = currentArg.expr
+            objInput[currentArg.key] = currentArgExpr
           }
         })
         const createObjParam: Parameters<typeof createObjectExpression>[0] = {}
@@ -1599,7 +1606,7 @@ export function removeSingleConstraint({
 
       return createCallWrapper(
         callExp.node.callee.name.name as any,
-        rawArgs[0].expr,
+        rawArgs[0].overrideExpr ?? rawArgs[0].expr,
         tag
       )
     },
