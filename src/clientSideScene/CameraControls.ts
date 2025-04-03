@@ -1,5 +1,8 @@
+import type {
+  CameraDragInteractionType_type,
+  CameraViewState_type,
+} from '@kittycad/lib/dist/types/src/models'
 import type { EngineStreamActor } from '@src/machines/engineStreamMachine'
-import type { CameraViewState_type, CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
 import * as TWEEN from '@tweenjs/tween.js'
 import {
   Euler,

@@ -299,12 +299,16 @@ class EngineConnection extends EventTarget {
   private engineCommandManager: EngineCommandManager
 
   private pingPongSpan: { ping?: number; pong?: number }
-  private pingIntervalId: ReturnType<typeof setInterval> = setInterval(() => {},
-  60_000)
+  private pingIntervalId: ReturnType<typeof setInterval> = setInterval(
+    () => {},
+    60_000
+  )
   isUsingConnectionLite: boolean = false
 
-  timeoutToForceConnectId: ReturnType<typeof setTimeout> = setTimeout(() => {},
-  3000)
+  timeoutToForceConnectId: ReturnType<typeof setTimeout> = setTimeout(
+    () => {},
+    3000
+  )
 
   constructor({
     engineCommandManager,

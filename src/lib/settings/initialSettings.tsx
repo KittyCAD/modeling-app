@@ -307,8 +307,8 @@ export function createSettings() {
                     {preview / MS_IN_MINUTE === 60
                       ? '1 hour'
                       : preview / MS_IN_MINUTE === 1
-                      ? '1 minute'
-                      : preview + ' minutes'}
+                        ? '1 minute'
+                        : preview + ' minutes'}
                   </div>
                 )}
               </div>

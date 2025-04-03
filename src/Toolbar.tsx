@@ -11,8 +11,8 @@ import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { useKclContext } from '@src/lang/KclProvider'
 import { isCursorInFunctionDefinition } from '@src/lang/queryAst'
-import { isCursorInSketchCommandRange } from '@src/lang/util'
 import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
+import { isCursorInSketchCommandRange } from '@src/lang/util'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { editorManager, kclManager } from '@src/lib/singletons'
@@ -25,7 +25,6 @@ import type {
 import { toolbarConfig } from '@src/lib/toolbar'
 import { isArray } from '@src/lib/utils'
 import { commandBarActor } from '@src/machines/commandBarMachine'
-
 
 export function Toolbar({
   className = '',

@@ -7,13 +7,13 @@ import CommandBarReview from '@src/components/CommandBar/CommandBarReview'
 import CommandComboBox from '@src/components/CommandComboBox'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import {
   commandBarActor,
   useCommandBarState,
 } from '@src/machines/commandBarMachine'
-import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
-import { useNetworkContext } from '@src/hooks/useNetworkContext'
 
 export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 
