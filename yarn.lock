@@ -1866,10 +1866,10 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@kittycad/lib@2.0.25":
-  version "2.0.25"
-  resolved "https://registry.yarnpkg.com/@kittycad/lib/-/lib-2.0.25.tgz#ad3e9a548752440b18102ca9b83e10811c2c08ab"
-  integrity sha512-Qw5veBEX37lOfdg93OiSKFcTC+3y5q3hcfjML53BbRwE7bzwE/PlPFAouqqnts4a9PEETHxeO1CsKe3YUW+ysA==
+"@kittycad/lib@2.0.26":
+  version "2.0.26"
+  resolved "https://registry.yarnpkg.com/@kittycad/lib/-/lib-2.0.26.tgz#4e7faa36ba9f9a2652f0cceaca40c9da9bd9e7ec"
+  integrity sha512-YFELcnBMiIsc24r4tnVFsFQFXr1iv8Kn/jmGGd7AnjR80BE4+GgbXf/NC7nNKCgsAhzxAXWFiupQ7bN+ImfUIw==
   dependencies:
     openapi-types "^12.0.0"
     ts-node "^10.9.1"
@@ -9446,10 +9446,10 @@ vite-tsconfig-paths@^4.3.2:
     globrex "^0.1.2"
     tsconfck "^3.0.3"
 
-vite@^5.0.0, vite@^5.4.12:
-  version "5.4.12"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-5.4.12.tgz#627d12ff06de3942557dfe8632fd712a12a072c7"
-  integrity sha512-KwUaKB27TvWwDJr1GjjWthLMATbGEbeWYZIbGZ5qFIsgPP3vWzLu4cVooqhm5/Z2SPDUMjyPVjTztm5tYKwQxA==
+vite@^5.0.0, vite@^5.4.16:
+  version "5.4.16"
+  resolved "https://registry.yarnpkg.com/vite/-/vite-5.4.16.tgz#471983257a890ef33f2700cbbbc2134f2d08abf1"
+  integrity sha512-Y5gnfp4NemVfgOTDQAunSD4346fal44L9mszGGY/e+qxsRT5y1sMlS/8tiQ8AFAp+MFgYNSINdfEchJiPm41vQ==
   dependencies:
     esbuild "^0.21.3"
     postcss "^8.4.43"

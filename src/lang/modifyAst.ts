@@ -590,7 +590,7 @@ export function revolveSketch(
     createObjectExpression({
       angle: angle,
       // TODO: hard coded 'X' axis for revolve MVP, should be changed.
-      axis: createLiteral('X'),
+      axis: createLocalName('X'),
     }),
     createLocalName(variableDeclarator.id.name),
   ])

@@ -7,6 +7,7 @@ import { uuidv4 } from '@src/lib/utils'
 
 import { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { BaseUnit } from '@src/lib/settings/settingsTypes'
 
 export const codeManager = new CodeManager()
 
@@ -28,9 +29,12 @@ engineCommandManager.kclManager = kclManager
 
 export const sceneInfra = new SceneInfra(engineCommandManager)
 engineCommandManager.camControlsCameraChange = sceneInfra.onCameraChange
+kclManager.sceneInfraBaseUnitMultiplierSetter = (unit: BaseUnit) => {
+  sceneInfra.baseUnit = unit
+}
 
 // This needs to be after sceneInfra and engineCommandManager are is created.
-export const editorManager = new EditorManager()
+export const editorManager = new EditorManager(engineCommandManager, kclManager)
 
 export const rustContext = new RustContext(engineCommandManager)
 

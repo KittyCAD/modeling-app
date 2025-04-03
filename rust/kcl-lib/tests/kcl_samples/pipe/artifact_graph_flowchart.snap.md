@@ -13,7 +13,7 @@ flowchart LR
     11[Solid2d]
   end
   1["Plane<br>[605, 622, 0]"]
-  12["Sweep Revolve<br>[1148, 1179, 0]"]
+  12["Sweep Revolve<br>[1148, 1177, 0]"]
   13[Wall]
   14[Wall]
   15[Wall]

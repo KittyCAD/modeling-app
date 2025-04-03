@@ -10,7 +10,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type EditorManager from '@src/editor/manager'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type CodeManager from '@src/lang/codeManager'
-import type { PathToNode, Program, SourceRange } from '@src/lang/wasm'
+import type { PathToNode, Program } from '@src/lang/wasm'
 import type { ExecutionType } from '@src/lib/constants'
 import {
   EXECUTION_TYPE_MOCK,
@@ -53,11 +53,6 @@ export async function updateModelingState(
   },
   options?: {
     focusPath?: Array<PathToNode>
-    zoomToFit?: boolean
-    zoomOnRangeAndType?: {
-      range: SourceRange
-      type: string
-    }
     skipUpdateAst?: boolean
   }
 ): Promise<void> {
@@ -93,8 +88,6 @@ export async function updateModelingState(
     if (executionType === EXECUTION_TYPE_REAL) {
       await dependencies.kclManager.executeAst({
         ast: updatedAst.newAst,
-        zoomToFit: options?.zoomToFit,
-        zoomOnRangeAndType: options?.zoomOnRangeAndType,
       })
     } else if (executionType === EXECUTION_TYPE_MOCK) {
       await dependencies.kclManager.executeAstMock(updatedAst.newAst)
