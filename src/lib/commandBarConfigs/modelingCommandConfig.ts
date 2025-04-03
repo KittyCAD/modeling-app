@@ -28,7 +28,7 @@ import type { Selections } from '@src/lib/selections'
 import { codeManager, kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { SketchTool, modelingMachine } from '@src/machines/modelingMachine'
-import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/Settings'
+import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 
 type OutputFormat = Models['OutputFormat3d_type']
 type OutputTypeKey = OutputFormat['type']

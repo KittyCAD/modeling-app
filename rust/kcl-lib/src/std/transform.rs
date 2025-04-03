@@ -104,7 +104,7 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// cube
 ///     |> scale(
-///     z = 2.5,
+///     y = 2.5,
 ///     )
 /// ```
 ///
@@ -278,10 +278,20 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///
 /// import "tests/inputs/cube.sldprt" as cube
 ///
+/// // Circle so you actually see the move.
+/// startSketchOn('XY')
+///     |> circle(
+///         center = [-10, -10],
+///         radius = 10,
+///         )
+///     |> extrude(
+///     length = 10,
+///     )
+///
 /// cube
 ///     |> translate(
-///     x = 1.0,
-///     y = 1.0,
+///     x = 10.0,
+///     y = 10.0,
 ///     z = 2.5,
 ///     )
 /// ```
@@ -452,27 +462,8 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         }));
     }
 
-    // If they give us a roll, pitch, or yaw, they must give us all three.
+    // If they give us a roll, pitch, or yaw, they must give us at least one of them.
     if roll.is_some() || pitch.is_some() || yaw.is_some() {
-        if roll.is_none() {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected `roll` to be provided when `pitch` or `yaw` is provided.".to_string(),
-                source_ranges: vec![args.source_range],
-            }));
-        }
-        if pitch.is_none() {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected `pitch` to be provided when `roll` or `yaw` is provided.".to_string(),
-                source_ranges: vec![args.source_range],
-            }));
-        }
-        if yaw.is_none() {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected `yaw` to be provided when `roll` or `pitch` is provided.".to_string(),
-                source_ranges: vec![args.source_range],
-            }));
-        }
-
         // Ensure they didn't also provide an axis or angle.
         if axis.is_some() || angle.is_some() {
             return Err(KclError::Semantic(KclErrorDetails {
@@ -617,6 +608,43 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 ///
 /// ```no_run
+/// // Rotate a pipe with just roll.
+///
+/// // Create a path for the sweep.
+/// sweepPath = startSketchOn('XZ')
+///     |> startProfileAt([0.05, 0.05], %)
+///     |> line(end = [0, 7])
+///     |> tangentialArc({
+///         offset: 90,
+///         radius: 5
+///     }, %)
+///     |> line(end = [-3, 0])
+///     |> tangentialArc({
+///         offset: -90,
+///         radius: 5
+///     }, %)
+///     |> line(end = [0, 7])
+///
+/// // Create a hole for the pipe.
+/// pipeHole = startSketchOn('XY')
+///     |> circle(
+///         center = [0, 0],
+///         radius = 1.5,
+///     )
+///
+/// sweepSketch = startSketchOn('XY')
+///     |> circle(
+///         center = [0, 0],
+///         radius = 2,
+///         )              
+///     |> hole(pipeHole, %)
+///     |> sweep(path = sweepPath)   
+///     |> rotate(
+///         roll = 10,
+///     )
+/// ```
+///
+/// ```no_run
 /// // Rotate a pipe about an axis with an angle.
 ///
 /// // Create a path for the sweep.
@@ -662,7 +690,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// cube
 ///     |> rotate(
 ///     axis =  [0, 0, 1.0],
-///     angle = 90,
+///     angle = 9,
 ///     )
 /// ```
 ///
@@ -728,9 +756,9 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     unlabeled_first = true,
     args = {
         objects = {docs = "The solid, sketch, or set of solids or sketches to rotate."},
-        roll = {docs = "The roll angle in degrees. Must be used with `pitch` and `yaw`. Must be between -360 and 360.", include_in_snippet = true},
-        pitch = {docs = "The pitch angle in degrees. Must be used with `roll` and `yaw`. Must be between -360 and 360.", include_in_snippet = true},
-        yaw = {docs = "The yaw angle in degrees. Must be used with `roll` and `pitch`. Must be between -360 and 360.", include_in_snippet = true},
+        roll = {docs = "The roll angle in degrees. Must be between -360 and 360. Default is 0 if not given.", include_in_snippet = true},
+        pitch = {docs = "The pitch angle in degrees. Must be between -360 and 360. Default is 0 if not given.", include_in_snippet = true},
+        yaw = {docs = "The yaw angle in degrees. Must be between -360 and 360. Default is 0 if not given.", include_in_snippet = true},
         axis = {docs = "The axis to rotate around. Must be used with `angle`.", include_in_snippet = false},
         angle = {docs = "The angle to rotate in degrees. Must be used with `axis`. Must be between -360 and 360.", include_in_snippet = false},
         global = {docs = "If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move."}
@@ -757,30 +785,6 @@ async fn inner_rotate(
     for object_id in objects.ids() {
         let id = exec_state.next_uuid();
 
-        if let (Some(roll), Some(pitch), Some(yaw)) = (roll, pitch, yaw) {
-            args.batch_modeling_cmd(
-                id,
-                ModelingCmd::from(mcmd::SetObjectTransform {
-                    object_id,
-                    transforms: vec![shared::ComponentTransform {
-                        rotate_rpy: Some(shared::TransformBy::<Point3d<f64>> {
-                            property: shared::Point3d {
-                                x: roll,
-                                y: pitch,
-                                z: yaw,
-                            },
-                            set: false,
-                            is_local: !global.unwrap_or(false),
-                        }),
-                        scale: None,
-                        rotate_angle_axis: None,
-                        translate: None,
-                    }],
-                }),
-            )
-            .await?;
-        }
-
         if let (Some(axis), Some(angle)) = (axis, angle) {
             args.batch_modeling_cmd(
                 id,
@@ -799,6 +803,29 @@ async fn inner_rotate(
                         }),
                         scale: None,
                         rotate_rpy: None,
+                        translate: None,
+                    }],
+                }),
+            )
+            .await?;
+        } else {
+            // Do roll, pitch, and yaw.
+            args.batch_modeling_cmd(
+                id,
+                ModelingCmd::from(mcmd::SetObjectTransform {
+                    object_id,
+                    transforms: vec![shared::ComponentTransform {
+                        rotate_rpy: Some(shared::TransformBy::<Point3d<f64>> {
+                            property: shared::Point3d {
+                                x: roll.unwrap_or(0.0),
+                                y: pitch.unwrap_or(0.0),
+                                z: yaw.unwrap_or(0.0),
+                            },
+                            set: false,
+                            is_local: !global.unwrap_or(false),
+                        }),
+                        scale: None,
+                        rotate_angle_axis: None,
                         translate: None,
                     }],
                 }),
@@ -923,24 +950,42 @@ sweepSketch = startSketchOn('XY')
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().message(),
-            r#"Expected `roll` to be provided when `pitch` or `yaw` is provided."#.to_string()
+            r#"Expected `axis` and `angle` to not be provided when `roll`, `pitch`, and `yaw` are provided."#
+                .to_string()
         );
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_rotate_yaw_no_pitch() {
+    async fn test_rotate_yaw_only() {
         let ast = PIPE.to_string()
             + r#"
     |> rotate(
     yaw = 90,
     )
 "#;
-        let result = parse_execute(&ast).await;
-        assert!(result.is_err());
-        assert_eq!(
-            result.unwrap_err().message(),
-            r#"Expected `roll` to be provided when `pitch` or `yaw` is provided."#.to_string()
-        );
+        parse_execute(&ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_rotate_pitch_only() {
+        let ast = PIPE.to_string()
+            + r#"
+    |> rotate(
+    pitch = 90,
+    )
+"#;
+        parse_execute(&ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_rotate_roll_only() {
+        let ast = PIPE.to_string()
+            + r#"
+    |> rotate(
+    pitch = 90,
+    )
+"#;
+        parse_execute(&ast).await.unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread")]
