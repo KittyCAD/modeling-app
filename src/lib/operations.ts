@@ -1143,8 +1143,16 @@ export function getOperationIcon(op: Operation): CustomIconName {
       return stdLibMap[op.name]?.icon ?? 'questionMark'
     case 'KclStdLibCall':
       return stdLibMap[op.name]?.icon ?? 'questionMark'
-    default:
+    case 'GroupBegin':
+      if (op.group.type === 'ModuleInstance') {
+        return 'import' // TODO: Use insert icon.
+      }
       return 'make-variable'
+    case 'GroupEnd':
+      return 'questionMark'
+    default:
+      const _exhaustiveCheck: never = op
+      return 'questionMark' // unreachable
   }
 }
 
