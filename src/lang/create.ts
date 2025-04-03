@@ -338,10 +338,14 @@ export function createBinaryExpressionWithUnary([left, right]: [
   return createBinaryExpression([left, '+', right])
 }
 
+export function createImportAsSelector(name: string): ImportSelector {
+  return { type: 'None', alias: createIdentifier(name) }
+}
+
 export function createImportStatement(
   selector: ImportSelector,
   path: ImportPath,
-  visibility: ItemVisibility
+  visibility: ItemVisibility = 'default'
 ): Node<ImportStatement> {
   return {
     type: 'ImportStatement',

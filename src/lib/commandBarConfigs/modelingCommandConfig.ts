@@ -48,7 +48,7 @@ export type HelixModes = 'Axis' | 'Edge' | 'Cylinder'
 
 export type ModelingCommandSchema = {
   'Enter sketch': { forceNewSketch?: boolean }
-  Import: {
+  Insert: {
     path: string
     localName: string
   }
@@ -228,9 +228,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   ],
-  Import: {
-    description: 'Import a part from the current project directory',
-    icon: 'floppyDiskArrowIn',
+  Insert: {
+    description: 'Insert from a file in the current project directory',
+    icon: 'import',
     needsReview: true,
     args: {
       path: {

@@ -46,7 +46,7 @@ import { createLiteral, createLocalName } from '@src/lang/create'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   addHelix,
-  addImport,
+  addImportAndInsert,
   addOffsetPlane,
   addShell,
   addSweep,
@@ -339,7 +339,7 @@ export type ModelingMachineEvent =
       data: ModelingCommandSchema['event.parameter.edit']
     }
   | { type: 'Export'; data: ModelingCommandSchema['Export'] }
-  | { type: 'Import'; data: ModelingCommandSchema['Import'] }
+  | { type: 'Insert'; data: ModelingCommandSchema['Insert'] }
   | {
       type: 'Boolean Subtract'
       data: ModelingCommandSchema['Boolean Subtract']
@@ -2678,24 +2678,28 @@ export const modelingMachine = setup({
         )
       }
     ),
-    importAstMod: fromPromise(
-      async ({ input }: { input?: ModelingCommandSchema['Import'] }) => {
+    insertAstMod: fromPromise(
+      async ({ input }: { input?: ModelingCommandSchema['Insert'] }) => {
         if (!input) {
           return new Error('No input provided')
         }
 
         const ast = kclManager.ast
         const { path, localName } = input
-        const { modifiedAst } = addImport({
-          node: ast,
-          path,
-          localName,
-        })
+        const { modifiedAst, pathToImportNode, pathToInsertNode } =
+          addImportAndInsert({
+            node: ast,
+            path,
+            localName,
+          })
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
           { kclManager, editorManager, codeManager },
-          { skipUpdateAst: true }
+          {
+            skipUpdateAst: true,
+            focusPath: [pathToImportNode, pathToInsertNode],
+          }
         )
       }
     ),
@@ -2847,8 +2851,8 @@ export const modelingMachine = setup({
           target: '#Modeling.parameter.editing',
         },
 
-        Import: {
-          target: 'Importing',
+        Insert: {
+          target: 'Inserting',
           reenter: true,
         },
 
@@ -4263,12 +4267,12 @@ export const modelingMachine = setup({
       },
     },
 
-    Importing: {
+    Inserting: {
       invoke: {
-        src: 'importAstMod',
-        id: 'importAstMod',
+        src: 'insertAstMod',
+        id: 'insertAstMod',
         input: ({ event }) => {
-          if (event.type !== 'Import') return undefined
+          if (event.type !== 'Insert') return undefined
           return event.data
         },
         onDone: ['idle'],

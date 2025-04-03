@@ -11,6 +11,7 @@ import {
   createCallExpressionStdLibKw,
   createExpressionStatement,
   createIdentifier,
+  createImportAsSelector,
   createImportStatement,
   createLabeledArg,
   createLiteral,
@@ -783,7 +784,7 @@ export function addOffsetPlane({
 /**
  * Add an import call to load a part
  */
-export function addImport({
+export function addImportAndInsert({
   node,
   path,
   localName,
@@ -791,28 +792,42 @@ export function addImport({
   node: Node<Program>
   path: string
   localName: string
-}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+}): {
+  modifiedAst: Node<Program>
+  pathToImportNode: PathToNode
+  pathToInsertNode: PathToNode
+} {
   const modifiedAst = structuredClone(node)
+
+  // Add import statement
+  // TODO: add it to the end of existing imports, only if it doesn't exist
   const importStatement = createImportStatement(
-    { type: 'None', alias: createIdentifier(localName) },
-    { type: 'Kcl', filename: path },
-    'default'
+    createImportAsSelector(localName),
+    { type: 'Kcl', filename: path }
   )
-  const expressionStatement = createExpressionStatement(
-    createLocalName(localName)
-  )
+  const importIndex = 0
   modifiedAst.body.unshift(importStatement)
-  modifiedAst.body.push(expressionStatement)
-  // TODO: figure out if we send back the module import or the expression
-  const pathToNode: PathToNode = [
+  const pathToImportNode: PathToNode = [
     ['body', ''],
-    [0, 'index'],
+    [importIndex, 'index'],
     ['path', 'ImportStatement'],
+  ]
+
+  // Add insert statement
+  // TODO: check that pushing to the end of the body is good here
+  const insertStatement = createExpressionStatement(createLocalName(localName))
+  const insertIndex = modifiedAst.body.length
+  modifiedAst.body.push(insertStatement)
+  const pathToInsertNode: PathToNode = [
+    ['body', ''],
+    [insertIndex, 'index'],
+    ['expression', 'ExpressionStatement'],
   ]
 
   return {
     modifiedAst,
-    pathToNode,
+    pathToImportNode,
+    pathToInsertNode,
   }
 }
 
