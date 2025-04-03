@@ -69,7 +69,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       action: () =>
         commandBarActor.send({
           type: 'Find and select command',
-          data: { name: 'Insert', groupId: 'modeling' },
+          data: { name: 'Insert', groupId: 'code' },
         }),
     },
     {

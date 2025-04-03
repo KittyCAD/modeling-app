@@ -19,6 +19,7 @@ import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { codeManager, kclManager } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
+import { commandBarActor } from '@src/machines/commandBarMachine'
 
 interface OnSubmitProps {
   sampleName: string
@@ -94,6 +95,52 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             'Failed to set per-file units: no value provided to submit function. This is a bug.'
           )
         }
+      },
+    },
+    {
+      name: 'Insert',
+      description: 'Insert from a file in the current project directory',
+      icon: 'import',
+      needsReview: false,
+      groupId: 'code',
+      hide: 'web',
+      args: {
+        path: {
+          inputType: 'options',
+          required: true,
+          options: () => {
+            const projectPath = commandProps.projectData.project?.path
+            if (!projectPath) {
+              return []
+            }
+            console.log('projectPath', projectPath)
+            console.log('children', commandProps.projectData.project?.children)
+            return Object.values(
+              commandProps.projectData.project?.children ?? []
+            ).map((v) => {
+              // TODO: actually traverse this properly
+              const relativePath = v.path
+                .replace(projectPath, '')
+                .replace(window.electron.sep, '')
+              return {
+                name: relativePath,
+                value: relativePath,
+              }
+            })
+          },
+        },
+      },
+      onSubmit: (data) => {
+        commandBarActor.send({
+          type: 'Find and select command',
+          data: {
+            name: 'Insert',
+            groupId: 'modeling',
+            argDefaultValues: {
+              path: data?.path,
+            },
+          },
+        })
       },
     },
     {
