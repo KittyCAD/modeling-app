@@ -41,6 +41,7 @@ export const kclManager = new KclManager(engineCommandManager, {
 // The most obvious of cyclic dependencies.
 // This is because the   handleOnViewUpdate(viewUpdate: ViewUpdate): void {
 // method requires it for the current ast.
+// CYCLIC REF
 editorManager.kclManager = kclManager
 
 engineCommandManager.kclManager = kclManager

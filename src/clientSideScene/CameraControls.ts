@@ -1,3 +1,4 @@
+import type { EngineStreamActor } from '@src/machines/engineStreamMachine'
 import type { CameraViewState_type, CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
 import * as TWEEN from '@tweenjs/tween.js'
 import {
@@ -39,7 +40,6 @@ import {
   uuidv4,
 } from '@src/lib/utils'
 import { deg2Rad } from '@src/lib/utils2d'
-import { engineStreamActor } from '@src/machines/appMachine'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
@@ -98,6 +98,7 @@ class CameraRateLimiter {
 
 export class CameraControls {
   engineCommandManager: EngineCommandManager
+  engineStreamActor?: EngineStreamActor
   syncDirection: 'clientToEngine' | 'engineToClient' = 'engineToClient'
   camera: PerspectiveCamera | OrthographicCamera
   target: Vector3
@@ -471,9 +472,9 @@ export class CameraControls {
       if (this.syncDirection === 'engineToClient') {
         const newCmdId = uuidv4()
 
-        const { videoRef } = engineStreamActor.getSnapshot().context
+        const videoRef = this.engineStreamActor?.getSnapshot().context.videoRef
         // Nonsense to do anything until the video stream is established.
-        if (!videoRef.current) return
+        if (!videoRef?.current) return
 
         const { x, y } = getNormalisedCoordinates(
           event,

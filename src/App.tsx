@@ -31,6 +31,7 @@ import {
   codeManager,
   engineCommandManager,
   rustContext,
+  sceneInfra,
 } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { type IndexLoaderData } from '@src/lib/types'
@@ -38,6 +39,9 @@ import { engineStreamActor, useSettings, useToken } from '@src/machines/appMachi
 import { EngineStreamTransition } from '@src/machines/engineStreamMachine'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
+// CYCLIC REF
+sceneInfra.camControls.engineStreamActor = engineStreamActor
 
 maybeWriteToDisk()
   .then(() => {})
