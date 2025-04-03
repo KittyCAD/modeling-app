@@ -47,7 +47,6 @@ export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 export default class EditorManager {
   private _copilotEnabled: boolean = true
   private engineCommandManager: EngineCommandManager
-  private kclManager: KclManager
 
   private _isAllTextSelected: boolean = false
   private _isShiftDown: boolean = false
@@ -67,13 +66,12 @@ export default class EditorManager {
   private _highlightRange: Array<[number, number]> = [[0, 0]]
 
   public _editorView: EditorView | null = null
+  public kclManager?: KclManager
 
   constructor(
     engineCommandManager: EngineCommandManager,
-    kclManager: KclManager
   ) {
     this.engineCommandManager = engineCommandManager
-    this.kclManager = kclManager
   }
 
   setCopilotEnabled(enabled: boolean) {
@@ -386,6 +384,11 @@ export default class EditorManager {
         )
       }
     )
+
+    if (!this.kclManager) {
+      console.error('unreachable')
+      return
+    }
 
     const eventInfo = processCodeMirrorRanges({
       codeMirrorRanges: viewUpdate.state.selection.ranges,
