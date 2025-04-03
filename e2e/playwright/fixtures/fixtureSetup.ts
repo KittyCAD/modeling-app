@@ -219,24 +219,27 @@ export class ElectronZoo {
         }))
     }
 
-    // We need to patch this because addInitScript will bind too late in our
-    // electron tests, never running. We need to call reload() after each call
-    // to guarantee it runs.
-    const oldContextAddInitScript = this.context.addInitScript
-    this.context.addInitScript = async function (a, b) {
-      // @ts-ignore pretty sure way out of tsc's type checking capabilities.
-      // This code works perfectly fine.
-      await oldContextAddInitScript.apply(this, [a, b])
-      await that.page.reload()
+    if (!this.electron) {
+      // We need to patch this because addInitScript will bind too late in our
+      // electron tests, never running. We need to call reload() after each call
+      // to guarantee it runs.
+      const oldContextAddInitScript = this.context.addInitScript
+      this.context.addInitScript = async function (a, b) {
+        // @ts-ignore pretty sure way out of tsc's type checking capabilities.
+        // This code works perfectly fine.
+        await oldContextAddInitScript.apply(this, [a, b])
+        await that.page.reload()
+      }
     }
 
-    // No idea why we mix and match page and context's addInitScript but we do
-    const oldPageAddInitScript = this.page.addInitScript
-    this.page.addInitScript = async function (a: any, b: any) {
-      // @ts-ignore pretty sure way out of tsc's type checking capabilities.
-      // This code works perfectly fine.
-      await oldPageAddInitScript.apply(this, [a, b])
-      await that.page.reload()
+    if (!this.electron || !this.page.addInitScript) {
+      const oldPageAddInitScript = this.page.addInitScript
+      this.page.addInitScript = async function (a: any, b: any) {
+        // @ts-ignore pretty sure way out of tsc's type checking capabilities.
+        // This code works perfectly fine.
+        await oldPageAddInitScript.apply(this, [a, b])
+        await that.page.reload()
+      }
     }
 
     if (!this.firstUrl) {
