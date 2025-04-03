@@ -20,7 +20,7 @@ import {
   INTERSECTION_PLANE_LAYER,
   SKETCH_LAYER,
   ZOOM_MAGIC_NUMBER,
-} from '@src/clientSideScene/sceneInfra'
+} from '@src/clientSideScene/sceneUtils'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type {
   EngineCommandManager,
