@@ -1688,5 +1688,482 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         expect(isPressed).toBe('true')
       })
     })
+    test.describe('Design role',() => {
+      // TODO Start sketch
+      test('Modeling.Design.Create an offset plane', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const openProject = app.applicationMenu.getMenuItemById(
+            'Design.Create an offset plane'
+          )
+          if (!openProject) {
+            throwMissingMenuItemById('Design.Create an offset plane')
+            return
+          }
+          openProject.click()
+        })
+        // Check that the command bar is opened
+        await expect(cmdBar.cmdBarElement).toBeVisible()
+        // Check the placeholder project name exists
+        const actual = await cmdBar.cmdBarElement
+          .getByTestId('command-name')
+          .textContent()
+        const expected = 'Offset plane'
+        expect(actual).toBe(expected)
+      })
+      test('Modeling.Design.Create a helix', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const openProject = app.applicationMenu.getMenuItemById(
+            'Design.Create a helix'
+          )
+          if (!openProject) {
+            throwMissingMenuItemById('Design.Create a helix')
+            return
+          }
+          openProject.click()
+        })
+        // Check that the command bar is opened
+        await expect(cmdBar.cmdBarElement).toBeVisible()
+        // Check the placeholder project name exists
+        const actual = await cmdBar.cmdBarElement
+          .getByTestId('command-name')
+          .textContent()
+        const expected = 'Helix'
+        expect(actual).toBe(expected)
+      })
+      test('Modeling.Design.Create a parameter', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const openProject = app.applicationMenu.getMenuItemById(
+            'Design.Create a parameter'
+          )
+          if (!openProject) {
+            throwMissingMenuItemById('Design.Create a parameter')
+            return
+          }
+          openProject.click()
+        })
+        // Check that the command bar is opened
+        await expect(cmdBar.cmdBarElement).toBeVisible()
+        // Check the placeholder project name exists
+        const actual = await cmdBar.cmdBarElement
+          .getByTestId('command-name')
+          .textContent()
+        const expected = 'Create parameter'
+        expect(actual).toBe(expected)
+      })
+      
+      test('Modeling.Design.Create an additive feature.Extrude', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const openProject = app.applicationMenu.getMenuItemById(
+            'Design.Create an additive feature.Extrude'
+          )
+          if (!openProject) {
+            throwMissingMenuItemById('Design.Create an additive feature.Extrude')
+            return
+          }
+          openProject.click()
+        })
+        // Check that the command bar is opened
+        await expect(cmdBar.cmdBarElement).toBeVisible()
+        // Check the placeholder project name exists
+        const actual = await cmdBar.cmdBarElement
+          .getByTestId('command-name')
+          .textContent()
+        const expected = 'Extrude'
+        expect(actual).toBe(expected)
+      })
+      test('Modeling.Design.Create an additive feature.Revolve', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const openProject = app.applicationMenu.getMenuItemById(
+            'Design.Create an additive feature.Revolve'
+          )
+          if (!openProject) {
+            throwMissingMenuItemById('Design.Create an additive feature.Revolve')
+            return
+          }
+          openProject.click()
+        })
+        // Check that the command bar is opened
+        await expect(cmdBar.cmdBarElement).toBeVisible()
+        // Check the placeholder project name exists
+        const actual = await cmdBar.cmdBarElement
+          .getByTestId('command-name')
+          .textContent()
+        const expected = 'Revolve'
+        expect(actual).toBe(expected)
+      })
+      test('Modeling.Design.Create an additive feature.Sweep', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const openProject = app.applicationMenu.getMenuItemById(
+            'Design.Create an additive feature.Sweep'
+          )
+          if (!openProject) {
+            throwMissingMenuItemById('Design.Create an additive feature.Sweep')
+            return
+          }
+          openProject.click()
+        })
+        // Check that the command bar is opened
+        await expect(cmdBar.cmdBarElement).toBeVisible()
+        // Check the placeholder project name exists
+        const actual = await cmdBar.cmdBarElement
+          .getByTestId('command-name')
+          .textContent()
+        const expected = 'Sweep'
+        expect(actual).toBe(expected)
+      })
+      test('Modeling.Design.Create an additive feature.Loft', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const openProject = app.applicationMenu.getMenuItemById(
+            'Design.Create an additive feature.Loft'
+          )
+          if (!openProject) {
+            throwMissingMenuItemById('Design.Create an additive feature.Loft')
+            return
+          }
+          openProject.click()
+        })
+        // Check that the command bar is opened
+        await expect(cmdBar.cmdBarElement).toBeVisible()
+        // Check the placeholder project name exists
+        const actual = await cmdBar.cmdBarElement
+          .getByTestId('command-name')
+          .textContent()
+        const expected = 'Loft'
+        expect(actual).toBe(expected)
+      })
+      test('Modeling.Design.Apply modification feature.Fillet', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const openProject = app.applicationMenu.getMenuItemById(
+            'Design.Apply modification feature.Fillet'
+          )
+          if (!openProject) {
+            throwMissingMenuItemById('Design.Apply modification feature.Fillet')
+            return
+          }
+          openProject.click()
+        })
+        // Check that the command bar is opened
+        await expect(cmdBar.cmdBarElement).toBeVisible()
+        // Check the placeholder project name exists
+        const actual = await cmdBar.cmdBarElement
+          .getByTestId('command-name')
+          .textContent()
+        const expected = 'Fillet'
+        expect(actual).toBe(expected)
+      })
+      test('Modeling.Design.Apply modification feature.Chamfer', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const openProject = app.applicationMenu.getMenuItemById(
+            'Design.Apply modification feature.Chamfer'
+          )
+          if (!openProject) {
+            throwMissingMenuItemById('Design.Apply modification feature.Chamfer')
+            return
+          }
+          openProject.click()
+        })
+        // Check that the command bar is opened
+        await expect(cmdBar.cmdBarElement).toBeVisible()
+        // Check the placeholder project name exists
+        const actual = await cmdBar.cmdBarElement
+          .getByTestId('command-name')
+          .textContent()
+        const expected = 'Chamfer'
+        expect(actual).toBe(expected)
+      })
+      
+      test('Modeling.Design.Apply modification feature.Shell', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const openProject = app.applicationMenu.getMenuItemById(
+            'Design.Apply modification feature.Shell'
+          )
+          if (!openProject) {
+            throwMissingMenuItemById('Design.Apply modification feature.Shell')
+            return
+          }
+          openProject.click()
+        })
+        // Check that the command bar is opened
+        await expect(cmdBar.cmdBarElement).toBeVisible()
+        // Check the placeholder project name exists
+        const actual = await cmdBar.cmdBarElement
+          .getByTestId('command-name')
+          .textContent()
+        const expected = 'Shell'
+        expect(actual).toBe(expected)
+      })
+
+            
+      test('Modeling.Design.Create with Zoo Text-To-CAD', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const openProject = app.applicationMenu.getMenuItemById(
+            'Design.Create with Zoo Text-To-CAD'
+          )
+          if (!openProject) {
+            throwMissingMenuItemById('Design.Create with Zoo Text-To-CAD')
+            return
+          }
+          openProject.click()
+        })
+        // Check that the command bar is opened
+        await expect(cmdBar.cmdBarElement).toBeVisible()
+        // Check the placeholder project name exists
+        const actual = await cmdBar.cmdBarElement
+          .getByTestId('command-name')
+          .textContent()
+        const expected = 'Text-to-CAD'
+        expect(actual).toBe(expected)
+      })
+
+      test('Modeling.Design.Modify with Zoo Text-To-CAD', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const openProject = app.applicationMenu.getMenuItemById(
+            'Design.Modify with Zoo Text-To-CAD'
+          )
+          if (!openProject) {
+            throwMissingMenuItemById('Design.Modify with Zoo Text-To-CAD')
+            return
+          }
+          openProject.click()
+        })
+        // Check that the command bar is opened
+        await expect(cmdBar.cmdBarElement).toBeVisible()
+        // Check the placeholder project name exists
+        const actual = await cmdBar.cmdBarElement
+          .getByTestId('command-name')
+          .textContent()
+        const expected = 'Prompt-to-edit'
+        expect(actual).toBe(expected)
+      })
+      
+    })
   })
 })
