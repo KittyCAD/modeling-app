@@ -201,6 +201,11 @@ const commonConstraintInfoHelper = (
         case 'CallExpression':
           return [callExp.arguments[0], undefined]
         case 'CallExpressionKw':
+          console.warn(
+            'ADAM: commonConstraintInfoHelper for name',
+            callExp.callee.name.name,
+            callExp.arguments
+          )
           if (callExp.callee.name.name === 'angledLine') {
             const angleVal = findKwArg(ARG_ANGLE, callExp)
             if (angleVal === undefined) {
@@ -234,50 +239,49 @@ const commonConstraintInfoHelper = (
           return [findKwArgAny(DETERMINING_ARGS, callExp), undefined]
       }
     })()
+  console.warn('ADAM: firstArg is', firstArg)
   if (firstArg === undefined) {
     console.error('ADAM: firstArg was undefined')
     return []
   }
-  const isArr = firstArg[0]?.type === 'ArrayExpression'
   const pipeExpressionIndex = pathToNode.findIndex(
     ([_, nodeName]) => nodeName === 'PipeExpression'
   )
   const pathToBase = pathToNode.slice(0, pipeExpressionIndex + 2)
-  const argIndex = (() => {
-    switch (callExp.type) {
-      case 'CallExpression':
-        return 0
-      case 'CallExpressionKw':
-        return findKwArgAnyIndex(DETERMINING_ARGS, callExp)
-    }
-  })()
-  if (argIndex === undefined) {
-    return []
-  }
-
-  // Construct the pathToNode.
-  const pathToArrayExpression: PathToNode = (() => {
-    const isKw = callExp.type === 'CallExpressionKw'
-    let path: PathToNode = [
-      ...pathToBase,
-      ['arguments', callExp.type],
-      [argIndex, 'index'],
-    ]
-    if (isKw) {
-      path.push(['arg', LABELED_ARG_FIELD])
-    }
-    path.push(
-      isArr
-        ? ['elements', 'ArrayExpression']
-        : ['properties', 'ObjectExpression']
-    )
-    return path
-  })()
 
   // Case where firstArg was a KCL expression.
   const firstArgInner = firstArg[0]
   if (firstArgInner !== undefined) {
     const isArr = firstArgInner?.type === 'ArrayExpression'
+    const argIndex = (() => {
+      switch (callExp.type) {
+        case 'CallExpression':
+          return 0
+        case 'CallExpressionKw':
+          return findKwArgAnyIndex(DETERMINING_ARGS, callExp)
+      }
+    })()
+    if (argIndex === undefined) {
+      return []
+    }
+    // Construct the pathToNode.
+    const pathToArrayExpression: PathToNode = (() => {
+      const isKw = callExp.type === 'CallExpressionKw'
+      let path: PathToNode = [
+        ...pathToBase,
+        ['arguments', callExp.type],
+        [argIndex, 'index'],
+      ]
+      if (isKw) {
+        path.push(['arg', LABELED_ARG_FIELD])
+      }
+      path.push(
+        isArr
+          ? ['elements', 'ArrayExpression']
+          : ['properties', 'ObjectExpression']
+      )
+      return path
+    })()
     if (!isArr && firstArgInner.type !== 'ObjectExpression') return []
     const pathToFirstArg: PathToNode = isArr
       ? [...pathToArrayExpression, [0, 'index']]
@@ -353,6 +357,7 @@ const commonConstraintInfoHelper = (
   // (i.e. map of argument labels to argument values in a KW call)
   const multipleArgs = firstArg[1]
   if (multipleArgs === undefined) {
+    console.error('ADAM: multipleArgs was undefined')
     return []
   }
   return Object.keys(multipleArgs).map((argLabel, i) => {
@@ -3207,13 +3212,13 @@ export function getConstraintInfoKw(
     return []
   }
   if (!(fnName in sketchLineHelperMapKw)) return []
-  const correctFnName = fnNameToTooltip(allLabels(callExpression), fnName)
-  if (err(correctFnName)) {
-    console.error(correctFnName)
+  const tooltip = fnNameToTooltip(allLabels(callExpression), fnName)
+  if (err(tooltip)) {
+    console.error(tooltip)
     return []
   }
-  console.warn('ADAM: correctFnName is', correctFnName)
-  return sketchLineHelperMapKw[correctFnName].getConstraintInfo(
+  console.warn('ADAM: tooltip is', tooltip)
+  return sketchLineHelperMapKw[tooltip].getConstraintInfo(
     callExpression,
     code,
     pathToNode,
