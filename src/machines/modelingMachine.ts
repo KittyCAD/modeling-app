@@ -2701,16 +2701,12 @@ export const modelingMachine = setup({
           path,
           localName,
         })
-        // TODO: add back updateModelingState
-        try {
-          await codeManager.updateEditorWithAstAndWriteToFile(modifiedAst)
-          await kclManager.executeAst({
-            ast: modifiedAst,
-          })
-        } catch (e) {
-          console.error(e)
-          toast.error('Error executing import codemod')
-        }
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          { kclManager, editorManager, codeManager },
+          { skipUpdateAst: true }
+        )
       }
     ),
     exportFromEngine: fromPromise(
