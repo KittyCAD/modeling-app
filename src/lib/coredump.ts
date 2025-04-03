@@ -12,7 +12,7 @@ import type {
 import { isDesktop } from '@src/lib/isDesktop'
 import type RustContext from '@src/lib/rustContext'
 import screenshot from '@src/lib/screenshot'
-import { APP_VERSION } from '@src/routes/Settings'
+import { APP_VERSION } from '@src/routes/utils'
 
 /* eslint-disable suggest-no-throw/suggest-no-throw --
  * All the throws in CoreDumpManager are intentional and should be caught and handled properly

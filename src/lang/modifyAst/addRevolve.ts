@@ -3,7 +3,6 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   createCallExpressionStdLibKw,
   createLabeledArg,
-  createLiteral,
   createLocalName,
   createVariableDeclaration,
   findUniqueName,
@@ -65,7 +64,7 @@ export function getAxisExpressionAndIndex(
       axisIndexIfAxis = value
     }
   } else if (axisOrEdge === 'Axis' && axis) {
-    generatedAxis = createLiteral(axis)
+    generatedAxis = createLocalName(axis)
   }
 
   return {
