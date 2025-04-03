@@ -166,7 +166,9 @@ const constrainInfo = (
         ? { type: 'arrayItem', index: g }
         : typeof g === 'string'
           ? { type: 'objectProperty', key: g }
-          : undefined
+          : g?.type === 'labeledArg'
+            ? g
+            : undefined
 
   return {
     type: a,
@@ -187,12 +189,12 @@ const commonConstraintInfoHelper = (
     {
       arrayInput?: 0 | 1
       objInput?: ObjectPropertyInput<any>['key']
-      type?: 'singleValue'
+      argLabel?: InputArgKeys
     },
     {
       arrayInput?: 0 | 1
       objInput?: ObjectPropertyInput<any>['key']
-      type?: 'singleValue'
+      argLabel?: InputArgKeys
     },
   ],
   code: string,
@@ -368,12 +370,13 @@ const commonConstraintInfoHelper = (
       [i, ARG_INDEX_FIELD],
       ['arg', LABELED_ARG_FIELD],
     ]
+    const label = abbreviatedInputs[i].argLabel
     return constrainInfo(
       inputConstrainTypes[i],
       isNotLiteralArrayOrStatic(argValue),
       code.slice(argValue.start, argValue.end),
       stdLibFnName,
-      abbreviatedInputs[i].type,
+      label === undefined ? undefined : { type: 'labeledArg', key: label },
       topLevelRange(argValue.start, argValue.end),
       pathToArg
     )
@@ -2332,12 +2335,10 @@ export const angledLine: SketchLineHelperKw = {
       callExp,
       ['angle', 'length'],
       'angledLine',
-      [{ type: 'singleValue' }, { type: 'singleValue' }],
-
+      [{ argLabel: 'angle' }, { argLabel: 'length' }],
       ...args
     )
 
-    console.warn('ADAM: Returning constraints', constraints)
     return constraints
   },
 }
@@ -2453,7 +2454,7 @@ export const angledLineOfXLength: SketchLineHelperKw = {
       callExp,
       ['angle', 'xRelative'],
       'angledLineOfXLength',
-      [{ type: 'singleValue' }, { type: 'singleValue' }],
+      [{ argLabel: 'angle' }, { argLabel: 'lengthX' }],
       ...args
     ),
 }
@@ -2567,7 +2568,7 @@ export const angledLineOfYLength: SketchLineHelperKw = {
       callExp,
       ['angle', 'yRelative'],
       'angledLineOfYLength',
-      [{ type: 'singleValue' }, { type: 'singleValue' }],
+      [{ argLabel: 'angle' }, { argLabel: 'lengthY' }],
       ...args
     ),
 }
@@ -2656,7 +2657,7 @@ export const angledLineToX: SketchLineHelperKw = {
       callExp,
       ['angle', 'xAbsolute'],
       'angledLineToX',
-      [{ type: 'singleValue' }, { type: 'singleValue' }],
+      [{ argLabel: 'angle' }, { argLabel: 'endAbsoluteX' }],
       ...args
     ),
 }
@@ -2747,7 +2748,7 @@ export const angledLineToY: SketchLineHelperKw = {
       callExp,
       ['angle', 'yAbsolute'],
       'angledLineToY',
-      [{ type: 'singleValue' }, { type: 'singleValue' }],
+      [{ argLabel: 'angle' }, { argLabel: 'endAbsoluteY' }],
       ...args
     ),
 }
