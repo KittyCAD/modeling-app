@@ -168,6 +168,7 @@ export const modelingFileRole = (
       },
       {
         label: 'Share current part (via Zoo link)',
+        id: 'File.Share current part (via Zoo link)',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'File.Share current part (via Zoo link)',
@@ -180,6 +181,7 @@ export const modelingFileRole = (
         submenu: [
           {
             label: 'Project settings',
+            id: 'File.Preferences.Project settings',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'File.Preferences.Project settings',
@@ -188,6 +190,7 @@ export const modelingFileRole = (
           },
           {
             label: 'User settings',
+            id: 'File.Preferences.User settings',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'File.Preferences.User settings',
@@ -196,6 +199,7 @@ export const modelingFileRole = (
           },
           {
             label: 'Keybindings',
+            id: 'File.Preferences.Keybindings',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'File.Preferences.Keybindings',
@@ -204,6 +208,7 @@ export const modelingFileRole = (
           },
           {
             label: 'User default units',
+            id: 'File.Preferences.User default units',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'File.Preferences.User default units',
@@ -212,6 +217,7 @@ export const modelingFileRole = (
           },
           {
             label: 'Theme',
+            id: 'File.Preferences.Theme',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'File.Preferences.Theme',
@@ -220,6 +226,7 @@ export const modelingFileRole = (
           },
           {
             label: 'Theme color',
+            id: 'File.Preferences.Theme color',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'File.Preferences.Theme color',
@@ -232,6 +239,7 @@ export const modelingFileRole = (
       // Last in list
       {
         label: 'Sign out',
+        id: 'File.Sign out',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'File.Sign out',

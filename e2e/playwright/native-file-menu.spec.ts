@@ -486,5 +486,297 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       const expected = 'Export'
       expect(actual).toBe(expected)
     })
+    test('Modeling.File.Share current part (via Zoo link)', async ({
+      tronApp,
+      cmdBar,
+      page,
+      homePage,
+      scene,
+    }) => {
+      if (!tronApp) {
+        throwTronAppMissing()
+        return
+      }
+      await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
+
+      // Run electron snippet to find the Menu!
+      await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+      await tronApp.electron.evaluate(async ({ app }) => {
+        if (!app || !app.applicationMenu) {
+          throwAppOrApplicationMenuMissing()
+          return
+        }
+        const openProject = app.applicationMenu.getMenuItemById(
+          'File.Share current part (via Zoo link)'
+        )
+        if (!openProject) {
+          throwMissingMenuItemById('File.Share current part (via Zoo link)')
+          return
+        }
+        openProject.click()
+      })
+
+      const textToCheck =
+        'Link copied to clipboard. Anyone who clicks this link will get a copy of this file. Share carefully!'
+      // Check if text appears anywhere in the page
+      const isTextVisible = page.getByText(textToCheck)
+
+      await expect(isTextVisible).toBeVisible({ timeout: 10000 })
+    })
+    test('Modeling.File.Preferences.Project settings', async ({
+      tronApp,
+      cmdBar,
+      page,
+      homePage,
+      scene,
+    }) => {
+      if (!tronApp) {
+        throwTronAppMissing()
+        return
+      }
+      await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
+
+      // Run electron snippet to find the Menu!
+      await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+      await tronApp.electron.evaluate(async ({ app }) => {
+        if (!app || !app.applicationMenu) {
+          throwAppOrApplicationMenuMissing()
+          return
+        }
+        const openProject = app.applicationMenu.getMenuItemById(
+          'File.Preferences.Project settings'
+        )
+        if (!openProject) {
+          throwMissingMenuItemById('File.Preferences.Project settings')
+          return
+        }
+        openProject.click()
+      })
+
+      const settings = page.getByTestId('settings-dialog-panel')
+      await expect(settings).toBeVisible()
+      // You are viewing the user tab
+      const actualText = settings.getByText(
+        'The hue of the primary theme color for the app'
+      )
+      await expect(actualText).toBeVisible()
+    })
+    test('Modeling.File.Preferences.User settings', async ({
+      tronApp,
+      cmdBar,
+      page,
+      homePage,
+      scene,
+    }) => {
+      if (!tronApp) {
+        throwTronAppMissing()
+        return
+      }
+      await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
+
+      // Run electron snippet to find the Menu!
+      await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+      await tronApp.electron.evaluate(async ({ app }) => {
+        if (!app || !app.applicationMenu) {
+          throwAppOrApplicationMenuMissing()
+          return
+        }
+        const userSettings = app.applicationMenu.getMenuItemById(
+          'File.Preferences.User settings'
+        )
+        if (!userSettings) {
+          throwMissingMenuItemById('File.Preferences.User settings')
+          return
+        }
+        userSettings.click()
+      })
+      const settings = page.getByTestId('settings-dialog-panel')
+      await expect(settings).toBeVisible()
+      // You are viewing the user tab
+      const actualText = settings.getByText('The overall appearance of the app')
+      await expect(actualText).toBeVisible()
+    })
+    test('Modeling.File.Preferences.Keybindings', async ({
+      tronApp,
+      cmdBar,
+      page,
+      homePage,
+      scene,
+    }) => {
+      if (!tronApp) {
+        throwTronAppMissing()
+        return
+      }
+      await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
+
+      // Run electron snippet to find the Menu!
+      await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+      await tronApp.electron.evaluate(async ({ app }) => {
+        if (!app || !app.applicationMenu) {
+          throwAppOrApplicationMenuMissing()
+          return
+        }
+        const keybindings = app.applicationMenu.getMenuItemById(
+          'File.Preferences.Keybindings'
+        )
+        if (!keybindings) {
+          throwMissingMenuItemById('File.Preferences.Keybindings')
+          return
+        }
+        keybindings.click()
+      })
+      const settings = page.getByTestId('settings-dialog-panel')
+      await expect(settings).toBeVisible()
+      // You are viewing the keybindings tab
+      const enterSketchMode = settings.locator('#enter-sketch-mode')
+      await expect(enterSketchMode).toBeVisible()
+    })
+    test('Modeling.File.Preferences.User default units', async ({
+      tronApp,
+      cmdBar,
+      page,
+      homePage,
+      scene,
+    }) => {
+      if (!tronApp) {
+        throwTronAppMissing()
+        return
+      }
+      await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
+
+      // Run electron snippet to find the Menu!
+      await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+      await tronApp.electron.evaluate(async ({ app }) => {
+        if (!app || !app.applicationMenu) {
+          throwAppOrApplicationMenuMissing()
+          return
+        }
+        const menu = app.applicationMenu.getMenuItemById(
+          'File.Preferences.User default units'
+        )
+        if (!menu) {
+          throwMissingMenuItemById('File.Preferences.User default units')
+          return
+        }
+        menu.click()
+      })
+      const settings = page.getByTestId('settings-dialog-panel')
+      await expect(settings).toBeVisible()
+      const defaultUnit = settings.locator('#defaultUnit')
+      await expect(defaultUnit).toBeVisible()
+    })
+    test('Modeling.File.Preferences.Theme', async ({
+      tronApp,
+      cmdBar,
+      page,
+      homePage,
+      scene,
+    }) => {
+      if (!tronApp) {
+        throwTronAppMissing()
+        return
+      }
+      await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
+
+      // Run electron snippet to find the Menu!
+      await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+      await tronApp.electron.evaluate(async ({ app }) => {
+        if (!app || !app.applicationMenu) {
+          throwAppOrApplicationMenuMissing()
+          return
+        }
+        const menu = app.applicationMenu.getMenuItemById(
+          'File.Preferences.Theme'
+        )
+        if (!menu) {
+          throwMissingMenuItemById('File.Preferences.Theme')
+          return
+        }
+        menu.click()
+      })
+      // Check that the command bar is opened
+      await expect(cmdBar.cmdBarElement).toBeVisible()
+      // Check the placeholder project name exists
+      const actual = await cmdBar.cmdBarElement
+        .getByTestId('command-name')
+        .textContent()
+      const expected = 'Settings · app · theme'
+      expect(actual).toBe(expected)
+    })
+    test('Modeling.File.Preferences.Theme color', async ({
+      tronApp,
+      cmdBar,
+      page,
+      homePage,
+      scene,
+    }) => {
+      if (!tronApp) {
+        throwTronAppMissing()
+        return
+      }
+      await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
+
+      // Run electron snippet to find the Menu!
+      await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+      await tronApp.electron.evaluate(async ({ app }) => {
+        if (!app || !app.applicationMenu) {
+          throwAppOrApplicationMenuMissing()
+          return
+        }
+        const menu = app.applicationMenu.getMenuItemById(
+          'File.Preferences.Theme color'
+        )
+        if (!menu) {
+          throwMissingMenuItemById('File.Preferences.Theme color')
+          return
+        }
+        menu.click()
+      })
+      const settings = page.getByTestId('settings-dialog-panel')
+      await expect(settings).toBeVisible()
+      const defaultUnit = settings.locator('#themeColor')
+      await expect(defaultUnit).toBeVisible()
+    })
+    test('Modeling.File.Preferences.Sign out', async ({
+      tronApp,
+      cmdBar,
+      page,
+      homePage,
+      scene,
+    }) => {
+      if (!tronApp) {
+        throwTronAppMissing()
+        return
+      }
+      await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
+
+      // Run electron snippet to find the Menu!
+      await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+      await tronApp.electron.evaluate(async ({ app }) => {
+        if (!app || !app.applicationMenu) {
+          throwAppOrApplicationMenuMissing()
+          return
+        }
+        const menu = app.applicationMenu.getMenuItemById('File.Sign out')
+        if (!menu) {
+          throwMissingMenuItemById('File.Sign out')
+          return
+        }
+        // FIXME: Add back when you can actually sign out
+        // menu.click()
+      })
+      // FIXME: When signing out during E2E the page is not bound correctly.
+      // It cannot find the button
+      // const signIn = page.getByTestId('sign-in-button')
+      // await expect(signIn).toBeVisible()
+    })
   })
 })
