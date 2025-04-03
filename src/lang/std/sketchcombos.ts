@@ -1746,7 +1746,6 @@ function getTransformMapPathKw(
 
   // check if the function is locked down and so can't be transformed
   const argForEnd = getArgForEnd(sketchFnExp)
-  console.warn('ADAM: argForEnd', argForEnd)
   if (err(argForEnd)) {
     return false
   }
@@ -1806,14 +1805,10 @@ export function getTransformInfoKw(
   sketchFnExp: CallExpressionKw,
   constraintType: ConstraintType
 ): TransformInfo | false {
-  console.warn('ADAM: sketchFnExp.callee', sketchFnExp.callee.name.name)
-  console.warn('ADAM: constraintType', constraintType)
   const path = getTransformMapPathKw(sketchFnExp, constraintType)
-  console.warn('ADAM: path', path)
   if (!path) return false
   const { toolTip, lineInputType, constraintType: _constraintType } = path
   const info = transformMap?.[toolTip]?.[lineInputType]?.[_constraintType]
-  console.warn('ADAM: info', info)
   if (!info) return false
   return info
 }
@@ -2085,7 +2080,6 @@ export function transformAstSketchLines({
           return getConstraintInfoKw(call.node, '', _pathToNode)
       }
     })()
-    console.warn('ADAM: constraints', constraints)
     constraints.forEach((a) => {
       if (
         a.type === 'tangentialWithPrevious' ||

@@ -48,9 +48,7 @@ async function testingSwapSketchFnCall({
     otherSelections: [],
   }
 
-  console.error('ADAM:', selections, constraintType)
   const transformInfos = getTransformInfos(selections, ast, constraintType)
-  console.error('ADAM:', transformInfos)
 
   if (!transformInfos)
     return Promise.reject(new Error('transformInfos undefined'))
@@ -78,11 +76,11 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
     `  |> startProfileAt([0, 0], %)`,
     `  |> line(endAbsolute = [1, 1], tag = $abc1)`,
     `  |> line(end = [-2.04, -0.7], tag = $abc2)`,
-    `  |> angledLine(angle = 157, length = 1.69 , tag = $abc3)`,
-    `  |> angledLineOfXLength({ angle = 217, length = 0.86 }, %, $abc4)`,
-    `  |> angledLineOfYLength({ angle = 104, length = 1.58 }, %, $abc5)`,
-    `  |> angledLine(angle = 55, endAbsoluteX =  -2.89, tag = $abc6)`,
-    `  |> angledLine(angle = 330, endAbsoluteY =  2.53, tag = $abc7)`,
+    `  |> angledLine(angle = 157, length = 1.69, tag = $abc3)`,
+    `  |> angledLine(angle = 217, lengthX = 0.86, tag = $abc4)`,
+    `  |> angledLine(angle = 104, lengthY = 1.58, tag = $abc5)`,
+    `  |> angledLine(angle = 55, endAbsoluteX = -2.89, tag = $abc6)`,
+    `  |> angledLine(angle = 330, endAbsoluteY = 2.53, tag = $abc7)`,
     `  |> xLine(length = 1.47, tag = $abc8)`,
     `  |> yLine(length = 1.57, tag = $abc9)`,
     `  |> xLine(endAbsolute = 1.49, tag = $abc10)`,
@@ -149,11 +147,10 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLine with tag converts to xLine', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: 'angledLine(angle = 157, length = 1.69 , tag = $abc3)',
+      callToSwap: 'angledLine(angle = 157, length = 1.69, tag = $abc3)',
       constraintType: 'horizontal',
     })
     const expectedLine = 'xLine(length = -1.56, tag = $abc3)'
-    console.log(newCode)
     expect(newCode).toContain(expectedLine)
     // new line should start at the same place as the old line
     expect(originalRange[0]).toBe(newCode.indexOf(expectedLine))
@@ -172,8 +169,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLineOfXLength with tag converts to xLine', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap:
-        'angledLineOfXLength({ angle = 217, length = 0.86 }, %, $abc4)',
+      callToSwap: 'angledLine(angle = 217, lengthX = 0.86, tag = $abc4)',
       constraintType: 'horizontal',
     })
     const expectedLine = 'xLine(length = -0.86, tag = $abc4)'
@@ -196,8 +192,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLineOfYLength with tag converts to yLine', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap:
-        'angledLineOfYLength({ angle = 104, length = 1.58 }, %, $abc5)',
+      callToSwap: 'angledLine(angle = 104, lengthY = 1.58, tag = $abc5)',
       constraintType: 'vertical',
     })
     const expectedLine = 'yLine(length = 1.58, tag = $abc5)'
@@ -219,7 +214,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLineToX with tag converts to xLineTo', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: 'angledLine(angle = 55, endAbsoluteX =  -2.89, tag = $abc6)',
+      callToSwap: 'angledLine(angle = 55, endAbsoluteX = -2.89, tag = $abc6)',
       constraintType: 'horizontal',
     })
     const expectedLine = 'xLine(endAbsolute = -2.89, tag = $abc6)'
@@ -241,7 +236,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLineToY with tag converts to yLineTo', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: 'angledLine(angle = 330, endAbsoluteY =  2.53, tag = $abc7)',
+      callToSwap: 'angledLine(angle = 330, endAbsoluteY = 2.53, tag = $abc7)',
       constraintType: 'vertical',
     })
     const expectedLine = 'yLine(endAbsolute = 2.53, tag = $abc7)'

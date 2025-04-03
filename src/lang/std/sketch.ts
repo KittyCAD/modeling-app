@@ -201,11 +201,6 @@ const commonConstraintInfoHelper = (
         case 'CallExpression':
           return [callExp.arguments[0], undefined]
         case 'CallExpressionKw':
-          console.warn(
-            'ADAM: commonConstraintInfoHelper for name',
-            callExp.callee.name.name,
-            callExp.arguments
-          )
           if (callExp.callee.name.name === 'angledLine') {
             const angleVal = findKwArg(ARG_ANGLE, callExp)
             if (angleVal === undefined) {
@@ -239,7 +234,6 @@ const commonConstraintInfoHelper = (
           return [findKwArgAny(DETERMINING_ARGS, callExp), undefined]
       }
     })()
-  console.warn('ADAM: firstArg is', firstArg)
   if (firstArg === undefined) {
     console.error('ADAM: firstArg was undefined')
     return []
