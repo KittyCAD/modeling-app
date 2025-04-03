@@ -175,7 +175,7 @@ export const EngineStream = (props: {
   useEffect(() => {
     if (engineCommandManager.engineConnection?.isReady() && file?.path) {
       console.log('file changed, executing code')
-      kclManager.executeCode(true).catch(trap)
+      kclManager.executeCode().catch(trap)
     }
   }, [file?.path, engineCommandManager.engineConnection])
 

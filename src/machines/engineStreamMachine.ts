@@ -119,7 +119,7 @@ export const engineStreamMachine = setup({
           .clearSceneAndBustCache({ settings: await jsAppSettings() })
           .catch(console.warn)
 
-        await kclManager.executeCode(params.zoomToFit)
+        await kclManager.executeCode()
       }
     ),
     [EngineStreamTransition.Pause]: fromPromise(
