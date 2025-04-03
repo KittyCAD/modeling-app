@@ -40,7 +40,7 @@ import {
 } from '@src/menu'
 
 if (os.platform() !== 'win32') {
-  await import('win-ca')
+  require('win-ca')
 }
 
 let mainWindow: BrowserWindow | null = null
