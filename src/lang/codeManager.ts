@@ -108,6 +108,11 @@ export default class CodeManager {
       if (clearHistory) {
         clearCodeMirrorHistory(editorManager.editorView)
       }
+      console.log('what we send to dispatch', {
+        from: 0,
+        to: editorManager.editorView.state.doc.length,
+        insert: code,
+      })
       editorManager.editorView.dispatch({
         changes: {
           from: 0,
@@ -119,6 +124,7 @@ export default class CodeManager {
           Transaction.addToHistory.of(!clearHistory),
         ],
       })
+      console.log('after dispatch, not reached')
     }
   }
 

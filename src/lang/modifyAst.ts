@@ -804,15 +804,11 @@ export function addImport({
   const insertAt = modifiedAst.body.length ? modifiedAst.body.length : 0
   modifiedAst.body.push(importStatement)
   modifiedAst.body.push(expressionStatement)
-  const argIndex = 0
+  // TODO: figure out if we send back the module import or the expression
   const pathToNode: PathToNode = [
     ['body', ''],
     [insertAt, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpressionKw'],
-    [argIndex, ARG_INDEX_FIELD],
-    ['arg', LABELED_ARG_FIELD],
+    ['path', 'ImportStatement'],
   ]
 
   return {
