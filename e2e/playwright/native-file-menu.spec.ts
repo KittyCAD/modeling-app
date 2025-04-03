@@ -1,8 +1,4 @@
-import {
-  throwAppOrApplicationMenuMissing,
-  throwMissingMenuItemById,
-  throwTronAppMissing,
-} from '@e2e/playwright/lib/electron-helpers'
+import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 /**
@@ -387,14 +383,12 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const openProject =
             app.applicationMenu.getMenuItemById('File.Open project')
           if (!openProject) {
-            throwMissingMenuItemById('File.Open project')
-            return
+            throw new Error('File.Open project')
           }
           openProject.click()
         })
@@ -425,15 +419,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const openProject = app.applicationMenu.getMenuItemById(
             'File.Load a sample model'
           )
           if (!openProject) {
-            throwMissingMenuItemById('File.Load a sample model')
-            return
+            throw new Error('File.Load a sample model')
           }
           openProject.click()
         })
@@ -464,15 +456,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const openProject = app.applicationMenu.getMenuItemById(
             'File.Export current part'
           )
           if (!openProject) {
-            throwMissingMenuItemById('File.Export current part')
-            return
+            throw new Error('File.Export current part')
           }
           openProject.click()
         })
@@ -503,15 +493,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const openProject = app.applicationMenu.getMenuItemById(
             'File.Share current part (via Zoo link)'
           )
           if (!openProject) {
-            throwMissingMenuItemById('File.Share current part (via Zoo link)')
-            return
+            throw new Error('File.Share current part (via Zoo link)')
           }
           openProject.click()
         })
@@ -541,15 +529,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const openProject = app.applicationMenu.getMenuItemById(
             'File.Preferences.Project settings'
           )
           if (!openProject) {
-            throwMissingMenuItemById('File.Preferences.Project settings')
-            return
+            throw new Error('File.Preferences.Project settings')
           }
           openProject.click()
         })
@@ -580,15 +566,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const userSettings = app.applicationMenu.getMenuItemById(
             'File.Preferences.User settings'
           )
           if (!userSettings) {
-            throwMissingMenuItemById('File.Preferences.User settings')
-            return
+            throw new Error('File.Preferences.User settings')
           }
           userSettings.click()
         })
@@ -618,15 +602,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const keybindings = app.applicationMenu.getMenuItemById(
             'File.Preferences.Keybindings'
           )
           if (!keybindings) {
-            throwMissingMenuItemById('File.Preferences.Keybindings')
-            return
+            throw new Error('File.Preferences.Keybindings')
           }
           keybindings.click()
         })
@@ -654,15 +636,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const menu = app.applicationMenu.getMenuItemById(
             'File.Preferences.User default units'
           )
           if (!menu) {
-            throwMissingMenuItemById('File.Preferences.User default units')
-            return
+            throw new Error('File.Preferences.User default units')
           }
           menu.click()
         })
@@ -689,15 +669,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const menu = app.applicationMenu.getMenuItemById(
             'File.Preferences.Theme'
           )
           if (!menu) {
-            throwMissingMenuItemById('File.Preferences.Theme')
-            return
+            throw new Error('File.Preferences.Theme')
           }
           menu.click()
         })
@@ -728,15 +706,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const menu = app.applicationMenu.getMenuItemById(
             'File.Preferences.Theme color'
           )
           if (!menu) {
-            throwMissingMenuItemById('File.Preferences.Theme color')
-            return
+            throw new Error('File.Preferences.Theme color')
           }
           menu.click()
         })
@@ -763,13 +739,11 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const menu = app.applicationMenu.getMenuItemById('File.Sign out')
           if (!menu) {
-            throwMissingMenuItemById('File.Sign out')
-            return
+            throw new Error('File.Sign out')
           }
           // FIXME: Add back when you can actually sign out
           // menu.click()
@@ -799,15 +773,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const menu = app.applicationMenu.getMenuItemById(
             'Edit.Modify with Zoo Text-To-CAD'
           )
           if (!menu) {
-            throwMissingMenuItemById('Edit.Modify with Zoo Text-To-CAD')
-            return
+            throw new Error('Edit.Modify with Zoo Text-To-CAD')
           }
           menu.click()
         })
@@ -836,15 +808,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const menu = app.applicationMenu.getMenuItemById(
             'Edit.Edit parameter'
           )
           if (!menu) {
-            throwMissingMenuItemById('Edit.Edit parameter')
-            return
+            throw new Error('Edit.Edit parameter')
           }
           menu.click()
         })
@@ -873,13 +843,11 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const menu = app.applicationMenu.getMenuItemById('Edit.Format code')
           if (!menu) {
-            throwMissingMenuItemById('Edit.Format code')
-            return
+            throw new Error('Edit.Format code')
           }
           // NO OP: Do not test that the code mirror will actually format the code.
           // The format code happens, there is no UI.
@@ -905,15 +873,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const menu = app.applicationMenu.getMenuItemById(
             'Edit.Rename project'
           )
           if (!menu) {
-            throwMissingMenuItemById('Edit.Rename project')
-            return
+            throw new Error('Edit.Rename project')
           }
           menu.click()
         })
@@ -942,15 +908,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const menu = app.applicationMenu.getMenuItemById(
             'Edit.Delete project'
           )
           if (!menu) {
-            throwMissingMenuItemById('Edit.Delete project')
-            return
+            throw new Error('Edit.Delete project')
           }
           menu.click()
         })
@@ -978,15 +942,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const menu = app.applicationMenu.getMenuItemById(
             'Edit.Change project directory'
           )
           if (!menu) {
-            throwMissingMenuItemById('Edit.Change project directory')
-            return
+            throw new Error('Edit.Change project directory')
           }
           menu.click()
         })
@@ -1015,15 +977,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const menu = app.applicationMenu.getMenuItemById(
             'View.Command Palette...'
           )
           if (!menu) {
-            throwMissingMenuItemById('View.Command Palette...')
-            return
+            throw new Error('View.Command Palette...')
           }
           menu.click()
         })
@@ -1049,15 +1009,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const menu = app.applicationMenu.getMenuItemById(
             'View.Orthographic view'
           )
           if (!menu) {
-            throwMissingMenuItemById('View.Orthographic view')
-            return
+            throw new Error('menu missing')
           }
           menu.click()
         })
@@ -1087,15 +1045,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const menu = app.applicationMenu.getMenuItemById(
             'View.Perspective view'
           )
           if (!menu) {
-            throwMissingMenuItemById('View.Perspective view')
-            return
+            throw new Error('menu missing')
           }
           menu.click()
         })
@@ -1125,15 +1081,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const menu = app.applicationMenu.getMenuItemById(
             'View.Standard views.Right view'
           )
           if (!menu) {
-            throwMissingMenuItemById('View.Standard views.Right view')
-            return
+            throw new Error('menu missing')
           }
           // menu.click()
         })
@@ -1164,15 +1118,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const menu = app.applicationMenu.getMenuItemById(
             'View.Standard views.Back view'
           )
           if (!menu) {
-            throwMissingMenuItemById('View.Standard views.Back view')
-            return
+            throw new Error('menu missing')
           }
           // menu.click()
         })
@@ -1195,15 +1147,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const menu = app.applicationMenu.getMenuItemById(
             'View.Standard views.Top view'
           )
           if (!menu) {
-            throwMissingMenuItemById('View.Standard views.Top view')
-            return
+            throw new Error('menu missing')
           }
           // menu.click()
         })
@@ -1226,15 +1176,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const menu = app.applicationMenu.getMenuItemById(
             'View.Standard views.Left view'
           )
           if (!menu) {
-            throwMissingMenuItemById('View.Standard views.Left view')
-            return
+            throw new Error('menu missing')
           }
           // menu.click()
         })
@@ -1257,15 +1205,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const menu = app.applicationMenu.getMenuItemById(
             'View.Standard views.Front view'
           )
           if (!menu) {
-            throwMissingMenuItemById('View.Standard views.Front view')
-            return
+            throw new Error('menu missing')
           }
           // menu.click()
         })
@@ -1288,15 +1234,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const menu = app.applicationMenu.getMenuItemById(
             'View.Standard views.Bottom view'
           )
           if (!menu) {
-            throwMissingMenuItemById('View.Standard views.Bottom view')
-            return
+            throw new Error('menu missing')
           }
           // menu.click()
         })
@@ -1319,15 +1263,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const menu = app.applicationMenu.getMenuItemById(
             'View.Standard views.Reset view'
           )
           if (!menu) {
-            throwMissingMenuItemById('View.Standard views.Reset view')
-            return
+            throw new Error('menu missing')
           }
           // menu.click()
         })
@@ -1350,17 +1292,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const menu = app.applicationMenu.getMenuItemById(
             'View.Standard views.Center view on selection'
           )
           if (!menu) {
-            throwMissingMenuItemById(
-              'View.Standard views.Center view on selection'
-            )
-            return
+            throw new Error('menu missing')
           }
           // menu.click()
         })
@@ -1383,15 +1321,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
           const menu = app.applicationMenu.getMenuItemById(
             'View.Standard views.Refresh'
           )
           if (!menu) {
-            throwMissingMenuItemById('View.Standard views.Refresh')
-            return
+            throw new Error('menu missing')
           }
           // menu.click()
         })
@@ -1414,17 +1350,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
-          const openProject = app.applicationMenu.getMenuItemById(
+          const menu = app.applicationMenu.getMenuItemById(
             'View.Named views.Create named view'
           )
-          if (!openProject) {
-            throwMissingMenuItemById('View.Named views.Create named view')
-            return
+          if (!menu) {
+            throw new Error('menu missing')
           }
-          openProject.click()
+          menu.click()
         })
         // Check that the command bar is opened
         await expect(cmdBar.cmdBarElement).toBeVisible()
@@ -1453,17 +1387,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
-          const openProject = app.applicationMenu.getMenuItemById(
+          const menu = app.applicationMenu.getMenuItemById(
             'View.Named views.Load named view'
           )
-          if (!openProject) {
-            throwMissingMenuItemById('View.Named views.Load named view')
-            return
+          if (!menu) {
+            throw new Error('menu missing')
           }
-          openProject.click()
+          menu.click()
         })
         // Check that the command bar is opened
         await expect(cmdBar.cmdBarElement).toBeVisible()
@@ -1492,17 +1424,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
-          const openProject = app.applicationMenu.getMenuItemById(
+          const menu = app.applicationMenu.getMenuItemById(
             'View.Named views.Delete named view'
           )
-          if (!openProject) {
-            throwMissingMenuItemById('View.Named views.Delete named view')
-            return
+          if (!menu) {
+            throw new Error('menu missing')
           }
-          openProject.click()
+          menu.click()
         })
         // Check that the command bar is opened
         await expect(cmdBar.cmdBarElement).toBeVisible()
@@ -1531,17 +1461,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
-          const openProject = app.applicationMenu.getMenuItemById(
+          const menu = app.applicationMenu.getMenuItemById(
             'View.Panes.Feature tree'
           )
-          if (!openProject) {
-            throwMissingMenuItemById('View.Panes.Feature tree')
-            return
+          if (!menu) {
+            throw new Error('menu missing')
           }
-          openProject.click()
+          menu.click()
         })
 
         const button = page.getByTestId('feature-tree-pane-button')
@@ -1566,17 +1494,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
-          const openProject = app.applicationMenu.getMenuItemById(
+          const menu = app.applicationMenu.getMenuItemById(
             'View.Panes.KCL code'
           )
-          if (!openProject) {
-            throwMissingMenuItemById('View.Panes.KCL code')
-            return
+          if (!menu) {
+            throw new Error('menu missing')
           }
-          openProject.click()
+          menu.click()
         })
 
         const button = page.getByTestId('code-pane-button')
@@ -1601,17 +1527,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
-          const openProject = app.applicationMenu.getMenuItemById(
+          const menu = app.applicationMenu.getMenuItemById(
             'View.Panes.Project files'
           )
-          if (!openProject) {
-            throwMissingMenuItemById('View.Panes.Project files')
-            return
+          if (!menu) {
+            throw new Error('menu missing')
           }
-          openProject.click()
+          menu.click()
         })
 
         const button = page.getByTestId('files-pane-button')
@@ -1636,17 +1560,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
-          const openProject = app.applicationMenu.getMenuItemById(
+          const menu = app.applicationMenu.getMenuItemById(
             'View.Panes.Variables'
           )
-          if (!openProject) {
-            throwMissingMenuItemById('View.Panes.Variables')
-            return
+          if (!menu) {
+            throw new Error('menu missing')
           }
-          openProject.click()
+          menu.click()
         })
 
         const button = page.getByTestId('variables-pane-button')
@@ -1671,16 +1593,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
-          const openProject =
-            app.applicationMenu.getMenuItemById('View.Panes.Logs')
-          if (!openProject) {
-            throwMissingMenuItemById('View.Panes.Logs')
-            return
+          const menu = app.applicationMenu.getMenuItemById('View.Panes.Logs')
+          if (!menu) {
+            throw new Error('menu missing')
           }
-          openProject.click()
+          menu.click()
         })
 
         const button = page.getByTestId('logs-pane-button')
@@ -1708,17 +1627,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
-          const openProject = app.applicationMenu.getMenuItemById(
+          const menu = app.applicationMenu.getMenuItemById(
             'Design.Create an offset plane'
           )
-          if (!openProject) {
-            throwMissingMenuItemById('Design.Create an offset plane')
-            return
+          if (!menu) {
+            throw new Error('menu missing')
           }
-          openProject.click()
+          menu.click()
         })
         // Check that the command bar is opened
         await expect(cmdBar.cmdBarElement).toBeVisible()
@@ -1747,17 +1664,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
-          const openProject = app.applicationMenu.getMenuItemById(
+          const menu = app.applicationMenu.getMenuItemById(
             'Design.Create a helix'
           )
-          if (!openProject) {
-            throwMissingMenuItemById('Design.Create a helix')
-            return
+          if (!menu) {
+            throw new Error('menu missing')
           }
-          openProject.click()
+          menu.click()
         })
         // Check that the command bar is opened
         await expect(cmdBar.cmdBarElement).toBeVisible()
@@ -1786,17 +1701,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
-          const openProject = app.applicationMenu.getMenuItemById(
+          const menu = app.applicationMenu.getMenuItemById(
             'Design.Create a parameter'
           )
-          if (!openProject) {
-            throwMissingMenuItemById('Design.Create a parameter')
-            return
+          if (!menu) {
+            throw new Error('menu missing')
           }
-          openProject.click()
+          menu.click()
         })
         // Check that the command bar is opened
         await expect(cmdBar.cmdBarElement).toBeVisible()
@@ -1826,19 +1739,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
-          const openProject = app.applicationMenu.getMenuItemById(
+          const menu = app.applicationMenu.getMenuItemById(
             'Design.Create an additive feature.Extrude'
           )
-          if (!openProject) {
-            throwMissingMenuItemById(
-              'Design.Create an additive feature.Extrude'
-            )
-            return
+          if (!menu) {
+            throw new Error('menu missing')
           }
-          openProject.click()
+          menu.click()
         })
         // Check that the command bar is opened
         await expect(cmdBar.cmdBarElement).toBeVisible()
@@ -1867,19 +1776,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
-          const openProject = app.applicationMenu.getMenuItemById(
+          const menu = app.applicationMenu.getMenuItemById(
             'Design.Create an additive feature.Revolve'
           )
-          if (!openProject) {
-            throwMissingMenuItemById(
-              'Design.Create an additive feature.Revolve'
-            )
-            return
+          if (!menu) {
+            throw new Error('menu missing')
           }
-          openProject.click()
+          menu.click()
         })
         // Check that the command bar is opened
         await expect(cmdBar.cmdBarElement).toBeVisible()
@@ -1908,17 +1813,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
-          const openProject = app.applicationMenu.getMenuItemById(
+          const menu = app.applicationMenu.getMenuItemById(
             'Design.Create an additive feature.Sweep'
           )
-          if (!openProject) {
-            throwMissingMenuItemById('Design.Create an additive feature.Sweep')
-            return
+          if (!menu) {
+            throw new Error('menu missing')
           }
-          openProject.click()
+          menu.click()
         })
         // Check that the command bar is opened
         await expect(cmdBar.cmdBarElement).toBeVisible()
@@ -1947,17 +1850,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
-          const openProject = app.applicationMenu.getMenuItemById(
+          const menu = app.applicationMenu.getMenuItemById(
             'Design.Create an additive feature.Loft'
           )
-          if (!openProject) {
-            throwMissingMenuItemById('Design.Create an additive feature.Loft')
-            return
+          if (!menu) {
+            throw new Error('menu missing')
           }
-          openProject.click()
+          menu.click()
         })
         // Check that the command bar is opened
         await expect(cmdBar.cmdBarElement).toBeVisible()
@@ -1986,17 +1887,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
-          const openProject = app.applicationMenu.getMenuItemById(
+          const menu = app.applicationMenu.getMenuItemById(
             'Design.Apply modification feature.Fillet'
           )
-          if (!openProject) {
-            throwMissingMenuItemById('Design.Apply modification feature.Fillet')
-            return
+          if (!menu) {
+            throw new Error('menu missing')
           }
-          openProject.click()
+          menu.click()
         })
         // Check that the command bar is opened
         await expect(cmdBar.cmdBarElement).toBeVisible()
@@ -2025,19 +1924,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
-          const openProject = app.applicationMenu.getMenuItemById(
+          const menu = app.applicationMenu.getMenuItemById(
             'Design.Apply modification feature.Chamfer'
           )
-          if (!openProject) {
-            throwMissingMenuItemById(
-              'Design.Apply modification feature.Chamfer'
-            )
-            return
+          if (!menu) {
+            throw new Error('menu missing')
           }
-          openProject.click()
+          menu.click()
         })
         // Check that the command bar is opened
         await expect(cmdBar.cmdBarElement).toBeVisible()
@@ -2067,17 +1962,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
-          const openProject = app.applicationMenu.getMenuItemById(
+          const menu = app.applicationMenu.getMenuItemById(
             'Design.Apply modification feature.Shell'
           )
-          if (!openProject) {
-            throwMissingMenuItemById('Design.Apply modification feature.Shell')
-            return
+          if (!menu) {
+            throw new Error('menu missing')
           }
-          openProject.click()
+          menu.click()
         })
         // Check that the command bar is opened
         await expect(cmdBar.cmdBarElement).toBeVisible()
@@ -2107,17 +2000,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
-          const openProject = app.applicationMenu.getMenuItemById(
+          const menu = app.applicationMenu.getMenuItemById(
             'Design.Create with Zoo Text-To-CAD'
           )
-          if (!openProject) {
-            throwMissingMenuItemById('Design.Create with Zoo Text-To-CAD')
-            return
+          if (!menu) {
+            throw new Error('menu missing')
           }
-          openProject.click()
+          menu.click()
         })
         // Check that the command bar is opened
         await expect(cmdBar.cmdBarElement).toBeVisible()
@@ -2147,17 +2038,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            throwAppOrApplicationMenuMissing()
-            return
+            throw new Error('app or app.applicationMenu is missing')
           }
-          const openProject = app.applicationMenu.getMenuItemById(
+          const menu = app.applicationMenu.getMenuItemById(
             'Design.Modify with Zoo Text-To-CAD'
           )
-          if (!openProject) {
-            throwMissingMenuItemById('Design.Modify with Zoo Text-To-CAD')
-            return
+          if (!menu) {
+            throw new Error('menu missing')
           }
-          openProject.click()
+          menu.click()
         })
         // Check that the command bar is opened
         await expect(cmdBar.cmdBarElement).toBeVisible()
