@@ -65,6 +65,7 @@ export const modelingViewRole = (
     submenu: [
       {
         label: 'Command Palette...',
+        id: 'View.Command Palette...',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'View.Command Palette...',
@@ -74,6 +75,7 @@ export const modelingViewRole = (
       { type: 'separator' },
       {
         label: 'Orthographic view',
+        id: 'View.Orthographic view',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'View.Orthographic view',
@@ -82,6 +84,7 @@ export const modelingViewRole = (
       },
       {
         label: 'Perspective view',
+        id: 'View.Perspective view',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'View.Perspective view',
@@ -95,6 +98,7 @@ export const modelingViewRole = (
         submenu: [
           {
             label: 'Right view',
+            id: 'View.Standard views.Right view',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Standard views.Right view',
@@ -103,6 +107,7 @@ export const modelingViewRole = (
           },
           {
             label: 'Back view',
+            id: 'View.Standard views.Back view',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Standard views.Back view',
@@ -112,6 +117,7 @@ export const modelingViewRole = (
 
           {
             label: 'Top view',
+            id: 'View.Standard views.Top view',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Standard views.Top view',
@@ -121,6 +127,7 @@ export const modelingViewRole = (
 
           {
             label: 'Left view',
+            id: 'View.Standard views.Left view',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Standard views.Left view',
@@ -130,6 +137,7 @@ export const modelingViewRole = (
 
           {
             label: 'Front view',
+            id: 'View.Standard views.Front view',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Standard views.Front view',
@@ -139,6 +147,7 @@ export const modelingViewRole = (
 
           {
             label: 'Bottom view',
+            id: 'View.Standard views.Bottom view',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Standard views.Bottom view',
@@ -148,6 +157,7 @@ export const modelingViewRole = (
           { type: 'separator' },
           {
             label: 'Reset view',
+            id: 'View.Standard views.Reset view',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Standard views.Reset view',
@@ -157,6 +167,7 @@ export const modelingViewRole = (
 
           {
             label: 'Center view on selection',
+            id: 'View.Standard views.Center view on selection',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Standard views.Center view on selection',
@@ -165,6 +176,7 @@ export const modelingViewRole = (
           },
           {
             label: 'Refresh',
+            id: 'View.Standard views.Refresh',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Standard views.Refresh',
@@ -179,6 +191,7 @@ export const modelingViewRole = (
         submenu: [
           {
             label: 'Create named view',
+            id: 'View.Named views.Create named view',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Named views.Create named view',
@@ -188,6 +201,7 @@ export const modelingViewRole = (
 
           {
             label: 'Load named view',
+            id: 'View.Named views.Load named view',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Named views.Load named view',
@@ -197,6 +211,7 @@ export const modelingViewRole = (
 
           {
             label: 'Delete named view',
+            id: 'View.Named views.Delete named view',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Named views.Delete named view',
@@ -211,6 +226,7 @@ export const modelingViewRole = (
         submenu: [
           {
             label: 'Feature tree',
+            id: 'View.Panes.Feature tree',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Panes.Feature tree',
@@ -219,6 +235,7 @@ export const modelingViewRole = (
           },
           {
             label: 'KCL code',
+            id: 'View.Panes.KCL code',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Panes.KCL code',
@@ -227,6 +244,7 @@ export const modelingViewRole = (
           },
           {
             label: 'Project files',
+            id: 'View.Panes.Project files',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Panes.Project files',
@@ -235,6 +253,7 @@ export const modelingViewRole = (
           },
           {
             label: 'Variables',
+            id: 'View.Panes.Variables',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Panes.Variables',
@@ -243,6 +262,7 @@ export const modelingViewRole = (
           },
           {
             label: 'Logs',
+            id: 'View.Panes.Logs',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'View.Panes.Logs',

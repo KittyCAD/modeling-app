@@ -996,5 +996,697 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await expect(projectDirectory).toBeVisible()
       })
     })
+    test.describe('View role', () => {
+      test('Modeling.View.Command Palette...', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const menu = app.applicationMenu.getMenuItemById(
+            'View.Command Palette...'
+          )
+          if (!menu) {
+            throwMissingMenuItemById('View.Command Palette...')
+            return
+          }
+          menu.click()
+        })
+        // Check the placeholder project name exists
+        const actual = cmdBar.cmdBarElement.getByTestId('cmd-bar-search')
+        await expect(actual).toBeVisible()
+      })
+      test('Modeling.View.Orthographic view', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const menu = app.applicationMenu.getMenuItemById(
+            'View.Orthographic view'
+          )
+          if (!menu) {
+            throwMissingMenuItemById('View.Orthographic view')
+            return
+          }
+          menu.click()
+        })
+
+        const textToCheck =
+          'Set camera projection to "orthographic" as a user default'
+        // Check if text appears anywhere in the page
+        const isTextVisible = page.getByText(textToCheck)
+
+        await expect(isTextVisible).toBeVisible({ timeout: 10000 })
+      })
+      test('Modeling.View.Perspective view', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const menu = app.applicationMenu.getMenuItemById(
+            'View.Perspective view'
+          )
+          if (!menu) {
+            throwMissingMenuItemById('View.Perspective view')
+            return
+          }
+          menu.click()
+        })
+
+        const textToCheck =
+          'Set camera projection to "perspective" as a user default'
+        // Check if text appears anywhere in the page
+        const isTextVisible = page.getByText(textToCheck)
+
+        await expect(isTextVisible).toBeVisible({ timeout: 10000 })
+      })
+      test('Modeling.View.Standard views.Right view', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const menu = app.applicationMenu.getMenuItemById(
+            'View.Standard views.Right view'
+          )
+          if (!menu) {
+            throwMissingMenuItemById('View.Standard views.Right view')
+            return
+          }
+          // menu.click()
+        })
+
+        // TODO: Make all of these screenshot E2E tests.
+        // Wait for camera to move
+        // await page.waitForTimeout(5000)
+
+        // const locator = page.getByTestId('gizmo').locator('canvas')
+        // const image = await locator.screenshot({ path: 'Modeling.View.Standard-views.Right-view.png' });
+        // expect(image).toMatchSnapshot('Modeling.View.Standard-views.Right-view')
+      })
+      test('Modeling.View.Standard views.Back view', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const menu = app.applicationMenu.getMenuItemById(
+            'View.Standard views.Back view'
+          )
+          if (!menu) {
+            throwMissingMenuItemById('View.Standard views.Back view')
+            return
+          }
+          // menu.click()
+        })
+      })
+      test('Modeling.View.Standard views.Top view', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const menu = app.applicationMenu.getMenuItemById(
+            'View.Standard views.Top view'
+          )
+          if (!menu) {
+            throwMissingMenuItemById('View.Standard views.Top view')
+            return
+          }
+          // menu.click()
+        })
+      })
+      test('Modeling.View.Standard views.Left view', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const menu = app.applicationMenu.getMenuItemById(
+            'View.Standard views.Left view'
+          )
+          if (!menu) {
+            throwMissingMenuItemById('View.Standard views.Left view')
+            return
+          }
+          // menu.click()
+        })
+      })
+      test('Modeling.View.Standard views.Front view', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const menu = app.applicationMenu.getMenuItemById(
+            'View.Standard views.Front view'
+          )
+          if (!menu) {
+            throwMissingMenuItemById('View.Standard views.Front view')
+            return
+          }
+          // menu.click()
+        })
+      })
+      test('Modeling.View.Standard views.Bottom view', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const menu = app.applicationMenu.getMenuItemById(
+            'View.Standard views.Bottom view'
+          )
+          if (!menu) {
+            throwMissingMenuItemById('View.Standard views.Bottom view')
+            return
+          }
+          // menu.click()
+        })
+      })
+      test('Modeling.View.Standard views.Reset view', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const menu = app.applicationMenu.getMenuItemById(
+            'View.Standard views.Reset view'
+          )
+          if (!menu) {
+            throwMissingMenuItemById('View.Standard views.Reset view')
+            return
+          }
+          // menu.click()
+        })
+      })
+      test('Modeling.View.Standard views.Center view on selection', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const menu = app.applicationMenu.getMenuItemById(
+            'View.Standard views.Center view on selection'
+          )
+          if (!menu) {
+            throwMissingMenuItemById(
+              'View.Standard views.Center view on selection'
+            )
+            return
+          }
+          // menu.click()
+        })
+      })
+      test('Modeling.View.Standard views.Refresh', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const menu = app.applicationMenu.getMenuItemById(
+            'View.Standard views.Refresh'
+          )
+          if (!menu) {
+            throwMissingMenuItemById('View.Standard views.Refresh')
+            return
+          }
+          // menu.click()
+        })
+      })
+      test('Modeling.View.Named views.Create named view', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const openProject = app.applicationMenu.getMenuItemById(
+            'View.Named views.Create named view'
+          )
+          if (!openProject) {
+            throwMissingMenuItemById('View.Named views.Create named view')
+            return
+          }
+          openProject.click()
+        })
+        // Check that the command bar is opened
+        await expect(cmdBar.cmdBarElement).toBeVisible()
+        // Check the placeholder project name exists
+        const actual = await cmdBar.cmdBarElement
+          .getByTestId('command-name')
+          .textContent()
+        const expected = 'Create named view'
+        expect(actual).toBe(expected)
+      })
+      test('Modeling.View.Named views.Load named view', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const openProject = app.applicationMenu.getMenuItemById(
+            'View.Named views.Load named view'
+          )
+          if (!openProject) {
+            throwMissingMenuItemById('View.Named views.Load named view')
+            return
+          }
+          openProject.click()
+        })
+        // Check that the command bar is opened
+        await expect(cmdBar.cmdBarElement).toBeVisible()
+        // Check the placeholder project name exists
+        const actual = await cmdBar.cmdBarElement
+          .getByTestId('command-name')
+          .textContent()
+        const expected = 'Load named view'
+        expect(actual).toBe(expected)
+      })
+      test('Modeling.View.Named views.Delete named view', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const openProject = app.applicationMenu.getMenuItemById(
+            'View.Named views.Delete named view'
+          )
+          if (!openProject) {
+            throwMissingMenuItemById('View.Named views.Delete named view')
+            return
+          }
+          openProject.click()
+        })
+        // Check that the command bar is opened
+        await expect(cmdBar.cmdBarElement).toBeVisible()
+        // Check the placeholder project name exists
+        const actual = await cmdBar.cmdBarElement
+          .getByTestId('command-name')
+          .textContent()
+        const expected = 'Delete named view'
+        expect(actual).toBe(expected)
+      })
+      test('Modeling.View.Panes.Feature tree', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const openProject = app.applicationMenu.getMenuItemById(
+            'View.Panes.Feature tree'
+          )
+          if (!openProject) {
+            throwMissingMenuItemById('View.Panes.Feature tree')
+            return
+          }
+          openProject.click()
+        })
+
+        const button = page.getByTestId('feature-tree-pane-button')
+        const isPressed = await button.getAttribute('aria-pressed')
+        expect(isPressed).toBe('true')
+      })
+      test('Modeling.View.Panes.KCL code', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const openProject = app.applicationMenu.getMenuItemById(
+            'View.Panes.KCL code'
+          )
+          if (!openProject) {
+            throwMissingMenuItemById('View.Panes.KCL code')
+            return
+          }
+          openProject.click()
+        })
+
+        const button = page.getByTestId('code-pane-button')
+        const isPressed = await button.getAttribute('aria-pressed')
+        expect(isPressed).toBe('true')
+      })
+      test('Modeling.View.Panes.Project files', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const openProject = app.applicationMenu.getMenuItemById(
+            'View.Panes.Project files'
+          )
+          if (!openProject) {
+            throwMissingMenuItemById('View.Panes.Project files')
+            return
+          }
+          openProject.click()
+        })
+
+        const button = page.getByTestId('files-pane-button')
+        const isPressed = await button.getAttribute('aria-pressed')
+        expect(isPressed).toBe('true')
+      })
+      test('Modeling.View.Panes.Variables', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const openProject = app.applicationMenu.getMenuItemById(
+            'View.Panes.Variables'
+          )
+          if (!openProject) {
+            throwMissingMenuItemById('View.Panes.Variables')
+            return
+          }
+          openProject.click()
+        })
+
+        const button = page.getByTestId('variables-pane-button')
+        const isPressed = await button.getAttribute('aria-pressed')
+        expect(isPressed).toBe('true')
+      })
+      test('Modeling.View.Panes.Logs', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) {
+            throwAppOrApplicationMenuMissing()
+            return
+          }
+          const openProject =
+            app.applicationMenu.getMenuItemById('View.Panes.Logs')
+          if (!openProject) {
+            throwMissingMenuItemById('View.Panes.Logs')
+            return
+          }
+          openProject.click()
+        })
+
+        const button = page.getByTestId('logs-pane-button')
+        const isPressed = await button.getAttribute('aria-pressed')
+        expect(isPressed).toBe('true')
+      })
+    })
   })
 })
