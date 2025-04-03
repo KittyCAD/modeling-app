@@ -1194,7 +1194,7 @@ impl LanguageServer for Backend {
                 // Get last word
                 let last_word = line_prefix
                     .split(|c: char| c.is_whitespace() || c.is_ascii_punctuation())
-                    .last()
+                    .next_back()
                     .unwrap_or("");
 
                 // If the last word starts with a digit, return no completions
