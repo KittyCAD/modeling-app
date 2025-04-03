@@ -1211,13 +1211,20 @@ description: Result of parsing pipe.kcl
                   "type": "Identifier"
                 },
                 "arg": {
+                  "abs_path": false,
                   "commentStart": 1175,
                   "end": 0,
-                  "raw": "'y'",
+                  "name": {
+                    "commentStart": 1175,
+                    "end": 0,
+                    "name": "Y",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": "y"
+                  "type": "Name",
+                  "type": "Name"
                 }
               }
             ],

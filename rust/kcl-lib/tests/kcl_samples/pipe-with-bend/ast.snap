@@ -664,19 +664,26 @@ description: Result of parsing pipe-with-bend.kcl
                   "type": "Identifier"
                 },
                 "arg": {
+                  "abs_path": false,
                   "commentStart": 804,
                   "end": 0,
-                  "raw": "'Y'",
+                  "name": {
+                    "commentStart": 804,
+                    "end": 0,
+                    "name": "Y",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": "Y"
+                  "type": "Name",
+                  "type": "Name"
                 }
               },
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 809,
+                  "commentStart": 807,
                   "end": 0,
                   "name": "angle",
                   "start": 0,
@@ -684,10 +691,10 @@ description: Result of parsing pipe-with-bend.kcl
                 },
                 "arg": {
                   "abs_path": false,
-                  "commentStart": 817,
+                  "commentStart": 815,
                   "end": 0,
                   "name": {
-                    "commentStart": 817,
+                    "commentStart": 815,
                     "end": 0,
                     "name": "bendAngle",
                     "start": 0,

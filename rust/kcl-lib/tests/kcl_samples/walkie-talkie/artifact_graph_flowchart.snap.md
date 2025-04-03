@@ -326,7 +326,7 @@ flowchart LR
   253["EdgeCut Fillet<br>[709, 931, 10]"]
   254["EdgeCut Fillet<br>[709, 931, 10]"]
   255["Plane<br>[352, 369, 11]"]
-  263["Sweep Revolve<br>[643, 662, 11]"]
+  263["Sweep Revolve<br>[643, 660, 11]"]
   264[Wall]
   265[Wall]
   266[Wall]

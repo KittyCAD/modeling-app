@@ -34,10 +34,8 @@ part001 = revolve(
   sketch001,
   angle = 90,
   axis = {
-    custom = {
-      axis = [1.0, 0.0],
-      origin = [0.0, height + .0001]
-    }
+    direction = [1.0, 0.0],
+    origin = [0.0, height + .0001]
   },
 )
 

@@ -54,7 +54,7 @@ example = extrude(exampleSketch, length = 5)
 // Add color to a revolved solid.
 sketch001 = startSketchOn(XY)
   |> circle(center = [15, 0], radius = 5)
-  |> revolve(angle = 360, axis = 'y')
+  |> revolve(angle = 360, axis = Y)
   |> appearance(color = '#ff0000', metalness = 90, roughness = 90)
 ```
 

@@ -33,4 +33,4 @@ pipeSketch = startSketchOn(XY)
   |> close()
 
 // Revolve the sketch to create the pipe
-pipe = revolve(pipeSketch, axis = 'y')
+pipe = revolve(pipeSketch, axis = Y)

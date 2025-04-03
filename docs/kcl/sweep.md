@@ -74,7 +74,7 @@ helixPath = helix(
   revolutions = 4,
   length = 10,
   radius = 5,
-  axis = 'Z',
+  axis = Z,
 )
 
 // Create a spring by sweeping around the helix path.

@@ -38,15 +38,6 @@ interface NewTrackArgs {
 
 type ClientMetrics = Models['ClientMetrics_type']
 
-interface WebRTCClientMetrics extends ClientMetrics {
-  rtc_frame_height: number
-  rtc_frame_width: number
-  rtc_packets_lost: number
-  rtc_pli_count: number
-  rtc_pause_count: number
-  rtc_total_pauses_duration_sec: number
-}
-
 type Value<T, U> = U extends undefined
   ? { type: T; value: U }
   : U extends void
@@ -307,7 +298,7 @@ class EngineConnection extends EventTarget {
   private readonly token?: string
 
   // TODO: actual type is ClientMetrics
-  public webrtcStatsCollector?: () => Promise<WebRTCClientMetrics>
+  public webrtcStatsCollector?: () => Promise<ClientMetrics>
   private engineCommandManager: EngineCommandManager
 
   private pingPongSpan: { ping?: Date; pong?: Date }
@@ -760,70 +751,53 @@ class EngineConnection extends EventTarget {
             },
           }
 
-          this.webrtcStatsCollector = (): Promise<WebRTCClientMetrics> => {
+          this.webrtcStatsCollector = (): Promise<ClientMetrics> => {
             return new Promise((resolve, reject) => {
               if (mediaStream.getVideoTracks().length !== 1) {
                 reject(new Error('too many video tracks to report'))
                 return
               }
+              const inboundVideoTrack = mediaStream.getVideoTracks()[0]
 
-              let videoTrack = mediaStream.getVideoTracks()[0]
-              void this.pc?.getStats(videoTrack).then((videoTrackStats) => {
-                let client_metrics: WebRTCClientMetrics = {
-                  rtc_frames_decoded: 0,
-                  rtc_frames_dropped: 0,
-                  rtc_frames_received: 0,
-                  rtc_frames_per_second: 0,
-                  rtc_freeze_count: 0,
-                  rtc_jitter_sec: 0.0,
-                  rtc_keyframes_decoded: 0,
-                  rtc_total_freezes_duration_sec: 0.0,
-                  rtc_frame_height: 0,
-                  rtc_frame_width: 0,
-                  rtc_packets_lost: 0,
-                  rtc_pli_count: 0,
-                  rtc_pause_count: 0,
-                  rtc_total_pauses_duration_sec: 0.0,
-                }
+              void this.pc?.getStats().then((stats) => {
+                let metrics: ClientMetrics = {}
 
-                // TODO(paultag): Since we can technically have multiple WebRTC
-                // video tracks (even if the Server doesn't at the moment), we
-                // ought to send stats for every video track(?), and add the stream
-                // ID into it.  This raises the cardinality of collected metrics
-                // when/if we do, but for now, just report the one stream.
+                stats.forEach((report, id) => {
+                  if (report.type === 'candidate-pair') {
+                    if (report.state == 'succeeded') {
+                      const rtt = report.currentRoundTripTime
+                      metrics.rtc_stun_rtt_sec = rtt
+                    }
+                  } else if (report.type === 'inbound-rtp') {
+                    // TODO(paultag): Since we can technically have multiple WebRTC
+                    // video tracks (even if the Server doesn't at the moment), we
+                    // ought to send stats for every video track(?), and add the stream
+                    // ID into it.  This raises the cardinality of collected metrics
+                    // when/if we do.
+                    // For now we just take one of the video tracks.
+                    if (report.trackIdentifier !== inboundVideoTrack.id) {
+                      return
+                    }
 
-                videoTrackStats.forEach((videoTrackReport) => {
-                  if (videoTrackReport.type === 'inbound-rtp') {
-                    client_metrics.rtc_frames_decoded =
-                      videoTrackReport.framesDecoded || 0
-                    client_metrics.rtc_frames_dropped =
-                      videoTrackReport.framesDropped || 0
-                    client_metrics.rtc_frames_received =
-                      videoTrackReport.framesReceived || 0
-                    client_metrics.rtc_frames_per_second =
-                      videoTrackReport.framesPerSecond || 0
-                    client_metrics.rtc_freeze_count =
-                      videoTrackReport.freezeCount || 0
-                    client_metrics.rtc_jitter_sec =
-                      videoTrackReport.jitter || 0.0
-                    client_metrics.rtc_keyframes_decoded =
-                      videoTrackReport.keyFramesDecoded || 0
-                    client_metrics.rtc_total_freezes_duration_sec =
-                      videoTrackReport.totalFreezesDuration || 0
-                    client_metrics.rtc_frame_height =
-                      videoTrackReport.frameHeight || 0
-                    client_metrics.rtc_frame_width =
-                      videoTrackReport.frameWidth || 0
-                    client_metrics.rtc_packets_lost =
-                      videoTrackReport.packetsLost || 0
-                    client_metrics.rtc_pli_count =
-                      videoTrackReport.pliCount || 0
-                  } else if (videoTrackReport.type === 'transport') {
-                    // videoTrackReport.bytesReceived,
-                    // videoTrackReport.bytesSent,
+                    metrics.rtc_frames_decoded = report.framesDecoded
+                    metrics.rtc_frames_dropped = report.framesDropped
+                    metrics.rtc_frames_received = report.framesReceived
+                    metrics.rtc_frames_per_second = report.framesPerSecond
+                    metrics.rtc_freeze_count = report.freezeCount
+                    metrics.rtc_jitter_sec = report.jitter
+                    metrics.rtc_keyframes_decoded = report.keyFramesDecoded
+                    metrics.rtc_total_freezes_duration_sec =
+                      report.totalFreezesDuration
+                    metrics.rtc_frame_height = report.frameHeight
+                    metrics.rtc_frame_width = report.frameWidth
+                    metrics.rtc_packets_lost = report.packetsLost
+                    metrics.rtc_pli_count = report.pliCount
                   }
+                  // The following report types exist, but are unused:
+                  // data-channel, transport, certificate, peer-connection, local-candidate, remote-candidate, codec
                 })
-                resolve(client_metrics)
+
+                resolve(metrics)
               })
             })
           }

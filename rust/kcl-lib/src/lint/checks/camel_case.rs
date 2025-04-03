@@ -120,7 +120,7 @@ const Part001 = startSketchOn('XY')
   |> line([0, pipeLength], %)
   |> angledLineToX({ angle: 60, to: pipeLargeDia }, %)
   |> close()
-  |> revolve({ axis: 'y' }, %)
+  |> revolve({ axis = Y }, %)
 "
     );
 
@@ -156,7 +156,7 @@ const part001 = startSketchOn('XY')
   |> line([0, pipeLength], %)
   |> angledLineToX({ angle: 60, to: pipeLargeDia }, %)
   |> close()
-  |> revolve({ axis: 'y' }, %)
+  |> revolve({ axis = Y }, %)
 "
     );
 

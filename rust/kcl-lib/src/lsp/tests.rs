@@ -1634,7 +1634,7 @@ insideRevolve = startSketchOn(XZ)
   |> line(end = [0, -thickness])
   |> line(end = [-overHangLength, 0])
   |> close()
-  |> revolve({ axis: 'y' }, %)
+  |> revolve({ axis = Y }, %)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
 sphere = startSketchOn(XZ)
@@ -1649,7 +1649,7 @@ sphere = startSketchOn(XZ)
        radius: sphereDia / 2 - 0.05
      }, %)
   |> close()
-  |> revolve({ axis: 'x' }, %)
+  |> revolve({ axis = X }, %)
   |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
@@ -1673,7 +1673,7 @@ outsideRevolve = startSketchOn(XZ)
   |> line(end = [0, thickness])
   |> line(end = [overHangLength - thickness, 0])
   |> close()
-  |> revolve({ axis: 'y' }, %)"#
+  |> revolve({ axis = Y }, %)"#
                     .to_string(),
             },
         })
@@ -1707,7 +1707,7 @@ outsideRevolve = startSketchOn(XZ)
             start: tower_lsp::lsp_types::Position { line: 0, character: 0 },
             end: tower_lsp::lsp_types::Position {
                 line: 60,
-                character: 30
+                character: 29
             }
         }
     );
@@ -1734,7 +1734,7 @@ insideRevolve = startSketchOn(XZ)
   |> line(end = [0, -thickness])
   |> line(end = [-overHangLength, 0])
   |> close()
-  |> revolve({ axis = 'y' }, %)
+  |> revolve({ axis = Y }, %)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
 sphere = startSketchOn(XZ)
@@ -1749,7 +1749,7 @@ sphere = startSketchOn(XZ)
        radius = sphereDia / 2 - 0.05
      }, %)
   |> close()
-  |> revolve({ axis = 'x' }, %)
+  |> revolve({ axis = X }, %)
   |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
@@ -1773,7 +1773,7 @@ outsideRevolve = startSketchOn(XZ)
   |> line(end = [0, thickness])
   |> line(end = [overHangLength - thickness, 0])
   |> close()
-  |> revolve({ axis = 'y' }, %)"#
+  |> revolve({ axis = Y }, %)"#
     );
 }
 

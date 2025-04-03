@@ -320,7 +320,10 @@ const OperationItem = (props: {
    * TODO: https://github.com/KittyCAD/modeling-app/issues/4442
    */
   function enterEditFlow() {
-    if (props.item.type === 'StdLibCall') {
+    if (
+      props.item.type === 'StdLibCall' ||
+      props.item.type === 'KclStdLibCall'
+    ) {
       props.send({
         type: 'enterEditFlow',
         data: {
@@ -332,7 +335,10 @@ const OperationItem = (props: {
   }
 
   function enterAppearanceFlow() {
-    if (props.item.type === 'StdLibCall') {
+    if (
+      props.item.type === 'StdLibCall' ||
+      props.item.type === 'KclStdLibCall'
+    ) {
       props.send({
         type: 'enterAppearanceFlow',
         data: {
@@ -346,7 +352,8 @@ const OperationItem = (props: {
   function deleteOperation() {
     if (
       props.item.type === 'StdLibCall' ||
-      props.item.type === 'UserDefinedFunctionCall'
+      props.item.type === 'UserDefinedFunctionCall' ||
+      props.item.type === 'KclStdLibCall'
     ) {
       props.send({
         type: 'deleteOperation',
@@ -397,7 +404,8 @@ const OperationItem = (props: {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall'
+      ...(props.item.type === 'StdLibCall' ||
+      props.item.type === 'KclStdLibCall'
         ? [
             <ContextMenuItem
               disabled={!stdLibMap[props.item.name]?.supportsAppearance}

@@ -35,7 +35,7 @@ ballsSketch = startSketchOn(XY)
   |> close()
 
 // Revolve the ball to make a sphere and pattern around the inside wall
-balls = revolve(ballsSketch, axis = "X")
+balls = revolve(ballsSketch, axis = X)
   |> patternCircular3d(
        arcDegrees = 360,
        axis = [0, 0, 1],
@@ -60,7 +60,7 @@ chainSketch = startSketchOn(XY)
   |> close()
 
 // Revolve the chain sketch
-chainHead = revolve(chainSketch, axis = "X")
+chainHead = revolve(chainSketch, axis = X)
   |> patternCircular3d(
        arcDegrees = 360,
        axis = [0, 0, 1],
@@ -80,7 +80,7 @@ linkSketch = startSketchOn(XZ)
      )
 
 // Revolve the link sketch
-linkRevolve = revolve(linkSketch, axis = 'Y', angle = 360 / nBalls)
+linkRevolve = revolve(linkSketch, axis = Y, angle = 360 / nBalls)
   |> patternCircular3d(
        arcDegrees = 360,
        axis = [0, 0, 1],
