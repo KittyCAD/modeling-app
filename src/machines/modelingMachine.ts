@@ -2696,23 +2696,21 @@ export const modelingMachine = setup({
 
         const ast = kclManager.ast
         const { path, localName } = input
-        const { modifiedAst, pathToNode } = addImport({
+        const { modifiedAst } = addImport({
           node: ast,
           path,
           localName,
         })
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          {
-            kclManager,
-            editorManager,
-            codeManager,
-          },
-          {
-            focusPath: [pathToNode],
-          }
-        )
+        // TODO: add back updateModelingState
+        try {
+          await codeManager.updateEditorWithAstAndWriteToFile(modifiedAst)
+          await kclManager.executeAst({
+            ast: modifiedAst,
+          })
+        } catch (e) {
+          console.error(e)
+          toast.error('Error executing import codemod')
+        }
       }
     ),
     exportFromEngine: fromPromise(

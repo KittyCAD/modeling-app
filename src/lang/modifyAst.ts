@@ -801,13 +801,12 @@ export function addImport({
   const expressionStatement = createExpressionStatement(
     createLocalName(localName)
   )
-  const insertAt = modifiedAst.body.length ? modifiedAst.body.length : 0
-  modifiedAst.body.push(importStatement)
+  modifiedAst.body.unshift(importStatement)
   modifiedAst.body.push(expressionStatement)
   // TODO: figure out if we send back the module import or the expression
   const pathToNode: PathToNode = [
     ['body', ''],
-    [insertAt, 'index'],
+    [0, 'index'],
     ['path', 'ImportStatement'],
   ]
 
