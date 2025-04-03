@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use validator::{Validate, ValidateRange};
 
 const DEFAULT_THEME_COLOR: f64 = 264.5;
-const DEFAULT_PROJECT_NAME_TEMPLATE: &str = "project-$nnn";
+const DEFAULT_PROJECT_NAME_TEMPLATE: &str = "untitled";
 
 /// User specific settings for the app.
 /// These live in `user.toml` in the app's configuration directory.
@@ -603,7 +603,7 @@ mouseControls = "KittyCAD"
 showDebugPanel = true
 
 [settings.projects]
-defaultProjectName = "project-$nnn"
+defaultProjectName = "untitled"
 
 [settings.textEditor]
 textWrapping = true
@@ -860,7 +860,7 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                     },
                     project: ProjectSettings {
                         directory: "/Users/macinatormax/Documents/kittycad-modeling-projects".into(),
-                        default_project_name: "project-$nnn".to_string().into()
+                        default_project_name: "untitled".to_string().into()
                     },
                     command_bar: CommandBarSettings {
                         include_settings: true.into()

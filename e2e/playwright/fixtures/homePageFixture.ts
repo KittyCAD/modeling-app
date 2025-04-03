@@ -96,7 +96,7 @@ export class HomePageFixture {
     await expect(this.projectSection).not.toHaveText('Loading your Projects...')
   }
 
-  createAndGoToProject = async (projectTitle = 'project-$nnn') => {
+  createAndGoToProject = async (projectTitle = 'untitled') => {
     await this.projectsLoaded()
     await this.projectButtonNew.click()
     await this.projectTextName.click()
