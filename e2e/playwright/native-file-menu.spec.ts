@@ -2169,5 +2169,118 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         expect(actual).toBe(expected)
       })
     })
+    test.describe('Help role', () => {
+      test('Modeling.Help.Show all commands', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) fail()
+          const menu = app.applicationMenu.getMenuItemById(
+            'Help.Show all commands'
+          )
+          if (!menu) fail()
+          menu.click()
+        })
+        // Check the placeholder project name exists
+        const actual = cmdBar.cmdBarElement.getByTestId('cmd-bar-search')
+        await expect(actual).toBeVisible()
+      })
+      test('Modeling.Help.KCL code samples', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) fail()
+          const menu = app.applicationMenu.getMenuItemById(
+            'Help.KCL code samples'
+          )
+          if (!menu) fail()
+        })
+      })
+      test('Modeling.Help.Refresh and report a bug', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+        toolbar,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) fail()
+          const menu = app.applicationMenu.getMenuItemById(
+            'Help.Refresh and report a bug'
+          )
+          if (!menu) fail()
+          menu.click()
+        })
+        // Core dump and refresh magic number timeout
+        await scene.waitForExecutionDone()
+        await expect(toolbar.startSketchBtn).toBeVisible()
+      })
+      test('Modeling.Help.Reset onboarding', async ({
+        tronApp,
+        cmdBar,
+        page,
+        homePage,
+        scene,
+      }) => {
+        if (!tronApp) {
+          throwTronAppMissing()
+          return
+        }
+        await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
+
+        // Run electron snippet to find the Menu!
+        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
+        await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) fail()
+          const menu = app.applicationMenu.getMenuItemById(
+            'Help.Reset onboarding'
+          )
+          if (!menu) fail()
+          menu.click()
+        })
+
+        const actual = page.getByText(
+          `This is a hardware design tool that lets you edit visually, with code, or both. It's powered by the KittyCAD Design API, the first API created for anyone to build hardware design tools.`
+        )
+        await expect(actual).toBeVisible()
+      })
+    })
   })
 })
