@@ -1,12 +1,13 @@
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import type { MutableRefObject } from 'react'
-import { setup, assign, fromPromise, ActorRefFrom } from 'xstate'
 import {
-  rustContext,
-  kclManager,
-  sceneInfra,
   engineCommandManager,
+  kclManager,
+  rustContext,
+  sceneInfra,
 } from '@src/lib/singletons'
+import type { MutableRefObject } from 'react'
+import type { ActorRefFrom } from 'xstate'
+import { assign, fromPromise, setup } from 'xstate'
 
 export enum EngineStreamState {
   Off = 'off',

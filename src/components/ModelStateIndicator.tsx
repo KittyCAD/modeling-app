@@ -1,9 +1,9 @@
-import { EngineStreamState } from '@src/machines/engineStreamMachine'
 import { engineStreamActor } from '@src/machines/appMachine'
+import { EngineStreamState } from '@src/machines/engineStreamMachine'
 import { useSelector } from '@xstate/react'
 
+import { faPause, faPlay, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlay, faPause, faSpinner } from '@fortawesome/free-solid-svg-icons'
 
 export const ModelStateIndicator = () => {
   const engineStreamState = useSelector(engineStreamActor, (state) => state)

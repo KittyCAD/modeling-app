@@ -68,9 +68,7 @@ export default class EditorManager {
   public _editorView: EditorView | null = null
   public kclManager?: KclManager
 
-  constructor(
-    engineCommandManager: EngineCommandManager,
-  ) {
+  constructor(engineCommandManager: EngineCommandManager) {
     this.engineCommandManager = engineCommandManager
   }
 

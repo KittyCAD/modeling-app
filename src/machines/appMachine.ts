@@ -3,9 +3,12 @@ import { createActor, setup, spawnChild } from 'xstate'
 
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { authMachine } from '@src/machines/authMachine'
+import {
+  engineStreamContextCreate,
+  engineStreamMachine,
+} from '@src/machines/engineStreamMachine'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 import { settingsMachine } from '@src/machines/settingsMachine'
-import { engineStreamContextCreate, engineStreamMachine } from '@src/machines/engineStreamMachine'
 
 const { AUTH, SETTINGS, ENGINE_STREAM } = ACTOR_IDS
 const appMachineActors = {

@@ -1,12 +1,12 @@
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type EditorManager from '@src/editor/manager'
-import type CodeManager from '@src/lang/codeManager'
-import type RustContext from '@src/lib/rustContext'
 import type { Diagnostic } from '@codemirror/lint'
 import type {
   EntityType_type,
   ModelingCmdReq_type,
 } from '@kittycad/lib/dist/types/src/models'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type EditorManager from '@src/editor/manager'
+import type CodeManager from '@src/lang/codeManager'
+import type RustContext from '@src/lib/rustContext'
 
 import type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -235,7 +235,10 @@ export class KclManager {
     this._wasmInitFailedCallback(wasmInitFailed)
   }
 
-  constructor(engineCommandManager: EngineCommandManager, singletons: Singletons) {
+  constructor(
+    engineCommandManager: EngineCommandManager,
+    singletons: Singletons
+  ) {
     this.engineCommandManager = engineCommandManager
     this.singletons = singletons
 
@@ -481,7 +484,9 @@ export class KclManager {
     await this.updateArtifactGraph(execState.artifactGraph)
     this._executeCallback()
     if (!isInterrupted) {
-      this.singletons.sceneInfra.modelingSend({ type: 'code edit during sketch' })
+      this.singletons.sceneInfra.modelingSend({
+        type: 'code edit during sketch',
+      })
     }
     this.engineCommandManager.addCommandLog({
       type: CommandLogType.ExecutionDone,

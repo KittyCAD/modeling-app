@@ -12,6 +12,7 @@ import {
 import { AppHeader } from '@src/components/AppHeader'
 import { CameraProjectionToggle } from '@src/components/CameraProjectionToggle'
 import { useEngineCommands } from '@src/components/EngineCommands'
+import { EngineStream } from '@src/components/EngineStream'
 import Gizmo from '@src/components/Gizmo'
 import { LowerRightControls } from '@src/components/LowerRightControls'
 import { useLspContext } from '@src/components/LspProvider'
@@ -35,9 +36,13 @@ import {
 } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { type IndexLoaderData } from '@src/lib/types'
-import { engineStreamActor, useSettings, useToken } from '@src/machines/appMachine'
-import { EngineStreamTransition } from '@src/machines/engineStreamMachine'
+import {
+  engineStreamActor,
+  useSettings,
+  useToken,
+} from '@src/machines/appMachine'
 import { commandBarActor } from '@src/machines/commandBarMachine'
+import { EngineStreamTransition } from '@src/machines/engineStreamMachine'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
 
 // CYCLIC REF
@@ -46,7 +51,6 @@ sceneInfra.camControls.engineStreamActor = engineStreamActor
 maybeWriteToDisk()
   .then(() => {})
   .catch(() => {})
-import { EngineStream } from '@src/components/EngineStream'
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData

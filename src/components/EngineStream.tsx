@@ -1,29 +1,33 @@
 import { useAppState } from '@src/AppState'
+import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
+import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
-import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
-import { btnName } from '@src/lib/cameraControls'
-import { sendSelectEventToEngine } from '@src/lib/selections'
-import { kclManager, engineCommandManager, sceneInfra } from '@src/lib/singletons'
-import { EngineCommandManagerEvents } from '@src/lang/std/engineConnection'
-import { PATHS } from '@src/lib/paths'
-import type { IndexLoaderData } from '@src/lib/types'
-import { err, reportRejection, trap } from '@src/lib/trap'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
-import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
-import { useSettings, engineStreamActor } from '@src/machines/appMachine'
+import { EngineCommandManagerEvents } from '@src/lang/std/engineConnection'
+import { btnName } from '@src/lib/cameraControls'
+import { PATHS } from '@src/lib/paths'
+import { sendSelectEventToEngine } from '@src/lib/selections'
+import {
+  engineCommandManager,
+  kclManager,
+  sceneInfra,
+} from '@src/lib/singletons'
+import { REASONABLE_TIME_TO_REFRESH_STREAM_SIZE } from '@src/lib/timings'
+import { err, reportRejection, trap } from '@src/lib/trap'
+import type { IndexLoaderData } from '@src/lib/types'
+import { engineStreamActor, useSettings } from '@src/machines/appMachine'
 import { useCommandBarState } from '@src/machines/commandBarMachine'
 import {
   EngineStreamState,
   EngineStreamTransition,
 } from '@src/machines/engineStreamMachine'
-import { REASONABLE_TIME_TO_REFRESH_STREAM_SIZE } from '@src/lib/timings'
 
 import { useSelector } from '@xstate/react'
-import { useRouteLoaderData } from 'react-router-dom'
-import { useEffect, useRef } from 'react'
 import type { MouseEventHandler } from 'react'
+import { useEffect, useRef } from 'react'
+import { useRouteLoaderData } from 'react-router-dom'
 
 export const EngineStream = (props: {
   pool: string | null
