@@ -4,8 +4,8 @@
 // Set units
 @settings(defaultLengthUnit = in)
 
-// Import Constants
-import lugCount, lugSpacing, offset, backSpacing, wheelWidth, wheelDiameter, spokeCount, spokeGap, spokeAngle, spokeThickness from "globals.kcl"
+// Import parameters
+import lugCount, lugSpacing, offset, backSpacing, wheelWidth, wheelDiameter, spokeCount, spokeGap, spokeAngle, spokeThickness from "parameters.kcl"
 
 // Create the wheel center
 lugBase = startSketchOn(XZ)
