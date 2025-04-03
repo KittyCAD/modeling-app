@@ -67,6 +67,30 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // This is the equivalent of: union([part001, part002])
 /// unionedPart = part001 + part002
 /// ```
+///
+/// ```no_run
+/// // Union two cubes using the more programmer-friendly operator.
+/// // NOTE: This will not work when using codemods through the UI.
+/// // Codemods will generate the stdlib function call instead.
+///
+/// fn cube(center) {
+///     return startSketchOn('XY')
+///         |> startProfileAt([center[0] - 10, center[1] - 10], %)
+///         |> line(endAbsolute = [center[0] + 10, center[1] - 10])
+///         |> line(endAbsolute = [center[0] + 10, center[1] + 10])
+///         |> line(endAbsolute = [center[0] - 10, center[1] + 10])
+///         |> close()
+///         |> extrude(length = 10)
+/// }
+///
+/// part001 = cube([0, 0])
+/// part002 = cube([20, 10])
+///
+/// // This is the equivalent of: union([part001, part002])
+/// // Programmers will understand `|` as a union operation, but mechanical engineers
+/// // will understand `+`, we made both work.
+/// unionedPart = part001 | part002
+/// ```
 #[stdlib {
     name = "union",
     feature_tree_operation = true,
