@@ -1036,6 +1036,7 @@ const transformMap: TransformMap = {
       vertical: {
         tooltip: 'yLine',
         createNode: ({ inputs, tag, rawArgs: args }) => {
+          console.warn('ADAM: inputs', inputs)
           const expr = inputs[1].expr
           if (forceNum(args[0].expr) >= 0)
             return createCallWrapper('yLine', expr, tag)
@@ -2069,6 +2070,7 @@ export function transformAstSketchLines({
           return getConstraintInfoKw(call.node, '', _pathToNode)
       }
     })()
+    console.warn('ADAM: constraints', constraints)
     constraints.forEach((a) => {
       if (
         a.type === 'tangentialWithPrevious' ||
@@ -2077,6 +2079,7 @@ export function transformAstSketchLines({
       )
         return
 
+      console.error(JSON.stringify(a.pathToNode))
       const nodeMeta = getNodeFromPath<Expr>(ast, a.pathToNode)
       if (err(nodeMeta)) return
 

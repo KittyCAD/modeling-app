@@ -193,22 +193,52 @@ const commonConstraintInfoHelper = (
   pathToNode: PathToNode,
   filterValue?: string
 ) => {
-  console.warn('ADAM: Must be updated to handle angled line kw args')
   if (callExp.type !== 'CallExpression' && callExp.type !== 'CallExpressionKw')
     return []
-  const firstArg = (() => {
-    switch (callExp.type) {
-      case 'CallExpression':
-        return callExp.arguments[0]
-      case 'CallExpressionKw':
-        return findKwArgAny(DETERMINING_ARGS, callExp)
-    }
-  })()
+  const firstArg: [Expr | undefined, { [key: string]: Expr } | undefined] =
+    (() => {
+      switch (callExp.type) {
+        case 'CallExpression':
+          return [callExp.arguments[0], undefined]
+        case 'CallExpressionKw':
+          if (callExp.callee.name.name === 'angledLine') {
+            const angleVal = findKwArg(ARG_ANGLE, callExp)
+            if (angleVal === undefined) {
+              return [undefined, undefined]
+            }
+            const lengthishIndex = findKwArgAnyIndex(
+              [
+                ARG_END_ABSOLUTE_X,
+                ARG_END_ABSOLUTE_Y,
+                ARG_LENGTH_X,
+                ARG_LENGTH_Y,
+                ARG_LENGTH,
+              ],
+              callExp
+            )
+            if (lengthishIndex === undefined) {
+              return [undefined, undefined]
+            }
+            const lengthKey = callExp.arguments[lengthishIndex].label.name
+            const lengthVal = callExp.arguments[lengthishIndex].arg
+            // Note: The order of keys here matters.
+            // Always assumes the angle was the first param, and then the length followed.
+            return [
+              undefined,
+              {
+                angle: angleVal,
+                [lengthKey]: lengthVal,
+              },
+            ]
+          }
+          return [findKwArgAny(DETERMINING_ARGS, callExp), undefined]
+      }
+    })()
   if (firstArg === undefined) {
+    console.error('ADAM: firstArg was undefined')
     return []
   }
-  const isArr = firstArg.type === 'ArrayExpression'
-  if (!isArr && firstArg.type !== 'ObjectExpression') return []
+  const isArr = firstArg[0]?.type === 'ArrayExpression'
   const pipeExpressionIndex = pathToNode.findIndex(
     ([_, nodeName]) => nodeName === 'PipeExpression'
   )
@@ -244,70 +274,105 @@ const commonConstraintInfoHelper = (
     return path
   })()
 
-  const pathToFirstArg: PathToNode = isArr
-    ? [...pathToArrayExpression, [0, 'index']]
-    : [
-        ...pathToArrayExpression,
-        [
-          firstArg.properties.findIndex(
-            (a) => a.key.name === abbreviatedInputs[0].objInput
-          ),
-          'index',
-        ],
-        ['value', 'Property'],
-      ]
+  // Case where firstArg was a KCL expression.
+  const firstArgInner = firstArg[0]
+  if (firstArgInner !== undefined) {
+    const isArr = firstArgInner?.type === 'ArrayExpression'
+    if (!isArr && firstArgInner.type !== 'ObjectExpression') return []
+    const pathToFirstArg: PathToNode = isArr
+      ? [...pathToArrayExpression, [0, 'index']]
+      : [
+          ...pathToArrayExpression,
+          [
+            firstArgInner.properties.findIndex(
+              (a) => a.key.name === abbreviatedInputs[0].objInput
+            ),
+            'index',
+          ],
+          ['value', 'Property'],
+        ]
 
-  const pathToSecondArg: PathToNode = isArr
-    ? [...pathToArrayExpression, [1, 'index']]
-    : [
-        ...pathToArrayExpression,
-        [
-          firstArg.properties.findIndex(
-            (a) => a.key.name === abbreviatedInputs[1].objInput
-          ),
-          'index',
-        ],
-        ['value', 'Property'],
-      ]
+    const pathToSecondArg: PathToNode = isArr
+      ? [...pathToArrayExpression, [1, 'index']]
+      : [
+          ...pathToArrayExpression,
+          [
+            firstArgInner.properties.findIndex(
+              (a) => a.key.name === abbreviatedInputs[1].objInput
+            ),
+            'index',
+          ],
+          ['value', 'Property'],
+        ]
 
-  const input1 = isArr
-    ? firstArg.elements[0]
-    : firstArg.properties.find(
-        (a) => a.key.name === abbreviatedInputs[0].objInput
-      )?.value
-  const input2 = isArr
-    ? firstArg.elements[1]
-    : firstArg.properties.find(
-        (a) => a.key.name === abbreviatedInputs[1].objInput
-      )?.value
+    const input1 = isArr
+      ? firstArgInner.elements[0]
+      : firstArgInner.properties.find(
+          (a) => a.key.name === abbreviatedInputs[0].objInput
+        )?.value
+    const input2 = isArr
+      ? firstArgInner.elements[1]
+      : firstArgInner.properties.find(
+          (a) => a.key.name === abbreviatedInputs[1].objInput
+        )?.value
 
-  const constraints: ConstrainInfo[] = []
-  if (input1)
-    constraints.push(
-      constrainInfo(
-        inputConstrainTypes[0],
-        isNotLiteralArrayOrStatic(input1),
-        code.slice(input1.start, input1.end),
-        stdLibFnName,
-        isArr ? abbreviatedInputs[0].arrayInput : abbreviatedInputs[0].objInput,
-        topLevelRange(input1.start, input1.end),
-        pathToFirstArg
+    const constraints: ConstrainInfo[] = []
+    if (input1)
+      constraints.push(
+        constrainInfo(
+          inputConstrainTypes[0],
+          isNotLiteralArrayOrStatic(input1),
+          code.slice(input1.start, input1.end),
+          stdLibFnName,
+          isArr
+            ? abbreviatedInputs[0].arrayInput
+            : abbreviatedInputs[0].objInput,
+          topLevelRange(input1.start, input1.end),
+          pathToFirstArg
+        )
       )
-    )
-  if (input2)
-    constraints.push(
-      constrainInfo(
-        inputConstrainTypes[1],
-        isNotLiteralArrayOrStatic(input2),
-        code.slice(input2.start, input2.end),
-        stdLibFnName,
-        isArr ? abbreviatedInputs[1].arrayInput : abbreviatedInputs[1].objInput,
-        topLevelRange(input2.start, input2.end),
-        pathToSecondArg
+    if (input2)
+      constraints.push(
+        constrainInfo(
+          inputConstrainTypes[1],
+          isNotLiteralArrayOrStatic(input2),
+          code.slice(input2.start, input2.end),
+          stdLibFnName,
+          isArr
+            ? abbreviatedInputs[1].arrayInput
+            : abbreviatedInputs[1].objInput,
+          topLevelRange(input2.start, input2.end),
+          pathToSecondArg
+        )
       )
-    )
 
-  return constraints
+    return constraints
+  }
+
+  // Case where the firstArg was an object of KCL expressions
+  // (i.e. map of argument labels to argument values in a KW call)
+  const multipleArgs = firstArg[1]
+  if (multipleArgs === undefined) {
+    return []
+  }
+  return Object.keys(multipleArgs).map((argLabel, i) => {
+    const argValue: Expr = multipleArgs[argLabel]
+    const pathToArg: PathToNode = [
+      ...pathToBase,
+      ['arguments', 'CallExpressionKw'],
+      [i, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD],
+    ]
+    return constrainInfo(
+      inputConstrainTypes[i],
+      isNotLiteralArrayOrStatic(argValue),
+      code.slice(argValue.start, argValue.end),
+      stdLibFnName,
+      abbreviatedInputs[1].objInput,
+      topLevelRange(argValue.start, argValue.end),
+      pathToArg
+    )
+  })
 }
 
 const horzVertConstraintInfoHelper = (
@@ -2246,7 +2311,6 @@ export const angledLine: SketchLineHelperKw = {
     const angleLit = createLiteral(angle)
     const lengthLit = createLiteral(lineLength)
 
-    const firstArg = callExpression.arguments?.[0]
     removeDeterminingArgs(callExpression)
     mutateKwArg(ARG_ANGLE, callExpression, angleLit)
     mutateKwArg(ARG_LENGTH, callExpression, lengthLit)
@@ -2258,8 +2322,8 @@ export const angledLine: SketchLineHelperKw = {
   },
   getTag: getTagKwArg(),
   addTag: addTagKw(),
-  getConstraintInfo: (callExp, ...args) =>
-    commonConstraintInfoHelper(
+  getConstraintInfo: (callExp, ...args) => {
+    const constraints = commonConstraintInfoHelper(
       callExp,
       ['angle', 'length'],
       'angledLine',
@@ -2268,7 +2332,11 @@ export const angledLine: SketchLineHelperKw = {
         { arrayInput: 1, objInput: 'length' },
       ],
       ...args
-    ),
+    )
+
+    console.warn('ADAM: Returning constraints', constraints)
+    return constraints
+  },
 }
 
 export const angledLineOfXLength: SketchLineHelperKw = {
@@ -3144,6 +3212,7 @@ export function getConstraintInfoKw(
     console.error(correctFnName)
     return []
   }
+  console.warn('ADAM: correctFnName is', correctFnName)
   return sketchLineHelperMapKw[correctFnName].getConstraintInfo(
     callExpression,
     code,

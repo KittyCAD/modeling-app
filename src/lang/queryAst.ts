@@ -166,7 +166,7 @@ export function getNodeFromPathCurry(
       path: PathToNode
     }
   | Error {
-  return <T>(stopAt?: SyntaxType | SyntaxType[], returnEarly = false) => {
+  return <T,>(stopAt?: SyntaxType | SyntaxType[], returnEarly = false) => {
     const _node1 = getNodeFromPath<T>(node, path, stopAt, returnEarly)
     if (err(_node1)) return _node1
     const { node: _node, shallowPath } = _node1

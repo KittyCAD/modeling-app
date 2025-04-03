@@ -9,6 +9,13 @@ import type { AsyncFn } from '@src/lib/types'
 export const uuidv4 = v4
 
 /**
+ * Get all labels for a keyword call expression.
+ */
+export function allLabels(callExpression: CallExpressionKw): string[] {
+  return callExpression.arguments.map((a) => a.label.name)
+}
+
+/**
  * A safer type guard for arrays since the built-in Array.isArray() asserts `any[]`.
  */
 export function isArray(val: any): val is unknown[] {
@@ -468,8 +475,4 @@ export function binaryToUuid(
     hexValues.slice(8, 10).join(''),
     hexValues.slice(10, 16).join(''),
   ].join('-')
-}
-
-export function allLabels(callExpression: CallExpressionKw): string[] {
-  return callExpression.arguments.map((a) => a.label.name)
 }
