@@ -38,7 +38,7 @@ export const modelingDesignRole = (
       },
       {
         label: 'Create a parameter',
-        id:'Design.Create a parameter',
+        id: 'Design.Create a parameter',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'Design.Create a parameter',

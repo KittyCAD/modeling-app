@@ -1688,7 +1688,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         expect(isPressed).toBe('true')
       })
     })
-    test.describe('Design role',() => {
+    test.describe('Design role', () => {
       // TODO Start sketch
       test('Modeling.Design.Create an offset plane', async ({
         tronApp,
@@ -1807,7 +1807,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         const expected = 'Create parameter'
         expect(actual).toBe(expected)
       })
-      
+
       test('Modeling.Design.Create an additive feature.Extrude', async ({
         tronApp,
         cmdBar,
@@ -1833,7 +1833,9 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
             'Design.Create an additive feature.Extrude'
           )
           if (!openProject) {
-            throwMissingMenuItemById('Design.Create an additive feature.Extrude')
+            throwMissingMenuItemById(
+              'Design.Create an additive feature.Extrude'
+            )
             return
           }
           openProject.click()
@@ -1872,7 +1874,9 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
             'Design.Create an additive feature.Revolve'
           )
           if (!openProject) {
-            throwMissingMenuItemById('Design.Create an additive feature.Revolve')
+            throwMissingMenuItemById(
+              'Design.Create an additive feature.Revolve'
+            )
             return
           }
           openProject.click()
@@ -2028,7 +2032,9 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
             'Design.Apply modification feature.Chamfer'
           )
           if (!openProject) {
-            throwMissingMenuItemById('Design.Apply modification feature.Chamfer')
+            throwMissingMenuItemById(
+              'Design.Apply modification feature.Chamfer'
+            )
             return
           }
           openProject.click()
@@ -2042,7 +2048,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         const expected = 'Chamfer'
         expect(actual).toBe(expected)
       })
-      
+
       test('Modeling.Design.Apply modification feature.Shell', async ({
         tronApp,
         cmdBar,
@@ -2083,7 +2089,6 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         expect(actual).toBe(expected)
       })
 
-            
       test('Modeling.Design.Create with Zoo Text-To-CAD', async ({
         tronApp,
         cmdBar,
@@ -2163,7 +2168,6 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         const expected = 'Prompt-to-edit'
         expect(actual).toBe(expected)
       })
-      
     })
   })
 })
