@@ -16,17 +16,20 @@ function stdlib(name: string): Operation {
 
 function userCall(name: string): Operation {
   return {
-    type: 'UserDefinedFunctionCall',
-    name,
-    functionSourceRange: defaultSourceRange(),
-    unlabeledArg: null,
-    labeledArgs: {},
+    type: 'GroupBegin',
+    group: {
+      type: 'FunctionCall',
+      name,
+      functionSourceRange: defaultSourceRange(),
+      unlabeledArg: null,
+      labeledArgs: {},
+    },
     sourceRange: defaultSourceRange(),
   }
 }
 function userReturn(): Operation {
   return {
-    type: 'UserDefinedFunctionReturn',
+    type: 'GroupEnd',
   }
 }
 

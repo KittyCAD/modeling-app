@@ -1,5 +1,5 @@
 name: Bug Report
-description: File a bug report for the Zoo Modeling App
+description: File a bug report for the Zoo Design Studio
 title: "[BUG]: "
 labels: ["bug"]
 assignees: []
@@ -70,7 +70,7 @@ body:
     id: version
     attributes:
       label: Version
-      description: "The version of the Zoo Modeling App you're using."
+      description: "The version of the Zoo Design Studio you're using."
       placeholder: "example: v0.15.0. You can find this in the settings."
     validations:
       required: true

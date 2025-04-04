@@ -4,15 +4,18 @@ description: Operations executed pattern_linear_in_module.kcl
 ---
 [
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "thing",
-    "functionSourceRange": [
-      15,
-      221,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "thing",
+      "functionSourceRange": [
+        15,
+        221,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -104,6 +107,6 @@ description: Operations executed pattern_linear_in_module.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   }
 ]

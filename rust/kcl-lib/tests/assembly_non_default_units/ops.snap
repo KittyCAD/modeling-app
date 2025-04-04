@@ -4,19 +4,13 @@ description: Operations executed assembly_non_default_units.kcl
 ---
 [
   {
-    "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "String",
-          "value": "XZ"
-        },
-        "sourceRange": []
-      }
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "other1",
+      "moduleId": 5
     },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -32,5 +26,35 @@ description: Operations executed assembly_non_default_units.kcl
     "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "other2",
+      "moduleId": 6
+    },
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "String",
+          "value": "XZ"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "GroupEnd"
   }
 ]

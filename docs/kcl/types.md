@@ -1,6 +1,6 @@
 ---
 title: "KCL Types"
-excerpt: "Documentation of types for the KCL standard library for the Zoo Modeling App."
+excerpt: "Documentation of types for the KCL standard library for the Zoo Design Studio."
 layout: manual
 ---
 

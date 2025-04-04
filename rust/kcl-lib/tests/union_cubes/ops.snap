@@ -4,15 +4,18 @@ description: Operations executed union_cubes.kcl
 ---
 [
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "cube",
-    "functionSourceRange": [
-      7,
-      328,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cube",
+      "functionSourceRange": [
+        7,
+        328,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -63,18 +66,21 @@ description: Operations executed union_cubes.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "cube",
-    "functionSourceRange": [
-      7,
-      328,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cube",
+      "functionSourceRange": [
+        7,
+        328,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -125,7 +131,7 @@ description: Operations executed union_cubes.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {

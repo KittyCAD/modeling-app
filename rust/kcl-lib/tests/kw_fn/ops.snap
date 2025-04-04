@@ -4,49 +4,37 @@ description: Operations executed kw_fn.kcl
 ---
 [
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "increment",
-    "functionSourceRange": [
-      12,
-      35,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "increment",
+      "functionSourceRange": [
+        12,
+        35,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "add",
-    "functionSourceRange": [
-      43,
-      77,
-      0
-    ],
-    "unlabeledArg": {
-      "value": {
-        "type": "Number",
-        "value": 1.0,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "delta": {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "add",
+      "functionSourceRange": [
+        43,
+        77,
+        0
+      ],
+      "unlabeledArg": {
         "value": {
           "type": "Number",
-          "value": 2.0,
+          "value": 1.0,
           "ty": {
             "type": "Default",
             "len": {
@@ -58,11 +46,29 @@ description: Operations executed kw_fn.kcl
           }
         },
         "sourceRange": []
+      },
+      "labeledArgs": {
+        "delta": {
+          "value": {
+            "type": "Number",
+            "value": 2.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
       }
     },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   }
 ]

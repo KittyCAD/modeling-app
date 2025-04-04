@@ -240,7 +240,7 @@ pub enum ContextType {
     Live,
 
     /// Completely mocked connection
-    /// Mock mode is only for the modeling app when they just want to mock engine calls and not
+    /// Mock mode is only for the Design Studio when they just want to mock engine calls and not
     /// actually make them.
     Mock,
 

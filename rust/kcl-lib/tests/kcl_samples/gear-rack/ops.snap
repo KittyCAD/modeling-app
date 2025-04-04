@@ -51,15 +51,18 @@ description: Operations executed gear-rack.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "tooth",
-    "functionSourceRange": [
-      812,
-      1321,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "tooth",
+      "functionSourceRange": [
+        812,
+        1321,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -110,7 +113,7 @@ description: Operations executed gear-rack.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {

@@ -1274,4 +1274,45 @@ sketch001 = startSketchOn(XZ)
       await middleMousePan(800, 200, 900, 300)
     })
   })
+
+  test('Can select lines on the main axis', async ({
+    page,
+    homePage,
+    toolbar,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn(XZ)
+  profile001 = startProfileAt([100.00, 100.0], sketch001)
+    |> yLine(length = -100.0)
+    |> xLine(length = 200.0)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()`
+      )
+    })
+
+    const width = 1200
+    const height = 800
+    const viewportSize = { width, height }
+    await page.setBodyDimensions(viewportSize)
+
+    await homePage.goToModelingScene()
+
+    const u = await getUtils(page)
+    await u.waitForPageLoad()
+
+    await toolbar.editSketch(0)
+
+    await page.waitForTimeout(1000)
+
+    // Click on the bottom segment that lies on the x axis
+    await page.mouse.click(width * 0.85, height / 2)
+
+    await page.waitForTimeout(1000)
+
+    // Verify segment is selected (you can check for visual indicators or state)
+    const element = page.locator('[data-overlay-index="1"]')
+    await expect(element).toHaveAttribute('data-overlay-visible', 'true')
+  })
 })

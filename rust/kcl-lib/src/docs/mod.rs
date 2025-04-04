@@ -612,7 +612,7 @@ pub fn get_description_string_from_schema(schema: &schemars::schema::RootSchema)
     }
 
     if let Some(reference) = &schema.schema.reference {
-        if let Some(definition) = schema.definitions.get(reference.split('/').last().unwrap_or("")) {
+        if let Some(definition) = schema.definitions.get(reference.split('/').next_back().unwrap_or("")) {
             let schemars::schema::Schema::Object(definition) = definition else {
                 return None;
             };

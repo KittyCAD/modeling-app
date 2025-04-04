@@ -4,27 +4,33 @@ description: Operations executed bench.kcl
 ---
 [
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "divider",
-    "functionSourceRange": [
-      1331,
-      1606,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "divider",
+      "functionSourceRange": [
+        1331,
+        1606,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "dividerSketch",
-    "functionSourceRange": [
-      309,
-      1312,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "dividerSketch",
+      "functionSourceRange": [
+        309,
+        1312,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -43,7 +49,7 @@ description: Operations executed bench.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -72,15 +78,18 @@ description: Operations executed bench.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "dividerSketch",
-    "functionSourceRange": [
-      309,
-      1312,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "dividerSketch",
+      "functionSourceRange": [
+        309,
+        1312,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -99,7 +108,7 @@ description: Operations executed bench.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -216,7 +225,7 @@ description: Operations executed bench.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -243,27 +252,33 @@ description: Operations executed bench.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "divider",
-    "functionSourceRange": [
-      1331,
-      1606,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "divider",
+      "functionSourceRange": [
+        1331,
+        1606,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "dividerSketch",
-    "functionSourceRange": [
-      309,
-      1312,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "dividerSketch",
+      "functionSourceRange": [
+        309,
+        1312,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -282,7 +297,7 @@ description: Operations executed bench.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -311,15 +326,18 @@ description: Operations executed bench.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "dividerSketch",
-    "functionSourceRange": [
-      309,
-      1312,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "dividerSketch",
+      "functionSourceRange": [
+        309,
+        1312,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -338,7 +356,7 @@ description: Operations executed bench.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -455,7 +473,7 @@ description: Operations executed bench.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -482,27 +500,33 @@ description: Operations executed bench.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "divider",
-    "functionSourceRange": [
-      1331,
-      1606,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "divider",
+      "functionSourceRange": [
+        1331,
+        1606,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "dividerSketch",
-    "functionSourceRange": [
-      309,
-      1312,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "dividerSketch",
+      "functionSourceRange": [
+        309,
+        1312,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -521,7 +545,7 @@ description: Operations executed bench.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -550,15 +574,18 @@ description: Operations executed bench.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "dividerSketch",
-    "functionSourceRange": [
-      309,
-      1312,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "dividerSketch",
+      "functionSourceRange": [
+        309,
+        1312,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -577,7 +604,7 @@ description: Operations executed bench.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -694,7 +721,7 @@ description: Operations executed bench.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -721,27 +748,33 @@ description: Operations executed bench.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "connector",
-    "functionSourceRange": [
-      1889,
-      2052,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "connector",
+      "functionSourceRange": [
+        1889,
+        2052,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "connectorSketch",
-    "functionSourceRange": [
-      1626,
-      1868,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "connectorSketch",
+      "functionSourceRange": [
+        1626,
+        1868,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -760,7 +793,7 @@ description: Operations executed bench.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -795,15 +828,18 @@ description: Operations executed bench.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "connectorSketch",
-    "functionSourceRange": [
-      1626,
-      1868,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "connectorSketch",
+      "functionSourceRange": [
+        1626,
+        1868,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -822,7 +858,7 @@ description: Operations executed bench.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -857,7 +893,7 @@ description: Operations executed bench.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -884,27 +920,33 @@ description: Operations executed bench.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "seatSlats",
-    "functionSourceRange": [
-      2474,
-      2560,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "seatSlats",
+      "functionSourceRange": [
+        2474,
+        2560,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "seatSlatSketch",
-    "functionSourceRange": [
-      2071,
-      2453,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "seatSlatSketch",
+      "functionSourceRange": [
+        2071,
+        2453,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -923,7 +965,7 @@ description: Operations executed bench.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -975,7 +1017,7 @@ description: Operations executed bench.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -1002,27 +1044,33 @@ description: Operations executed bench.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "backSlats",
-    "functionSourceRange": [
-      2993,
-      3084,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "backSlats",
+      "functionSourceRange": [
+        2993,
+        3084,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "backSlatsSketch",
-    "functionSourceRange": [
-      2580,
-      2972,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "backSlatsSketch",
+      "functionSourceRange": [
+        2580,
+        2972,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1041,7 +1089,7 @@ description: Operations executed bench.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -1087,18 +1135,21 @@ description: Operations executed bench.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "armRest",
-    "functionSourceRange": [
-      3671,
-      3859,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "armRest",
+      "functionSourceRange": [
+        3671,
+        3859,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1126,15 +1177,18 @@ description: Operations executed bench.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "armRestPath",
-    "functionSourceRange": [
-      3100,
-      3325,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "armRestPath",
+      "functionSourceRange": [
+        3100,
+        3325,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1153,7 +1207,7 @@ description: Operations executed bench.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -1186,15 +1240,18 @@ description: Operations executed bench.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "armRestProfile",
-    "functionSourceRange": [
-      3344,
-      3652,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "armRestProfile",
+      "functionSourceRange": [
+        3344,
+        3652,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1213,7 +1270,7 @@ description: Operations executed bench.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -1241,18 +1298,21 @@ description: Operations executed bench.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "armRest",
-    "functionSourceRange": [
-      3671,
-      3859,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "armRest",
+      "functionSourceRange": [
+        3671,
+        3859,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1280,15 +1340,18 @@ description: Operations executed bench.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "armRestPath",
-    "functionSourceRange": [
-      3100,
-      3325,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "armRestPath",
+      "functionSourceRange": [
+        3100,
+        3325,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1307,7 +1370,7 @@ description: Operations executed bench.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -1340,15 +1403,18 @@ description: Operations executed bench.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "armRestProfile",
-    "functionSourceRange": [
-      3344,
-      3652,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "armRestProfile",
+      "functionSourceRange": [
+        3344,
+        3652,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1367,7 +1433,7 @@ description: Operations executed bench.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -1395,6 +1461,6 @@ description: Operations executed bench.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   }
 ]

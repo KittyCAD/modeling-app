@@ -1,6 +1,6 @@
 ---
 title: "KCL Standard Library"
-excerpt: "Documentation for the KCL standard library for the Zoo Modeling App."
+excerpt: "Documentation for the KCL standard library for the Zoo Design Studio."
 layout: manual
 ---
 

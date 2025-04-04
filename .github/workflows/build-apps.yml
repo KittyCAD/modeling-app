@@ -241,7 +241,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: out-arm64-${{ matrix.platform }}
-          # first two will pick both Zoo Modeling App-$VERSION-arm64-win.exe and Zoo Modeling App-$VERSION-win.exe
+          # first two will pick both Zoo Design Studio-$VERSION-arm64-win.exe and Zoo Design Studio-$VERSION-win.exe
           path: |
             out/*-${{ env.VERSION_NO_V }}-win.*
             out/*-${{ env.VERSION_NO_V }}-arm64-win.*

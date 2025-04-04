@@ -799,7 +799,7 @@ impl Backend {
                     // We do not have project descriptions yet.
                     project_description: None,
                     project_name,
-                    // The UUID for the modeling app.
+                    // The UUID for the Design Studio.
                     // We can unwrap here because we know it will not panic.
                     source_id: uuid::Uuid::from_str("70178592-dfca-47b3-bd2d-6fce2bcaee04").unwrap(),
                     type_: kittycad::types::Type::ModelingAppEvent,
@@ -1194,7 +1194,7 @@ impl LanguageServer for Backend {
                 // Get last word
                 let last_word = line_prefix
                     .split(|c: char| c.is_whitespace() || c.is_ascii_punctuation())
-                    .last()
+                    .next_back()
                     .unwrap_or("");
 
                 // If the last word starts with a digit, return no completions
