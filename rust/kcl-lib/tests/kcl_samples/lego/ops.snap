@@ -185,18 +185,6 @@ description: Operations executed lego.kcl
             "value": {
               "artifactId": "[uuid]"
             }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
           }
         ]
       },
@@ -253,12 +241,6 @@ description: Operations executed lego.kcl
       "value": {
         "type": "Array",
         "value": [
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
           {
             "type": "Sketch",
             "value": {
