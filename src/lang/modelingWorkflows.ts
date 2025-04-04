@@ -17,7 +17,7 @@ import {
   EXECUTION_TYPE_NONE,
   EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
-import { Selections } from '@src/lib/selections'
+import type { Selections } from '@src/lib/selections'
 
 /**
  * Updates the complete modeling state:

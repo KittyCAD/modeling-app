@@ -35,6 +35,9 @@ interface KclCommandConfig {
     onSubmit: (p: OnSubmitProps) => Promise<void>
     providedOptions: CommandArgumentOption<string>[]
   }
+  specialPropsForInsertCommand: {
+    providedOptions: CommandArgumentOption<string>[]
+  }
   projectData: IndexLoaderData
   authToken: string
   settings: {
@@ -108,26 +111,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         path: {
           inputType: 'options',
           required: true,
-          options: () => {
-            const projectPath = commandProps.projectData.project?.path
-            if (!projectPath) {
-              return []
-            }
-            console.log('projectPath', projectPath)
-            console.log('children', commandProps.projectData.project?.children)
-            return Object.values(
-              commandProps.projectData.project?.children ?? []
-            ).map((v) => {
-              // TODO: actually traverse this properly
-              const relativePath = v.path
-                .replace(projectPath, '')
-                .replace(window.electron.sep, '')
-              return {
-                name: relativePath,
-                value: relativePath,
-              }
-            })
-          },
+          options: commandProps.specialPropsForInsertCommand.providedOptions,
         },
       },
       onSubmit: (data) => {
