@@ -512,14 +512,10 @@ impl GetTangentialInfoFromPathsResult {
     pub(crate) fn tan_previous_point(&self, last_arc_end: crate::std::utils::Coords2d) -> [f64; 2] {
         match self {
             GetTangentialInfoFromPathsResult::PreviousPoint(p) => *p,
-            GetTangentialInfoFromPathsResult::Arc { center, ccw, .. } => {
+            GetTangentialInfoFromPathsResult::Arc { center, ccw }
+            | GetTangentialInfoFromPathsResult::Circle { center, ccw, .. } => {
                 crate::std::utils::get_tangent_point_from_previous_arc(*center, *ccw, last_arc_end)
             }
-            // The circle always starts at 0 degrees, so a suitable tangent
-            // point is either directly above or below.
-            GetTangentialInfoFromPathsResult::Circle {
-                center, radius, ccw, ..
-            } => [center[0] + radius, center[1] + if *ccw { -1.0 } else { 1.0 }],
         }
     }
 }
@@ -1058,7 +1054,7 @@ impl Path {
                 let center_point = [circle_center.center.x, circle_center.center.y];
                 GetTangentialInfoFromPathsResult::Circle {
                     center: center_point,
-                    ccw: true,
+                    ccw: crate::std::utils::is_points_ccw(&[*p1, *p2, *p3]) > 0,
                     radius,
                 }
             }
@@ -1076,7 +1072,8 @@ impl Path {
                 let center_point = [circle_center.center.x, circle_center.center.y];
                 GetTangentialInfoFromPathsResult::Circle {
                     center: center_point,
-                    ccw: true,
+                    // Note should a circle always be ccw regardless  of the order of points?
+                    ccw: crate::std::utils::is_points_ccw(&[*p1, *p2, *p3]) > 0,
                     radius,
                 }
             }

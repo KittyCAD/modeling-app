@@ -164,7 +164,7 @@ import type { Themes } from '@src/lib/theme'
 import { getThemeColorForThreeJs } from '@src/lib/theme'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
-import { closestPointOnRay } from '@src/lib/utils2d'
+import { closestPointOnRay, deg2Rad } from '@src/lib/utils2d'
 import type {
   SegmentOverlayPayload,
   SketchDetails,
@@ -1087,7 +1087,6 @@ export class SceneEntities {
 
             modifiedAst = taggedAstResult.modifiedAst
             snaps.previousArcTag = taggedAstResult.tag
-            snaps.negativeTangentDirection
             resolvedFunctionName = 'angledLine'
           } else if (isHorizontal) {
             // If the angle between is 0 or 180 degrees (+/- the snapping angle), make the line an xLine
@@ -3882,9 +3881,9 @@ function findTangentDirection(segmentGroup: Group) {
     segmentGroup.userData.type === THREE_POINT_ARC_SEGMENT
   ) {
     const tangentAngle =
-      (getAngle(segmentGroup.userData.center, segmentGroup.userData.to) *
-        Math.PI) /
-        180 +
+      deg2Rad(
+        getAngle(segmentGroup.userData.center, segmentGroup.userData.to)
+      ) +
       (Math.PI / 2) * (segmentGroup.userData.ccw ? 1 : -1)
     tangentDirection = [Math.cos(tangentAngle), Math.sin(tangentAngle)]
   } else {

@@ -1428,7 +1428,7 @@ class ThreePointArcSegment implements SegmentUtils {
       p3,
       radius,
       center,
-      ccw: false,
+      ccw: !isClockwise([p1, p2, p3]),
       prevSegment,
       pathToNode,
       isSelected,
