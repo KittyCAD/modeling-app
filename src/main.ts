@@ -39,9 +39,8 @@ import {
   enableMenu,
 } from '@src/menu'
 
-if (os.platform() === 'win32') {
-  require('win-ca')
-}
+// If we're on Windows, pull the local system TLS CAs in
+require('win-ca')
 
 let mainWindow: BrowserWindow | null = null
 
