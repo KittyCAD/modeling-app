@@ -37,7 +37,7 @@ text_wrapping = false
 
 #### app
 
-The settings for the modeling app.
+The settings for the Design Studio.
 
 
 **Default:** None

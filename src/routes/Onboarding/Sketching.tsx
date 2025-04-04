@@ -39,7 +39,7 @@ export default function Sketching() {
         </p>
         <p className="my-4">
           Watch the code pane as you click. Point-and-click interactions are
-          always just modifying and generating code in Zoo Modeling App.
+          always just modifying and generating code in Zoo Design Studio.
         </p>
         <OnboardingButtons
           currentSlug={onboardingPaths.SKETCHING}

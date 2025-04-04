@@ -289,10 +289,7 @@ const OperationItem = (props: {
   send: Prop<Actor<typeof featureTreeMachine>, 'send'>
 }) => {
   const kclContext = useKclContext()
-  const name =
-    'name' in props.item && props.item.name !== null
-      ? getOperationLabel(props.item)
-      : 'anonymous'
+  const name = getOperationLabel(props.item)
   const errors = useMemo(() => {
     return kclContext.diagnostics.filter(
       (diag) =>
@@ -304,7 +301,7 @@ const OperationItem = (props: {
   }, [kclContext.diagnostics.length])
 
   function selectOperation() {
-    if (props.item.type === 'UserDefinedFunctionReturn') {
+    if (props.item.type === 'GroupEnd') {
       return
     }
     props.send({
@@ -352,7 +349,7 @@ const OperationItem = (props: {
   function deleteOperation() {
     if (
       props.item.type === 'StdLibCall' ||
-      props.item.type === 'UserDefinedFunctionCall' ||
+      props.item.type === 'GroupBegin' ||
       props.item.type === 'KclStdLibCall'
     ) {
       props.send({
@@ -368,7 +365,7 @@ const OperationItem = (props: {
     () => [
       <ContextMenuItem
         onClick={() => {
-          if (props.item.type === 'UserDefinedFunctionReturn') {
+          if (props.item.type === 'GroupEnd') {
             return
           }
           props.send({
@@ -381,14 +378,19 @@ const OperationItem = (props: {
       >
         View KCL source code
       </ContextMenuItem>,
-      ...(props.item.type === 'UserDefinedFunctionCall'
+      ...(props.item.type === 'GroupBegin' &&
+      props.item.group.type === 'FunctionCall'
         ? [
             <ContextMenuItem
               onClick={() => {
-                if (props.item.type !== 'UserDefinedFunctionCall') {
+                if (props.item.type !== 'GroupBegin') {
                   return
                 }
-                const functionRange = props.item.functionSourceRange
+                if (props.item.group.type !== 'FunctionCall') {
+                  // TODO: Add module instance support.
+                  return
+                }
+                const functionRange = props.item.group.functionSourceRange
                 // For some reason, the cursor goes to the end of the source
                 // range we select.  So set the end equal to the beginning.
                 functionRange[1] = functionRange[0]

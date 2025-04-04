@@ -148,15 +148,18 @@ description: Operations executed color-cube.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "sketchRectangle",
-    "functionSourceRange": [
-      726,
-      1326,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sketchRectangle",
+      "functionSourceRange": [
+        726,
+        1326,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -192,18 +195,21 @@ description: Operations executed color-cube.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "sketchRectangle",
-    "functionSourceRange": [
-      726,
-      1326,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sketchRectangle",
+      "functionSourceRange": [
+        726,
+        1326,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -239,18 +245,21 @@ description: Operations executed color-cube.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "sketchRectangle",
-    "functionSourceRange": [
-      726,
-      1326,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sketchRectangle",
+      "functionSourceRange": [
+        726,
+        1326,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -286,18 +295,21 @@ description: Operations executed color-cube.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "sketchRectangle",
-    "functionSourceRange": [
-      726,
-      1326,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sketchRectangle",
+      "functionSourceRange": [
+        726,
+        1326,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -333,18 +345,21 @@ description: Operations executed color-cube.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "sketchRectangle",
-    "functionSourceRange": [
-      726,
-      1326,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sketchRectangle",
+      "functionSourceRange": [
+        726,
+        1326,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -380,18 +395,21 @@ description: Operations executed color-cube.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "sketchRectangle",
-    "functionSourceRange": [
-      726,
-      1326,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sketchRectangle",
+      "functionSourceRange": [
+        726,
+        1326,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -427,6 +445,6 @@ description: Operations executed color-cube.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   }
 ]
