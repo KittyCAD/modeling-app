@@ -17,20 +17,17 @@ frontLength = 7
 sketch001 = startSketchOn(-YZ)
   |> startProfileAt([wallsWidth / 2, 0], %)
   |> xLine(length = wallThickness / 2)
-  |> angledLineToX({ angle = 60, to = wallsWidth }, %, $seg01)
+  |> angledLine(angle = 60, endAbsoluteX = wallsWidth, tag = $seg01)
   |> yLine(endAbsolute = height)
   |> xLine(length = -wallThickness)
   |> yLine(endAbsolute = segEndY(seg01))
-  |> angledLineToX({
-       angle = 60,
-       to = wallsWidth / 2 + wallThickness / 2
-     }, %)
+  |> angledLine(angle = 60, endAbsoluteX = wallsWidth / 2 + wallThickness / 2)
   |> xLine(length = -wallThickness)
-  |> angledLineToX({ angle = 180 - 60, to = wallThickness }, %)
+  |> angledLine(angle = 180 - 60, endAbsoluteX = wallThickness)
   |> yLine(endAbsolute = height)
   |> xLine(endAbsolute = 0)
   |> yLine(endAbsolute = segEndY(seg01))
-  |> angledLineToY({ angle = 180 - 60, to = 0 }, %)
+  |> angledLine(angle = 180 - 60, endAbsoluteY = 0)
   |> close()
 part001 = revolve(
   sketch001,
@@ -44,20 +41,17 @@ part001 = revolve(
 sketch002 = startSketchOn(-YZ)
   |> startProfileAt([wallsWidth / 2, 0], %)
   |> xLine(length = wallThickness / 2)
-  |> angledLineToX({ angle = 60, to = wallsWidth }, %, $seg02)
+  |> angledLine(angle = 60, endAbsoluteX = wallsWidth, tag = $seg02)
   |> yLine(endAbsolute = height)
   |> xLine(length = -wallThickness)
   |> yLine(endAbsolute = segEndY(seg01))
-  |> angledLineToX({
-       angle = 60,
-       to = wallsWidth / 2 + wallThickness / 2
-     }, %)
+  |> angledLine(angle = 60, endAbsoluteX = wallsWidth / 2 + wallThickness / 2)
   |> xLine(length = -wallThickness)
-  |> angledLineToX({ angle = 180 - 60, to = wallThickness }, %)
+  |> angledLine(angle = 180 - 60, endAbsoluteX = wallThickness)
   |> yLine(endAbsolute = height)
   |> xLine(endAbsolute = 0)
   |> yLine(endAbsolute = segEndY(seg02))
-  |> angledLineToY({ angle = 180 - 60, to = 0 }, %)
+  |> angledLine(angle = 180 - 60, endAbsoluteY = 0)
   |> close()
   |> extrude(length = backLength - height)
 
@@ -76,7 +70,7 @@ customPlane = {
 sketch003 = startSketchOn(customPlane)
   |> startProfileAt([0, 0], %)
   |> tangentialArc({ offset = 60, radius = height }, %)
-  |> angledLineToY({ angle = 60, to = 0 }, %)
+  |> angledLine(angle = 60, endAbsoluteY = 0)
   |> close()
   |> extrude(length = wallThickness)
 
@@ -86,12 +80,9 @@ sketch004 = startSketchOn(sketch002, 'END')
   |> yLine(endAbsolute = height)
   |> xLine(endAbsolute = wallThickness)
   |> yLine(endAbsolute = segEndY(seg01))
-  |> angledLineToX({
-       angle = 180 - 60,
-       to = wallsWidth / 2 - (wallThickness / 2)
-     }, %)
+  |> angledLine(angle = 180 - 60, endAbsoluteX = wallsWidth / 2 - (wallThickness / 2))
   |> xLine(length = wallThickness)
-  |> angledLineToY({ angle = 60, to = segEndY(seg01) }, %)
+  |> angledLine(angle = 60, endAbsoluteY = segEndY(seg01))
   |> yLine(endAbsolute = height)
   |> xLine(length = wallThickness)
   |> tangentialArcTo([

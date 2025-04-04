@@ -45,9 +45,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           ],
           "radius": 80.0,
           "tag": {
-            "commentStart": 544,
-            "end": 552,
-            "start": 544,
+            "commentStart": 541,
+            "end": 549,
+            "start": 541,
             "type": "TagDeclarator",
             "value": "arc_tag"
           },
@@ -110,9 +110,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 246,
-                "end": 248,
-                "start": 246,
+                "commentStart": 245,
+                "end": 247,
+                "start": 245,
                 "type": "TagDeclarator",
                 "value": "a"
               },
@@ -123,9 +123,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 308,
-                "end": 310,
-                "start": 308,
+                "commentStart": 306,
+                "end": 308,
+                "start": 306,
                 "type": "TagDeclarator",
                 "value": "b"
               },
@@ -136,9 +136,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 370,
-                "end": 372,
-                "start": 370,
+                "commentStart": 367,
+                "end": 369,
+                "start": 367,
                 "type": "TagDeclarator",
                 "value": "c"
               },
@@ -159,9 +159,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 246,
-                  "end": 248,
-                  "start": 246,
+                  "commentStart": 245,
+                  "end": 247,
+                  "start": 245,
                   "type": "TagDeclarator",
                   "value": "a"
                 },
@@ -184,9 +184,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   433.0127
                 ],
                 "tag": {
-                  "commentStart": 308,
-                  "end": 310,
-                  "start": 308,
+                  "commentStart": 306,
+                  "end": 308,
+                  "start": 306,
                   "type": "TagDeclarator",
                   "value": "b"
                 },
@@ -209,9 +209,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   433.0127
                 ],
                 "tag": {
-                  "commentStart": 370,
-                  "end": 372,
-                  "start": 370,
+                  "commentStart": 367,
+                  "end": 369,
+                  "start": 367,
                   "type": "TagDeclarator",
                   "value": "c"
                 },
@@ -356,9 +356,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           ],
           "radius": 80.0,
           "tag": {
-            "commentStart": 544,
-            "end": 552,
-            "start": 544,
+            "commentStart": 541,
+            "end": 549,
+            "start": 541,
             "type": "TagDeclarator",
             "value": "arc_tag"
           },
@@ -421,9 +421,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 246,
-                "end": 248,
-                "start": 246,
+                "commentStart": 245,
+                "end": 247,
+                "start": 245,
                 "type": "TagDeclarator",
                 "value": "a"
               },
@@ -434,9 +434,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 308,
-                "end": 310,
-                "start": 308,
+                "commentStart": 306,
+                "end": 308,
+                "start": 306,
                 "type": "TagDeclarator",
                 "value": "b"
               },
@@ -447,9 +447,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 370,
-                "end": 372,
-                "start": 370,
+                "commentStart": 367,
+                "end": 369,
+                "start": 367,
                 "type": "TagDeclarator",
                 "value": "c"
               },
@@ -470,9 +470,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 246,
-                  "end": 248,
-                  "start": 246,
+                  "commentStart": 245,
+                  "end": 247,
+                  "start": 245,
                   "type": "TagDeclarator",
                   "value": "a"
                 },
@@ -495,9 +495,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   433.0127
                 ],
                 "tag": {
-                  "commentStart": 308,
-                  "end": 310,
-                  "start": 308,
+                  "commentStart": 306,
+                  "end": 308,
+                  "start": 306,
                   "type": "TagDeclarator",
                   "value": "b"
                 },
@@ -520,9 +520,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   433.0127
                 ],
                 "tag": {
-                  "commentStart": 370,
-                  "end": 372,
-                  "start": 370,
+                  "commentStart": 367,
+                  "end": 369,
+                  "start": 367,
                   "type": "TagDeclarator",
                   "value": "c"
                 },
@@ -704,9 +704,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 246,
-            "end": 248,
-            "start": 246,
+            "commentStart": 245,
+            "end": 247,
+            "start": 245,
             "type": "TagDeclarator",
             "value": "a"
           },
@@ -717,9 +717,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 308,
-            "end": 310,
-            "start": 308,
+            "commentStart": 306,
+            "end": 308,
+            "start": 306,
             "type": "TagDeclarator",
             "value": "b"
           },
@@ -730,9 +730,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 370,
-            "end": 372,
-            "start": 370,
+            "commentStart": 367,
+            "end": 369,
+            "start": 367,
             "type": "TagDeclarator",
             "value": "c"
           },
@@ -753,9 +753,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 246,
-              "end": 248,
-              "start": 246,
+              "commentStart": 245,
+              "end": 247,
+              "start": 245,
               "type": "TagDeclarator",
               "value": "a"
             },
@@ -778,9 +778,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               433.0127
             ],
             "tag": {
-              "commentStart": 308,
-              "end": 310,
-              "start": 308,
+              "commentStart": 306,
+              "end": 308,
+              "start": 306,
               "type": "TagDeclarator",
               "value": "b"
             },
@@ -803,9 +803,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               433.0127
             ],
             "tag": {
-              "commentStart": 370,
-              "end": 372,
-              "start": 370,
+              "commentStart": 367,
+              "end": 369,
+              "start": 367,
               "type": "TagDeclarator",
               "value": "c"
             },
@@ -906,9 +906,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 544,
-            "end": 552,
-            "start": 544,
+            "commentStart": 541,
+            "end": 549,
+            "start": 541,
             "type": "TagDeclarator",
             "value": "arc_tag"
           },
@@ -935,9 +935,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             ],
             "radius": 80.0,
             "tag": {
-              "commentStart": 544,
-              "end": 552,
-              "start": 544,
+              "commentStart": 541,
+              "end": 549,
+              "start": 541,
               "type": "TagDeclarator",
               "value": "arc_tag"
             },
@@ -1000,9 +1000,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 246,
-                  "end": 248,
-                  "start": 246,
+                  "commentStart": 245,
+                  "end": 247,
+                  "start": 245,
                   "type": "TagDeclarator",
                   "value": "a"
                 },
@@ -1013,9 +1013,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 308,
-                  "end": 310,
-                  "start": 308,
+                  "commentStart": 306,
+                  "end": 308,
+                  "start": 306,
                   "type": "TagDeclarator",
                   "value": "b"
                 },
@@ -1026,9 +1026,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 370,
-                  "end": 372,
-                  "start": 370,
+                  "commentStart": 367,
+                  "end": 369,
+                  "start": 367,
                   "type": "TagDeclarator",
                   "value": "c"
                 },
@@ -1049,9 +1049,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 246,
-                    "end": 248,
-                    "start": 246,
+                    "commentStart": 245,
+                    "end": 247,
+                    "start": 245,
                     "type": "TagDeclarator",
                     "value": "a"
                   },
@@ -1074,9 +1074,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                     433.0127
                   ],
                   "tag": {
-                    "commentStart": 308,
-                    "end": 310,
-                    "start": 308,
+                    "commentStart": 306,
+                    "end": 308,
+                    "start": 306,
                     "type": "TagDeclarator",
                     "value": "b"
                   },
@@ -1099,9 +1099,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                     433.0127
                   ],
                   "tag": {
-                    "commentStart": 370,
-                    "end": 372,
-                    "start": 370,
+                    "commentStart": 367,
+                    "end": 369,
+                    "start": 367,
                     "type": "TagDeclarator",
                     "value": "c"
                   },
@@ -1259,9 +1259,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 544,
-            "end": 552,
-            "start": 544,
+            "commentStart": 541,
+            "end": 549,
+            "start": 541,
             "type": "TagDeclarator",
             "value": "arc_tag"
           },
@@ -1288,9 +1288,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             ],
             "radius": 80.0,
             "tag": {
-              "commentStart": 544,
-              "end": 552,
-              "start": 544,
+              "commentStart": 541,
+              "end": 549,
+              "start": 541,
               "type": "TagDeclarator",
               "value": "arc_tag"
             },
@@ -1353,9 +1353,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 246,
-                  "end": 248,
-                  "start": 246,
+                  "commentStart": 245,
+                  "end": 247,
+                  "start": 245,
                   "type": "TagDeclarator",
                   "value": "a"
                 },
@@ -1366,9 +1366,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 308,
-                  "end": 310,
-                  "start": 308,
+                  "commentStart": 306,
+                  "end": 308,
+                  "start": 306,
                   "type": "TagDeclarator",
                   "value": "b"
                 },
@@ -1379,9 +1379,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 370,
-                  "end": 372,
-                  "start": 370,
+                  "commentStart": 367,
+                  "end": 369,
+                  "start": 367,
                   "type": "TagDeclarator",
                   "value": "c"
                 },
@@ -1402,9 +1402,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 246,
-                    "end": 248,
-                    "start": 246,
+                    "commentStart": 245,
+                    "end": 247,
+                    "start": 245,
                     "type": "TagDeclarator",
                     "value": "a"
                   },
@@ -1427,9 +1427,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                     433.0127
                   ],
                   "tag": {
-                    "commentStart": 308,
-                    "end": 310,
-                    "start": 308,
+                    "commentStart": 306,
+                    "end": 308,
+                    "start": 306,
                     "type": "TagDeclarator",
                     "value": "b"
                   },
@@ -1452,9 +1452,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                     433.0127
                   ],
                   "tag": {
-                    "commentStart": 370,
-                    "end": 372,
-                    "start": 370,
+                    "commentStart": 367,
+                    "end": 369,
+                    "start": 367,
                     "type": "TagDeclarator",
                     "value": "c"
                   },

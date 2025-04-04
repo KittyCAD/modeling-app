@@ -2109,7 +2109,7 @@ description: Operations executed car-wheel-assembly.kcl
       "name": "lug",
       "functionSourceRange": [
         668,
-        1293,
+        1278,
         8
       ],
       "unlabeledArg": null,

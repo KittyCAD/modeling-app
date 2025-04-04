@@ -1,9 +1,15 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import { type NonCodeMeta } from '@rust/kcl-lib/bindings/NonCodeMeta'
 
 import {
+  ARG_ANGLE,
   ARG_END,
   ARG_END_ABSOLUTE,
+  ARG_END_ABSOLUTE_X,
+  ARG_END_ABSOLUTE_Y,
   ARG_LENGTH,
+  ARG_LENGTH_X,
+  ARG_LENGTH_Y,
   ARG_TAG,
   DETERMINING_ARGS,
 } from '@src/lang/constants'
@@ -29,6 +35,7 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   createFirstArg,
   fnNameToTooltip,
+  getAngledLine,
   getArgForEnd,
   getCircle,
   getConstraintInfo,
@@ -67,8 +74,14 @@ import type {
 } from '@src/lang/wasm'
 import { sketchFromKclValue } from '@src/lang/wasm'
 import type { Selections } from '@src/lib/selections'
-import { cleanErrs, err } from '@src/lib/trap'
-import { getAngle, isArray, normaliseAngle, roundOff } from '@src/lib/utils'
+import { cleanErrs, err, isNotErr } from '@src/lib/trap'
+import {
+  allLabels,
+  getAngle,
+  isArray,
+  normaliseAngle,
+  roundOff,
+} from '@src/lib/utils'
 
 export type LineInputsType =
   | 'xAbsolute'
@@ -158,6 +171,43 @@ function createCallWrapper(
           'line',
           null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
           labeledArgs
+        ),
+        valueUsedInTransform,
+      }
+    }
+    if (
+      tooltip === 'angledLine' ||
+      tooltip === 'angledLineToX' ||
+      tooltip === 'angledLineToY' ||
+      tooltip === 'angledLineOfXLength' ||
+      tooltip === 'angledLineOfYLength'
+    ) {
+      const args = [createLabeledArg(ARG_ANGLE, val[0])]
+      const v = val[1]
+      args.push(
+        (() => {
+          switch (tooltip) {
+            case 'angledLine':
+              return createLabeledArg(ARG_LENGTH, v)
+            case 'angledLineToX':
+              return createLabeledArg(ARG_END_ABSOLUTE_X, v)
+            case 'angledLineToY':
+              return createLabeledArg(ARG_END_ABSOLUTE_Y, v)
+            case 'angledLineOfXLength':
+              return createLabeledArg(ARG_LENGTH_X, v)
+            case 'angledLineOfYLength':
+              return createLabeledArg(ARG_LENGTH_Y, v)
+          }
+        })()
+      )
+      if (tag) {
+        args.push(createLabeledArg(ARG_TAG, tag))
+      }
+      return {
+        callExp: createCallExpressionStdLibKw(
+          'angledLine',
+          null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
+          args
         ),
         valueUsedInTransform,
       }
@@ -262,7 +312,8 @@ function createStdlibCallExpressionKw(
   labeled: LabeledArg[],
   tag?: Expr,
   valueUsedInTransform?: number,
-  unlabeled?: Expr
+  unlabeled?: Expr,
+  noncode?: NonCodeMeta
 ): CreatedSketchExprResult {
   const args = labeled
   if (tag) {
@@ -272,7 +323,8 @@ function createStdlibCallExpressionKw(
     callExp: createCallExpressionStdLibKw(
       tool,
       unlabeled ? unlabeled : null,
-      args
+      args,
+      noncode
     ),
     valueUsedInTransform,
   }
@@ -987,6 +1039,7 @@ const transformMap: TransformMap = {
       vertical: {
         tooltip: 'yLine',
         createNode: ({ inputs, tag, rawArgs: args }) => {
+          console.warn('ADAM: inputs', inputs)
           const expr = inputs[1].expr
           if (forceNum(args[0].expr) >= 0)
             return createCallWrapper('yLine', expr, tag)
@@ -1441,6 +1494,51 @@ export function removeSingleConstraint({
       // So we should update the call expression to use the inputs, except for
       // the inputDetails, input where we should use the rawValue(s)
 
+      if (inputToReplace.type === 'labeledArg') {
+        if (callExp.node.type !== 'CallExpressionKw') {
+          return new Error(
+            'ADAM: This code path only works with callExpressionKw but a positional call was somehow passed'
+          )
+        }
+        const toReplace = inputToReplace.key
+        let argsPreFilter = inputs.map((arg) => {
+          // console.log('ADAM: arg is', arg)
+          if (arg.type !== 'labeledArg') {
+            return undefined
+          }
+          const k = arg.key
+          if (k !== toReplace) {
+            return createLabeledArg(k, arg.expr)
+          } else {
+            const rawArgVersion = rawArgs.find(
+              (a) => a.type === 'labeledArg' && a.key === k
+            )
+            if (!rawArgVersion) {
+              return new Error(
+                `raw arg version not found while trying to remove constraint: ${JSON.stringify(arg)}`
+              )
+            }
+            return createLabeledArg(k, rawArgVersion.expr)
+          }
+        })
+        const args = argsPreFilter
+          .filter((arg) => arg !== undefined)
+          .filter(isNotErr)
+        if (args.length !== argsPreFilter.length) {
+          return new Error('Error while trying to remove constraint', {
+            cause: argsPreFilter,
+          })
+        }
+        const noncode = callExp.node.nonCodeMeta
+        return createStdlibCallExpressionKw(
+          callExp.node.callee.name.name as ToolTip,
+          args,
+          tag,
+          undefined,
+          undefined,
+          noncode
+        )
+      }
       if (inputToReplace.type === 'arrayItem') {
         const values = inputs.map((arg) => {
           if (
@@ -1674,7 +1772,7 @@ function getTransformMapPathKw(
       constraintType: ConstraintType
     }
   | false {
-  const name = sketchFnExp.callee.name.name as ToolTip
+  const name = sketchFnExp.callee.name.name
   if (name === 'circleThreePoint') {
     const info = transformMap?.circleThreePoint?.free?.[constraintType]
     if (info)
@@ -1685,8 +1783,8 @@ function getTransformMapPathKw(
       }
     return false
   }
-  const isAbsolute = findKwArg(ARG_END_ABSOLUTE, sketchFnExp) !== undefined
-  const tooltip = fnNameToTooltip(isAbsolute, name)
+  const tooltip = fnNameToTooltip(allLabels(sketchFnExp), name)
+  console.warn('ADAM: allLabels, tooltip', allLabels(sketchFnExp), tooltip)
   if (err(tooltip)) {
     return false
   }
@@ -1717,7 +1815,14 @@ function getTransformMapPathKw(
   }
 
   // check what constraints the function has
-  const lineInputType = getConstraintType(argForEnd.val, name, isAbsolute)
+  const isAbsolute = findKwArg(ARG_END_ABSOLUTE, sketchFnExp) !== undefined
+  const lineInputType = getConstraintType(argForEnd.val, tooltip, isAbsolute)
+  console.warn(
+    'ADAM: tooltip, lineInputType, constraintType',
+    tooltip,
+    lineInputType,
+    constraintType
+  )
   if (lineInputType) {
     const info = transformMap?.[tooltip]?.[lineInputType]?.[constraintType]
     if (info) {
@@ -1765,6 +1870,7 @@ export function getConstraintType(
   // and for one val sketch functions that the arg is NOT locked down
   // these conditions should have been checked previously.
   // completely locked down or not locked down at all does not depend on the fnName so we can check that first
+  console.warn('ADAM: getConstraintType', val, fnName, isAbsolute)
   const isArr = isArray(val)
   if (!isArr) {
     if (fnName === 'xLine') return isAbsolute ? 'yAbsolute' : 'yRelative'
@@ -1805,6 +1911,7 @@ export function getTransformInfos(
 
   try {
     const theTransforms = nodes.map((nodeMeta) => {
+      // console.warn('ADAM: nodeMeta is', nodeMeta)
       if (err(nodeMeta)) {
         console.error(nodeMeta)
         return false
@@ -1963,6 +2070,8 @@ export function transformAstSketchLines({
   const pathToNodeMap: PathToNodeMap = {}
 
   const processSelection = (_pathToNode: PathToNode, index: number) => {
+    console.warn('ADAM: transformInfos is', transformInfos)
+    console.warn('ADAM: index is', index)
     const callBack = transformInfos?.[index].createNode
     const transformTo = transformInfos?.[index].tooltip
 
@@ -2027,37 +2136,57 @@ export function transformAstSketchLines({
       )
         return
 
+      console.error(JSON.stringify(a.pathToNode))
       const nodeMeta = getNodeFromPath<Expr>(ast, a.pathToNode)
       if (err(nodeMeta)) return
 
-      if (a?.argPosition?.type === 'arrayItem') {
-        inputs.push({
-          type: 'arrayItem',
-          index: a.argPosition.index,
-          expr: nodeMeta.node,
-          argType: a.type,
-        })
-      } else if (a?.argPosition?.type === 'objectProperty') {
-        inputs.push({
-          type: 'objectProperty',
-          key: a.argPosition.key,
-          expr: nodeMeta.node,
-          argType: a.type,
-        })
-      } else if (a?.argPosition?.type === 'singleValue') {
-        inputs.push({
-          type: 'singleValue',
-          argType: a.type,
-          expr: nodeMeta.node,
-        })
-      } else if (a?.argPosition?.type === 'arrayInObject') {
-        inputs.push({
-          type: 'arrayInObject',
-          key: a.argPosition.key,
-          index: a.argPosition.index,
-          expr: nodeMeta.node,
-          argType: a.type,
-        })
+      switch (a?.argPosition?.type) {
+        case 'arrayItem':
+          inputs.push({
+            type: 'arrayItem',
+            index: a.argPosition.index,
+            expr: nodeMeta.node,
+            argType: a.type,
+          })
+          break
+        case 'objectProperty':
+          inputs.push({
+            type: 'objectProperty',
+            key: a.argPosition.key,
+            expr: nodeMeta.node,
+            argType: a.type,
+          })
+          break
+        case 'singleValue':
+          inputs.push({
+            type: 'singleValue',
+            argType: a.type,
+            expr: nodeMeta.node,
+          })
+          break
+        case 'labeledArg':
+          inputs.push({
+            type: 'labeledArg',
+            key: a.argPosition.key,
+            expr: nodeMeta.node,
+            argType: a.type,
+          })
+          break
+        case 'arrayInObject':
+          inputs.push({
+            type: 'arrayInObject',
+            key: a.argPosition.key,
+            index: a.argPosition.index,
+            expr: nodeMeta.node,
+            argType: a.type,
+          })
+          break
+        case 'arrayOrObjItem':
+          break
+        case undefined:
+          break
+        default:
+          const _exhaustiveCheck: never = a?.argPosition
       }
     })
 
@@ -2211,6 +2340,15 @@ export function getConstraintLevelFromSourceRange(
         case 'CallExpressionKw':
           if (name === 'circle') {
             return getCircle(nodeMeta.node)
+          }
+          if (
+            name === 'angledLine' ||
+            name === 'angledLineOfXLength' ||
+            name === 'angledLineOfYLength' ||
+            name === 'angledLineToX' ||
+            name === 'angledLineToY'
+          ) {
+            return getAngledLine(nodeMeta.node)
           }
           const arg = findKwArgAny(DETERMINING_ARGS, nodeMeta.node)
           if (arg === undefined) {

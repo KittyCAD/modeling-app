@@ -714,18 +714,23 @@ export function findUsesOfTagInPipe(
   traverse(varDec.node, {
     enter: (node) => {
       if (
-        node.type !== 'CallExpression' ||
+        (node.type !== 'CallExpression' && node.type !== 'CallExpressionKw') ||
         !stdlibFunctionsThatTakeTagInputs.includes(node.callee.name.name)
       )
         return
-      const tagArg = node.arguments[0]
-      if (!(tagArg.type === 'TagDeclarator' || tagArg.type === 'Name')) return
-      const tagArgValue =
-        tagArg.type === 'TagDeclarator'
-          ? String(tagArg.value)
-          : tagArg.name.name
-      if (tagArgValue === tag)
-        dependentRanges.push(topLevelRange(node.start, node.end))
+      const tagArg =
+        node.type === 'CallExpression'
+          ? node.arguments[0]
+          : findKwArg(ARG_TAG, node)
+      if (tagArg !== undefined) {
+        if (!(tagArg.type === 'TagDeclarator' || tagArg.type === 'Name')) return
+        const tagArgValue =
+          tagArg.type === 'TagDeclarator'
+            ? String(tagArg.value)
+            : tagArg.name.name
+        if (tagArgValue === tag)
+          dependentRanges.push(topLevelRange(node.start, node.end))
+      }
     },
   })
   return dependentRanges

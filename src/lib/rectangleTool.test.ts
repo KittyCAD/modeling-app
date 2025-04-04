@@ -19,8 +19,8 @@ describe('library rectangleTool helper functions', () => {
       // Base source code that will be edited in place
       const sourceCode = `sketch001 = startSketchOn(XZ)
 |> startProfileAt([120.37, 162.76], %)
-|> angledLine([0, 0], %, $rectangleSegmentA001)
-|> angledLine([segAng(rectangleSegmentA001) + 90, 0], %, $rectangleSegmentB001)
+|> angledLine(angle = 0, length = 0, tag = $rectangleSegmentA001)
+|> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 0, tag = $rectangleSegmentB001)
 |> angledLine([
 segAng(rectangleSegmentA001),
 -segLen(rectangleSegmentA001)
@@ -72,8 +72,8 @@ segAng(rectangleSegmentA001),
       // ast is edited in place from the updateCenterRectangleSketch
       const expectedSourceCode = `sketch001 = startSketchOn(XZ)
   |> startProfileAt([120.37, 80], %)
-  |> angledLine([0, 0], %, $rectangleSegmentA001)
-  |> angledLine([segAng(rectangleSegmentA001) + 90, 0], %, $rectangleSegmentB001)
+  |> angledLine(angle = 0, length = 0, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 0, tag = $rectangleSegmentB001)
   |> angledLine([
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)

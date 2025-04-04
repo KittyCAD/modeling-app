@@ -36,9 +36,9 @@ myAngle = -120
 sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [8, 0])
-  |> angledLine({ angle = abs(myAngle), length = 5 }, %)
+  |> angledLine(angle = abs(myAngle), length = 5)
   |> line(end = [-5, 0])
-  |> angledLine({ angle = myAngle, length = 5 }, %)
+  |> angledLine(angle = myAngle, length = 5)
   |> close()
 
 baseExtrusion = extrude(sketch001, length = 5)

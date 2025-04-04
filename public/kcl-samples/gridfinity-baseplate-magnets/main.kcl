@@ -26,9 +26,9 @@ fn face(plane) {
   faceSketch = startSketchOn(plane)
     |> startProfileAt([0, 0], %)
     |> yLine(length = height)
-    |> angledLineOfYLength({ angle = -45, length = thirdStep }, %)
+    |> angledLine(angle = -45, lengthY = thirdStep)
     |> yLine(length = -secondStep)
-    |> angledLineOfYLength({ angle = -45, length = firstStep }, %)
+    |> angledLine(angle = -45, lengthY = firstStep)
     |> close()
   return faceSketch
 }

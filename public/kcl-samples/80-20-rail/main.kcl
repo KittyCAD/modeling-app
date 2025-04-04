@@ -31,15 +31,9 @@ fn rail8020(originStart, railHeight, railLength) {
     |> xLine(length = 0.06 * railHeight, tag = $edge1)
     |> yLine(length = 0.087 * railHeight, tag = $edge2)
     |> xLine(length = -0.183 * railHeight, tag = $edge3)
-    |> angledLineToY({
-         angle = 45,
-         to = (1 - 0.356) / 2 * railHeight + originStart[1]
-       }, %, $edge4)
+    |> angledLine(angle = 45, endAbsoluteY = (1 - 0.356) / 2 * railHeight + originStart[1], tag = $edge4)
     |> xLine(length = 0.232 * railHeight, tag = $edge5)
-    |> angledLineToY({
-         angle = -45,
-         to = 0.087 * railHeight + originStart[1]
-       }, %, $edge6)
+    |> angledLine(angle = -45, endAbsoluteY = 0.087 * railHeight + originStart[1], tag = $edge6)
     |> xLine(length = -0.183 * railHeight, tag = $edge7)
     |> yLine(length = -0.087 * railHeight, tag = $edge8)
     |> xLine(length = 0.06 * railHeight)
@@ -75,15 +69,9 @@ fn rail8020(originStart, railHeight, railLength) {
     |> yLine(length = 0.06 * railHeight, tag = $edge9)
     |> xLine(length = -0.087 * railHeight, tag = $edge10)
     |> yLine(length = -0.183 * railHeight, tag = $edge11) // edge11
-    |> angledLineToX({
-         angle = 135,
-         to = ((1 - 0.356) / 2 + 0.356) * railHeight + originStart[0]
-       }, %, $edge12) // edge12
+    |> angledLine(angle = 135, endAbsoluteX = ((1 - 0.356) / 2 + 0.356) * railHeight + originStart[0], tag = $edge12) // edge12
     |> yLine(length = 0.232 * railHeight, tag = $edge13) // 13
-    |> angledLineToX({
-         angle = 45,
-         to = (1 - 0.087) * railHeight + originStart[0]
-       }, %, $edge14) // 14
+    |> angledLine(angle = 45, endAbsoluteX = (1 - 0.087) * railHeight + originStart[0], tag = $edge14) // 14
     |> yLine(length = -0.183 * railHeight, tag = $edge15) // 15
     |> xLine(length = 0.087 * railHeight, tag = $edge16)
     |> yLine(length = 0.06 * railHeight)
@@ -119,15 +107,9 @@ fn rail8020(originStart, railHeight, railLength) {
     |> xLine(length = -0.06 * railHeight, tag = $edge17)
     |> yLine(length = -0.087 * railHeight, tag = $edge18)
     |> xLine(length = 0.183 * railHeight, tag = $edge19)
-    |> angledLineToY({
-         angle = 45,
-         to = ((1 - 0.356) / 2 + 0.356) * railHeight + originStart[1]
-       }, %, $edge20)
+    |> angledLine(angle = 45, endAbsoluteY = ((1 - 0.356) / 2 + 0.356) * railHeight + originStart[1], tag = $edge20)
     |> xLine(length = -0.232 * railHeight, tag = $edge21)
-    |> angledLineToY({
-         angle = 135,
-         to = (1 - 0.087) * railHeight + originStart[1]
-       }, %, $edge22)
+    |> angledLine(angle = 135, endAbsoluteY = (1 - 0.087) * railHeight + originStart[1], tag = $edge22)
     |> xLine(length = 0.183 * railHeight, tag = $edge23)
     |> yLine(length = 0.087 * railHeight, tag = $edge24)
     |> xLine(length = -0.06 * railHeight)
@@ -163,15 +145,9 @@ fn rail8020(originStart, railHeight, railLength) {
     |> yLine(length = -0.06 * railHeight, tag = $edge25)
     |> xLine(length = 0.087 * railHeight, tag = $edge26)
     |> yLine(length = 0.183 * railHeight, tag = $edge27)
-    |> angledLineToX({
-         angle = 135,
-         to = (1 - 0.356) / 2 * railHeight + originStart[0]
-       }, %, $edge28)
+    |> angledLine(angle = 135, endAbsoluteX = (1 - 0.356) / 2 * railHeight + originStart[0], tag = $edge28)
     |> yLine(length = -0.232 * railHeight, tag = $edge29)
-    |> angledLineToX({
-         angle = 45,
-         to = 0.087 * railHeight + originStart[0]
-       }, %, $edge30)
+    |> angledLine(angle = 45, endAbsoluteX = 0.087 * railHeight + originStart[0], tag = $edge30)
     |> yLine(length = 0.183 * railHeight, tag = $edge31)
     |> xLine(length = -0.087 * railHeight, tag = $edge32)
     |> yLine(length = -0.06 * railHeight)

@@ -34,15 +34,9 @@ fn primaryTube(n, angle001, length001, length002, length003) {
     |> startProfileAt([0, plateHeight], %)
     |> line(end = [0, length001])
     |> tangentialArc({ offset = -80, radius = bendRadius }, %, $arc01)
-    |> angledLine({
-         angle = tangentToEnd(arc01),
-         length = length002
-       }, %)
+    |> angledLine(angle = tangentToEnd(arc01), length = length002)
     |> tangentialArc({ offset = 85, radius = bendRadius }, %, $arc02)
-    |> angledLine({
-         angle = tangentToEnd(arc02),
-         length = length003
-       }, %)
+    |> angledLine(angle = tangentToEnd(arc02), length = length003)
 
   // Create the cross section of each tube and sweep them
   sweepProfile = startSketchOn(XY)

@@ -33,10 +33,7 @@ acos(num: number): number
 ```js
 sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
-  |> angledLine({
-       angle = toDegrees(acos(0.5)),
-       length = 10
-     }, %)
+  |> angledLine(angle = toDegrees(acos(0.5)), length = 10)
   |> line(end = [5, 0])
   |> line(endAbsolute = [12, 0])
   |> close()

@@ -10,7 +10,7 @@ description: Operations executed exhaust-manifold.kcl
       "name": "primaryTube",
       "functionSourceRange": [
         330,
-        1532,
+        1468,
         0
       ],
       "unlabeledArg": null,
@@ -311,7 +311,7 @@ description: Operations executed exhaust-manifold.kcl
       "name": "primaryTube",
       "functionSourceRange": [
         330,
-        1532,
+        1468,
         0
       ],
       "unlabeledArg": null,
@@ -612,7 +612,7 @@ description: Operations executed exhaust-manifold.kcl
       "name": "primaryTube",
       "functionSourceRange": [
         330,
-        1532,
+        1468,
         0
       ],
       "unlabeledArg": null,
@@ -913,7 +913,7 @@ description: Operations executed exhaust-manifold.kcl
       "name": "primaryTube",
       "functionSourceRange": [
         330,
-        1532,
+        1468,
         0
       ],
       "unlabeledArg": null,

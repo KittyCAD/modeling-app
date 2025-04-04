@@ -1515,7 +1515,7 @@ description: Operations executed walkie-talkie.kcl
       "name": "zLogo",
       "functionSourceRange": [
         69,
-        1088,
+        1018,
         12
       ],
       "unlabeledArg": null,
@@ -1573,8 +1573,8 @@ description: Operations executed walkie-talkie.kcl
       "type": "FunctionCall",
       "name": "oLogo",
       "functionSourceRange": [
-        1146,
-        1656,
+        1076,
+        1579,
         12
       ],
       "unlabeledArg": null,
@@ -1632,8 +1632,8 @@ description: Operations executed walkie-talkie.kcl
       "type": "FunctionCall",
       "name": "oLogo2",
       "functionSourceRange": [
-        1674,
-        2184,
+        1597,
+        2100,
         12
       ],
       "unlabeledArg": null,
@@ -1691,8 +1691,8 @@ description: Operations executed walkie-talkie.kcl
       "type": "FunctionCall",
       "name": "oLogo",
       "functionSourceRange": [
-        1146,
-        1656,
+        1076,
+        1579,
         12
       ],
       "unlabeledArg": null,
@@ -1750,8 +1750,8 @@ description: Operations executed walkie-talkie.kcl
       "type": "FunctionCall",
       "name": "oLogo2",
       "functionSourceRange": [
-        1674,
-        2184,
+        1597,
+        2100,
         12
       ],
       "unlabeledArg": null,
@@ -2058,7 +2058,7 @@ description: Operations executed walkie-talkie.kcl
       "name": "button",
       "functionSourceRange": [
         308,
-        900,
+        891,
         11
       ],
       "unlabeledArg": null,
@@ -2171,7 +2171,7 @@ description: Operations executed walkie-talkie.kcl
       "name": "button",
       "functionSourceRange": [
         308,
-        900,
+        891,
         11
       ],
       "unlabeledArg": null,
@@ -2284,7 +2284,7 @@ description: Operations executed walkie-talkie.kcl
       "name": "button",
       "functionSourceRange": [
         308,
-        900,
+        891,
         11
       ],
       "unlabeledArg": null,
@@ -2397,7 +2397,7 @@ description: Operations executed walkie-talkie.kcl
       "name": "button",
       "functionSourceRange": [
         308,
-        900,
+        891,
         11
       ],
       "unlabeledArg": null,

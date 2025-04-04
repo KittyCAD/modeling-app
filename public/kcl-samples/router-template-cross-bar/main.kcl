@@ -56,15 +56,9 @@ extrude001 = extrude(sketch001, length = 5)
 // Create the second sketch
 sketch002 = startSketchOn(extrude001, 'START')
   |> startProfileAt([distanceToInsideEdge, 0], %)
-  |> angledLine([180, templateThickness], %, $rectangleSegmentA002)
-  |> angledLine([
-       segAng(rectangleSegmentA002) + 90,
-       templateThickness
-     ], %, $rectangleSegmentB002)
-  |> angledLine([
-       segAng(rectangleSegmentA002),
-       -segLen(rectangleSegmentA002)
-     ], %, $rectangleSegmentC002)
+  |> angledLine(angle = 180, length = templateThickness, tag = $rectangleSegmentA002)
+  |> angledLine(angle = segAng(rectangleSegmentA002) + 90, length = templateThickness, tag = $rectangleSegmentB002)
+  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002), tag = $rectangleSegmentC002)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
@@ -74,15 +68,9 @@ extrude002 = extrude(sketch002, length = 13)
 // Create the third sketch
 sketch003 = startSketchOn(extrude001, 'START')
   |> startProfileAt([-distanceToInsideEdge, 0], %)
-  |> angledLine([0, templateThickness], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       templateThickness
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
+  |> angledLine(angle = 0, length = templateThickness, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = templateThickness, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
@@ -92,15 +80,9 @@ extrude003 = extrude(sketch003, length = 13)
 // Create the fourth sketch
 sketch004 = startSketchOn(extrude002, 'END')
   |> startProfileAt([-distanceToInsideEdge, 0], %)
-  |> angledLine([0, distanceToInsideEdge * 2], %, $rectangleSegmentA003)
-  |> angledLine([
-       segAng(rectangleSegmentA003) - 90,
-       templateThickness
-     ], %, $rectangleSegmentB003)
-  |> angledLine([
-       segAng(rectangleSegmentA003),
-       -segLen(rectangleSegmentA003)
-     ], %, $rectangleSegmentC003)
+  |> angledLine(angle = 0, length = distanceToInsideEdge * 2, tag = $rectangleSegmentA003)
+  |> angledLine(angle = segAng(rectangleSegmentA003) - 90, length = templateThickness, tag = $rectangleSegmentB003)
+  |> angledLine(angle = segAng(rectangleSegmentA003), length = -segLen(rectangleSegmentA003), tag = $rectangleSegmentC003)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 

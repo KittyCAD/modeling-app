@@ -24,26 +24,11 @@ hexPatternSketch = startSketchOn(boltHead, 'start')
        boltHexDrive / 2,
        boltHexFlatLength / 2
      ], %)
-  |> angledLine({
-       angle = 270,
-       length = boltHexFlatLength
-     }, %)
-  |> angledLine({
-       angle = 210,
-       length = boltHexFlatLength
-     }, %)
-  |> angledLine({
-       angle = 150,
-       length = boltHexFlatLength
-     }, %)
-  |> angledLine({
-       angle = 90,
-       length = boltHexFlatLength
-     }, %)
-  |> angledLine({
-       angle = 30,
-       length = boltHexFlatLength
-     }, %)
+  |> angledLine(angle = 270, length = boltHexFlatLength)
+  |> angledLine(angle = 210, length = boltHexFlatLength)
+  |> angledLine(angle = 150, length = boltHexFlatLength)
+  |> angledLine(angle = 90, length = boltHexFlatLength)
+  |> angledLine(angle = 30, length = boltHexFlatLength)
   |> close()
   |> extrude(length = -boltHeadLength * 0.75)
 boltBody = startSketchOn(boltHead, 'end')

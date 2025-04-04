@@ -388,18 +388,19 @@ pub async fn segment_length(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 60,
 ///     length = 10,
-///   }, %, $thing)
+///     tag = $thing,
+///   )
 ///   |> tangentialArc({
 ///     offset = -120,
 ///     radius = 5,
 ///   }, %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = -60,
 ///     length = segLen(thing),
-///   }, %)
+///   )
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 5)
@@ -442,9 +443,9 @@ pub async fn segment_angle(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 ///   |> line(end = [10, 0])
 ///   |> line(end = [5, 10], tag = $seg01)
 ///   |> line(end = [-10, 0])
-///   |> angledLine([segAng(seg01), 10], %)
+///   |> angledLine(angle = segAng(seg01), length = 10)
 ///   |> line(end = [-10, 0])
-///   |> angledLine([segAng(seg01), -15], %)
+///   |> angledLine(angle = segAng(seg01), length = -15)
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 4)
@@ -487,10 +488,10 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [20, 0])
 ///   |> tangentialArcToRelative([0, 10], %, $arc1)
-///   |> angledLine({
-///     angle: tangentToEnd(arc1),
-///     length: 20,
-///   }, %)
+///   |> angledLine(
+///     angle = tangentToEnd(arc1),
+///     length = 20,
+///   )
 ///   |> tangentialArcToRelative([0, -10], %)
 ///   |> close()
 ///
@@ -503,10 +504,10 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [0, 20])
 ///   |> tangentialArcTo([10, 20], %, $arc1)
-///   |> angledLine({
-///     angle: tangentToEnd(arc1),
-///     length: 20,
-///   }, %)
+///   |> angledLine(
+///     angle = tangentToEnd(arc1),
+///     length = 20,
+///   )
 ///   |> tangentialArcToRelative([-10, 0], %)
 ///   |> close()
 ///
@@ -517,10 +518,10 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// rectangleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [10, 0], tag = $seg1)
-///   |> angledLine({
-///     angle: tangentToEnd(seg1),
-///     length: 10,
-///   }, %)
+///   |> angledLine(
+///     angle = tangentToEnd(seg1),
+///     length = 10,
+///   )
 ///   |> line(end = [0, 10])
 ///   |> line(end = [-20, 0])
 ///   |> close()
@@ -535,7 +536,7 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///        end: [10, 10],
 ///        interior: [5, 1]
 ///      }, %, $arc1)
-///   |> angledLine([tangentToEnd(arc1), 20], %)
+///   |> angledLine(angle = tangentToEnd(arc1), length = 20)
 ///   |> close()
 /// ```
 ///
@@ -545,7 +546,7 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///
 /// triangleSketch = startSketchOn("XY")
 ///   |> startProfileAt([-5, 0], %)
-///   |> angledLine([tangentToEnd(circ), 10], %)
+///   |> angledLine(angle = tangentToEnd(circ), length = 10)
 ///   |> line(end = [-15, 0])
 ///   |> close()
 /// ```
@@ -595,10 +596,10 @@ pub async fn angle_to_match_length_x(exec_state: &mut ExecState, args: Args) -> 
 /// sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [2, 5], tag = $seg01)
-///   |> angledLineToX([
-///        -angleToMatchLengthX(seg01, 7, %),
-///        10
-///      ], %)
+///   |> angledLine(
+///        angle = -angleToMatchLengthX(seg01, 7, %),
+///        endAbsoluteX = 10,
+///      )
 ///   |> close()
 ///
 /// extrusion = extrude(sketch001, length = 5)
@@ -658,10 +659,10 @@ pub async fn angle_to_match_length_y(exec_state: &mut ExecState, args: Args) -> 
 /// sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [1, 2], tag = $seg01)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = angleToMatchLengthY(seg01, 15, %),
 ///     length = 5,
-///     }, %)
+///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///  

@@ -905,56 +905,70 @@ description: Result of parsing color-cube.kcl
                       {
                         "arguments": [
                           {
-                            "commentStart": 832,
-                            "elements": [
-                              {
-                                "commentStart": 833,
-                                "end": 0,
-                                "raw": "0",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 0.0,
-                                  "suffix": "None"
-                                }
-                              },
-                              {
-                                "abs_path": false,
-                                "commentStart": 836,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 836,
-                                  "end": 0,
-                                  "name": "size",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
+                            "type": "LabeledArg",
+                            "label": {
+                              "commentStart": 832,
+                              "end": 0,
+                              "name": "angle",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "arg": {
+                              "commentStart": 840,
+                              "end": 0,
+                              "raw": "0",
+                              "start": 0,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 0.0,
+                                "suffix": "None"
                               }
-                            ],
-                            "end": 0,
-                            "start": 0,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
+                            }
                           },
                           {
-                            "commentStart": 843,
-                            "end": 0,
-                            "start": 0,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
+                            "type": "LabeledArg",
+                            "label": {
+                              "commentStart": 843,
+                              "end": 0,
+                              "name": "length",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "arg": {
+                              "abs_path": false,
+                              "commentStart": 852,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 852,
+                                "end": 0,
+                                "name": "size",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            }
                           },
                           {
-                            "commentStart": 846,
-                            "end": 0,
-                            "start": 0,
-                            "type": "TagDeclarator",
-                            "type": "TagDeclarator",
-                            "value": "rectangleSegmentA001"
+                            "type": "LabeledArg",
+                            "label": {
+                              "commentStart": 858,
+                              "end": 0,
+                              "name": "tag",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "arg": {
+                              "commentStart": 864,
+                              "end": 0,
+                              "start": 0,
+                              "type": "TagDeclarator",
+                              "type": "TagDeclarator",
+                              "value": "rectangleSegmentA001"
+                            }
                           }
                         ],
                         "callee": {
@@ -975,146 +989,32 @@ description: Result of parsing color-cube.kcl
                         "commentStart": 821,
                         "end": 0,
                         "start": 0,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
                       },
                       {
                         "arguments": [
                           {
-                            "commentStart": 887,
-                            "elements": [
-                              {
-                                "commentStart": 898,
-                                "end": 0,
-                                "left": {
-                                  "arguments": [
-                                    {
-                                      "abs_path": false,
-                                      "commentStart": 905,
-                                      "end": 0,
-                                      "name": {
-                                        "commentStart": 905,
-                                        "end": 0,
-                                        "name": "rectangleSegmentA001",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    }
-                                  ],
-                                  "callee": {
-                                    "abs_path": false,
-                                    "commentStart": 898,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 898,
-                                      "end": 0,
-                                      "name": "segAng",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name"
-                                  },
-                                  "commentStart": 898,
-                                  "end": 0,
-                                  "start": 0,
-                                  "type": "CallExpression",
-                                  "type": "CallExpression"
-                                },
-                                "operator": "-",
-                                "right": {
-                                  "commentStart": 929,
-                                  "end": 0,
-                                  "raw": "90",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 90.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              },
-                              {
-                                "abs_path": false,
-                                "commentStart": 942,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 942,
-                                  "end": 0,
-                                  "name": "size",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              }
-                            ],
-                            "end": 0,
-                            "start": 0,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          },
-                          {
-                            "commentStart": 957,
-                            "end": 0,
-                            "start": 0,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
-                          },
-                          {
-                            "commentStart": 960,
-                            "end": 0,
-                            "start": 0,
-                            "type": "TagDeclarator",
-                            "type": "TagDeclarator",
-                            "value": "rectangleSegmentB001"
-                          }
-                        ],
-                        "callee": {
-                          "abs_path": false,
-                          "commentStart": 876,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 876,
-                            "end": 0,
-                            "name": "angledLine",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name"
-                        },
-                        "commentStart": 876,
-                        "end": 0,
-                        "start": 0,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
-                      },
-                      {
-                        "arguments": [
-                          {
-                            "commentStart": 1001,
-                            "elements": [
-                              {
+                            "type": "LabeledArg",
+                            "label": {
+                              "commentStart": 905,
+                              "end": 0,
+                              "name": "angle",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "arg": {
+                              "commentStart": 913,
+                              "end": 0,
+                              "left": {
                                 "arguments": [
                                   {
                                     "abs_path": false,
-                                    "commentStart": 1019,
+                                    "commentStart": 920,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 1019,
+                                      "commentStart": 920,
                                       "end": 0,
                                       "name": "rectangleSegmentA001",
                                       "start": 0,
@@ -1128,10 +1028,10 @@ description: Result of parsing color-cube.kcl
                                 ],
                                 "callee": {
                                   "abs_path": false,
-                                  "commentStart": 1012,
+                                  "commentStart": 913,
                                   "end": 0,
                                   "name": {
-                                    "commentStart": 1012,
+                                    "commentStart": 913,
                                     "end": 0,
                                     "name": "segAng",
                                     "start": 0,
@@ -1141,88 +1041,81 @@ description: Result of parsing color-cube.kcl
                                   "start": 0,
                                   "type": "Name"
                                 },
-                                "commentStart": 1012,
+                                "commentStart": 913,
                                 "end": 0,
                                 "start": 0,
                                 "type": "CallExpression",
                                 "type": "CallExpression"
                               },
-                              {
-                                "argument": {
-                                  "arguments": [
-                                    {
-                                      "abs_path": false,
-                                      "commentStart": 1059,
-                                      "end": 0,
-                                      "name": {
-                                        "commentStart": 1059,
-                                        "end": 0,
-                                        "name": "rectangleSegmentA001",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    }
-                                  ],
-                                  "callee": {
-                                    "abs_path": false,
-                                    "commentStart": 1052,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 1052,
-                                      "end": 0,
-                                      "name": "segLen",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name"
-                                  },
-                                  "commentStart": 1052,
-                                  "end": 0,
-                                  "start": 0,
-                                  "type": "CallExpression",
-                                  "type": "CallExpression"
-                                },
-                                "commentStart": 1051,
+                              "operator": "-",
+                              "right": {
+                                "commentStart": 944,
                                 "end": 0,
-                                "operator": "-",
+                                "raw": "90",
                                 "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
-                              }
-                            ],
-                            "end": 0,
-                            "start": 0,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 90.0,
+                                  "suffix": "None"
+                                }
+                              },
+                              "start": 0,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            }
                           },
                           {
-                            "commentStart": 1091,
-                            "end": 0,
-                            "start": 0,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
+                            "type": "LabeledArg",
+                            "label": {
+                              "commentStart": 948,
+                              "end": 0,
+                              "name": "length",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "arg": {
+                              "abs_path": false,
+                              "commentStart": 957,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 957,
+                                "end": 0,
+                                "name": "size",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            }
                           },
                           {
-                            "commentStart": 1094,
-                            "end": 0,
-                            "start": 0,
-                            "type": "TagDeclarator",
-                            "type": "TagDeclarator",
-                            "value": "rectangleSegmentC001"
+                            "type": "LabeledArg",
+                            "label": {
+                              "commentStart": 963,
+                              "end": 0,
+                              "name": "tag",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "arg": {
+                              "commentStart": 969,
+                              "end": 0,
+                              "start": 0,
+                              "type": "TagDeclarator",
+                              "type": "TagDeclarator",
+                              "value": "rectangleSegmentB001"
+                            }
                           }
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 990,
+                          "commentStart": 894,
                           "end": 0,
                           "name": {
-                            "commentStart": 990,
+                            "commentStart": 894,
                             "end": 0,
                             "name": "angledLine",
                             "start": 0,
@@ -1232,11 +1125,163 @@ description: Result of parsing color-cube.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 990,
+                        "commentStart": 894,
                         "end": 0,
                         "start": 0,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
+                      },
+                      {
+                        "arguments": [
+                          {
+                            "type": "LabeledArg",
+                            "label": {
+                              "commentStart": 1010,
+                              "end": 0,
+                              "name": "angle",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "arg": {
+                              "arguments": [
+                                {
+                                  "abs_path": false,
+                                  "commentStart": 1025,
+                                  "end": 0,
+                                  "name": {
+                                    "commentStart": 1025,
+                                    "end": 0,
+                                    "name": "rectangleSegmentA001",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                }
+                              ],
+                              "callee": {
+                                "abs_path": false,
+                                "commentStart": 1018,
+                                "end": 0,
+                                "name": {
+                                  "commentStart": 1018,
+                                  "end": 0,
+                                  "name": "segAng",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name"
+                              },
+                              "commentStart": 1018,
+                              "end": 0,
+                              "start": 0,
+                              "type": "CallExpression",
+                              "type": "CallExpression"
+                            }
+                          },
+                          {
+                            "type": "LabeledArg",
+                            "label": {
+                              "commentStart": 1048,
+                              "end": 0,
+                              "name": "length",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "arg": {
+                              "argument": {
+                                "arguments": [
+                                  {
+                                    "abs_path": false,
+                                    "commentStart": 1065,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 1065,
+                                      "end": 0,
+                                      "name": "rectangleSegmentA001",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  }
+                                ],
+                                "callee": {
+                                  "abs_path": false,
+                                  "commentStart": 1058,
+                                  "end": 0,
+                                  "name": {
+                                    "commentStart": 1058,
+                                    "end": 0,
+                                    "name": "segLen",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name"
+                                },
+                                "commentStart": 1058,
+                                "end": 0,
+                                "start": 0,
+                                "type": "CallExpression",
+                                "type": "CallExpression"
+                              },
+                              "commentStart": 1057,
+                              "end": 0,
+                              "operator": "-",
+                              "start": 0,
+                              "type": "UnaryExpression",
+                              "type": "UnaryExpression"
+                            }
+                          },
+                          {
+                            "type": "LabeledArg",
+                            "label": {
+                              "commentStart": 1088,
+                              "end": 0,
+                              "name": "tag",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "arg": {
+                              "commentStart": 1094,
+                              "end": 0,
+                              "start": 0,
+                              "type": "TagDeclarator",
+                              "type": "TagDeclarator",
+                              "value": "rectangleSegmentC001"
+                            }
+                          }
+                        ],
+                        "callee": {
+                          "abs_path": false,
+                          "commentStart": 999,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 999,
+                            "end": 0,
+                            "name": "angledLine",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name"
+                        },
+                        "commentStart": 999,
+                        "end": 0,
+                        "start": 0,
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
                       },
                       {
                         "arguments": [
@@ -1372,7 +1417,7 @@ description: Result of parsing color-cube.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "commentStart": 1214,
+                              "commentStart": 1211,
                               "end": 0,
                               "name": "length",
                               "start": 0,
@@ -1380,10 +1425,10 @@ description: Result of parsing color-cube.kcl
                             },
                             "arg": {
                               "abs_path": false,
-                              "commentStart": 1223,
+                              "commentStart": 1220,
                               "end": 0,
                               "name": {
-                                "commentStart": 1223,
+                                "commentStart": 1220,
                                 "end": 0,
                                 "name": "extrudeLength",
                                 "start": 0,
@@ -1416,20 +1461,14 @@ description: Result of parsing color-cube.kcl
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
-                        "unlabeled": {
-                          "commentStart": 1211,
-                          "end": 0,
-                          "start": 0,
-                          "type": "PipeSubstitution",
-                          "type": "PipeSubstitution"
-                        }
+                        "unlabeled": null
                       },
                       {
                         "arguments": [
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "commentStart": 1256,
+                              "commentStart": 1253,
                               "end": 0,
                               "name": "color",
                               "start": 0,
@@ -1437,10 +1476,10 @@ description: Result of parsing color-cube.kcl
                             },
                             "arg": {
                               "abs_path": false,
-                              "commentStart": 1264,
+                              "commentStart": 1261,
                               "end": 0,
                               "name": {
-                                "commentStart": 1264,
+                                "commentStart": 1261,
                                 "end": 0,
                                 "name": "color",
                                 "start": 0,
@@ -1455,7 +1494,7 @@ description: Result of parsing color-cube.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "commentStart": 1271,
+                              "commentStart": 1268,
                               "end": 0,
                               "name": "metalness",
                               "start": 0,
@@ -1463,10 +1502,10 @@ description: Result of parsing color-cube.kcl
                             },
                             "arg": {
                               "abs_path": false,
-                              "commentStart": 1283,
+                              "commentStart": 1280,
                               "end": 0,
                               "name": {
-                                "commentStart": 1283,
+                                "commentStart": 1280,
                                 "end": 0,
                                 "name": "metalConstant",
                                 "start": 0,
@@ -1481,7 +1520,7 @@ description: Result of parsing color-cube.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "commentStart": 1298,
+                              "commentStart": 1295,
                               "end": 0,
                               "name": "roughness",
                               "start": 0,
@@ -1489,10 +1528,10 @@ description: Result of parsing color-cube.kcl
                             },
                             "arg": {
                               "abs_path": false,
-                              "commentStart": 1310,
+                              "commentStart": 1307,
                               "end": 0,
                               "name": {
-                                "commentStart": 1310,
+                                "commentStart": 1307,
                                 "end": 0,
                                 "name": "roughnessConstant",
                                 "start": 0,
@@ -1507,10 +1546,10 @@ description: Result of parsing color-cube.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 1245,
+                          "commentStart": 1242,
                           "end": 0,
                           "name": {
-                            "commentStart": 1245,
+                            "commentStart": 1242,
                             "end": 0,
                             "name": "appearance",
                             "start": 0,
@@ -1520,7 +1559,7 @@ description: Result of parsing color-cube.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 1245,
+                        "commentStart": 1242,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
@@ -1588,16 +1627,16 @@ description: Result of parsing color-cube.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1330,
+        "commentStart": 1327,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "abs_path": false,
-              "commentStart": 1380,
+              "commentStart": 1377,
               "end": 0,
               "name": {
-                "commentStart": 1380,
+                "commentStart": 1377,
                 "end": 0,
                 "name": "bluePlane",
                 "start": 0,
@@ -1609,7 +1648,7 @@ description: Result of parsing color-cube.kcl
               "type": "Name"
             },
             {
-              "commentStart": 1391,
+              "commentStart": 1388,
               "end": 0,
               "raw": "'#0000FF'",
               "start": 0,
@@ -1620,10 +1659,10 @@ description: Result of parsing color-cube.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 1364,
+            "commentStart": 1361,
             "end": 0,
             "name": {
-              "commentStart": 1364,
+              "commentStart": 1361,
               "end": 0,
               "name": "sketchRectangle",
               "start": 0,
@@ -1633,7 +1672,7 @@ description: Result of parsing color-cube.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 1364,
+          "commentStart": 1361,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -1649,16 +1688,16 @@ description: Result of parsing color-cube.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 1402,
+        "commentStart": 1399,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "abs_path": false,
-              "commentStart": 1418,
+              "commentStart": 1415,
               "end": 0,
               "name": {
-                "commentStart": 1418,
+                "commentStart": 1415,
                 "end": 0,
                 "name": "yellowPlane",
                 "start": 0,
@@ -1670,7 +1709,7 @@ description: Result of parsing color-cube.kcl
               "type": "Name"
             },
             {
-              "commentStart": 1431,
+              "commentStart": 1428,
               "end": 0,
               "raw": "'#FFFF00'",
               "start": 0,
@@ -1681,10 +1720,10 @@ description: Result of parsing color-cube.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 1402,
+            "commentStart": 1399,
             "end": 0,
             "name": {
-              "commentStart": 1402,
+              "commentStart": 1399,
               "end": 0,
               "name": "sketchRectangle",
               "start": 0,
@@ -1694,7 +1733,7 @@ description: Result of parsing color-cube.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 1402,
+          "commentStart": 1399,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -1705,16 +1744,16 @@ description: Result of parsing color-cube.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 1442,
+        "commentStart": 1439,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "abs_path": false,
-              "commentStart": 1458,
+              "commentStart": 1455,
               "end": 0,
               "name": {
-                "commentStart": 1458,
+                "commentStart": 1455,
                 "end": 0,
                 "name": "greenPlane",
                 "start": 0,
@@ -1726,7 +1765,7 @@ description: Result of parsing color-cube.kcl
               "type": "Name"
             },
             {
-              "commentStart": 1470,
+              "commentStart": 1467,
               "end": 0,
               "raw": "'#00FF00'",
               "start": 0,
@@ -1737,10 +1776,10 @@ description: Result of parsing color-cube.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 1442,
+            "commentStart": 1439,
             "end": 0,
             "name": {
-              "commentStart": 1442,
+              "commentStart": 1439,
               "end": 0,
               "name": "sketchRectangle",
               "start": 0,
@@ -1750,7 +1789,7 @@ description: Result of parsing color-cube.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 1442,
+          "commentStart": 1439,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -1761,16 +1800,16 @@ description: Result of parsing color-cube.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 1481,
+        "commentStart": 1478,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "abs_path": false,
-              "commentStart": 1497,
+              "commentStart": 1494,
               "end": 0,
               "name": {
-                "commentStart": 1497,
+                "commentStart": 1494,
                 "end": 0,
                 "name": "redPlane",
                 "start": 0,
@@ -1782,7 +1821,7 @@ description: Result of parsing color-cube.kcl
               "type": "Name"
             },
             {
-              "commentStart": 1507,
+              "commentStart": 1504,
               "end": 0,
               "raw": "'#FF0000'",
               "start": 0,
@@ -1793,10 +1832,10 @@ description: Result of parsing color-cube.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 1481,
+            "commentStart": 1478,
             "end": 0,
             "name": {
-              "commentStart": 1481,
+              "commentStart": 1478,
               "end": 0,
               "name": "sketchRectangle",
               "start": 0,
@@ -1806,7 +1845,7 @@ description: Result of parsing color-cube.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 1481,
+          "commentStart": 1478,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -1817,16 +1856,16 @@ description: Result of parsing color-cube.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 1518,
+        "commentStart": 1515,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "abs_path": false,
-              "commentStart": 1534,
+              "commentStart": 1531,
               "end": 0,
               "name": {
-                "commentStart": 1534,
+                "commentStart": 1531,
                 "end": 0,
                 "name": "tealPlane",
                 "start": 0,
@@ -1838,7 +1877,7 @@ description: Result of parsing color-cube.kcl
               "type": "Name"
             },
             {
-              "commentStart": 1545,
+              "commentStart": 1542,
               "end": 0,
               "raw": "'#00FFFF'",
               "start": 0,
@@ -1849,10 +1888,10 @@ description: Result of parsing color-cube.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 1518,
+            "commentStart": 1515,
             "end": 0,
             "name": {
-              "commentStart": 1518,
+              "commentStart": 1515,
               "end": 0,
               "name": "sketchRectangle",
               "start": 0,
@@ -1862,7 +1901,7 @@ description: Result of parsing color-cube.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 1518,
+          "commentStart": 1515,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -1873,16 +1912,16 @@ description: Result of parsing color-cube.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 1556,
+        "commentStart": 1553,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "abs_path": false,
-              "commentStart": 1572,
+              "commentStart": 1569,
               "end": 0,
               "name": {
-                "commentStart": 1572,
+                "commentStart": 1569,
                 "end": 0,
                 "name": "purplePlane",
                 "start": 0,
@@ -1894,7 +1933,7 @@ description: Result of parsing color-cube.kcl
               "type": "Name"
             },
             {
-              "commentStart": 1585,
+              "commentStart": 1582,
               "end": 0,
               "raw": "'#FF00FF'",
               "start": 0,
@@ -1905,10 +1944,10 @@ description: Result of parsing color-cube.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 1556,
+            "commentStart": 1553,
             "end": 0,
             "name": {
-              "commentStart": 1556,
+              "commentStart": 1553,
               "end": 0,
               "name": "sketchRectangle",
               "start": 0,
@@ -1918,7 +1957,7 @@ description: Result of parsing color-cube.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 1556,
+          "commentStart": 1553,
           "end": 0,
           "start": 0,
           "type": "CallExpression",

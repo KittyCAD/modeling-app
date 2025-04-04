@@ -259,7 +259,7 @@ test.describe(`Testing gizmo, fixture-based`, () => {
         `@settings(defaultLengthUnit = in)
         const sketch002 = startSketchOn(XZ)
           |> startProfileAt([-108.83, -57.48], %)
-          |> angledLine([0, 105.13], %, $rectangleSegmentA001)
+          |> angledLine(angle = 0, length = 105.13, tag = $rectangleSegmentA001)
           |> angledLine([
                segAng(rectangleSegmentA001) - 90,
                77.9

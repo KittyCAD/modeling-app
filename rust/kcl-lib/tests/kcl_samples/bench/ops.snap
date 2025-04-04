@@ -1049,8 +1049,8 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "backSlats",
       "functionSourceRange": [
-        2993,
-        3084,
+        3029,
+        3120,
         5
       ],
       "unlabeledArg": null,
@@ -1065,7 +1065,7 @@ description: Operations executed bench.kcl
       "name": "backSlatsSketch",
       "functionSourceRange": [
         2580,
-        2972,
+        3008,
         5
       ],
       "unlabeledArg": null,
@@ -1143,8 +1143,8 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "armRest",
       "functionSourceRange": [
-        3671,
-        3859,
+        3707,
+        3895,
         5
       ],
       "unlabeledArg": null,
@@ -1182,8 +1182,8 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "armRestPath",
       "functionSourceRange": [
-        3100,
-        3325,
+        3136,
+        3361,
         5
       ],
       "unlabeledArg": null,
@@ -1245,8 +1245,8 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "armRestProfile",
       "functionSourceRange": [
-        3344,
-        3652,
+        3380,
+        3688,
         5
       ],
       "unlabeledArg": null,
@@ -1306,8 +1306,8 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "armRest",
       "functionSourceRange": [
-        3671,
-        3859,
+        3707,
+        3895,
         5
       ],
       "unlabeledArg": null,
@@ -1345,8 +1345,8 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "armRestPath",
       "functionSourceRange": [
-        3100,
-        3325,
+        3136,
+        3361,
         5
       ],
       "unlabeledArg": null,
@@ -1408,8 +1408,8 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "armRestProfile",
       "functionSourceRange": [
-        3344,
-        3652,
+        3380,
+        3688,
         5
       ],
       "unlabeledArg": null,

@@ -31,28 +31,22 @@ caseIndentSketch = startSketchOn(body, 'END')
        -width / 2 + offset,
        height / 2 - (chamferLength + offset / 2 * cos(toRadians(45)))
      ], %)
-  |> angledLineToY({ angle = 45, to = height / 2 - offset }, %)
+  |> angledLine(angle = 45, endAbsoluteY = height / 2 - offset)
   |> line(endAbsolute = [
        width / 2 - (chamferLength + offset / 2 * cos(toRadians(45))),
        height / 2 - offset
      ])
-  |> angledLineToX({ angle = -45, to = width / 2 - offset }, %)
+  |> angledLine(angle = -45, endAbsoluteX = width / 2 - offset)
   |> line(endAbsolute = [
        width / 2 - offset,
        -(height / 2 - (chamferLength + offset / 2 * cos(toRadians(45))))
      ])
-  |> angledLineToY({
-       angle = -135,
-       to = -height / 2 + offset
-     }, %)
+  |> angledLine(angle = -135, endAbsoluteY = -height / 2 + offset)
   |> line(endAbsolute = [
        -(width / 2 - (chamferLength + offset / 2 * cos(toRadians(45)))),
        -height / 2 + offset
      ])
-  |> angledLineToX({
-       angle = -225,
-       to = -width / 2 + offset
-     }, %)
+  |> angledLine(angle = -225, endAbsoluteX = -width / 2 + offset)
   |> close()
 extrude002 = extrude(caseIndentSketch, length = -0.0625)
 
