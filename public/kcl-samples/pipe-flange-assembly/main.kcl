@@ -1,31 +1,31 @@
 // Pipe and Flange Assembly
 // A crucial component in various piping systems, designed to facilitate the connection, disconnection, and access to piping for inspection, cleaning, and modifications. This assembly combines pipes (long cylindrical conduits) with flanges (plate-like fittings) to create a secure yet detachable joint.
 
-// set units
+// Set units
 @settings(defaultLengthUnit = in)
 
-// import constants
-import * from "globals.kcl"
+// Import parameters
+import * from "parameters.kcl"
 
-// import parts
+// Import parts
+import '9472k188-gasket.kcl' as gasket
 import flange from "68095k348-flange.kcl"
-import gasket from "9472k188-gasket.kcl"
 import washer from "98017a257-washer.kcl"
 import bolt from "91251a404-bolt.kcl"
 import hexNut from "95479a127-hex-nut.kcl"
 import pipe from "1120t74-pipe.kcl"
 
-// place flanges
+// Place flanges
 flange()
 flange()
   |> rotate(axis = [0, 1, 0], angle = 180)
   |> translate(x = 0, y = 0, z = flangeBackHeight * 2 + gasketThickness)
 
-// place gasket between the flanges
-gasket()
+// Place gasket between the flanges
+gasket
   |> translate(x = 0, y = 0, z = -flangeBackHeight - gasketThickness)
 
-// place eight washers (four front, four back)
+// Place eight washers (four front, four back)
 washer()
   |> translate(x = mountingHolePlacementDiameter / 2, y = 0, z = flangeBaseThickness)
   |> patternCircular3d(
@@ -43,7 +43,7 @@ washer()
        axis = [0, 0, 1],
      )
 
-// place four bolts
+// Place four bolts
 bolt()
   |> translate(x = mountingHolePlacementDiameter / 2, y = 0, z = flangeBaseThickness + washerThickness)
   |> rotate(roll = 90, pitch = 0, yaw = 0)
@@ -56,7 +56,7 @@ bolt()
        rotateDuplicates = false,
      )
 
-// place four hex nuts
+// Place four hex nuts
 hexNut()
   |> translate(x = mountingHolePlacementDiameter / 2, y = 0, z = -(flangeBackHeight * 2 + gasketThickness + flangeBaseThickness + washerThickness + hexNutThickness))
   |> patternCircular3d(
@@ -68,7 +68,7 @@ hexNut()
        rotateDuplicates = false,
      )
 
-// place both pieces of pipe
+// Place both pieces of pipe
 pipe()
   |> rotate(
        %,

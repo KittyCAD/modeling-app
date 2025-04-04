@@ -1,19 +1,19 @@
 // Makeup Mirror
 // A circular vanity mirror mounted on a swiveling arm with pivot joints, used for personal grooming.
 
-// Settings
+// Set units
 @settings(defaultLengthUnit = mm)
 
-// hinge
+// Hinge parameters
 hingeRadius = 8
 hingeHeight = hingeRadius * 3
 hingeGap = 0.5
 
-// arm
+// Arm parameters
 armLength = 170
 armRadius = 5
 
-// mirror
+// Mirror parameters
 mirrorRadius = 170 / 2
 mirrorThickness = 10
 archToMirrorGap = 5
@@ -21,7 +21,7 @@ archThickness = 1
 archRadius = mirrorRadius + archToMirrorGap
 
 // Geometry
-// hinge
+// Add a function to create the hinge 
 fn hingeFn(x, y, z) {
   hingeBody = startSketchOn(offsetPlane(XY, offset = z))
     |> circle(center = [x, y], radius = hingeRadius)
@@ -39,7 +39,7 @@ hingePartB3 = hingeFn(armLength, 0, hingeHeight * 2 + hingeGap * 2)
 hingePartC2 = hingeFn(armLength, -armLength, hingeHeight * 2 + hingeGap * 2)
 hingePartC3 = hingeFn(armLength, -armLength, hingeHeight * 3 + hingeGap * 3)
 
-// arm
+// Add a function to create the arm
 fn armFn(plane, offset, altitude) {
   armBody = startSketchOn(plane)
     |> circle(center = [offset, altitude], radius = armRadius)
@@ -50,7 +50,7 @@ fn armFn(plane, offset, altitude) {
 armPartA = armFn(YZ, 0, hingeHeight * 1.5 + hingeGap)
 armPartB = armFn(XZ, armLength, hingeHeight * 2.5 + hingeGap * 2)
 
-// mirror
+// Add a function to create the mirror
 fn mirrorFn(plane, offsetX, offsetY, altitude, radius, tiefe, gestellR, gestellD) {
   armPlane = startSketchOn(  offsetPlane(plane, offset = offsetY - (tiefe / 2)))
   armBody = circle(armPlane, center = [offsetX, altitude], radius = radius)
