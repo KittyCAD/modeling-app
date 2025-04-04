@@ -16,6 +16,7 @@ import {
   PROJECT_FOLDER,
   PROJECT_IMAGE_NAME,
   PROJECT_SETTINGS_FILE_NAME,
+  RELEVANT_FILE_TYPES,
   SETTINGS_FILE_NAME,
   TELEMETRY_FILE_NAME,
   TELEMETRY_RAW_FILE_NAME,
@@ -199,16 +200,8 @@ export async function listProjects(
   return projects
 }
 
-const IMPORT_FILE_EXTENSIONS = [
-  // TODO Use ImportFormat enum
-  'stp',
-  'glb',
-  'fbxb',
-  'kcl',
-]
-
 const isRelevantFile = (filename: string): boolean =>
-  IMPORT_FILE_EXTENSIONS.some((ext) => filename.endsWith('.' + ext))
+  RELEVANT_FILE_TYPES.some((ext) => filename.endsWith('.' + ext))
 
 const collectAllFilesRecursiveFrom = async (
   path: string,
