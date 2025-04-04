@@ -4,6 +4,15 @@ description: Operations executed car-wheel-assembly.kcl
 ---
 [
   {
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "carRotor",
+      "moduleId": 6
+    },
+    "sourceRange": []
+  },
+  {
     "labeledArgs": {
       "data": {
         "value": {
@@ -686,6 +695,18 @@ description: Operations executed car-wheel-assembly.kcl
     }
   },
   {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "carWheel",
+      "moduleId": 5
+    },
+    "sourceRange": []
+  },
+  {
     "labeledArgs": {
       "data": {
         "value": {
@@ -1189,15 +1210,18 @@ description: Operations executed car-wheel-assembly.kcl
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "spoke",
-    "functionSourceRange": [
-      2616,
-      4189,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "spoke",
+      "functionSourceRange": [
+        2616,
+        4189,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1573,18 +1597,21 @@ description: Operations executed car-wheel-assembly.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "spoke",
-    "functionSourceRange": [
-      2616,
-      4189,
-      5
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "spoke",
+      "functionSourceRange": [
+        2616,
+        4189,
+        5
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1960,7 +1987,7 @@ description: Operations executed car-wheel-assembly.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -2064,15 +2091,30 @@ description: Operations executed car-wheel-assembly.kcl
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "lug",
-    "functionSourceRange": [
-      664,
-      1289,
-      8
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "lugNut",
+      "moduleId": 8
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "lug",
+      "functionSourceRange": [
+        664,
+        1289,
+        8
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -2347,7 +2389,10 @@ description: Operations executed car-wheel-assembly.kcl
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -2499,6 +2544,15 @@ description: Operations executed car-wheel-assembly.kcl
     }
   },
   {
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "brakeCaliper",
+      "moduleId": 7
+    },
+    "sourceRange": []
+  },
+  {
     "labeledArgs": {
       "data": {
         "value": {
@@ -2621,6 +2675,18 @@ description: Operations executed car-wheel-assembly.kcl
     "sourceRange": []
   },
   {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "carTire",
+      "moduleId": 9
+    },
+    "sourceRange": []
+  },
+  {
     "labeledArgs": {
       "data": {
         "value": {
@@ -2725,5 +2791,8 @@ description: Operations executed car-wheel-assembly.kcl
       }
     },
     "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
   }
 ]

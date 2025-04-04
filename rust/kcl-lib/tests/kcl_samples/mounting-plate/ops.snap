@@ -4,15 +4,18 @@ description: Operations executed mounting-plate.kcl
 ---
 [
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "rectShape",
-    "functionSourceRange": [
-      519,
-      887,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "rectShape",
+      "functionSourceRange": [
+        519,
+        887,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -31,7 +34,7 @@ description: Operations executed mounting-plate.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {

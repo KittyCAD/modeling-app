@@ -1,4 +1,4 @@
-//! This module contains settings for kcl projects as well as the modeling app.
+//! This module contains settings for kcl projects as well as the Design Studio.
 
 pub mod types;
 
