@@ -467,7 +467,10 @@ export const FileMachineProvider = ({
           })),
         },
         specialPropsForInsertCommand: {
-          providedOptions: (project?.children ?? []).flatMap((v) => {
+          providedOptions: (isDesktop() && project?.children
+            ? project.children
+            : []
+          ).flatMap((v) => {
             // TODO: add support for full tree traversal when KCL support subdir imports
             const relativeFilePath = v.path.replace(
               project?.path + window.electron.sep,
