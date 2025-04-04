@@ -43,6 +43,7 @@ pub struct EngineConnection {
     responses: Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>,
     artifact_commands: Arc<RwLock<Vec<ArtifactCommand>>>,
     execution_kind: Arc<RwLock<ExecutionKind>>,
+    ignore_failed_responses: Arc<RwLock<Vec<uuid::Uuid>>>,
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
     stats: EngineStats,
@@ -63,6 +64,7 @@ impl EngineConnection {
             artifact_commands: Arc::new(RwLock::new(Vec::new())),
             execution_kind: Default::default(),
             default_planes: Default::default(),
+            ignore_failed_responses: Arc::new(RwLock::new(Vec::new())),
             stats: Default::default(),
         })
     }
@@ -154,6 +156,10 @@ impl crate::engine::EngineManager for EngineConnection {
 
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
         self.responses.clone()
+    }
+
+    fn ignore_failed_responses(&self) -> Arc<RwLock<Vec<uuid::Uuid>>> {
+        self.ignore_failed_responses.clone()
     }
 
     fn stats(&self) -> &EngineStats {

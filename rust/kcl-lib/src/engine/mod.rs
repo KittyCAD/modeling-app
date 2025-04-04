@@ -90,6 +90,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the command responses from the engine.
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>;
 
+    /// Ignore failed responses of these command ids.
+    fn ignore_failed_responses(&self) -> Arc<RwLock<Vec<Uuid>>>;
+
     /// Get the artifact commands that have accumulated so far.
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>>;
 
@@ -150,6 +153,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     async fn clear_queues(&self) {
         self.batch().write().await.clear();
         self.batch_end().write().await.clear();
+        self.ignore_failed_responses().write().await.clear();
     }
 
     /// Send a modeling command and wait for the response message.
@@ -292,6 +296,21 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Add cmd to the batch.
         self.batch().write().await.push((req, source_range));
         self.stats().commands_batched.fetch_add(1, Ordering::Relaxed);
+
+        Ok(())
+    }
+
+    // Add a modeling command to the batch but don't fire it right away.
+    // Ignore the failure of this command.
+    async fn batch_modeling_cmd_ignore_failure(
+        &self,
+        id: uuid::Uuid,
+        source_range: SourceRange,
+        cmd: &ModelingCmd,
+    ) -> Result<(), crate::errors::KclError> {
+        self.ignore_failed_responses().write().await.push(id);
+
+        self.batch_modeling_cmd(id, source_range, cmd).await?;
 
         Ok(())
     }
@@ -467,6 +486,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 if let OkWebSocketResponseData::ModelingBatch { responses } = response {
                     let responses = responses.into_iter().map(|(k, v)| (Uuid::from(k), v)).collect();
                     self.parse_batch_responses(last_id.into(), id_to_source_range, responses)
+                        .await
                 } else {
                     // We should never get here.
                     Err(KclError::Engine(KclErrorDetails {
@@ -657,7 +677,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         }
     }
 
-    fn parse_batch_responses(
+    async fn parse_batch_responses(
         &self,
         // The last response we are looking for.
         id: uuid::Uuid,
@@ -685,6 +705,16 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     }
                 }
                 BatchResponse::Failure { errors } => {
+                    // If this was in our ignore list, we don't care about it.
+                    if self
+                        .ignore_failed_responses()
+                        .read()
+                        .await
+                        .iter()
+                        .any(|id| id == cmd_id)
+                    {
+                        continue;
+                    }
                     // Get the source range for the command.
                     let source_range = id_to_source_range.get(cmd_id).cloned().ok_or_else(|| {
                         KclError::Engine(KclErrorDetails {

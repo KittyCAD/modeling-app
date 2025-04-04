@@ -51,6 +51,8 @@ pub struct EngineConnection {
     /// If the server sends session data, it'll be copied to here.
     session_data: Arc<RwLock<Option<ModelingSessionData>>>,
 
+    ignore_failed_responses: Arc<RwLock<Vec<uuid::Uuid>>>,
+
     execution_kind: Arc<RwLock<ExecutionKind>>,
     stats: EngineStats,
 }
@@ -343,6 +345,7 @@ impl EngineConnection {
             batch_end: Arc::new(RwLock::new(IndexMap::new())),
             artifact_commands: Arc::new(RwLock::new(Vec::new())),
             default_planes: Default::default(),
+            ignore_failed_responses: Arc::new(RwLock::new(Vec::new())),
             session_data,
             execution_kind: Default::default(),
             stats: Default::default(),
@@ -362,6 +365,10 @@ impl EngineManager for EngineConnection {
 
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
         self.responses.clone()
+    }
+
+    fn ignore_failed_responses(&self) -> Arc<RwLock<Vec<Uuid>>> {
+        self.ignore_failed_responses.clone()
     }
 
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {

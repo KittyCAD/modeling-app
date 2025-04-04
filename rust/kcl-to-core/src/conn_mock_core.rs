@@ -24,6 +24,7 @@ pub struct EngineConnection {
     batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, kcl_lib::SourceRange)>>>,
     core_test: Arc<RwLock<String>>,
     execution_kind: Arc<RwLock<ExecutionKind>>,
+    ignore_failed_responses: Arc<RwLock<Vec<uuid::Uuid>>>,
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
     stats: EngineStats,
@@ -39,6 +40,7 @@ impl EngineConnection {
             core_test: result,
             execution_kind: Default::default(),
             default_planes: Default::default(),
+            ignore_failed_responses: Default::default(),
             stats: Default::default(),
         })
     }
@@ -369,6 +371,10 @@ impl kcl_lib::EngineManager for EngineConnection {
 
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
         Arc::new(RwLock::new(IndexMap::new()))
+    }
+
+    fn ignore_failed_responses(&self) -> Arc<RwLock<Vec<uuid::Uuid>>> {
+        self.ignore_failed_responses.clone()
     }
 
     fn stats(&self) -> &EngineStats {

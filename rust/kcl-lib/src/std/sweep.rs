@@ -211,7 +211,6 @@ async fn inner_sweep(
                 sketch,
                 id.into(),
                 0.0,
-                sectional,
                 &super::extrude::NamedCapTags {
                     start: tag_start.as_ref(),
                     end: tag_end.as_ref(),
