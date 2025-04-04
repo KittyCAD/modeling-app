@@ -61,6 +61,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
+          console.log(app)
           if (!app || !app.applicationMenu) {
             fail()
           }
