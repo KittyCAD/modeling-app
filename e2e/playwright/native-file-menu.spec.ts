@@ -9,17 +9,19 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
     test.describe('File role', () => {
       test('File.Create project', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) {
-          test.fail()
+          throw new Error('no tronApp')
         }
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            test.fail()
+            throw new Error(
+              `no app or application menu, ${app}, ${app.applicationMenu}`
+            )
           }
           const newProject =
             app.applicationMenu.getMenuItemById('File.New project')
-          if (!newProject) test.fail()
+          if (!newProject) throw new Error('no menu')
           newProject.click()
         })
         // Check that the command bar is opened
@@ -33,16 +35,20 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       })
       test('File.Open project', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) {
-          test.fail()
+          throw new Error('no tronApp')
         }
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) test.fail()
+          if (!app || !app.applicationMenu) {
+            throw new Error(
+              `no app or application menu, ${app}, ${app.applicationMenu}`
+            )
+          }
           const openProject =
             app.applicationMenu.getMenuItemById('File.Open project')
           if (!openProject) {
-            test.fail()
+            throw new Error('no menu')
           }
           openProject.click()
         })
@@ -60,17 +66,23 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         cmdBar,
         page,
       }) => {
-        if (!tronApp) test.fail()
+        if (!tronApp) {
+          throw new Error('no tronApp')
+        }
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            test.fail()
+            throw new Error(
+              `no app or application menu, ${app}, ${app.applicationMenu}`
+            )
           }
           const userSettings = app.applicationMenu.getMenuItemById(
             'File.Preferences.User settings'
           )
-          if (!userSettings) test.fail()
+          if (!userSettings) {
+            throw new Error('no menu')
+          }
           userSettings.click()
         })
         const settings = page.getByTestId('settings-dialog-panel')
@@ -87,17 +99,21 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         page,
       }) => {
         if (!tronApp) {
-          test.fail()
+          throw new Error('no tronApp')
         }
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) test.fail()
+          if (!app || !app.applicationMenu) {
+            throw new Error(
+              `no app or application menu, ${app}, ${app.applicationMenu}`
+            )
+          }
           const keybindings = app.applicationMenu.getMenuItemById(
             'File.Preferences.Keybindings'
           )
           if (!keybindings) {
-            test.fail()
+            throw new Error('no menu')
           }
           keybindings.click()
         })
@@ -112,17 +128,23 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         cmdBar,
         page,
       }) => {
-        if (!tronApp) test.fail()
+        if (!tronApp) {
+          throw new Error('no tronApp')
+        }
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            test.fail()
+            throw new Error(
+              `no app or application menu, ${app}, ${app.applicationMenu}`
+            )
           }
           const menu = app.applicationMenu.getMenuItemById(
             'File.Preferences.User default units'
           )
-          if (!menu) test.fail()
+          if (!menu) {
+            throw new Error('no menu')
+          }
           menu.click()
         })
         const settings = page.getByTestId('settings-dialog-panel')
@@ -132,17 +154,21 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       })
       test('File.Preferences.Theme', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) {
-          test.fail()
+          throw new Error('no tronApp')
         }
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) test.fail()
+          if (!app || !app.applicationMenu) {
+            throw new Error(
+              `no app or application menu, ${app}, ${app.applicationMenu}`
+            )
+          }
           const menu = app.applicationMenu.getMenuItemById(
             'File.Preferences.Theme'
           )
           if (!menu) {
-            test.fail()
+            throw new Error('no menu')
           }
           menu.click()
         })
@@ -160,17 +186,23 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         cmdBar,
         page,
       }) => {
-        if (!tronApp) test.fail()
+        if (!tronApp) {
+          throw new Error('no tronApp')
+        }
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            test.fail()
+            throw new Error(
+              `no app or applicationMenu, ${app}, ${app.applicationMenu}`
+            )
           }
           const menu = app.applicationMenu.getMenuItemById(
             'File.Preferences.Theme color'
           )
-          if (!menu) test.fail()
+          if (!menu) {
+            throw new Error('no menu')
+          }
           menu.click()
         })
         const settings = page.getByTestId('settings-dialog-panel')
@@ -180,15 +212,19 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       })
       test('File.Preferences.Sign out', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) {
-          test.fail()
+          throw new Error('no tronApp')
         }
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) test.fail()
+          if (!app || !app.applicationMenu) {
+            throw new Error(
+              `no app or application menu, ${app}, ${app.applicationMenu}`
+            )
+          }
           const menu = app.applicationMenu.getMenuItemById('File.Sign out')
           if (!menu) {
-            test.fail()
+            throw new Error('no menu')
           }
           // FIXME: Add back when you can actually sign out
           // menu.click()
@@ -202,17 +238,23 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
 
     test.describe('Edit role', () => {
       test('Edit.Rename project', async ({ tronApp, cmdBar, page }) => {
-        if (!tronApp) test.fail()
+        if (!tronApp) {
+          throw new Error('no tronApp')
+        }
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            test.fail()
+            throw new Error(
+              `no app or applicationMenu, ${app}, ${app.applicationMenu}`
+            )
           }
           const menu = app.applicationMenu.getMenuItemById(
             'Edit.Rename project'
           )
-          if (!menu) test.fail()
+          if (!menu) {
+            throw new Error('no menu')
+          }
           menu.click()
         })
         // Check the placeholder project name exists
@@ -224,17 +266,21 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       })
       test('Edit.Delete project', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) {
-          test.fail()
+          throw new Error('no tronApp')
         }
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) test.fail()
+          if (!app || !app.applicationMenu) {
+            throw new Error(
+              `no app or application menu, ${app}, ${app.applicationMenu}`
+            )
+          }
           const menu = app.applicationMenu.getMenuItemById(
             'Edit.Delete project'
           )
           if (!menu) {
-            test.fail()
+            throw new Error('no menu')
           }
           menu.click()
         })
@@ -249,17 +295,23 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         cmdBar,
         page,
       }) => {
-        if (!tronApp) test.fail()
+        if (!tronApp) {
+          throw new Error('no tronApp')
+        }
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            test.fail()
+            throw new Error(
+              `no app or applicationMenu, ${app}, ${app.applicationMenu}`
+            )
           }
           const menu = app.applicationMenu.getMenuItemById(
             'Edit.Change project directory'
           )
-          if (!menu) test.fail()
+          if (!menu) {
+            throw new Error('no menu')
+          }
           menu.click()
         })
         const settings = page.getByTestId('settings-dialog-panel')
@@ -271,17 +323,21 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
     test.describe('View role', () => {
       test('View.Command Palette...', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) {
-          test.fail()
+          throw new Error('no tronApp')
         }
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) test.fail()
+          if (!app || !app.applicationMenu) {
+            throw new Error(
+              `no app or application menu, ${app}, ${app.applicationMenu}`
+            )
+          }
           const menu = app.applicationMenu.getMenuItemById(
             'View.Command Palette...'
           )
           if (!menu) {
-            test.fail()
+            throw new Error('no menu')
           }
           menu.click()
         })
@@ -292,17 +348,23 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
     })
     test.describe('Help role', () => {
       test('Help.Show all commands', async ({ tronApp, cmdBar, page }) => {
-        if (!tronApp) test.fail()
+        if (!tronApp) {
+          throw new Error('no tronApp')
+        }
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            test.fail()
+            throw new Error(
+              `no app or applicationMenu, ${app}, ${app.applicationMenu}`
+            )
           }
           const menu = app.applicationMenu.getMenuItemById(
             'Help.Show all commands'
           )
-          if (!menu) test.fail()
+          if (!menu) {
+            throw new Error('no menu')
+          }
           menu.click()
         })
         // Check the placeholder project name exists
@@ -311,17 +373,21 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       })
       test('Help.KCL code samples', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) {
-          test.fail()
+          throw new Error('no tronApp')
         }
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) test.fail()
+          if (!app || !app.applicationMenu) {
+            throw new Error(
+              `no app or application menu, ${app}, ${app.applicationMenu}`
+            )
+          }
           const menu = app.applicationMenu.getMenuItemById(
             'Help.KCL code samples'
           )
           if (!menu) {
-            test.fail()
+            throw new Error('no menu')
           }
         })
       })
@@ -330,17 +396,23 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         cmdBar,
         page,
       }) => {
-        if (!tronApp) test.fail()
+        if (!tronApp) {
+          throw new Error('no tronApp')
+        }
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            test.fail()
+            throw new Error(
+              `no app or applicationMenu, ${app}, ${app.applicationMenu}`
+            )
           }
           const menu = app.applicationMenu.getMenuItemById(
             'Help.Refresh and report a bug'
           )
-          if (!menu) test.fail()
+          if (!menu) {
+            throw new Error('no menu')
+          }
           menu.click()
         })
         // Core dump and refresh magic number timeout
@@ -352,17 +424,21 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       })
       test('Help.Reset onboarding', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) {
-          test.fail()
+          throw new Error('no tronApp')
         }
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) test.fail()
+          if (!app || !app.applicationMenu) {
+            throw new Error(
+              `no app or application menu, ${app}, ${app.applicationMenu}`
+            )
+          }
           const menu = app.applicationMenu.getMenuItemById(
             'Help.Reset onboarding'
           )
           if (!menu) {
-            test.fail()
+            throw new Error('no menu')
           }
           menu.click()
         })
