@@ -8,7 +8,7 @@
 import * from "parameters.kcl"
 
 // Import parts
-import '9472k188-gasket.kcl' as gasket
+import "9472k188-gasket.kcl" as gasket
 import flange from "68095k348-flange.kcl"
 import washer from "98017a257-washer.kcl"
 import bolt from "91251a404-bolt.kcl"
