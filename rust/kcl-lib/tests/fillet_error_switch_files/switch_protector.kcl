@@ -1,0 +1,24 @@
+holeFudgeD = 0.4
+holeFudgeR = holeFudgeD / 2
+
+totalH = 12.5
+switchNutD = 9.5
+switchNutR = switchNutD / 2
+bottomInnerR = switchNutR + holeFudgeR
+bottomOuterR = 13.5
+topInnerR = switchNutR + 1.5 + holeFudgeR
+topFlatL = 1
+topOuterR = topInnerR + topFlatL
+baseH = 1
+coneH = totalH - baseH
+
+sketch001 = startSketchOn(XZ)
+  |> startProfileAt([bottomInnerR, 0], %)
+  |> xLine(endAbsolute = bottomOuterR)
+  |> yLine(length = baseH)
+  |> line(end = [-(bottomOuterR - topOuterR), coneH])
+  |> line(end = [-(topOuterR - topInnerR), 0])
+  |> close(%)
+  |> revolve(axis = Y)
+
+
