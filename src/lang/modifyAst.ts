@@ -3,10 +3,10 @@ import type { Models } from '@kittycad/lib'
 import type { BodyItem } from '@rust/kcl-lib/bindings/BodyItem'
 import type { Name } from '@rust/kcl-lib/bindings/Name'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { NonCodeMeta } from '@rust/kcl-lib/bindings/NonCodeMeta'
 
 import {
   createArrayExpression,
-  createCallExpression,
   createCallExpressionStdLib,
   createCallExpressionStdLibKw,
   createExpressionStatement,
@@ -1356,7 +1356,9 @@ export async function deleteFromSelection(
       if (!pathToNode) return new Error('Could not find extrude variable')
     } else {
       pathToNode = selection.codeRef.pathToNode
-      if (varDec.node.type !== 'VariableDeclarator') {
+      if (varDec.node.type === 'VariableDeclarator') {
+        extrudeNameToDelete = varDec.node.id.name
+      } else if (varDec.node.type === 'CallExpression') {
         const callExp = getNodeFromPath<CallExpression>(
           astClone,
           pathToNode,
@@ -1365,7 +1367,7 @@ export async function deleteFromSelection(
         if (err(callExp)) return callExp
         extrudeNameToDelete = callExp.node.callee.name.name
       } else {
-        extrudeNameToDelete = varDec.node.id.name
+        return new Error('Could not find extrude variable or call')
       }
     }
 
@@ -1693,7 +1695,7 @@ export function splitPipedProfile(
     }
   | Error {
   const _ast = structuredClone(ast)
-  const varDec = getNodeFromPath<VariableDeclaration>(
+  const varDec = getNodeFromPath<Node<VariableDeclaration>>(
     _ast,
     pathToPipe,
     'VariableDeclaration'
@@ -1717,26 +1719,53 @@ export function splitPipedProfile(
   const newVarName = findUniqueName(_ast, 'sketch')
   const secondCallArgs = structuredClone(secondCall.arguments)
   secondCallArgs[1] = createLocalName(newVarName)
-  const firstCallOfNewPipe = createCallExpression(
-    'startProfileAt',
-    secondCallArgs
-  )
-  const newSketch = createVariableDeclaration(
-    newVarName,
-    varDec.node.declaration.init.body[0]
-  )
-  const newProfile = createVariableDeclaration(
-    varName,
-    varDec.node.declaration.init.body.length <= 2
-      ? firstCallOfNewPipe
-      : createPipeExpression([
-          firstCallOfNewPipe,
-          ...varDec.node.declaration.init.body.slice(2),
-        ])
-  )
+  const startSketchOnBrokenIntoNewVarDec = structuredClone(varDec.node)
+  const profileBrokenIntoItsOwnVar = structuredClone(varDec.node)
+  if (
+    startSketchOnBrokenIntoNewVarDec.declaration.init.type !== 'PipeExpression'
+  ) {
+    return new Error('clonedVarDec1 is not a PipeExpression')
+  }
+  varDec.node.declaration.init =
+    startSketchOnBrokenIntoNewVarDec.declaration.init.body[0]
+  varDec.node.declaration.id.name = newVarName
+  if (profileBrokenIntoItsOwnVar.declaration.init.type !== 'PipeExpression') {
+    return new Error('clonedVarDec2 is not a PipeExpression')
+  }
+  profileBrokenIntoItsOwnVar.declaration.init.body =
+    profileBrokenIntoItsOwnVar.declaration.init.body.slice(1)
+  if (
+    !(
+      profileBrokenIntoItsOwnVar.declaration.init.body[0].type ===
+        'CallExpression' &&
+      profileBrokenIntoItsOwnVar.declaration.init.body[0].callee.name.name ===
+        'startProfileAt'
+    )
+  ) {
+    return new Error('problem breaking pipe, expect startProfileAt to be first')
+  }
+  profileBrokenIntoItsOwnVar.declaration.init.body[0].arguments[1] =
+    createLocalName(newVarName)
+  profileBrokenIntoItsOwnVar.declaration.id.name = varName
+  profileBrokenIntoItsOwnVar.preComments = [] // we'll duplicate the comments since the new variable will have it to
+
+  // new pipe has one less from the start, so need to decrement comments for them to remain in the same place
+  if (profileBrokenIntoItsOwnVar.declaration.init?.nonCodeMeta?.nonCodeNodes) {
+    let decrementedNonCodeMeta: NonCodeMeta['nonCodeNodes'] = {}
+    decrementedNonCodeMeta =
+      Object.entries(
+        profileBrokenIntoItsOwnVar.declaration.init?.nonCodeMeta?.nonCodeNodes
+      ).reduce((acc, [key, value]) => {
+        acc[Number(key) - 1] = value
+        return acc
+      }, decrementedNonCodeMeta) || {}
+    profileBrokenIntoItsOwnVar.declaration.init.nonCodeMeta.nonCodeNodes =
+      decrementedNonCodeMeta
+  }
+
   const index = getBodyIndex(pathToPipe)
   if (err(index)) return index
-  _ast.body.splice(index, 1, newSketch, newProfile)
+  _ast.body.splice(index + 1, 0, profileBrokenIntoItsOwnVar)
   const pathToPlane = structuredClone(pathToPipe)
   const pathToProfile = structuredClone(pathToPipe)
   pathToProfile[1][0] = index + 1
