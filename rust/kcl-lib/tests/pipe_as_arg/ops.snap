@@ -4,30 +4,36 @@ description: Operations executed pipe_as_arg.kcl
 ---
 [
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "double",
-    "functionSourceRange": [
-      404,
-      426,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "double",
+      "functionSourceRange": [
+        404,
+        426,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "cube",
-    "functionSourceRange": [
-      7,
-      393,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cube",
+      "functionSourceRange": [
+        7,
+        393,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -72,6 +78,6 @@ description: Operations executed pipe_as_arg.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   }
 ]

@@ -4,15 +4,18 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
 ---
 [
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "bracketSketch",
-    "functionSourceRange": [
-      1212,
-      1736,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "bracketSketch",
+      "functionSourceRange": [
+        1212,
+        1736,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -207,7 +210,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
