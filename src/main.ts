@@ -99,6 +99,8 @@ if (!singleInstanceLock && !IS_PLAYWRIGHT) {
 }
 
 const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
+  new BrowserWindow({}).loadURL('chrome://gpu')
+
   let newWindow
 
   if (reuse) {
