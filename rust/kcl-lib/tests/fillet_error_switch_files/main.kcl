@@ -1,0 +1,71 @@
+holeFudge = 0.4
+frontBarD = 5.0
+yBarD = 6.7
+slideGap = 0.7
+lowerBlockTransHole = {
+  r = (frontBarD + slideGap + holeFudge) / 2
+}
+upperBlockLongHole = { r = (yBarD + holeFudge) / 2 }
+
+upperBlockTransHole = { r = (yBarD + holeFudge) / 2 }
+tubeClr = 1.5
+lowerBlock = {
+  h = 2 * lowerBlockTransHole.r + 2 * tubeClr,
+  l = 70
+}
+upperBlock = {
+  h = 2 * upperBlockLongHole.r + 2 * tubeClr,
+  l = 25
+}
+elevate = { h = 5 }
+
+blockSz = max(upperBlock.h, lowerBlock.h)
+
+slot = { l = 10, h = 1 }
+
+sketch001 = startSketchOn(XZ)
+  |> startProfileAt([0, 0], %)
+  |> yLine(length = blockSz, tag = $edgeA)
+  |> xLine(length = blockSz, tag = $edgeB)
+  |> yLine(length = -blockSz, tag = $edgeC)
+  |> xLine(length = upperBlock.l - blockSz, tag = $edge1)
+  |> yLine(length = -(elevate.h + blockSz), tag = $edge2)
+  |> xLine(length = lowerBlock.l - blockSz, tag = $edge3)
+  |> yLine(length = -blockSz, tag = $edge4)
+  |> xLine(length = -lowerBlock.l, tag = $edge5)
+  |> yLine(length = blockSz + elevate.h, tag = $edge6)
+  |> xLine(length = -(upperBlock.l - blockSz), tag = $edge7)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> close(%)
+  |> hole(circle(center = [blockSz / 2, blockSz / 2], radius = upperBlockTransHole.r), %)
+  |> hole(circle(
+       center = [
+         upperBlock.l + lowerBlock.l - blockSz - lowerBlockTransHole.r - tubeClr,
+         -(blockSz + elevate.h + blockSz / 2)
+       ],
+       radius = lowerBlockTransHole.r,
+     ), %)
+rad = 3
+
+extrude001 = extrude(sketch001, length = blockSz)
+  |> fillet(
+       radius = rad,
+       tags = [
+         getNextAdjacentEdge(edgeA),
+         getNextAdjacentEdge(edgeB),
+         getNextAdjacentEdge(edgeC),
+         getNextAdjacentEdge(edge1),
+         getNextAdjacentEdge(edge2),
+         getNextAdjacentEdge(edge3),
+         getNextAdjacentEdge(edge4),
+         getNextAdjacentEdge(edge5),
+         getNextAdjacentEdge(edge6),
+         getNextAdjacentEdge(edge7)
+       ],
+     )
+
+sketch002 = startSketchOn(extrude001, seg01)
+  |> startProfileAt([0, 0], %)
+  |> circle(center = [blockSz / 2, -blockSz / 2], radius = upperBlockLongHole.r)
+  |> extrude(length = -upperBlock.l)
+
