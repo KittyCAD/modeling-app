@@ -340,7 +340,7 @@ jobs:
         run: yarn tronb:vite:dev
 
       - name: Install vector
-        if: ${{ needs.conditions.outputs.should-run == 'true' && contains(matrix.os, 'ubuntu') }}
+        if: ${{ needs.conditions.outputs.should-run == 'true' && !contains(matrix.os, 'windows') }}
         shell: bash
         run: |
           curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh
