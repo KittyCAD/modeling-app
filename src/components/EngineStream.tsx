@@ -17,6 +17,7 @@ import {
 import { REASONABLE_TIME_TO_REFRESH_STREAM_SIZE } from '@src/lib/timings'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
+import { uuidv4 } from '@src/lib/utils'
 import { engineStreamActor, useSettings } from '@src/machines/appMachine'
 import { useCommandBarState } from '@src/machines/commandBarMachine'
 import {
@@ -26,7 +27,7 @@ import {
 
 import { useSelector } from '@xstate/react'
 import type { MouseEventHandler } from 'react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouteLoaderData } from 'react-router-dom'
 
 export const EngineStream = (props: {
@@ -34,6 +35,7 @@ export const EngineStream = (props: {
   authToken: string | undefined
 }) => {
   const { setAppState } = useAppState()
+  const [firstPlay, setFirstPlay] = useState(true)
 
   const { overallState } = useNetworkContext()
   const settings = useSettings()
@@ -76,11 +78,49 @@ export const EngineStream = (props: {
     })
   }
 
+  // When the scene is ready play the stream and execute!
   const play = () => {
     engineStreamActor.send({
       type: EngineStreamTransition.Play,
     })
+
+    const kmp = kclManager.executeCode().catch(trap)
+
+    if (!firstPlay) return
+    setFirstPlay(false)
+    console.log('scene is ready, fire!')
+
+    kmp
+      .then(() =>
+        // It makes sense to also call zoom to fit here, when a new file is
+        // loaded for the first time, but not overtaking the work kevin did
+        // so the camera isn't moving all the time.
+        engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'zoom_to_fit',
+            object_ids: [], // leave empty to zoom to all objects
+            padding: 0.1, // padding around the objects
+            animated: false, // don't animate the zoom for now
+          },
+        })
+      )
+      .catch(trap)
   }
+
+  useEffect(() => {
+    engineCommandManager.addEventListener(
+      EngineCommandManagerEvents.SceneReady,
+      play
+    )
+    return () => {
+      engineCommandManager.removeEventListener(
+        EngineCommandManagerEvents.SceneReady,
+        play
+      )
+    }
+  }, [firstPlay])
 
   useEffect(() => {
     engineCommandManager.addEventListener(
@@ -99,10 +139,6 @@ export const EngineStream = (props: {
 
     return () => {
       engineCommandManager.tearDown()
-      engineCommandManager.removeEventListener(
-        EngineCommandManagerEvents.SceneReady,
-        play
-      )
     }
   }, [])
 
@@ -175,9 +211,27 @@ export const EngineStream = (props: {
   useEffect(() => {
     if (engineCommandManager.engineConnection?.isReady() && file?.path) {
       console.log('file changed, executing code')
-      kclManager.executeCode().catch(trap)
+      kclManager
+        .executeCode()
+        .catch(trap)
+        .then(() =>
+          // It makes sense to also call zoom to fit here, when a new file is
+          // loaded for the first time, but not overtaking the work kevin did
+          // so the camera isn't moving all the time.
+          engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'zoom_to_fit',
+              object_ids: [], // leave empty to zoom to all objects
+              padding: 0.1, // padding around the objects
+              animated: false, // don't animate the zoom for now
+            },
+          })
+        )
+        .catch(trap)
     }
-  }, [file?.path, engineCommandManager.engineConnection])
+  }, [file?.path])
 
   const IDLE_TIME_MS = Number(streamIdleMode)
 
