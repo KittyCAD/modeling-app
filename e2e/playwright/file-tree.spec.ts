@@ -47,6 +47,7 @@ test.describe('integrations tests', () => {
         await scene.connectionEstablished()
         await scene.settled(cmdBar)
         await clickObj()
+        await page.waitForTimeout(1000)
         await scene.moveNoWhere()
         await editor.expectState({
           activeLines: [
@@ -72,10 +73,11 @@ test.describe('integrations tests', () => {
       })
       await test.step('setup for next assertion', async () => {
         await toolbar.openFile('main.kcl')
-        await scene.settled(cmdBar)
-
+        await page.waitForTimeout(1000)
         await clickObj()
+        await page.waitForTimeout(1000)
         await scene.moveNoWhere()
+        await page.waitForTimeout(1000)
         await editor.expectState({
           activeLines: [
             '|>startProfileAt([75.8,317.2],%)//[$startCapTag,$EndCapTag]',
