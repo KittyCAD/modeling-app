@@ -1695,15 +1695,18 @@ export function splitPipedProfile(
   profileBrokenIntoItsOwnVar.preComments = [] // we'll duplicate the comments since the new variable will have it to
 
   // new pipe has one less from the start, so need to decrement comments for them to remain in the same place
-  let decrementedNonCodeMeta: NonCodeMeta['nonCodeNodes'] = {}
-  decrementedNonCodeMeta = Object.entries(
-    profileBrokenIntoItsOwnVar.declaration.init.nonCodeMeta.nonCodeNodes
-  ).reduce((acc, [key, value]) => {
-    acc[Number(key) - 1] = value
-    return acc
-  }, decrementedNonCodeMeta)
-  profileBrokenIntoItsOwnVar.declaration.init.nonCodeMeta.nonCodeNodes =
-    decrementedNonCodeMeta
+  if (profileBrokenIntoItsOwnVar.declaration.init?.nonCodeMeta?.nonCodeNodes) {
+    let decrementedNonCodeMeta: NonCodeMeta['nonCodeNodes'] = {}
+    decrementedNonCodeMeta =
+      Object.entries(
+        profileBrokenIntoItsOwnVar.declaration.init?.nonCodeMeta?.nonCodeNodes
+      ).reduce((acc, [key, value]) => {
+        acc[Number(key) - 1] = value
+        return acc
+      }, decrementedNonCodeMeta) || {}
+    profileBrokenIntoItsOwnVar.declaration.init.nonCodeMeta.nonCodeNodes =
+      decrementedNonCodeMeta
+  }
 
   const index = getBodyIndex(pathToPipe)
   if (err(index)) return index
