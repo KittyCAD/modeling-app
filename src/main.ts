@@ -39,7 +39,7 @@ import {
   enableMenu,
 } from '@src/menu'
 
-if (os.platform() !== 'win32') {
+if (os.platform() === 'win32') {
   require('win-ca')
 }
 
