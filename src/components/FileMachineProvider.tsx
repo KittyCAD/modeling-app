@@ -11,6 +11,8 @@ import type {
 } from 'xstate'
 import { fromPromise } from 'xstate'
 
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
+import { useMenuListener } from '@src/hooks/useMenu'
 import { newKclFile } from '@src/lang/project'
 import { createNamedViewsCommand } from '@src/lib/commandBarConfigs/namedViewsConfig'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
@@ -34,6 +36,7 @@ import { type IndexLoaderData } from '@src/lib/types'
 import { useSettings, useToken } from '@src/machines/appMachine'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import { fileMachine } from '@src/machines/fileMachine'
+import { modelingMenuCallbackMostActions } from '@src/menu/register'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -59,6 +62,14 @@ export const FileMachineProvider = ({
   const [kclSamples, setKclSamples] = React.useState<KclSamplesManifestItem[]>(
     []
   )
+
+  const filePath = useAbsoluteFilePath()
+  // Only create the native file menus on desktop
+  useEffect(() => {
+    if (isDesktop()) {
+      window.electron.createModelingPageMenu().catch(reportRejection)
+    }
+  }, [])
 
   // Only create the native file menus on desktop
   useEffect(() => {
@@ -413,6 +424,15 @@ export const FileMachineProvider = ({
       },
     }
   )
+
+  const cb = modelingMenuCallbackMostActions(
+    settings,
+    navigate,
+    filePath,
+    project,
+    token
+  )
+  useMenuListener(cb)
 
   const kclCommandMemo = useMemo(
     () =>
