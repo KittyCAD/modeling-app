@@ -1319,9 +1319,10 @@ sketch001 = startSketchOn(XZ)
   test(`Only show axis planes when there are no errors`, async ({
     page,
     homePage,
-  }, testInfo) => {
+    scene,
+    cmdBar,
+  }) => {
     await page.addInitScript(async () => {
-      // extrude length = 0 causes an error
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XZ)
@@ -1329,7 +1330,7 @@ sketch001 = startSketchOn(XZ)
 
     sketch002 = startSketchOn(XZ)
     profile002 = circle(sketch002, center = [-100.0, 100.0], radius = 50.0)
-    extrude001 = extrude(profile002, length = 0)` // length = 0 is causing an error
+    extrude001 = extrude(profile002, length = 0)` // length = 0 is causing the error
       )
     })
 
@@ -1338,37 +1339,14 @@ sketch001 = startSketchOn(XZ)
 
     await homePage.goToModelingScene()
 
-    const u = await getUtils(page)
-    const locationToHaveColor = async (
-      position: { x: number; y: number },
-      color: [number, number, number]
-    ) => {
-      return u.getGreatestPixDiff(position, color)
-    }
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
 
-    await u.waitForPageLoad()
-
-    // Wait until axis planes are rendered.
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
-
-    // Alternatively just wait a bit
-    // await page.waitForTimeout(3000)
-
-    await expect
-      .poll(
-        async () =>
-          locationToHaveColor(
-            // This is a position where the blue part of the axis plane is visible if its rendered
-            { x: viewportSize.width * 0.75, y: viewportSize.height * 0.2 },
-            TEST_COLORS.DARK_MODE_BKGD
-          ),
-        {
-          timeout: 5000,
-          message: 'XZ plane color is visible',
-        }
-      )
-      .toBeLessThan(15)
+    await scene.expectPixelColor(
+      TEST_COLORS.DARK_MODE_BKGD,
+      // This is a position where the blue part of the axis plane is visible if its rendered
+      { x: viewportSize.width * 0.75, y: viewportSize.height * 0.2 },
+      15
+    )
   })
 })
