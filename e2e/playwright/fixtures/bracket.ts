@@ -6,6 +6,7 @@ export const bracket = fs.readFileSync(
     __dirname,
     '../',
     '../',
+    '../',
     'public',
     'kcl-samples',
     'bracket',
