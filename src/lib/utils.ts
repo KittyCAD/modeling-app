@@ -470,6 +470,6 @@ export function binaryToUuid(
   ].join('-')
 }
 
-export function sourceRangeFileIndex(sourceRange: SourceRange) {
+export function getModuleId(sourceRange: SourceRange) {
   return sourceRange[2]
 }

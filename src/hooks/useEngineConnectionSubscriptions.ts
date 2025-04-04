@@ -25,7 +25,7 @@ import {
   sceneInfra,
 } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
-import { sourceRangeFileIndex } from '@src/lib/utils'
+import { getModuleId } from '@src/lib/utils'
 import type {
   EdgeCutInfo,
   ExtrudeFacePlane,
@@ -190,16 +190,25 @@ export function useEngineConnectionSubscriptions() {
                 kclManager.artifactGraph
               )
               if (!err(extrusion)) {
-                const fileIndex = sourceRangeFileIndex(extrusion.codeRef.range)
+                const fileIndex = getModuleId(extrusion.codeRef.range)
                 if (fileIndex !== 0) {
                   const importDetails =
                     kclManager.execState.filenames[fileIndex]
+                  if (!importDetails) {
+                    toast.error("can't sketch on this face")
+                    return
+                  }
                   if (importDetails?.type === 'Local') {
                     const paths = importDetails.value.split('/')
                     const fileName = paths[paths.length - 1]
                     showSketchOnImportToast(fileName)
-                  } else {
+                  } else if (
+                    importDetails?.type === 'Main' ||
+                    importDetails?.type === 'Std'
+                  ) {
                     toast.error("can't sketch on this face")
+                  } else {
+                    const _exhaustiveCheck: never = importDetails
                   }
                 }
               }

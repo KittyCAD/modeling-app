@@ -13,6 +13,7 @@ import {
 } from '@src/editor/highlightextension'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
+import { isTopLevelModule } from '@src/lang/util'
 import { markOnce } from '@src/lib/performance'
 import type { Selection, Selections } from '@src/lib/selections'
 import { processCodeMirrorRanges } from '@src/lib/selections'
@@ -151,22 +152,15 @@ export default class EditorManager {
     selection: Array<Selection['codeRef']['range']>
   ): Array<[number, number]> {
     if (!this._editorView) {
-      return selection
-        .filter((s) => s[2] === 0)
-        .map((s): [number, number] => {
-          return [s[0], s[1]]
-        })
+      return selection.filter(isTopLevelModule).map((s): [number, number] => {
+        return [s[0], s[1]]
+      })
     }
 
-    return selection
-      .filter((s) => s[2] === 0)
-      .map((s): [number, number] => {
-        const safeEnd = Math.min(
-          s[1],
-          this._editorView?.state.doc.length || s[1]
-        )
-        return [s[0], safeEnd]
-      })
+    return selection.filter(isTopLevelModule).map((s): [number, number] => {
+      const safeEnd = Math.min(s[1], this._editorView?.state.doc.length || s[1])
+      return [s[0], safeEnd]
+    })
   }
 
   set selectionRanges(selectionRanges: Selections) {
