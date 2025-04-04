@@ -31,13 +31,21 @@ pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValu
     Ok(sketches.into())
 }
 
+/// Mirror a sketch.
+///
+/// Only works on unclosed sketches for now.
 async fn inner_mirror_2d(
     sketches: Vec<Sketch>,
     axis: Axis2dOrEdgeReference,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Sketch>, KclError> {
-    let starting_sketches = sketches;
+    let mut starting_sketches = sketches.clone();
+
+    // Update all to have a mirror.
+    starting_sketches.iter_mut().for_each(|sketch| {
+        sketch.mirror = true;
+    });
 
     if args.ctx.no_engine_commands().await {
         return Ok(starting_sketches);
