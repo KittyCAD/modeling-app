@@ -154,7 +154,6 @@ export class ElectronZoo {
     if (!this.electron) {
       this.electron = await electron.launch(options)
 
-      this.page = await this.electron.firstWindow()
       // Mac takes quite a long time to create the first window in CI.
       // Turns out we can't trust firstWindow() either. So loop.
       let timeoutId: ReturnType<typeof setTimeout>
