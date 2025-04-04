@@ -87,7 +87,7 @@ lint: install ## Lint the code
 ###############################################################################
 # RUN
 
-TARGET ?= web
+TARGET ?= desktop
 
 .PHONY: run
 run: run-$(TARGET)
@@ -104,6 +104,7 @@ run-desktop: install build-desktop ## Start the desktop app
 # TEST
 
 E2E_GREP ?=
+E2E_WORKERS ?=
 E2E_FAILURES ?= 1
 
 .PHONY: test

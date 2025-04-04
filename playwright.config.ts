@@ -1,10 +1,27 @@
 import { defineConfig, devices } from '@playwright/test'
+import os from 'os'
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// require('dotenv').config();
+const platform = os.platform() // 'linux' (Ubuntu), 'darwin' (macOS), 'win32' (Windows)
+
+let workers: number | string
+
+if (process.env.E2E_WORKERS) {
+  workers = process.env.E2E_WORKERS
+} else if (!process.env.CI) {
+  workers = 1 // Local dev: keep things simple and deterministic by default
+} else {
+  // On CI: adjust based on OS
+  switch (platform) {
+    case 'linux':
+      workers = '100%' // CI Linux runners are generally beefier
+      break
+    case 'darwin':
+    case 'win32':
+    default:
+      workers = '75%' // Slightly conservative for GUI-based OSes
+      break
+  }
+}
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -20,7 +37,7 @@ export default defineConfig({
   /* Do not retry */
   retries: process.env.CI ? 0 : 0,
   /* Use all available CPU cores */
-  workers: process.env.CI ? '100%' : 1,
+  workers: workers,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     [process.env.CI ? 'dot' : 'list'],
