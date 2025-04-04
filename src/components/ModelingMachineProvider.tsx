@@ -19,6 +19,7 @@ import type {
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 
+import { useAppState } from '@src/AppState'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
 import {
   SEGMENT_BODIES,
@@ -26,6 +27,7 @@ import {
 } from '@src/clientSideScene/sceneConstants'
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import { MachineManagerContext } from '@src/components/MachineManagerProvider'
+import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
 import { applyConstraintIntersect } from '@src/components/Toolbar/Intersect'
 import { applyConstraintAbsDistance } from '@src/components/Toolbar/SetAbsDistance'
 import {
@@ -38,8 +40,14 @@ import {
   applyConstraintLength,
 } from '@src/components/Toolbar/setAngleLength'
 import { useFileContext } from '@src/hooks/useFileContext'
+import {
+  useMenuListener,
+  useSketchModeMenuEnableDisable,
+} from '@src/hooks/useMenu'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { useSetupEngineManager } from '@src/hooks/useSetupEngineManager'
 import useStateMachineCommands from '@src/hooks/useStateMachineCommands'
+import { useKclContext } from '@src/lang/KclProvider'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   insertNamedConstant,
@@ -111,6 +119,7 @@ import {
   modelingMachine,
   modelingMachineDefaultContext,
 } from '@src/machines/modelingMachine'
+import type { WebContentSendPayload } from '@src/menu/channels'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -1754,6 +1763,142 @@ export const ModelingMachineProvider = ({
       },
       // devTools: true,
     }
+  )
+
+  // Register file menu actions based off modeling send
+  const cb = (data: WebContentSendPayload) => {
+    const openPanes = modelingActor.getSnapshot().context.store.openPanes
+    if (data.menuLabel === 'View.Panes.Feature tree') {
+      const featureTree: SidebarType = 'feature-tree'
+      const alwaysAddFeatureTree: SidebarType[] = [
+        ...new Set([...openPanes, featureTree]),
+      ]
+      modelingSend({
+        type: 'Set context',
+        data: {
+          openPanes: alwaysAddFeatureTree,
+        },
+      })
+    } else if (data.menuLabel === 'View.Panes.KCL code') {
+      const code: SidebarType = 'code'
+      const alwaysAddCode: SidebarType[] = [...new Set([...openPanes, code])]
+      modelingSend({
+        type: 'Set context',
+        data: {
+          openPanes: alwaysAddCode,
+        },
+      })
+    } else if (data.menuLabel === 'View.Panes.Project files') {
+      const projectFiles: SidebarType = 'files'
+      const alwaysAddProjectFiles: SidebarType[] = [
+        ...new Set([...openPanes, projectFiles]),
+      ]
+      modelingSend({
+        type: 'Set context',
+        data: {
+          openPanes: alwaysAddProjectFiles,
+        },
+      })
+    } else if (data.menuLabel === 'View.Panes.Variables') {
+      const variables: SidebarType = 'variables'
+      const alwaysAddVariables: SidebarType[] = [
+        ...new Set([...openPanes, variables]),
+      ]
+      modelingSend({
+        type: 'Set context',
+        data: {
+          openPanes: alwaysAddVariables,
+        },
+      })
+    } else if (data.menuLabel === 'View.Panes.Logs') {
+      const logs: SidebarType = 'logs'
+      const alwaysAddLogs: SidebarType[] = [...new Set([...openPanes, logs])]
+      modelingSend({
+        type: 'Set context',
+        data: {
+          openPanes: alwaysAddLogs,
+        },
+      })
+    } else if (data.menuLabel === 'Design.Start sketch') {
+      modelingSend({
+        type: 'Enter sketch',
+        data: { forceNewSketch: true },
+      })
+    }
+  }
+  useMenuListener(cb)
+
+  const { overallState } = useNetworkContext()
+  const { isExecuting } = useKclContext()
+  const { isStreamReady } = useAppState()
+
+  // Assumes all commands are network commands
+  useSketchModeMenuEnableDisable(
+    modelingState.context.currentMode,
+    overallState,
+    isExecuting,
+    isStreamReady,
+    [
+      { menuLabel: 'Edit.Modify with Zoo Text-To-CAD' },
+      { menuLabel: 'View.Standard views' },
+      { menuLabel: 'View.Named views' },
+      { menuLabel: 'Design.Start sketch' },
+      {
+        menuLabel: 'Design.Create an offset plane',
+        commandName: 'Offset plane',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Create a helix',
+        commandName: 'Helix',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Create an additive feature.Extrude',
+        commandName: 'Extrude',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Create an additive feature.Revolve',
+        commandName: 'Revolve',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Create an additive feature.Sweep',
+        commandName: 'Sweep',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Create an additive feature.Loft',
+        commandName: 'Loft',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Apply modification feature.Fillet',
+        commandName: 'Fillet',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Apply modification feature.Chamfer',
+        commandName: 'Chamfer',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Apply modification feature.Shell',
+        commandName: 'Shell',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Create with Zoo Text-To-CAD',
+        commandName: 'Text-to-CAD',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Modify with Zoo Text-To-CAD',
+        commandName: 'Prompt-to-edit',
+        groupId: 'modeling',
+      },
+    ]
   )
 
   // Add debug function to window object

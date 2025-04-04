@@ -1,5 +1,29 @@
 import { defineConfig, devices } from '@playwright/test'
-import { platform } from 'os'
+import os from 'os'
+
+const platform = os.platform() // 'linux' (Ubuntu), 'darwin' (macOS), 'win32' (Windows)
+
+let workers: number | string
+
+if (process.env.E2E_WORKERS) {
+  workers = process.env.E2E_WORKERS.includes('%')
+    ? process.env.E2E_WORKERS
+    : parseInt(process.env.E2E_WORKERS)
+} else if (!process.env.CI) {
+  workers = 1 // Local dev: keep things simple and deterministic by default
+} else {
+  // On CI: adjust based on OS
+  switch (platform) {
+    case 'linux':
+      workers = '50%' // CI Linux runners are generally beefier
+      break
+    case 'darwin':
+    case 'win32':
+    default:
+      workers = '25%' // Lower concurrency for heavier Electron processes
+      break
+  }
+}
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -14,8 +38,8 @@ export default defineConfig({
   forbidOnly: true,
   /* Do not retry */
   retries: 0,
-  /* Different amount of parallelism on CI and local. */
-  workers: platform() === 'win32' ? 1 : 2,
+  /* Use all available CPU cores */
+  workers: workers,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['dot'],
