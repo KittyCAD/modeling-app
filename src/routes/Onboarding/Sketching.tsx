@@ -10,7 +10,7 @@ export default function Sketching() {
     async function clearEditor() {
       // We do want to update both the state and editor here.
       codeManager.updateCodeStateEditor('')
-      await kclManager.executeCode(true)
+      await kclManager.executeCode()
     }
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -39,7 +39,7 @@ export default function Sketching() {
         </p>
         <p className="my-4">
           Watch the code pane as you click. Point-and-click interactions are
-          always just modifying and generating code in Zoo Modeling App.
+          always just modifying and generating code in Zoo Design Studio.
         </p>
         <OnboardingButtons
           currentSlug={onboardingPaths.SKETCHING}
