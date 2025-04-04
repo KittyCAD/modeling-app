@@ -257,14 +257,6 @@ export const isErrorWhitelisted = (exception: Error) => {
       project: 'Google Chrome',
       foundInSpec: 'e2e/playwright/testing-settings.spec.ts',
     },
-    // TODO: fix this error in the code
-    {
-      name: 'ReferenceError',
-      message: '_testUtils is not defined',
-      stack: '',
-      project: 'Google Chrome',
-      foundInSpec: 'e2e/playwright/snapshot-tests.spec.ts',
-    },
     {
       name: 'TypeError',
       message: 'Failed to fetch',
