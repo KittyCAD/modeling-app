@@ -124,7 +124,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           required: true,
         },
       },
-      onSubmit: async (data) => {
+      onSubmit: (data) => {
         if (!data) {
           return new Error('No input provided')
         }
@@ -137,7 +137,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             path,
             localName,
           })
-        await updateModelingState(
+        updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
           { kclManager, editorManager, codeManager },
@@ -145,7 +145,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             skipUpdateAst: true,
             focusPath: [pathToImportNode, pathToInsertNode],
           }
-        )
+        ).catch(reportRejection)
       },
     },
     {
