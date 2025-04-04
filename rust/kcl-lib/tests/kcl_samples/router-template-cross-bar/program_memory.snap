@@ -35,9 +35,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 555,
-            "end": 561,
-            "start": 555,
+            "commentStart": 630,
+            "end": 636,
+            "start": 630,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -48,9 +48,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 663,
-            "end": 669,
-            "start": 663,
+            "commentStart": 738,
+            "end": 744,
+            "start": 738,
             "type": "TagDeclarator",
             "value": "seg09"
           },
@@ -61,9 +61,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 722,
-            "end": 728,
-            "start": 722,
+            "commentStart": 797,
+            "end": 803,
+            "start": 797,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -74,9 +74,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 775,
-            "end": 781,
-            "start": 775,
+            "commentStart": 850,
+            "end": 856,
+            "start": 850,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -87,9 +87,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 876,
-            "end": 882,
-            "start": 876,
+            "commentStart": 951,
+            "end": 957,
+            "start": 951,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -100,9 +100,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 953,
-            "end": 959,
-            "start": 953,
+            "commentStart": 1028,
+            "end": 1034,
+            "start": 1028,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -113,24 +113,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1010,
-            "end": 1016,
-            "start": 1010,
+            "commentStart": 1085,
+            "end": 1091,
+            "start": 1085,
             "type": "TagDeclarator",
             "value": "seg08"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1069,
-            "end": 1075,
-            "start": 1069,
-            "type": "TagDeclarator",
-            "value": "seg05"
           },
           "type": "extrudePlane"
         },
@@ -143,6 +130,19 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "end": 1150,
             "start": 1144,
             "type": "TagDeclarator",
+            "value": "seg05"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1219,
+            "end": 1225,
+            "start": 1219,
+            "type": "TagDeclarator",
             "value": "seg10"
           },
           "type": "extrudePlane"
@@ -152,9 +152,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1186,
-            "end": 1192,
-            "start": 1186,
+            "commentStart": 1261,
+            "end": 1267,
+            "start": 1261,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -238,9 +238,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               31.8813
             ],
             "tag": {
-              "commentStart": 555,
-              "end": 561,
-              "start": 555,
+              "commentStart": 630,
+              "end": 636,
+              "start": 630,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -269,9 +269,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             ],
             "radius": 11.88125,
             "tag": {
-              "commentStart": 663,
-              "end": 669,
-              "start": 663,
+              "commentStart": 738,
+              "end": 744,
+              "start": 738,
               "type": "TagDeclarator",
               "value": "seg09"
             },
@@ -294,9 +294,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               20.0
             ],
             "tag": {
-              "commentStart": 722,
-              "end": 728,
-              "start": 722,
+              "commentStart": 797,
+              "end": 803,
+              "start": 797,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -319,9 +319,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "tag": {
-              "commentStart": 775,
-              "end": 781,
-              "start": 775,
+              "commentStart": 850,
+              "end": 856,
+              "start": 850,
               "type": "TagDeclarator",
               "value": "seg07"
             },
@@ -344,9 +344,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "tag": {
-              "commentStart": 876,
-              "end": 882,
-              "start": 876,
+              "commentStart": 951,
+              "end": 957,
+              "start": 951,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -369,9 +369,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               10.9406
             ],
             "tag": {
-              "commentStart": 953,
-              "end": 959,
-              "start": 953,
+              "commentStart": 1028,
+              "end": 1034,
+              "start": 1028,
               "type": "TagDeclarator",
               "value": "seg06"
             },
@@ -394,9 +394,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               10.9406
             ],
             "tag": {
-              "commentStart": 1010,
-              "end": 1016,
-              "start": 1010,
+              "commentStart": 1085,
+              "end": 1091,
+              "start": 1085,
               "type": "TagDeclarator",
               "value": "seg08"
             },
@@ -419,9 +419,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               30.9406
             ],
             "tag": {
-              "commentStart": 1069,
-              "end": 1075,
-              "start": 1069,
+              "commentStart": 1144,
+              "end": 1150,
+              "start": 1144,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -444,9 +444,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               30.9406
             ],
             "tag": {
-              "commentStart": 1144,
-              "end": 1150,
-              "start": 1144,
+              "commentStart": 1219,
+              "end": 1225,
+              "start": 1219,
               "type": "TagDeclarator",
               "value": "seg10"
             },
@@ -469,9 +469,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               41.8813
             ],
             "tag": {
-              "commentStart": 1186,
-              "end": 1192,
-              "start": 1186,
+              "commentStart": 1261,
+              "end": 1267,
+              "start": 1261,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -815,1028 +815,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2403,
-            "end": 2424,
-            "start": 2403,
-            "type": "TagDeclarator",
-            "value": "rectangleSegmentA001"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 2519,
-            "end": 2540,
-            "start": 2519,
-            "type": "TagDeclarator",
-            "value": "rectangleSegmentB001"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 2642,
-            "end": 2663,
-            "start": 2642,
-            "type": "TagDeclarator",
-            "value": "rectangleSegmentC001"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        }
-      ],
-      "sketch": {
-        "type": "Sketch",
-        "id": "[uuid]",
-        "paths": [
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -32.6313,
-              0.0
-            ],
-            "tag": {
-              "commentStart": 2403,
-              "end": 2424,
-              "start": 2403,
-              "type": "TagDeclarator",
-              "value": "rectangleSegmentA001"
-            },
-            "to": [
-              -22.6313,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -22.6313,
-              0.0
-            ],
-            "tag": {
-              "commentStart": 2519,
-              "end": 2540,
-              "start": 2519,
-              "type": "TagDeclarator",
-              "value": "rectangleSegmentB001"
-            },
-            "to": [
-              -22.6313,
-              -10.0
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -22.6313,
-              -10.0
-            ],
-            "tag": {
-              "commentStart": 2642,
-              "end": 2663,
-              "start": 2642,
-              "type": "TagDeclarator",
-              "value": "rectangleSegmentC001"
-            },
-            "to": [
-              -32.6313,
-              -10.0
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -32.6313,
-              -10.0
-            ],
-            "tag": null,
-            "to": [
-              -32.6313,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -32.6313,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              -32.6313,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          }
-        ],
-        "on": {
-          "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": "start",
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0
-          },
-          "solid": {
-            "type": "Solid",
-            "id": "[uuid]",
-            "artifactId": "[uuid]",
-            "value": [
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": {
-                  "commentStart": 555,
-                  "end": 561,
-                  "start": 555,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": {
-                  "commentStart": 663,
-                  "end": 669,
-                  "start": 663,
-                  "type": "TagDeclarator",
-                  "value": "seg09"
-                },
-                "type": "extrudeArc"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": {
-                  "commentStart": 722,
-                  "end": 728,
-                  "start": 722,
-                  "type": "TagDeclarator",
-                  "value": "seg03"
-                },
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": {
-                  "commentStart": 775,
-                  "end": 781,
-                  "start": 775,
-                  "type": "TagDeclarator",
-                  "value": "seg07"
-                },
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": {
-                  "commentStart": 876,
-                  "end": 882,
-                  "start": 876,
-                  "type": "TagDeclarator",
-                  "value": "seg02"
-                },
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": {
-                  "commentStart": 953,
-                  "end": 959,
-                  "start": 953,
-                  "type": "TagDeclarator",
-                  "value": "seg06"
-                },
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": {
-                  "commentStart": 1010,
-                  "end": 1016,
-                  "start": 1010,
-                  "type": "TagDeclarator",
-                  "value": "seg08"
-                },
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": {
-                  "commentStart": 1069,
-                  "end": 1075,
-                  "start": 1069,
-                  "type": "TagDeclarator",
-                  "value": "seg05"
-                },
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": {
-                  "commentStart": 1144,
-                  "end": 1150,
-                  "start": 1144,
-                  "type": "TagDeclarator",
-                  "value": "seg10"
-                },
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": {
-                  "commentStart": 1186,
-                  "end": 1192,
-                  "start": 1186,
-                  "type": "TagDeclarator",
-                  "value": "seg04"
-                },
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": null,
-                "type": "extrudeArc"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": null,
-                "type": "extrudePlane"
-              }
-            ],
-            "sketch": {
-              "type": "Sketch",
-              "id": "[uuid]",
-              "paths": [
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    0.0,
-                    31.8813
-                  ],
-                  "tag": {
-                    "commentStart": 555,
-                    "end": 561,
-                    "start": 555,
-                    "type": "TagDeclarator",
-                    "value": "seg01"
-                  },
-                  "to": [
-                    10.75,
-                    31.8813
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "ccw": false,
-                  "center": [
-                    10.75,
-                    20.0
-                  ],
-                  "from": [
-                    10.75,
-                    31.8813
-                  ],
-                  "radius": 11.88125,
-                  "tag": {
-                    "commentStart": 663,
-                    "end": 669,
-                    "start": 663,
-                    "type": "TagDeclarator",
-                    "value": "seg09"
-                  },
-                  "to": [
-                    22.6313,
-                    20.0
-                  ],
-                  "type": "Arc",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    22.6313,
-                    20.0
-                  ],
-                  "tag": {
-                    "commentStart": 722,
-                    "end": 728,
-                    "start": 722,
-                    "type": "TagDeclarator",
-                    "value": "seg03"
-                  },
-                  "to": [
-                    22.6313,
-                    -10.0
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    22.6313,
-                    -10.0
-                  ],
-                  "tag": {
-                    "commentStart": 775,
-                    "end": 781,
-                    "start": 775,
-                    "type": "TagDeclarator",
-                    "value": "seg07"
-                  },
-                  "to": [
-                    32.6313,
-                    -10.0
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    32.6313,
-                    -10.0
-                  ],
-                  "tag": {
-                    "commentStart": 876,
-                    "end": 882,
-                    "start": 876,
-                    "type": "TagDeclarator",
-                    "value": "seg02"
-                  },
-                  "to": [
-                    32.6313,
-                    10.9406
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    32.6313,
-                    10.9406
-                  ],
-                  "tag": {
-                    "commentStart": 953,
-                    "end": 959,
-                    "start": 953,
-                    "type": "TagDeclarator",
-                    "value": "seg06"
-                  },
-                  "to": [
-                    102.6313,
-                    10.9406
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    102.6313,
-                    10.9406
-                  ],
-                  "tag": {
-                    "commentStart": 1010,
-                    "end": 1016,
-                    "start": 1010,
-                    "type": "TagDeclarator",
-                    "value": "seg08"
-                  },
-                  "to": [
-                    102.6313,
-                    30.9406
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    102.6313,
-                    30.9406
-                  ],
-                  "tag": {
-                    "commentStart": 1069,
-                    "end": 1075,
-                    "start": 1069,
-                    "type": "TagDeclarator",
-                    "value": "seg05"
-                  },
-                  "to": [
-                    32.6313,
-                    30.9406
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    32.6313,
-                    30.9406
-                  ],
-                  "tag": {
-                    "commentStart": 1144,
-                    "end": 1150,
-                    "start": 1144,
-                    "type": "TagDeclarator",
-                    "value": "seg10"
-                  },
-                  "to": [
-                    32.6313,
-                    41.8813
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    32.6313,
-                    41.8813
-                  ],
-                  "tag": {
-                    "commentStart": 1186,
-                    "end": 1192,
-                    "start": 1186,
-                    "type": "TagDeclarator",
-                    "value": "seg04"
-                  },
-                  "to": [
-                    0.0,
-                    41.8813
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    0.0,
-                    41.8813
-                  ],
-                  "tag": null,
-                  "to": [
-                    -32.6313,
-                    41.8813
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -32.6313,
-                    41.8813
-                  ],
-                  "tag": null,
-                  "to": [
-                    -32.6313,
-                    30.9406
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -32.6313,
-                    30.9406
-                  ],
-                  "tag": null,
-                  "to": [
-                    -102.6313,
-                    30.9406
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -102.6313,
-                    30.9406
-                  ],
-                  "tag": null,
-                  "to": [
-                    -102.6313,
-                    10.9406
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -102.6313,
-                    10.9406
-                  ],
-                  "tag": null,
-                  "to": [
-                    -32.6312,
-                    10.9406
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -32.6312,
-                    10.9406
-                  ],
-                  "tag": null,
-                  "to": [
-                    -32.6312,
-                    -10.0
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -32.6312,
-                    -10.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -22.6312,
-                    -10.0
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -22.6312,
-                    -10.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -22.6312,
-                    20.0
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "ccw": false,
-                  "center": [
-                    -10.75,
-                    20.0
-                  ],
-                  "from": [
-                    -22.6312,
-                    20.0
-                  ],
-                  "radius": 11.88125,
-                  "tag": null,
-                  "to": [
-                    -10.75,
-                    31.8813
-                  ],
-                  "type": "Arc",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -10.75,
-                    31.8813
-                  ],
-                  "tag": null,
-                  "to": [
-                    0.0,
-                    31.8813
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    0.0,
-                    31.8813
-                  ],
-                  "tag": null,
-                  "to": [
-                    0.0,
-                    31.8813
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                }
-              ],
-              "on": {
-                "type": "plane",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
-                "value": "XZ",
-                "origin": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0
-                },
-                "xAxis": {
-                  "x": 1.0,
-                  "y": 0.0,
-                  "z": 0.0
-                },
-                "yAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0
-                },
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "start": {
-                "from": [
-                  0.0,
-                  31.8813
-                ],
-                "to": [
-                  0.0,
-                  31.8813
-                ],
-                "units": {
-                  "type": "Mm"
-                },
-                "tag": null,
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                }
-              },
-              "tags": {
-                "seg01": {
-                  "type": "TagIdentifier",
-                  "value": "seg01"
-                },
-                "seg02": {
-                  "type": "TagIdentifier",
-                  "value": "seg02"
-                },
-                "seg03": {
-                  "type": "TagIdentifier",
-                  "value": "seg03"
-                },
-                "seg04": {
-                  "type": "TagIdentifier",
-                  "value": "seg04"
-                },
-                "seg05": {
-                  "type": "TagIdentifier",
-                  "value": "seg05"
-                },
-                "seg06": {
-                  "type": "TagIdentifier",
-                  "value": "seg06"
-                },
-                "seg07": {
-                  "type": "TagIdentifier",
-                  "value": "seg07"
-                },
-                "seg08": {
-                  "type": "TagIdentifier",
-                  "value": "seg08"
-                },
-                "seg09": {
-                  "type": "TagIdentifier",
-                  "value": "seg09"
-                },
-                "seg10": {
-                  "type": "TagIdentifier",
-                  "value": "seg10"
-                }
-              },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "height": 5.0,
-            "startCapId": "[uuid]",
-            "endCapId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "start": {
-          "from": [
-            -32.6313,
-            0.0
-          ],
-          "to": [
-            -32.6313,
-            0.0
-          ],
-          "units": {
-            "type": "Mm"
-          },
-          "tag": null,
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          }
-        },
-        "tags": {
-          "rectangleSegmentA001": {
-            "type": "TagIdentifier",
-            "value": "rectangleSegmentA001"
-          },
-          "rectangleSegmentB001": {
-            "type": "TagIdentifier",
-            "value": "rectangleSegmentB001"
-          },
-          "rectangleSegmentC001": {
-            "type": "TagIdentifier",
-            "value": "rectangleSegmentC001"
-          }
-        },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "height": 13.0,
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
-    }
-  },
-  "extrude003": {
-    "type": "Solid",
-    "value": {
-      "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1861,
-            "end": 1882,
-            "start": 1861,
+            "commentStart": 1993,
+            "end": 2014,
+            "start": 1993,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -1847,9 +828,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1977,
-            "end": 1998,
-            "start": 1977,
+            "commentStart": 2109,
+            "end": 2130,
+            "start": 2109,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB002"
           },
@@ -1860,9 +841,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2100,
-            "end": 2121,
-            "start": 2100,
+            "commentStart": 2232,
+            "end": 2253,
+            "start": 2232,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC002"
           },
@@ -1890,9 +871,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 1861,
-              "end": 1882,
-              "start": 1861,
+              "commentStart": 1993,
+              "end": 2014,
+              "start": 1993,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA002"
             },
@@ -1915,9 +896,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 1977,
-              "end": 1998,
-              "start": 1977,
+              "commentStart": 2109,
+              "end": 2130,
+              "start": 2109,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB002"
             },
@@ -1940,9 +921,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "tag": {
-              "commentStart": 2100,
-              "end": 2121,
-              "start": 2100,
+              "commentStart": 2232,
+              "end": 2253,
+              "start": 2232,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC002"
             },
@@ -2024,9 +1005,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 555,
-                  "end": 561,
-                  "start": 555,
+                  "commentStart": 630,
+                  "end": 636,
+                  "start": 630,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -2037,9 +1018,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 663,
-                  "end": 669,
-                  "start": 663,
+                  "commentStart": 738,
+                  "end": 744,
+                  "start": 738,
                   "type": "TagDeclarator",
                   "value": "seg09"
                 },
@@ -2050,9 +1031,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 722,
-                  "end": 728,
-                  "start": 722,
+                  "commentStart": 797,
+                  "end": 803,
+                  "start": 797,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -2063,9 +1044,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 775,
-                  "end": 781,
-                  "start": 775,
+                  "commentStart": 850,
+                  "end": 856,
+                  "start": 850,
                   "type": "TagDeclarator",
                   "value": "seg07"
                 },
@@ -2076,9 +1057,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 876,
-                  "end": 882,
-                  "start": 876,
+                  "commentStart": 951,
+                  "end": 957,
+                  "start": 951,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2089,9 +1070,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 953,
-                  "end": 959,
-                  "start": 953,
+                  "commentStart": 1028,
+                  "end": 1034,
+                  "start": 1028,
                   "type": "TagDeclarator",
                   "value": "seg06"
                 },
@@ -2102,24 +1083,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1010,
-                  "end": 1016,
-                  "start": 1010,
+                  "commentStart": 1085,
+                  "end": 1091,
+                  "start": 1085,
                   "type": "TagDeclarator",
                   "value": "seg08"
-                },
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [],
-                "tag": {
-                  "commentStart": 1069,
-                  "end": 1075,
-                  "start": 1069,
-                  "type": "TagDeclarator",
-                  "value": "seg05"
                 },
                 "type": "extrudePlane"
               },
@@ -2132,6 +1100,19 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "end": 1150,
                   "start": 1144,
                   "type": "TagDeclarator",
+                  "value": "seg05"
+                },
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": {
+                  "commentStart": 1219,
+                  "end": 1225,
+                  "start": 1219,
+                  "type": "TagDeclarator",
                   "value": "seg10"
                 },
                 "type": "extrudePlane"
@@ -2141,9 +1122,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1186,
-                  "end": 1192,
-                  "start": 1186,
+                  "commentStart": 1261,
+                  "end": 1267,
+                  "start": 1261,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -2227,9 +1208,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     31.8813
                   ],
                   "tag": {
-                    "commentStart": 555,
-                    "end": 561,
-                    "start": 555,
+                    "commentStart": 630,
+                    "end": 636,
+                    "start": 630,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -2258,9 +1239,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   ],
                   "radius": 11.88125,
                   "tag": {
-                    "commentStart": 663,
-                    "end": 669,
-                    "start": 663,
+                    "commentStart": 738,
+                    "end": 744,
+                    "start": 738,
                     "type": "TagDeclarator",
                     "value": "seg09"
                   },
@@ -2283,9 +1264,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     20.0
                   ],
                   "tag": {
-                    "commentStart": 722,
-                    "end": 728,
-                    "start": 722,
+                    "commentStart": 797,
+                    "end": 803,
+                    "start": 797,
                     "type": "TagDeclarator",
                     "value": "seg03"
                   },
@@ -2308,9 +1289,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.0
                   ],
                   "tag": {
-                    "commentStart": 775,
-                    "end": 781,
-                    "start": 775,
+                    "commentStart": 850,
+                    "end": 856,
+                    "start": 850,
                     "type": "TagDeclarator",
                     "value": "seg07"
                   },
@@ -2333,9 +1314,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.0
                   ],
                   "tag": {
-                    "commentStart": 876,
-                    "end": 882,
-                    "start": 876,
+                    "commentStart": 951,
+                    "end": 957,
+                    "start": 951,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -2358,9 +1339,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     10.9406
                   ],
                   "tag": {
-                    "commentStart": 953,
-                    "end": 959,
-                    "start": 953,
+                    "commentStart": 1028,
+                    "end": 1034,
+                    "start": 1028,
                     "type": "TagDeclarator",
                     "value": "seg06"
                   },
@@ -2383,9 +1364,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     10.9406
                   ],
                   "tag": {
-                    "commentStart": 1010,
-                    "end": 1016,
-                    "start": 1010,
+                    "commentStart": 1085,
+                    "end": 1091,
+                    "start": 1085,
                     "type": "TagDeclarator",
                     "value": "seg08"
                   },
@@ -2408,9 +1389,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     30.9406
                   ],
                   "tag": {
-                    "commentStart": 1069,
-                    "end": 1075,
-                    "start": 1069,
+                    "commentStart": 1144,
+                    "end": 1150,
+                    "start": 1144,
                     "type": "TagDeclarator",
                     "value": "seg05"
                   },
@@ -2433,9 +1414,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     30.9406
                   ],
                   "tag": {
-                    "commentStart": 1144,
-                    "end": 1150,
-                    "start": 1144,
+                    "commentStart": 1219,
+                    "end": 1225,
+                    "start": 1219,
                     "type": "TagDeclarator",
                     "value": "seg10"
                   },
@@ -2458,9 +1439,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     41.8813
                   ],
                   "tag": {
-                    "commentStart": 1186,
-                    "end": 1192,
-                    "start": 1186,
+                    "commentStart": 1261,
+                    "end": 1267,
+                    "start": 1261,
                     "type": "TagDeclarator",
                     "value": "seg04"
                   },
@@ -2841,6 +1822,1025 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       }
     }
   },
+  "extrude003": {
+    "type": "Solid",
+    "value": {
+      "type": "Solid",
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 2592,
+            "end": 2613,
+            "start": 2592,
+            "type": "TagDeclarator",
+            "value": "rectangleSegmentA001"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 2708,
+            "end": 2729,
+            "start": 2708,
+            "type": "TagDeclarator",
+            "value": "rectangleSegmentB001"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 2831,
+            "end": 2852,
+            "start": 2831,
+            "type": "TagDeclarator",
+            "value": "rectangleSegmentC001"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        }
+      ],
+      "sketch": {
+        "type": "Sketch",
+        "id": "[uuid]",
+        "paths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -32.6313,
+              0.0
+            ],
+            "tag": {
+              "commentStart": 2592,
+              "end": 2613,
+              "start": 2592,
+              "type": "TagDeclarator",
+              "value": "rectangleSegmentA001"
+            },
+            "to": [
+              -22.6313,
+              0.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -22.6313,
+              0.0
+            ],
+            "tag": {
+              "commentStart": 2708,
+              "end": 2729,
+              "start": 2708,
+              "type": "TagDeclarator",
+              "value": "rectangleSegmentB001"
+            },
+            "to": [
+              -22.6313,
+              -10.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -22.6313,
+              -10.0
+            ],
+            "tag": {
+              "commentStart": 2831,
+              "end": 2852,
+              "start": 2831,
+              "type": "TagDeclarator",
+              "value": "rectangleSegmentC001"
+            },
+            "to": [
+              -32.6313,
+              -10.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -32.6313,
+              -10.0
+            ],
+            "tag": null,
+            "to": [
+              -32.6313,
+              0.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -32.6313,
+              0.0
+            ],
+            "tag": null,
+            "to": [
+              -32.6313,
+              0.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          }
+        ],
+        "on": {
+          "type": "face",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": "start",
+          "xAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "yAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0
+          },
+          "solid": {
+            "type": "Solid",
+            "id": "[uuid]",
+            "artifactId": "[uuid]",
+            "value": [
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": {
+                  "commentStart": 630,
+                  "end": 636,
+                  "start": 630,
+                  "type": "TagDeclarator",
+                  "value": "seg01"
+                },
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": {
+                  "commentStart": 738,
+                  "end": 744,
+                  "start": 738,
+                  "type": "TagDeclarator",
+                  "value": "seg09"
+                },
+                "type": "extrudeArc"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": {
+                  "commentStart": 797,
+                  "end": 803,
+                  "start": 797,
+                  "type": "TagDeclarator",
+                  "value": "seg03"
+                },
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": {
+                  "commentStart": 850,
+                  "end": 856,
+                  "start": 850,
+                  "type": "TagDeclarator",
+                  "value": "seg07"
+                },
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": {
+                  "commentStart": 951,
+                  "end": 957,
+                  "start": 951,
+                  "type": "TagDeclarator",
+                  "value": "seg02"
+                },
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": {
+                  "commentStart": 1028,
+                  "end": 1034,
+                  "start": 1028,
+                  "type": "TagDeclarator",
+                  "value": "seg06"
+                },
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": {
+                  "commentStart": 1085,
+                  "end": 1091,
+                  "start": 1085,
+                  "type": "TagDeclarator",
+                  "value": "seg08"
+                },
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": {
+                  "commentStart": 1144,
+                  "end": 1150,
+                  "start": 1144,
+                  "type": "TagDeclarator",
+                  "value": "seg05"
+                },
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": {
+                  "commentStart": 1219,
+                  "end": 1225,
+                  "start": 1219,
+                  "type": "TagDeclarator",
+                  "value": "seg10"
+                },
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": {
+                  "commentStart": 1261,
+                  "end": 1267,
+                  "start": 1261,
+                  "type": "TagDeclarator",
+                  "value": "seg04"
+                },
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudeArc"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudePlane"
+              }
+            ],
+            "sketch": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    0.0,
+                    31.8813
+                  ],
+                  "tag": {
+                    "commentStart": 630,
+                    "end": 636,
+                    "start": 630,
+                    "type": "TagDeclarator",
+                    "value": "seg01"
+                  },
+                  "to": [
+                    10.75,
+                    31.8813
+                  ],
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": false,
+                  "center": [
+                    10.75,
+                    20.0
+                  ],
+                  "from": [
+                    10.75,
+                    31.8813
+                  ],
+                  "radius": 11.88125,
+                  "tag": {
+                    "commentStart": 738,
+                    "end": 744,
+                    "start": 738,
+                    "type": "TagDeclarator",
+                    "value": "seg09"
+                  },
+                  "to": [
+                    22.6313,
+                    20.0
+                  ],
+                  "type": "Arc",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    22.6313,
+                    20.0
+                  ],
+                  "tag": {
+                    "commentStart": 797,
+                    "end": 803,
+                    "start": 797,
+                    "type": "TagDeclarator",
+                    "value": "seg03"
+                  },
+                  "to": [
+                    22.6313,
+                    -10.0
+                  ],
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    22.6313,
+                    -10.0
+                  ],
+                  "tag": {
+                    "commentStart": 850,
+                    "end": 856,
+                    "start": 850,
+                    "type": "TagDeclarator",
+                    "value": "seg07"
+                  },
+                  "to": [
+                    32.6313,
+                    -10.0
+                  ],
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    32.6313,
+                    -10.0
+                  ],
+                  "tag": {
+                    "commentStart": 951,
+                    "end": 957,
+                    "start": 951,
+                    "type": "TagDeclarator",
+                    "value": "seg02"
+                  },
+                  "to": [
+                    32.6313,
+                    10.9406
+                  ],
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    32.6313,
+                    10.9406
+                  ],
+                  "tag": {
+                    "commentStart": 1028,
+                    "end": 1034,
+                    "start": 1028,
+                    "type": "TagDeclarator",
+                    "value": "seg06"
+                  },
+                  "to": [
+                    102.6313,
+                    10.9406
+                  ],
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    102.6313,
+                    10.9406
+                  ],
+                  "tag": {
+                    "commentStart": 1085,
+                    "end": 1091,
+                    "start": 1085,
+                    "type": "TagDeclarator",
+                    "value": "seg08"
+                  },
+                  "to": [
+                    102.6313,
+                    30.9406
+                  ],
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    102.6313,
+                    30.9406
+                  ],
+                  "tag": {
+                    "commentStart": 1144,
+                    "end": 1150,
+                    "start": 1144,
+                    "type": "TagDeclarator",
+                    "value": "seg05"
+                  },
+                  "to": [
+                    32.6313,
+                    30.9406
+                  ],
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    32.6313,
+                    30.9406
+                  ],
+                  "tag": {
+                    "commentStart": 1219,
+                    "end": 1225,
+                    "start": 1219,
+                    "type": "TagDeclarator",
+                    "value": "seg10"
+                  },
+                  "to": [
+                    32.6313,
+                    41.8813
+                  ],
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    32.6313,
+                    41.8813
+                  ],
+                  "tag": {
+                    "commentStart": 1261,
+                    "end": 1267,
+                    "start": 1261,
+                    "type": "TagDeclarator",
+                    "value": "seg04"
+                  },
+                  "to": [
+                    0.0,
+                    41.8813
+                  ],
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    0.0,
+                    41.8813
+                  ],
+                  "tag": null,
+                  "to": [
+                    -32.6313,
+                    41.8813
+                  ],
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -32.6313,
+                    41.8813
+                  ],
+                  "tag": null,
+                  "to": [
+                    -32.6313,
+                    30.9406
+                  ],
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -32.6313,
+                    30.9406
+                  ],
+                  "tag": null,
+                  "to": [
+                    -102.6313,
+                    30.9406
+                  ],
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -102.6313,
+                    30.9406
+                  ],
+                  "tag": null,
+                  "to": [
+                    -102.6313,
+                    10.9406
+                  ],
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -102.6313,
+                    10.9406
+                  ],
+                  "tag": null,
+                  "to": [
+                    -32.6312,
+                    10.9406
+                  ],
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -32.6312,
+                    10.9406
+                  ],
+                  "tag": null,
+                  "to": [
+                    -32.6312,
+                    -10.0
+                  ],
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -32.6312,
+                    -10.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    -22.6312,
+                    -10.0
+                  ],
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -22.6312,
+                    -10.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    -22.6312,
+                    20.0
+                  ],
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": false,
+                  "center": [
+                    -10.75,
+                    20.0
+                  ],
+                  "from": [
+                    -22.6312,
+                    20.0
+                  ],
+                  "radius": 11.88125,
+                  "tag": null,
+                  "to": [
+                    -10.75,
+                    31.8813
+                  ],
+                  "type": "Arc",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -10.75,
+                    31.8813
+                  ],
+                  "tag": null,
+                  "to": [
+                    0.0,
+                    31.8813
+                  ],
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    0.0,
+                    31.8813
+                  ],
+                  "tag": null,
+                  "to": [
+                    0.0,
+                    31.8813
+                  ],
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
+                }
+              ],
+              "on": {
+                "type": "plane",
+                "id": "[uuid]",
+                "artifactId": "[uuid]",
+                "value": "XZ",
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0
+                },
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": -1.0,
+                  "z": 0.0
+                },
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "start": {
+                "from": [
+                  0.0,
+                  31.8813
+                ],
+                "to": [
+                  0.0,
+                  31.8813
+                ],
+                "units": {
+                  "type": "Mm"
+                },
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "tags": {
+                "seg01": {
+                  "type": "TagIdentifier",
+                  "value": "seg01"
+                },
+                "seg02": {
+                  "type": "TagIdentifier",
+                  "value": "seg02"
+                },
+                "seg03": {
+                  "type": "TagIdentifier",
+                  "value": "seg03"
+                },
+                "seg04": {
+                  "type": "TagIdentifier",
+                  "value": "seg04"
+                },
+                "seg05": {
+                  "type": "TagIdentifier",
+                  "value": "seg05"
+                },
+                "seg06": {
+                  "type": "TagIdentifier",
+                  "value": "seg06"
+                },
+                "seg07": {
+                  "type": "TagIdentifier",
+                  "value": "seg07"
+                },
+                "seg08": {
+                  "type": "TagIdentifier",
+                  "value": "seg08"
+                },
+                "seg09": {
+                  "type": "TagIdentifier",
+                  "value": "seg09"
+                },
+                "seg10": {
+                  "type": "TagIdentifier",
+                  "value": "seg10"
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              }
+            },
+            "height": 5.0,
+            "startCapId": "[uuid]",
+            "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "units": {
+            "type": "Mm"
+          }
+        },
+        "start": {
+          "from": [
+            -32.6313,
+            0.0
+          ],
+          "to": [
+            -32.6313,
+            0.0
+          ],
+          "units": {
+            "type": "Mm"
+          },
+          "tag": null,
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          }
+        },
+        "tags": {
+          "rectangleSegmentA001": {
+            "type": "TagIdentifier",
+            "value": "rectangleSegmentA001"
+          },
+          "rectangleSegmentB001": {
+            "type": "TagIdentifier",
+            "value": "rectangleSegmentB001"
+          },
+          "rectangleSegmentC001": {
+            "type": "TagIdentifier",
+            "value": "rectangleSegmentC001"
+          }
+        },
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
+        "units": {
+          "type": "Mm"
+        }
+      },
+      "height": 13.0,
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
+      "units": {
+        "type": "Mm"
+      }
+    }
+  },
   "extrude004": {
     "type": "Solid",
     "value": {
@@ -2853,9 +2853,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2951,
-            "end": 2972,
-            "start": 2951,
+            "commentStart": 3196,
+            "end": 3217,
+            "start": 3196,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA003"
           },
@@ -2866,9 +2866,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3067,
-            "end": 3088,
-            "start": 3067,
+            "commentStart": 3312,
+            "end": 3333,
+            "start": 3312,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB003"
           },
@@ -2879,9 +2879,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3190,
-            "end": 3211,
-            "start": 3190,
+            "commentStart": 3435,
+            "end": 3456,
+            "start": 3435,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC003"
           },
@@ -2909,9 +2909,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2951,
-              "end": 2972,
-              "start": 2951,
+              "commentStart": 3196,
+              "end": 3217,
+              "start": 3196,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA003"
             },
@@ -2934,9 +2934,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 3067,
-              "end": 3088,
-              "start": 3067,
+              "commentStart": 3312,
+              "end": 3333,
+              "start": 3312,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB003"
             },
@@ -2959,9 +2959,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "tag": {
-              "commentStart": 3190,
-              "end": 3211,
-              "start": 3190,
+              "commentStart": 3435,
+              "end": 3456,
+              "start": 3435,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC003"
             },
@@ -3043,11 +3043,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2403,
-                  "end": 2424,
-                  "start": 2403,
+                  "commentStart": 1993,
+                  "end": 2014,
+                  "start": 1993,
                   "type": "TagDeclarator",
-                  "value": "rectangleSegmentA001"
+                  "value": "rectangleSegmentA002"
                 },
                 "type": "extrudePlane"
               },
@@ -3056,11 +3056,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2519,
-                  "end": 2540,
-                  "start": 2519,
+                  "commentStart": 2109,
+                  "end": 2130,
+                  "start": 2109,
                   "type": "TagDeclarator",
-                  "value": "rectangleSegmentB001"
+                  "value": "rectangleSegmentB002"
                 },
                 "type": "extrudePlane"
               },
@@ -3069,11 +3069,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2642,
-                  "end": 2663,
-                  "start": 2642,
+                  "commentStart": 2232,
+                  "end": 2253,
+                  "start": 2232,
                   "type": "TagDeclarator",
-                  "value": "rectangleSegmentC001"
+                  "value": "rectangleSegmentC002"
                 },
                 "type": "extrudePlane"
               },
@@ -3095,18 +3095,18 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -32.6313,
+                    32.6313,
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2403,
-                    "end": 2424,
-                    "start": 2403,
+                    "commentStart": 1993,
+                    "end": 2014,
+                    "start": 1993,
                     "type": "TagDeclarator",
-                    "value": "rectangleSegmentA001"
+                    "value": "rectangleSegmentA002"
                   },
                   "to": [
-                    -22.6313,
+                    22.6313,
                     0.0
                   ],
                   "type": "ToPoint",
@@ -3120,18 +3120,18 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -22.6313,
+                    22.6313,
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2519,
-                    "end": 2540,
-                    "start": 2519,
+                    "commentStart": 2109,
+                    "end": 2130,
+                    "start": 2109,
                     "type": "TagDeclarator",
-                    "value": "rectangleSegmentB001"
+                    "value": "rectangleSegmentB002"
                   },
                   "to": [
-                    -22.6313,
+                    22.6312,
                     -10.0
                   ],
                   "type": "ToPoint",
@@ -3145,18 +3145,18 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -22.6313,
+                    22.6312,
                     -10.0
                   ],
                   "tag": {
-                    "commentStart": 2642,
-                    "end": 2663,
-                    "start": 2642,
+                    "commentStart": 2232,
+                    "end": 2253,
+                    "start": 2232,
                     "type": "TagDeclarator",
-                    "value": "rectangleSegmentC001"
+                    "value": "rectangleSegmentC002"
                   },
                   "to": [
-                    -32.6313,
+                    32.6312,
                     -10.0
                   ],
                   "type": "ToPoint",
@@ -3170,12 +3170,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -32.6313,
+                    32.6312,
                     -10.0
                   ],
                   "tag": null,
                   "to": [
-                    -32.6313,
+                    32.6313,
                     0.0
                   ],
                   "type": "ToPoint",
@@ -3189,12 +3189,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -32.6313,
+                    32.6313,
                     0.0
                   ],
                   "tag": null,
                   "to": [
-                    -32.6313,
+                    32.6313,
                     0.0
                   ],
                   "type": "ToPoint",
@@ -3233,9 +3233,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 555,
-                        "end": 561,
-                        "start": 555,
+                        "commentStart": 630,
+                        "end": 636,
+                        "start": 630,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -3246,9 +3246,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 663,
-                        "end": 669,
-                        "start": 663,
+                        "commentStart": 738,
+                        "end": 744,
+                        "start": 738,
                         "type": "TagDeclarator",
                         "value": "seg09"
                       },
@@ -3259,9 +3259,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 722,
-                        "end": 728,
-                        "start": 722,
+                        "commentStart": 797,
+                        "end": 803,
+                        "start": 797,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -3272,9 +3272,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 775,
-                        "end": 781,
-                        "start": 775,
+                        "commentStart": 850,
+                        "end": 856,
+                        "start": 850,
                         "type": "TagDeclarator",
                         "value": "seg07"
                       },
@@ -3285,9 +3285,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 876,
-                        "end": 882,
-                        "start": 876,
+                        "commentStart": 951,
+                        "end": 957,
+                        "start": 951,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -3298,9 +3298,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 953,
-                        "end": 959,
-                        "start": 953,
+                        "commentStart": 1028,
+                        "end": 1034,
+                        "start": 1028,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -3311,24 +3311,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 1010,
-                        "end": 1016,
-                        "start": 1010,
+                        "commentStart": 1085,
+                        "end": 1091,
+                        "start": 1085,
                         "type": "TagDeclarator",
                         "value": "seg08"
-                      },
-                      "type": "extrudePlane"
-                    },
-                    {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [],
-                      "tag": {
-                        "commentStart": 1069,
-                        "end": 1075,
-                        "start": 1069,
-                        "type": "TagDeclarator",
-                        "value": "seg05"
                       },
                       "type": "extrudePlane"
                     },
@@ -3341,6 +3328,19 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "end": 1150,
                         "start": 1144,
                         "type": "TagDeclarator",
+                        "value": "seg05"
+                      },
+                      "type": "extrudePlane"
+                    },
+                    {
+                      "faceId": "[uuid]",
+                      "id": "[uuid]",
+                      "sourceRange": [],
+                      "tag": {
+                        "commentStart": 1219,
+                        "end": 1225,
+                        "start": 1219,
+                        "type": "TagDeclarator",
                         "value": "seg10"
                       },
                       "type": "extrudePlane"
@@ -3350,9 +3350,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 1186,
-                        "end": 1192,
-                        "start": 1186,
+                        "commentStart": 1261,
+                        "end": 1267,
+                        "start": 1261,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -3436,9 +3436,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           31.8813
                         ],
                         "tag": {
-                          "commentStart": 555,
-                          "end": 561,
-                          "start": 555,
+                          "commentStart": 630,
+                          "end": 636,
+                          "start": 630,
                           "type": "TagDeclarator",
                           "value": "seg01"
                         },
@@ -3467,9 +3467,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         ],
                         "radius": 11.88125,
                         "tag": {
-                          "commentStart": 663,
-                          "end": 669,
-                          "start": 663,
+                          "commentStart": 738,
+                          "end": 744,
+                          "start": 738,
                           "type": "TagDeclarator",
                           "value": "seg09"
                         },
@@ -3492,9 +3492,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           20.0
                         ],
                         "tag": {
-                          "commentStart": 722,
-                          "end": 728,
-                          "start": 722,
+                          "commentStart": 797,
+                          "end": 803,
+                          "start": 797,
                           "type": "TagDeclarator",
                           "value": "seg03"
                         },
@@ -3517,9 +3517,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           -10.0
                         ],
                         "tag": {
-                          "commentStart": 775,
-                          "end": 781,
-                          "start": 775,
+                          "commentStart": 850,
+                          "end": 856,
+                          "start": 850,
                           "type": "TagDeclarator",
                           "value": "seg07"
                         },
@@ -3542,9 +3542,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           -10.0
                         ],
                         "tag": {
-                          "commentStart": 876,
-                          "end": 882,
-                          "start": 876,
+                          "commentStart": 951,
+                          "end": 957,
+                          "start": 951,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -3567,9 +3567,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           10.9406
                         ],
                         "tag": {
-                          "commentStart": 953,
-                          "end": 959,
-                          "start": 953,
+                          "commentStart": 1028,
+                          "end": 1034,
+                          "start": 1028,
                           "type": "TagDeclarator",
                           "value": "seg06"
                         },
@@ -3592,9 +3592,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           10.9406
                         ],
                         "tag": {
-                          "commentStart": 1010,
-                          "end": 1016,
-                          "start": 1010,
+                          "commentStart": 1085,
+                          "end": 1091,
+                          "start": 1085,
                           "type": "TagDeclarator",
                           "value": "seg08"
                         },
@@ -3617,9 +3617,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           30.9406
                         ],
                         "tag": {
-                          "commentStart": 1069,
-                          "end": 1075,
-                          "start": 1069,
+                          "commentStart": 1144,
+                          "end": 1150,
+                          "start": 1144,
                           "type": "TagDeclarator",
                           "value": "seg05"
                         },
@@ -3642,9 +3642,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           30.9406
                         ],
                         "tag": {
-                          "commentStart": 1144,
-                          "end": 1150,
-                          "start": 1144,
+                          "commentStart": 1219,
+                          "end": 1225,
+                          "start": 1219,
                           "type": "TagDeclarator",
                           "value": "seg10"
                         },
@@ -3667,9 +3667,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           41.8813
                         ],
                         "tag": {
-                          "commentStart": 1186,
-                          "end": 1192,
-                          "start": 1186,
+                          "commentStart": 1261,
+                          "end": 1267,
+                          "start": 1261,
                           "type": "TagDeclarator",
                           "value": "seg04"
                         },
@@ -4006,11 +4006,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "start": {
                 "from": [
-                  -32.6313,
+                  32.6313,
                   0.0
                 ],
                 "to": [
-                  -32.6313,
+                  32.6313,
                   0.0
                 ],
                 "units": {
@@ -4023,17 +4023,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 }
               },
               "tags": {
-                "rectangleSegmentA001": {
+                "rectangleSegmentA002": {
                   "type": "TagIdentifier",
-                  "value": "rectangleSegmentA001"
+                  "value": "rectangleSegmentA002"
                 },
-                "rectangleSegmentB001": {
+                "rectangleSegmentB002": {
                   "type": "TagIdentifier",
-                  "value": "rectangleSegmentB001"
+                  "value": "rectangleSegmentB002"
                 },
-                "rectangleSegmentC001": {
+                "rectangleSegmentC002": {
                   "type": "TagIdentifier",
-                  "value": "rectangleSegmentC001"
+                  "value": "rectangleSegmentC002"
                 }
               },
               "artifactId": "[uuid]",
@@ -4249,9 +4249,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             31.8813
           ],
           "tag": {
-            "commentStart": 555,
-            "end": 561,
-            "start": 555,
+            "commentStart": 630,
+            "end": 636,
+            "start": 630,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -4280,9 +4280,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           ],
           "radius": 11.88125,
           "tag": {
-            "commentStart": 663,
-            "end": 669,
-            "start": 663,
+            "commentStart": 738,
+            "end": 744,
+            "start": 738,
             "type": "TagDeclarator",
             "value": "seg09"
           },
@@ -4305,9 +4305,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             20.0
           ],
           "tag": {
-            "commentStart": 722,
-            "end": 728,
-            "start": 722,
+            "commentStart": 797,
+            "end": 803,
+            "start": 797,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -4330,9 +4330,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "tag": {
-            "commentStart": 775,
-            "end": 781,
-            "start": 775,
+            "commentStart": 850,
+            "end": 856,
+            "start": 850,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -4355,9 +4355,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "tag": {
-            "commentStart": 876,
-            "end": 882,
-            "start": 876,
+            "commentStart": 951,
+            "end": 957,
+            "start": 951,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -4380,9 +4380,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             10.9406
           ],
           "tag": {
-            "commentStart": 953,
-            "end": 959,
-            "start": 953,
+            "commentStart": 1028,
+            "end": 1034,
+            "start": 1028,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -4405,9 +4405,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             10.9406
           ],
           "tag": {
-            "commentStart": 1010,
-            "end": 1016,
-            "start": 1010,
+            "commentStart": 1085,
+            "end": 1091,
+            "start": 1085,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -4430,9 +4430,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             30.9406
           ],
           "tag": {
-            "commentStart": 1069,
-            "end": 1075,
-            "start": 1069,
+            "commentStart": 1144,
+            "end": 1150,
+            "start": 1144,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -4455,9 +4455,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             30.9406
           ],
           "tag": {
-            "commentStart": 1144,
-            "end": 1150,
-            "start": 1144,
+            "commentStart": 1219,
+            "end": 1225,
+            "start": 1219,
             "type": "TagDeclarator",
             "value": "seg10"
           },
@@ -4480,9 +4480,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             41.8813
           ],
           "tag": {
-            "commentStart": 1186,
-            "end": 1192,
-            "start": 1186,
+            "commentStart": 1261,
+            "end": 1267,
+            "start": 1261,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -4819,973 +4819,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            -32.6313,
-            0.0
-          ],
-          "tag": {
-            "commentStart": 2403,
-            "end": 2424,
-            "start": 2403,
-            "type": "TagDeclarator",
-            "value": "rectangleSegmentA001"
-          },
-          "to": [
-            -22.6313,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -22.6313,
-            0.0
-          ],
-          "tag": {
-            "commentStart": 2519,
-            "end": 2540,
-            "start": 2519,
-            "type": "TagDeclarator",
-            "value": "rectangleSegmentB001"
-          },
-          "to": [
-            -22.6313,
-            -10.0
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -22.6313,
-            -10.0
-          ],
-          "tag": {
-            "commentStart": 2642,
-            "end": 2663,
-            "start": 2642,
-            "type": "TagDeclarator",
-            "value": "rectangleSegmentC001"
-          },
-          "to": [
-            -32.6313,
-            -10.0
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -32.6313,
-            -10.0
-          ],
-          "tag": null,
-          "to": [
-            -32.6313,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -32.6313,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            -32.6313,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        }
-      ],
-      "on": {
-        "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "value": "start",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": -1.0,
-          "z": 0.0
-        },
-        "solid": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 555,
-                "end": 561,
-                "start": 555,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 663,
-                "end": 669,
-                "start": 663,
-                "type": "TagDeclarator",
-                "value": "seg09"
-              },
-              "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 722,
-                "end": 728,
-                "start": 722,
-                "type": "TagDeclarator",
-                "value": "seg03"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 775,
-                "end": 781,
-                "start": 775,
-                "type": "TagDeclarator",
-                "value": "seg07"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 876,
-                "end": 882,
-                "start": 876,
-                "type": "TagDeclarator",
-                "value": "seg02"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 953,
-                "end": 959,
-                "start": 953,
-                "type": "TagDeclarator",
-                "value": "seg06"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1010,
-                "end": 1016,
-                "start": 1010,
-                "type": "TagDeclarator",
-                "value": "seg08"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1069,
-                "end": 1075,
-                "start": 1069,
-                "type": "TagDeclarator",
-                "value": "seg05"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1144,
-                "end": 1150,
-                "start": 1144,
-                "type": "TagDeclarator",
-                "value": "seg10"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1186,
-                "end": 1192,
-                "start": 1186,
-                "type": "TagDeclarator",
-                "value": "seg04"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  31.8813
-                ],
-                "tag": {
-                  "commentStart": 555,
-                  "end": 561,
-                  "start": 555,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "to": [
-                  10.75,
-                  31.8813
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": false,
-                "center": [
-                  10.75,
-                  20.0
-                ],
-                "from": [
-                  10.75,
-                  31.8813
-                ],
-                "radius": 11.88125,
-                "tag": {
-                  "commentStart": 663,
-                  "end": 669,
-                  "start": 663,
-                  "type": "TagDeclarator",
-                  "value": "seg09"
-                },
-                "to": [
-                  22.6313,
-                  20.0
-                ],
-                "type": "Arc",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  22.6313,
-                  20.0
-                ],
-                "tag": {
-                  "commentStart": 722,
-                  "end": 728,
-                  "start": 722,
-                  "type": "TagDeclarator",
-                  "value": "seg03"
-                },
-                "to": [
-                  22.6313,
-                  -10.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  22.6313,
-                  -10.0
-                ],
-                "tag": {
-                  "commentStart": 775,
-                  "end": 781,
-                  "start": 775,
-                  "type": "TagDeclarator",
-                  "value": "seg07"
-                },
-                "to": [
-                  32.6313,
-                  -10.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  32.6313,
-                  -10.0
-                ],
-                "tag": {
-                  "commentStart": 876,
-                  "end": 882,
-                  "start": 876,
-                  "type": "TagDeclarator",
-                  "value": "seg02"
-                },
-                "to": [
-                  32.6313,
-                  10.9406
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  32.6313,
-                  10.9406
-                ],
-                "tag": {
-                  "commentStart": 953,
-                  "end": 959,
-                  "start": 953,
-                  "type": "TagDeclarator",
-                  "value": "seg06"
-                },
-                "to": [
-                  102.6313,
-                  10.9406
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  102.6313,
-                  10.9406
-                ],
-                "tag": {
-                  "commentStart": 1010,
-                  "end": 1016,
-                  "start": 1010,
-                  "type": "TagDeclarator",
-                  "value": "seg08"
-                },
-                "to": [
-                  102.6313,
-                  30.9406
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  102.6313,
-                  30.9406
-                ],
-                "tag": {
-                  "commentStart": 1069,
-                  "end": 1075,
-                  "start": 1069,
-                  "type": "TagDeclarator",
-                  "value": "seg05"
-                },
-                "to": [
-                  32.6313,
-                  30.9406
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  32.6313,
-                  30.9406
-                ],
-                "tag": {
-                  "commentStart": 1144,
-                  "end": 1150,
-                  "start": 1144,
-                  "type": "TagDeclarator",
-                  "value": "seg10"
-                },
-                "to": [
-                  32.6313,
-                  41.8813
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  32.6313,
-                  41.8813
-                ],
-                "tag": {
-                  "commentStart": 1186,
-                  "end": 1192,
-                  "start": 1186,
-                  "type": "TagDeclarator",
-                  "value": "seg04"
-                },
-                "to": [
-                  0.0,
-                  41.8813
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  41.8813
-                ],
-                "tag": null,
-                "to": [
-                  -32.6313,
-                  41.8813
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -32.6313,
-                  41.8813
-                ],
-                "tag": null,
-                "to": [
-                  -32.6313,
-                  30.9406
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -32.6313,
-                  30.9406
-                ],
-                "tag": null,
-                "to": [
-                  -102.6313,
-                  30.9406
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -102.6313,
-                  30.9406
-                ],
-                "tag": null,
-                "to": [
-                  -102.6313,
-                  10.9406
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -102.6313,
-                  10.9406
-                ],
-                "tag": null,
-                "to": [
-                  -32.6312,
-                  10.9406
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -32.6312,
-                  10.9406
-                ],
-                "tag": null,
-                "to": [
-                  -32.6312,
-                  -10.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -32.6312,
-                  -10.0
-                ],
-                "tag": null,
-                "to": [
-                  -22.6312,
-                  -10.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -22.6312,
-                  -10.0
-                ],
-                "tag": null,
-                "to": [
-                  -22.6312,
-                  20.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": false,
-                "center": [
-                  -10.75,
-                  20.0
-                ],
-                "from": [
-                  -22.6312,
-                  20.0
-                ],
-                "radius": 11.88125,
-                "tag": null,
-                "to": [
-                  -10.75,
-                  31.8813
-                ],
-                "type": "Arc",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -10.75,
-                  31.8813
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  31.8813
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  31.8813
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  31.8813
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "XZ",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "start": {
-              "from": [
-                0.0,
-                31.8813
-              ],
-              "to": [
-                0.0,
-                31.8813
-              ],
-              "units": {
-                "type": "Mm"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "tags": {
-              "seg01": {
-                "type": "TagIdentifier",
-                "value": "seg01"
-              },
-              "seg02": {
-                "type": "TagIdentifier",
-                "value": "seg02"
-              },
-              "seg03": {
-                "type": "TagIdentifier",
-                "value": "seg03"
-              },
-              "seg04": {
-                "type": "TagIdentifier",
-                "value": "seg04"
-              },
-              "seg05": {
-                "type": "TagIdentifier",
-                "value": "seg05"
-              },
-              "seg06": {
-                "type": "TagIdentifier",
-                "value": "seg06"
-              },
-              "seg07": {
-                "type": "TagIdentifier",
-                "value": "seg07"
-              },
-              "seg08": {
-                "type": "TagIdentifier",
-                "value": "seg08"
-              },
-              "seg09": {
-                "type": "TagIdentifier",
-                "value": "seg09"
-              },
-              "seg10": {
-                "type": "TagIdentifier",
-                "value": "seg10"
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "height": 5.0,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "start": {
-        "from": [
-          -32.6313,
-          0.0
-        ],
-        "to": [
-          -32.6313,
-          0.0
-        ],
-        "units": {
-          "type": "Mm"
-        },
-        "tag": null,
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": []
-        }
-      },
-      "tags": {
-        "rectangleSegmentA001": {
-          "type": "TagIdentifier",
-          "value": "rectangleSegmentA001"
-        },
-        "rectangleSegmentB001": {
-          "type": "TagIdentifier",
-          "value": "rectangleSegmentB001"
-        },
-        "rectangleSegmentC001": {
-          "type": "TagIdentifier",
-          "value": "rectangleSegmentC001"
-        }
-      },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
-    }
-  },
-  "sketch003": {
-    "type": "Sketch",
-    "value": {
-      "type": "Sketch",
-      "id": "[uuid]",
-      "paths": [
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
             32.6313,
             0.0
           ],
           "tag": {
-            "commentStart": 1861,
-            "end": 1882,
-            "start": 1861,
+            "commentStart": 1993,
+            "end": 2014,
+            "start": 1993,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -5808,9 +4848,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 1977,
-            "end": 1998,
-            "start": 1977,
+            "commentStart": 2109,
+            "end": 2130,
+            "start": 2109,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB002"
           },
@@ -5833,9 +4873,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "tag": {
-            "commentStart": 2100,
-            "end": 2121,
-            "start": 2100,
+            "commentStart": 2232,
+            "end": 2253,
+            "start": 2232,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC002"
           },
@@ -5917,9 +4957,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 555,
-                "end": 561,
-                "start": 555,
+                "commentStart": 630,
+                "end": 636,
+                "start": 630,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -5930,9 +4970,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 663,
-                "end": 669,
-                "start": 663,
+                "commentStart": 738,
+                "end": 744,
+                "start": 738,
                 "type": "TagDeclarator",
                 "value": "seg09"
               },
@@ -5943,9 +4983,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 722,
-                "end": 728,
-                "start": 722,
+                "commentStart": 797,
+                "end": 803,
+                "start": 797,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -5956,9 +4996,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 775,
-                "end": 781,
-                "start": 775,
+                "commentStart": 850,
+                "end": 856,
+                "start": 850,
                 "type": "TagDeclarator",
                 "value": "seg07"
               },
@@ -5969,9 +5009,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 876,
-                "end": 882,
-                "start": 876,
+                "commentStart": 951,
+                "end": 957,
+                "start": 951,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -5982,9 +5022,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 953,
-                "end": 959,
-                "start": 953,
+                "commentStart": 1028,
+                "end": 1034,
+                "start": 1028,
                 "type": "TagDeclarator",
                 "value": "seg06"
               },
@@ -5995,24 +5035,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1010,
-                "end": 1016,
-                "start": 1010,
+                "commentStart": 1085,
+                "end": 1091,
+                "start": 1085,
                 "type": "TagDeclarator",
                 "value": "seg08"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1069,
-                "end": 1075,
-                "start": 1069,
-                "type": "TagDeclarator",
-                "value": "seg05"
               },
               "type": "extrudePlane"
             },
@@ -6025,6 +5052,19 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "end": 1150,
                 "start": 1144,
                 "type": "TagDeclarator",
+                "value": "seg05"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 1219,
+                "end": 1225,
+                "start": 1219,
+                "type": "TagDeclarator",
                 "value": "seg10"
               },
               "type": "extrudePlane"
@@ -6034,9 +5074,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1186,
-                "end": 1192,
-                "start": 1186,
+                "commentStart": 1261,
+                "end": 1267,
+                "start": 1261,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -6120,9 +5160,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   31.8813
                 ],
                 "tag": {
-                  "commentStart": 555,
-                  "end": 561,
-                  "start": 555,
+                  "commentStart": 630,
+                  "end": 636,
+                  "start": 630,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -6151,9 +5191,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 ],
                 "radius": 11.88125,
                 "tag": {
-                  "commentStart": 663,
-                  "end": 669,
-                  "start": 663,
+                  "commentStart": 738,
+                  "end": 744,
+                  "start": 738,
                   "type": "TagDeclarator",
                   "value": "seg09"
                 },
@@ -6176,9 +5216,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   20.0
                 ],
                 "tag": {
-                  "commentStart": 722,
-                  "end": 728,
-                  "start": 722,
+                  "commentStart": 797,
+                  "end": 803,
+                  "start": 797,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -6201,9 +5241,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   -10.0
                 ],
                 "tag": {
-                  "commentStart": 775,
-                  "end": 781,
-                  "start": 775,
+                  "commentStart": 850,
+                  "end": 856,
+                  "start": 850,
                   "type": "TagDeclarator",
                   "value": "seg07"
                 },
@@ -6226,9 +5266,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   -10.0
                 ],
                 "tag": {
-                  "commentStart": 876,
-                  "end": 882,
-                  "start": 876,
+                  "commentStart": 951,
+                  "end": 957,
+                  "start": 951,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -6251,9 +5291,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   10.9406
                 ],
                 "tag": {
-                  "commentStart": 953,
-                  "end": 959,
-                  "start": 953,
+                  "commentStart": 1028,
+                  "end": 1034,
+                  "start": 1028,
                   "type": "TagDeclarator",
                   "value": "seg06"
                 },
@@ -6276,9 +5316,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   10.9406
                 ],
                 "tag": {
-                  "commentStart": 1010,
-                  "end": 1016,
-                  "start": 1010,
+                  "commentStart": 1085,
+                  "end": 1091,
+                  "start": 1085,
                   "type": "TagDeclarator",
                   "value": "seg08"
                 },
@@ -6301,9 +5341,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   30.9406
                 ],
                 "tag": {
-                  "commentStart": 1069,
-                  "end": 1075,
-                  "start": 1069,
+                  "commentStart": 1144,
+                  "end": 1150,
+                  "start": 1144,
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
@@ -6326,9 +5366,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   30.9406
                 ],
                 "tag": {
-                  "commentStart": 1144,
-                  "end": 1150,
-                  "start": 1144,
+                  "commentStart": 1219,
+                  "end": 1225,
+                  "start": 1219,
                   "type": "TagDeclarator",
                   "value": "seg10"
                 },
@@ -6351,9 +5391,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   41.8813
                 ],
                 "tag": {
-                  "commentStart": 1186,
-                  "end": 1192,
-                  "start": 1186,
+                  "commentStart": 1261,
+                  "end": 1267,
+                  "start": 1261,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -6727,6 +5767,966 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       }
     }
   },
+  "sketch003": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -32.6313,
+            0.0
+          ],
+          "tag": {
+            "commentStart": 2592,
+            "end": 2613,
+            "start": 2592,
+            "type": "TagDeclarator",
+            "value": "rectangleSegmentA001"
+          },
+          "to": [
+            -22.6313,
+            0.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -22.6313,
+            0.0
+          ],
+          "tag": {
+            "commentStart": 2708,
+            "end": 2729,
+            "start": 2708,
+            "type": "TagDeclarator",
+            "value": "rectangleSegmentB001"
+          },
+          "to": [
+            -22.6313,
+            -10.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -22.6313,
+            -10.0
+          ],
+          "tag": {
+            "commentStart": 2831,
+            "end": 2852,
+            "start": 2831,
+            "type": "TagDeclarator",
+            "value": "rectangleSegmentC001"
+          },
+          "to": [
+            -32.6313,
+            -10.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -32.6313,
+            -10.0
+          ],
+          "tag": null,
+          "to": [
+            -32.6313,
+            0.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -32.6313,
+            0.0
+          ],
+          "tag": null,
+          "to": [
+            -32.6313,
+            0.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        }
+      ],
+      "on": {
+        "type": "face",
+        "id": "[uuid]",
+        "artifactId": "[uuid]",
+        "value": "start",
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
+        },
+        "solid": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 630,
+                "end": 636,
+                "start": 630,
+                "type": "TagDeclarator",
+                "value": "seg01"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 738,
+                "end": 744,
+                "start": 738,
+                "type": "TagDeclarator",
+                "value": "seg09"
+              },
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 797,
+                "end": 803,
+                "start": 797,
+                "type": "TagDeclarator",
+                "value": "seg03"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 850,
+                "end": 856,
+                "start": 850,
+                "type": "TagDeclarator",
+                "value": "seg07"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 951,
+                "end": 957,
+                "start": 951,
+                "type": "TagDeclarator",
+                "value": "seg02"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 1028,
+                "end": 1034,
+                "start": 1028,
+                "type": "TagDeclarator",
+                "value": "seg06"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 1085,
+                "end": 1091,
+                "start": 1085,
+                "type": "TagDeclarator",
+                "value": "seg08"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 1144,
+                "end": 1150,
+                "start": 1144,
+                "type": "TagDeclarator",
+                "value": "seg05"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 1219,
+                "end": 1225,
+                "start": 1219,
+                "type": "TagDeclarator",
+                "value": "seg10"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 1261,
+                "end": 1267,
+                "start": 1261,
+                "type": "TagDeclarator",
+                "value": "seg04"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.0,
+                  31.8813
+                ],
+                "tag": {
+                  "commentStart": 630,
+                  "end": 636,
+                  "start": 630,
+                  "type": "TagDeclarator",
+                  "value": "seg01"
+                },
+                "to": [
+                  10.75,
+                  31.8813
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": false,
+                "center": [
+                  10.75,
+                  20.0
+                ],
+                "from": [
+                  10.75,
+                  31.8813
+                ],
+                "radius": 11.88125,
+                "tag": {
+                  "commentStart": 738,
+                  "end": 744,
+                  "start": 738,
+                  "type": "TagDeclarator",
+                  "value": "seg09"
+                },
+                "to": [
+                  22.6313,
+                  20.0
+                ],
+                "type": "Arc",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  22.6313,
+                  20.0
+                ],
+                "tag": {
+                  "commentStart": 797,
+                  "end": 803,
+                  "start": 797,
+                  "type": "TagDeclarator",
+                  "value": "seg03"
+                },
+                "to": [
+                  22.6313,
+                  -10.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  22.6313,
+                  -10.0
+                ],
+                "tag": {
+                  "commentStart": 850,
+                  "end": 856,
+                  "start": 850,
+                  "type": "TagDeclarator",
+                  "value": "seg07"
+                },
+                "to": [
+                  32.6313,
+                  -10.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  32.6313,
+                  -10.0
+                ],
+                "tag": {
+                  "commentStart": 951,
+                  "end": 957,
+                  "start": 951,
+                  "type": "TagDeclarator",
+                  "value": "seg02"
+                },
+                "to": [
+                  32.6313,
+                  10.9406
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  32.6313,
+                  10.9406
+                ],
+                "tag": {
+                  "commentStart": 1028,
+                  "end": 1034,
+                  "start": 1028,
+                  "type": "TagDeclarator",
+                  "value": "seg06"
+                },
+                "to": [
+                  102.6313,
+                  10.9406
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  102.6313,
+                  10.9406
+                ],
+                "tag": {
+                  "commentStart": 1085,
+                  "end": 1091,
+                  "start": 1085,
+                  "type": "TagDeclarator",
+                  "value": "seg08"
+                },
+                "to": [
+                  102.6313,
+                  30.9406
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  102.6313,
+                  30.9406
+                ],
+                "tag": {
+                  "commentStart": 1144,
+                  "end": 1150,
+                  "start": 1144,
+                  "type": "TagDeclarator",
+                  "value": "seg05"
+                },
+                "to": [
+                  32.6313,
+                  30.9406
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  32.6313,
+                  30.9406
+                ],
+                "tag": {
+                  "commentStart": 1219,
+                  "end": 1225,
+                  "start": 1219,
+                  "type": "TagDeclarator",
+                  "value": "seg10"
+                },
+                "to": [
+                  32.6313,
+                  41.8813
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  32.6313,
+                  41.8813
+                ],
+                "tag": {
+                  "commentStart": 1261,
+                  "end": 1267,
+                  "start": 1261,
+                  "type": "TagDeclarator",
+                  "value": "seg04"
+                },
+                "to": [
+                  0.0,
+                  41.8813
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.0,
+                  41.8813
+                ],
+                "tag": null,
+                "to": [
+                  -32.6313,
+                  41.8813
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -32.6313,
+                  41.8813
+                ],
+                "tag": null,
+                "to": [
+                  -32.6313,
+                  30.9406
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -32.6313,
+                  30.9406
+                ],
+                "tag": null,
+                "to": [
+                  -102.6313,
+                  30.9406
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -102.6313,
+                  30.9406
+                ],
+                "tag": null,
+                "to": [
+                  -102.6313,
+                  10.9406
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -102.6313,
+                  10.9406
+                ],
+                "tag": null,
+                "to": [
+                  -32.6312,
+                  10.9406
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -32.6312,
+                  10.9406
+                ],
+                "tag": null,
+                "to": [
+                  -32.6312,
+                  -10.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -32.6312,
+                  -10.0
+                ],
+                "tag": null,
+                "to": [
+                  -22.6312,
+                  -10.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -22.6312,
+                  -10.0
+                ],
+                "tag": null,
+                "to": [
+                  -22.6312,
+                  20.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": false,
+                "center": [
+                  -10.75,
+                  20.0
+                ],
+                "from": [
+                  -22.6312,
+                  20.0
+                ],
+                "radius": 11.88125,
+                "tag": null,
+                "to": [
+                  -10.75,
+                  31.8813
+                ],
+                "type": "Arc",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -10.75,
+                  31.8813
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  31.8813
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.0,
+                  31.8813
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  31.8813
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": "XZ",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": 0.0
+              },
+              "units": {
+                "type": "Mm"
+              }
+            },
+            "start": {
+              "from": [
+                0.0,
+                31.8813
+              ],
+              "to": [
+                0.0,
+                31.8813
+              ],
+              "units": {
+                "type": "Mm"
+              },
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "tags": {
+              "seg01": {
+                "type": "TagIdentifier",
+                "value": "seg01"
+              },
+              "seg02": {
+                "type": "TagIdentifier",
+                "value": "seg02"
+              },
+              "seg03": {
+                "type": "TagIdentifier",
+                "value": "seg03"
+              },
+              "seg04": {
+                "type": "TagIdentifier",
+                "value": "seg04"
+              },
+              "seg05": {
+                "type": "TagIdentifier",
+                "value": "seg05"
+              },
+              "seg06": {
+                "type": "TagIdentifier",
+                "value": "seg06"
+              },
+              "seg07": {
+                "type": "TagIdentifier",
+                "value": "seg07"
+              },
+              "seg08": {
+                "type": "TagIdentifier",
+                "value": "seg08"
+              },
+              "seg09": {
+                "type": "TagIdentifier",
+                "value": "seg09"
+              },
+              "seg10": {
+                "type": "TagIdentifier",
+                "value": "seg10"
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "height": 5.0,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        "units": {
+          "type": "Mm"
+        }
+      },
+      "start": {
+        "from": [
+          -32.6313,
+          0.0
+        ],
+        "to": [
+          -32.6313,
+          0.0
+        ],
+        "units": {
+          "type": "Mm"
+        },
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": []
+        }
+      },
+      "tags": {
+        "rectangleSegmentA001": {
+          "type": "TagIdentifier",
+          "value": "rectangleSegmentA001"
+        },
+        "rectangleSegmentB001": {
+          "type": "TagIdentifier",
+          "value": "rectangleSegmentB001"
+        },
+        "rectangleSegmentC001": {
+          "type": "TagIdentifier",
+          "value": "rectangleSegmentC001"
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "units": {
+        "type": "Mm"
+      }
+    }
+  },
   "sketch004": {
     "type": "Sketch",
     "value": {
@@ -6743,9 +6743,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 2951,
-            "end": 2972,
-            "start": 2951,
+            "commentStart": 3196,
+            "end": 3217,
+            "start": 3196,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA003"
           },
@@ -6768,9 +6768,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 3067,
-            "end": 3088,
-            "start": 3067,
+            "commentStart": 3312,
+            "end": 3333,
+            "start": 3312,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB003"
           },
@@ -6793,9 +6793,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "tag": {
-            "commentStart": 3190,
-            "end": 3211,
-            "start": 3190,
+            "commentStart": 3435,
+            "end": 3456,
+            "start": 3435,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC003"
           },
@@ -6877,11 +6877,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2403,
-                "end": 2424,
-                "start": 2403,
+                "commentStart": 1993,
+                "end": 2014,
+                "start": 1993,
                 "type": "TagDeclarator",
-                "value": "rectangleSegmentA001"
+                "value": "rectangleSegmentA002"
               },
               "type": "extrudePlane"
             },
@@ -6890,11 +6890,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2519,
-                "end": 2540,
-                "start": 2519,
+                "commentStart": 2109,
+                "end": 2130,
+                "start": 2109,
                 "type": "TagDeclarator",
-                "value": "rectangleSegmentB001"
+                "value": "rectangleSegmentB002"
               },
               "type": "extrudePlane"
             },
@@ -6903,11 +6903,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2642,
-                "end": 2663,
-                "start": 2642,
+                "commentStart": 2232,
+                "end": 2253,
+                "start": 2232,
                 "type": "TagDeclarator",
-                "value": "rectangleSegmentC001"
+                "value": "rectangleSegmentC002"
               },
               "type": "extrudePlane"
             },
@@ -6929,18 +6929,18 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -32.6313,
+                  32.6313,
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 2403,
-                  "end": 2424,
-                  "start": 2403,
+                  "commentStart": 1993,
+                  "end": 2014,
+                  "start": 1993,
                   "type": "TagDeclarator",
-                  "value": "rectangleSegmentA001"
+                  "value": "rectangleSegmentA002"
                 },
                 "to": [
-                  -22.6313,
+                  22.6313,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -6954,18 +6954,18 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -22.6313,
+                  22.6313,
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 2519,
-                  "end": 2540,
-                  "start": 2519,
+                  "commentStart": 2109,
+                  "end": 2130,
+                  "start": 2109,
                   "type": "TagDeclarator",
-                  "value": "rectangleSegmentB001"
+                  "value": "rectangleSegmentB002"
                 },
                 "to": [
-                  -22.6313,
+                  22.6312,
                   -10.0
                 ],
                 "type": "ToPoint",
@@ -6979,18 +6979,18 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -22.6313,
+                  22.6312,
                   -10.0
                 ],
                 "tag": {
-                  "commentStart": 2642,
-                  "end": 2663,
-                  "start": 2642,
+                  "commentStart": 2232,
+                  "end": 2253,
+                  "start": 2232,
                   "type": "TagDeclarator",
-                  "value": "rectangleSegmentC001"
+                  "value": "rectangleSegmentC002"
                 },
                 "to": [
-                  -32.6313,
+                  32.6312,
                   -10.0
                 ],
                 "type": "ToPoint",
@@ -7004,12 +7004,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -32.6313,
+                  32.6312,
                   -10.0
                 ],
                 "tag": null,
                 "to": [
-                  -32.6313,
+                  32.6313,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -7023,12 +7023,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -32.6313,
+                  32.6313,
                   0.0
                 ],
                 "tag": null,
                 "to": [
-                  -32.6313,
+                  32.6313,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -7067,9 +7067,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 555,
-                      "end": 561,
-                      "start": 555,
+                      "commentStart": 630,
+                      "end": 636,
+                      "start": 630,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -7080,9 +7080,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 663,
-                      "end": 669,
-                      "start": 663,
+                      "commentStart": 738,
+                      "end": 744,
+                      "start": 738,
                       "type": "TagDeclarator",
                       "value": "seg09"
                     },
@@ -7093,9 +7093,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 722,
-                      "end": 728,
-                      "start": 722,
+                      "commentStart": 797,
+                      "end": 803,
+                      "start": 797,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -7106,9 +7106,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 775,
-                      "end": 781,
-                      "start": 775,
+                      "commentStart": 850,
+                      "end": 856,
+                      "start": 850,
                       "type": "TagDeclarator",
                       "value": "seg07"
                     },
@@ -7119,9 +7119,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 876,
-                      "end": 882,
-                      "start": 876,
+                      "commentStart": 951,
+                      "end": 957,
+                      "start": 951,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -7132,9 +7132,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 953,
-                      "end": 959,
-                      "start": 953,
+                      "commentStart": 1028,
+                      "end": 1034,
+                      "start": 1028,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -7145,24 +7145,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1010,
-                      "end": 1016,
-                      "start": 1010,
+                      "commentStart": 1085,
+                      "end": 1091,
+                      "start": 1085,
                       "type": "TagDeclarator",
                       "value": "seg08"
-                    },
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": {
-                      "commentStart": 1069,
-                      "end": 1075,
-                      "start": 1069,
-                      "type": "TagDeclarator",
-                      "value": "seg05"
                     },
                     "type": "extrudePlane"
                   },
@@ -7175,6 +7162,19 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "end": 1150,
                       "start": 1144,
                       "type": "TagDeclarator",
+                      "value": "seg05"
+                    },
+                    "type": "extrudePlane"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": {
+                      "commentStart": 1219,
+                      "end": 1225,
+                      "start": 1219,
+                      "type": "TagDeclarator",
                       "value": "seg10"
                     },
                     "type": "extrudePlane"
@@ -7184,9 +7184,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1186,
-                      "end": 1192,
-                      "start": 1186,
+                      "commentStart": 1261,
+                      "end": 1267,
+                      "start": 1261,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -7270,9 +7270,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         31.8813
                       ],
                       "tag": {
-                        "commentStart": 555,
-                        "end": 561,
-                        "start": 555,
+                        "commentStart": 630,
+                        "end": 636,
+                        "start": 630,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -7301,9 +7301,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       ],
                       "radius": 11.88125,
                       "tag": {
-                        "commentStart": 663,
-                        "end": 669,
-                        "start": 663,
+                        "commentStart": 738,
+                        "end": 744,
+                        "start": 738,
                         "type": "TagDeclarator",
                         "value": "seg09"
                       },
@@ -7326,9 +7326,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         20.0
                       ],
                       "tag": {
-                        "commentStart": 722,
-                        "end": 728,
-                        "start": 722,
+                        "commentStart": 797,
+                        "end": 803,
+                        "start": 797,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -7351,9 +7351,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         -10.0
                       ],
                       "tag": {
-                        "commentStart": 775,
-                        "end": 781,
-                        "start": 775,
+                        "commentStart": 850,
+                        "end": 856,
+                        "start": 850,
                         "type": "TagDeclarator",
                         "value": "seg07"
                       },
@@ -7376,9 +7376,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         -10.0
                       ],
                       "tag": {
-                        "commentStart": 876,
-                        "end": 882,
-                        "start": 876,
+                        "commentStart": 951,
+                        "end": 957,
+                        "start": 951,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -7401,9 +7401,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         10.9406
                       ],
                       "tag": {
-                        "commentStart": 953,
-                        "end": 959,
-                        "start": 953,
+                        "commentStart": 1028,
+                        "end": 1034,
+                        "start": 1028,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -7426,9 +7426,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         10.9406
                       ],
                       "tag": {
-                        "commentStart": 1010,
-                        "end": 1016,
-                        "start": 1010,
+                        "commentStart": 1085,
+                        "end": 1091,
+                        "start": 1085,
                         "type": "TagDeclarator",
                         "value": "seg08"
                       },
@@ -7451,9 +7451,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         30.9406
                       ],
                       "tag": {
-                        "commentStart": 1069,
-                        "end": 1075,
-                        "start": 1069,
+                        "commentStart": 1144,
+                        "end": 1150,
+                        "start": 1144,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -7476,9 +7476,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         30.9406
                       ],
                       "tag": {
-                        "commentStart": 1144,
-                        "end": 1150,
-                        "start": 1144,
+                        "commentStart": 1219,
+                        "end": 1225,
+                        "start": 1219,
                         "type": "TagDeclarator",
                         "value": "seg10"
                       },
@@ -7501,9 +7501,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         41.8813
                       ],
                       "tag": {
-                        "commentStart": 1186,
-                        "end": 1192,
-                        "start": 1186,
+                        "commentStart": 1261,
+                        "end": 1267,
+                        "start": 1261,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -7840,11 +7840,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             },
             "start": {
               "from": [
-                -32.6313,
+                32.6313,
                 0.0
               ],
               "to": [
-                -32.6313,
+                32.6313,
                 0.0
               ],
               "units": {
@@ -7857,17 +7857,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               }
             },
             "tags": {
-              "rectangleSegmentA001": {
+              "rectangleSegmentA002": {
                 "type": "TagIdentifier",
-                "value": "rectangleSegmentA001"
+                "value": "rectangleSegmentA002"
               },
-              "rectangleSegmentB001": {
+              "rectangleSegmentB002": {
                 "type": "TagIdentifier",
-                "value": "rectangleSegmentB001"
+                "value": "rectangleSegmentB002"
               },
-              "rectangleSegmentC001": {
+              "rectangleSegmentC002": {
                 "type": "TagIdentifier",
-                "value": "rectangleSegmentC001"
+                "value": "rectangleSegmentC002"
               }
             },
             "artifactId": "[uuid]",

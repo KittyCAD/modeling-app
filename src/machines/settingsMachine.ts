@@ -174,14 +174,6 @@ export const settingsMachine = setup({
     }),
   },
   actions: {
-    setClientSideSceneUnits: ({ context, event }) => {
-      const newBaseUnit =
-        event.type === 'set.modeling.defaultUnit'
-          ? (event.data.value as BaseUnit)
-          : context.modeling.defaultUnit.current
-      if (!sceneInfra) return
-      sceneInfra.baseUnit = newBaseUnit
-    },
     setEngineTheme: ({ context }) => {
       if (engineCommandManager && context.app.theme.current) {
         engineCommandManager
@@ -253,7 +245,7 @@ export const settingsMachine = setup({
 
         if (shouldExecute) {
           // Unit changes requires a re-exec of code
-          kclManager.executeCode(true).catch(reportRejection)
+          kclManager.executeCode().catch(reportRejection)
         } else {
           // For any future logging we'd like to do
           // console.log(
@@ -372,7 +364,7 @@ export const settingsMachine = setup({
   ],
   states: {
     idle: {
-      entry: ['setThemeClass', 'setClientSideSceneUnits', 'sendThemeToWatcher'],
+      entry: ['setThemeClass', 'sendThemeToWatcher'],
 
       on: {
         '*': {
@@ -415,12 +407,7 @@ export const settingsMachine = setup({
         'set.modeling.defaultUnit': {
           target: 'persisting settings',
 
-          actions: [
-            'setSettingAtLevel',
-            'toastSuccess',
-            'setClientSideSceneUnits',
-            'Execute AST',
-          ],
+          actions: ['setSettingAtLevel', 'toastSuccess', 'Execute AST'],
         },
 
         'set.app.theme': {
@@ -474,7 +461,6 @@ export const settingsMachine = setup({
             'resetSettings',
             'setThemeClass',
             'setEngineTheme',
-            'setClientSideSceneUnits',
             'setThemeColor',
             'Execute AST',
             'setClientTheme',
@@ -488,7 +474,6 @@ export const settingsMachine = setup({
             'setAllSettings',
             'setThemeClass',
             'setEngineTheme',
-            'setClientSideSceneUnits',
             'setThemeColor',
             'Execute AST',
             'setClientTheme',
@@ -549,7 +534,6 @@ export const settingsMachine = setup({
             'setAllSettings',
             'setThemeClass',
             'setEngineTheme',
-            'setClientSideSceneUnits',
             'setThemeColor',
             'setClientTheme',
             'setAllowOrbitInSketchMode',
@@ -579,7 +563,6 @@ export const settingsMachine = setup({
             'setAllSettings',
             'setThemeClass',
             'setEngineTheme',
-            'setClientSideSceneUnits',
             'setThemeColor',
             'Execute AST',
             'setClientTheme',

@@ -351,7 +351,7 @@ const extrudeDefaultPlane = async (
             },
           },
           project: {
-            default_project_name: 'project-$nnn',
+            default_project_name: 'untitled',
           },
           text_editor: {
             text_wrapping: true,
@@ -455,7 +455,7 @@ test(
     await page.waitForTimeout(700) // TODO detect animation ending, or disable animation
 
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-    code += `profile001 = startProfileAt([7.19, -9.7], sketch001)`
+    code += `profile001 = startProfileAt([182.59, -246.32], sketch001)`
     await expect(page.locator('.cm-content')).toHaveText(code)
     await page.waitForTimeout(100)
 
@@ -473,7 +473,7 @@ test(
     await page.waitForTimeout(500)
 
     code += `
-  |> xLine(length = 7.25)`
+  |> xLine(length = 184.3)`
     await expect(page.locator('.cm-content')).toHaveText(code)
 
     await page
@@ -631,7 +631,7 @@ test(
       mask: [page.getByTestId('model-state-indicator')],
     })
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)profile001 = circle(sketch001, center = [14.44, -2.44], radius = 1)`
+      `sketch001 = startSketchOn(XZ)profile001 = circle(sketch001, center = [366.89, -62.01], radius = 1)`
     )
   }
 )
@@ -668,7 +668,7 @@ test.describe(
 
       const startXPx = 600
       await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-      code += `profile001 = startProfileAt([7.19, -9.7], sketch001)`
+      code += `profile001 = startProfileAt([182.59, -246.32], sketch001)`
       await expect(u.codeLocator).toHaveText(code)
       await page.waitForTimeout(100)
 
@@ -676,7 +676,7 @@ test.describe(
       await page.waitForTimeout(100)
 
       code += `
-  |> xLine(length = 7.25)`
+  |> xLine(length = 184.3)`
       await expect(u.codeLocator).toHaveText(code)
 
       await page
@@ -691,7 +691,7 @@ test.describe(
       await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
       code += `
-  |> tangentialArcTo([21.7, -2.44], %)`
+  |> tangentialArcTo([551.2, -62.01], %)`
       await expect(u.codeLocator).toHaveText(code)
 
       // click tangential arc tool again to unequip it

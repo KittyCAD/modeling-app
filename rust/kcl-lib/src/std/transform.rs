@@ -104,7 +104,7 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// cube
 ///     |> scale(
-///     z = 2.5,
+///     y = 2.5,
 ///     )
 /// ```
 ///
@@ -278,10 +278,20 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///
 /// import "tests/inputs/cube.sldprt" as cube
 ///
+/// // Circle so you actually see the move.
+/// startSketchOn('XY')
+///     |> circle(
+///         center = [-10, -10],
+///         radius = 10,
+///         )
+///     |> extrude(
+///     length = 10,
+///     )
+///
 /// cube
 ///     |> translate(
-///     x = 1.0,
-///     y = 1.0,
+///     x = 10.0,
+///     y = 10.0,
 ///     z = 2.5,
 ///     )
 /// ```
@@ -680,7 +690,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// cube
 ///     |> rotate(
 ///     axis =  [0, 0, 1.0],
-///     angle = 90,
+///     angle = 9,
 ///     )
 /// ```
 ///

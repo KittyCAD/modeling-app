@@ -828,7 +828,7 @@ test.describe(`Project management commands`, () => {
       const commandButton = page.getByRole('button', { name: 'Commands' })
       const commandOption = page.getByRole('option', { name: 'rename project' })
       const projectNameOption = page.getByRole('option', { name: projectName })
-      const projectRenamedName = `project-000`
+      const projectRenamedName = `untitled`
       // const projectMenuButton = page.getByTestId('project-sidebar-toggle')
       const commandContinueButton = page.getByRole('button', {
         name: 'Continue',
@@ -941,7 +941,7 @@ test.describe(`Project management commands`, () => {
       const commandButton = page.getByRole('button', { name: 'Commands' })
       const commandOption = page.getByRole('option', { name: 'rename project' })
       const projectNameOption = page.getByRole('option', { name: projectName })
-      const projectRenamedName = `project-000`
+      const projectRenamedName = `untitled`
       const commandContinueButton = page.getByRole('button', {
         name: 'Continue',
       })
@@ -1139,7 +1139,7 @@ test(`Create a few projects using the default project name`, async ({
     await test.step(`Create project ${i}`, async () => {
       await homePage.expectState({
         projectCards: Array.from({ length: i }, (_, i) => ({
-          title: `project-${i.toString().padStart(3, '0')}`,
+          title: i === 0 ? 'untitled' : `untitled-${i}`,
           fileCount: 1,
         })).toReversed(),
         sortBy: 'last-modified-desc',
@@ -1323,9 +1323,9 @@ test(
     })
 
     await test.step('Check we can still create a project', async () => {
-      await createProject({ name: 'project-000', page, returnHome: true })
+      await createProject({ name: 'new-project', page, returnHome: true })
       await expect(
-        page.getByTestId('project-link').filter({ hasText: 'project-000' })
+        page.getByTestId('project-link').filter({ hasText: 'new-project' })
       ).toBeVisible()
     })
   }

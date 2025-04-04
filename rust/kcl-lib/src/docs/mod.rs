@@ -612,7 +612,7 @@ pub fn get_description_string_from_schema(schema: &schemars::schema::RootSchema)
     }
 
     if let Some(reference) = &schema.schema.reference {
-        if let Some(definition) = schema.definitions.get(reference.split('/').last().unwrap_or("")) {
+        if let Some(definition) = schema.definitions.get(reference.split('/').next_back().unwrap_or("")) {
             let schemars::schema::Schema::Object(definition) = definition else {
                 return None;
             };
@@ -937,9 +937,12 @@ mod tests {
 
     #[test]
     fn get_autocomplete_snippet_revolve() {
-        let revolve_fn: Box<dyn StdLibFn> = Box::new(crate::std::revolve::Revolve);
-        let snippet = revolve_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"revolve(${0:%}, axis = ${1:"X"})${}"#);
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(revolve_fn) = data.into_iter().find(|d| d.name() == "revolve").unwrap() else {
+            panic!();
+        };
+        let snippet = revolve_fn.to_autocomplete_snippet();
+        assert_eq!(snippet, r#"revolve(axis = ${0:X})${}"#);
     }
 
     #[test]
@@ -952,7 +955,7 @@ mod tests {
         let snippet = circle_fn.to_autocomplete_snippet();
         assert_eq!(
             snippet,
-            r#"circle(${0:%}, center = [${1:3.14}, ${2:3.14}], radius = ${3:3.14})${}"#
+            r#"circle(center = [${0:3.14}, ${1:3.14}], radius = ${2:3.14})${}"#
         );
     }
 
@@ -1026,11 +1029,14 @@ mod tests {
     #[test]
     #[allow(clippy::literal_string_with_formatting_args)]
     fn get_autocomplete_snippet_helix() {
-        let helix_fn: Box<dyn StdLibFn> = Box::new(crate::std::helix::Helix);
-        let snippet = helix_fn.to_autocomplete_snippet().unwrap();
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(helix_fn) = data.into_iter().find(|d| d.name() == "helix").unwrap() else {
+            panic!();
+        };
+        let snippet = helix_fn.to_autocomplete_snippet();
         assert_eq!(
             snippet,
-            r#"helix(revolutions = ${0:3.14}, angleStart = ${1:3.14}, radius = ${2:3.14}, axis = ${3:"X"}, length = ${4:3.14})${}"#
+            r#"helix(revolutions = ${0:3.14}, angleStart = ${1:3.14}, radius = ${2:3.14}, axis = ${3:X}, length = ${4:3.14})${}"#
         );
     }
 

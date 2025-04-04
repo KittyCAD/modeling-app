@@ -961,7 +961,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 ///   |> line(end = [-2, 0])
 ///   |> close()
 ///
-/// example = revolve(exampleSketch, axis = 'y', angle = 180)
+/// example = revolve(exampleSketch, axis = Y, angle = 180)
 ///
 /// exampleSketch002 = startSketchOn(example, 'end')
 ///   |> startProfileAt([4.5, -5], %)
@@ -987,7 +987,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 ///   |> line(end = [-2, 0])
 ///   |> close()
 ///
-/// example = revolve(exampleSketch, axis = 'y', angle = 180, tagEnd = $end01)
+/// example = revolve(exampleSketch, axis = Y, angle = 180, tagEnd = $end01)
 ///
 /// exampleSketch002 = startSketchOn(example, end01)
 ///   |> startProfileAt([4.5, -5], %)
@@ -1283,6 +1283,7 @@ pub(crate) async fn inner_start_profile_at(
         on: sketch_surface.clone(),
         paths: vec![],
         units: sketch_surface.units(),
+        mirror: Default::default(),
         meta: vec![args.source_range.into()],
         tags: if let Some(tag) = &tag {
             let mut tag_identifier: TagIdentifier = tag.into();

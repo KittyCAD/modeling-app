@@ -139,9 +139,9 @@ description: Variables in memory after executing poop_chute.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 360,
-            "end": 366,
-            "start": 360,
+            "commentStart": 358,
+            "end": 364,
+            "start": 358,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -258,9 +258,9 @@ description: Variables in memory after executing poop_chute.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 360,
-              "end": 366,
-              "start": 360,
+              "commentStart": 358,
+              "end": 364,
+              "start": 358,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -595,9 +595,9 @@ description: Variables in memory after executing poop_chute.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 360,
-            "end": 366,
-            "start": 360,
+            "commentStart": 358,
+            "end": 364,
+            "start": 358,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -899,9 +899,9 @@ description: Variables in memory after executing poop_chute.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1176,
-            "end": 1182,
-            "start": 1176,
+            "commentStart": 1152,
+            "end": 1158,
+            "start": 1152,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1018,9 +1018,9 @@ description: Variables in memory after executing poop_chute.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 1176,
-              "end": 1182,
-              "start": 1176,
+              "commentStart": 1152,
+              "end": 1158,
+              "start": 1152,
               "type": "TagDeclarator",
               "value": "seg02"
             },

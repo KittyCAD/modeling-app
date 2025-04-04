@@ -26,7 +26,6 @@ pub mod shell;
 pub mod sketch;
 pub mod sweep;
 pub mod transform;
-pub mod types;
 pub mod units;
 pub mod utils;
 
@@ -92,7 +91,6 @@ lazy_static! {
         Box::new(crate::std::sketch::TangentialArcToRelative),
         Box::new(crate::std::sketch::BezierCurve),
         Box::new(crate::std::sketch::Hole),
-        Box::new(crate::std::mirror::Mirror2D),
         Box::new(crate::std::patterns::PatternLinear2D),
         Box::new(crate::std::patterns::PatternLinear3D),
         Box::new(crate::std::patterns::PatternCircular2D),
@@ -109,10 +107,8 @@ lazy_static! {
         Box::new(crate::std::edge::GetNextAdjacentEdge),
         Box::new(crate::std::edge::GetPreviousAdjacentEdge),
         Box::new(crate::std::edge::GetCommonEdge),
-        Box::new(crate::std::helix::Helix),
         Box::new(crate::std::shell::Shell),
         Box::new(crate::std::shell::Hollow),
-        Box::new(crate::std::revolve::Revolve),
         Box::new(crate::std::sweep::Sweep),
         Box::new(crate::std::loft::Loft),
         Box::new(crate::std::planes::OffsetPlane),
@@ -173,6 +169,7 @@ pub fn get_stdlib_fn(name: &str) -> Option<Box<dyn StdLibFn>> {
 pub struct StdFnProps {
     pub name: String,
     pub deprecated: bool,
+    pub include_in_feature_tree: bool,
 }
 
 impl StdFnProps {
@@ -180,7 +177,13 @@ impl StdFnProps {
         Self {
             name: name.to_owned(),
             deprecated: false,
+            include_in_feature_tree: false,
         }
+    }
+
+    fn include_in_feature_tree(mut self) -> Self {
+        self.include_in_feature_tree = true;
+        self
     }
 }
 
@@ -202,6 +205,18 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::shapes::circle(e, a)),
             StdFnProps::default("std::sketch::circle"),
         ),
+        ("prelude", "helix") => (
+            |e, a| Box::pin(crate::std::helix::helix(e, a)),
+            StdFnProps::default("std::helix").include_in_feature_tree(),
+        ),
+        ("sketch", "mirror2d") => (
+            |e, a| Box::pin(crate::std::mirror::mirror_2d(e, a)),
+            StdFnProps::default("std::sketch::mirror2d"),
+        ),
+        ("prelude", "revolve") => (
+            |e, a| Box::pin(crate::std::revolve::revolve(e, a)),
+            StdFnProps::default("std::revolve").include_in_feature_tree(),
+        ),
         _ => unreachable!(),
     }
 }
@@ -213,6 +228,9 @@ pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
         ("prelude", "Plane") => (PrimitiveType::Plane, StdFnProps::default("std::Plane")),
         ("prelude", "Face") => (PrimitiveType::Face, StdFnProps::default("std::Face")),
         ("prelude", "Helix") => (PrimitiveType::Helix, StdFnProps::default("std::Helix")),
+        ("prelude", "Edge") => (PrimitiveType::Edge, StdFnProps::default("std::Edge")),
+        ("prelude", "Axis2d") => (PrimitiveType::Axis2d, StdFnProps::default("std::Axis2d")),
+        ("prelude", "Axis3d") => (PrimitiveType::Axis3d, StdFnProps::default("std::Axis3d")),
         _ => unreachable!(),
     }
 }

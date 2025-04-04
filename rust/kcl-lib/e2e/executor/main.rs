@@ -881,7 +881,7 @@ async fn kcl_test_simple_revolve() {
      |> line(end = [0, -5.5])
      |> line(end = [-2, 0])
      |> close()
-     |> revolve({axis: 'y'}, %)
+     |> revolve(axis = Y)
 
 "#;
 
@@ -901,7 +901,7 @@ async fn kcl_test_simple_revolve_uppercase() {
      |> line(end = [0, -5.5])
      |> line(end = [-2, 0])
      |> close()
-     |> revolve({axis: 'Y'}, %)
+     |> revolve(axis = Y)
 
 "#;
 
@@ -921,7 +921,7 @@ async fn kcl_test_simple_revolve_negative() {
      |> line(end = [0, -5.5])
      |> line(end = [-2, 0])
      |> close()
-     |> revolve({axis: '-Y', angle: 180}, %)
+     |> revolve(axis = -Y, angle = 180)
 
 "#;
 
@@ -941,7 +941,7 @@ async fn kcl_test_revolve_bad_angle_low() {
      |> line(end = [0, -5.5])
      |> line(end = [-2, 0])
      |> close()
-     |> revolve({axis: 'y', angle: -455}, %)
+     |> revolve(axis = Y, angle = -455)
 
 "#;
 
@@ -967,7 +967,7 @@ async fn kcl_test_revolve_bad_angle_high() {
      |> line(end = [0, -5.5])
      |> line(end = [-2, 0])
      |> close()
-     |> revolve({axis: 'y', angle: 455}, %)
+     |> revolve(axis = Y, angle = 455)
 
 "#;
 
@@ -993,7 +993,7 @@ async fn kcl_test_simple_revolve_custom_angle() {
      |> line(end = [0, -5.5])
      |> line(end = [-2, 0])
      |> close()
-     |> revolve({axis: 'y', angle: 180}, %)
+     |> revolve(axis = Y, angle = 180)
 
 "#;
 
@@ -1013,7 +1013,7 @@ async fn kcl_test_simple_revolve_custom_axis() {
      |> line(end = [0, -5.5])
      |> line(end = [-2, 0])
      |> close()
-     |> revolve({axis: {custom: {axis: [0, -1], origin: [0,0]}}, angle: 180}, %)
+     |> revolve(axis = { direction = [0, -1], origin: [0,0] }, angle = 180)
 
 "#;
 
@@ -1109,10 +1109,10 @@ async fn kcl_test_revolve_on_face_circle() {
 
 sketch001 = startSketchOn(box, "END")
   |> circle(center = [10,10], radius= 4 )
-  |> revolve({
-    angle: -90, 
-    axis: 'y' 
-    }, %)
+  |> revolve(
+    angle = -90, 
+    axis = Y 
+    )
 "#;
 
     let result = execute_and_snapshot(code, None).await.unwrap();
@@ -1135,10 +1135,10 @@ sketch001 = startSketchOn(box, "end")
   |> line(end = [2, 0])
   |> line(end = [0, 10])
   |> close()
-  |> revolve({
-      axis: 'y',
-      angle: -90,
-  }, %)
+  |> revolve(
+      axis = Y,
+      angle = -90,
+  )
 "#;
 
     let result = execute_and_snapshot(code, None).await.unwrap();
@@ -1149,10 +1149,10 @@ sketch001 = startSketchOn(box, "end")
 async fn kcl_test_basic_revolve_circle() {
     let code = r#"sketch001 = startSketchOn('XY')
   |> circle(center = [15, 0], radius= 5)
-  |> revolve({
-    angle: 360, 
-    axis: 'y' 
-    }, %)
+  |> revolve(
+    angle = 360, 
+    axis = Y 
+    )
 "#;
 
     let result = execute_and_snapshot(code, None).await.unwrap();
@@ -1171,7 +1171,7 @@ async fn kcl_test_simple_revolve_sketch_on_edge() {
      |> line(end = [0, -5.5])
      |> line(end = [-2, 0])
      |> close()
-     |> revolve({axis: 'y', angle: 180}, %)
+     |> revolve(axis = Y, angle = 180)
 
 part002 = startSketchOn(part001, 'end')
     |> startProfileAt([4.5, -5], %)

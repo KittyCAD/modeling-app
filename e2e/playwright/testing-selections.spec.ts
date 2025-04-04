@@ -324,7 +324,7 @@ part009 = startSketchOn(XY)
   |> line(end = [0, pipeLength])
   |> angledLine(angle = 60, endAbsoluteX =  pipeLargeDia)
   |> close()
-rev = revolve(part009, axis = 'y')
+rev = revolve(part009, axis = Y)
 sketch006 = startSketchOn(XY)
 profile001 = circle(
   sketch006,
@@ -381,7 +381,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await page.waitForTimeout(200)
 
     await expect(u.codeLocator).not.toContainText(
-      `rev = revolve(part009, axis: 'y')`
+      `rev = revolve(part009, axis: Y)`
     )
 
     // FIXME (commented section below), this test would select a wall that had a sketch on it, and delete the underlying extrude

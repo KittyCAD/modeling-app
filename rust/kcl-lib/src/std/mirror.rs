@@ -1,128 +1,75 @@
 //! Standard library mirror.
 
 use anyhow::Result;
-use kcl_derive_docs::stdlib;
 use kcmc::{each_cmd as mcmd, ModelingCmd};
-use kittycad_modeling_cmds::{self as kcmc};
-use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
-
-use crate::{
-    errors::KclError,
-    execution::{ExecState, KclValue, Sketch},
-    std::{axis_or_reference::Axis2dOrEdgeReference, Args},
+use kittycad_modeling_cmds::{
+    self as kcmc, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, output::EntityGetAllChildUuids,
+    shared::Point3d, websocket::OkWebSocketResponseData,
 };
 
-/// Data for a mirror.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct Mirror2dData {
-    /// Axis to use as mirror.
-    pub axis: Axis2dOrEdgeReference,
-}
+use crate::{
+    errors::{KclError, KclErrorDetails},
+    execution::{
+        types::{PrimitiveType, RuntimeType},
+        ExecState, KclValue, Sketch,
+    },
+    std::{axis_or_reference::Axis2dOrEdgeReference, Args},
+};
 
 /// Mirror a sketch.
 ///
 /// Only works on unclosed sketches for now.
 pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch_set): (Mirror2dData, Vec<Sketch>) = args.get_data_and_sketches(exec_state)?;
+    let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
+    let axis = args.get_kw_arg_typed(
+        "axis",
+        &RuntimeType::Union(vec![
+            RuntimeType::Primitive(PrimitiveType::Edge),
+            RuntimeType::Primitive(PrimitiveType::Axis2d),
+        ]),
+        exec_state,
+    )?;
 
-    let sketches = inner_mirror_2d(data, sketch_set, exec_state, args).await?;
+    let sketches = inner_mirror_2d(sketches, axis, exec_state, args).await?;
     Ok(sketches.into())
 }
 
 /// Mirror a sketch.
 ///
 /// Only works on unclosed sketches for now.
-///
-/// Mirror occurs around a local sketch axis rather than a global axis.
-///
-/// ```no_run
-/// // Mirror an un-closed sketch across the Y axis.
-/// sketch001 = startSketchOn('XZ')
-///     |> startProfileAt([0, 10], %)
-///     |> line(end = [15, 0])
-///     |> line(end = [-7, -3])
-///     |> line(end = [9, -1])
-///     |> line(end = [-8, -5])
-///     |> line(end = [9, -3])
-///     |> line(end = [-8, -3])
-///     |> line(end = [9, -1])
-///     |> line(end = [-19, -0])
-///     |> mirror2d({axis = 'Y'}, %)
-///
-/// example = extrude(sketch001, length = 10)
-/// ```
-///
-/// ```no_run
-/// // Mirror a un-closed sketch across the Y axis.
-/// sketch001 = startSketchOn('XZ')
-///     |> startProfileAt([0, 8.5], %)
-///     |> line(end = [20, -8.5])
-///     |> line(end = [-20, -8.5])
-///     |> mirror2d({axis = 'Y'}, %)
-///
-/// example = extrude(sketch001, length = 10)
-/// ```
-///
-/// ```no_run
-/// // Mirror a un-closed sketch across an edge.
-/// helper001 = startSketchOn('XZ')
-///  |> startProfileAt([0, 0], %)
-///  |> line(end = [0, 10], tag = $edge001)
-///
-/// sketch001 = startSketchOn('XZ')
-///     |> startProfileAt([0, 8.5], %)
-///     |> line(end = [20, -8.5])
-///     |> line(end = [-20, -8.5])
-///     |> mirror2d({axis = edge001}, %)
-///
-/// // example = extrude(sketch001, length = 10)
-/// ```
-///
-/// ```no_run
-/// // Mirror an un-closed sketch across a custom axis.
-/// sketch001 = startSketchOn('XZ')
-///     |> startProfileAt([0, 8.5], %)
-///     |> line(end = [20, -8.5])
-///     |> line(end = [-20, -8.5])
-///     |> mirror2d({
-///   axis = {
-///     custom = {
-///       axis = [0.0, 1.0],
-///       origin = [0.0, 0.0]
-///     }
-///   }
-/// }, %)
-///
-/// example = extrude(sketch001, length = 10)
-/// ```
-#[stdlib {
-    name = "mirror2d",
-}]
 async fn inner_mirror_2d(
-    data: Mirror2dData,
     sketches: Vec<Sketch>,
+    axis: Axis2dOrEdgeReference,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Sketch>, KclError> {
-    let starting_sketches = sketches;
+    let mut starting_sketches = sketches.clone();
+
+    // Update all to have a mirror.
+    starting_sketches.iter_mut().for_each(|sketch| {
+        sketch.mirror = Some(exec_state.next_uuid());
+    });
 
     if args.ctx.no_engine_commands().await {
         return Ok(starting_sketches);
     }
 
-    match data.axis {
-        Axis2dOrEdgeReference::Axis(axis) => {
-            let (axis, origin) = axis.axis_and_origin()?;
-
+    match axis {
+        Axis2dOrEdgeReference::Axis { direction, origin } => {
             args.batch_modeling_cmd(
                 exec_state.next_uuid(),
                 ModelingCmd::from(mcmd::EntityMirror {
                     ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
-                    axis,
-                    point: origin,
+                    axis: Point3d {
+                        x: direction[0],
+                        y: direction[1],
+                        z: 0.0,
+                    },
+                    point: Point3d {
+                        x: LengthUnit(origin[0]),
+                        y: LengthUnit(origin[1]),
+                        z: LengthUnit(0.0),
+                    },
                 }),
             )
             .await?;
@@ -140,6 +87,41 @@ async fn inner_mirror_2d(
             .await?;
         }
     };
+
+    // After the mirror, get the first child uuid for the path.
+    // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
+    // But if you mirror2d a sketch these IDs might change so we need to get the children versus
+    // using the IDs we already have.
+    // We only do this with mirrors because otherwise it is a waste of a websocket call.
+    for sketch in &mut starting_sketches {
+        let response = args
+            .send_modeling_cmd(
+                exec_state.next_uuid(),
+                ModelingCmd::from(mcmd::EntityGetAllChildUuids { entity_id: sketch.id }),
+            )
+            .await?;
+        let OkWebSocketResponseData::Modeling {
+            modeling_response:
+                OkModelingCmdResponse::EntityGetAllChildUuids(EntityGetAllChildUuids { entity_ids: child_ids }),
+        } = response
+        else {
+            return Err(KclError::Internal(KclErrorDetails {
+                message: "Expected a successful response from EntityGetAllChildUuids".to_string(),
+                source_ranges: vec![args.source_range],
+            }));
+        };
+
+        if child_ids.len() >= 2 {
+            // The first child is the original sketch, the second is the mirrored sketch.
+            let child_id = child_ids[1];
+            sketch.mirror = Some(child_id);
+        } else {
+            return Err(KclError::Type(KclErrorDetails {
+                message: "Expected child uuids to be >= 2".to_string(),
+                source_ranges: vec![args.source_range],
+            }));
+        }
+    }
 
     Ok(starting_sketches)
 }
