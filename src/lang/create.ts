@@ -1,6 +1,6 @@
 import type { Name } from '@rust/kcl-lib/bindings/Name'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import { NonCodeMeta } from '@rust/kcl-lib/bindings/NonCodeMeta'
+import { type NonCodeMeta } from '@rust/kcl-lib/bindings/NonCodeMeta'
 import type { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
 
 import { ARG_TAG } from '@src/lang/constants'

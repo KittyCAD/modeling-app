@@ -1,6 +1,6 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import {
+import type {
   ARG_END_ABSOLUTE_X,
   ARG_END_ABSOLUTE_Y,
   ARG_LENGTH,
@@ -100,7 +100,6 @@ interface updateArgs extends ModifyAstBase {
 export type InputArgKeys =
   | 'angle'
   | 'offset'
-  | 'length'
   | 'to'
   | 'intersectTag'
   | 'radius'
