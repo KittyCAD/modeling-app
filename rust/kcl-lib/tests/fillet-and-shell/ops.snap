@@ -122,15 +122,18 @@ description: Operations executed fillet-and-shell.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "m25Screw",
-    "functionSourceRange": [
-      1310,
-      1538,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "m25Screw",
+      "functionSourceRange": [
+        1310,
+        1538,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -207,18 +210,21 @@ description: Operations executed fillet-and-shell.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "m25Screw",
-    "functionSourceRange": [
-      1310,
-      1538,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "m25Screw",
+      "functionSourceRange": [
+        1310,
+        1538,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -295,18 +301,21 @@ description: Operations executed fillet-and-shell.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "m25Screw",
-    "functionSourceRange": [
-      1310,
-      1538,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "m25Screw",
+      "functionSourceRange": [
+        1310,
+        1538,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -383,18 +392,21 @@ description: Operations executed fillet-and-shell.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "m25Screw",
-    "functionSourceRange": [
-      1310,
-      1538,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "m25Screw",
+      "functionSourceRange": [
+        1310,
+        1538,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -471,7 +483,7 @@ description: Operations executed fillet-and-shell.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {

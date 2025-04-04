@@ -3,12 +3,12 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use super::{types::NumericType, ArtifactId, KclValue};
-use crate::{docs::StdLibFn, std::get_stdlib_fn, SourceRange};
+use crate::{docs::StdLibFn, std::get_stdlib_fn, ModuleId, SourceRange};
 
 /// A CAD modeling operation for display in the feature tree, AKA operations
 /// timeline.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[ts(export_to = "Operation.ts")]
 #[serde(tag = "type")]
 pub enum Operation {
     #[serde(rename_all = "camelCase")]
@@ -40,7 +40,34 @@ pub enum Operation {
         is_error: bool,
     },
     #[serde(rename_all = "camelCase")]
-    UserDefinedFunctionCall {
+    GroupBegin {
+        /// The details of the group.
+        group: Group,
+        /// The source range of the operation in the source code.
+        source_range: SourceRange,
+    },
+    GroupEnd,
+}
+
+impl Operation {
+    /// If the variant is `StdLibCall`, set the `is_error` field.
+    pub(crate) fn set_std_lib_call_is_error(&mut self, is_err: bool) {
+        match self {
+            Self::StdLibCall { ref mut is_error, .. } => *is_error = is_err,
+            Self::KclStdLibCall { ref mut is_error, .. } => *is_error = is_err,
+            Self::GroupBegin { .. } | Self::GroupEnd => {}
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export_to = "Operation.ts")]
+#[serde(tag = "type")]
+#[expect(clippy::large_enum_variant)]
+pub enum Group {
+    /// A function call.
+    #[serde(rename_all = "camelCase")]
+    FunctionCall {
         /// The name of the user-defined function being called.  Anonymous
         /// functions have no name.
         name: Option<String>,
@@ -51,26 +78,20 @@ pub enum Operation {
         unlabeled_arg: Option<OpArg>,
         /// The labeled keyword arguments to the function.
         labeled_args: IndexMap<String, OpArg>,
-        /// The source range of the operation in the source code.
-        source_range: SourceRange,
     },
-    UserDefinedFunctionReturn,
-}
-
-impl Operation {
-    /// If the variant is `StdLibCall`, set the `is_error` field.
-    pub(crate) fn set_std_lib_call_is_error(&mut self, is_err: bool) {
-        match self {
-            Self::StdLibCall { ref mut is_error, .. } => *is_error = is_err,
-            Self::KclStdLibCall { ref mut is_error, .. } => *is_error = is_err,
-            Self::UserDefinedFunctionCall { .. } | Self::UserDefinedFunctionReturn => {}
-        }
-    }
+    /// A whole-module import use.
+    #[serde(rename_all = "camelCase")]
+    ModuleInstance {
+        /// The name of the module being used.
+        name: String,
+        /// The ID of the module which can be used to determine its path.
+        module_id: ModuleId,
+    },
 }
 
 /// An argument to a CAD modeling operation.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpArg {
     /// The runtime value of the argument.  Instead of using [`KclValue`], we
@@ -90,7 +111,7 @@ impl OpArg {
 /// A reference to a standard library function.  This exists to implement
 /// `PartialEq` and `Eq` for `Operation`.
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct StdLibFnRef {
     // The following doc comment gets inlined into Operation, overriding what's
@@ -154,7 +175,7 @@ fn is_false(b: &bool) -> bool {
 /// A KCL value used in Operations.  `ArtifactId`s are used to refer to the
 /// actual scene objects.  Any data not needed in the UI may be omitted.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[ts(export_to = "Operation.ts")]
 #[serde(tag = "type")]
 pub enum OpKclValue {
     Uuid {
@@ -212,21 +233,21 @@ pub enum OpKclValue {
 pub type OpKclObjectFields = IndexMap<String, OpKclValue>;
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpSketch {
     artifact_id: ArtifactId,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpSolid {
     artifact_id: ArtifactId,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpHelix {
     artifact_id: ArtifactId,
