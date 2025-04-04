@@ -3,6 +3,7 @@ import { createActor, setup, spawnChild } from 'xstate'
 
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { authMachine } from '@src/machines/authMachine'
+import type { EngineStreamActor } from '@src/machines/engineStreamMachine'
 import {
   engineStreamContextCreate,
   engineStreamMachine,
@@ -74,4 +75,4 @@ export const useSettings = () =>
 
 export const engineStreamActor = appActor.system.get(
   ENGINE_STREAM
-) as ActorRefFrom<typeof engineStreamMachine>
+) as EngineStreamActor

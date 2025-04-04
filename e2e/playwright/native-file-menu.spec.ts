@@ -236,7 +236,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
                 }
                 // FIXME: Add back when you can actually sign out
                 // menu.click()
-                // return true
+                return true
               })
           )
           .toBe(true)
@@ -868,17 +868,24 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const menu = app.applicationMenu.getMenuItemById('File.Sign out')
-          if (!menu) {
-            throw new Error('File.Sign out')
-          }
-          // FIXME: Add back when you can actually sign out
-          // menu.click()
-        })
+        await expect
+          .poll(
+            async () =>
+              await tronApp.electron.evaluate(async ({ app }) => {
+                if (!app || !app.applicationMenu) {
+                  throw new Error('app or app.applicationMenu is missing')
+                }
+                const menu =
+                  app.applicationMenu.getMenuItemById('File.Sign out')
+                if (!menu) {
+                  throw new Error('File.Sign out')
+                }
+                // FIXME: Add back when you can actually sign out
+                // menu.click()
+                return true
+              })
+          )
+          .toBe(true)
         // FIXME: When signing out during E2E the page is not bound correctly.
         // It cannot find the button
         // const signIn = page.getByTestId('sign-in-button')
