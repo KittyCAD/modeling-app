@@ -111,7 +111,7 @@ export fn circle(
 ///
 /// sketch002 = startSketchOn(sketch0011, 'END')
 ///     |> circle( center = [-0.01, 1.58], radius = 1.2 )
-///     |> extrude(1.2, %)
+///     |> extrude(length = 1.2)
 ///
 /// shell([sketch002], faces = ['end'], thickness = .1 )
 /// ```

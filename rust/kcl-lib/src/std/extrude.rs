@@ -8,7 +8,7 @@ use kcmc::{
     each_cmd as mcmd,
     length_unit::LengthUnit,
     ok_response::OkModelingCmdResponse,
-    output::{EntityGetAllChildUuids, ExtrusionFaceInfo},
+    output::ExtrusionFaceInfo,
     shared::ExtrusionFaceCapType,
     websocket::{ModelingCmdReq, OkWebSocketResponseData},
     ModelingCmd,
@@ -168,39 +168,8 @@ pub(crate) async fn do_post_extrude<'a>(
     )
     .await?;
 
-    let any_edge_id = if sketch.mirror {
-        // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
-        // But if you mirror2d a sketch these IDs might change so we need to get the children versus
-        // using the IDs we already have.
-        // We only do this with mirrors because otherwise it is a waste of a websocket call.
-        let response = args
-            .send_modeling_cmd(
-                exec_state.next_uuid(),
-                ModelingCmd::from(mcmd::EntityGetAllChildUuids { entity_id: sketch.id }),
-            )
-            .await?;
-        let OkWebSocketResponseData::Modeling {
-            modeling_response:
-                OkModelingCmdResponse::EntityGetAllChildUuids(EntityGetAllChildUuids {
-                    entity_ids: old_entity_ids,
-                }),
-        } = response
-        else {
-            return Err(KclError::Internal(KclErrorDetails {
-                message: "Expected a successful response from EntityGetAllChildUuids".to_string(),
-                source_ranges: vec![args.source_range],
-            }));
-        };
-
-        if old_entity_ids.len() >= 2 {
-            // If we have more than one child, we can use the first one.
-            old_entity_ids[1]
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: "Expected child uuids to be >= 2".to_string(),
-                source_ranges: vec![args.source_range],
-            }));
-        }
+    let any_edge_id = if let Some(edge_id) = sketch.mirror {
+        edge_id
     } else {
         // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
         // So, let's just use the first one.

@@ -420,7 +420,7 @@ pub struct Sketch {
     pub original_id: uuid::Uuid,
     /// If the sketch includes a mirror.
     #[serde(skip)]
-    pub mirror: bool,
+    pub mirror: Option<uuid::Uuid>,
     pub units: UnitLen,
     /// Metadata.
     #[serde(skip)]
