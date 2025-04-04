@@ -1,5 +1,5 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import { NonCodeMeta } from '@rust/kcl-lib/bindings/NonCodeMeta'
+import { type NonCodeMeta } from '@rust/kcl-lib/bindings/NonCodeMeta'
 
 import {
   ARG_ANGLE,
@@ -74,7 +74,7 @@ import type {
 } from '@src/lang/wasm'
 import { sketchFromKclValue } from '@src/lang/wasm'
 import type { Selections } from '@src/lib/selections'
-import { cleanErrs, err } from '@src/lib/trap'
+import { cleanErrs, err, isNotErr } from '@src/lib/trap'
 import {
   allLabels,
   getAngle,
@@ -1501,16 +1501,34 @@ export function removeSingleConstraint({
           )
         }
         const toReplace = inputToReplace.key
-        const args = inputs.map((arg) => {
+        let argsPreFilter = inputs.map((arg) => {
           // console.log('ADAM: arg is', arg)
+          if (arg.type !== 'labeledArg') {
+            return undefined
+          }
           const k = arg.key
           if (k !== toReplace) {
             return createLabeledArg(k, arg.expr)
           } else {
-            const rawArgVersion = rawArgs.find((a) => a.key === k)
+            const rawArgVersion = rawArgs.find(
+              (a) => a.type === 'labeledArg' && a.key === k
+            )
+            if (!rawArgVersion) {
+              return new Error(
+                `raw arg version not found while trying to remove constraint: ${JSON.stringify(arg)}`
+              )
+            }
             return createLabeledArg(k, rawArgVersion.expr)
           }
         })
+        const args = argsPreFilter
+          .filter((arg) => arg !== undefined)
+          .filter(isNotErr)
+        if (args.length !== argsPreFilter.length) {
+          return new Error('Error while trying to remove constraint', {
+            cause: argsPreFilter,
+          })
+        }
         const noncode = callExp.node.nonCodeMeta
         return createStdlibCallExpressionKw(
           callExp.node.callee.name.name as ToolTip,
