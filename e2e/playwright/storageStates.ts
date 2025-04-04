@@ -80,7 +80,8 @@ export const TEST_SETTINGS_CORRUPTED = {
   },
 } satisfies Partial<SaveSettingsPayload>
 
-export const TEST_CODE_GIZMO = `part001 = startSketchOn(XZ)
+export const TEST_CODE_GIZMO = `@settings(defaultLengthUnit = in)
+part001 = startSketchOn(XZ)
 |> startProfileAt([20, 0], %)
 |> line(end = [7.13, 4 + 0])
 |> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)

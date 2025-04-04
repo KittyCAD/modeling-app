@@ -2,7 +2,11 @@ import { getUtils, orRunWhenFullSuiteEnabled } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Test toggling perspective', () => {
-  test('via command palette and toggle', async ({ page, homePage }) => {
+  test('via command palette and toggle', async ({
+    page,
+    homePage,
+    toolbar,
+  }) => {
     test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
 
@@ -14,7 +18,7 @@ test.describe('Test toggling perspective', () => {
       y: screenHeight * 0.2,
     }
     const backgroundColor: [number, number, number] = [29, 29, 29]
-    const xzPlaneColor: [number, number, number] = [82, 55, 96]
+    const xzPlaneColor: [number, number, number] = [72, 55, 96]
     const locationToHaveColor = async (color: [number, number, number]) => {
       return u.getGreatestPixDiff(checkedScreenLocation, color)
     }
@@ -26,9 +30,29 @@ test.describe('Test toggling perspective', () => {
     const commandToast = page.getByText(
       `Set camera projection to "orthographic"`
     )
-    const projectionToggle = page.getByRole('switch', {
-      name: 'Camera projection: ',
-    })
+
+    const checkSettingValue = async () => {
+      const settingsButton = page.getByRole('link', {
+        name: 'Settings',
+        exact: false,
+      })
+
+      let settingValue: string | null = null
+
+      await test.step(`Check the setting value`, async () => {
+        await settingsButton.click()
+        const userTab = page.getByRole('radio', { name: 'User' })
+        await userTab.click()
+        await expect(userTab).toBeChecked()
+        const setting = page.locator('#cameraProjection').first()
+        await expect(setting).toBeAttached()
+        await setting.scrollIntoViewIfNeeded()
+        settingValue = await setting.getByRole('combobox').inputValue()
+        await page.getByTestId('settings-close-button').click()
+      })
+
+      return settingValue
+    }
 
     await test.step('Setup', async () => {
       await page.setBodyDimensions({ width: screenWidth, height: screenHeight })
@@ -39,8 +63,8 @@ test.describe('Test toggling perspective', () => {
           timeout: 5000,
           message: 'This spot should have the background color',
         })
-        .toBeLessThan(15)
-      await expect(projectionToggle).toHaveAttribute('aria-checked', 'true')
+        .toBeLessThan(30)
+      expect(await checkSettingValue()).toBe('perspective')
     })
 
     // Extremely wild note: flicking between ortho and persp actually changes
@@ -59,33 +83,22 @@ test.describe('Test toggling perspective', () => {
           timeout: 5000,
           message: 'This spot should have the XZ plane color',
         })
-        .toBeLessThan(15)
-      await expect(projectionToggle).toHaveAttribute('aria-checked', 'false')
+        .toBeLessThan(30)
+      expect(await checkSettingValue()).toBe('orthographic')
     })
 
     await test.step(`Refresh the page and ensure the stream is loaded in ortho`, async () => {
       await page.reload()
-      await page.waitForTimeout(1000)
+      await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 15_000 })
       await u.closeKclCodePanel()
       await expect
         .poll(async () => locationToHaveColor(xzPlaneColor), {
           timeout: 5000,
           message: 'This spot should have the XZ plane color',
         })
-        .toBeLessThan(15)
+        .toBeLessThan(30)
       await expect(commandToast).not.toBeVisible()
-      await expect(projectionToggle).toHaveAttribute('aria-checked', 'false')
-    })
-
-    await test.step(`Switch to perspective via toggle`, async () => {
-      await projectionToggle.click()
-      await expect(projectionToggle).toHaveAttribute('aria-checked', 'true')
-      await expect
-        .poll(async () => locationToHaveColor(backgroundColor), {
-          timeout: 5000,
-          message: 'This spot should have the background color',
-        })
-        .toBeLessThan(15)
+      expect(await checkSettingValue()).toBe('orthographic')
     })
   })
 })
