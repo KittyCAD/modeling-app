@@ -479,7 +479,7 @@ async fn inner_angled_line(
     )
     .await?;
 
-    let current_path = Path::ToPoint {
+    let current_path = Path::AngledLine {
         base: BasePath {
             from: from.into(),
             to,

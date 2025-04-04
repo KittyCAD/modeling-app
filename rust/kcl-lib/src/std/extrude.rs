@@ -209,59 +209,44 @@ pub(crate) async fn do_post_extrude<'a>(
     };
 
     // Face filtering attempt in order to resolve https://github.com/KittyCAD/modeling-app/issues/5328
-    // In case of a sectional sweep, empirically it looks that the first n faces that are yielded from the sweep
-    // are the ones that work with GetOppositeEdge and GetNextAdjacentEdge, aka the n sides in the sweep.
-    // So here we're figuring out that n number as yielded_sides_count here,
-    // making sure that circle() calls count but close() don't (no length)
-    let count_of_first_set_of_faces_if_sectional = if sectional {
-        sketch
-            .paths
+    // We need to not run Solid3dGetOppositeEdge and Solid3dGetNextAdjacentEdge because it is too
+    // hard to know when they work or fail.
+    if !sectional {
+        for (curve_id, face_id) in face_infos
             .iter()
-            .filter(|p| {
-                let is_circle = matches!(p, Path::Circle { .. });
-                let has_length = p.get_base().from != p.get_base().to;
-                is_circle || has_length
+            .filter(|face_info| face_info.cap == ExtrusionFaceCapType::None)
+            .filter_map(|face_info| {
+                if let (Some(curve_id), Some(face_id)) = (face_info.curve_id, face_info.face_id) {
+                    Some((curve_id, face_id))
+                } else {
+                    None
+                }
             })
-            .count()
-    } else {
-        usize::MAX
-    };
+        {
+            // Batch these commands, because the Rust code doesn't actually care about the outcome.
+            // So, there's no need to await them.
+            // Instead, the Typescript codebases (which handles WebSocket sends when compiled via Wasm)
+            // uses this to build the artifact graph, which the UI needs.
+            args.batch_modeling_cmd(
+                exec_state.next_uuid(),
+                ModelingCmd::from(mcmd::Solid3dGetOppositeEdge {
+                    edge_id: curve_id,
+                    object_id: sketch.id,
+                    face_id,
+                }),
+            )
+            .await?;
 
-    for (curve_id, face_id) in face_infos
-        .iter()
-        .filter(|face_info| face_info.cap == ExtrusionFaceCapType::None)
-        .filter_map(|face_info| {
-            if let (Some(curve_id), Some(face_id)) = (face_info.curve_id, face_info.face_id) {
-                Some((curve_id, face_id))
-            } else {
-                None
-            }
-        })
-        .take(count_of_first_set_of_faces_if_sectional)
-    {
-        // Batch these commands, because the Rust code doesn't actually care about the outcome.
-        // So, there's no need to await them.
-        // Instead, the Typescript codebases (which handles WebSocket sends when compiled via Wasm)
-        // uses this to build the artifact graph, which the UI needs.
-        args.batch_modeling_cmd(
-            exec_state.next_uuid(),
-            ModelingCmd::from(mcmd::Solid3dGetOppositeEdge {
-                edge_id: curve_id,
-                object_id: sketch.id,
-                face_id,
-            }),
-        )
-        .await?;
-
-        args.batch_modeling_cmd(
-            exec_state.next_uuid(),
-            ModelingCmd::from(mcmd::Solid3dGetNextAdjacentEdge {
-                edge_id: curve_id,
-                object_id: sketch.id,
-                face_id,
-            }),
-        )
-        .await?;
+            args.batch_modeling_cmd(
+                exec_state.next_uuid(),
+                ModelingCmd::from(mcmd::Solid3dGetNextAdjacentEdge {
+                    edge_id: curve_id,
+                    object_id: sketch.id,
+                    face_id,
+                }),
+            )
+            .await?;
+        }
     }
 
     let Faces {
@@ -293,7 +278,11 @@ pub(crate) async fn do_post_extrude<'a>(
                         });
                         Some(extrude_surface)
                     }
-                    Path::Base { .. } | Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } => {
+                    Path::Base { .. }
+                    | Path::ToPoint { .. }
+                    | Path::Horizontal { .. }
+                    | Path::AngledLineTo { .. }
+                    | Path::AngledLine { .. } => {
                         let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
                             face_id: *actual_face_id,
                             tag: path.get_base().tag.clone(),

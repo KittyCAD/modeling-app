@@ -140,7 +140,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     }, %)
 ///     |> xLine(length = 384.93)
 ///
-/// sweep([rectangleSketch, circleSketch], path = sweepPath, sectional = false)
+/// sweep([rectangleSketch, circleSketch], path = sweepPath)
 /// ```
 /// ```
 /// // Sectionally sweep one sketch along the path
@@ -190,6 +190,8 @@ async fn inner_sweep(
         SweepPath::Helix(helix) => helix.value.into(),
     };
 
+    let sectional = sectional.unwrap_or(true);
+
     let mut solids = Vec::new();
     for sketch in &sketches {
         let id = exec_state.next_uuid();
@@ -198,7 +200,7 @@ async fn inner_sweep(
             ModelingCmd::from(mcmd::Sweep {
                 target: sketch.id.into(),
                 trajectory,
-                sectional: sectional.unwrap_or(true),
+                sectional,
                 tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
             }),
         )
@@ -209,7 +211,7 @@ async fn inner_sweep(
                 sketch,
                 id.into(),
                 0.0,
-                sectional.unwrap_or(false),
+                sectional,
                 &super::extrude::NamedCapTags {
                     start: tag_start.as_ref(),
                     end: tag_end.as_ref(),

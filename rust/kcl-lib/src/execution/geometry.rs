@@ -460,6 +460,13 @@ impl Sketch {
             },
         ]
     }
+
+    /// Get the path by the curve ID.
+    pub fn get_path_by_curve_id(&self, curve_id: uuid::Uuid) -> Option<Path> {
+        self.paths
+            .iter()
+            .find_map(|path| (path.get_id() == curve_id).then(|| path.clone()))
+    }
 }
 
 /// A sketch type.
@@ -883,6 +890,11 @@ pub enum Path {
         /// The y coordinate.
         y: Option<f64>,
     },
+    /// An angled line.
+    AngledLine {
+        #[serde(flatten)]
+        base: BasePath,
+    },
     /// A base path.
     Base {
         #[serde(flatten)]
@@ -903,7 +915,7 @@ pub enum Path {
 
 /// What kind of path is this?
 #[derive(Display)]
-enum PathType {
+pub enum PathType {
     ToPoint,
     Base,
     TangentialArc,
@@ -912,6 +924,7 @@ enum PathType {
     CircleThreePoint,
     Horizontal,
     AngledLineTo,
+    AngledLine,
     Arc,
 }
 
@@ -925,6 +938,7 @@ impl From<&Path> for PathType {
             Path::CircleThreePoint { .. } => Self::CircleThreePoint,
             Path::Horizontal { .. } => Self::Horizontal,
             Path::AngledLineTo { .. } => Self::AngledLineTo,
+            Path::AngledLine { .. } => Self::AngledLine,
             Path::Base { .. } => Self::Base,
             Path::Arc { .. } => Self::Arc,
             Path::ArcThreePoint { .. } => Self::Arc,
@@ -938,6 +952,7 @@ impl Path {
             Path::ToPoint { base } => base.geo_meta.id,
             Path::Horizontal { base, .. } => base.geo_meta.id,
             Path::AngledLineTo { base, .. } => base.geo_meta.id,
+            Path::AngledLine { base } => base.geo_meta.id,
             Path::Base { base } => base.geo_meta.id,
             Path::TangentialArcTo { base, .. } => base.geo_meta.id,
             Path::TangentialArc { base, .. } => base.geo_meta.id,
@@ -953,6 +968,7 @@ impl Path {
             Path::ToPoint { base } => base.tag.clone(),
             Path::Horizontal { base, .. } => base.tag.clone(),
             Path::AngledLineTo { base, .. } => base.tag.clone(),
+            Path::AngledLine { base, .. } => base.tag.clone(),
             Path::Base { base } => base.tag.clone(),
             Path::TangentialArcTo { base, .. } => base.tag.clone(),
             Path::TangentialArc { base, .. } => base.tag.clone(),
@@ -968,6 +984,7 @@ impl Path {
             Path::ToPoint { base } => base,
             Path::Horizontal { base, .. } => base,
             Path::AngledLineTo { base, .. } => base,
+            Path::AngledLine { base, .. } => base,
             Path::Base { base } => base,
             Path::TangentialArcTo { base, .. } => base,
             Path::TangentialArc { base, .. } => base,
@@ -990,9 +1007,11 @@ impl Path {
     /// Length of this path segment, in cartesian plane.
     pub fn length(&self) -> f64 {
         match self {
-            Self::ToPoint { .. } | Self::Base { .. } | Self::Horizontal { .. } | Self::AngledLineTo { .. } => {
-                linear_distance(self.get_from(), self.get_to())
-            }
+            Self::ToPoint { .. }
+            | Self::Base { .. }
+            | Self::Horizontal { .. }
+            | Self::AngledLineTo { .. }
+            | Self::AngledLine { .. } => linear_distance(self.get_from(), self.get_to()),
             Self::TangentialArc {
                 base: _,
                 center,
@@ -1036,6 +1055,7 @@ impl Path {
             Path::ToPoint { base } => Some(base),
             Path::Horizontal { base, .. } => Some(base),
             Path::AngledLineTo { base, .. } => Some(base),
+            Path::AngledLine { base, .. } => Some(base),
             Path::Base { base } => Some(base),
             Path::TangentialArcTo { base, .. } => Some(base),
             Path::TangentialArc { base, .. } => Some(base),
@@ -1083,7 +1103,11 @@ impl Path {
                     radius,
                 }
             }
-            Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } | Path::Base { .. } => {
+            Path::ToPoint { .. }
+            | Path::Horizontal { .. }
+            | Path::AngledLineTo { .. }
+            | Path::AngledLine { .. }
+            | Path::Base { .. } => {
                 let base = self.get_base();
                 GetTangentialInfoFromPathsResult::PreviousPoint(base.from)
             }
