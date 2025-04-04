@@ -35,7 +35,7 @@ base_unit = "in"
 
 #### app
 
-The settings for the modeling app.
+The settings for the Design Studio.
 
 
 **Default:** None
