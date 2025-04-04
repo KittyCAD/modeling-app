@@ -1,5 +1,18 @@
 ---
-source: kcl/src/simulation_tests.rs
-description: Operations executed import_glob.kcl
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed import_foreign.kcl
 ---
-[]
+[
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "cube",
+      "moduleId": 5
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  }
+]
