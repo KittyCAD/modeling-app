@@ -79,7 +79,7 @@ test.describe('Testing in-app sample loading', () => {
   test(
     'Desktop: should create new file by default, optionally overwrite',
     { tag: '@electron' },
-    async ({ editor, context, page }, testInfo) => {
+    async ({ editor, context, page, scene, cmdBar }, testInfo) => {
       const { dir } = await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'bracket')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -126,7 +126,7 @@ test.describe('Testing in-app sample loading', () => {
       await test.step(`Test setup`, async () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
         await projectCard.click()
-        await u.waitForPageLoad()
+        await scene.settled(cmdBar)
       })
 
       await test.step(`Precondition: check the initial code`, async () => {

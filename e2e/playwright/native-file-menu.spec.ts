@@ -2266,14 +2266,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) fail()
+        await expect.poll(async () => await tronApp.electron.evaluate(async ({ app }) => {
+          if (!app || !app.applicationMenu) return false
           const menu = app.applicationMenu.getMenuItemById(
             'Help.Refresh and report a bug'
           )
-          if (!menu) fail()
+          if (!menu) return false
           menu.click()
-        })
+          return true
+        })).toBe(true)
         // Core dump and refresh magic number timeout
         await scene.connectionEstablished()
         await expect(toolbar.startSketchBtn).toBeVisible()
