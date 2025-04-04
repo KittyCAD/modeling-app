@@ -1303,7 +1303,9 @@ export async function deleteFromSelection(
       if (!pathToNode) return new Error('Could not find extrude variable')
     } else {
       pathToNode = selection.codeRef.pathToNode
-      if (varDec.node.type !== 'VariableDeclarator') {
+      if (varDec.node.type === 'VariableDeclarator') {
+        extrudeNameToDelete = varDec.node.id.name
+      } else if (varDec.node.type === 'CallExpression') {
         const callExp = getNodeFromPath<CallExpression>(
           astClone,
           pathToNode,
@@ -1312,7 +1314,7 @@ export async function deleteFromSelection(
         if (err(callExp)) return callExp
         extrudeNameToDelete = callExp.node.callee.name.name
       } else {
-        extrudeNameToDelete = varDec.node.id.name
+        return new Error('Could not find extrude variable or call')
       }
     }
 

@@ -4,1518 +4,1821 @@ description: Operations executed add_lots.kcl
 ---
 [
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "f",
-    "functionSourceRange": [
-      4,
-      26,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "f",
+      "functionSourceRange": [
+        4,
+        26,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   }
 ]

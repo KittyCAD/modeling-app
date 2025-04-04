@@ -51,15 +51,18 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -119,7 +122,7 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -178,15 +181,18 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -246,18 +252,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -317,18 +326,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -388,18 +400,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -459,7 +474,7 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -518,15 +533,18 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -586,18 +604,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -657,18 +678,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -728,18 +752,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -799,18 +826,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -870,18 +900,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -941,18 +974,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1012,18 +1048,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1083,18 +1122,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1154,18 +1196,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1225,18 +1270,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1296,18 +1344,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1367,18 +1418,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1438,18 +1492,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "kitLeg",
-    "functionSourceRange": [
-      6080,
-      6895,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "kitLeg",
+      "functionSourceRange": [
+        6080,
+        6895,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1500,15 +1557,18 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1568,21 +1628,24 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "kitLeg",
-    "functionSourceRange": [
-      6080,
-      6895,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "kitLeg",
+      "functionSourceRange": [
+        6080,
+        6895,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1633,15 +1696,18 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1701,33 +1767,39 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "kitEar",
-    "functionSourceRange": [
-      7082,
-      8003,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "kitEar",
+      "functionSourceRange": [
+        7082,
+        8003,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1788,18 +1860,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1859,18 +1934,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1930,18 +2008,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -2001,33 +2082,39 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "kitEar",
-    "functionSourceRange": [
-      7082,
-      8003,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "kitEar",
+      "functionSourceRange": [
+        7082,
+        8003,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -2088,18 +2175,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -2159,18 +2249,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -2230,18 +2323,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -2301,21 +2397,24 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -2376,18 +2475,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -2448,18 +2550,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -2520,18 +2625,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -2592,18 +2700,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -2664,18 +2775,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -2736,18 +2850,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -2808,18 +2925,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -2880,18 +3000,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -2952,18 +3075,21 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "pixelBox",
-    "functionSourceRange": [
-      95,
-      496,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -3024,6 +3150,6 @@ description: Operations executed kitt.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   }
 ]
