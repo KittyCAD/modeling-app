@@ -46,7 +46,6 @@ import { createLiteral, createLocalName } from '@src/lang/create'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   addHelix,
-  addImportAndInsert,
   addOffsetPlane,
   addShell,
   addSweep,
@@ -339,7 +338,6 @@ export type ModelingMachineEvent =
       data: ModelingCommandSchema['event.parameter.edit']
     }
   | { type: 'Export'; data: ModelingCommandSchema['Export'] }
-  | { type: 'Insert'; data: ModelingCommandSchema['Insert'] }
   | {
       type: 'Boolean Subtract'
       data: ModelingCommandSchema['Boolean Subtract']
@@ -2678,31 +2676,6 @@ export const modelingMachine = setup({
         )
       }
     ),
-    insertAstMod: fromPromise(
-      async ({ input }: { input?: ModelingCommandSchema['Insert'] }) => {
-        if (!input) {
-          return new Error('No input provided')
-        }
-
-        const ast = kclManager.ast
-        const { path, localName } = input
-        const { modifiedAst, pathToImportNode, pathToInsertNode } =
-          addImportAndInsert({
-            node: ast,
-            path,
-            localName,
-          })
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          { kclManager, editorManager, codeManager },
-          {
-            skipUpdateAst: true,
-            focusPath: [pathToImportNode, pathToInsertNode],
-          }
-        )
-      }
-    ),
     exportFromEngine: fromPromise(
       async ({}: { input?: ModelingCommandSchema['Export'] }) => {
         return undefined as Error | undefined
@@ -2849,11 +2822,6 @@ export const modelingMachine = setup({
         },
         'event.parameter.edit': {
           target: '#Modeling.parameter.editing',
-        },
-
-        Insert: {
-          target: 'Inserting',
-          reenter: true,
         },
 
         Export: {
@@ -4260,19 +4228,6 @@ export const modelingMachine = setup({
         id: 'appearanceAstMod',
         input: ({ event }) => {
           if (event.type !== 'Appearance') return undefined
-          return event.data
-        },
-        onDone: ['idle'],
-        onError: ['idle'],
-      },
-    },
-
-    Inserting: {
-      invoke: {
-        src: 'insertAstMod',
-        id: 'insertAstMod',
-        input: ({ event }) => {
-          if (event.type !== 'Insert') return undefined
           return event.data
         },
         onDone: ['idle'],

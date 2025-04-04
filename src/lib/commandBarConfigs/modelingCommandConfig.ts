@@ -48,10 +48,6 @@ export type HelixModes = 'Axis' | 'Edge' | 'Cylinder'
 
 export type ModelingCommandSchema = {
   'Enter sketch': { forceNewSketch?: boolean }
-  Insert: {
-    path: string
-    localName: string
-  }
   Export: {
     type: OutputTypeKey
     storage?: StorageUnion
@@ -228,24 +224,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   ],
-  Insert: {
-    // TODO: find a way to populate the options from here instead of the code.Insert sibbling hack
-    description: 'Insert from a file in the current project directory',
-    icon: 'import',
-    needsReview: true,
-    hide: 'web',
-    args: {
-      path: {
-        inputType: 'string',
-        required: true,
-        skip: true,
-      },
-      localName: {
-        inputType: 'string',
-        required: true,
-      },
-    },
-  },
   Export: {
     description: 'Export the current model.',
     icon: 'floppyDiskArrow',

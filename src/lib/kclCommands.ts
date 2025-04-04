@@ -2,6 +2,8 @@ import type { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 import toast from 'react-hot-toast'
 
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
+import { addImportAndInsert } from '@src/lang/modifyAst'
 import {
   changeKclSettings,
   unitAngleToUnitAng,
@@ -11,15 +13,15 @@ import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
   DEFAULT_DEFAULT_ANGLE_UNIT,
   DEFAULT_DEFAULT_LENGTH_UNIT,
+  EXECUTION_TYPE_REAL,
   FILE_EXT,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { copyFileShareLink } from '@src/lib/links'
 import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
-import { codeManager, kclManager } from '@src/lib/singletons'
+import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
-import { commandBarActor } from '@src/machines/commandBarMachine'
 
 interface OnSubmitProps {
   sampleName: string
@@ -113,18 +115,33 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           required: true,
           options: commandProps.specialPropsForInsertCommand.providedOptions,
         },
+        localName: {
+          inputType: 'string',
+          required: true,
+        },
       },
-      onSubmit: (data) => {
-        commandBarActor.send({
-          type: 'Find and select command',
-          data: {
-            name: 'Insert',
-            groupId: 'modeling',
-            argDefaultValues: {
-              path: data?.path,
-            },
-          },
-        })
+      onSubmit: async (data) => {
+        if (!data) {
+          return new Error('No input provided')
+        }
+
+        const ast = kclManager.ast
+        const { path, localName } = data
+        const { modifiedAst, pathToImportNode, pathToInsertNode } =
+          addImportAndInsert({
+            node: ast,
+            path,
+            localName,
+          })
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          { kclManager, editorManager, codeManager },
+          {
+            skipUpdateAst: true,
+            focusPath: [pathToImportNode, pathToInsertNode],
+          }
+        )
       },
     },
     {
