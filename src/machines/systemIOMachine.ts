@@ -1,7 +1,7 @@
 import { setup, fromPromise, assign, assertEvent} from 'xstate'
 import { DEFAULT_PROJECT_NAME } from "@src/lib/constants"
 import { mkdirOrNOOP, getProjectInfo } from "@src/lib/desktop"
-import type { FileEntry, Project } from '@src/lib/project'
+import type { Project } from '@src/lib/project'
 
 export enum SystemIOMachineActors {
   readFoldersFromProjectDirectory = "read folders from project directory",
@@ -20,7 +20,6 @@ export enum SystemIOMachineEvents {
   readFoldersFromProjectDirectory = "read folders from project directory",
   done_readFoldersFromProjectDirectory = donePrefix + "read folders from project directory",
   setProjectDirectoryPath = "set project directory path",
-  done_setProjectDirectoryPath = donePrefix + "set project directory path",
 }
 
 export enum SystemIOMachineActions {
@@ -56,7 +55,6 @@ export const systemIOMachine = setup({
       | { type: SystemIOMachineEvents.readFoldersFromProjectDirectory; data: {} }
       | { type: SystemIOMachineEvents.done_readFoldersFromProjectDirectory; data: {}, output: Project[] }
       | { type: SystemIOMachineEvents.setProjectDirectoryPath; data: {requestedProjectDirectoryPath: string}}
-      | { type: SystemIOMachineEvents.done_setProjectDirectoryPath; data: {requestedProjectDirectoryPath: string}, output: string}
   },
   actions: {
     [SystemIOMachineActions.setFolders]: assign({
@@ -67,8 +65,8 @@ export const systemIOMachine = setup({
     }),
     [SystemIOMachineActions.setProjectDirectoryPath]: assign({
       projectDirectoryPath:({event})=>{
-        assertEvent(event, SystemIOMachineEvents.done_setProjectDirectoryPath)
-        return event.output
+        assertEvent(event, SystemIOMachineEvents.setProjectDirectoryPath)
+        return event.data.requestedProjectDirectoryPath
       }
     })
   },
@@ -110,9 +108,6 @@ export const systemIOMachine = setup({
       }
       return projects
     }),
-    [SystemIOMachineActors.setProjectDirectoryPath]: fromPromise(async ({input}:{input: string}) => {
-      return input
-    })
   }
 }).createMachine({
   initial:SystemIOMachineStates.idle,
@@ -128,8 +123,14 @@ export const systemIOMachine = setup({
   states: {
     [SystemIOMachineStates.idle]: {
       on: {
+        // on can be an action
         [SystemIOMachineEvents.readFoldersFromProjectDirectory]:SystemIOMachineStates.readingFolders,
-        [SystemIOMachineEvents.setProjectDirectoryPath]:SystemIOMachineStates.settingProjectDirectoryPath
+        [SystemIOMachineEvents.setProjectDirectoryPath]:{
+          target: SystemIOMachineStates.readingFolders,
+          actions: [
+            SystemIOMachineActions.setProjectDirectoryPath
+          ]
+        }
       }
     },
     [SystemIOMachineStates.readingFolders]: {
@@ -150,25 +151,6 @@ export const systemIOMachine = setup({
         }
       }
     },
-    [SystemIOMachineStates.settingProjectDirectoryPath]: {
-      invoke: {
-        id: SystemIOMachineActors.setProjectDirectoryPath,
-        src: SystemIOMachineActors.setProjectDirectoryPath,
-        input: ({event}) => {
-          assertEvent(event, SystemIOMachineEvents.setProjectDirectoryPath)
-          return event.data.requestedProjectDirectoryPath
-        },
-        onDone: {
-          target: SystemIOMachineStates.readingFolders,
-          actions: [
-            SystemIOMachineActions.setProjectDirectoryPath
-          ]
-        },
-        onError: {
-          target: SystemIOMachineStates.idle,
-        }
-      }
-    }
   }
 })
 

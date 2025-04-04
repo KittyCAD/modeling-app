@@ -69,6 +69,9 @@ export const useSettings = () =>
 
 // TODO: Debugging
 const systemIOActor = appActor.getSnapshot().children.systemIO!
+
 // systemIOActor.send({type:SystemIOMachineEvents.readFoldersFromProjectDirectory, data: {}})
+
 systemIOActor.send({type:SystemIOMachineEvents.setProjectDirectoryPath, data: {requestedProjectDirectoryPath:'/home/kevin-nadro/Documents/zoo-modeling-app-projects'}})
+
 window.systemIOActor = systemIOActor
